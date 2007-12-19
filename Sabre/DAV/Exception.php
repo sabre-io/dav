@@ -100,4 +100,14 @@
         }
 
     }
+
+    class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 423;
+
+        }
+
+    }
 ?>

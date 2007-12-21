@@ -14,6 +14,10 @@
 
         function getLastModified();
 
+        function setFullPath($path);
+
+        function getFullPath();
+
     }
 
 ?>

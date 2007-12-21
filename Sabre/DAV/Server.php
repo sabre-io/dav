@@ -1,6 +1,7 @@
 <?php
    
     require_once 'Sabre/DAV/Exception.php';
+    require_once 'Sabre/DAV/XMLReader.php';
 
     /**
      * Main DAV server class
@@ -29,6 +30,13 @@
          * @var mixed
          */
         private $allowDirectoryOverwrite = false;
+
+        /**
+         * The centralized property manager (if any) 
+         * 
+         * @var Sabre_DAV_PropertyManager 
+         */
+        private $propertyManager;
 
         function __construct(Sabre_DAV_IDirectory $root) {
 
@@ -69,8 +77,15 @@
 
         }
 
+        public function setPropertyManager(Sabre_DAV_PropertyManager $propertyManager) {
+
+            $this->propertyManager = $propertyManager;
+
+        }
+
         public function getFileObject($path) {
 
+            $pathStr = $path;
             $path = trim($path,'/');
 
             $current = $this->root;
@@ -85,17 +100,33 @@
                 }
 
             }
-
+            
+            $current->setFullpath($pathStr);
             return $current;
 
         }
 
+        /**
+         * Sets the base responding url 
+         * 
+         * @param string $url 
+         * @return void
+         */
         public function setBaseUrl($url) {
 
             $this->baseUrl = $url;    
 
         } 
 
+        /**
+         * Copies a file from 1 to another location 
+         * 
+         * @param Sabre_DAV_IFile $source Source-file object 
+         * @param Sabre_DAV_IFile $destDirectory Destination container
+         * @param mixed $destName Destination name
+         * @param mixed $depth How 'deep' the copy should go. 
+         * @return void
+         */
         public function copyFile(Sabre_DAV_IFile $source,Sabre_DAV_IFile $destDirectory,$destName,$depth = null) {
 
             if (is_null($depth)) $depth = self::DEPTH_INFINITY; //self::DEPTH_INFINITY;
@@ -129,10 +160,13 @@
                 $destDirectory->createFile($destName,ob_get_clean());
 
             }
+            if ($this->propertyManager) {
+
+                $this->propertyManager->storeProperties($destDirectory->getFullPath() . '/' . $destName,$this->propertyManager->getProperties($source->getFullPath()),true);
+
+            }
 
         }
-
-
 
         // HTTP Method implementations {{{
         
@@ -155,8 +189,9 @@
          */
         protected function propfind() {
 
-            $properties = $this->getRequestedProperties(file_get_contents('php://input'));
-
+            $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
+            $properties = $xml->parsePropfindRequest();
+           
             $depth = isset($_SERVER['HTTP_DEPTH'])?$_SERVER['HTTP_DEPTH']:0;
             if ($depth!=0) $depth = 1;
 
@@ -166,32 +201,42 @@
             // The file object
             $fileObject = $this->getFileObject($path);
 
-            $fileList[] = array(
+            $props = array(
                 'name'         => '',
                 'type'         => $fileObject instanceof Sabre_DAV_IDirectory?1:0,
                 'lastmodified' => $fileObject->getLastModified(),
                 'size'         => $fileObject->getSize(),
             );
 
+            if ($this->propertyManager) {
+                $newProps = $this->propertyManager->getProperties($path);
+                if ($newProps) $props = array_merge($props,$newProps);
+            }
+
+            $fileList[] = $props;
+
             // If the depth was 1, we'll also want the files in the directory
             if ($depth==1 && $fileObject instanceof Sabre_DAV_IDirectory) {
 
                 foreach($fileObject->getChildren() as $child) {
-                    $fileList[] = array(
+                    $props= array(
                         'name'         => $child->getName(), 
                         'type'         => $child instanceof Sabre_DAV_IDirectory?1:0,
                         'lastmodified' => $child->getLastModified(),
                         'size'         => $child->getSize(),
                     );
+                    if ($this->propertyManager) {
+                        $props = array_merge($props,$this->propertyManager->getProperties($path . '/' . $child->getName()));
+                    }
+
+                    $fileList[] = $props;
                 }
                 
             }
-            
+           
             // This is a multi-status response
             $this->sendHTTPStatus(207);
-
-            // Building up the property list
-            $data = $this->generatePropertyList($fileList,$properties);
+            $data = $this->generatePropfindResponse($fileList,$properties);
             echo $data;
 
         }
@@ -400,6 +445,13 @@
                     $destObject = $this->getFileObject(dirname($destination));
 
                     $this->copyFile($fileObject,$destObject,basename($destination));
+
+                    if ($this->propertyManager) {
+
+                        $this->propertyManager->deleteProperties($destination,array());
+
+                    }
+
                     $fileObject->delete();
 
                     // Sending 204: No Content
@@ -431,6 +483,11 @@
 
                 $this->copyFile($fileObject,$destObject,basename($destination));
                 $fileObject->delete();
+                if ($this->propertyManager) {
+
+                    $this->propertyManager->deleteProperties($destination,array());
+
+                }
 
                 // Sending a 201 Created
                 $this->sendHTTPStatus(201);
@@ -439,10 +496,28 @@
 
         }
 
+        function proppatch() {
 
+            $uri = $this->getRequestUri();
+
+            // This will give us a 404 in the case the url doesn't exist
+            $fileObject = $this->getFileObject($uri);
+
+            // Getting the modifications. This array contains a 'set' property with property updates, 
+            // and a 'remove' property with properties that should be removed
+            $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
+            $changes = $xml->parsePropPatchRequest();
+
+            if ($this->propertyManager) {
+
+                if ($changes['set'])    $this->propertyManager->storeProperties($uri,$changes['set']);
+                if ($changes['remove']) $this->propertyManager->deleteProperties($uri,$changes['remove']);
+
+            }
+
+        }
 
         // }}}
-
         // {{{ HTTP HELPERS
         
         protected function invoke($method) {
@@ -463,7 +538,7 @@
 
         protected function getAllowedMethods() {
 
-            return array('options','get','head','post','delete','trace','propfind','copy','mkcol','put','move');
+            return array('options','get','head','post','delete','trace','propfind','copy','mkcol','put','move','proppatch');
 
         }
 
@@ -544,16 +619,15 @@
         }
 
         /// }}}
+        // {{{ XML HTTP Request READER/WRITERS
         
-        
-        // {{{ PROPERTY READER/WRITERS
         /**
-         * generatePropertyList 
+         * generatePropfindResponse 
          * 
          * @param mixed $list 
          * @return void
          */
-        private function generatePropertyList($list,$properties) {
+        private function generatePropfindResponse($list,$properties) {
 
             $xw = new XMLWriter();
             $xw->openMemory();
@@ -597,7 +671,7 @@
 
             $url = implode('/',$url);
 
-            // Adding the protocol and hostname
+            // Adding the protocol and hostname. We'll also append a slash if this is a collection
             $xw->text('http://' . $_SERVER['HTTP_HOST'] . $url . ($data['type']==1&&$url?'/':''));
             $xw->endElement(); //d:href
 
@@ -633,7 +707,17 @@
                         $xw->endElement();
                         break;
 
-                    default : $notFoundProps[] = $prop;
+                    default : 
+                        if (isset($data[$prop])) {
+                            $propParts = explode('#',$prop,2);
+                            $xw->startElement($propParts[1]);
+                            $xw->writeAttribute('xmlns',$propParts[0]);
+                            $xw->text($data[$prop]);
+                            $xw->endElement();
+                        } else {
+                            $notFoundProps[] = $prop;
+                        }
+                        break;
 
                 }
 
@@ -645,7 +729,7 @@
            
             $xw->endElement(); // :d:propstat
 
-            /*
+            
             if ($notFoundProps) {
 
                 $xw->startElement('d:propstat');
@@ -662,73 +746,13 @@
                 $xw->writeElement('d:status',$this->getHTTPStatus(404));
                 $xw->endElement(); // propstat
 
-            }*/
+            }
             $xw->endElement(); // d:response
         }
 
-        function getRequestedProperties($data) {
-
-            // We'll need to change the DAV namespace declaration to something else in order to make it parsable
-            $data = preg_replace("/xmlns(:[A-Za-z0-9_])?=\"DAV:\"/","xmlns\\1=\"urn:DAV\"",$data);
-          
-            // Make sure the xml parser doesn't throw xml errors
-            libxml_use_internal_errors(true);
-            libxml_clear_errors();
-
-            $xml = new XMLReader();
-            if(!$xml->xml($data) || libxml_get_last_error()) throw new Sabre_DAV_BadRequestException('Invalid XML body');
-
-            $props = array();
-
-            try {
-                while($xml->read()) {
-
-                    if ($xml->nodeType==XMLReader::ELEMENT && $xml->namespaceURI=='urn:DAV' && $xml->localName=='prop') {
-
-                        while($xml->read() && $xml->nodeType != XMLReader::END_ELEMENT) {
-
-                            if ($xml->nodeType==XMLReader::ELEMENT) {
-                               
-                                // according to litmus and the xml spec we should fail on empty namespaceURI's
-                                if (!$xml->namespaceURI)  throw new Sabre_DAV_BadRequestException('Invalid XML body');
-                                $props[] = $xml->namespaceURI . '#' . $xml->localName;
-                                $xml->next();
-
-                            }
-
-                        }
-
-                        $xml->close();
-                        break;
-                   }
-
-                }
-            } catch (Sabre_PHP_Exception $e) {
-
-                throw new Sabre_DAV_BadRequestException('Invalid XML body (' . $e->getMessage() . ')');
-
-            }
-
-            /*
-            if (!$xml) throw new Sabre_DAV_BadRequestException('Malformed XML body');
-
-            $xml = $xml->children('urn:DAV');
-
-            $props = array();
-
-            $propertyTypes = array(
-                'getlastmodified',
-                'getcontentlength',
-                'resourcetype',
-            );
-
-            foreach($propertyTypes as $propType) if (isset($xml->prop->$propType)) $props[] = $propType;
-            */         
-            return $props;
-            
-        }
 
         // }}}
+
     }
 
 ?>

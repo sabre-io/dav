@@ -1,37 +1,63 @@
 <?php
 
-    require_once 'Sabre/DAV/File.php';
-    require_once 'Sabre/DAV/IDirectory.php';
-    require_once 'Sabre/DAV/Exception.php';
+    require_once 'Sabre/DAV/Directory.php';
+    require_once 'Sabre/DAV/FS/File.php';
 
-    abstract class Sabre_DAV_Directory extends Sabre_DAV_File implements Sabre_DAV_IDirectory {
+    class Sabre_DAV_FS_Directory extends Sabre_DAV_Directory {
 
-        function createFile($filename,$data) {
+        function __construct($myPath) {
 
-            throw new Sabre_DAV_PermissionDeniedException();
+            $this->myPath = $myPath;
 
         }
 
-        function createDirectory($name) {
+        function getName() {
 
-            throw new Sabre_DAV_PermissionDeniedException();
+            return basename($this->myPath);
 
         }
 
         function getChildren() {
 
-            throw new Sabre_DAV_PermissionDeniedException();
+            $children = array();
+
+            clearstatcache();
+            foreach(scandir($this->myPath) as $file) {
+
+                if ($file=='.' || $file=='..') continue;
+                if (is_dir($this->myPath . '/' . $file)) {
+
+                    $children[] = new self($this->myPath . '/' . $file);
+
+                } else {
+
+                    $children[] = new Sabre_DAV_FS_File($this->myPath . '/' . $file);
+
+                } 
+
+            }
+
+            return $children;
 
         }
 
-        function getChild($path) {
+        function createDirectory($name) {
 
-            foreach($this->getChildren() as $child) {
+            $newPath = $this->myPath . '/' . $name;
+            mkdir($newPath);
 
-                if ($child->getName()==$path) return $child;
+        }
 
-            }
-            throw new Sabre_DAV_FileNotFoundException();
+        function createFile($name,$data) {
+
+            file_put_contents($this->myPath . '/' . basename($name),$data);
+
+        }
+
+        function delete() {
+
+            foreach($this->getChildren() as $child) $child->delete();
+            rmdir($this->myPath);
 
         }
 

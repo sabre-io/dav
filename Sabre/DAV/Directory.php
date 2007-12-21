@@ -1,63 +1,37 @@
 <?php
 
-    require_once 'Sabre/DAV/Directory.php';
-    require_once 'Sabre/DAV/FS/File.php';
+    require_once 'Sabre/DAV/File.php';
+    require_once 'Sabre/DAV/IDirectory.php';
+    require_once 'Sabre/DAV/Exception.php';
 
-    class Sabre_DAV_FS_Directory extends Sabre_DAV_Directory {
+    abstract class Sabre_DAV_Directory extends Sabre_DAV_File implements Sabre_DAV_IDirectory {
 
-        function __construct($myPath) {
+        function createFile($filename,$data) {
 
-            $this->myPath = $myPath;
-
-        }
-
-        function getName() {
-
-            return basename($this->myPath);
-
-        }
-
-        function getChildren() {
-
-            $children = array();
-
-            clearstatcache();
-            foreach(scandir($this->myPath) as $file) {
-
-                if ($file=='.' || $file=='..') continue;
-                if (is_dir($this->myPath . '/' . $file)) {
-
-                    $children[] = new self($this->myPath . '/' . $file);
-
-                } else {
-
-                    $children[] = new Sabre_DAV_FS_File($this->myPath . '/' . $file);
-
-                } 
-
-            }
-
-            return $children;
+            throw new Sabre_DAV_PermissionDeniedException();
 
         }
 
         function createDirectory($name) {
 
-            $newPath = $this->myPath . '/' . $name;
-            mkdir($newPath);
+            throw new Sabre_DAV_PermissionDeniedException();
 
         }
 
-        function createFile($name,$data) {
+        function getChildren() {
 
-            file_put_contents($this->myPath . '/' . basename($name),$data);
+            throw new Sabre_DAV_PermissionDeniedException();
 
         }
 
-        function delete() {
+        function getChild($path) {
 
-            foreach($this->getChildren() as $child) $child->delete();
-            rmdir($this->myPath);
+            foreach($this->getChildren() as $child) {
+
+                if ($child->getName()==$path) return $child;
+
+            }
+            throw new Sabre_DAV_FileNotFoundException();
 
         }
 

@@ -1,51 +1,51 @@
 <?php
 
-    require_once 'Sabre/DAV/File.php';
+    require_once 'Sabre/DAV/IFile.php';
 
-    class Sabre_DAV_FS_File extends Sabre_DAV_File {
+    abstract class Sabre_DAV_File implements Sabre_DAV_IFile {
 
-        private $myPath;
-
-        function __construct($myPath) {
-
-            $this->myPath = $myPath;
-
-        }
-
-        function getName() {
-
-            return basename($this->myPath);
-
-        }
-
-        function get() {
-
-            readfile($this->myPath);
-
-        }
+        private $fullPath;
 
         function delete() {
 
-            unlink($this->myPath);
+            throw new Sabre_DAV_PermissionDeniedException();
 
         }
 
         function put($data) {
 
-            file_put_contents($this->myPath,$data);
+            throw new Sabre_DAV_PermissionDeniedException();
 
         }
 
-        function getLastModified() {
+        function get() { 
 
-            return filemtime($this->myPath);
+            throw new Sabre_DAV_PermissionDeniedException();
 
         }
 
         function getSize() {
 
-            return filesize($this->myPath);
-            
+            return 0;
+
+        }
+
+        function getLastModified() {
+
+            return time();
+
+        }
+
+        function setFullPath($path) {
+
+            $this->fullPath = $path;
+
+        }
+
+        function getFullpath() {
+
+            return $this->fullPath;
+
         }
 
     }

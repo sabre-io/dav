@@ -38,6 +38,13 @@
          */
         private $propertyManager;
 
+        /**
+         * The centralized lock manager (if any)
+         * 
+         * @var Sabre_DAV_LockManager 
+         */
+        private $lockManager;
+
         function __construct(Sabre_DAV_IDirectory $root) {
 
             $this->root = $root;
@@ -80,6 +87,12 @@
         public function setPropertyManager(Sabre_DAV_PropertyManager $propertyManager) {
 
             $this->propertyManager = $propertyManager;
+
+        }
+
+        public function setLockManager($lockManager) {
+
+            $this->lockManager = $lockManager;
 
         }
 
@@ -178,7 +191,7 @@
         protected function options() {
 
             $this->addHeader('Allows',strtoupper(implode(' ',$this->getAllowedMethods())));
-            $this->addHeader('DAV','1');
+            $this->addHeader('DAV','1,2');
 
         }
 
@@ -248,6 +261,10 @@
          */
         protected function delete() {
 
+            // we need to check if the file is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($this->getRequestUri())) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
             $fileObject = $this->getFileObject($this->getRequestUri());
             $fileObject->delete();
 
@@ -261,6 +278,12 @@
         protected function put() {
 
             $requestUri = $this->getRequestUri();
+
+            // we need to check if the file is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($requestUri)) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
+
             // We'll catch FileNotFound exceptions, because that means its a new file we're creating
             try {
 
@@ -354,11 +377,23 @@
 
         protected function copy() {
             
-            $fileObject = $this->getFileObject($this->getRequestUri());
-
             // The HTTP Destination header is a full url with the destination for this copy
             if(!isset($_SERVER['HTTP_DESTINATION'])) throw new Sabre_DAV_BadRequestException();
             $destination = $this->calculateUri($_SERVER['HTTP_DESTINATION']);
+
+            // we need to check if the source is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($this->getRequestUri())) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
+
+            // we need to check if the destination is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($destination)) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
+
+            $fileObject = $this->getFileObject($this->getRequestUri());
+
+
 
             // Now we'll check if the destination already exists
             
@@ -419,12 +454,21 @@
         protected function move() {
            
             // TODO: Almost direct copy of the copy method.. perhaps this can be refactored
-            
             $fileObject = $this->getFileObject($this->getRequestUri());
 
             // The HTTP Destination header is a full url with the destination for this copy
             if(!isset($_SERVER['HTTP_DESTINATION'])) throw new Sabre_DAV_BadRequestException();
             $destination = $this->calculateUri($_SERVER['HTTP_DESTINATION']);
+
+            // we need to check if the source is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($this->getRequestUri())) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
+
+            // we need to check if the destination is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($destination)) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
 
             // Now we'll check if the destination already exists
             
@@ -500,6 +544,11 @@
 
             $uri = $this->getRequestUri();
 
+            // we need to check if the file is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($uri)) {
+                throw new Sabre_DAV_LockedException('Uri is locked');
+            }
+
             // This will give us a 404 in the case the url doesn't exist
             $fileObject = $this->getFileObject($uri);
 
@@ -514,6 +563,57 @@
                 if ($changes['remove']) $this->propertyManager->deleteProperties($uri,$changes['remove']);
 
             }
+
+        }
+
+        function lock() {
+
+            $uri = $this->getRequestUri();
+            $lockInfo = $this->lockManager->getLockInfo($uri);
+
+            $clientIf = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:null;
+
+            $clientLockToken = null;
+            if (!is_null($clientIf)) {
+                
+                $clientLockToken = trim($clientIf,'()<>');
+
+            }
+        
+            if ($lockInfo) {
+                // There's an active lock on the file
+                //echo "client:" . $clientLockToken . "\nServer:" . print_r($lockInfo,true) . "\n";
+                //die();
+                // If the supplied locktoken doesnt match the current lock, we'll throw the exception
+                if (!$clientLockToken || $clientLockToken!=$lockInfo['locktoken']) 
+                    throw new Sabre_DAV_LockedException('File was already locked');
+
+            }
+            $lockInfo = $this->lockManager->lockFile($uri,'litmus test suite',600,$clientLockToken);
+            $this->addHeader('Lock-Token',$lockInfo['locktoken']);
+            echo $this->generateLockResponse($lockInfo);
+
+        }
+
+        function unlock() {
+
+            $uri = $this->getRequestUri();
+            $lockInfo = $this->lockManager->getLockInfo($uri);
+
+            $clientIf = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:null;
+
+            $clientLockToken = null;
+            if (!is_null($clientIf)) {
+                
+                $clientLockToken = trim($clientIf,'()<>');
+
+            }
+            if (!$clientLockToken || $clientLockToken!=$lockInfo['locktoken']) 
+                throw new Sabre_DAV_LockedException('File was already locked');
+            else {
+                $this->lockManger->unlockFile($uri);
+            }
+
 
         }
 
@@ -538,7 +638,7 @@
 
         protected function getAllowedMethods() {
 
-            return array('options','get','head','post','delete','trace','propfind','copy','mkcol','put','move','proppatch');
+            return array('options','get','head','post','delete','trace','propfind','copy','mkcol','put','move','proppatch','lock','unlock');
 
         }
 
@@ -556,6 +656,7 @@
                 409 => 'Conflict',
                 412 => 'Precondition failed',
                 415 => 'Unsupported Media Type',
+                423 => 'Locked',
                 500 => 'Internal Server Error',
                 501 => 'Method not implemented',
            ); 
@@ -748,6 +849,33 @@
 
             }
             $xw->endElement(); // d:response
+        }
+
+        function generateLockResponse($lockInfo) {
+
+            $xw = new XMLWriter();
+            $xw->openMemory();
+            $xw->setIndent(true);
+            $xw->startDocument('1.0','UTF-8');
+            $xw->startElementNS('d','prop','DAV:');
+                $xw->startElement('d:lockdiscovery');
+                    $xw->startElement('d:activelock');
+                        $xw->startElement('d:lockscope');
+                            $xw->writeRaw('<d:exclusive />');
+                        $xw->endElement();
+                        $xw->startElement('d:locktype');
+                            $xw->writeRaw('<d:write />');
+                        $xw->endElement();
+                        $xw->writeElement('d:depth',0);
+                        $xw->writeElement('d:timeout','Second-' . $lockInfo['timeout']);
+                        $xw->startElement('d:locktoken');
+                            $xw->writeElement('d:href',$lockInfo['locktoken']);
+                        $xw->endElement();
+                        $xw->writeElement('d:owner',$lockInfo['owner']);
+                    $xw->endElement();
+                $xw->endElement();    
+            $xw->endElement();
+            return $xw->outputMemory();
         }
 
 

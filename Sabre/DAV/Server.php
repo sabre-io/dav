@@ -181,6 +181,49 @@
 
         }
 
+        protected function checkLockStatus($uri=null) {
+
+            if (is_null($uri)) $uri = $this->getRequestUri();
+            else {
+                $uri = $this->calculateUri(parse_url($uri,PHP_URL_PATH));
+            }
+
+            // we need to check if the file is locked
+            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($uri)) {
+
+                $conditions = $this->parseIfHeader();
+
+                $fullUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/' . trim($this->baseUrl,'/') . '/' . $uri;
+
+                $validLock = false;
+                foreach($conditions as $condition) {
+
+                    //print_r($condition);
+                    //echo "\n$fullUrl\n\n";
+                    if (($condition['url'] == $fullUrl || !$condition['url']) && $condition['locktoken']==$lockInfo['locktoken']) {
+                        return $lockInfo['locktoken'];
+                    }
+
+                }
+
+                return false; 
+
+            } else {
+
+                if ($this->parseIfHeader()) {
+
+                    throw new Sabre_DAV_PreconditionFailedException('There was no lock on the file, but an If header was supplied');
+
+                } else {
+
+                    return true; 
+
+                }
+
+            }
+
+        }
+
         // HTTP Method implementations {{{
         
         /**
@@ -267,6 +310,7 @@
             }
             $fileObject = $this->getFileObject($this->getRequestUri());
             $fileObject->delete();
+            if ($this->lockManager) $this->lockManager->unlockFile($this->getRequestUri());
 
         }
 
@@ -279,9 +323,10 @@
 
             $requestUri = $this->getRequestUri();
 
-            // we need to check if the file is locked
-            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($requestUri)) {
+            if (!$this->checkLockStatus()) {
+
                 throw new Sabre_DAV_LockedException('Uri is locked');
+
             }
 
             // We'll catch FileNotFound exceptions, because that means its a new file we're creating
@@ -381,22 +426,15 @@
             if(!isset($_SERVER['HTTP_DESTINATION'])) throw new Sabre_DAV_BadRequestException();
             $destination = $this->calculateUri($_SERVER['HTTP_DESTINATION']);
 
-            // we need to check if the source is locked
-            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($this->getRequestUri())) {
-                throw new Sabre_DAV_LockedException('Uri is locked');
-            }
+            if (!$this->checkLockStatus($_SERVER['HTTP_DESTINATION'])) {
 
-            // we need to check if the destination is locked
-            if ($this->lockManager && $lockInfo = $this->lockManager->getLockInfo($destination)) {
-                throw new Sabre_DAV_LockedException('Uri is locked');
+                throw new Sabre_DAV_LockedException('Destination Uri is locked');
+
             }
 
             $fileObject = $this->getFileObject($this->getRequestUri());
 
-
-
             // Now we'll check if the destination already exists
-            
             try {
 
                 $destObject = $this->getFileObject($destination);
@@ -413,7 +451,7 @@
                     $destObject->delete();
                     $destObject = $this->getFileObject(dirname($destination));
 
-                    $this->copyFile($fileObject,$destObject,basename($destination),$this->getDepth());
+                    $this->copyFile($fileObject,$destObject,basename($destination),$this->parseDepthHeader());
 
                     // Sending 204: No Content
                     $this->sendHTTPStatus(204);
@@ -442,7 +480,7 @@
 
                 if (!$destObject instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_ConflictException('Not a directory!');
 
-                $this->copyFile($fileObject,$destObject,basename($destination),$this->getDepth());
+                $this->copyFile($fileObject,$destObject,basename($destination),$this->parseDepthHeader());
 
                 // Sending a 201 Created
                 $this->sendHTTPStatus(201);
@@ -571,25 +609,27 @@
             $uri = $this->getRequestUri();
             $lockInfo = $this->lockManager->getLockInfo($uri);
 
-            $clientIf = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:null;
-
             $clientLockToken = null;
-            if (!is_null($clientIf)) {
-                
-                $clientLockToken = trim($clientIf,'()<>');
 
-            }
-        
             if ($lockInfo) {
-                // There's an active lock on the file
-                //echo "client:" . $clientLockToken . "\nServer:" . print_r($lockInfo,true) . "\n";
-                //die();
-                // If the supplied locktoken doesnt match the current lock, we'll throw the exception
-                if (!$clientLockToken || $clientLockToken!=$lockInfo['locktoken']) 
+
+                $conditions = $this->parseIfHeader();
+
+                $validLock = false;
+                foreach($conditions as $condition) {
+
+                    if (($condition['url'] == $_SERVER['REQUEST_URI'] || !$condition['url']) && $condition['locktoken']==$lockInfo['locktoken']) {
+                        $validLock = true;
+                        $clientLockToken = $lockInfo['locktoken'];
+                    }
+
+                }
+
+                if (!$validLock) 
                     throw new Sabre_DAV_LockedException('File was already locked');
 
             }
-            $lockInfo = $this->lockManager->lockFile($uri,'litmus test suite',600,$clientLockToken);
+            $lockInfo = $this->lockManager->lockFile($uri,'user',600,$clientLockToken);
             $this->addHeader('Lock-Token',$lockInfo['locktoken']);
             echo $this->generateLockResponse($lockInfo);
 
@@ -600,20 +640,12 @@
             $uri = $this->getRequestUri();
             $lockInfo = $this->lockManager->getLockInfo($uri);
 
-            $clientIf = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:null;
+            $clientLockToken = isset($_SERVER['HTTP_LOCK_TOKEN'])?trim($_SERVER['HTTP_LOCK_TOKEN'],'<>'):false;
 
-            $clientLockToken = null;
-            if (!is_null($clientIf)) {
-                
-                $clientLockToken = trim($clientIf,'()<>');
-
-            }
-            if (!$clientLockToken || $clientLockToken!=$lockInfo['locktoken']) 
-                throw new Sabre_DAV_LockedException('File was already locked');
-            else {
-                $this->lockManger->unlockFile($uri);
-            }
-
+            if ($clientLockToken != $lockInfo['locktoken']) 
+                throw new Sabre_DAV_LockedException('Incorrect lock-token');
+            else 
+                $this->lockManager->unlockFile($uri);
 
         }
 
@@ -703,7 +735,7 @@
 
         }
 
-        function getDepth($default = self::DEPTH_INFINITY) {
+        function parseDepthHeader($default = self::DEPTH_INFINITY) {
 
             // If its not set, we'll grab the default
             $depth = isset($_SERVER['HTTP_DEPTH'])?$_SERVER['HTTP_DEPTH']:$default;
@@ -716,6 +748,28 @@
             }
 
             return $depth;
+
+        }
+
+        function parseIfHeader() {
+
+            $regex = '/(?:<(?P<url>[^>]*)>(?:\s)?)?\(<(?P<locktoken>[^\>]*)>\)/';
+            $header = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:'';
+
+            $header = trim(str_replace("\n"," ",$header));
+
+            $matches = array();
+            preg_match_all($regex,$header,$matches);
+
+            $result = array();
+            if ($matches) foreach($matches[0] as $k=>$match) {
+                $result[] = array(
+                    'url' => $matches['url'][$k],
+                    'locktoken' => $matches['locktoken'][$k]
+                );
+            }
+
+            return $result;
 
         }
 

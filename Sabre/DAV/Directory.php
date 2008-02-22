@@ -84,19 +84,9 @@
         }
 
         /**
-         * Returns an array with all the child nodes 
-         * 
-         * @return Sabre_DAV_INode[] 
-         */
-        public function getChildren() {
-
-            return array();
-
-        }
-
-        /**
          * Deleted the current node
          *
+         * @throws Sabre_DAV_PermissionDeniedException
          * @return void 
          */
         public function unlink() {
@@ -108,6 +98,8 @@
         /**
          * Renames the node
          * 
+         * @throws Sabre_DAV_PermissionDeniedException
+         * @param string $name The new name
          * @return void
          */
         public function setName($name) {

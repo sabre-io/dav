@@ -28,7 +28,8 @@
 
         /**
          * Renames the node
-         * 
+         *
+         * @param string $name The new name
          * @return void
          */
         function setName($name);

@@ -57,7 +57,7 @@
     /**
      * PermissionDeniedException 
      *
-     * This method is thrown whenever a user tries to do an operation that he's not allowed to
+     * This exception is thrown whenever a user tries to do an operation that he's not allowed to
      */
     class Sabre_DAV_PermissionDeniedException extends Sabre_DAV_Exception {
 
@@ -69,6 +69,26 @@
         public function getHTTPCode() {
 
             return 403;
+
+        }
+
+    }
+
+    /**
+     * MethodNotImplementedException 
+     *
+     * This exception is thrown when the client tried to call an unsupported HTTP method
+     */
+    class Sabre_DAV_MethodNotImplementedException extends Sabre_DAV_Exception {
+
+        /**
+         * getHTTPCode 
+         * 
+         * @return void
+         */
+        public function getHTTPCode() {
+            
+            return 501;
 
         }
 

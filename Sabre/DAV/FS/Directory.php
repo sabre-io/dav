@@ -2,6 +2,7 @@
 
     require_once 'Sabre/DAV/FS/Node.php';
     require_once 'Sabre/DAV/IDirectory.php';
+    require_once 'Sabre/DAV/FS/File.php';
 
     /**
      * Directory class 
@@ -46,12 +47,16 @@
          * Returns a specific child node, referenced by its name 
          * 
          * @param string $name 
+         * @throws Sabre_DAV_FileNotFoundException
          * @return Sabre_DAV_INode 
          */
         public function getChild($name) {
 
             $path = $this->path . '/' . $name;
-            if (is_dir($name)) {
+
+            if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException('File could not be located');
+
+            if (is_dir($path)) {
 
                 return new Sabre_DAV_FS_Directory($path);
 
@@ -71,7 +76,7 @@
         public function getChildren() {
 
             $nodes = array();
-            foreach(scandir($this->path) as $node) $nodes[] = $this->getChild($node);
+            foreach(scandir($this->path) as $node) if($node!='.' && $node!='..') $nodes[] = $this->getChild($node);
             return $nodes;
 
         }

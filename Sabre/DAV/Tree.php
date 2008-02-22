@@ -42,7 +42,9 @@
 
         /**
          * Creates a new file node, or updates an existing one 
-         * 
+         *
+         * This method MUST return either Sabre_DAV_Server::RESULT_CREATED or Sabre_DAV_Server::RESULT_UPDATED
+         *
          * @param string $path 
          * @param string $data 
          * @return int 

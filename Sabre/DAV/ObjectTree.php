@@ -140,7 +140,21 @@
          */
         public function put($path, $data) {
 
-            throw new Sabre_DAV_MethodNotImplementedException('put is not yet implemented');
+            $parent = $this->getNodeForPath(dirname($path));
+            try {
+                $child = $parent->getChild(basename($path));
+
+                // The child existed, so we're updating the contents
+                $child->put($data);
+                return Sabre_DAV_Server::RESULT_UPDATED;
+
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // The child didn't exist yet, so we're createing a new one
+                $parent->createFile(basename($path),$data);
+                return Sabre_DAV_Server::RESULT_CREATED;
+
+            }
 
         }
 

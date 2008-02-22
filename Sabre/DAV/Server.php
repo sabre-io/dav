@@ -27,6 +27,9 @@
          */
         const NODE_DIRECTORY = 2;
 
+        const RESULT_UPDATED = 1;
+        const RESULT_CREATED = 2;
+
         /**
          * The tree object
          * 
@@ -140,7 +143,19 @@
             echo $data;
 
         }
-                
+        
+        protected function httpPut() {
+
+            $result = $this->tree->put($this->getRequestUri(),file_get_contents('php://input'));
+            switch($result) {
+
+                case self::RESULT_CREATED : $this->sendHTTPStatus(201); break;
+                case self::RESULT_UPDATED : $this->sendHTTPStatus(200); break;
+                default : throw new Sabre_DAV_Exception('PUT did not send back a valid result value');
+
+            }
+
+        }
 
         // }}}
         // {{{ HTTP/WebDAV protocol helpers 

@@ -2,6 +2,7 @@
 
     require_once 'Sabre/DAV/Tree.php';
     require_once 'Sabre/DAV/Exception.php';
+    require_once 'Sabre/DAV/Server.php';
 
     /**
      * ObjectTree class
@@ -15,7 +16,7 @@
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
      * @license license http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      */
-    class Sabre_DAV_ObjectTree {
+    class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
         /**
          * The root node 
@@ -82,12 +83,39 @@
          * Returns an array with information about nodes 
          * 
          * @param string $path The path to get information about 
-         * @param int $depth 0 for just the path, 1 for the path and its children, Sabre_DAV_Server::DEPTH_INFINITY for infinit depth
+         * @param int $depth 0 for just the path, 1 for the path and its children
          * @return array 
          */
         public function getNodeInfo($path,$depth) {
 
-            throw new Sabre_DAV_MethodNotImplementedException('getNodeInfo is not yet implemented');
+            // The file object
+            $fileObject = $this->getNodeForPath($path);
+
+            $props = array(
+                'name'         => '',
+                'type'         => $fileObject instanceof Sabre_DAV_IDirectory?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
+                'lastmodified' => $fileObject->getLastModified(),
+                'size'         => $fileObject->getSize(),
+            );
+
+            $fileList[] = $props;
+
+            // If the depth was 1, we'll also want the files in the directory
+            if ($depth==1 && $fileObject instanceof Sabre_DAV_IDirectory) {
+
+                foreach($fileObject->getChildren() as $child) {
+                    $props= array(
+                        'name'         => $child->getName(), 
+                        'type'         => $child instanceof Sabre_DAV_IDirectory?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
+                        'lastmodified' => $child->getLastModified(),
+                        'size'         => $child->getSize(),
+                    );
+
+                    $fileList[] = $props;
+                }
+                
+            }
+            return $fileList;
 
         }
 

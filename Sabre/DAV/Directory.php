@@ -50,6 +50,13 @@
 
         }
 
+        /**
+         * Returns the last modification time 
+         *
+         * In this case, it will simply return the current time
+         *
+         * @return int 
+         */
         public function getLastModified() {
 
             return time();

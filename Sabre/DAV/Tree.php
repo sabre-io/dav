@@ -74,24 +74,6 @@
          * @return int
          */
         abstract function move($sourcePath, $destinationPath, $overwrite);
-        
-        /**
-         * Locks a node 
-         * 
-         * @param string $path Path to the node which should be locked 
-         * @param Sabre_DAV_Lock $lockInfo Locking information
-         * @return void
-         */
-        abstract function lock($path,Sabre_DAV_Lock $lockInfo);
-
-        /**
-         * Unlocks an existing lock 
-         * 
-         * @param string $path The path to unlock 
-         * @param Sabre_DAV_Lock $lockInfo Lock information
-         * @return void
-         */
-        abstract function unlock($path,Sabre_DAV_Lock $lockInfo);
 
     }
 

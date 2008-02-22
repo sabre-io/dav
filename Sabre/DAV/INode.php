@@ -31,7 +31,7 @@
          * 
          * @return void
          */
-        function setName();
+        function setName($name);
 
         /**
          * Returns the size of the node, in bytes 

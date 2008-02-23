@@ -96,7 +96,7 @@
          * @throws Sabre_DAV_PermissionDeniedException
          * @return void 
          */
-        public function unlink() {
+        public function delete() {
 
             throw new Sabre_DAV_PermissionDeniedException('Permission denied to delete directory');
 

@@ -35,16 +35,7 @@
 
         }
 
-        /**
-         * Delete the current node
-         *
-         * @return void 
-         */
-        public function unlink() {
 
-            unlink($path);
-
-        }
 
         /**
          * Returns the name of the node 

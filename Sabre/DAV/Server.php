@@ -109,6 +109,8 @@
 
         /**
          * HTTP GET
+         *
+         * This method simply fetches the contents of a uri, like normal
          * 
          * @return void
          */
@@ -119,8 +121,47 @@
         }
 
         /**
-         * HTTP PROPFIND 
-         * 
+         * HTTP HEAD
+         *
+         * This method is normally used to take a peak at a url, and only get the HTTP response headers, without the body
+         * This is used by clients to determine if a remote file was changed, so they can use a local cached version, instead of downloading it again
+         *
+         * @todo currently not implemented
+         * @return void
+         */
+        protected function httpHead() {
+
+            throw new Sabre_DAV_MethodNotImplementedException('Head is not yet implemented');
+
+        }
+
+        /**
+         * HTTP Delete 
+         *
+         * The HTTP delete method, deletes a given uri
+         *
+         * @return void
+         */
+        protected function httpDelete() {
+
+            $this->tree->delete($this->getRequestUri());
+
+        }
+
+
+        /**
+         * WEBDAV PROPFIND 
+         *
+         * This WebDAV method requests information about an uri resource, or a list of resources
+         * If a client wants to receive the properties for a single resource it will add an HTTP Depth: header with a 0 value
+         * If the value is 1, it means that it also expects a list of sub-resources (e.g.: files in a directory)
+         *
+         * The request body contains an XML data structure that has a list of properties the client understands 
+         * The response body is also an xml document, containing information about every uri resource and the requested properties
+         *
+         * It has to return a HTTP 207 Multi-status status code
+         *
+         * @todo currently this method doesn't do anything with the request-body, and just returns a default set of properties 
          * @return void
          */
         protected function httpPropfind() {
@@ -144,6 +185,15 @@
 
         }
         
+        /**
+         * HTTP PUT method 
+         * 
+         * This HTTP method updates a file, or creates a new one.
+         *
+         * If a new resource was created, a 201 Created status code should be returned. If an existing resource is updated, it's a 200 Ok
+         *
+         * @return void
+         */
         protected function httpPut() {
 
             $result = $this->tree->put($this->getRequestUri(),file_get_contents('php://input'));
@@ -154,6 +204,28 @@
                 default : throw new Sabre_DAV_Exception('PUT did not send back a valid result value');
 
             }
+
+        }
+
+        /**
+         * HTTP POST method
+         *
+         * This a WebDAV extension. This WebDAV server supports HTTP POST file uploads, coming from for example a browser.
+         * It works the exact same as a PUT, only accepts 1 file and can either create a new file, or update an existing one
+         *
+         * If a post variable 'redirectUrl' is supplied, it will return a 'Location: ' header, thus redirecting the client to said location
+         */
+        protected function httpPOST() {
+
+            foreach($_FILES as $file) {
+
+                $this->tree->put($this->getRequestUri().file_get_contents($file['tmp_name']));
+                break;
+
+            }
+
+            // We assume > 5.1.2, which has the header injection attack prevention
+            if (isset($_POST['redirectUrl']) && is_string($_POST['redirectUrl'])) header('Location: ' . $_POST['redirectUrl']);
 
         }
 

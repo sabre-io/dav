@@ -127,7 +127,7 @@
          */
         public function delete($path) {
 
-            throw new Sabre_DAV_MethodNotImplementedException('delete is not yet implemented');
+            $this->getNodeForPath($path)->delete();
 
         }
 

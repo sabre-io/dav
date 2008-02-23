@@ -81,6 +81,18 @@
 
         }
 
+        /**
+         * Deletes all files in this directory, and then itself 
+         * 
+         * @return void
+         */
+        public function delete() {
+
+            foreach($this->getChildren() as $child) $child->delete();
+            rmdir($this->path);
+
+        }
+
     }
 
 ?>

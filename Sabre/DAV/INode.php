@@ -17,7 +17,7 @@
          *
          * @return void 
          */
-        function unlink();
+        function delete();
 
         /**
          * Returns the name of the node 

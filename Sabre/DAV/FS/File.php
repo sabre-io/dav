@@ -38,6 +38,16 @@
 
         }
 
+        /**
+         * Delete the current file
+         *
+         * @return void 
+         */
+        public function delete() {
+
+            unlink($this->path);
+
+        }
 
     }
 

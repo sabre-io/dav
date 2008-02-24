@@ -180,7 +180,7 @@
 
             // This is a multi-status response
             $this->sendHTTPStatus(207);
-            $data = $this->generatePropfindResponse($fileList,$properties);
+            $data = $this->generatePropfindResponse($fileList);
             echo $data;
 
         }

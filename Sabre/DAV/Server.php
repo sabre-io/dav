@@ -116,6 +116,10 @@
          */
         protected function httpGet() {
 
+            $nodeInfo = $this->tree->getNodeInfo($this->requestUri(),0);
+
+            if ($nodeInfo[0]['size']) $this->addHeader('Content-Length',$nodeInfo[0]['size']);
+
             $this->addHeader('Content-Type', 'application/octet-stream');
             echo $this->tree->get($this->getRequestUri());
 

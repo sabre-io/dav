@@ -116,6 +116,7 @@
          */
         protected function httpGet() {
 
+            $this->addHeader('Content-Type', 'application/octet-stream');
             echo $this->tree->get($this->getRequestUri());
 
         }

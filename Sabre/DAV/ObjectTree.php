@@ -174,12 +174,43 @@
         /**
          * Creates a new directory 
          * 
-         * @param string $path The full path to the new directory 
+         * @param string $path The full path to the new directory
+         * @throws Sabre_DAV_ConflictException This method should return a conflict if the parent directory doesn't exist, or if there's a file with that name on that path 
+         * @throws Sabre_DAV_MethodNotAllowedException This method should return this exception when the directory already exists
          * @return void
          */
         public function createDirectory($path) {
 
-            throw new Sabre_DAV_MethodNotImplementedException('createDirectory is not yet implemented');
+            try {
+
+                $parent = $this->getNodeForPath(dirname($path));
+
+                // If the directory was not found, we're actually supposed to throw 409 Conflict
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                throw new Sabre_DAV_ConflictException($e->getMessage());
+
+            }
+
+            // Now we'll check if the file already exists
+            try {
+                $child = $parent->getChild(basename($path));
+
+                // We got so far.. so it already existed. Now for an appropriate error
+                if ($child instanceof Sabre_DAV_IDirectory) 
+
+                    // 405 for directories
+                    throw new Sabre_DAV_MethodNotAllowedException('Directory already exists');
+                else 
+                    // 409 for files
+                    throw new Sabre_DAV_ConflictException('The file already exists');
+                
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // this exception is actually good news
+                $parent->createDirectory(basename($path));
+
+            }
 
         }
 

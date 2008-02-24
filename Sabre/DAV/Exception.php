@@ -94,4 +94,49 @@
 
     }
 
+    /**
+     * UnSupportedMediaTypeException
+     *
+     * The 415 Unsupported Media Type status code is generally sent back when the client tried to call an HTTP method, with a body the server didn't understand
+     */
+    class Sabre_DAV_UnsupportedMediaTypeException extends Sabre_DAV_Exception { 
+
+        function getHTTPCode() {
+
+            return 415;
+
+        }
+
+    }
+
+    /**
+     * ConflictException
+     *
+     * A 409 Conflict is thrown when a user tried to make a directory over an existing file or in a parent directory that doesn't exist
+     */
+    class Sabre_DAV_ConflictException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 409;
+
+        }
+
+    }
+
+    /**
+     * MethodNotAllowedException 
+     *
+     * The 405 is thrown when a client tried to create a directory on an already existing directory
+     */
+    class Sabre_DAV_MethodNotAllowedException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 405;
+
+        }
+
+    }
+
 ?>

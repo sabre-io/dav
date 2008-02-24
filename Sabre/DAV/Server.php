@@ -229,6 +229,26 @@
 
         }
 
+
+        /**
+         * WebDAV MKCOL
+         *
+         * The MKCOL method is used to create a new collection (directory) on the server
+         *
+         * @return void
+         */
+        protected function mkcol() {
+
+            $requestUri = $this->getRequestUri();
+
+            // If there's a body, we're supposed to send an HTTP 412 Unsupported Media Type exception
+            $requestBody = file_get_contents('php://input');
+            if ($requestBody) throw new Sabre_DAV_UnsupportedMediaTypeException();
+
+            $this->tree->createDirectory($this->getRequestUri());
+
+        }
+        // }}}
         // }}}
         // {{{ HTTP/WebDAV protocol helpers 
 

@@ -63,6 +63,8 @@
          * Creates a new directory 
          * 
          * @param string $path The full path to the new directory 
+         * @throws Sabre_DAV_ConflictException This method should return a conflict if the parent directory doesn't exist, or if there's a file with that name on that path 
+         * @throws Sabre_DAV_MethodNotAllowedException This method should return this exception when the directory already exists
          * @return void
          */
         abstract function createDirectory($path);

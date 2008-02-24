@@ -116,7 +116,7 @@
          */
         protected function httpGet() {
 
-            $nodeInfo = $this->tree->getNodeInfo($this->requestUri(),0);
+            $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
 
             if ($nodeInfo[0]['size']) $this->addHeader('Content-Length',$nodeInfo[0]['size']);
 

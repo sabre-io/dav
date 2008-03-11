@@ -254,7 +254,6 @@
 
         }
         // }}}
-        // }}}
         // {{{ HTTP/WebDAV protocol helpers 
 
         /**
@@ -482,7 +481,7 @@
 
             // Content-length property
             $xw->startElement('d:getcontentlength');
-            $xw->text(isset($item['size'])?(int)$item['size']:'0');
+            $xw->text(isset($data['size'])?(int)$data['size']:'0');
             $xw->endElement(); // d:getcontentlength
                    
             // Resource type property

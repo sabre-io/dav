@@ -183,7 +183,9 @@
 
             try {
 
-                $parent = $this->getNodeForPath(dirname($path));
+                $parentPath = dirname($path);
+                if ($parentPath=='.') $parentPath='/';
+                $parent = $this->getNodeForPath($parentPath);
 
                 // If the directory was not found, we're actually supposed to throw 409 Conflict
             } catch (Sabre_DAV_FileNotFoundException $e) {
@@ -225,6 +227,64 @@
         public function move($sourcePath, $destinationPath, $overwrite) {
 
             throw new Sabre_DAV_MethodNotImplementedException('move is not yet implemented');
+
+        }
+
+        /**
+         * This function should return true or false, depending on wether or not this WebDAV tree supports locking of files 
+         *
+         * In case of the ObjectTree, this is determined by checking if the root node implements the Sabre_DAV_ILockable interface
+         *
+         * @return bool 
+         */
+        public function supportsLocks() {
+
+            return $this->rootNode instanceof Sabre_DAV_ILockable;
+
+        }
+
+        /**
+         * Returns all lock information on a particular uri 
+         * 
+         * This function should return an array with Sabre_DAV_Lock objects. If there are no locks on a file, return an empty array
+         *
+         * @param string $uri 
+         * @return array 
+         */
+        public function getLockInfo($uri) {
+
+            return $this->getNodeForPath($uri)->getLockInfo(); 
+
+        }
+
+        /**
+         * Locks a uri
+         *
+         * All the locking information is supplied in the lockInfo object. The object has a suggested timeout, but this can be safely ignored
+         * It is important that if the existing timeout is ignored, the property is overwritten, as this needs to be sent back to the client
+         * 
+         * @param string $uri 
+         * @param Sabre_DAV_Lock $lockInfo 
+         * @return void
+         */
+        public function lockNode($uri,Sabre_DAV_Lock $lockInfo) {
+
+            return $this->getNodeForPath($uri)->lock($lockInfo);
+
+        }
+
+        /**
+         * Unlocks a uri
+         *
+         * This method removes a lock from a uri. It is assumed all the correct information is correct and verified
+         * 
+         * @param string $uri 
+         * @param Sabre_DAV_Lock $lockInfo 
+         * @return void
+         */
+        public function unlockNode($uri,Sabre_DAV_Lock $lockInfo) {
+
+            return $this->getNodeForPath($uri)->unlock($lockInfo);
 
         }
 

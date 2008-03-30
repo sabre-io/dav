@@ -46,11 +46,33 @@
         public $timeout;
 
         /**
-         * The locktype, use the SHARED and EXCLUSIVE constants for this 
+         * Exclusive or shared lock 
          * 
          * @var int 
          */
-        public $lockType = self::EXCLUSIVE;
+        public $lockScope = self::EXCLUSIVE;
+
+        /**
+         * Parses a webdav lock xml body, and returns a new Sabre_DAV_LockInfo object 
+         * 
+         * @param string $body 
+         * @return Sabre_DAV_LockInfo
+         */
+        static function parseLockRequest($body) {
+
+            $xml = simplexml_load_string($body);
+            $lockInfo = new self();
+            
+            $lockInfo->owner = (string)$xml->owner;
+
+            $lockToken = '44445502';
+            $id = md5(microtime() . 'somethingrandom');
+            $lockToken.='-' . substr($id,0,4) . '-' . substr($id,4,4) . '-' . substr($id,8,4) . '-' . substr($id,12,12);
+
+            $lockInfo->token = $lockToken;
+            $lockToken->lockScope = isset($xml->lockscope->exclusive);
+
+        }
 
     }
 

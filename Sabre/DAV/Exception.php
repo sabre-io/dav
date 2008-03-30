@@ -139,4 +139,18 @@
 
     }
 
+    /**
+     * LockedException 
+     *
+     * The 425 is thrown when a client tried to access a resource that was locked, without supplying a valid lock token
+     */
+    class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 425;
+
+        }
+
+    }
 ?>

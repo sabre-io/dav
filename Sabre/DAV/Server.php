@@ -201,7 +201,7 @@
          */
         protected function httpPut() {
 
-            $result = $this->tree->put($this->getRequestUri(),file_get_contents('php://input'));
+            $result = $this->tree->put($this->getRequestUri(),$this->getRequestBody());
             switch($result) {
 
                 case self::RESULT_CREATED : $this->sendHTTPStatus(201); break;
@@ -218,7 +218,7 @@
          * This a WebDAV extension. This WebDAV server supports HTTP POST file uploads, coming from for example a browser.
          * It works the exact same as a PUT, only accepts 1 file and can either create a new file, or update an existing one
          *
-         * If a post variable 'redirectUrl' is supplied, it will return a 'Location: ' header, thus redirecting the client to said location
+         * If a post variable 'redirectUrl' is supplied, it will return a 'Location: ' header, thus redirecting the client to the given location
          */
         protected function httpPOST() {
 
@@ -242,17 +242,83 @@
          *
          * @return void
          */
-        protected function mkcol() {
+        protected function httpMkcol() {
 
             $requestUri = $this->getRequestUri();
 
             // If there's a body, we're supposed to send an HTTP 412 Unsupported Media Type exception
-            $requestBody = file_get_contents('php://input');
+            $requestBody = $this->getRequestBody();
             if ($requestBody) throw new Sabre_DAV_UnsupportedMediaTypeException();
 
             $this->tree->createDirectory($this->getRequestUri());
 
         }
+
+        /**
+         * Locks an uri
+         *
+         * The WebDAV lock request can be operated to either create a new lock on a file, or to refresh an existing lock
+         * If a new lock is created, a full XML body should be supplied, containing information about the lock such as the type 
+         * of lock (shared or exclusive) and the owner of the lock
+         *
+         * If a lock is to be refreshed, no body should be supplied and there should be a valid If header containing the lock
+         * 
+         * @return void
+         */
+        protected function httpLock() {
+
+            $uri = $this->getRequestUri();
+
+            $lastLock = null;
+            if (!$this->validateLock($uri,$lastLock)) {
+                throw new Sabre_DAV_LockedException('You tried to lock an url that was already locked');
+            }
+
+            if ($body = $this->getRequestBody()) {
+                $lockInfo = Sabre_DAV_LockInfo::parseLockRequest($body);
+            } else {
+                $lockInfo = new Sabre_DAV_Lock();
+            }
+            $lockInfo = Sabre_DAV_LockInfo::parseLockRequest($this->getRequestBody());
+
+            if ($timeOut = $this->getTimeoutHeader) $lockInfo->timeOut = $timeOut;
+            $lockInfo->timeOut = $this->getTimeoutHeader();
+
+            if ($lastLock) $lockInfo->lockToken = $lastLock->lockToken;
+
+            // If there was no locktoken, this means there was no request body, and also not an exiting locktoken in the header
+            if (!$lockInfo->lockToken) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
+            $this->tree->lockNode($uri,$lockInfo);
+
+        }
+
+        protected function httpUnlock() {
+
+            $uri = $this->getRequestUri();
+            
+            $lockToken = isset($_SERVER['HTTP_LOCKTOKEN'])?$_SERVER['HTTP_LOCKTOKEN']:false;
+
+            // If the locktoken header is not supplied, we need to throw a bad request exception
+            if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
+
+            $locks = $this->tree->getLocks();
+
+            foreach($locks as $lock) {
+
+                if ($lock->lockToken == $lockToken) {
+
+                    $this->tree->unlockNode($uri,$lock);
+                    return;
+
+                }
+
+            }
+
+            // If we got here, it means the locktoken was invalid
+            throw new Sabre_DAV_PreconditionFaileException('The uri wasn\'t locked, or the supplied locktoken was incorrect');
+
+        }
+
         // }}}
         // {{{ HTTP/WebDAV protocol helpers 
 
@@ -404,6 +470,105 @@
             }
 
             return $depth;
+
+        }
+
+        /**
+         * Returns the entire HTTP request body 
+         * 
+         * @return string 
+         */
+        protected function getRequestBody() {
+
+            return file_get_contents('php://input');
+
+        }
+
+        /**
+         * validateLock should be called when a write operation is about to happen
+         * It will check if the requested url is locked, and see if the correct lock tokens are passed 
+         *
+         * @param mixed $urls List of relevant urls. Can be an array, a string or nothing at all for the current request uri
+         * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre_DAV_Lock)
+         * @return bool
+         */
+        protected function validateLock($urls = null,&$lastLock = null) {
+
+            if (is_null($urls)) {
+                $urls = array($this->requestUri());
+            } elseif (is_string($urls)) {
+                $urls = array($urls);
+            } elseif (!is_array($urls)) {
+                throw new Sabre_DAV_Exception('The urls parameter should either be null, a string or an array');
+            }
+
+            $conditions = $this->getIfConditions();
+            // We're going to loop through the urls and make sure all lock conditions are satisfied
+            foreach($urls as $url) {
+
+                $locks = $this->tree->getLockInfo($url);
+
+                // If there were no conditions, but there were locks or the other way round, we fail 
+                if ((!$conditions && $locks)||(!$locks && $conditions)) {
+                    return false;
+                }
+              
+                // If there were no locks or conditions, we go to the next url
+                if (!$locks && !$conditions) continue;
+
+                // See if there's a satisfied condition
+                foreach($conditions as $condition) {
+
+                    // If the condition has a url, and it doesn't match, check the next condition
+                    if ($condition['url'] && $condition['url']!=$url) continue;
+
+                    // Check the locks
+                    foreach($locks as $lock) {
+                        if ((!$condition['not'] && $lock->lockToken == $condition['token']) || ($condition['not'] && $lock->lockToken != $condition['token'])) {
+                          
+                            // If we have a matched lock, we'll populated the $lastLock variable
+                            $lastLock = $lock;
+
+                            // Condition satisfied, onto the next url
+                            continue 2;
+
+                        }
+
+                    }
+
+                }
+
+                // No conditions satisfied, we fail
+                return false;
+
+            }
+
+            // We got here, this means every condition was satisfied
+            return true;
+
+        }
+
+        function getIfConditions() {
+
+            $header = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:'';
+            if (!$header) return array();
+
+            $matches = array();
+            $regex = '/(?:\<(?P<url>.*?)\>\s)?\((?P<not>Not\s)?\<(?P<token>.*?)\>\)/im';
+            preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
+
+            $conditions = array();
+
+            foreach($matches as $match) {
+                $condition = array(
+                    'url'   => $match['url'],
+                    'token' => $match['token'],
+                    'not'   => $match['not'],
+                );
+
+                if (!$condition['url'] && count($conditions)) $condition['url'] = $conditions[count($conditions)-1]['url'];
+                $conditions[] = $condition;
+            }
 
         }
 

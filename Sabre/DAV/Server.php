@@ -103,7 +103,11 @@
         protected function httpOptions() {
 
             $this->addHeader('Allows',strtoupper(implode(' ',$this->getAllowedMethods())));
-            $this->addHeader('DAV','1');
+            if ($this->tree->supportsLocks()) {
+                $this->addHeader('DAV','1,2');
+            } else {
+                $this->addHeader('DAV','1');
+            }
 
         }
 
@@ -292,11 +296,19 @@
 
         }
 
+        /**
+         * Unlocks a uri
+         *
+         * This WebDAV method allows you to remove a lock from a node. The client should provide a valid locktoken through the Lock-token http header
+         * The server should return 204 (No content) on success
+         *
+         * @return void
+         */
         protected function httpUnlock() {
 
             $uri = $this->getRequestUri();
             
-            $lockToken = isset($_SERVER['HTTP_LOCKTOKEN'])?$_SERVER['HTTP_LOCKTOKEN']:false;
+            $lockToken = isset($_SERVER['HTTP_LOCK_TOKEN'])?$_SERVER['HTTP_LOCK_TOKEN']:false;
 
             // If the locktoken header is not supplied, we need to throw a bad request exception
             if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
@@ -308,6 +320,7 @@
                 if ($lock->lockToken == $lockToken) {
 
                     $this->tree->unlockNode($uri,$lock);
+                    $this->sendHTTPStatus(204);
                     return;
 
                 }
@@ -393,7 +406,10 @@
          */
         protected function getAllowedMethods() {
 
-            return array('options','get','head','post','delete','trace','propfind','copy','mkcol','put','move','proppatch', /* 'lock','unlock' */);
+            $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','move','proppatch');
+            if ($this->tree->supportsLocks()) array_push($methods,'lock','unlock');
+
+            return $methods;
 
         }
 

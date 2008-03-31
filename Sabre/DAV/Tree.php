@@ -17,11 +17,9 @@
          *
          * @param string $sourcePath The source location
          * @param string $destinationPath The full destination path
-         * @param int $depth How deep the copy should be done
-         * @param bool $overwrite Wether or not to overwrite the destniation location
          * @return int
          */
-        abstract function copy($sourcePath, $destinationPath, $depth, $overwrite); 
+        abstract function copy($sourcePath, $destinationPath); 
 
         /**
          * Returns an array with information about nodes 
@@ -41,15 +39,22 @@
         abstract function delete($path);
 
         /**
-         * Creates a new file node, or updates an existing one 
-         *
-         * This method MUST return either Sabre_DAV_Server::RESULT_CREATED or Sabre_DAV_Server::RESULT_UPDATED
+         * Updates an existing file node 
          *
          * @param string $path 
          * @param string $data 
-         * @return int 
+         * @return bool
          */
         abstract function put($path, $data);
+
+        /**
+         * Creates a new filenode on the specified path
+         *
+         * @param string $path 
+         * @param string $data 
+         * @return bool
+         */
+        abstract function createFile($path, $data);
 
         /**
          * Returns the contents of a node 
@@ -74,10 +79,9 @@
          * 
          * @param string $sourcePath The path to the file which should be moved 
          * @param string $destinationPath The full destination path, so not just the destination parent node
-         * @param bool $overwrite Whether or not to overwrite the destiniation  
          * @return int
          */
-        abstract function move($sourcePath, $destinationPath, $overwrite);
+        abstract function move($sourcePath, $destinationPath);
 
         /**
          * This function should return true or false, depending on wether or not this WebDAV tree supports locking of files 

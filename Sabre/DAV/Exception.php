@@ -142,13 +142,44 @@
     /**
      * LockedException 
      *
-     * The 425 is thrown when a client tried to access a resource that was locked, without supplying a valid lock token
+     * The 423 is thrown when a client tried to access a resource that was locked, without supplying a valid lock token
      */
     class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
 
         function getHTTPCode() {
 
-            return 425;
+            return 423;
+
+        }
+
+    }
+
+    /**
+     * InsufficientStorageException 
+     *
+     * This Exception can be thrown, when for example a harddisk is full or a quota is exceeded
+     */
+    class Sabre_DAV_InsufficientStorageException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 423;
+
+        }
+
+    }
+
+    /**
+     * PreconditionFailedException 
+     *
+     * This exception is normally thrown when a client submitted a conditional request, like for example an If, If-None-Match or If-Match header, which 
+     * caused the HTTP request to not execute (the condition of the header failed)
+     */
+    class Sabre_DAV_PreconditionFailedException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 412; 
 
         }
 

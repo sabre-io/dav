@@ -69,11 +69,9 @@
          *
          * @param string $sourcePath The source location
          * @param string $destinationPath The full destination path
-         * @param int $depth How deep the copy should be done
-         * @param bool $overwrite Wether or not to overwrite the destniation location
          * @return int
          */
-        public function copy($sourcePath, $destinationPath, $depth, $overwrite) {
+        public function copy($sourcePath, $destinationPath) {
 
             throw new Sabre_DAV_MethodNotImplementedException('Copy is not yet implemented');
 
@@ -132,7 +130,21 @@
         }
 
         /**
-         * Creates a new file node, or updates an existing one 
+         * Creates a new file on the specified path 
+         * 
+         * @param string $path 
+         * @param string $data 
+         * @return void
+         */
+        public function createFile($path,$data) {
+
+            $parent = $this->getNodeForPath(dirname($path));
+            return $parent->createFile(basename($path),$data);
+
+        }
+
+        /**
+         * Updates an existing file
          * 
          * @param string $path 
          * @param string $data 
@@ -140,21 +152,8 @@
          */
         public function put($path, $data) {
 
-            $parent = $this->getNodeForPath(dirname($path));
-            try {
-                $child = $parent->getChild(basename($path));
-
-                // The child existed, so we're updating the contents
-                $child->put($data);
-                return Sabre_DAV_Server::RESULT_UPDATED;
-
-            } catch (Sabre_DAV_FileNotFoundException $e) {
-
-                // The child didn't exist yet, so we're createing a new one
-                $parent->createFile(basename($path),$data);
-                return Sabre_DAV_Server::RESULT_CREATED;
-
-            }
+            $node = $this->getNodeForPath($path);
+            return $child->put($data);
 
         }
 
@@ -221,10 +220,9 @@
          * 
          * @param string $sourcePath The path to the file which should be moved 
          * @param string $destinationPath The full destination path, so not just the destination parent node
-         * @param bool $overwrite Whether or not to overwrite the destiniation  
          * @return int
          */
-        public function move($sourcePath, $destinationPath, $overwrite) {
+        public function move($sourcePath, $destinationPath) {
 
             throw new Sabre_DAV_MethodNotImplementedException('move is not yet implemented');
 

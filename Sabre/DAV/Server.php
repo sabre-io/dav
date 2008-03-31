@@ -27,9 +27,6 @@
          */
         const NODE_DIRECTORY = 2;
 
-        const RESULT_UPDATED = 1;
-        const RESULT_CREATED = 2;
-
         /**
          * The tree object
          * 
@@ -108,6 +105,7 @@
             } else {
                 $this->addHeader('DAV','1');
             }
+            $this->addHeader('MS-Author-Via','DAV');
 
         }
 
@@ -154,6 +152,7 @@
         protected function httpDelete() {
 
             $this->tree->delete($this->getRequestUri());
+            $this->sendHTTPCode(204);
 
         }
 
@@ -205,12 +204,29 @@
          */
         protected function httpPut() {
 
-            $result = $this->tree->put($this->getRequestUri(),$this->getRequestBody());
-            switch($result) {
+            // First we'll do a check to see if the resource already exists
+            try {
+                $info = $this->tree->getNodeInfo($this->getRequestUri(),0); 
+                
+                // We got this far, this means the node already exists.
+                // This also means we should check for the If-None-Match header
+                if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH']) {
 
-                case self::RESULT_CREATED : $this->sendHTTPStatus(201); break;
-                case self::RESULT_UPDATED : $this->sendHTTPStatus(200); break;
-                default : throw new Sabre_DAV_Exception('PUT did not send back a valid result value');
+                    throw new Sabre_DAV_PrecondtionFailedException('The resource already exists, and an If-None-Match header was supplied');
+
+                }
+                
+                // If the node is a collection, we'll deny it
+                if ($info['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_ConflictException('PUTs on directories are not allowed'); 
+
+                $this->tree->put($this->getRequestUri(),$this->getRequestBody());
+                $this->sendHTTPRequest(200);
+
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // This means the resource doesn't exist yet, and we're creating a new one
+                $this->tree->createFile($this->getRequestUri(),$this->getRequestBody());
+                $this->sendHTTPRequest(201);
 
             }
 
@@ -250,11 +266,63 @@
 
             $requestUri = $this->getRequestUri();
 
-            // If there's a body, we're supposed to send an HTTP 412 Unsupported Media Type exception
+            // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
             $requestBody = $this->getRequestBody();
             if ($requestBody) throw new Sabre_DAV_UnsupportedMediaTypeException();
 
+            // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
+            
+            try {
+                if ($nodeInfo = $this->tree->getNodeInfo(dirname($requestUri),0)) {
+                    if ($nodeInfo['type']==self::NODE_FILE) {
+                        throw new Sabre_DAV_ConflictException('Parent node is not a directory');
+                    }
+                }
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // This means the parent node doesn't exist, and we need to throw a 409 Conflict
+                throw new Sabre_DAV_ConflictException('Parent node does not exist');
+
+            }
+
             $this->tree->createDirectory($this->getRequestUri());
+
+        }
+
+        /**
+         * WebDAV HTTP MOVE method
+         *
+         * This method moves one uri to a different uri. A lot of the actual request processing is done in getCopyMoveInfo
+         * 
+         * @return void
+         */
+        protected function httpMove() {
+
+            $moveInfo = $this->getCopyAndMoveInfo();
+
+            $this->tree->move($moveInfo['source'],$moveInfo['destination']);
+
+            // If a resource was overwritten we should send a 204, otherwise a 201
+            $this->sendHTTPStatus($moveInfo['destinationExists']?204:201);
+
+        }
+
+        /**
+         * WebDAV HTTP COPY method
+         *
+         * This method copies one uri to a different uri, and works much like the MOVE request
+         * A lot of the actual request processing is done in getCopyMoveInfo
+         * 
+         * @return void
+         */
+        protected function httpCopy() {
+
+            $copyInfo = $this->getCopyAndMoveInfo();
+
+            $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
+
+            // If a resource was overwritten we should send a 204, otherwise a 201
+            $this->sendHTTPStatus($copyInfo['destinationExists']?204:201);
 
         }
 
@@ -328,7 +396,7 @@
             }
 
             // If we got here, it means the locktoken was invalid
-            throw new Sabre_DAV_PreconditionFaileException('The uri wasn\'t locked, or the supplied locktoken was incorrect');
+            throw new Sabre_DAV_PreconditionFailedException('The uri wasn\'t locked, or the supplied locktoken was incorrect');
 
         }
 
@@ -358,6 +426,7 @@
                 423 => 'Locked',
                 500 => 'Internal Server Error',
                 501 => 'Method not implemented',
+                507 => 'Unsufficient Storage',
            ); 
 
             return 'HTTP/1.1 ' . $code . ' ' . $msg[$code];
@@ -406,9 +475,8 @@
          */
         protected function getAllowedMethods() {
 
-            $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','move','proppatch');
+            $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','proppatch');
             if ($this->tree->supportsLocks()) array_push($methods,'lock','unlock');
-
             return $methods;
 
         }
@@ -587,6 +655,66 @@
             }
 
         }
+
+        
+        /**
+         * Returns information about Copy and Move requests
+         * 
+         * This function is created to help getting information about the source and the destination for the 
+         * WebDAV MOVE and COPY HTTP request. It also validates a lot of information and throws proper exceptions 
+         * 
+         * The returned value is an array with the following keys:
+         *   * source - Source path
+         *   * destination - Destination path
+         *   * destinationExists - Wether or not the destination is an existing url (and should therefore be overwritten)
+         *
+         * @return array 
+         */
+        function getCopyAndMoveInfo() {
+
+            $source = $this->getRequestUri();
+
+            // Collecting the relevant HTTP headers
+            if (!isset($_SERVER['HTTP_DESTINATION'])) throw new Sabre_DAV_BadRequestException('The destination header was not supplied');
+            $destination = $this->calculateUri($_SERVER['HTTP_DESTINATION']);
+            $overwrite = isset($_SERVER['HTTP_OVERWRITE'])?$_SERVER['HTTP_OVERWRITE']:'T';
+
+            if (strtoupper($overwrite)=='T') $overwrite = true;
+            elseif (strtoupper($overwrite)=='F') $overwrite = false;
+
+            // We need to throw a bad request exception, if the header was invalid
+            else throw new Sabre_DAV_BadRequestException('The HTTP Overwrite header should be either T or F');
+
+            // Collection information on relevant existing nodes
+            $sourceInfo = $this->tree->getNodeInfo($source);
+
+            try {
+                $destinationParentInfo = $this->tree->getNodeInfo(dirname($destination));
+                if ($destinationParentInfo['type'] == self::NODE_FILE) throw new Sabre_DAV_UnsupportedMediaTypeException('The destination node is not a collection');
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // If the destination parent node is not found, we throw a 409
+                throw new Sabre_DAV_ConflictException('The destination node is not found');
+
+            }
+
+            try {
+
+                $destinationInfo = $this->tree->getNodeInfo($destination);
+                
+                // If this succeeded, it means the destination already exists
+                // we'll need to throw precondition failed in case overwrite is false
+                if (!$overwrite) throw new Sabre_DAV_PreconditionFailedException('The destination node already exists, and the overwrite header is set to false');
+
+            } catch (Sabre_DAV_NotFoundException $e) {
+
+                // Destination didn't exist, we're all good
+                $destinationInfo = false;
+
+            }
+
+        }
+
 
         // }}} 
         // {{{ XML Writers  

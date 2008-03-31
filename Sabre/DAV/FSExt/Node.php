@@ -25,7 +25,11 @@
         function getLocks() {
 
             $resourceData = $this->getResourceData();
-            return isset($resourceData['locks'])?$resourceData['locks']:array();
+            $locks = isset($resourceData['locks'])?$resourceData['locks']:array();
+            foreach($locks as $k=>$lock) {
+                if (time() > $lock->timeOut + $lock->created) unset($locks[$k]); 
+            }
+            return $locks;
 
         }
 
@@ -36,6 +40,10 @@
          * @return void
          */
         function lock(Sabre_DAV_Lock $lockInfo) {
+
+            // We're making the lock timeout 30 minutes
+            $lockInfo->timeOut = 1800;
+            $lockInfo->created = time();
 
             $resourceData = $this->getResourceData();
             if (!isset($resourceData['locks'])) $resourceData['locks'] = array();
@@ -52,9 +60,8 @@
          */
         function unlock(Sabre_DAV_Lock $lockInfo) {
 
-            $resourceData = $this->getResourceData();
-            if (!isset($resourceData['locks'])) return false;
-            foreach($resourceData['locks'] as $k=>$lock) {
+            $locks = $this->getLocks();
+            foreach($locks as $k=>$lock) {
 
                 if ($lock->lockToken == $lockInfo->lockToken) {
                     unset($resourceData['locks'][$k]);

@@ -46,6 +46,13 @@
         public $timeout;
 
         /**
+         * UNIX Timestamp of when this lock was created 
+         * 
+         * @var int 
+         */
+        public $created;
+
+        /**
          * Exclusive or shared lock 
          * 
          * @var int 
@@ -71,7 +78,7 @@
 
             $lockInfo->token = $lockToken;
             $lockInfo->lockScope = isset($xml->lockscope->exclusive);
-            
+
             return $lockInfo;
 
         }

@@ -362,6 +362,8 @@
             if (!$lockInfo->token) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
             $this->tree->lockNode($uri,$lockInfo);
 
+            $this->generateLockResponse($lockInfo);
+
         }
 
         /**
@@ -831,6 +833,33 @@
             $xw->endElement(); // d:response
         }
 
+        function generateLockResponse($lockInfo) {
+
+            $xw = new XMLWriter();
+            $xw->openMemory();
+            $xw->setIndent(true);
+            $xw->startDocument('1.0','UTF-8');
+            $xw->startElementNS('d','prop','DAV:');
+                $xw->startElement('d:lockdiscovery');
+                    $xw->startElement('d:activelock');
+                        $xw->startElement('d:lockscope');
+                            $xw->writeRaw('<d:exclusive />');
+                        $xw->endElement();
+                        $xw->startElement('d:locktype');
+                            $xw->writeRaw('<d:write />');
+                        $xw->endElement();
+                        $xw->writeElement('d:depth',0);
+                        $xw->writeElement('d:timeout','Second-' . $lockInfo->timeOut);
+                        $xw->startElement('d:locktoken');
+                            $xw->writeElement('d:href',$lockInfo->token);
+                        $xw->endElement();
+                        $xw->writeElement('d:owner',$lockInfo->owner);
+                    $xw->endElement();
+                $xw->endElement();    
+            $xw->endElement();
+            return $xw->outputMemory();
+
+        }
         // }}}
 
     }

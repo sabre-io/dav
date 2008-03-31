@@ -276,7 +276,7 @@
             
             try {
                 if ($nodeInfo = $this->tree->getNodeInfo(dirname($requestUri),0)) {
-                    if ($nodeInfo['type']==self::NODE_FILE) {
+                    if ($nodeInfo[0]['type']==self::NODE_FILE) {
                         throw new Sabre_DAV_ConflictException('Parent node is not a directory');
                     }
                 }

@@ -353,15 +353,13 @@
             } else {
                 $lockInfo = new Sabre_DAV_Lock();
             }
-            $lockInfo = Sabre_DAV_Lock::parseLockRequest($this->getRequestBody());
 
-            if ($timeOut = $this->getTimeoutHeader) $lockInfo->timeOut = $timeOut;
-            $lockInfo->timeOut = $this->getTimeoutHeader();
+            if ($timeOut = $this->getTimeoutHeader()) $lockInfo->timeOut = $timeOut;
 
-            if ($lastLock) $lockInfo->lockToken = $lastLock->lockToken;
+            if ($lastLock) $lockInfo->token = $lastLock->token;
 
             // If there was no locktoken, this means there was no request body, and also not an exiting locktoken in the header
-            if (!$lockInfo->lockToken) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
+            if (!$lockInfo->token) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
             $this->tree->lockNode($uri,$lockInfo);
 
         }
@@ -387,7 +385,7 @@
 
             foreach($locks as $lock) {
 
-                if ($lock->lockToken == $lockToken) {
+                if ($lock->token == $lockToken) {
 
                     $this->tree->unlockNode($uri,$lock);
                     $this->sendHTTPStatus(204);
@@ -610,7 +608,7 @@
 
                     // Check the locks
                     foreach($locks as $lock) {
-                        if ((!$condition['not'] && $lock->lockToken == $condition['token']) || ($condition['not'] && $lock->lockToken != $condition['token'])) {
+                        if ((!$condition['not'] && $lock->token == $condition['token']) || ($condition['not'] && $lock->token != $condition['token'])) {
                           
                             // If we have a matched lock, we'll populated the $lastLock variable
                             $lastLock = $lock;
@@ -655,6 +653,22 @@
                 if (!$condition['url'] && count($conditions)) $condition['url'] = $conditions[count($conditions)-1]['url'];
                 $conditions[] = $condition;
             }
+
+        }
+
+        function getTimeoutHeader() {
+
+            $header = isset($_SERVER['HTTP_TIMEOUT'])?$_SERVER['HTTP_TIMEOUT']:0;
+            
+            if ($header) {
+
+                if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
+                else if (strtolower($header)=='infinite') $header=Sabre_DAV_Lock::TIMEOUT_INFINITE;
+                else throw new Sabre_DAV_BadRequestException('Invalid HTTP timeout header');
+
+            }
+
+            return $header;
 
         }
 

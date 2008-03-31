@@ -80,7 +80,52 @@
          */
         public function copy($sourcePath, $destinationPath) {
 
-            throw new Sabre_DAV_MethodNotImplementedException('Copy is not yet implemented');
+            $sourceNode = $this->getNodeForPath($sourcePath);
+            $destinationParent = $this->getNodeForPath(dirname($destinationPath));
+
+            try {
+                $destinationNode = $destinationParent->getChild(basename($destinationPath));
+
+                // If we got here, it means the destination exists, and needs to be overwritten
+                $destinationNode->delete();
+
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // If we got here, it means the destination node does not yet exist
+
+            }
+
+            $this->copyNode($sourceNode,$destinationParent,basename($destinationPath));
+
+        }
+
+        /**
+         * copyNode 
+         * 
+         * @param Sabre_DAV_INode $source 
+         * @param Sabre_DAV_IDirectory $destination 
+         * @return void
+         */
+        protected function copyNode(Sabre_DAV_INode $source,Sabre_DAV_IDirectory $destinationParent,$destinationName = null) {
+
+            if (!$destinationName) $destinationName = $source->getName();
+
+            if ($source instanceof Sabre_DAV_IFile) {
+
+                $destinationParent->createFile($destinationName,$source->get());
+
+            } elseif ($source instanceof Sabre_DAV_IDirectory) {
+
+                $destinationParent->createDirectory($destinationName);
+                
+                $destination = $destinationParent->getChild($destinationName);
+                foreach($source->getChildren() as $child) {
+
+                    $this->copyNode($child,$destination);
+
+                }
+
+            }
 
         }
 
@@ -231,13 +276,8 @@
          */
         public function move($sourcePath, $destinationPath) {
 
-            // If the parent folder remains the same, its easy
-            if (dirname($sourcePath)==dirname($destinationPath)) {
-                $this->getNodeForPath($sourcePath)->setName(basename($destinationPath));
-                return true;
-            }
-
-            throw new Sabre_DAV_MethodNotImplementedException('moving between different folders is not yet implemented');
+            $this->copy($sourcePath,$destinationPath);
+            $this->delete($sourcePath);
 
         }
 

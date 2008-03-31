@@ -184,4 +184,19 @@
         }
 
     }
+
+    /**
+     * BabRequestException
+     *
+     * The BadRequestException is thrown when the user submitted an invalid HTTP request
+     */
+    class Sabre_DAV_BadRequestException extends Sabre_DAV_Exception {
+
+        function getHTTPCode() {
+
+            return 400; 
+
+        }
+
+    }
 ?>

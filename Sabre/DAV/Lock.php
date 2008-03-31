@@ -60,9 +60,9 @@
          */
         static function parseLockRequest($body) {
 
-            $xml = simplexml_load_string($body);
+            $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
             $lockInfo = new self();
-            
+         
             $lockInfo->owner = (string)$xml->owner;
 
             $lockToken = '44445502';
@@ -70,7 +70,9 @@
             $lockToken.='-' . substr($id,0,4) . '-' . substr($id,4,4) . '-' . substr($id,8,4) . '-' . substr($id,12,12);
 
             $lockInfo->token = $lockToken;
-            $lockToken->lockScope = isset($xml->lockscope->exclusive);
+            $lockInfo->lockScope = isset($xml->lockscope->exclusive);
+            
+            return $lockInfo;
 
         }
 

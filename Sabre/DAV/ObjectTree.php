@@ -49,13 +49,20 @@
 
             $path = trim($path,'/');
 
-            if (!$path) return $this->rootNode;
-
+            //if (!$path || $path=='.') return $this->rootNode;
             $currentNode = $this->rootNode;
-
+            $i=0;
+            // We're splitting up the path variable into folder/subfolder components and traverse to the correct node.. 
             foreach(explode('/',$path) as $pathPart) {
 
+                // If this part of the path is just a dot, it actually means we can skip it
+                if ($pathPart=='.' || $pathPart=='') continue;
+
+            //    try { 
                 $currentNode = $currentNode->getChild($pathPart); 
+            //    } catch (Sabre_DAV_FileNotFoundException $e) { 
+            //       throw new Sabre_DAV_FileNotFoundException('we could not find : ' . $path);
+            //    }
 
             }
 
@@ -84,7 +91,7 @@
          * @param int $depth 0 for just the path, 1 for the path and its children
          * @return array 
          */
-        public function getNodeInfo($path,$depth) {
+        public function getNodeInfo($path,$depth = 0) {
 
             // The file object
             $fileObject = $this->getNodeForPath($path);
@@ -153,7 +160,7 @@
         public function put($path, $data) {
 
             $node = $this->getNodeForPath($path);
-            return $child->put($data);
+            return $node->put($data);
 
         }
 
@@ -224,7 +231,13 @@
          */
         public function move($sourcePath, $destinationPath) {
 
-            throw new Sabre_DAV_MethodNotImplementedException('move is not yet implemented');
+            // If the parent folder remains the same, its easy
+            if (dirname($sourcePath)==dirname($destinationPath)) {
+                $this->getNodeForPath($sourcePath)->setName(basename($destinationPath));
+                return true;
+            }
+
+            throw new Sabre_DAV_MethodNotImplementedException('moving between different folders is not yet implemented');
 
         }
 
@@ -251,7 +264,7 @@
          */
         public function getLockInfo($uri) {
 
-            return $this->getNodeForPath($uri)->getLockInfo(); 
+            return $this->getNodeForPath($uri)->getLocks(); 
 
         }
 

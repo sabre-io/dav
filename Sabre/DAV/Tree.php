@@ -28,7 +28,7 @@
          * @param int $depth 0 for just the path, 1 for the path and its children, Sabre_DAV_Server::DEPTH_INFINITY for infinit depth
          * @return array 
          */
-        abstract function getNodeInfo($path,$depth);
+        abstract function getNodeInfo($path,$depth = 0);
 
         /**
          * Deletes a node based on its path 

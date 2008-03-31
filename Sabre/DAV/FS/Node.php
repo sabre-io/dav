@@ -56,7 +56,7 @@
          */
         public function setName($name) {
 
-            rename($this->path,dirname($path) . '/' . basename($name));
+            rename($this->path,dirname($this->path) . '/' . basename($name));
 
         }
 

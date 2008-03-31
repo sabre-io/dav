@@ -1,5 +1,7 @@
 <?php
 
+    require_once 'Sabre/DAV/Lock.php';
+
     /**
      * Main DAV server class
      * 
@@ -152,7 +154,7 @@
         protected function httpDelete() {
 
             $this->tree->delete($this->getRequestUri());
-            $this->sendHTTPCode(204);
+            $this->sendHTTPStatus(204);
 
         }
 
@@ -217,16 +219,16 @@
                 }
                 
                 // If the node is a collection, we'll deny it
-                if ($info['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_ConflictException('PUTs on directories are not allowed'); 
+                if ($info[0]['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_ConflictException('PUTs on directories are not allowed'); 
 
                 $this->tree->put($this->getRequestUri(),$this->getRequestBody());
-                $this->sendHTTPRequest(200);
+                $this->sendHTTPStatus(200);
 
             } catch (Sabre_DAV_FileNotFoundException $e) {
 
                 // This means the resource doesn't exist yet, and we're creating a new one
                 $this->tree->createFile($this->getRequestUri(),$this->getRequestBody());
-                $this->sendHTTPRequest(201);
+                $this->sendHTTPStatus(201);
 
             }
 
@@ -347,11 +349,11 @@
             }
 
             if ($body = $this->getRequestBody()) {
-                $lockInfo = Sabre_DAV_LockInfo::parseLockRequest($body);
+                $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
             } else {
                 $lockInfo = new Sabre_DAV_Lock();
             }
-            $lockInfo = Sabre_DAV_LockInfo::parseLockRequest($this->getRequestBody());
+            $lockInfo = Sabre_DAV_Lock::parseLockRequest($this->getRequestBody());
 
             if ($timeOut = $this->getTimeoutHeader) $lockInfo->timeOut = $timeOut;
             $lockInfo->timeOut = $this->getTimeoutHeader();
@@ -475,7 +477,7 @@
          */
         protected function getAllowedMethods() {
 
-            $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','proppatch');
+            $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','proppatch','copy','move');
             if ($this->tree->supportsLocks()) array_push($methods,'lock','unlock');
             return $methods;
 
@@ -690,7 +692,7 @@
 
             try {
                 $destinationParentInfo = $this->tree->getNodeInfo(dirname($destination));
-                if ($destinationParentInfo['type'] == self::NODE_FILE) throw new Sabre_DAV_UnsupportedMediaTypeException('The destination node is not a collection');
+                if ($destinationParentInfo[0]['type'] == self::NODE_FILE) throw new Sabre_DAV_UnsupportedMediaTypeException('The destination node is not a collection');
             } catch (Sabre_DAV_FileNotFoundException $e) {
 
                 // If the destination parent node is not found, we throw a 409
@@ -700,18 +702,25 @@
 
             try {
 
-                $destinationInfo = $this->tree->getNodeInfo($destination);
+                $destinationInfo[0] = $this->tree->getNodeInfo($destination);
                 
                 // If this succeeded, it means the destination already exists
                 // we'll need to throw precondition failed in case overwrite is false
                 if (!$overwrite) throw new Sabre_DAV_PreconditionFailedException('The destination node already exists, and the overwrite header is set to false');
 
-            } catch (Sabre_DAV_NotFoundException $e) {
+            } catch (Sabre_DAV_FileNotFoundException $e) {
 
                 // Destination didn't exist, we're all good
                 $destinationInfo = false;
 
             }
+
+            // These are the three relevant properties we need to return
+            return array(
+                'source'            => $source,
+                'destination'       => $destination,
+                'destinationExists' => $destinationInfo==true,
+            );
 
         }
 

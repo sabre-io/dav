@@ -25,6 +25,8 @@
          */
         public function createFile($name, $data = null) {
 
+            // We're not allowing dots
+            if ($name[0]=='.') throw new Sabre_DAV_PermissionDeniedException('Permission denied to create files starting with dots');
             $newPath = $this->path . '/' . $name;
             file_put_contents($newPath,$data);
 
@@ -38,6 +40,8 @@
          */
         public function createDirectory($name) {
 
+            // We're not allowing dots
+            if ($name[0]=='.') throw new Sabre_DAV_PermissionDeniedException('Permission denied to create files starting with dots');
             $newPath = $this->path . '/' . $name;
             mkdir($newPath);
 

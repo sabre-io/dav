@@ -94,7 +94,13 @@
          */
         public function delete() {
 
+            // Deleting all children
             foreach($this->getChildren() as $child) $child->delete();
+
+            // Removing resource info
+            if (file_exists($this->path . '/.sabredav')) unlink($this->path . '/.sabredav');
+
+            // Removing the directory itself
             rmdir($this->path);
 
         }

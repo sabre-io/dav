@@ -27,7 +27,7 @@
             $resourceData = $this->getResourceData();
             $locks = isset($resourceData['locks'])?$resourceData['locks']:array();
             foreach($locks as $k=>$lock) {
-                if (time() > $lock->timeOut + $lock->created) unset($locks[$k]); 
+                if (time() > $lock->timeout + $lock->created) unset($locks[$k]); 
             }
             return $locks;
 
@@ -42,7 +42,7 @@
         function lock(Sabre_DAV_Lock $lockInfo) {
 
             // We're making the lock timeout 30 minutes
-            $lockInfo->timeOut = 1800;
+            $lockInfo->timeout = 1800;
             $lockInfo->created = time();
 
             $resourceData = $this->getResourceData();
@@ -123,12 +123,13 @@
         protected function putResourceData(array $newData) {
 
             $path = $this->getResourceInfoPath();
-            if (!file_exists($path)) return array();
 
             // opening up the file, and creating a shared lock
-            $handle = fopen($path,'r+');
+            $handle = fopen($path,'a+');
             flock($handle,LOCK_EX);
             $data = '';
+
+            rewind($handle);
 
             // Reading data until the eof
             while(!feof($handle)) {

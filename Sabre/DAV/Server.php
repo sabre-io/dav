@@ -345,6 +345,7 @@
 
             $lastLock = null;
             if (!$this->validateLock($uri,$lastLock)) {
+
                 throw new Sabre_DAV_LockedException('You tried to lock an url that was already locked');
             }
 
@@ -354,7 +355,7 @@
                 $lockInfo = new Sabre_DAV_Lock();
             }
 
-            if ($timeOut = $this->getTimeoutHeader()) $lockInfo->timeOut = $timeOut;
+            if ($timeout = $this->getTimeoutHeader()) $lockInfo->timeout = $timeout;
 
             if ($lastLock) $lockInfo->token = $lastLock->token;
 
@@ -362,7 +363,9 @@
             if (!$lockInfo->token) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
             $this->tree->lockNode($uri,$lockInfo);
 
-            $this->generateLockResponse($lockInfo);
+            $this->addHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
+
+            echo $this->generateLockResponse($lockInfo);
 
         }
 
@@ -589,10 +592,13 @@
             }
 
             $conditions = $this->getIfConditions();
+
             // We're going to loop through the urls and make sure all lock conditions are satisfied
             foreach($urls as $url) {
 
                 $locks = $this->tree->getLockInfo($url);
+               
+
 
                 // If there were no conditions, but there were locks or the other way round, we fail 
                 if ((!$conditions && $locks)||(!$locks && $conditions)) {
@@ -605,18 +611,25 @@
                 // See if there's a satisfied condition
                 foreach($conditions as $condition) {
 
+                    //echo "got here1..\n";
                     // If the condition has a url, and it doesn't match, check the next condition
                     if ($condition['url'] && $condition['url']!=$url) continue;
+                    // echo "got here2..\n";
 
                     // Check the locks
                     foreach($locks as $lock) {
-                        if ((!$condition['not'] && $lock->token == $condition['token']) || ($condition['not'] && $lock->token != $condition['token'])) {
+                        //echo "got here3..\n";
+                        //print_r($lock);
+                        //print_r($condition);
+                       
+                        $lockToken = 'opaquelocktoken:' . $lock->token;
+                        if ((!$condition['not'] && $lockToken == $condition['token']) || ($condition['not'] && $lockToken != $condition['token'])) {
                           
                             // If we have a matched lock, we'll populated the $lastLock variable
                             $lastLock = $lock;
 
                             // Condition satisfied, onto the next url
-                            continue 2;
+                            continue 3;
 
                         }
 
@@ -655,6 +668,8 @@
                 if (!$condition['url'] && count($conditions)) $condition['url'] = $conditions[count($conditions)-1]['url'];
                 $conditions[] = $condition;
             }
+
+            return $conditions;
 
         }
 
@@ -849,9 +864,9 @@
                             $xw->writeRaw('<d:write />');
                         $xw->endElement();
                         $xw->writeElement('d:depth',0);
-                        $xw->writeElement('d:timeout','Second-' . $lockInfo->timeOut);
+                        $xw->writeElement('d:timeout','Second-' . $lockInfo->timeout);
                         $xw->startElement('d:locktoken');
-                            $xw->writeElement('d:href',$lockInfo->token);
+                            $xw->writeElement('d:href','opaquelocktoken:' . $lockInfo->token);
                         $xw->endElement();
                         $xw->writeElement('d:owner',$lockInfo->owner);
                     $xw->endElement();

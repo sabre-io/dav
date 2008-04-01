@@ -147,6 +147,34 @@
 
         }
 
+        public function delete() {
+
+            // When we're deleting this node, we also need to delete any resource information
+            $path = $this->getResourceInfoPath();
+            if (!file_exists($path)) return true;
+
+            // opening up the file, and creating a shared lock
+            $handle = fopen($path,'a+');
+            flock($handle,LOCK_EX);
+            $data = '';
+
+            rewind($handle);
+
+            // Reading data until the eof
+            while(!feof($handle)) {
+                $data.=fread($handle,8192);
+            }
+
+            // Unserializing and checking if the resource file contains data for this file
+            $data = unserialize($data);
+            if (isset($data[$this->getName()])) unset($data[$this->getName()]);
+            ftruncate($handle,0);
+            rewind($handle);
+            fwrite($handle,serialize($data));
+            fclose($handle);
+
+        }
+
 
     }
 

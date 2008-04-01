@@ -152,7 +152,8 @@
          * @return void
          */
         protected function httpDelete() {
-
+ 
+            if (!$this->validateLocks()) throw new Sabre_DAV_lockedException('The resource you tried to delete is locked');
             $this->tree->delete($this->getRequestUri());
             $this->sendHTTPStatus(204);
 
@@ -205,6 +206,9 @@
          * @return void
          */
         protected function httpPut() {
+
+            // Checking possible locks
+            if (!$this->validateLocks()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
 
             // First we'll do a check to see if the resource already exists
             try {
@@ -266,6 +270,8 @@
          */
         protected function httpMkcol() {
 
+            if (!$this->validateLocks()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+
             $requestUri = $this->getRequestUri();
 
             // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
@@ -302,6 +308,8 @@
 
             $moveInfo = $this->getCopyAndMoveInfo();
 
+            if (!$this->validateLocks(array($copyInfo['source'],$copyInfo['destination']))) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+
             $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
             // If a resource was overwritten we should send a 204, otherwise a 201
@@ -320,6 +328,8 @@
         protected function httpCopy() {
 
             $copyInfo = $this->getCopyAndMoveInfo();
+
+            if (!$this->validateLocks(array($copyInfo['source'],$copyInfo['destination']))) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
 
             $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 

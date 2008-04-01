@@ -46,6 +46,7 @@
         public function delete() {
 
             unlink($this->path);
+            return parent::delete();
 
         }
 

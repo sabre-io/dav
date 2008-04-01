@@ -302,9 +302,14 @@
          * @param string $uri 
          * @return array 
          */
-        public function getLockInfo($uri) {
+        public function getLocks($uri) {
 
-            return $this->getNodeForPath($uri)->getLocks(); 
+            try {
+                return $this->getNodeForPath($uri)->getLocks();
+            } catch (Sabre_DAV_FileNotFoundException $e){
+                // In case the node didn't exist, there are no locks
+                return array();
+            }
 
         }
 

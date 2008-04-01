@@ -104,7 +104,7 @@
          * @param string $uri 
          * @return array 
          */
-        public function getLockInfo($uri) {
+        public function getLocks($uri) {
 
             return array();
 

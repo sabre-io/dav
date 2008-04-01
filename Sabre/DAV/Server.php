@@ -144,6 +144,8 @@
 
         }
 
+
+
         /**
          * HTTP Delete 
          *
@@ -153,7 +155,7 @@
          */
         protected function httpDelete() {
  
-            if (!$this->validateLocks()) throw new Sabre_DAV_lockedException('The resource you tried to delete is locked');
+            if (!$this->validateLock()) throw new Sabre_DAV_lockedException('The resource you tried to delete is locked');
             $this->tree->delete($this->getRequestUri());
             $this->sendHTTPStatus(204);
 
@@ -161,7 +163,7 @@
 
 
         /**
-         * WEBDAV PROPFIND 
+         * WebDAV PROPFIND 
          *
          * This WebDAV method requests information about an uri resource, or a list of resources
          * If a client wants to receive the properties for a single resource it will add an HTTP Depth: header with a 0 value
@@ -195,6 +197,22 @@
             echo $data;
 
         }
+
+        /**
+         * WebDAV PROPPATCH 
+         *
+         * This HTTP method is used to change a resource's properties
+         *
+         * @todo currently not implemented
+         * @return void
+         */
+        protected function httpProppatch() {
+
+            // Checking possible locks
+            if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+            throw new Sabre_DAV_MethodNotImplementedException('Proppatch is not yet implemented');
+
+        }
         
         /**
          * HTTP PUT method 
@@ -208,7 +226,7 @@
         protected function httpPut() {
 
             // Checking possible locks
-            if (!$this->validateLocks()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+            if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
 
             // First we'll do a check to see if the resource already exists
             try {
@@ -270,7 +288,7 @@
          */
         protected function httpMkcol() {
 
-            if (!$this->validateLocks()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+            if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
 
             $requestUri = $this->getRequestUri();
 
@@ -308,7 +326,7 @@
 
             $moveInfo = $this->getCopyAndMoveInfo();
 
-            if (!$this->validateLocks(array($copyInfo['source'],$copyInfo['destination']))) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+            if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']))) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
 
             $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
@@ -329,7 +347,7 @@
 
             $copyInfo = $this->getCopyAndMoveInfo();
 
-            if (!$this->validateLocks(array($copyInfo['source'],$copyInfo['destination']))) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+            if (!$this->validateLock($copyInfo['destination'])) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
 
             $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
@@ -367,7 +385,9 @@
 
             if ($timeout = $this->getTimeoutHeader()) $lockInfo->timeout = $timeout;
 
-            if ($lastLock) $lockInfo->token = $lastLock->token;
+            if ($lastLock) {
+                $lockInfo = $lastLock;
+            }
 
             // If there was no locktoken, this means there was no request body, and also not an exiting locktoken in the header
             if (!$lockInfo->token) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
@@ -396,11 +416,11 @@
             // If the locktoken header is not supplied, we need to throw a bad request exception
             if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
 
-            $locks = $this->tree->getLocks();
+            $locks = $this->tree->getLocks($uri);
 
             foreach($locks as $lock) {
 
-                if ($lock->token == $lockToken) {
+                if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
                     $this->tree->unlockNode($uri,$lock);
                     $this->sendHTTPStatus(204);
@@ -594,7 +614,7 @@
         protected function validateLock($urls = null,&$lastLock = null) {
 
             if (is_null($urls)) {
-                $urls = array($this->requestUri());
+                $urls = array($this->getRequestUri());
             } elseif (is_string($urls)) {
                 $urls = array($urls);
             } elseif (!is_array($urls)) {
@@ -606,8 +626,13 @@
             // We're going to loop through the urls and make sure all lock conditions are satisfied
             foreach($urls as $url) {
 
-                $locks = $this->tree->getLockInfo($url);
-               
+                $locks = $this->tree->getLocks($url);
+              
+                if (isset($_SERVER['HTTP_X_LITMUS_SECOND']) && $_SERVER['HTTP_X_LITMUS_SECOND']=='locks: 14 (copy)' && $_SERVER['REQUEST_METHOD']=='COPY') {
+                    //echo "Current url: $url\n";
+                    //print_r($locks);
+                    //print_r($conditions);
+                }
 
 
                 // If there were no conditions, but there were locks or the other way round, we fail 
@@ -621,9 +646,10 @@
                 // See if there's a satisfied condition
                 foreach($conditions as $condition) {
 
+                    $conditionUri = $condition['uri']?$this->calculateUri($condition['uri']):'';
                     //echo "got here1..\n";
                     // If the condition has a url, and it doesn't match, check the next condition
-                    if ($condition['url'] && $condition['url']!=$url) continue;
+                    if ($conditionUri && $conditionUri!=$url) continue;
                     // echo "got here2..\n";
 
                     // Check the locks
@@ -657,25 +683,46 @@
 
         }
 
+        /**
+         * This method is created to extract information from the WebDAV HTTP 'If:' header
+         *
+         * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
+         * The function will return an array, containg structs with the following keys
+         *
+         *   * url   - the urii the condition applies to. This can be an empty string for 'every relevant url'
+         *   * token - The lock token. Always set
+         *   * not   - Wether or not the condition should be reversed (equals false)
+         * 
+         * @return void
+         */
         function getIfConditions() {
 
             $header = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:'';
             if (!$header) return array();
 
             $matches = array();
-            $regex = '/(?:\<(?P<url>.*?)\>\s)?\((?P<not>Not\s)?\<(?P<token>.*?)\>\)/im';
+
+            $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?\<(?P<token>.*?)\>\)/im';
             preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
 
             $conditions = array();
 
             foreach($matches as $match) {
                 $condition = array(
-                    'url'   => $match['url'],
+                    'uri'   => $match['uri'],
                     'token' => $match['token'],
-                    'not'   => $match['not'],
+                    'not'   => $match['not']==true,
                 );
 
-                if (!$condition['url'] && count($conditions)) $condition['url'] = $conditions[count($conditions)-1]['url'];
+                /* // Next piece of code is to validate if a locktoken is a url.. doesn't look like we're going to need it; but we'll keep it around for a bit, just in case
+                 
+                if (strpos($condition['token'],'opaquelocktoken:')===0 && !preg_match('/^opaquelocktoken:([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})$/',$condition['token'])) {
+                    throw new Sabre_DAV_BadRequestException('Lock-tokens with uri scheme opaquelocktoken should contain a valid UUID');
+                }
+
+                */
+
+                if (!$condition['uri'] && count($conditions)) $condition['uri'] = $conditions[count($conditions)-1]['uri'];
                 $conditions[] = $condition;
             }
 

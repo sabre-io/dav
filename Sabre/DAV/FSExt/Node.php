@@ -25,7 +25,7 @@
         function getLocks() {
 
             $resourceData = $this->getResourceData();
-            $locks = isset($resourceData['locks'])?$resourceData['locks']:array();
+            $locks = $resourceData['locks'];
             foreach($locks as $k=>$lock) {
                 if (time() > $lock->timeout + $lock->created) unset($locks[$k]); 
             }
@@ -45,8 +45,19 @@
             $lockInfo->timeout = 1800;
             $lockInfo->created = time();
 
+            $try = array(
+                'X_LITMUS',
+                'X_LITMUS_ONE',
+                'X_LITMUS_SECOND',
+            );
+
+            foreach($try as $t) if (isset($_SERVER['HTTP_'.$t])) $lockInfo->info = "\n" . $_SERVER['HTTP_' . $t] . "\n";
+
             $resourceData = $this->getResourceData();
             if (!isset($resourceData['locks'])) $resourceData['locks'] = array();
+            foreach($resourceData['locks'] as $k=>$lock) {
+                if ($lock->token == $lockInfo->token) unset($resourceData['locks'][$k]);
+            }
             $resourceData['locks'][] = $lockInfo;
             $this->putResourceData($resourceData);
 
@@ -60,13 +71,16 @@
          */
         function unlock(Sabre_DAV_Lock $lockInfo) {
 
-            $locks = $this->getLocks();
-            foreach($locks as $k=>$lock) {
+            throw new Sabre_DAV_Exception('bla');
+            $resourceData = $this->getResourceData();
+            foreach($resourceData['locks'] as $k=>$lock) {
 
-                if ($lock->lockToken == $lockInfo->lockToken) {
+                if ($lock->token == $lockInfo->token) {
+
                     unset($resourceData['locks'][$k]);
                     $this->putResourceData($resourceData);
                     return true;
+
                 }
             }
             return false;
@@ -92,7 +106,7 @@
         protected function getResourceData() {
 
             $path = $this->getResourceInfoPath();
-            if (!file_exists($path)) return array();
+            if (!file_exists($path)) return array('locks'=>array());
 
             // opening up the file, and creating a shared lock
             $handle = fopen($path,'r');
@@ -109,8 +123,13 @@
 
             // Unserializing and checking if the resource file contains data for this file
             $data = unserialize($data);
-            if (!isset($data[$this->getName()])) return array();
-            return $data[$this->getName()];
+            if (!isset($data[$this->getName()])) {
+                return array('locks'=>array());
+            }
+
+            $data = $data[$this->getName()];
+            if (!isset($data['locks'])) $data['locks'] = array();
+            return $data;
 
         }
 

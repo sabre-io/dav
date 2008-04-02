@@ -140,7 +140,11 @@
          */
         protected function httpHead() {
 
-            throw new Sabre_DAV_MethodNotImplementedException('Head is not yet implemented');
+            $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
+
+            if ($nodeInfo[0]['size']) $this->addHeader('Content-Length',$nodeInfo[0]['size']);
+
+            $this->addHeader('Content-Type', 'application/octet-stream');
 
         }
 
@@ -374,27 +378,35 @@
             $lastLock = null;
             if (!$this->validateLock($uri,$lastLock)) {
 
-                throw new Sabre_DAV_LockedException('You tried to lock an url that was already locked');
+                throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked');
+
+                // If ohe existing lock was an exclusive lock, we need to fail
+                if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
+                    //var_dump($lastLock);
+                    throw new Sabre_DAV_LockedException('You tried to lock an url that was already locked'  . print_r($lastLock,true));
+                }
+
             }
 
             if ($body = $this->getRequestBody()) {
+                // There as a new lock request
                 $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
+
+            } elseif ($lastLock) {
+
+                // This must have been a lock refresh
+                $lockInfo = $lastLock;
+
             } else {
-                $lockInfo = new Sabre_DAV_Lock();
+                
+                // There was neither a lock refresh nor a new lock request
+                throw new Sabre_DAV_BadRequestException('An xml body is required for lock requests');
+
             }
 
             if ($timeout = $this->getTimeoutHeader()) $lockInfo->timeout = $timeout;
-
-            if ($lastLock) {
-                $lockInfo = $lastLock;
-            }
-
-            // If there was no locktoken, this means there was no request body, and also not an exiting locktoken in the header
-            if (!$lockInfo->token) throw new Sabre_DAV_BadRequestException('An xml body is required on lock requests');
             $this->tree->lockNode($uri,$lockInfo);
-
             $this->addHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
-
             echo $this->generateLockResponse($lockInfo);
 
         }
@@ -431,7 +443,7 @@
             }
 
             // If we got here, it means the locktoken was invalid
-            throw new Sabre_DAV_PreconditionFailedException('The uri wasn\'t locked, or the supplied locktoken was incorrect');
+            throw new Sabre_DAV_PreconditionFailedException('The uri wasn\'t locked, or the supplied locktoken was incorrect' . print_r($locks,true));
 
         }
 
@@ -627,54 +639,61 @@
             foreach($urls as $url) {
 
                 $locks = $this->tree->getLocks($url);
-              
-                if (isset($_SERVER['HTTP_X_LITMUS_SECOND']) && $_SERVER['HTTP_X_LITMUS_SECOND']=='locks: 14 (copy)' && $_SERVER['REQUEST_METHOD']=='COPY') {
-                    //echo "Current url: $url\n";
-                    //print_r($locks);
-                    //print_r($conditions);
-                }
 
-
-                // If there were no conditions, but there were locks or the other way round, we fail 
-                if ((!$conditions && $locks)||(!$locks && $conditions)) {
+                // If there were no conditions, but there were locks, we fail 
+                if (!$conditions && $locks) {
+                    reset($locks);
+                    $lastLock = current($locks);
                     return false;
                 }
               
                 // If there were no locks or conditions, we go to the next url
                 if (!$locks && !$conditions) continue;
 
-                // See if there's a satisfied condition
                 foreach($conditions as $condition) {
 
                     $conditionUri = $condition['uri']?$this->calculateUri($condition['uri']):'';
-                    //echo "got here1..\n";
                     // If the condition has a url, and it doesn't match, check the next condition
                     if ($conditionUri && $conditionUri!=$url) continue;
-                    // echo "got here2..\n";
 
-                    // Check the locks
-                    foreach($locks as $lock) {
-                        //echo "got here3..\n";
-                        //print_r($lock);
-                        //print_r($condition);
-                       
-                        $lockToken = 'opaquelocktoken:' . $lock->token;
-                        if ((!$condition['not'] && $lockToken == $condition['token']) || ($condition['not'] && $lockToken != $condition['token'])) {
-                          
-                            // If we have a matched lock, we'll populated the $lastLock variable
-                            $lastLock = $lock;
+                    // The tokens array contians arrays with 2 elements. 0=true/false for normal/not condition, 1=locktoken
+                    // At least 1 condition has to be satisfied
+                    foreach($condition['tokens'] as $conditionToken) {
 
-                            // Condition satisfied, onto the next url
-                            continue 3;
+                        // Match all the locks
+                        foreach($locks as $lockIndex=>$lock) {
+
+                            $lockToken = 'opaquelocktoken:' . $lock->token;
+                            // Checking NOT
+                            if (!$conditionToken[0] && $lockToken != $conditionToken[1]) {
+
+                                // Condition valid, onto the next
+                                continue 3;
+                            }
+                            if ($conditionToken[0] && $lockToken == $conditionToken[1]) {
+
+                                $lastLock = $lock;
+                                // Condition valid and lock matched
+                                unset($locks[$lockIndex]);
+                                continue 3;
+
+                            }
 
                         }
+                   }
+                   // No conditions matched, so we fail
+                   throw new Sabre_DAV_PreconditionFailedException('The tokens provided in the if header did not match');
+                }
 
-                    }
+                // Conditions were met, we'll also need to check if all the locks are gone
+                if (count($locks)) {
+
+                    // There's still locks, we fail
+                    $lastLock = current($locks);
+                    return false;
 
                 }
 
-                // No conditions satisfied, we fail
-                return false;
 
             }
 
@@ -689,9 +708,8 @@
          * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
          * The function will return an array, containg structs with the following keys
          *
-         *   * url   - the urii the condition applies to. This can be an empty string for 'every relevant url'
-         *   * token - The lock token. Always set
-         *   * not   - Wether or not the condition should be reversed (equals false)
+         *   * uri   - the uri the condition applies to. This can be an empty string for 'every relevant url'
+         *   * tokens - The lock token. another 2 dimensional array containg 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
          * 
          * @return void
          */
@@ -710,20 +728,16 @@
             foreach($matches as $match) {
                 $condition = array(
                     'uri'   => $match['uri'],
-                    'token' => $match['token'],
-                    'not'   => $match['not']==true,
+                    'tokens' => array(
+                        array($match['not']==false,$match['token'])
+                    ),    
                 );
 
-                /* // Next piece of code is to validate if a locktoken is a url.. doesn't look like we're going to need it; but we'll keep it around for a bit, just in case
-                 
-                if (strpos($condition['token'],'opaquelocktoken:')===0 && !preg_match('/^opaquelocktoken:([0-9a-fA-F]{8})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{12})$/',$condition['token'])) {
-                    throw new Sabre_DAV_BadRequestException('Lock-tokens with uri scheme opaquelocktoken should contain a valid UUID');
+                if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array($match['not']==false,$match['token']);
+                else {
+                    $conditions[] = $condition;
                 }
 
-                */
-
-                if (!$condition['uri'] && count($conditions)) $condition['uri'] = $conditions[count($conditions)-1]['uri'];
-                $conditions[] = $condition;
             }
 
             return $conditions;

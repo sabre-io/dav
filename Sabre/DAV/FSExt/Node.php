@@ -71,7 +71,7 @@
          */
         function unlock(Sabre_DAV_Lock $lockInfo) {
 
-            throw new Sabre_DAV_Exception('bla');
+            //throw new Sabre_DAV_Exception('bla');
             $resourceData = $this->getResourceData();
             foreach($resourceData['locks'] as $k=>$lock) {
 

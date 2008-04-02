@@ -315,6 +315,16 @@
 
             }
 
+            try {
+                $nodeInfo = $this->tree->getNodeInfo($requestUri);
+
+                // If we got here.. it means there's already a node on that url, and we need to throw a 405
+                throw new Sabre_DAV_MethodNotAllowedException('The directory you tried to create already exists');
+
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+                // This is correct
+            }
+
             $this->tree->createDirectory($this->getRequestUri());
 
         }

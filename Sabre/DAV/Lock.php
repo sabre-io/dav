@@ -57,7 +57,7 @@
          * 
          * @var int 
          */
-        public $lockScope = self::EXCLUSIVE;
+        public $scope = self::EXCLUSIVE;
 
         /**
          * Parses a webdav lock xml body, and returns a new Sabre_DAV_LockInfo object 
@@ -77,7 +77,7 @@
             $lockToken.='-' . substr($id,0,4) . '-' . substr($id,4,4) . '-' . substr($id,8,4) . '-' . substr($id,12,12);
 
             $lockInfo->token = $lockToken;
-            $lockInfo->lockScope = isset($xml->lockscope->exclusive);
+            $lockInfo->scope = isset($xml->lockscope->exclusive)?self::EXCLUSIVE:self::SHARED;
 
             return $lockInfo;
 

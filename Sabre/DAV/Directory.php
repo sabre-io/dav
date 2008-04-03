@@ -2,6 +2,7 @@
 
     require_once 'Sabre/DAV/Exception.php'; 
     require_once 'Sabre/DAV/IDirectory.php';
+    require_once 'Sabre/DAV/Node.php';
 
     /**
      * Directory class
@@ -16,7 +17,7 @@
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
      * @license licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      */
-    abstract class Sabre_DAV_Directory implements Sabre_DAV_IDirectory {
+    abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_IDirectory {
 
         /**
          * Returns a child object, by its name.
@@ -36,30 +37,6 @@
 
             }
             throw new Sabre_DAV_FileNotFoundException('File not found');
-
-        }
-
-        /**
-         * A default filesize for directories is 0 
-         * 
-         * @return int
-         */
-        public function getSize() {
-
-            return 0;
-
-        }
-
-        /**
-         * Returns the last modification time 
-         *
-         * In this case, it will simply return the current time
-         *
-         * @return int 
-         */
-        public function getLastModified() {
-
-            return time();
 
         }
 
@@ -90,30 +67,6 @@
 
         }
 
-        /**
-         * Deleted the current node
-         *
-         * @throws Sabre_DAV_PermissionDeniedException
-         * @return void 
-         */
-        public function delete() {
-
-            throw new Sabre_DAV_PermissionDeniedException('Permission denied to delete directory');
-
-        }
-
-        /**
-         * Renames the node
-         * 
-         * @throws Sabre_DAV_PermissionDeniedException
-         * @param string $name The new name
-         * @return void
-         */
-        public function setName($name) {
-
-            throw new Sabre_DAV_PermissionDeniedException('Permission denied to rename file');
-
-        }
 
     }
 

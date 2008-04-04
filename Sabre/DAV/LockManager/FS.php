@@ -15,7 +15,7 @@
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
      * @license licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      */
-    class Sabre_DAV_FS_LockManager extends Sabre_DAV_LockManager {
+    class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
 
         /**
          * The default data directory 

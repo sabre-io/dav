@@ -78,7 +78,7 @@
                 if ($lock->token == $lockInfo->token) unset($locks[$k]);
             }
             $locks[] = $lockInfo;
-            $this->putData($uri,$resourceData);
+            $this->putData($uri,$locks);
         }
 
         /**

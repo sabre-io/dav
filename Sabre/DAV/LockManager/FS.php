@@ -96,7 +96,7 @@
                 if ($lock->token == $lockInfo->token) {
 
                     unset($locks[$k]);
-                    $this->putData($locks);
+                    $this->putData($uri,$locks);
                     return true;
 
                 }

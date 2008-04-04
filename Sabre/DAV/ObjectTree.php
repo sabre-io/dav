@@ -26,6 +26,13 @@
         private $rootNode;
 
         /**
+         * Lock manager
+         *
+         * @var Sabre_DAV_LockManager
+         */
+        private $lockManager;
+
+        /**
          * Creates the object
          *
          * This method expects the rootObject to be passed as a parameter
@@ -36,6 +43,20 @@
         public function __construct(Sabre_DAV_IDirectory $rootNode) {
 
             $this->rootNode = $rootNode;
+
+        }
+
+        /**
+         * This method allows you to set a global lock manager.
+         *
+         * Normally locks are handled by nodes implementing Sabre_DAV_ILockable. If this interface is not available, the lock manager can be used as a fallback.
+         * 
+         * @param Sabre_DAV_LockManager $lockManager 
+         * @return void
+         */
+        public function setLockManager(Sabre_DAV_LockManager $lockManager) {
+
+            $this->lockManager = $lockManager;
 
         }
 
@@ -254,13 +275,14 @@
         /**
          * This function should return true or false, depending on wether or not this WebDAV tree supports locking of files 
          *
-         * In case of the ObjectTree, this is determined by checking if the root node implements the Sabre_DAV_ILockable interface
+         * In case of the ObjectTree, this is determined by checking if the root node implements the Sabre_DAV_ILockable interface.
+         * If the Root node does not support this interface, we'll simply check if there's a global lock manager
          *
          * @return bool 
          */
         public function supportsLocks() {
 
-            return $this->rootNode instanceof Sabre_DAV_ILockable;
+            return $this->rootNode instanceof Sabre_DAV_ILockable || $this->lockManager;
 
         }
 
@@ -275,7 +297,12 @@
         public function getLocks($uri) {
 
             try {
-                return $this->getNodeForPath($uri)->getLocks();
+                $node = $this->getNodeForPath($uri);
+
+                if ($node instanceof Sabre_DAV_ILockable) return $node->getLocks();
+                if ($this->lockManager) return $this->lockManager->getLocks($uri);
+                return array();
+
             } catch (Sabre_DAV_FileNotFoundException $e){
                 // In case the node didn't exist, there are no locks
                 return array();
@@ -295,7 +322,10 @@
          */
         public function lockNode($uri,Sabre_DAV_Lock $lockInfo) {
 
-            return $this->getNodeForPath($uri)->lock($lockInfo);
+            $node = $this->getNodeForPath($uri);
+
+            if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
+            if ($this->lockManager) return $this->lockManager->lock($uri,$lockInfo);
 
         }
 
@@ -310,7 +340,9 @@
          */
         public function unlockNode($uri,Sabre_DAV_Lock $lockInfo) {
 
-            return $this->getNodeForPath($uri)->unlock($lockInfo);
+            $node = $this->getNodeForPath($uri);
+            if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);
+            if ($this->lockManager) return $this->lockManager->unlock($uri,$lockInfo);
 
         }
 

@@ -204,21 +204,26 @@
         }
 
         /**
-         * WebDAV PROPPATCH 
+         * WebDAV PROPPATCH
          *
-         * This HTTP method is used to change a resource's properties
+         * This method is called to update properties on a Node. The request is an XML body with all the mutations.
+         * In this XML body it is specified which properties should be set/updated and/or deleted
          *
-         * @todo currently not implemented
+         * @todo SabreDAV does not support custom properties yet, so this will be ignored
          * @return void
          */
-        protected function httpProppatch() {
+        protected function httpPropPatch() {
 
             // Checking possible locks
             if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
-            throw new Sabre_DAV_MethodNotImplementedException('Proppatch is not yet implemented');
+           
+            $mutations = $this->parsePropPatchRequest($this->getRequestBody());
+
+            $this->sendHTTPStatus(207);
+            echo $this->generatePropPatchResponse($this->getRequestUri(),$mutations);
 
         }
-        
+
         /**
          * HTTP PUT method 
          * 
@@ -839,7 +844,7 @@
 
 
         // }}} 
-        // {{{ XML Writers  
+        // {{{ XML Readers & Writers  
         
         
         /**
@@ -957,6 +962,91 @@
             return $xw->outputMemory();
 
         }
+
+        /**
+         * This method parses a PropPatch request 
+         * 
+         * @param string $body xml body
+         * @return array list of properties in need of updating or deletion
+         */
+        protected function parsePropPatchRequest($body) {
+
+            // We'll need to change the DAV namespace declaration to something else in order to make it parsable
+            //$body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+
+            $dom = new DOMDocument();
+            $dom->loadXML($body,LIBXML_NOWARNING);
+            $dom->preserveWhiteSpace = false;
+
+            $operations = array();
+
+            foreach($dom->firstChild->childNodes as $child) {
+
+                if ($child->namespaceURI != 'DAV:' || ($child->localName != 'set' && $child->localName !='remove')) continue; 
+                
+                $propList = $this->parseProps($child);
+                foreach($propList as $k=>$propItem) {
+
+                    $operations[] = array($child->localName=='set'?1:2,$k,$propItem);
+
+                }
+
+            }
+
+            return $operations;
+
+        }
+
+        protected function parseProps(DOMNode $prop) {
+
+            $propList = array(); 
+            foreach($prop->childNodes as $propNode) {
+
+                if ($propNode->namespaceURI == 'DAV:' && $propNode->localName == 'prop') {
+
+                    foreach($propNode->childNodes as $propNodeData) {
+
+                        /* if ($propNodeData->attributes->getNamedItem('xmlns')->value == "") {
+                            // If the namespace declaration is an empty string, litmus expects us to throw a HTTP400
+                            throw new Sabre_DAV_BadRequestException('Invalid namespace: ""');
+                        } */
+
+                        $propList[$propNodeData->namespaceURI . '#' . $propNodeData->localName] = $propNodeData->textContent;
+                    }
+
+                }
+
+            }
+            return $propList; 
+
+        }
+
+        protected function generatePropPatchResponse($href,$mutations) {
+
+            $xw = new XMLWriter();
+            $xw->openMemory();
+            $xw->setIndent(true);
+            $xw->startDocument('1.0','UTF-8');
+            $xw->startElementNS('d','multistatus','DAV:');
+                $xw->startElement('d:response');
+                    $xw->writeElement('d:href',$href);
+                    foreach($mutations as $mutation) {
+
+                        $xw->startElement('d:propstat');
+                            $xw->startElement('d:prop');
+                                $element = explode('#',$mutation[1]);
+                                $xw->writeElementNS('X',$element[1],$element[0],null);
+                            $xw->endElement(); // d:prop
+                            $xw->writeElement('d:status',$this->getHTTPStatus(403));
+                        $xw->endElement(); // d:propstat
+
+                    }
+                $xw->endElement(); // d:response
+            $xw->endElement(); // d:multistatus
+            return $xw->outputMemory();
+
+        }
+
         // }}}
 
     }

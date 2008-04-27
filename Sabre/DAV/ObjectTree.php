@@ -162,25 +162,30 @@
             // The file object
             $fileObject = $this->getNodeForPath($path);
 
-            $props = array(
-                'name'         => '',
-                'type'         => $fileObject instanceof Sabre_DAV_IDirectory?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
-                'lastmodified' => $fileObject->getLastModified(),
-                'size'         => $fileObject->getSize(),
-            );
+            $fileList = array();
 
-            if ($fileObject instanceof Sabre_DAV_IQuota) {
+            if ($depth==0 || $depth == Sabre_DAV_Server::DEPTH_INFINITY) {
+                $props = array(
+                    'name'         => '',
+                    'type'         => $fileObject instanceof Sabre_DAV_IDirectory?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
+                    'lastmodified' => $fileObject->getLastModified(),
+                    'size'         => $fileObject->getSize(),
+                );
 
-                $quotaInfo = $fileObject->getQuotaInfo();
-                $props['quota-used'] = $quotaInfo[0];
-                $props['quota-available'] = $quotaInfo[1];
+                if ($fileObject instanceof Sabre_DAV_IQuota) {
+
+                    $quotaInfo = $fileObject->getQuotaInfo();
+                    $props['quota-used'] = $quotaInfo[0];
+                    $props['quota-available'] = $quotaInfo[1];
+
+                }
+
+                $fileList[] = $props;
 
             }
 
-            $fileList[] = $props;
-
             // If the depth was 1, we'll also want the files in the directory
-            if ($depth==1 && $fileObject instanceof Sabre_DAV_IDirectory) {
+            if (($depth==1 || $depth==Sabre_DAV_Server::DEPTH_INFINITY) && $fileObject instanceof Sabre_DAV_IDirectory) {
 
                 foreach($fileObject->getChildren() as $child) {
                     $props= array(

@@ -198,6 +198,7 @@
 
             // This is a multi-status response
             $this->sendHTTPStatus(207);
+            $this->addHeader('Content-Type','text/xml; charset="utf-8"');
             $data = $this->generatePropfindResponse($fileList);
             echo $data;
 
@@ -857,8 +858,9 @@
 
             $xw = new XMLWriter();
             $xw->openMemory();
-            $xw->setIndent(true);
-            $xw->startDocument('1.0','UTF-8');
+            // Windows XP doesn't like indentation
+            //$xw->setIndent(true);
+            $xw->startDocument('1.0','utf-8');
             $xw->startElementNS('d','multistatus','DAV:');
 
             foreach($list as $entry) {
@@ -926,6 +928,9 @@
             if (isset($data['type'])&&$data['type']==self::NODE_DIRECTORY) $xw->writeElement('d:collection','');
             $xw->endElement(); // d:resourcetype
 
+            if (isset($data['quota-used'])) $xw->writeElement('d:quota-used-bytes',$data['quota-used']);
+            if (isset($data['quota-available'])) $xw->writeElement('d:quota-available-bytes',$data['quota-available']);
+    
             $xw->endElement(); // d:prop
            
             $xw->writeElement('d:status',$this->getHTTPStatus(200));
@@ -940,7 +945,7 @@
             $xw = new XMLWriter();
             $xw->openMemory();
             $xw->setIndent(true);
-            $xw->startDocument('1.0','UTF-8');
+            $xw->startDocument('1.0','utf-8');
             $xw->startElementNS('d','prop','DAV:');
                 $xw->startElement('d:lockdiscovery');
                     $xw->startElement('d:activelock');
@@ -1026,7 +1031,7 @@
             $xw = new XMLWriter();
             $xw->openMemory();
             $xw->setIndent(true);
-            $xw->startDocument('1.0','UTF-8');
+            $xw->startDocument('1.0','utf-8');
             $xw->startElementNS('d','multistatus','DAV:');
                 $xw->startElement('d:response');
                     $xw->writeElement('d:href',$href);

@@ -169,6 +169,14 @@
                 'size'         => $fileObject->getSize(),
             );
 
+            if ($fileObject instanceof Sabre_DAV_IQuota) {
+
+                $quotaInfo = $fileObject->getQuotaInfo();
+                $props['quota-used'] = $quotaInfo[0];
+                $props['quota-available'] = $quotaInfo[1];
+
+            }
+
             $fileList[] = $props;
 
             // If the depth was 1, we'll also want the files in the directory
@@ -181,6 +189,14 @@
                         'lastmodified' => $child->getLastModified(),
                         'size'         => $child->getSize(),
                     );
+
+                    if ($child instanceof Sabre_DAV_IQuota) {
+
+                        $quotaInfo = $child->getQuotaInfo();
+                        $props['quota-used'] = $quotaInfo[0];
+                        $props['quota-available'] = $quotaInfo[1];
+
+                    }
 
                     $fileList[] = $props;
                 }

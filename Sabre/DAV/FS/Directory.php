@@ -3,6 +3,7 @@
     require_once 'Sabre/DAV/FS/Node.php';
     require_once 'Sabre/DAV/IDirectory.php';
     require_once 'Sabre/DAV/FS/File.php';
+    require_once 'Sabre/DAV/IQuota.php';
 
     /**
      * Directory class 
@@ -14,7 +15,7 @@
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
      * @license licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      */
-    class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_IDirectory {
+    class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_IDirectory, Sabre_DAV_IQuota {
 
         /**
          * Creates a new file in the directory 
@@ -90,6 +91,20 @@
 
             foreach($this->getChildren() as $child) $child->delete();
             rmdir($this->path);
+
+        }
+
+        /**
+         * Returns available diskspace information 
+         * 
+         * @return array 
+         */
+        public function getQuotaInfo() {
+
+            return array(
+                disk_total_space($this->path)-disk_free_space($this->path),
+                disk_free_space($this->path)
+                ); 
 
         }
 

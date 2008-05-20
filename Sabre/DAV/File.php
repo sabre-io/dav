@@ -1,7 +1,7 @@
 <?php
 
     require_once 'Sabre/DAV/Exception.php'; 
-    require_once 'Sabre/DAV/INode.php';
+    require_once 'Sabre/DAV/Node.php';
 
     /**
      * File class

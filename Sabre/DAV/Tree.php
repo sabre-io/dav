@@ -68,8 +68,6 @@
          * Creates a new directory 
          * 
          * @param string $path The full path to the new directory 
-         * @throws Sabre_DAV_ConflictException This method should return a conflict if the parent directory doesn't exist, or if there's a file with that name on that path 
-         * @throws Sabre_DAV_MethodNotAllowedException This method should return this exception when the directory already exists
          * @return void
          */
         abstract function createDirectory($path);
@@ -97,44 +95,44 @@
         }
 
         /**
-         * Returns all lock information on a particular uri 
+         * Returns all lock information on a particular path 
          * 
          * This function should return an array with Sabre_DAV_Lock objects. If there are no locks on a file, return an empty array
          *
-         * @param string $uri 
+         * @param string $path 
          * @return array 
          */
-        public function getLocks($uri) {
+        public function getLocks($path) {
 
             return array();
 
         }
 
         /**
-         * Locks a uri
+         * Locks a path 
          *
          * All the locking information is supplied in the lockInfo object. The object has a suggested timeout, but this can be safely ignored
          * It is important that if the existing timeout is ignored, the property is overwritten, as this needs to be sent back to the client
          * 
-         * @param string $uri 
+         * @param string $path 
          * @param Sabre_DAV_Lock $lockInfo 
          * @return void
          */
-        public function lockNode($uri,Sabre_DAV_Lock $lockInfo) {
+        public function lockNode($path,Sabre_DAV_Lock $lockInfo) {
 
 
         }
 
         /**
-         * Unlocks a uri
+         * Unlocks a path 
          *
-         * This method removes a lock from a uri. It is assumed all the correct information is correct and verified
+         * This method removes a lock from a path. It is assumed all the correct information is correct and verified
          * 
-         * @param string $uri 
+         * @param string $path 
          * @param Sabre_DAV_Lock $lockInfo 
          * @return void
          */
-        public function unlockNode($uri,Sabre_DAV_Lock $lockInfo) {
+        public function unlockNode($path,Sabre_DAV_Lock $lockInfo) {
 
 
         }

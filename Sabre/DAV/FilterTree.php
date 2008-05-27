@@ -15,7 +15,7 @@
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
      * @license licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      */
-    class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
+    abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
 
         /**
          * subject 
@@ -32,7 +32,7 @@
          */
         public function __construct(Sabre_DAV_Tree $subject) {
 
-            $this->tempDir = $tempDir;
+            $this->subject = $subject;
 
         }
 
@@ -144,7 +144,7 @@
          */
         public function supportsLocks() {
 
-            return $this->subject->supportLocks();
+            return $this->subject->supportsLocks();
 
         }
 

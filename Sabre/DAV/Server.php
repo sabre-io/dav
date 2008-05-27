@@ -39,7 +39,7 @@
 
         /**
          * The base uri 
-         * `
+         * 
          * @var string 
          */
         protected $baseUri;
@@ -185,8 +185,8 @@
         protected function httpPropfind() {
 
             // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
-            // $properties = $xml->parsePropfindRequest();
-          
+            $properties = $this->parsePropfindRequest($this->getRequestBody());
+
             $depth = $this->getHTTPDepth(1);
             // The only two options for the depth of a propfind is 0 or 1 
             if ($depth!=0) $depth = 1;
@@ -199,7 +199,7 @@
             // This is a multi-status response
             $this->sendHTTPStatus(207);
             $this->addHeader('Content-Type','text/xml; charset="utf-8"');
-            $data = $this->generatePropfindResponse($fileList);
+            $data = $this->generatePropfindResponse($fileList,$properties);
             echo $data;
 
         }
@@ -851,10 +851,11 @@
         /**
          * Generates a WebDAV propfind response body based on a list of nodes 
          * 
-         * @param array $list 
+         * @param array $list The list with nodes
+         * @param array $properties The properties that should be returned
          * @return string 
          */
-        private function generatePropfindResponse($list) {
+        private function generatePropfindResponse($list,$properties) {
 
             $xw = new XMLWriter();
             $xw->openMemory();
@@ -865,7 +866,7 @@
 
             foreach($list as $entry) {
 
-                $this->writeProperty($xw,$_SERVER['REQUEST_URI'],$entry);
+                $this->writeProperty($xw,$_SERVER['REQUEST_URI'],$entry, $properties);
 
             }
 
@@ -881,10 +882,11 @@
          * 
          * @param XMLWriter $xw 
          * @param string $baseurl 
-         * @param array $data 
+         * @param array $data
+         * @param array $properties
          * @return void
          */
-        private function writeProperty(XMLWriter $xw,$baseurl,$data) {
+        private function writeProperty(XMLWriter $xw,$baseurl,$data, $properties) {
 
             $xw->startElement('d:response');
             $xw->startElement('d:href');
@@ -902,41 +904,84 @@
             $url = implode('/',$url);
 
             // Adding the protocol and hostname. We'll also append a slash if this is a collection
-            $xw->text('http://' . $_SERVER['HTTP_HOST'] . $url . ($data['type']==self::NODE_DIRECTORY&&$url?'/':''));
+            $xw->text('http://' . $_SERVER['HTTP_HOST'] . $url . ($data['type']==self::NODE_DIRECTORY?'/':''));
             $xw->endElement(); //d:href
 
             $xw->startElement('d:propstat');
+
+            // We have to collect the properties we don't know
+            $notFound = array();
+
             $xw->startElement('d:prop');
+            foreach($properties as $property) {
 
-            // Last modification property
-            $xw->startElement('d:getlastmodified');
-            $xw->writeAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
-            $xw->writeAttribute('b:dt','dateTime.rfc1123');
-            $modified = isset($data['modified'])?$data['modified']:time();
-            if (!(int)$modified) $modified = strtotime($modified);
-            $xw->text(date(DATE_RFC1123,$modified));
-            $xw->endElement(); // d:getlastmodified
+                switch($property) {
+                    case 'DAV:#getlastmodified' :
+                        // Last modification property
+                        $xw->startElement('d:getlastmodified');
+                        $xw->writeAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
+                        $xw->writeAttribute('b:dt','dateTime.rfc1123');
+                        $modified = isset($data['modified'])?$data['modified']:time();
+                        if (!(int)$modified) $modified = strtotime($modified);
+                        $xw->text(date(DATE_RFC1123,$modified));
+                        $xw->endElement(); // d:getlastmodified
+                        break;
 
-            // Content-length property
-            $xw->startElement('d:getcontentlength');
-            $xw->text(isset($data['size'])?(int)$data['size']:'0');
-            $xw->endElement(); // d:getcontentlength
-                   
-            // Resource type property
+                    case 'DAV:#getcontentlength' :
+                        // Content-length property
+                        $xw->startElement('d:getcontentlength');
+                        $xw->text(isset($data['size'])?(int)$data['size']:'0');
+                        $xw->endElement(); // d:getcontentlength
+                        break;
 
-            $xw->startElement('d:resourcetype');
-            if (isset($data['type'])&&$data['type']==self::NODE_DIRECTORY) $xw->writeElement('d:collection','');
-            $xw->endElement(); // d:resourcetype
+                    case 'DAV:#resourcetype' :
+                        // Resource type property
+                        $xw->startElement('d:resourcetype');
+                        if (isset($data['type'])&&$data['type']==self::NODE_DIRECTORY) $xw->writeElement('d:collection','');
+                        $xw->endElement(); // d:resourcetype
+                        break;
 
-            if (isset($data['quota-used'])) $xw->writeElement('d:quota-used-bytes',$data['quota-used']);
-            if (isset($data['quota-available'])) $xw->writeElement('d:quota-available-bytes',$data['quota-available']);
+                    case 'DAV:#quota-used' :
+                        if (isset($data['quota-used'])) $xw->writeElement('d:quota-used-bytes',$data['quota-used']);
+                        else $notFound[] = $property;
+                        break;
+
+                    case 'DAV#quota-available' : 
+                        if (isset($data['quota-available'])) $xw->writeElement('d:quota-available-bytes',$data['quota-available']);
+                        else $notFound[] = $property;
+                        break;
+
+                    default :
+                        $notFound[] = $property;
+
+                }
+
+            }
     
             $xw->endElement(); // d:prop
            
             $xw->writeElement('d:status',$this->getHTTPStatus(200));
-           
+
             $xw->endElement(); // :d:propstat
 
+            if ($notFound) { 
+                $xw->startElement('d:propstat');
+                $xw->startElement('d:prop');
+                foreach($notFound as $property) {
+                    list($ns,$tagName) = explode('#',$property,2);
+                    if ($ns=='DAV:') {
+                        $xw->writeElement('d:' . $tagName,'');
+                    } else {
+                        $xw->startElement($tagName);
+                        $xw->writeAttribute('xmlns',$ns);
+                        $xw->endElement();
+                    }
+                }
+                $xw->endElement(); // d:prop
+                $xw->writeElement('d:status',$this->getHTTPStatus(404));
+                $xw->endElement(); // :d:propstat
+
+            }
             $xw->endElement(); // d:response
         }
 
@@ -976,18 +1021,20 @@
          */
         protected function parsePropPatchRequest($body) {
 
-            // We'll need to change the DAV namespace declaration to something else in order to make it parsable
-            //$body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+            //We'll need to change the DAV namespace declaration to something else in order to make it parsable
+            $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
 
             $dom = new DOMDocument();
-            $dom->loadXML($body,LIBXML_NOWARNING);
+            $dom->loadXML($body,LIBXML_NOWARNING | LIBXML_NOERROR);
             $dom->preserveWhiteSpace = false;
+
+            if (libxml_get_last_error()) throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request');
 
             $operations = array();
 
             foreach($dom->firstChild->childNodes as $child) {
 
-                if ($child->namespaceURI != 'DAV:' || ($child->localName != 'set' && $child->localName !='remove')) continue; 
+                if ($child->namespaceURI != 'urn:DAV' || ($child->localName != 'set' && $child->localName !='remove')) continue; 
                 
                 $propList = $this->parseProps($child);
                 foreach($propList as $k=>$propItem) {
@@ -1002,12 +1049,29 @@
 
         }
 
+        protected function parsePropFindRequest($body) {
+
+            $errorsetting =  libxml_use_internal_errors(true);
+            libxml_clear_errors();
+            $dom = new DOMDocument();
+            $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+            $dom->preserveWhiteSpace = false;
+            $dom->loadXML($body,LIBXML_NOERROR);
+            if($error = libxml_get_last_error()) {
+                throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request' . print_r($error,true));
+            }
+            libxml_use_internal_errors($errorsetting); 
+            $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
+            return array_keys($this->parseProps($elem)); 
+
+        }
+
         protected function parseProps(DOMNode $prop) {
 
             $propList = array(); 
             foreach($prop->childNodes as $propNode) {
 
-                if ($propNode->namespaceURI == 'DAV:' && $propNode->localName == 'prop') {
+                if ($propNode->namespaceURI == 'urn:DAV' && $propNode->localName == 'prop') {
 
                     foreach($propNode->childNodes as $propNodeData) {
 
@@ -1016,7 +1080,8 @@
                             throw new Sabre_DAV_BadRequestException('Invalid namespace: ""');
                         } */
 
-                        $propList[$propNodeData->namespaceURI . '#' . $propNodeData->localName] = $propNodeData->textContent;
+                        if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
+                        $propList[$ns . '#' . $propNodeData->localName] = $propNodeData->textContent;
                     }
 
                 }

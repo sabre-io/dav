@@ -319,16 +319,12 @@
 
             try {
                 $node = $this->getNodeForPath($uri);
-
                 if ($node instanceof Sabre_DAV_ILockable) return $node->getLocks();
-                if ($this->lockManager) return $this->lockManager->getLocks($uri);
-                return array();
-
             } catch (Sabre_DAV_FileNotFoundException $e){
-                // In case the node didn't exist, there are no locks
-                return array();
+                // In case the node didn't exist, this could be a lock-null request
             }
-
+            if ($this->lockManager) return $this->lockManager->getLocks($uri);
+            return array();
         }
 
         /**
@@ -343,9 +339,13 @@
          */
         public function lockNode($uri,Sabre_DAV_Lock $lockInfo) {
 
-            $node = $this->getNodeForPath($uri);
+            try {
+                $node = $this->getNodeForPath($uri);
+                if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+                // In case the node didn't exist, this could be a lock-null request
+            }
 
-            if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
             if ($this->lockManager) return $this->lockManager->lock($uri,$lockInfo);
 
         }
@@ -361,8 +361,13 @@
          */
         public function unlockNode($uri,Sabre_DAV_Lock $lockInfo) {
 
-            $node = $this->getNodeForPath($uri);
-            if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);
+            try {
+                $node = $this->getNodeForPath($uri);
+                if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+                // In case the node didn't exist, this could be a lock-null request
+            }
+
             if ($this->lockManager) return $this->lockManager->unlock($uri,$lockInfo);
 
         }

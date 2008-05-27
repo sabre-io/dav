@@ -6,8 +6,8 @@
 
         private $dataDir = null;
 
-        const FINDER_FORK = 
-            'H4sIAAAAAAAAA+3XMWsCMRQH8Beh2Fu0OHQqR+Yicji6FV0cRKiHlG7xfNJwuSTkIuK36mdy6rfQiGepwtHNQd6PhHCP9w+5bIGH5yY0ACYi49MZ/+CVYw2iMPsAre+whu/WDoDFcPYENd7S9D0snVMCfsL8vGppVPXXMDJT9IS1CnsFerEUXgzyyWjssRiXs8wh6qGwfu3wFGVhX0gAuvW5i1S6tSG5sEqWPkmix2oXVp2EXZ0sOnfON1Ivzea//nbdLRBCCCGEEEIIuTUGf55tcfolS+6wNGuXIV8Zl3OpPWovjRZKbbnClecLJXR+fAffgcv//y2/QLzfHwDNa116ABAAAA==';
+        const FINDER_FORK =
+            'eJzt1zFrAjEUB/AXodhbtDh0KkfmInI4uhVdHESoh5Ru8XzScLkk5CLit+pncuq30IhnqcLRzUHej4Rwj/cPuWyBh+cmNAAmIuPTGf/glWMNojD7AK3vsIbv1g6AxXD2BDXe0vQ9LJ1TAn7C/LxqaVT11zAyU/SEtQp7BXqxFF4M8slo7LEYl7PMIeqhsH7t8BRlYV9IALr1uYtUurUhubBKlj5JosdqF1adhF2dLDp3zjdSL83mv/523S0QQgghhBBCCLk1Bn+ebXH6JUvusDRrlyFfGZdzqT1qL40WSm25wpXnCyV0fnwH34HL//8tv0C83x8AUcxHTA==';
 
         public function setDataDir($path) {
 
@@ -68,7 +68,7 @@
             if ($tempPath = $this->isTempFile($path)) {
 
                 if (!file_exists($tempPath)) {
-                    if (strpos(basename($path),'._')===0) echo gzdecode(base64_decode(self::FINDER_FORK));
+                    if (strpos(basename($path),'._')===0) echo gzuncompress(base64_decode(self::FINDER_FORK));
                     else throw new Sabre_DAV_FileNotFoundException();
                 } else { 
                     return file_get_contents($tempPath);

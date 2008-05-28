@@ -1021,6 +1021,9 @@
          */
         protected function parsePropPatchRequest($body) {
 
+            // If the propfind body was empty, it means IE is requesting 'all' properties
+            if (!$body) return array();
+
             //We'll need to change the DAV namespace declaration to something else in order to make it parsable
             $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
 

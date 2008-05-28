@@ -187,6 +187,16 @@
             // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
             $properties = $this->parsePropfindRequest($this->getRequestBody());
 
+            // If properties is empty, we'll send back a default set. This is not conform to the protocol, as it should send back all properties
+            if (!$properties) $properties = array(
+                    'DAV:#getcontentlength',
+                    'DAV:#resourcetype',
+                    'DAV:#getlastmodified',
+                    'DAV:#quotaused',
+                    'DAV:#quotaavailable',
+            );        
+
+
             $depth = $this->getHTTPDepth(1);
             // The only two options for the depth of a propfind is 0 or 1 
             if ($depth!=0) $depth = 1;
@@ -1021,9 +1031,6 @@
          */
         protected function parsePropPatchRequest($body) {
 
-            // If the propfind body was empty, it means IE is requesting 'all' properties
-            if (!$body) return array();
-
             //We'll need to change the DAV namespace declaration to something else in order to make it parsable
             $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
 
@@ -1053,6 +1060,9 @@
         }
 
         protected function parsePropFindRequest($body) {
+
+            // If the propfind body was empty, it means IE is requesting 'all' properties
+            if (!$body) return array();
 
             $errorsetting =  libxml_use_internal_errors(true);
             libxml_clear_errors();

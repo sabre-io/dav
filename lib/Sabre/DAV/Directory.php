@@ -36,7 +36,7 @@
                 if ($child->getName()==$name) return $child;
 
             }
-            throw new Sabre_DAV_FileNotFoundException('File not found');
+            throw new Sabre_DAV_FileNotFoundException('File not found: ' . $name);
 
         }
 
@@ -50,7 +50,7 @@
          */
         public function createFile($name, $data = null) {
 
-            throw new Sabre_DAV_PermissionDeniedException('Permission denied to create file');
+            throw new Sabre_DAV_PermissionDeniedException('Permission denied to create file (filename ' . $name . ')');
 
         }
 

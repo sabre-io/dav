@@ -25,6 +25,7 @@
                 '/^desktop.ini$/', // Windows custom folder settings
                 '/^Thumbs.db$/',   // Windows thumbnail cache
                 '/^.(.*).swp$/',   // ViM temporary files
+                '/.dat(.*)$/',     // Smultron seems to create these
             );
 
             $match = false;

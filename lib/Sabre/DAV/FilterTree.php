@@ -83,7 +83,7 @@
          */
         public function put($path, $data) {
 
-            return $this->subject->delete($data);
+            return $this->subject->put($path,$data);
 
         }
 

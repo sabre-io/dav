@@ -70,7 +70,7 @@
             } catch (Sabre_DAV_Exception $e) {
 
                 $this->sendHTTPStatus($e->getHTTPCode());
-                throw $e;
+                echo (string)$e;
 
             } catch (Exception $e) {
 

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<project name="SabreDAV" default="dist" basedir=".">
+
+    <property name="BUILDDIR" value="build/" />
+    <svnlastrevision workingcopy="." propertyname="svn.lastrevision"/>
+
+    <fileset dir="${BUILDDIR}" id="pkgfiles">
+        <include name="*.php" />
+        <include name="**/*.php" />
+        <include name="README" />
+        <include name="LICENCE" />
+    </fileset>    
+        
+
+    <target name="prepare">
+        <echo msg="Preparing build.." />
+        <mkdir dir="${BUILDDIR}" />
+        <copy file="LICENCE" todir="${BUILDDIR}" />
+    </target>
+
+    <target name="build" depends="prepare">
+         <echo msg="Copying source files" />
+         <mkdir dir="${BUILDDIR}" />
+         <copy todir="${BUILDDIR}">
+            <fileset dir="lib/">
+                <include name="*.php" />
+                <include name="**/*.php" />
+            </fileset>    
+        </copy>
+    </target>
+
+    <!--
+    <target name="buildexamples" depends="prepare">
+        <echo msg="Copying examples" />
+        <mkdir dir="${BUILDDIR}/examples" />
+        <copy todir="${BUILDDIR}/examples">
+            <fileset dir="examples/">
+                <include name="*.php" />
+            </fileset>
+        </copy>    
+    </target>-->
+
+    <target name="package" depends="build, pearpkg">
+        <echo msg="packaging" />
+    </target>
+
+    <target name="pearpkg" depends="prepare, build">
+        <pearpkg name="Sabre_DAV" dir="${BUILDDIR}" destFile="${BUILDDIR}/package.xml">
+            <fileset refid="pkgfiles" />
+            <option name="notes">Alpha release.</option>
+            <option name="description">SabreDAV is a WebDAV library allowing you to implement WebDAV servers using just PHP 5. Its focus is to create a library that allows you to easily build WebDAV shares based on existing web applications, and has many features to accomodate for common clients in a logical manner.</option>
+            <option name="summary">SabreDAV is a WebDAV library for PHP 5.</option>
+            <option name="version" value="0.3.${svn.lastrevision}" />
+            <option name="state" value="alpha" />
+            <option name="licence" value="BSD" />
+            <option name="baseinstalldir" value="/" />
+            <mapping name="maintainers">
+                <element>
+                    <element key="handle" value="evert" />
+                    <element key="name" value="Evert Pot" />
+                    <element key="email" value="evert@rooftopsolutions.nl" />
+                    <element key="role" value="lead" />
+                </element>
+             </mapping>
+             <mapping name="deps">
+                <element>
+                    <element key="type" value="php" />
+                    <element key="version" value="5.2.0" />
+                    <element key="rel" value="ge" />
+                </element>
+             </mapping>
+             <mapping name="exceptions">
+                <element key="README" value="doc" />
+                <element key="LICENCE" value="doc" />
+             </mapping>   
+         </pearpkg> 
+    </target>
+
+    <target name="documentation" depends="prepare">
+        <phpdoc title="SabreDAV API Documentation" destdir="build/apidocs" sourcepath="Sabre/" output="HTML:frames:default" />
+    </target>
+
+    <target name="dist" depends="build, pearpkg">
+        <echo msg="Creating full featured SabreDAV package" />
+    </target>    
+
+    <target name="clean">
+        <echo msg="Removing build files (cleaning up distribution)" />
+        <delete dir="build/" />
+        <delete dir="apidocs" />
+    </target>    
+
+</project>

@@ -2,7 +2,7 @@
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
 
-// {$Id} //
+// {$Id$} //
 
 // settings
 date_default_timezone_set('Canada/Eastern');

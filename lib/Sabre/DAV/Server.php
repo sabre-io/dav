@@ -30,6 +30,10 @@
          */
         const NODE_DIRECTORY = 2;
 
+        const PROP_SET = 1;
+        const PROP_REMOVE = 2;
+
+
         /**
          * The tree object
          * 
@@ -187,15 +191,6 @@
             // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
             $properties = $this->parsePropfindRequest($this->getRequestBody());
 
-            // If properties is empty, we'll send back a default set. This is not conform to the protocol, as it should send back all properties
-            if (!$properties) $properties = array(
-                    'DAV:#getcontentlength',
-                    'DAV:#resourcetype',
-                    'DAV:#getlastmodified',
-                    'DAV:#quotaused',
-                    'DAV:#quotaavailable',
-            );        
-
 
             $depth = $this->getHTTPDepth(1);
             // The only two options for the depth of a propfind is 0 or 1 
@@ -205,6 +200,20 @@
             $path = $this->getRequestUri();
 
             $fileList = $this->tree->getNodeInfo($path,$depth);
+
+            foreach($fileList as $k=>$file) {
+                $newProps = $this->tree->getProperties($path,$properties);
+                $newProps['DAV:#getlastmodified'] =  (isset($file['modified'])?$file['modified']:time());
+                $newProps['DAV:#getcontentlength'] = (isset($file['size'])?$file['size']:0);
+                $newProps['DAV:#resourcetype'] =  $file['type'];
+                if (isset($file['quota-used'])) $newProps['DAV:#quota-used-bytes'] = $file['quota-used'];
+                if (isset($file['quota-available'])) $newProps['DAV:#quota-available-bytes'] = $file['quota-available'];
+                
+                //print_r($newProps);die();
+
+                $fileList[$k] = $newProps;
+
+            }
 
             // This is a multi-status response
             $this->sendHTTPStatus(207);
@@ -230,8 +239,19 @@
            
             $mutations = $this->parsePropPatchRequest($this->getRequestBody());
 
+            $result = $this->tree->updateProperties($this->getRequestUri(),$mutations);
+
+            if (!$result) {
+                
+                $result = array();
+                foreach($mutations as $mutations) {
+                    $result[] = array($mutations[1],403);
+                }
+
+            }
+
             $this->sendHTTPStatus(207);
-            echo $this->generatePropPatchResponse($this->getRequestUri(),$mutations);
+            echo $this->generatePropPatchResponse($this->getRequestUri(),$result);
 
         }
 
@@ -914,7 +934,7 @@
             $url = implode('/',$url);
 
             // Adding the protocol and hostname. We'll also append a slash if this is a collection
-            $xw->text('http://' . $_SERVER['HTTP_HOST'] . $url . ($data['type']==self::NODE_DIRECTORY?'/':''));
+            $xw->text('http://' . $_SERVER['HTTP_HOST'] . $url . ($data['DAV:#resourcetype']==self::NODE_DIRECTORY?'/':''));
             $xw->endElement(); //d:href
 
             $xw->startElement('d:propstat');
@@ -923,48 +943,57 @@
             $notFound = array();
 
             $xw->startElement('d:prop');
+            if (!$properties) $properties = array_keys($data);
+
+            $nsList = array(
+                'DAV:' => 'd',
+            );
+
             foreach($properties as $property) {
+
+                if(!isset($data[$property])) {
+                    $notFound[] = $property;
+                    continue;
+                }
+
+                $value = $data[$property];
+
+                $propName = explode('#',$property,2);
+               
+                if (isset($nsList[$propName[0]])) {
+
+                    $xw->startElement($nsList[$propName[0]] . ':' . $propName[1]);
+
+                } else {
+
+                    $xw->startElement($propName[1]);
+                    $xw->writeAttribute('xmlns',$propName[0]);
+
+                }
 
                 switch($property) {
                     case 'DAV:#getlastmodified' :
-                        // Last modification property
-                        $xw->startElement('d:getlastmodified');
                         $xw->writeAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
                         $xw->writeAttribute('b:dt','dateTime.rfc1123');
-                        $modified = isset($data['modified'])?$data['modified']:time();
-                        if (!(int)$modified) $modified = strtotime($modified);
-                        $xw->text(date(DATE_RFC1123,$modified));
-                        $xw->endElement(); // d:getlastmodified
-                        break;
-
-                    case 'DAV:#getcontentlength' :
-                        // Content-length property
-                        $xw->startElement('d:getcontentlength');
-                        $xw->text(isset($data['size'])?(int)$data['size']:'0');
-                        $xw->endElement(); // d:getcontentlength
+                        if (!(int)$value) $value = strtotime($value);
+                        $xw->text(date(DATE_RFC1123,$value));
                         break;
 
                     case 'DAV:#resourcetype' :
-                        // Resource type property
-                        $xw->startElement('d:resourcetype');
-                        if (isset($data['type'])&&$data['type']==self::NODE_DIRECTORY) $xw->writeElement('d:collection','');
-                        $xw->endElement(); // d:resourcetype
-                        break;
-
-                    case 'DAV:#quota-used' :
-                        if (isset($data['quota-used'])) $xw->writeElement('d:quota-used-bytes',$data['quota-used']);
-                        else $notFound[] = $property;
-                        break;
-
-                    case 'DAV#quota-available' : 
-                        if (isset($data['quota-available'])) $xw->writeElement('d:quota-available-bytes',$data['quota-available']);
-                        else $notFound[] = $property;
+                        if ($value==self::NODE_DIRECTORY) $xw->writeElement('d:collection','');
                         break;
 
                     default :
-                        $notFound[] = $property;
+                        if (is_scalar($value)) {
+                            $xw->text($value);
+                        } else {
+                            $xw->text($value->textContent);
+                        }
+                        break;
 
                 }
+
+                $xw->endElement();
 
             }
     
@@ -1117,10 +1146,10 @@
 
                         $xw->startElement('d:propstat');
                             $xw->startElement('d:prop');
-                                $element = explode('#',$mutation[1]);
+                                $element = explode('#',$mutation[0]);
                                 $xw->writeElementNS('X',$element[1],$element[0],null);
                             $xw->endElement(); // d:prop
-                            $xw->writeElement('d:status',$this->getHTTPStatus(403));
+                            $xw->writeElement('d:status',$this->getHTTPStatus($mutation[1]));
                         $xw->endElement(); // d:propstat
 
                     }

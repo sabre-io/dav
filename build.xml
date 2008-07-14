@@ -50,7 +50,7 @@
             <option name="notes">Alpha release.</option>
             <option name="description">SabreDAV is a WebDAV library allowing you to implement WebDAV servers using just PHP 5. Its focus is to create a library that allows you to easily build WebDAV shares based on existing web applications, and has many features to accomodate for common clients in a logical manner.</option>
             <option name="summary">SabreDAV is a WebDAV library for PHP 5.</option>
-            <option name="version" value="0.3.${svn.lastrevision}" />
+            <option name="version" value="0.4.${svn.lastrevision}" />
             <option name="state" value="alpha" />
             <option name="licence" value="BSD" />
             <option name="baseinstalldir" value="/" />

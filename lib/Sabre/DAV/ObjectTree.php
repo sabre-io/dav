@@ -134,6 +134,7 @@
             if ($source instanceof Sabre_DAV_IFile) {
 
                 $destinationParent->createFile($destinationName,$source->get());
+                $destination = $destinationParent->getChild($destinationName);
 
             } elseif ($source instanceof Sabre_DAV_IDirectory) {
 
@@ -145,6 +146,20 @@
                     $this->copyNode($child,$destination);
 
                 }
+
+            }
+            if ($source instanceof Sabre_DAV_IProperties && $destination instanceof Sabre_DAV_IProperties) {
+
+                $props = $source->getProperties(array());
+                $newProps = array();
+                foreach($props as $k=>$v) {
+                    $newProps[] = array(
+                        Sabre_DAV_Server::PROP_SET,
+                        $k,
+                        $v
+                    );
+                }
+                $destination->updateProperties($newProps);
 
             }
 
@@ -369,6 +384,28 @@
             }
 
             if ($this->lockManager) return $this->lockManager->unlock($uri,$lockInfo);
+
+        }
+
+        public function updateProperties($uri,$mutations) {
+
+            $node = $this->getNodeForPath($uri);
+            if ($node instanceof Sabre_DAV_IProperties) {
+                return $node->updateProperties($mutations);
+            } else {
+                return false;
+            }
+
+        }
+
+        public function getProperties($uri,$properties) {
+
+            $node = $this->getNodeForPath($uri);
+            if ($node instanceof Sabre_DAV_IProperties) {
+                return $node->getProperties($properties);
+            } else {
+                return false;
+            }
 
         }
 

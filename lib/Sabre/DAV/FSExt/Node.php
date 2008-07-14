@@ -2,6 +2,7 @@
 
     require_once 'Sabre/DAV/FS/Node.php';
     require_once 'Sabre/DAV/ILockable.php';
+    require_once 'Sabre/DAV/IProperties.php';
 
     /**
      * Base node-class 
@@ -15,7 +16,7 @@
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
      * @license license http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      */
-    abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_DAV_ILockable {
+    abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_DAV_ILockable, Sabre_DAV_IProperties {
 
         /**
          * Returns all the locks on this node
@@ -44,14 +45,6 @@
             // We're making the lock timeout 30 minutes
             $lockInfo->timeout = 1800;
             $lockInfo->created = time();
-
-            $try = array(
-                'X_LITMUS',
-                'X_LITMUS_ONE',
-                'X_LITMUS_SECOND',
-            );
-
-            foreach($try as $t) if (isset($_SERVER['HTTP_'.$t])) $lockInfo->info = "\n" . $_SERVER['HTTP_' . $t] . "\n";
 
             $resourceData = $this->getResourceData();
             if (!isset($resourceData['locks'])) $resourceData['locks'] = array();
@@ -88,6 +81,85 @@
         }
 
         /**
+         * Updates properties on this node,
+         *
+         * The mutations array, contains arrays with mutation information, with the following 3 elements:
+         *   * 0 = mutationtype (1 for set, 2 for remove)
+         *   * 1 = nodename (encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
+         *   * 2 = value, can either be a string or a DOMElement
+         * 
+         * This method should return a similar array, with information about every mutation:
+         *   * 0 - nodename, encoded as in the $mutations argument
+         *   * 1 - statuscode, encoded as http status code, for example
+         *      200 for an updated property or succesful delete
+         *      201 for a new property
+         *      403 for permission denied
+         *      etc..
+         *
+         * @param array $mutations 
+         * @return void
+         */
+        function updateProperties($mutations) {
+
+            $resourceData = $this->getResourceData();
+            
+            $result = array();
+
+            foreach($mutations as $mutation) {
+
+
+                switch($mutation[0]){ 
+                    case Sabre_DAV_Server::PROP_SET :
+                       if (isset($resourceData['properties'][$mutation[1]])) {
+                           $result[] = array($mutation[1],200);
+                       } else {
+                           $result[] = array($mutation[1],201);
+                       }
+                       $resourceData['properties'][$mutation[1]] = $mutation[2];
+                       break;
+                    case Sabre_DAV_Server::PROP_REMOVE :
+                       if (isset($resourceData['properties'][$mutation[1]])) {
+                           $result[] = array($mutation[1],200);
+                           unset($resourceData['properties'][$mutation[1]]);
+                       } else {
+                           $result[] = array($mutation[1],404);
+                       }
+                       break;
+
+                }
+
+            }
+
+            $this->putResourceData($resourceData);
+            return $result;
+        }
+
+        /**
+         * Returns a list of properties for this nodes.
+         *
+         * The properties list is a list of propertynames the client requested, encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
+         * If the array is empty, all properties should be returned
+         *
+         * @param array $properties 
+         * @return void
+         */
+        function getProperties($properties) {
+
+            $resourceData = $this->getResourceData();
+
+            // if the array was empty, we need to return everything
+            if (!$properties) return $resourceData['properties'];
+
+            $props = array();
+            foreach($properties as $property) {
+                if (isset($resourceData['properties'][$property])) $props[$property] = $resourceData['properties'][$property];
+            }
+
+            return $props;
+
+        }
+
+        /**
          * Returns the path to the resource file 
          * 
          * @return string 
@@ -106,7 +178,7 @@
         protected function getResourceData() {
 
             $path = $this->getResourceInfoPath();
-            if (!file_exists($path)) return array('locks'=>array());
+            if (!file_exists($path)) return array('locks'=>array(), 'properties' => array());
 
             // opening up the file, and creating a shared lock
             $handle = fopen($path,'r');
@@ -124,11 +196,12 @@
             // Unserializing and checking if the resource file contains data for this file
             $data = unserialize($data);
             if (!isset($data[$this->getName()])) {
-                return array('locks'=>array());
+                return array('locks'=>array(), 'properties' => array());
             }
 
             $data = $data[$this->getName()];
             if (!isset($data['locks'])) $data['locks'] = array();
+            if (!isset($data['properties'])) $data['properties'] = array();
             return $data;
 
         }
@@ -193,7 +266,6 @@
             fclose($handle);
 
         }
-
 
     }
 

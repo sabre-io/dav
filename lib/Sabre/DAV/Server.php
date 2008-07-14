@@ -208,7 +208,7 @@
                 $newProps['DAV:#resourcetype'] =  $file['type'];
                 if (isset($file['quota-used'])) $newProps['DAV:#quota-used-bytes'] = $file['quota-used'];
                 if (isset($file['quota-available'])) $newProps['DAV:#quota-available-bytes'] = $file['quota-available'];
-                $newProps['name'] = $file['name']; 
+                $newProps['href'] = $file['name']; 
                 //print_r($newProps);die();
 
                 $fileList[$k] = $newProps;
@@ -926,7 +926,7 @@
             $url = rtrim(urldecode($baseurl),'/');
 
             // Adding the node in the directory
-            if (isset($data['name']) && trim($data['name'],'/')) $url.= '/' . trim((isset($data['name'])?$data['name']:''),'/');
+            if (isset($data['href']) && trim($data['href'],'/')) $url.= '/' . trim((isset($data['href'])?$data['href']:''),'/');
 
             $url = explode('/',$url);
 
@@ -951,6 +951,9 @@
             );
 
             foreach($properties as $property) {
+
+                // We can skip href
+                if ($property=='href') continue;
 
                 if(!isset($data[$property])) {
                     $notFound[] = $property;

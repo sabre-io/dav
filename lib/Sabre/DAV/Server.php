@@ -106,7 +106,7 @@
          */
         protected function httpOptions() {
 
-            $this->addHeader('Allows',strtoupper(implode(' ',$this->getAllowedMethods())));
+            $this->addHeader('Allow',strtoupper(implode(' ',$this->getAllowedMethods())));
             if ($this->tree->supportsLocks()) {
                 $this->addHeader('DAV','1,2');
             } else {
@@ -208,12 +208,13 @@
                 $newProps['DAV:#resourcetype'] =  $file['type'];
                 if (isset($file['quota-used'])) $newProps['DAV:#quota-used-bytes'] = $file['quota-used'];
                 if (isset($file['quota-available'])) $newProps['DAV:#quota-available-bytes'] = $file['quota-available'];
-                
+                $newProps['name'] = $file['name']; 
                 //print_r($newProps);die();
 
                 $fileList[$k] = $newProps;
 
             }
+
 
             // This is a multi-status response
             $this->sendHTTPStatus(207);
@@ -934,7 +935,7 @@
             $url = implode('/',$url);
 
             // Adding the protocol and hostname. We'll also append a slash if this is a collection
-            $xw->text('http://' . $_SERVER['HTTP_HOST'] . $url . ($data['DAV:#resourcetype']==self::NODE_DIRECTORY?'/':''));
+            $xw->text(/*'http://' . $_SERVER['HTTP_HOST'] .*/ $url . ($data['DAV:#resourcetype']==self::NODE_DIRECTORY?'/':''));
             $xw->endElement(); //d:href
 
             $xw->startElement('d:propstat');
@@ -980,7 +981,7 @@
                         break;
 
                     case 'DAV:#resourcetype' :
-                        if ($value==self::NODE_DIRECTORY) $xw->writeElement('d:collection','');
+                        if ($value==self::NODE_DIRECTORY) $xw->writeRaw('<d:collection />');
                         break;
 
                     default :

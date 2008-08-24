@@ -69,7 +69,7 @@
             if ($tempPath = $this->isTempFile($path)) {
 
                 if (!file_exists($tempPath)) {
-                    if (strpos(basename($path),'._')===0) echo gzuncompress(base64_decode(self::FINDER_FORK));
+                    if (strpos(basename($path),'._')===0) return gzuncompress(base64_decode(self::FINDER_FORK));
                     else throw new Sabre_DAV_FileNotFoundException();
                 } else { 
                     return file_get_contents($tempPath);

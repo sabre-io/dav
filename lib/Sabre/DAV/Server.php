@@ -1067,11 +1067,13 @@
             //We'll need to change the DAV namespace declaration to something else in order to make it parsable
             $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
 
+            $errorsetting =  libxml_use_internal_errors(true);
+            libxml_clear_errors();
             $dom = new DOMDocument();
             $dom->loadXML($body,LIBXML_NOWARNING | LIBXML_NOERROR);
             $dom->preserveWhiteSpace = false;
 
-            if (libxml_get_last_error()) throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request');
+            if ($error = libxml_get_last_error()) throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request: ' . print_r($error,true));
 
             $operations = array();
 

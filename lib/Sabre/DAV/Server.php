@@ -11,7 +11,7 @@
      * @version $Id: Server.php 7 2008-01-02 05:47:17Z evertpot $
      * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
      * @author Evert Pot (http://www.rooftopsolutions.nl/) 
-     * @license license http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
+     * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
      */
     class Sabre_DAV_Server {
 

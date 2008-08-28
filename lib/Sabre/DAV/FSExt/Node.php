@@ -119,11 +119,10 @@
                        break;
                     case Sabre_DAV_Server::PROP_REMOVE :
                        if (isset($resourceData['properties'][$mutation[1]])) {
-                           $result[] = array($mutation[1],200);
                            unset($resourceData['properties'][$mutation[1]]);
-                       } else {
-                           $result[] = array($mutation[1],404);
                        }
+                       // Specifying the deletion of a property that does not exist, is _not_ an error
+                       $result[] = array($mutation[1],200);
                        break;
 
                 }

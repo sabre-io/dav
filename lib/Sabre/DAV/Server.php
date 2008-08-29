@@ -1073,7 +1073,16 @@
             $dom->loadXML($body,LIBXML_NOWARNING | LIBXML_NOERROR);
             $dom->preserveWhiteSpace = false;
 
-            if ($error = libxml_get_last_error()) throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request: ' . print_r($error,true));
+            if ($error = libxml_get_last_error()) {
+                switch ($error->code) {
+                    // Error 100 is a non-absolute namespace, which WebDAV allows
+                    case 100 :
+                        break;
+                    default :    
+                        throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request: ' . print_r($error,true));
+
+                }
+            }
 
             $operations = array();
 
@@ -1106,7 +1115,13 @@
             $dom->preserveWhiteSpace = false;
             $dom->loadXML($body,LIBXML_NOERROR);
             if($error = libxml_get_last_error()) {
-                throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request' . print_r($error,true));
+                switch($error->code) {
+                    // Error 100 is a non-absolute namespace, which WebDAV allows
+                    case 100 :
+                        break;
+                    default :
+                        throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request' . print_r($error,true));
+                }
             }
             libxml_use_internal_errors($errorsetting); 
             $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);

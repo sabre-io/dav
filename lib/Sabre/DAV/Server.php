@@ -163,7 +163,7 @@
          * @return void
          */
         protected function httpDelete() {
- 
+
             if (!$this->validateLock()) throw new Sabre_DAV_lockedException('The resource you tried to delete is locked');
             $this->tree->delete($this->getRequestUri());
             $this->sendHTTPStatus(204);
@@ -426,12 +426,10 @@
             $lastLock = null;
             if (!$this->validateLock($uri,$lastLock)) {
 
-                throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked');
-
                 // If ohe existing lock was an exclusive lock, we need to fail
                 if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
                     //var_dump($lastLock);
-                    throw new Sabre_DAV_LockedException('You tried to lock an url that was already locked'  . print_r($lastLock,true));
+                    throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked'  . print_r($lastLock,true));
                 }
 
             }
@@ -439,6 +437,7 @@
             if ($body = $this->getRequestBody()) {
                 // There as a new lock request
                 $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
+                if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked');
 
             } elseif ($lastLock) {
 

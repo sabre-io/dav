@@ -419,7 +419,7 @@
          *
          * If a lock is to be refreshed, no body should be supplied and there should be a valid If header containing the lock
          *
-         * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC5918:S7.3
+         * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC4918:S7.3
          * 
          * @return void
          */

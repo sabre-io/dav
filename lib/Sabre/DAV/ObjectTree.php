@@ -325,21 +325,45 @@
         /**
          * Returns all lock information on a particular uri 
          * 
-         * This function should return an array with Sabre_DAV_Lock objects. If there are no locks on a file, return an empty array
+         * This function should return an array with Sabre_DAV_Lock objects. If there are no locks on a file, return an empty array.
+         *
+         * Additionally there is also the possibility of locks on parent nodes, so we'll need to traverse every part of the tree 
          *
          * @param string $uri 
          * @return array 
          */
         public function getLocks($uri) {
 
-            try {
-                $node = $this->getNodeForPath($uri);
-                if ($node instanceof Sabre_DAV_ILockable) return $node->getLocks();
-            } catch (Sabre_DAV_FileNotFoundException $e){
-                // In case the node didn't exist, this could be a lock-null request
+            $lockList = array();
+            $currentPath = '';
+            foreach(explode('/',$uri) as $uriPart) {
+
+                $uriLocks = array();
+                if ($currentPath) $currentPath.='/'; 
+                $currentPath.=$uriPart;
+
+                try {
+
+                    $node = $this->getNodeForPath($currentPath);
+                    if ($node instanceof Sabre_DAV_ILockable) $uriLocks = $node->getLocks();
+
+                } catch (Sabre_DAV_FileNotFoundException $e){
+                    // In case the node didn't exist, this could be a lock-null request
+                }
+                if ($this->lockManager) $uriLocks = array_merge($uriLocks,$this->lockManager->getLocks($uri));
+
+                foreach($uriLocks as $uriLock) {
+
+                    // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
+                    if($uri==$currentPath || $uriLock->depth!=0) {
+                        $uriLock->uri = $currentPath;
+                        $lockList[] = $uriLock;
+                    }
+
+                }
+
             }
-            if ($this->lockManager) return $this->lockManager->getLocks($uri);
-            return array();
+            return $lockList;
         }
 
         /**

@@ -56,7 +56,6 @@
          */
         public function getChild($name) {
 
-
             $path = $this->path . '/' . $name;
 
             if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException('File could not be located');

@@ -146,14 +146,10 @@
         protected function httpHead() {
 
             $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
-
             if ($nodeInfo[0]['size']) $this->addHeader('Content-Length',$nodeInfo[0]['size']);
-
             $this->addHeader('Content-Type', 'application/octet-stream');
 
         }
-
-
 
         /**
          * HTTP Delete 
@@ -267,13 +263,13 @@
          */
         protected function httpPut() {
 
-            // Checking possible locks
-            if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
-
             // First we'll do a check to see if the resource already exists
             try {
                 $info = $this->tree->getNodeInfo($this->getRequestUri(),0); 
                 
+                // Checking potential locks
+                if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+
                 // We got this far, this means the node already exists.
                 // This also means we should check for the If-None-Match header
                 if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH']) {
@@ -289,6 +285,12 @@
                 $this->sendHTTPStatus(200);
 
             } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // If we got here, the resource didn't exist yet.
+
+                // Validating the lock on the parent collection
+                $parent = dirname($this->getRequestUri());
+                if (!$this->validateLock($parent)) throw new Sabre_DAV_LockedException('You\'re creating a new file, but the parent collection is currently locked');
 
                 // This means the resource doesn't exist yet, and we're creating a new one
                 $this->tree->createFile($this->getRequestUri(),$this->getRequestBody());
@@ -416,6 +418,8 @@
          * of lock (shared or exclusive) and the owner of the lock
          *
          * If a lock is to be refreshed, no body should be supplied and there should be a valid If header containing the lock
+         *
+         * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC5918:S7.3
          * 
          * @return void
          */
@@ -437,6 +441,8 @@
             if ($body = $this->getRequestBody()) {
                 // There as a new lock request
                 $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
+                $lockInfo->depth = $this->getHTTPDepth(0); 
+                $lockInfo->uri = $uri;
                 if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked');
 
             } elseif ($lastLock) {
@@ -700,8 +706,9 @@
                 foreach($conditions as $condition) {
 
                     $conditionUri = $condition['uri']?$this->calculateUri($condition['uri']):'';
-                    // If the condition has a url, and it doesn't match, check the next condition
-                    if ($conditionUri && $conditionUri!=$url) continue;
+
+                    // If the condition has a url, and it isn't part of the affected url at all, check the next condition
+                    if ($conditionUri && strpos($url,$conditionUri)!==0) continue;
 
                     // The tokens array contians arrays with 2 elements. 0=true/false for normal/not condition, 1=locktoken
                     // At least 1 condition has to be satisfied
@@ -1042,7 +1049,7 @@
                         $xw->startElement('d:locktype');
                             $xw->writeRaw('<d:write />');
                         $xw->endElement();
-                        $xw->writeElement('d:depth',0);
+                        $xw->writeElement('d:depth',($lockInfo->depth == self::DEPTH_INFINITY?'infinity':$lockInfo->depth));
                         $xw->writeElement('d:timeout','Second-' . $lockInfo->timeout);
                         $xw->startElement('d:locktoken');
                             $xw->writeElement('d:href','opaquelocktoken:' . $lockInfo->token);
@@ -1072,6 +1079,7 @@
             $dom->loadXML($body,LIBXML_NOWARNING | LIBXML_NOERROR);
             $dom->preserveWhiteSpace = false;
 
+            
             if ($error = libxml_get_last_error()) {
                 switch ($error->code) {
                     // Error 100 is a non-absolute namespace, which WebDAV allows
@@ -1082,6 +1090,7 @@
 
                 }
             }
+            
 
             $operations = array();
 

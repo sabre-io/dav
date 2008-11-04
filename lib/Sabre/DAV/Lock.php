@@ -60,6 +60,19 @@
         public $scope = self::EXCLUSIVE;
 
         /**
+         * Depth of lock, can be 0 or Sabre_DAV_Server::DEPTH_INFINITY
+         */
+        public $depth = 0;
+
+        /**
+         * The uri this lock locks
+         *
+         * TODO: This value is not always set 
+         * @var mixed
+         */
+        public $uri;
+
+        /**
          * Parses a webdav lock xml body, and returns a new Sabre_DAV_LockInfo object 
          * 
          * @param string $body 

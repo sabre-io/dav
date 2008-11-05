@@ -1,0 +1,32 @@
+0.4-unreleased (????-??-??)
+	* Passes all litmus tests!
+	* Added: more examples
+	* Added: Custom property support
+	* Added: Shared lock support
+	* Added: Depth support to locks
+	* Added: Locking on unmapped urls (non-existant nodes)
+	* Fixed: Advertising as WebDAV class 3 support
+
+0.3-alpha (2008-06-29) 
+	* Fully working in MS Windows clients.
+	* Added: temporary file filter: support for smultron files.
+	* Added: Phing build scripts 
+	* Added: PEAR package 
+	* Fixed: MOVE bug identied using finder.
+	* Fixed: Using gzuncompress instead of gzdecode in the temporary file
+	  filter. This seems more common.
+
+0.2-alpha (2008-05-27) 
+	* Somewhat working in Windows clients 
+	* Added: Working PROPPATCH method (doesn't support custom properties yet)
+	* Added: Temporary filename handling system 
+	* Added: Sabre_DAV_IQuota to return quota information
+	* Added: PROPFIND now reads the request body and only supplies the
+	  requested properties
+
+0.1-alpha (2008-04-04)
+	* First release!
+	* Passes litmus: basic, http and copymove test.
+	* Fully working in Finder and DavFSv2
+
+Project started: 2007-12-13

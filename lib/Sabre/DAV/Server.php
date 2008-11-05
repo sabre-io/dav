@@ -497,7 +497,8 @@
 
             $locks = $this->tree->getLocks($uri);
 
-            // $nodeInfo = $this->tree->getNodeInfo($uri,0); 
+            // We're grabbing the node information, just to rely on the fact it will throw a 404 when the node doesn't exist 
+            $this->tree->getNodeInfo($uri,0); 
 
             foreach($locks as $lock) {
 

@@ -495,9 +495,6 @@
             // If the locktoken header is not supplied, we need to throw a bad request exception
             if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
 
-            // We request the node info and rely on a 404 if the node didn't exist.
-            $this->tree->getNodeInfo($uri,0);
-                
             $locks = $this->tree->getLocks($uri);
 
             // $nodeInfo = $this->tree->getNodeInfo($uri,0); 

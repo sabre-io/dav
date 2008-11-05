@@ -108,9 +108,9 @@
 
             $this->addHeader('Allow',strtoupper(implode(' ',$this->getAllowedMethods())));
             if ($this->tree->supportsLocks()) {
-                $this->addHeader('DAV','1,2');
+                $this->addHeader('DAV','1,2,3');
             } else {
-                $this->addHeader('DAV','1');
+                $this->addHeader('DAV','1,3');
             }
             $this->addHeader('MS-Author-Via','DAV');
 
@@ -458,6 +458,20 @@
             }
 
             if ($timeout = $this->getTimeoutHeader()) $lockInfo->timeout = $timeout;
+
+            // If we got this far.. we should go check if this node actually exists. If this is not the case, we need to create it first
+            try {
+                $nodeInfo = $this->tree->getNodeInfo($uri,0);
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+                
+                // It didn't, lets create it 
+                $this->tree->createFile($uri,'');
+                
+                // We also need to return a 201 in this case
+                $this->sendHTTPStatus(201);
+
+            }
+
             $this->tree->lockNode($uri,$lockInfo);
             $this->addHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
             echo $this->generateLockResponse($lockInfo);
@@ -481,7 +495,12 @@
             // If the locktoken header is not supplied, we need to throw a bad request exception
             if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
 
+            // We request the node info and rely on a 404 if the node didn't exist.
+            $this->tree->getNodeInfo($uri,0);
+                
             $locks = $this->tree->getLocks($uri);
+
+            // $nodeInfo = $this->tree->getNodeInfo($uri,0); 
 
             foreach($locks as $lock) {
 

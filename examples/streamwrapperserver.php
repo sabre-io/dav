@@ -128,7 +128,7 @@ class streamTree extends Sabre_DAV_Tree {
 
     public function move($source,$destination) {
 
-        rename($this->getPath($source,true),$destination);
+        rename($this->getPath($source,true),$this->getPath($destination));
 
     }
 

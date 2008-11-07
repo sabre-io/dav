@@ -1061,7 +1061,7 @@
                 $xw->startElement('d:lockdiscovery');
                     $xw->startElement('d:activelock');
                         $xw->startElement('d:lockscope');
-                            $xw->writeRaw('<d:exclusive />');
+                            $xw->writeRaw($lockInfo->scope==Sabre_DAV_Lock::EXCLUSIVE?'<d:exclusive />':'<d:shared />');
                         $xw->endElement();
                         $xw->startElement('d:locktype');
                             $xw->writeRaw('<d:write />');

@@ -29,7 +29,7 @@
         </copy>
     </target>
 
-    <!--
+    
     <target name="buildexamples" depends="prepare">
         <echo msg="Copying examples" />
         <mkdir dir="${BUILDDIR}/examples" />
@@ -38,7 +38,7 @@
                 <include name="*.php" />
             </fileset>
         </copy>    
-    </target>-->
+    </target>
 
     <target name="package" depends="build, pearpkg">
         <echo msg="packaging" />
@@ -50,7 +50,7 @@
             <option name="notes">Alpha release.</option>
             <option name="description">SabreDAV is a WebDAV library allowing you to implement WebDAV servers using just PHP 5. Its focus is to create a library that allows you to easily build WebDAV shares based on existing web applications, and has many features to accomodate for common clients in a logical manner.</option>
             <option name="summary">SabreDAV is a WebDAV library for PHP 5.</option>
-            <option name="version" value="0.4.${svn.lastrevision}" />
+            <option name="version" value="0.5.${svn.lastrevision}" />
             <option name="state" value="alpha" />
             <option name="licence" value="BSD" />
             <option name="baseinstalldir" value="/" />
@@ -80,7 +80,7 @@
         <phpdoc title="SabreDAV API Documentation" destdir="build/apidocs" sourcepath="Sabre/" output="HTML:frames:default" />
     </target>
 
-    <target name="dist" depends="build, pearpkg">
+    <target name="dist" depends="build, buildexamples, pearpkg">
         <echo msg="Creating full featured SabreDAV package" />
     </target>    
 

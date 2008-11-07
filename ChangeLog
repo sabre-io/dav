@@ -1,3 +1,8 @@
+0.5-unreleased (????-??-??)
+	* Added: PHP Streams wrapper Tree example
+	* Updated: Sabre_DAV_Tree can now work with Sabre_DAV_LockManager
+	* Fixed: examples are now actually included in the pear package
+
 0.4-alpha (2008-11-05)
 	* Passes all litmus tests!
 	* Added: more examples

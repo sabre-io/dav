@@ -9,6 +9,7 @@
         <include name="**/*.php" />
         <include name="README" />
         <include name="LICENCE" />
+        <include name="ChangeLog" />
     </fileset>    
         
 
@@ -72,6 +73,7 @@
              <mapping name="exceptions">
                 <element key="README" value="doc" />
                 <element key="LICENCE" value="doc" />
+                <element key="ChangeLog" value="doc" />
              </mapping>   
          </pearpkg> 
     </target>

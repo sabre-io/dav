@@ -1,52 +1,52 @@
 <?php
 
+/**
+ * The INode interface is the base interface, and the parent class of both IDirectory and IFile
+ * 
+ * @package Sabre
+ * @subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
+interface Sabre_DAV_INode {
+
     /**
-     * The INode interface is the base interface, and the parent class of both IDirectory and IFile
-     * 
-     * @package Sabre
-     * @subpackage DAV
-     * @version $Id$
-     * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
-     * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+     * Deleted the current node
+     *
+     * @return void 
      */
-    interface Sabre_DAV_INode {
+    function delete();
 
-        /**
-         * Deleted the current node
-         *
-         * @return void 
-         */
-        function delete();
+    /**
+     * Returns the name of the node 
+     * 
+     * @return string 
+     */
+    function getName();
 
-        /**
-         * Returns the name of the node 
-         * 
-         * @return string 
-         */
-        function getName();
+    /**
+     * Renames the node
+     *
+     * @param string $name The new name
+     * @return void
+     */
+    function setName($name);
 
-        /**
-         * Renames the node
-         *
-         * @param string $name The new name
-         * @return void
-         */
-        function setName($name);
+    /**
+     * Returns the size of the node, in bytes 
+     * 
+     * @return int 
+     */
+    function getSize();
 
-        /**
-         * Returns the size of the node, in bytes 
-         * 
-         * @return int 
-         */
-        function getSize();
+    /**
+     * Returns the last modification time, as a unix timestamp 
+     * 
+     * @return int 
+     */
+    function getLastModified();
 
-        /**
-         * Returns the last modification time, as a unix timestamp 
-         * 
-         * @return int 
-         */
-        function getLastModified();
-
-    }
+}
 

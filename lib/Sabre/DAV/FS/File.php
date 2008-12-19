@@ -1,53 +1,53 @@
 <?php
 
-    require_once 'Sabre/DAV/FS/Node.php';
-    require_once 'Sabre/DAV/IFile.php';
+require_once 'Sabre/DAV/FS/Node.php';
+require_once 'Sabre/DAV/IFile.php';
+
+/**
+ * File class 
+ * 
+ * @package Sabre
+ * @subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
+class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
 
     /**
-     * File class 
+     * Updates the data 
      * 
-     * @package Sabre
-     * @subpackage DAV
-     * @version $Id$
-     * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
-     * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+     * @param string $data 
+     * @return void 
      */
-    class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
+    public function put($data) {
 
-        /**
-         * Updates the data 
-         * 
-         * @param string $data 
-         * @return void 
-         */
-        public function put($data) {
-
-            file_put_contents($this->path,$data);
-
-        }
-
-        /**
-         * Returns the data 
-         * 
-         * @return string 
-         */
-        public function get() {
-
-            return file_get_contents($this->path);
-
-        }
-
-        /**
-         * Delete the current file
-         *
-         * @return void 
-         */
-        public function delete() {
-
-            unlink($this->path);
-
-        }
+        file_put_contents($this->path,$data);
 
     }
+
+    /**
+     * Returns the data 
+     * 
+     * @return string 
+     */
+    public function get() {
+
+        return file_get_contents($this->path);
+
+    }
+
+    /**
+     * Delete the current file
+     *
+     * @return void 
+     */
+    public function delete() {
+
+        unlink($this->path);
+
+    }
+
+}
 

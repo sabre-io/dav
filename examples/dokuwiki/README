@@ -7,9 +7,9 @@ Working:
   * reading and editing existing pages
 
 Todo:
+  * Authentication/Access control integration. Right now only publically accessible pages are readable/writeable. 
   * Use the TemporaryFileFilter (integration with the dokuwiki cache)
   * Add locking (should also integrate with the dokuwiki cache)
-  * Authentication integration
   * Creating new pages
   * Retrieving more info on pages, such as filesize and last modification date
   * Admin panel integration

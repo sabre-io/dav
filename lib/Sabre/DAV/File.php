@@ -1,9 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/Exception.php'; 
-require_once 'Sabre/DAV/Node.php';
-require_once 'Sabre/DAV/IFile.php';
-
 /**
  * File class
  *

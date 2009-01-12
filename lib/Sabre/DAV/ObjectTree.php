@@ -1,9 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/Tree.php';
-require_once 'Sabre/DAV/Exception.php';
-require_once 'Sabre/DAV/Server.php';
-
 /**
  * ObjectTree class
  *

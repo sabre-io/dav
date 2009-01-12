@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/Tree.php';
-
 /**
  * This class can be used to hook into your tree and override/alter actions
  *

@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/Lock.php';
-require_once 'Sabre/DAV/Exception.php';
-
 /**
  * Main DAV server class
  * 

@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/FilterTree.php';
-
 class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
 
     private $dataDir = null;

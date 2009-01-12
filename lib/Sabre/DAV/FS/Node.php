@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/INode.php';
-
 /**
  * Base node-class 
  *

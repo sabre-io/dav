@@ -1,9 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/FS/Node.php';
-require_once 'Sabre/DAV/ILockable.php';
-require_once 'Sabre/DAV/IProperties.php';
-
 /**
  * Base node-class 
  *

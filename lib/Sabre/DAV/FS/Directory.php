@@ -1,10 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/FS/Node.php';
-require_once 'Sabre/DAV/IDirectory.php';
-require_once 'Sabre/DAV/FS/File.php';
-require_once 'Sabre/DAV/IQuota.php';
-
 /**
  * Directory class 
  * 

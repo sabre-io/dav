@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/Exception.php'; 
-require_once 'Sabre/DAV/INode.php';
-
 /**
  * Directory class
  *

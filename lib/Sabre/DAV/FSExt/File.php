@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/FSExt/Node.php';
-require_once 'Sabre/DAV/IFile.php';
-
 /**
  * File class 
  * 

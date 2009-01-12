@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/INode.php';
-
 /**
  * This interface represents a file or leaf in the tree.
  *

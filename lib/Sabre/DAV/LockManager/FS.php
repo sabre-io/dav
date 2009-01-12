@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Sabre/DAV/LockManager.php';
-
 /**
  * The Lock manager allows you to handle all file-locks centrally.
  *

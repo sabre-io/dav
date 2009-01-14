@@ -2,6 +2,9 @@
 	* Added: Added a very simple example for implementing a mapping to PHP
 	  file streams. This should allow easy implementation of for example a
 	  WebDAV to FTP proxy.
+	* Added: HTTP Basic Authentication helper class.
+	* Added: Sabre_HTTP_Reponse class. This centralizes HTTP operations and
+	  will be a start towards the creating of a testing framework.
 	* Updated: Backwards compatibility break: all require_once() statements
 	  are removed
 	  from all the files. It is now recommended to use autoloading of 

@@ -2,6 +2,7 @@
 
 /* Utilities */
 include 'Sabre/PHP/Exception.php';
+include 'Sabre/HTTP/Response.php';
 
 /* Basics */
 include 'Sabre/DAV/Lock.php';

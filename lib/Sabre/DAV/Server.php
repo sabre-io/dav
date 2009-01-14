@@ -46,6 +46,13 @@ class Sabre_DAV_Server {
     protected $baseUri;
 
     /**
+     * httpResponse 
+     * 
+     * @var Sabre_HTTP_Response 
+     */
+    protected $httpResponse;
+
+    /**
      * Class constructor 
      * 
      * @param Sabre_DAV_Tree $tree The tree object 
@@ -54,6 +61,7 @@ class Sabre_DAV_Server {
     public function __construct(Sabre_DAV_Tree $tree) {
 
         $this->tree = $tree;
+        $this->httpResponse = new Sabre_HTTP_Response();
 
     }
 
@@ -70,12 +78,12 @@ class Sabre_DAV_Server {
 
         } catch (Sabre_DAV_Exception $e) {
 
-            $this->sendHTTPStatus($e->getHTTPCode());
+            $this->httpResponse->sendStatus($e->getHTTPCode());
             echo (string)$e;
 
         } catch (Exception $e) {
 
-            $this->sendHTTPStatus(500);
+            $this->httpResponse->sendStatus(500);
             throw $e;
 
         }
@@ -159,7 +167,7 @@ class Sabre_DAV_Server {
 
         if (!$this->validateLock()) throw new Sabre_DAV_lockedException('The resource you tried to delete is locked');
         $this->tree->delete($this->getRequestUri());
-        $this->sendHTTPStatus(204);
+        $this->httpResponse->sendStatus(204);
 
     }
 
@@ -210,7 +218,7 @@ class Sabre_DAV_Server {
 
 
         // This is a multi-status response
-        $this->sendHTTPStatus(207);
+        $this->httpResponse->sendStatus(207);
         $this->addHeader('Content-Type','text/xml; charset="utf-8"');
         $data = $this->generatePropfindResponse($fileList,$properties);
         echo $data;
@@ -244,7 +252,7 @@ class Sabre_DAV_Server {
 
         }
 
-        $this->sendHTTPStatus(207);
+        $this->httpResponse->sendStatus(207);
         echo $this->generatePropPatchResponse($this->getRequestUri(),$result);
 
     }
@@ -279,7 +287,7 @@ class Sabre_DAV_Server {
             if ($info[0]['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_ConflictException('PUTs on directories are not allowed'); 
 
             $this->tree->put($this->getRequestUri(),$this->getRequestBody());
-            $this->sendHTTPStatus(200);
+            $this->httpResponse->sendStatus(200);
 
         } catch (Sabre_DAV_FileNotFoundException $e) {
 
@@ -291,7 +299,7 @@ class Sabre_DAV_Server {
 
             // This means the resource doesn't exist yet, and we're creating a new one
             $this->tree->createFile($this->getRequestUri(),$this->getRequestBody());
-            $this->sendHTTPStatus(201);
+            $this->httpResponse->sendStatus(201);
 
         }
 
@@ -382,7 +390,7 @@ class Sabre_DAV_Server {
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
-        $this->sendHTTPStatus($moveInfo['destinationExists']?204:201);
+        $this->httpResponse->sendStatus($moveInfo['destinationExists']?204:201);
 
     }
 
@@ -403,7 +411,7 @@ class Sabre_DAV_Server {
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
-        $this->sendHTTPStatus($copyInfo['destinationExists']?204:201);
+        $this->httpResponse->sendStatus($copyInfo['destinationExists']?204:201);
 
     }
 
@@ -465,7 +473,7 @@ class Sabre_DAV_Server {
             $this->tree->createFile($uri,'');
             
             // We also need to return a 201 in this case
-            $this->sendHTTPStatus(201);
+            $this->httpResponse->sendStatus(201);
 
         }
 
@@ -502,7 +510,7 @@ class Sabre_DAV_Server {
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
                 $this->tree->unlockNode($uri,$lock);
-                $this->sendHTTPStatus(204);
+                $this->httpResponse->sendStatus(204);
                 return;
 
             }
@@ -516,48 +524,6 @@ class Sabre_DAV_Server {
 
     // }}}
     // {{{ HTTP/WebDAV protocol helpers 
-
-    /**
-     * Returns a full HTTP status header based on a status code 
-     * 
-     * @param int $code 
-     * @return string 
-     */
-    public function getHTTPStatus($code) {
-        
-        $msg = array(
-            200 => 'Ok',
-            201 => 'Created',
-            204 => 'No Content',
-            207 => 'Multi-Status',
-            400 => 'Bad request',
-            403 => 'Forbidden',
-            404 => 'Not Found',
-            405 => 'Method not allowed',
-            409 => 'Conflict',
-            412 => 'Precondition failed',
-            415 => 'Unsupported Media Type',
-            423 => 'Locked',
-            500 => 'Internal Server Error',
-            501 => 'Method not implemented',
-            507 => 'Unsufficient Storage',
-       ); 
-
-        return 'HTTP/1.1 ' . $code . ' ' . $msg[$code];
-
-    }
-
-    /**
-     * Sends an HTTP status header to the client 
-     * 
-     * @param int $code HTTP status code 
-     * @return void
-     */
-    public function sendHTTPStatus($code) {
-
-        header($this->getHTTPStatus($code));
-
-    }
 
     /**
      * Handles a http request, and execute a method based on its name 
@@ -1023,7 +989,7 @@ class Sabre_DAV_Server {
 
         $xw->endElement(); // d:prop
        
-        $xw->writeElement('d:status',$this->getHTTPStatus(200));
+        $xw->writeElement('d:status',$this->httpResponse->getStatusMessage(200));
 
         $xw->endElement(); // :d:propstat
 
@@ -1041,7 +1007,7 @@ class Sabre_DAV_Server {
                 }
             }
             $xw->endElement(); // d:prop
-            $xw->writeElement('d:status',$this->getHTTPStatus(404));
+            $xw->writeElement('d:status',$this->httpResponse->getStatusMessage(404));
             $xw->endElement(); // :d:propstat
 
         }
@@ -1192,7 +1158,7 @@ class Sabre_DAV_Server {
                             $element = explode('#',$mutation[0]);
                             $xw->writeElementNS('X',$element[1],$element[0],null);
                         $xw->endElement(); // d:prop
-                        $xw->writeElement('d:status',$this->getHTTPStatus($mutation[1]));
+                        $xw->writeElement('d:status',$this->httpResponse->getStatusMessage($mutation[1]));
                     $xw->endElement(); // d:propstat
 
                 }

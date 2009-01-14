@@ -111,13 +111,13 @@ class Sabre_DAV_Server {
      */
     protected function httpOptions() {
 
-        $this->addHeader('Allow',strtoupper(implode(' ',$this->getAllowedMethods())));
+        $this->httpResponse->setHeader('Allow',strtoupper(implode(' ',$this->getAllowedMethods())));
         if ($this->tree->supportsLocks()) {
-            $this->addHeader('DAV','1,2,3');
+            $this->httpResponse->setHeader('DAV','1,2,3');
         } else {
-            $this->addHeader('DAV','1,3');
+            $this->httpResponse->setHeader('DAV','1,3');
         }
-        $this->addHeader('MS-Author-Via','DAV');
+        $this->httpResponse->setHeader('MS-Author-Via','DAV');
 
     }
 
@@ -132,9 +132,9 @@ class Sabre_DAV_Server {
 
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
 
-        if ($nodeInfo[0]['size']) $this->addHeader('Content-Length',$nodeInfo[0]['size']);
+        if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
 
-        $this->addHeader('Content-Type', 'application/octet-stream');
+        $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
         echo $this->tree->get($this->getRequestUri());
 
     }
@@ -151,8 +151,8 @@ class Sabre_DAV_Server {
     protected function httpHead() {
 
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
-        if ($nodeInfo[0]['size']) $this->addHeader('Content-Length',$nodeInfo[0]['size']);
-        $this->addHeader('Content-Type', 'application/octet-stream');
+        if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
+        $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
 
     }
 
@@ -219,7 +219,7 @@ class Sabre_DAV_Server {
 
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
-        $this->addHeader('Content-Type','text/xml; charset="utf-8"');
+        $this->httpResponse->setHeader('Content-Type','text/xml; charset="utf-8"');
         $data = $this->generatePropfindResponse($fileList,$properties);
         echo $data;
 
@@ -323,7 +323,7 @@ class Sabre_DAV_Server {
         }
 
         // We assume > 5.1.2, which has the header injection attack prevention
-        if (isset($_POST['redirectUrl']) && is_string($_POST['redirectUrl'])) header('Location: ' . $_POST['redirectUrl']);
+        if (isset($_POST['redirectUrl']) && is_string($_POST['redirectUrl'])) $this->httpResponse->setHeader('Location', $_POST['redirectUrl']);
 
     }
 
@@ -478,7 +478,7 @@ class Sabre_DAV_Server {
         }
 
         $this->tree->lockNode($uri,$lockInfo);
-        $this->addHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
+        $this->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
         echo $this->generateLockResponse($lockInfo);
 
     }
@@ -558,19 +558,6 @@ class Sabre_DAV_Server {
         $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','proppatch','copy','move');
         if ($this->tree->supportsLocks()) array_push($methods,'lock','unlock');
         return $methods;
-
-    }
-
-    /**
-     * Adds an HTTP response header 
-     * 
-     * @param string $name 
-     * @param string $value 
-     * @return void
-     */
-    protected function addHeader($name,$value) {
-
-        header($name . ': ' . str_replace(array("\n","\r"),array('\n','\r'),$value));
 
     }
 

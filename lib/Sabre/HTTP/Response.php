@@ -4,10 +4,11 @@
  * Sabre_HTTP_Response 
  * 
  * @package Sabre
+ * @subpackage DAV
  * @version $Id$
- * @copyright Copyright (C) 2007 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
- * @license licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_HTTP_Response {
 
@@ -51,6 +52,20 @@ class Sabre_HTTP_Response {
     public function sendStatus($code) {
 
         header($this->getStatusMessage($code));
+
+    }
+
+    /**
+     * Sets an HTTP header for the response
+     * 
+     * @param string $name 
+     * @param string $value 
+     * @return void
+     */
+    public function setHeader($name, $value) {
+
+        $value = str_replace(array("\r","\n"),array('\r','\n'),$value);
+        header($name . ': ' . $value);
 
     }
 

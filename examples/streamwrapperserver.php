@@ -2,15 +2,19 @@
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
 
+/* Settings */
+
+// Files we're going to share
+$publicDir = './public/';
+// Filestore for locks
+$dataDir = './data/';
+// Base url
+$baseUrl = '/';
+
 // {$Id$} //
 
 // Files we need
-
-require_once 'Sabre/DAV/Server.php';
-require_once 'Sabre/DAV/ObjectTree.php';
-require_once 'Sabre/DAV/LockManager/FS.php';
-require_once 'Sabre/DAV/FSExt/Directory.php';
-
+require_once 'Sabre.includes.php';
 
 class streamTree extends Sabre_DAV_Tree {
 
@@ -134,15 +138,15 @@ class streamTree extends Sabre_DAV_Tree {
 
 }
 
-$objectTree = new streamTree('public/');
-$lockManager = new Sabre_DAV_LockManager_FS();
+$objectTree = new streamTree($publicDir);
+$lockManager = new Sabre_DAV_LockManager_FS($dataDir);
 $objectTree->setLockManager($lockManager);
 
 
 // The object tree needs in turn to be passed to the server class
 $server = new Sabre_DAV_Server($objectTree);
 
-$server->setBaseUri('/');
+$server->setBaseUri($baseUrl);
 
 // And off we go!
 $server->exec();

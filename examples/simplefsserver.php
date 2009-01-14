@@ -10,12 +10,7 @@ $publicDir = 'public';
 $baseUri = '/';
 
 // Files we need
-
-require_once 'Sabre/DAV/Server.php';
-require_once 'Sabre/DAV/ObjectTree.php';
-require_once 'Sabre/DAV/LockManager/FS.php';
-require_once 'Sabre/DAV/Directory.php';
-require_once 'Sabre/DAV/File.php';
+require_once 'Sabre.includes.php';
 
 class MyDirectory extends Sabre_DAV_Directory {
 

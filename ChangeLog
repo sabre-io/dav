@@ -1,7 +1,20 @@
 0.5-unreleased (????-??-??)
-	* Added: PHP Streams wrapper Tree example
-	* Updated: Sabre_DAV_Tree can now work with Sabre_DAV_LockManager
-	* Fixed: examples are now actually included in the pear package
+	* Added: Added a very simple example for implementing a mapping to PHP
+	  file streams. This should allow easy implementation of for example a
+	  WebDAV to FTP proxy.
+	* Updated: Backwards compatibility break: all require_once() statements
+	  are removed
+	  from all the files. It is now recommended to use autoloading of 
+	  classes, or just including lib/Sabre.includes.php. This fix was made
+	  to allow easier integration into applications not using this standard
+	  inclusion model.
+	* Updated: Better in-file documentation.
+	* Updated: Sabre_DAV_Tree can now work with Sabre_DAV_LockManager.
+	* Updated: Fixes a shared-lock bug.
+	* Updated: Removed ?> from the bottom of each php file.
+	* Updated: Split up some operations from Sabre_DAV_Server to
+	  Sabre_HTTP_Response.
+	* Fixed: examples are now actually included in the pear package.
 
 0.4-alpha (2008-11-05)
 	* Passes all litmus tests!

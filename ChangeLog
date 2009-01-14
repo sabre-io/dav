@@ -1,4 +1,4 @@
-0.5-unreleased (????-??-??)
+0.5-alpha (2009-01-14)
 	* Added: Added a very simple example for implementing a mapping to PHP
 	  file streams. This should allow easy implementation of for example a
 	  WebDAV to FTP proxy.

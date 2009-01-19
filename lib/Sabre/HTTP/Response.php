@@ -69,4 +69,16 @@ class Sabre_HTTP_Response {
 
     }
 
+    /**
+     * Sends the entire response body 
+     * 
+     * @param string $body 
+     * @return void
+     */
+    public function sendBody($body) {
+
+        echo $body;
+
+    }
+
 }

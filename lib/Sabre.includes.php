@@ -3,6 +3,7 @@
 /* Utilities */
 include 'Sabre/PHP/Exception.php';
 include 'Sabre/HTTP/Response.php';
+include 'Sabre/HTTP/Request.php';
 include 'Sabre/HTTP/BasicAuth.php';
 
 /* Basics */

@@ -43,7 +43,7 @@ class Sabre_DAV_Server {
      * 
      * @var string 
      */
-    protected $baseUri;
+    protected $baseUri = '/';
 
     /**
      * httpResponse 
@@ -51,6 +51,13 @@ class Sabre_DAV_Server {
      * @var Sabre_HTTP_Response 
      */
     protected $httpResponse;
+
+    /**
+     * httpRequest
+     * 
+     * @var Sabre_HTTP_Request 
+     */
+    protected $httpRequest;
 
     /**
      * Class constructor 
@@ -62,6 +69,7 @@ class Sabre_DAV_Server {
 
         $this->tree = $tree;
         $this->httpResponse = new Sabre_HTTP_Response();
+        $this->httpRequest = new Sabre_HTTP_Request();
 
     }
 
@@ -102,6 +110,31 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Sets an alternative HTTP response object 
+     * 
+     * @param Sabre_HTTP_Response $response 
+     * @return void
+     */
+    public function setHTTPResponse(Sabre_HTTP_Response $response) {
+
+        $this->httpResponse = $response;
+
+    }
+
+    /**
+     * Sets an alternative HTTP request object 
+     * 
+     * @param Sabre_HTTP_Request $request 
+     * @return void
+     */
+    public function setHTTPRequest(Sabre_HTTP_Request $request) {
+
+        $this->httpRequest = $request;
+
+    }
+
+
     // {{{ HTTP Method implementations
     
     /**
@@ -118,6 +151,7 @@ class Sabre_DAV_Server {
             $this->httpResponse->setHeader('DAV','1,3');
         }
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
+        $this->httpResponse->sendStatus(200);
 
     }
 
@@ -135,7 +169,8 @@ class Sabre_DAV_Server {
         if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
 
         $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
-        echo $this->tree->get($this->getRequestUri());
+        $this->httpResponse->sendStatus(200);
+        $this->httpResponse->sendBody($this->tree->get($this->getRequestUri()));
 
     }
 
@@ -153,6 +188,7 @@ class Sabre_DAV_Server {
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
         if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
         $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+        $this->httpResponse->sendStatus(200);
 
     }
 
@@ -190,7 +226,7 @@ class Sabre_DAV_Server {
     protected function httpPropfind() {
 
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
-        $properties = $this->parsePropfindRequest($this->getRequestBody());
+        $properties = $this->parsePropfindRequest($this->httpRequest->getBody());
 
 
         $depth = $this->getHTTPDepth(1);
@@ -239,7 +275,7 @@ class Sabre_DAV_Server {
         // Checking possible locks
         if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
        
-        $mutations = $this->parsePropPatchRequest($this->getRequestBody());
+        $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody());
 
         $result = $this->tree->updateProperties($this->getRequestUri(),$mutations);
 
@@ -277,7 +313,7 @@ class Sabre_DAV_Server {
 
             // We got this far, this means the node already exists.
             // This also means we should check for the If-None-Match header
-            if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH']) {
+            if ($this->httpRequest->getHeader('If-None-Match')) {
 
                 throw new Sabre_DAV_PrecondtionFailedException('The resource already exists, and an If-None-Match header was supplied');
 
@@ -286,7 +322,7 @@ class Sabre_DAV_Server {
             // If the node is a collection, we'll deny it
             if ($info[0]['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_ConflictException('PUTs on directories are not allowed'); 
 
-            $this->tree->put($this->getRequestUri(),$this->getRequestBody());
+            $this->tree->put($this->getRequestUri(),$this->httpRequest->getBody());
             $this->httpResponse->sendStatus(200);
 
         } catch (Sabre_DAV_FileNotFoundException $e) {
@@ -298,7 +334,7 @@ class Sabre_DAV_Server {
             if (!$this->validateLock($parent)) throw new Sabre_DAV_LockedException('You\'re creating a new file, but the parent collection is currently locked');
 
             // This means the resource doesn't exist yet, and we're creating a new one
-            $this->tree->createFile($this->getRequestUri(),$this->getRequestBody());
+            $this->tree->createFile($this->getRequestUri(),$this->httpRequest->getBody());
             $this->httpResponse->sendStatus(201);
 
         }
@@ -342,7 +378,7 @@ class Sabre_DAV_Server {
         $requestUri = $this->getRequestUri();
 
         // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
-        $requestBody = $this->getRequestBody();
+        $requestBody = $this->httpRequest->getBody();
         if ($requestBody) throw new Sabre_DAV_UnsupportedMediaTypeException();
 
         // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
@@ -371,6 +407,7 @@ class Sabre_DAV_Server {
         }
 
         $this->tree->createDirectory($this->getRequestUri());
+        $this->httpResponse->sendStatus(201);
 
     }
 
@@ -443,7 +480,7 @@ class Sabre_DAV_Server {
 
         }
 
-        if ($body = $this->getRequestBody()) {
+        if ($body = $this->httpRequest->getBody()) {
             // There as a new lock request
             $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
             $lockInfo->depth = $this->getHTTPDepth(0); 
@@ -495,7 +532,7 @@ class Sabre_DAV_Server {
 
         $uri = $this->getRequestUri();
         
-        $lockToken = isset($_SERVER['HTTP_LOCK_TOKEN'])?$_SERVER['HTTP_LOCK_TOKEN']:false;
+        $lockToken = $this->httpRequest->getHeader('Lock-Token');
 
         // If the locktoken header is not supplied, we need to throw a bad request exception
         if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
@@ -532,7 +569,7 @@ class Sabre_DAV_Server {
      */
     protected function invoke() {
 
-        $method = strtolower($_SERVER['REQUEST_METHOD']);
+        $method = strtolower($this->httpRequest->getMethod()); 
 
         // Make sure this is a HTTP method we support
         if (in_array($method,$this->getAllowedMethods())) {
@@ -568,7 +605,7 @@ class Sabre_DAV_Server {
      */
     public function getRequestUri() {
 
-        return $this->calculateUri($_SERVER['REQUEST_URI']);
+        return $this->calculateUri($this->httpRequest->getUri());
 
     }
 
@@ -611,7 +648,8 @@ class Sabre_DAV_Server {
     public function getHTTPDepth($default = self::DEPTH_INFINITY) {
 
         // If its not set, we'll grab the default
-        $depth = isset($_SERVER['HTTP_DEPTH'])?$_SERVER['HTTP_DEPTH']:$default;
+        $depth = $this->httpRequest->getHeader('Depth');
+        if (!$depth) $depth = $default;
 
         // Infinity
         if ($depth == 'infinity') $depth = self::DEPTH_INFINITY;
@@ -621,17 +659,6 @@ class Sabre_DAV_Server {
         }
 
         return $depth;
-
-    }
-
-    /**
-     * Returns the entire HTTP request body 
-     * 
-     * @return string 
-     */
-    protected function getRequestBody() {
-
-        return file_get_contents('php://input');
 
     }
 
@@ -736,7 +763,7 @@ class Sabre_DAV_Server {
      */
     function getIfConditions() {
 
-        $header = isset($_SERVER['HTTP_IF'])?$_SERVER['HTTP_IF']:'';
+        $header = $this->httpRequest->getHeader('If'); 
         if (!$header) return array();
 
         $matches = array();
@@ -767,13 +794,17 @@ class Sabre_DAV_Server {
 
     function getTimeoutHeader() {
 
-        $header = isset($_SERVER['HTTP_TIMEOUT'])?$_SERVER['HTTP_TIMEOUT']:0;
+        $header = $this->httpRequest->getHeader('Timeout');
         
         if ($header) {
 
             if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
             else if (strtolower($header)=='infinite') $header=Sabre_DAV_Lock::TIMEOUT_INFINITE;
             else throw new Sabre_DAV_BadRequestException('Invalid HTTP timeout header');
+
+        } else {
+
+            $header = 0;
 
         }
 
@@ -800,10 +831,10 @@ class Sabre_DAV_Server {
         $source = $this->getRequestUri();
 
         // Collecting the relevant HTTP headers
-        if (!isset($_SERVER['HTTP_DESTINATION'])) throw new Sabre_DAV_BadRequestException('The destination header was not supplied');
-        $destination = $this->calculateUri($_SERVER['HTTP_DESTINATION']);
-        $overwrite = isset($_SERVER['HTTP_OVERWRITE'])?$_SERVER['HTTP_OVERWRITE']:'T';
-
+        if (!$this->httpRequest->getHeader('Destination')) throw new Sabre_DAV_BadRequestException('The destination header was not supplied');
+        $destination = $this->calculateUri($this->httpRequest->getHeader('Destination'));
+        $overwrite = $this->httpRequest->getHeader('Overwrite');
+        if (!$overwrite) $overwrite = 'T';
         if (strtoupper($overwrite)=='T') $overwrite = true;
         elseif (strtoupper($overwrite)=='F') $overwrite = false;
 
@@ -870,7 +901,7 @@ class Sabre_DAV_Server {
 
         foreach($list as $entry) {
 
-            $this->writeProperty($xw,$_SERVER['REQUEST_URI'],$entry, $properties);
+            $this->writeProperty($xw,$this->httpRequest->getUri(),$entry, $properties);
 
         }
 

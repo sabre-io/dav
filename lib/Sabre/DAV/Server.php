@@ -856,7 +856,7 @@ class Sabre_DAV_Server {
 
         try {
 
-            $destinationInfo[0] = $this->tree->getNodeInfo($destination);
+            $destinationInfo = $this->tree->getNodeInfo($destination);
             
             // If this succeeded, it means the destination already exists
             // we'll need to throw precondition failed in case overwrite is false

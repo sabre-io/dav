@@ -1,0 +1,14 @@
+<phpunit
+  colors="true"
+  bootstrap="bootstrap.php"
+  >
+  <testsuite name="SabreDAV">
+    <directory>Sabre/</directory>
+  </testsuite>
+
+  <filter>
+    <whitelist>
+       <directory suffix=".php">../lib/</directory>
+    </whitelist>   
+  </filter>
+</phpunit>

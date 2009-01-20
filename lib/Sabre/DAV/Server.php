@@ -87,7 +87,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_Exception $e) {
 
             $this->httpResponse->sendStatus($e->getHTTPCode());
-            echo (string)$e;
+            $this->httpResponse->sendBody((string)$e);
 
         } catch (Exception $e) {
 
@@ -315,7 +315,7 @@ class Sabre_DAV_Server {
             // This also means we should check for the If-None-Match header
             if ($this->httpRequest->getHeader('If-None-Match')) {
 
-                throw new Sabre_DAV_PrecondtionFailedException('The resource already exists, and an If-None-Match header was supplied');
+                throw new Sabre_DAV_PreconditionFailedException('The resource already exists, and an If-None-Match header was supplied');
 
             }
             

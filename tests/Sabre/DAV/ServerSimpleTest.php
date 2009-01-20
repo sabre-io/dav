@@ -205,6 +205,23 @@ class Sabre_DAV_ServerSimpleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
         $this->assertEquals('', $this->response->body);
 
+    
+    }
+    function testNonExistantMethod() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'BLABLA',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->setHTTPRequest($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(),$this->response->headers);
+
+        $this->assertEquals('HTTP/1.1 501 Method not implemented',$this->response->status);
+
 
     }
 

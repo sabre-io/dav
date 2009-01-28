@@ -35,9 +35,8 @@ class Sabre_HTTP_Request {
 
         if (is_null($this->body)) {
             $this->body = file_get_contents('php://input');
-        } else {
-            return $this->body;
-        }
+        } 
+        return $this->body;
 
     }
 

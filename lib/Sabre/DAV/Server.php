@@ -240,7 +240,7 @@ class Sabre_DAV_Server {
 
         foreach($fileList as $k=>$file) {
             $newProps = $this->tree->getProperties($path,$properties);
-            $newProps['DAV:#getlastmodified'] =  (isset($file['modified'])?$file['modified']:time());
+            $newProps['DAV:#getlastmodified'] =  (isset($file['lastmodified'])?$file['lastmodified']:time());
             $newProps['DAV:#getcontentlength'] = (isset($file['size'])?$file['size']:0);
             $newProps['DAV:#resourcetype'] =  $file['type'];
             if (isset($file['quota-used'])) $newProps['DAV:#quota-used-bytes'] = $file['quota-used'];
@@ -257,7 +257,7 @@ class Sabre_DAV_Server {
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','text/xml; charset="utf-8"');
         $data = $this->generatePropfindResponse($fileList,$properties);
-        echo $data;
+        $this->httpResponse->sendBody($data);
 
     }
 

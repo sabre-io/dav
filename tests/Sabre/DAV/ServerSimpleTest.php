@@ -59,7 +59,7 @@ class Sabre_DAV_ServerSimpleTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
-        $this->assertEquals('Test contents', $this->response->body);
+        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
 

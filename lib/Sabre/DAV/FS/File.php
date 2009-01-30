@@ -31,7 +31,7 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
      */
     public function get() {
 
-        return file_get_contents($this->path);
+        return fopen($this->path,'r');
 
     }
 

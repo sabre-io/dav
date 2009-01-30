@@ -87,7 +87,7 @@ class MyFile extends Sabre_DAV_File {
 
   function get() {
 
-    return file_get_contents($this->myPath);
+    return fopen($this->myPath,'r');
 
   }
 

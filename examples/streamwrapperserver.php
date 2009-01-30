@@ -120,7 +120,7 @@ class streamTree extends Sabre_DAV_Tree {
 
     public function get($path) {
 
-        return file_get_contents($this->getPath($path,1));
+        return fopen($this->getPath($path,1),'r');
 
     }
 

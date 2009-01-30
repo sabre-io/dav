@@ -33,7 +33,7 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
      */
     public function get() {
 
-        return file_get_contents($this->path);
+        return fopen($this->path,'r');
 
     }
 

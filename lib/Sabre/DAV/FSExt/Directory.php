@@ -16,7 +16,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
      * Creates a new file in the directory 
      * 
      * @param string $name Name of the file 
-     * @param string $data Initial payload 
+     * @param resource $data Initial payload 
      * @return void
      */
     public function createFile($name, $data = null) {

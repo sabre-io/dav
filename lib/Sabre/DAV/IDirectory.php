@@ -17,8 +17,10 @@ interface Sabre_DAV_IDirectory extends Sabre_DAV_INode {
     /**
      * Creates a new file in the directory 
      * 
+     * data is a readable stream resource
+     *
      * @param string $name Name of the file 
-     * @param string $data Initial payload 
+     * @param resource $data Initial payload 
      * @return void
      */
     function createFile($name, $data = null);

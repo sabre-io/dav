@@ -15,8 +15,10 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_IDir
     /**
      * Creates a new file in the directory 
      * 
+     * data is a readable stream resource
+     *
      * @param string $name Name of the file 
-     * @param string $data Initial payload 
+     * @param resource $data Initial payload 
      * @return void
      */
     public function createFile($name, $data = null) {

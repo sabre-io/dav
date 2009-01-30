@@ -70,14 +70,27 @@ class Sabre_HTTP_Response {
     }
 
     /**
-     * Sends the entire response body 
+     * Sends the entire response body
+     *
+     * This method can accept either an open filestream, or a string.
+     * Note that this method will first rewind the stream before output.
      * 
-     * @param string $body 
+     * @param mixed $body 
      * @return void
      */
     public function sendBody($body) {
 
-        echo $body;
+        if (is_resource($body)) {
+        
+            rewind($body);
+            fpassthru($body);
+
+        } else {
+
+            // We assume a string
+            echo $body;
+
+        }
 
     }
 

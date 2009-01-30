@@ -226,7 +226,7 @@ class Sabre_DAV_Server {
     protected function httpPropfind() {
 
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
-        $properties = $this->parsePropfindRequest($this->httpRequest->getBody());
+        $properties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
 
 
         $depth = $this->getHTTPDepth(1);
@@ -275,7 +275,7 @@ class Sabre_DAV_Server {
         // Checking possible locks
         if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
        
-        $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody());
+        $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
         $result = $this->tree->updateProperties($this->getRequestUri(),$mutations);
 
@@ -378,7 +378,7 @@ class Sabre_DAV_Server {
         $requestUri = $this->getRequestUri();
 
         // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
-        $requestBody = $this->httpRequest->getBody();
+        $requestBody = $this->httpRequest->getBody(true);
         if ($requestBody) throw new Sabre_DAV_UnsupportedMediaTypeException();
 
         // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
@@ -480,7 +480,7 @@ class Sabre_DAV_Server {
 
         }
 
-        if ($body = $this->httpRequest->getBody()) {
+        if ($body = $this->httpRequest->getBody(true)) {
             // There as a new lock request
             $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
             $lockInfo->depth = $this->getHTTPDepth(0); 

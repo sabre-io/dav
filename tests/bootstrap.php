@@ -1,6 +1,7 @@
 <?php
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../lib/');
+set_include_path('../lib/' . PATH_SEPARATOR . get_include_path());
+
 include 'Sabre.includes.php';
 
 

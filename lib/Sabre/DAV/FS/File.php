@@ -15,7 +15,7 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
     /**
      * Updates the data 
      * 
-     * @param string $data 
+     * @param resource $data 
      * @return void 
      */
     public function put($data) {

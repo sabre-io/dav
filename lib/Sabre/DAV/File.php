@@ -16,9 +16,11 @@
 abstract class Sabre_DAV_File extends Sabre_DAV_Node implements Sabre_DAV_IFile {
 
     /**
-     * Updates the data 
+     * Updates the data
+     *
+     * data is a readable stream resource.
      * 
-     * @param string $data 
+     * @param resource $data 
      * @return void 
      */
     public function put($data) { 
@@ -29,8 +31,10 @@ abstract class Sabre_DAV_File extends Sabre_DAV_Node implements Sabre_DAV_IFile 
 
     /**
      * Returns the data 
-     * 
-     * @return string 
+     *
+     * This method may either return a string or a readable stream resource
+     *
+     * @return mixed 
      */
     public function get() { 
 

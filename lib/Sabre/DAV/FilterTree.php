@@ -76,7 +76,7 @@ abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
      * Updates an existing file node 
      *
      * @param string $path 
-     * @param string $data 
+     * @param resource $data 
      * @return bool
      */
     public function put($path, $data) {
@@ -89,7 +89,7 @@ abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
      * Creates a new filenode on the specified path
      *
      * @param string $path 
-     * @param string $data 
+     * @param resource $data 
      * @return bool
      */
     public function createFile($path,$data) {
@@ -113,8 +113,10 @@ abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
     /**
      * Returns the contents of a node 
      * 
+     * This method may either return a string or a readable stream resource.
+     *
      * @param string $path 
-     * @return string 
+     * @return mixed 
      */
     public function get($path) {
 

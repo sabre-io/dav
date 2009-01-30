@@ -17,7 +17,9 @@ interface Sabre_DAV_IFile extends Sabre_DAV_INode {
     /**
      * Updates the data 
      * 
-     * @param string $data 
+     * The data argument is a readable stream resource.
+     *
+     * @param resource $data 
      * @return void 
      */
     function put($data);
@@ -25,7 +27,9 @@ interface Sabre_DAV_IFile extends Sabre_DAV_INode {
     /**
      * Returns the data 
      * 
-     * @return string 
+     * This method may either return a string or a readable stream resource
+     *
+     * @return mixed 
      */
     function get();
 

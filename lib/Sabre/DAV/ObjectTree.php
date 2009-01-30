@@ -217,8 +217,10 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
     /**
      * Creates a new file on the specified path 
      * 
+     * data is a readable stream resource.
+     *
      * @param string $path 
-     * @param string $data 
+     * @param resource $data 
      * @return void
      */
     public function createFile($path,$data) {
@@ -231,8 +233,10 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
     /**
      * Updates an existing file
      * 
+     * data is a readable stream resource.
+     *
      * @param string $path 
-     * @param string $data 
+     * @param resource $data 
      * @return int 
      */
     public function put($path, $data) {
@@ -245,9 +249,11 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
     /**
      * Returns the contents of a node 
-     * 
+     *
+     * This method may either return a string, or a readable stream resource.
+     *
      * @param string $path 
-     * @return string 
+     * @return mixed 
      */
     public function get($path) {
 

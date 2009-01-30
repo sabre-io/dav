@@ -353,7 +353,7 @@ class Sabre_DAV_Server {
 
         foreach($_FILES as $file) {
 
-            $this->tree->put($this->getRequestUri().file_get_contents($file['tmp_name']));
+            $this->tree->put($this->getRequestUri().'/' . basename($file['name']),fopen($file['tmp_name'],'r'));
             break;
 
         }

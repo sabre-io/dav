@@ -88,7 +88,7 @@ class Sabre_HTTP_BasicAuth {
     public function getUserPass() {
 
         // Apache
-        if ($user = $this->httpRequest->getRawServerValue('PHP_AUTH_USER') && $pass = $this->httpRequest->getRawServerValue('PHP_AUTH_PW')) {
+        if (($user = $this->httpRequest->getRawServerValue('PHP_AUTH_USER')) && ($pass = $this->httpRequest->getRawServerValue('PHP_AUTH_PW'))) {
 
             return array($user,$pass);
 

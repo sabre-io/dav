@@ -65,14 +65,12 @@ class streamTree extends Sabre_DAV_Tree {
 
         $realPath = $this->getPath($path,true);
 
-        if ($depth == 0 || $depth == Sabre_DAV_Server::DEPTH_INFINITY) {
-            $props[] = array(
-                'name'         => '',
-                'type'         => is_dir($realPath)?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
-                'lastmodified' => filemtime($realPath),
-                'size'         => filesize($realPath),
-            );
-        }
+        $props[] = array(
+            'name'         => '',
+            'type'         => is_dir($realPath)?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
+            'lastmodified' => filemtime($realPath),
+            'size'         => filesize($realPath),
+        );
 
         if ($depth == 1 || $depth == Sabre_DAV_Server::DEPTH_INFINITY) {
 

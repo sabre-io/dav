@@ -109,7 +109,11 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
         if ($source instanceof Sabre_DAV_IFile) {
 
-            $destinationParent->createFile($destinationName,$source->get());
+            $data = $source->get();
+            if (is_string($data)) {
+                $data = fopen('data://text/plain,' . $data,'r');
+            }
+            $destinationParent->createFile($destinationName,$data);
             $destination = $destinationParent->getChild($destinationName);
 
         } elseif ($source instanceof Sabre_DAV_IDirectory) {

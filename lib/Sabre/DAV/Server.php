@@ -624,6 +624,8 @@ class Sabre_DAV_Server {
 
         }
 
+        $uri = str_replace('//','/',$uri);
+
         if (strpos($uri,$this->baseUri)===0) {
 
             return trim(urldecode(substr($uri,strlen($this->baseUri))),'/');

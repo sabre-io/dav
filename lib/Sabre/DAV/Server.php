@@ -649,7 +649,7 @@ class Sabre_DAV_Server {
 
         // If its not set, we'll grab the default
         $depth = $this->httpRequest->getHeader('Depth');
-        if (!$depth) $depth = $default;
+        if (is_null($depth)) $depth = $default;
 
         // Infinity
         if ($depth == 'infinity') $depth = self::DEPTH_INFINITY;

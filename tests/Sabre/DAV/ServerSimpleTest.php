@@ -1,44 +1,9 @@
 <?php
 
 require_once 'Sabre/HTTP/ResponseMock.php';
+require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_ServerSimpleTest extends PHPUnit_Framework_TestCase {
-
-    private $response;
-    private $request;
-    private $server;
-    private $tempDir = 'temp/';
-
-    function setUp() {
-
-        $this->response = new Sabre_HTTP_ResponseMock();
-        $dir = new Sabre_DAV_FS_Directory($this->tempDir);
-        $tree = new Sabre_DAV_ObjectTree($dir);
-        $this->server = new Sabre_DAV_Server($tree);
-        $this->server->setHTTPResponse($this->response);
-
-        file_put_contents($this->tempDir . '/test.txt', 'Test contents');
-
-    }
-
-    function tearDown() {
-
-        $cleanUp = array('test.txt','testput.txt','testcol');
-        foreach($cleanUp as $file) {
-            $tmpFile = $this->tempDir . '/' . $file;
-            if (file_exists($tmpFile)) {
-               
-                if (is_dir($tmpFile)) {
-                    rmdir($tmpFile);
-                } else {
-                    unlink($tmpFile);
-                }
-
-            }
-        }
-
-    }
-
+class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     function testGet() {
         
@@ -173,7 +138,6 @@ class Sabre_DAV_ServerSimpleTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $request->setBody('Testing updated file');
         $this->server->setHTTPRequest($request);
         $this->server->exec();
 
@@ -182,6 +146,27 @@ class Sabre_DAV_ServerSimpleTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertFalse(file_exists($this->tempDir . '/test.txt'));
+
+    }
+
+    function testDeleteDirectory() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/testcol',
+            'REQUEST_METHOD' => 'DELETE',
+        );
+
+        mkdir($this->tempDir.'/testcol');
+        file_put_contents($this->tempDir.'/testcol/test.txt','Hi! I\'m a file with a short lifespan');
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->setHTTPRequest($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(),$this->response->headers);
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
+        $this->assertEquals('', $this->response->body);
+        $this->assertFalse(file_exists($this->tempDir . '/col'));
 
     }
 
@@ -222,6 +207,30 @@ class Sabre_DAV_ServerSimpleTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('HTTP/1.1 501 Method not implemented',$this->response->status);
 
+
+    }
+
+    function testBaseUri() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/blabla/test.txt',
+            'REQUEST_METHOD' => 'GET',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->setBaseUri('/blabla/');
+        $this->server->setHTTPRequest($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/octet-stream',
+            'Content-Length' => 13,
+            ),
+            $this->response->headers
+         );
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
 

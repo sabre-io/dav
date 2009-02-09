@@ -1,0 +1,48 @@
+<?php
+
+require_once 'Sabre/HTTP/ResponseMock.php';
+
+abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
+
+    protected $response;
+    protected $request;
+    protected $server;
+    protected $tempDir = 'temp/';
+
+    function setUp() {
+
+        $this->response = new Sabre_HTTP_ResponseMock();
+        $dir = new Sabre_DAV_FS_Directory($this->tempDir);
+        $tree = new Sabre_DAV_ObjectTree($dir);
+        $this->server = new Sabre_DAV_Server($tree);
+        $this->server->setHTTPResponse($this->response);
+        file_put_contents($this->tempDir . '/test.txt', 'Test contents');
+
+    }
+
+    function tearDown() {
+
+        $this->deleteTree($this->tempDir,false);
+
+    }
+
+    private function deleteTree($path,$deleteRoot = true) {
+
+        foreach(scandir($path) as $node) {
+
+            if ($node[0]=='.') continue;
+            $myPath = $path.'/'. $node;
+            if (is_file($myPath)) {
+                unlink($myPath);
+            } else {
+                $this->deleteTree($myPath);
+            }
+
+        }
+        if ($deleteRoot) rmdir($path);
+
+    }
+
+}
+
+?>

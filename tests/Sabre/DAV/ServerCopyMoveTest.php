@@ -155,6 +155,27 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testSimpleCopy() {
+        
+        $serverVars = array(
+            'REQUEST_URI'    => '/col',
+            'REQUEST_METHOD' => 'COPY',
+            'HTTP_DESTINATION' => '/col2',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->setHTTPRequest($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            ),
+            $this->response->headers
+         );
+
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('Test contents',file_get_contents($this->tempDir . '/col2/test.txt'));
+
+    }
 
 }
 

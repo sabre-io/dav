@@ -120,8 +120,11 @@ class Sabre_HTTP_Request {
         if(is_resource($body)) {
             $this->body = $body;
         } else {
+            $stream = fopen('php://temp','r+');
+            fwrite($stream,$body);
+            rewind($stream);
             // String is assumed
-            $this->body = fopen('data://text/plain,' . $body,'r');
+            $this->body = $stream;
         }
 
     }

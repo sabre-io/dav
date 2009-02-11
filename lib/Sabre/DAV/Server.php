@@ -170,7 +170,12 @@ class Sabre_DAV_Server {
         $body = $this->tree->get($this->getRequestUri());
 
         // Converting string into stream, if needed.
-        if (is_string($body)) $body = fopen('data://text/plain,' . $body,'r');
+        if (is_string($body)) {
+            $stream = fopen('php://temp','r+');
+            fwrite($stream,$body);
+            rewind($stream);
+            $body = $stream;
+        }
 
         $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
 
@@ -198,7 +203,7 @@ class Sabre_DAV_Server {
             }
 
             // New read/write stream
-            $newStream = fopen('data://text/plain,','r+');
+            $newStream = fopen('php://temp','r+');
 
             stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
             rewind($newStream);
@@ -552,7 +557,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_FileNotFoundException $e) {
             
             // It didn't, lets create it 
-            $this->tree->createFile($uri,fopen('data://text/plain,','r'));
+            $this->tree->createFile($uri,fopen('php://memory,','r'));
             
             // We also need to return a 201 in this case
             $this->httpResponse->sendStatus(201);

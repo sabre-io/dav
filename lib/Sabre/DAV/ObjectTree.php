@@ -110,9 +110,14 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
         if ($source instanceof Sabre_DAV_IFile) {
 
             $data = $source->get();
+
+            // If the body was a string, we need to convert it to a stream
             if (is_string($data)) {
-                $data = fopen('data://text/plain,' . $data,'r');
-            }
+                $stream = fopen('php://temp','r+');
+                fwrite($stream,$data);
+                rewind($stream);
+                $data = $stream;
+            } 
             $destinationParent->createFile($destinationName,$data);
             $destination = $destinationParent->getChild($destinationName);
 

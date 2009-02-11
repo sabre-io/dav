@@ -19,6 +19,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );
@@ -28,12 +29,17 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
-    function testGetRange() {
+    /**
+     * This test should have the exact same result as testGet.
+     *
+     * The idea is that double slashes // are converted to single ones /
+     * 
+     */
+    function testGetDoubleSlash() {
         
         $serverVars = array(
-            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_URI'    => '//test.txt',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_RANGE'     => 'bytes=2-5', 
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -42,16 +48,17 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 4,
-            'Content-Range' => 'bytes 2-5/13',
+            'Content-Length' => 13,
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 206 Partial Content',$this->response->status);
-        $this->assertEquals('st c', stream_get_contents($this->response->body));
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
+
 
     function testHEAD() {
         
@@ -67,6 +74,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );
@@ -251,6 +259,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );

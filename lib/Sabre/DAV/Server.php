@@ -178,6 +178,7 @@ class Sabre_DAV_Server {
         }
 
         $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+        $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
 
         // We're only going to support HTTP ranges if the backend provided a filesize
         if ($nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
@@ -238,6 +239,7 @@ class Sabre_DAV_Server {
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
         if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
         $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+        $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
         $this->httpResponse->sendStatus(200);
 
     }

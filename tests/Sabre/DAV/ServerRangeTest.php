@@ -20,6 +20,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );
@@ -45,6 +46,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 11,
             'Content-Range' => 'bytes 2-12/13',
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );
@@ -70,6 +72,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 8,
             'Content-Range' => 'bytes 5-12/13',
+            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
             ),
             $this->response->headers
          );

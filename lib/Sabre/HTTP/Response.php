@@ -24,6 +24,7 @@ class Sabre_HTTP_Response {
             200 => 'Ok',
             201 => 'Created',
             204 => 'No Content',
+            206 => 'Partial Content',
             207 => 'Multi-Status',
             400 => 'Bad request',
             401 => 'Unauthorized',
@@ -33,9 +34,10 @@ class Sabre_HTTP_Response {
             409 => 'Conflict',
             412 => 'Precondition failed',
             415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
             423 => 'Locked',
             500 => 'Internal Server Error',
-            501 => 'Method not implemented',
+            501 => 'Not Implemented',
             507 => 'Unsufficient Storage',
        ); 
 

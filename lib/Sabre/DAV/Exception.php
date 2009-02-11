@@ -186,7 +186,7 @@ class Sabre_DAV_PreconditionFailedException extends Sabre_DAV_Exception {
 }
 
 /**
- * BabRequestException
+ * BadRequestException
  *
  * The BadRequestException is thrown when the user submitted an invalid HTTP request
  */
@@ -195,6 +195,21 @@ class Sabre_DAV_BadRequestException extends Sabre_DAV_Exception {
     function getHTTPCode() {
 
         return 400; 
+
+    }
+
+}
+
+/**
+ * RequestedRangeNotSatisfiableException 
+ * 
+ * The RequestedRangeNotSatisfiableException is thrown when the user request a range that is out of the entity bounds.
+ */
+class Sabre_DAV_RequestedRangeNotSatisfiableException extends Sabre_DAV_Exception {
+
+    function getHTTPCode() {
+
+        return 416;
 
     }
 

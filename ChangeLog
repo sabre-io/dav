@@ -3,8 +3,9 @@
 	  This means it won't require to hold entire files in memory, which can be
 	  an issue if you're dealing with big files. Note that this breaks 
 	  compatibility for put() and createFile methods.
+	* Added: Support for HTTP Range header
 	* Added: starting with basic framework for unittesting, using PHPUnit.
-	* Added: 29 unittests.
+	* Added: 35 unittests.
 	* Added: Abstraction for the HTTP request.
 	* Fixed: HTTP_BasicAuth class now works as expected.
 	* Fixed: DAV_Server uses / for a default baseUrl.

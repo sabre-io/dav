@@ -151,6 +151,7 @@ class Sabre_DAV_Server {
             $this->httpResponse->setHeader('DAV','1,3');
         }
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
+        $this->httpResponse->setHeader('Accept-Ranges','bytes');
         $this->httpResponse->sendStatus(200);
 
     }
@@ -166,11 +167,55 @@ class Sabre_DAV_Server {
 
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
 
-        if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
+        $body = $this->tree->get($this->getRequestUri());
+
+        // Converting string into stream, if needed.
+        if (is_string($body)) $body = fopen('data://text/plain,' . $body,'r');
 
         $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
-        $this->httpResponse->sendStatus(200);
-        $this->httpResponse->sendBody($this->tree->get($this->getRequestUri()));
+
+        // We're only going to support HTTP ranges if the backend provided a filesize
+        if ($nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
+
+            // Determining the exact byte offsets
+            if ($range[0]) {
+
+                $start = $range[0];
+                $end = $range[1]?$range[1]:$nodeInfo[0]['size']-1;
+                if($start > $nodeInfo[0]['size']) 
+                    throw new Sabre_DAV_RequestedRangeNotSatisfiableException('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeInfo[0]['size'] . ')');
+
+                if($end < $start) throw new Sabre_DAV_RequestedRangeNotSatisfiableException('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
+                if($end > $nodeInfo[0]['size']) $end = $nodeInfo[0]['size']-1;
+
+            } else {
+
+                $start = $nodeInfo[0]['size']-$range[1];
+                $end  = $nodeInfo[0]['size']-1;
+
+                if ($start<0) $start = 0;
+
+            }
+
+            // New read/write stream
+            $newStream = fopen('data://text/plain,','r+');
+
+            stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
+            rewind($newStream);
+
+            $this->httpResponse->setHeader('Content-Length', $end-$start+1);
+            $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeInfo[0]['size']);
+            $this->httpResponse->sendStatus(206);
+            $this->httpResponse->sendBody($newStream);
+
+
+        } else {
+
+            if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
+            $this->httpResponse->sendStatus(200);
+            $this->httpResponse->sendBody($body);
+
+        }
 
     }
 
@@ -661,6 +706,38 @@ class Sabre_DAV_Server {
         }
 
         return $depth;
+
+    }
+
+    /**
+     * Returns the HTTP range header
+     *
+     * This method returns null if there is no well-formed HTTP range request
+     * header or array($start, $end).
+     *
+     * The first number is the offset of the first byte in the range.
+     * The second number is the offset of the last byte in the range.
+     *
+     * If the second offset is null, it should be treated as the offset of the last byte of the entity
+     * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity 
+     *
+     * return $mixed
+     */
+    public function getHTTPRange() {
+
+        $range = $this->httpRequest->getHeader('range');
+        if (is_null($range)) return null; 
+
+        // Matching "Range: bytes=1234-5678: both numbers are optional
+
+        if (!preg_match('/^bytes=([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
+
+        if ($matches[1]==='' && $matches[2]==='') return null;
+
+        return array(
+            $matches[1]!==''?$matches[1]:null,
+            $matches[2]!==''?$matches[2]:null,
+        );
 
     }
 

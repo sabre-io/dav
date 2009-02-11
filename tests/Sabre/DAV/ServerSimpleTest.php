@@ -28,6 +28,31 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testGetRange() {
+        
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'GET',
+            'HTTP_RANGE'     => 'bytes=2-5', 
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->setHTTPRequest($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/octet-stream',
+            'Content-Length' => 4,
+            'Content-Range' => 'bytes 2-5/13',
+            ),
+            $this->response->headers
+         );
+
+        $this->assertEquals('HTTP/1.1 206 Partial Content',$this->response->status);
+        $this->assertEquals('st c', stream_get_contents($this->response->body));
+
+    }
+
     function testHEAD() {
         
         $serverVars = array(
@@ -185,6 +210,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             'DAV'           => '1,3',
             'MS-Author-Via' => 'DAV',
             'Allow'         => 'OPTIONS GET HEAD POST DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE',
+            'Accept-Ranges' => 'bytes',
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
@@ -205,7 +231,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
         $this->assertEquals(array(),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 501 Method not implemented',$this->response->status);
+        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
 
 
     }

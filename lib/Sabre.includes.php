@@ -4,7 +4,9 @@
 include 'Sabre/PHP/Exception.php';
 include 'Sabre/HTTP/Response.php';
 include 'Sabre/HTTP/Request.php';
+include 'Sabre/HTTP/AbstractAuth.php';
 include 'Sabre/HTTP/BasicAuth.php';
+include 'Sabre/HTTP/DigestAuth.php';
 
 /* Basics */
 include 'Sabre/DAV/Lock.php';

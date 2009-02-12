@@ -39,7 +39,7 @@ class Sabre_HTTP_BasicAuthTest extends PHPUnit_Framework_TestCase {
     function testGetUserPassIIS() {
 
         $server = array(
-            'HTTP_AUTHORIZATION' => 'Basic: ' . base64_encode('admin:1234'),
+            'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode('admin:1234'),
         );
 
         $request = new Sabre_HTTP_Request($server);

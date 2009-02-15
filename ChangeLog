@@ -5,8 +5,10 @@
 	  compatibility for put() and createFile methods.
 	* Added: HTTP Digest Authentication helper class.
 	* Added: Support for HTTP Range header
+	* Added: Support for ETags within If: headers
+	* Added: The API can now return ETags and override the default Content-Type
 	* Added: starting with basic framework for unittesting, using PHPUnit.
-	* Added: 39 unittests.
+	* Added: 49 unittests.
 	* Added: Abstraction for the HTTP request.
 	* Fixed: HTTP_BasicAuth class now works as expected.
 	* Fixed: DAV_Server uses / for a default baseUrl.

@@ -316,6 +316,8 @@ class Sabre_DAV_Server {
             $newProps['DAV:#resourcetype'] =  $file['type'];
             if (isset($file['quota-used'])) $newProps['DAV:#quota-used-bytes'] = $file['quota-used'];
             if (isset($file['quota-available'])) $newProps['DAV:#quota-available-bytes'] = $file['quota-available'];
+            if (isset($file['etag'])) $newProps['DAV:#getetag'] = $file['etag'];
+            if (isset($file['contenttype'])) $newProps['DAV:#getcontenttype'] = $file['contenttype'];
             $newProps['href'] = $file['name']; 
             //print_r($newProps);die();
 

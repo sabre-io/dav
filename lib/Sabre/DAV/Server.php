@@ -559,7 +559,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_FileNotFoundException $e) {
             
             // It didn't, lets create it 
-            $this->tree->createFile($uri,fopen('php://memory,','r'));
+            $this->tree->createFile($uri,fopen('php://memory','r'));
             
             // We also need to return a 201 in this case
             $this->httpResponse->sendStatus(201);

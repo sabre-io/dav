@@ -171,6 +171,13 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             'size'         => $fileObject->getSize(),
         );
 
+        if ($fileObject instanceof Sabre_DAV_IFile) {
+
+            if ($etag = $fileObject->getETag()) $props['etag'] = $etag;
+            if ($contenttype = $fileObject->getContentType()) $props['contenttype'] = $contenttype;
+
+        }
+
         if ($fileObject instanceof Sabre_DAV_IQuota) {
 
             $quotaInfo = $fileObject->getQuotaInfo();
@@ -197,6 +204,13 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
                     $quotaInfo = $child->getQuotaInfo();
                     $props['quota-used'] = $quotaInfo[0];
                     $props['quota-available'] = $quotaInfo[1];
+
+                }
+
+                if ($fileObject instanceof Sabre_DAV_IFile) {
+
+                    if ($etag = $fileObject->getETag()) $props['etag'] = $etag;
+                    if ($contenttype = $fileObject->getContentType()) $props['contenttype'] = $contenttype;
 
                 }
 

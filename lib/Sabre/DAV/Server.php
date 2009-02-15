@@ -177,8 +177,17 @@ class Sabre_DAV_Server {
             $body = $stream;
         }
 
-        $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+        if (isset($nodeInfo[0]['contenttype'])) $contentType = $nodeInfo[0]['contenttype'];
+        else $contentType = 'application/octet-stream';
+
+        $this->httpResponse->setHeader('Content-Type', $contentType);
         $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
+
+        if (isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']) {
+
+            $this->httpResponse->setHeader('ETag',$nodeInfo[0]['etag']);
+
+        }
 
         // We're only going to support HTTP ranges if the backend provided a filesize
         if ($nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
@@ -238,7 +247,17 @@ class Sabre_DAV_Server {
 
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
         if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
-        $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+
+        if (isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']) {
+
+            $this->httpResponse->setHeader('ETag',$nodeInfo[0]['etag']);
+
+        }
+
+        if (isset($nodeInfo[0]['contenttype'])) $contentType = $nodeInfo[0]['contenttype'];
+        else $contentType = 'application/octet-stream';
+
+        $this->httpResponse->setHeader('Content-Type', $contentType);
         $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
         $this->httpResponse->sendStatus(200);
 
@@ -794,24 +813,47 @@ class Sabre_DAV_Server {
                 // At least 1 condition has to be satisfied
                 foreach($condition['tokens'] as $conditionToken) {
 
-                    // Match all the locks
-                    foreach($locks as $lockIndex=>$lock) {
+                    $etagValid = true;
+                    $lockValid  = true;
 
-                        $lockToken = 'opaquelocktoken:' . $lock->token;
-                        // Checking NOT
-                        if (!$conditionToken[0] && $lockToken != $conditionToken[1]) {
+                    // key 2 can contain an etag
+                    if ($conditionToken[2]) {
 
-                            // Condition valid, onto the next
-                            continue 3;
+                        $uri = $conditionUri?$conditionUri:$this->getRequestUri(); 
+                        $nodeInfo = $this->tree->getNodeInfo($uri,0);
+                        $etagValid = isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']==$conditionToken[2]; 
+
+                    }
+
+                    // key 1 can contain a lock token
+                    if ($conditionToken[1]) {
+
+                        $lockValid = false;
+                        // Match all the locks
+                        foreach($locks as $lockIndex=>$lock) {
+
+                            $lockToken = 'opaquelocktoken:' . $lock->token;
+
+                            // Checking NOT
+                            if (!$conditionToken[0] && $lockToken != $conditionToken[1]) {
+
+                                // Condition valid, onto the next
+                                $lockValid = true;
+                                break;
+                            }
+                            if ($conditionToken[0] && $lockToken == $conditionToken[1]) {
+
+                                $lastLock = $lock;
+                                // Condition valid and lock matched
+                                unset($locks[$lockIndex]);
+                                $lockValid = true;
+                                break;
+
+                            }
+
                         }
-                        if ($conditionToken[0] && $lockToken == $conditionToken[1]) {
 
-                            $lastLock = $lock;
-                            // Condition valid and lock matched
-                            unset($locks[$lockIndex]);
-                            continue 3;
-
-                        }
+                        if ($etagValid && $lockValid) continue 2;
 
                     }
                }
@@ -844,30 +886,36 @@ class Sabre_DAV_Server {
      *
      *   * uri   - the uri the condition applies to. This can be an empty string for 'every relevant url'
      *   * tokens - The lock token. another 2 dimensional array containg 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
+     *   * etag - an etag, if supplied
      * 
      * @return void
      */
-    function getIfConditions() {
+    public function getIfConditions() {
 
         $header = $this->httpRequest->getHeader('If'); 
         if (!$header) return array();
 
         $matches = array();
 
-        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?\<(?P<token>.*?)\>\)/im';
+        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im'; // (?:\s?)(?:\[(?P<etag>[^\]]*)\])';
         preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
 
         $conditions = array();
 
         foreach($matches as $match) {
+
             $condition = array(
                 'uri'   => $match['uri'],
                 'tokens' => array(
-                    array($match['not']==false,$match['token'])
+                    array($match['not']?0:1,$match['token'],isset($match['etag'])?$match['etag']:'')
                 ),    
             );
 
-            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array($match['not']==false,$match['token']);
+            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array(
+                $match['not']?0:1,
+                $match['token'],
+                isset($match['etag'])?$match['etag']:''
+            );
             else {
                 $conditions[] = $condition;
             }

@@ -49,5 +49,29 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
 
     }
 
+    /**
+     * Returns the ETag for a file
+     *
+     * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.
+     *
+     * Return null if the ETag can not effectively be determined
+     */
+    public function getETag() {
+
+        return md5_file($this->path);
+
+    }
+
+    /**
+     * Returns the mime-type for a file
+     *
+     * If null is returned, we'll assume application/octet-stream
+     */ 
+    public function getContentType() {
+
+        return null;
+
+    }
+
 }
 

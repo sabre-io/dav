@@ -52,6 +52,8 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.
      *
      * Return null if the ETag can not effectively be determined
+     * 
+     * @return mixed
      */
     public function getETag() {
 
@@ -63,6 +65,8 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
      * Returns the mime-type for a file
      *
      * If null is returned, we'll assume application/octet-stream
+     *
+     * @return mixed 
      */ 
     public function getContentType() {
 

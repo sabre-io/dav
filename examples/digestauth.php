@@ -16,8 +16,6 @@ $p = '1234';
 $auth = new Sabre_HTTP_DigestAuth();
 $auth->init();
 
-$result = $auth->getUserPass();
-
 if ($auth->getUsername() != $u || !$auth->validatePassword($p)) { 
 
     $auth->requireLogin();

@@ -311,13 +311,13 @@ class Sabre_DAV_Server {
 
         foreach($fileList as $k=>$file) {
             $newProps = $this->tree->getProperties($path,$properties);
-            $newProps['DAV:#getlastmodified'] =  (isset($file['lastmodified'])?$file['lastmodified']:time());
-            $newProps['DAV:#getcontentlength'] = (isset($file['size'])?$file['size']:0);
-            $newProps['DAV:#resourcetype'] =  $file['type'];
-            if (isset($file['quota-used'])) $newProps['DAV:#quota-used-bytes'] = $file['quota-used'];
-            if (isset($file['quota-available'])) $newProps['DAV:#quota-available-bytes'] = $file['quota-available'];
-            if (isset($file['etag'])) $newProps['DAV:#getetag'] = $file['etag'];
-            if (isset($file['contenttype'])) $newProps['DAV:#getcontenttype'] = $file['contenttype'];
+            $newProps['{DAV:}getlastmodified'] =  (isset($file['lastmodified'])?$file['lastmodified']:time());
+            $newProps['{DAV:}getcontentlength'] = (isset($file['size'])?$file['size']:0);
+            $newProps['{DAV:}resourcetype'] =  $file['type'];
+            if (isset($file['quota-used'])) $newProps['{DAV:}quota-used-bytes'] = $file['quota-used'];
+            if (isset($file['quota-available'])) $newProps['{DAV:}quota-available-bytes'] = $file['quota-available'];
+            if (isset($file['etag'])) $newProps['{DAV:}getetag'] = $file['etag'];
+            if (isset($file['contenttype'])) $newProps['{DAV:}getcontenttype'] = $file['contenttype'];
             $newProps['href'] = $file['name']; 
             //print_r($newProps);die();
 
@@ -1075,7 +1075,8 @@ class Sabre_DAV_Server {
         $url = implode('/',$url);
 
         // Adding the protocol and hostname. We'll also append a slash if this is a collection
-        $xw->text(/*'http://' . $_SERVER['HTTP_HOST'] .*/ $url . ($data['DAV:#resourcetype']==self::NODE_DIRECTORY?'/':''));
+        $xw->text(/*'http://' . $_SERVER['HTTP_HOST'] .*/ $url . ($data['{DAV:}resourcetype']==self::NODE_DIRECTORY?'/':''));
+
         $xw->endElement(); //d:href
 
         $xw->startElement('d:propstat');
@@ -1102,28 +1103,29 @@ class Sabre_DAV_Server {
 
             $value = $data[$property];
 
-            $propName = explode('#',$property,2);
+            $propName = null;
+            preg_match('/^{([^}]*)}(.*)$/',$property,$propName);
            
-            if (isset($nsList[$propName[0]])) {
+            if (isset($nsList[$propName[1]])) {
 
-                $xw->startElement($nsList[$propName[0]] . ':' . $propName[1]);
+                $xw->startElement($nsList[$propName[1]] . ':' . $propName[2]);
 
             } else {
 
-                $xw->startElement($propName[1]);
-                $xw->writeAttribute('xmlns',$propName[0]);
+                $xw->startElement($propName[2]);
+                $xw->writeAttribute('xmlns',$propName[1]);
 
             }
 
             switch($property) {
-                case 'DAV:#getlastmodified' :
+                case '{DAV:}getlastmodified' :
                     $xw->writeAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
                     $xw->writeAttribute('b:dt','dateTime.rfc1123');
                     if (!(int)$value) $value = strtotime($value);
                     $xw->text(date(DATE_RFC1123,$value));
                     break;
 
-                case 'DAV:#resourcetype' :
+                case '{DAV:}resourcetype' :
                     if ($value==self::NODE_DIRECTORY) $xw->writeRaw('<d:collection />');
                     break;
 
@@ -1151,12 +1153,14 @@ class Sabre_DAV_Server {
             $xw->startElement('d:propstat');
             $xw->startElement('d:prop');
             foreach($notFound as $property) {
-                list($ns,$tagName) = explode('#',$property,2);
-                if ($ns=='DAV:') {
-                    $xw->writeElement('d:' . $tagName,'');
+
+                $tag = null;
+                preg_match('/^{([^}]*)}(.*)$/',$property,$tag);
+                if ($tag[1]=='DAV:') {
+                    $xw->writeElement('d:' . $tag[2],'');
                 } else {
-                    $xw->startElement($tagName);
-                    $xw->writeAttribute('xmlns',$ns);
+                    $xw->startElement($tag[2]);
+                    $xw->writeAttribute('xmlns',$tag[1]);
                     $xw->endElement();
                 }
             }
@@ -1225,7 +1229,6 @@ class Sabre_DAV_Server {
             }
         }
         
-
         $operations = array();
 
         foreach($dom->firstChild->childNodes as $child) {
@@ -1286,7 +1289,7 @@ class Sabre_DAV_Server {
                     } */
 
                     if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
-                    $propList[$ns . '#' . $propNodeData->localName] = $propNodeData->textContent;
+                    $propList['{' . $ns . '}' . $propNodeData->localName] = $propNodeData->textContent;
                 }
 
             }
@@ -1309,8 +1312,9 @@ class Sabre_DAV_Server {
 
                     $xw->startElement('d:propstat');
                         $xw->startElement('d:prop');
-                            $element = explode('#',$mutation[0]);
-                            $xw->writeElementNS('X',$element[1],$element[0],null);
+                            $matches = null;
+                            preg_match('/^{([^}]*)}(.*)$/',$mutation[0],$matches);
+                            $xw->writeElementNS('X',$matches[2],$matches[1],null);
                         $xw->endElement(); // d:prop
                         $xw->writeElement('d:status',$this->httpResponse->getStatusMessage($mutation[1]));
                     $xw->endElement(); // d:propstat

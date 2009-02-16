@@ -10,6 +10,8 @@
 	* Added: starting with basic framework for unittesting, using PHPUnit.
 	* Added: 49 unittests.
 	* Added: Abstraction for the HTTP request.
+	* Updated: Using Clark Notation for tags in properties. This means tags
+	are serialized as {namespace}tagName instead of namespace#tagName
 	* Fixed: HTTP_BasicAuth class now works as expected.
 	* Fixed: DAV_Server uses / for a default baseUrl.
 	* Fixed: Last modification date is no longer ignored in PROPFIND.

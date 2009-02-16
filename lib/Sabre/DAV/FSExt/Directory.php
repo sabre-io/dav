@@ -22,7 +22,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     public function createFile($name, $data = null) {
 
         // We're not allowing dots
-        if ($name[0]=='.') throw new Sabre_DAV_PermissionDeniedException('Permission denied to create files starting with dots');
+        if ($name=='.' || $name=='..') throw new Sabre_DAV_PermissionDeniedException('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         file_put_contents($newPath,$data);
 
@@ -37,7 +37,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     public function createDirectory($name) {
 
         // We're not allowing dots
-        if ($name[0]=='.') throw new Sabre_DAV_PermissionDeniedException('Permission denied to create files starting with dots');
+        if ($name=='.' || $name=='..') throw new Sabre_DAV_PermissionDeniedException('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
 
@@ -55,7 +55,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
         $path = $this->path . '/' . $name;
 
         if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException('File could not be located');
-        if (strpos($name,'.')===0) throw new Sabre_DAV_PermissionDeniedException('Permission denied to access this file'); 
+        if ($name=='.' || $name=='..') throw new Sabre_DAV_PermissionDeniedException('Permission denied to . and ..'); 
 
         if (is_dir($path)) {
 

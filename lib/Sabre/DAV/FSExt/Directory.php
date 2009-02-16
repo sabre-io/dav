@@ -77,7 +77,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     public function getChildren() {
 
         $nodes = array();
-        foreach(scandir($this->path) as $node) if($node!='.'i && $node!='..') $nodes[] = $this->getChild($node);
+        foreach(scandir($this->path) as $node) if($node!='.' && $node!='..') $nodes[] = $this->getChild($node);
         return $nodes;
 
     }

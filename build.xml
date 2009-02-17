@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <project name="SabreDAV" default="dist" basedir=".">
 
-    <property name="BUILDDIR" value="build/" />
+    <property name="BUILDDIR" value="SabreDAV/" />
     <svnlastrevision workingcopy="." propertyname="svn.lastrevision"/>
+    <property name="VERSION" value="0.6.${svn.lastrevision}" />
 
     <fileset dir="${BUILDDIR}" id="pkgfiles">
         <include name="*.php" />
@@ -21,9 +22,15 @@
 
     <target name="build" depends="prepare">
          <echo msg="Copying source files" />
-         <mkdir dir="${BUILDDIR}" />
-         <copy todir="${BUILDDIR}">
+         <mkdir dir="${BUILDDIR}/lib" />
+         <copy todir="${BUILDDIR}/lib">
             <fileset dir="lib/">
+                <include name="*.php" />
+                <include name="**/*.php" />
+            </fileset>    
+        </copy>
+         <copy todir="${BUILDDIR}/tests">
+            <fileset dir="tests/">
                 <include name="*.php" />
                 <include name="**/*.php" />
             </fileset>    
@@ -41,8 +48,9 @@
         </copy>    
     </target>
 
-    <target name="package" depends="build, pearpkg">
+    <target name="package" depends="build">
         <echo msg="packaging" />
+        <tar destfile="SabreDAV-${VERSION}.tar.gz" basedir="${BUILDDIR}" compression="gzip" />
     </target>
 
     <target name="pearpkg" depends="prepare, build">
@@ -51,7 +59,7 @@
             <option name="notes">Alpha release.</option>
             <option name="description">SabreDAV is a WebDAV library allowing you to implement WebDAV servers using just PHP 5. Its focus is to create a library that allows you to easily build WebDAV shares based on existing web applications, and has many features to accomodate for common clients in a logical manner.</option>
             <option name="summary">SabreDAV is a WebDAV library for PHP 5.</option>
-            <option name="version" value="0.6.${svn.lastrevision}" />
+            <option name="version" value="${VERSION}" />
             <option name="state" value="alpha" />
             <option name="licence" value="BSD" />
             <option name="baseinstalldir" value="/" />
@@ -74,6 +82,7 @@
                 <element key="README" value="doc" />
                 <element key="LICENCE" value="doc" />
                 <element key="ChangeLog" value="doc" />
+                <element key="tests/*" value="test" />
              </mapping>   
          </pearpkg> 
     </target>
@@ -82,13 +91,13 @@
         <phpdoc title="SabreDAV API Documentation" destdir="build/apidocs" sourcepath="Sabre/" output="HTML:frames:default" />
     </target>
 
-    <target name="dist" depends="build, buildexamples, pearpkg">
+    <target name="dist" depends="build, buildexamples, package, clean">
         <echo msg="Creating full featured SabreDAV package" />
     </target>    
 
     <target name="clean">
         <echo msg="Removing build files (cleaning up distribution)" />
-        <delete dir="build/" />
+        <delete dir="${BUILDDIR}/" />
         <delete dir="apidocs" />
     </target>    
 

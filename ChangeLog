@@ -1,4 +1,4 @@
-0.6-alpha (2009-02-??)
+0.6-alpha (2009-02-16)
 	* Added: Now uses streams for files, instead of strings.
 	  This means it won't require to hold entire files in memory, which can be
 	  an issue if you're dealing with big files. Note that this breaks 

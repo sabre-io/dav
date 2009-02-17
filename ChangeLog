@@ -1,3 +1,7 @@
+0.7-alpha (????-??-??)
+	* Fixed: bug related to parsing proppatch and propfind requests. Didn't
+	show up in most clients, but it needed fixing regardless.
+
 0.6-alpha (2009-02-16)
 	* Added: Now uses streams for files, instead of strings.
 	  This means it won't require to hold entire files in memory, which can be

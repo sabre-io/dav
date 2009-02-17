@@ -1209,7 +1209,7 @@ class Sabre_DAV_Server {
     protected function parsePropPatchRequest($body) {
 
         //We'll need to change the DAV namespace declaration to something else in order to make it parsable
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
 
         $errorsetting =  libxml_use_internal_errors(true);
         libxml_clear_errors();
@@ -1238,7 +1238,7 @@ class Sabre_DAV_Server {
             $propList = $this->parseProps($child);
             foreach($propList as $k=>$propItem) {
 
-                $operations[] = array($child->localName=='set'?1:2,$k,$propItem);
+                $operations[] = array($child->localName=='set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
 
             }
 
@@ -1256,7 +1256,7 @@ class Sabre_DAV_Server {
         $errorsetting =  libxml_use_internal_errors(true);
         libxml_clear_errors();
         $dom = new DOMDocument();
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\\2)/","xmlns\\1=\"urn:DAV\"",$body);
         $dom->preserveWhiteSpace = false;
         $dom->loadXML($body,LIBXML_NOERROR);
         if($error = libxml_get_last_error()) {

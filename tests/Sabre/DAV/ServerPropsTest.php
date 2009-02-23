@@ -5,6 +5,12 @@ require_once 'Sabre/DAV/AbstractServer.php';
 
 class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
+    protected function getRootNode() {
+
+        return new Sabre_DAV_FSExt_Directory($this->tempDir);
+
+    }
+
     function setUp() {
 
         parent::setUp();
@@ -30,7 +36,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
     }
 
-    function testPropFindEmptyBody() {
+    public function testPropFindEmptyBody() {
        
         $this->sendRequest("");
 
@@ -45,8 +51,6 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
-
-        echo $body;
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
         $this->assertEquals('/',(string)$data,'href element should have been /');
@@ -68,8 +72,26 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $this->sendRequest($xml);
         
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
-        print_r($body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
 
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry');
+        $this->assertEquals(2,count($data),'We expected two \'d:lockentry\' tags');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope');
+        $this->assertEquals(2,count($data),'We expected two \'d:lockscope\' tags');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype');
+        $this->assertEquals(2,count($data),'We expected two \'d:locktype\' tags');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:shared');
+        $this->assertEquals(1,count($data),'We expected a \'d:shared\' tag');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:exclusive');
+        $this->assertEquals(1,count($data),'We expected a \'d:exclusive\' tag');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype/d:write');
+        $this->assertEquals(2,count($data),'We expected two \'d:write\' tags');
     }
 }
 

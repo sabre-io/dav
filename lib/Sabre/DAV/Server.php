@@ -310,7 +310,7 @@ class Sabre_DAV_Server {
 
         foreach($fileList as $k=>$file) {
             $newProps = $this->tree->getProperties($path,$properties);
-            $newProps['{DAV:}getlastmodified'] =  (isset($file['lastmodified'])?$file['lastmodified']:time());
+            $newProps['{DAV:}getlastmodified'] =  new Sabre_DAV_Property_GetLastModified(isset($file['lastmodified'])?$file['lastmodified']:time());
             $newProps['{DAV:}getcontentlength'] = (isset($file['size'])?$file['size']:0);
             $newProps['{DAV:}resourcetype'] =  $file['type'];
             if (isset($file['quota-used'])) $newProps['{DAV:}quota-used-bytes'] = $file['quota-used'];
@@ -1128,12 +1128,6 @@ class Sabre_DAV_Server {
             }
 
             switch($property) {
-                case '{DAV:}getlastmodified' :
-                    $currentProperty->setAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
-                    $currentProperty->setAttribute('b:dt','dateTime.rfc1123');
-                    if (!(int)$value) $value = strtotime($value);
-                    $currentProperty->nodeValue = date(DATE_RFC1123,$value);
-                    break;
 
                 case '{DAV:}resourcetype' :
                     if ($value==self::NODE_DIRECTORY) $currentProperty->appendChild($document->createElementNS('DAV:','d:collection'));

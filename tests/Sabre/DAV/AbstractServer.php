@@ -12,8 +12,7 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
     function setUp() {
 
         $this->response = new Sabre_HTTP_ResponseMock();
-        $dir = new Sabre_DAV_FS_Directory($this->tempDir);
-        $tree = new Sabre_DAV_ObjectTree($dir);
+        $tree = new Sabre_DAV_ObjectTree($this->getRootNode());
         $this->server = new Sabre_DAV_Server($tree);
         $this->server->setHTTPResponse($this->response);
         file_put_contents($this->tempDir . '/test.txt', 'Test contents');
@@ -23,6 +22,12 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
     function tearDown() {
 
         $this->deleteTree($this->tempDir,false);
+
+    }
+
+    protected function getRootNode() {
+
+        return new Sabre_DAV_FS_Directory($this->tempDir);
 
     }
 

@@ -1060,7 +1060,7 @@ class Sabre_DAV_Server {
 
         $document = $multistatus->ownerDocument;
         
-        $xresponse = $document->createElementNS('DAV:','d:reponse');
+        $xresponse = $document->createElementNS('DAV:','d:response');
         $multistatus->appendChild($xresponse); 
 
         /* Figuring out the url */
@@ -1109,22 +1109,30 @@ class Sabre_DAV_Server {
 
             $propName = null;
             preg_match('/^{([^}]*)}(.*)$/',$property,$propName);
-           
-            if (!isset($nsList[$propName[1]])) {
+         
+            // special case for empty namespaces
+            if ($propName[1]=='') {
 
-                $nsList[$propName[1]] = 'x' . count($nsList);
+                $currentProperty = $document->createElement($propName[2]);
+                $xprop->appendChild($currentProperty);
+                $currentProperty->setAttribute('xmlns','');
+
+            } else {
+
+                if (!isset($nsList[$propName[1]])) {
+                    $nsList[$propName[1]] = 'x' . count($nsList);
+                }
+                $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+                $xprop->appendChild($currentProperty);
 
             }
-            $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
-
-            $xprop->appendChild($currentProperty);
 
             switch($property) {
                 case '{DAV:}getlastmodified' :
                     $currentProperty->setAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
                     $currentProperty->setAttribute('b:dt','dateTime.rfc1123');
                     if (!(int)$value) $value = strtotime($value);
-                    $currentProperty->textContent = date(DATE_RFC1123,$value);
+                    $currentProperty->nodeValue = date(DATE_RFC1123,$value);
                     break;
 
                 case '{DAV:}resourcetype' :
@@ -1133,7 +1141,7 @@ class Sabre_DAV_Server {
 
                 default :
                     if (is_scalar($value)) {
-                        $currentProperty->textContent = $value;
+                        $currentProperty->nodeValue = $value;
                     } elseif ($value instanceof Sabre_DAV_Property) {
                         $value->serialize($currentProperty);
                     } else {

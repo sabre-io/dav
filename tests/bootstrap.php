@@ -6,3 +6,5 @@ include 'Sabre.includes.php';
 
 date_default_timezone_set('UTC');
 
+if (!file_exists('temp')) mkdir('temp');
+

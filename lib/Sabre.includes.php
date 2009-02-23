@@ -12,6 +12,10 @@ include 'Sabre/HTTP/DigestAuth.php';
 include 'Sabre/DAV/Lock.php';
 include 'Sabre/DAV/Exception.php';
 
+/* Properties */
+include 'Sabre/DAV/Property.php';
+include 'Sabre/DAV/Property/SupportedLock.php';
+
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';
 include 'Sabre/DAV/IFile.php';

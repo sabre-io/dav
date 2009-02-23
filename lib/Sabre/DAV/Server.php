@@ -299,7 +299,6 @@ class Sabre_DAV_Server {
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
         $properties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
 
-
         $depth = $this->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1 
         if ($depth!=0) $depth = 1;
@@ -319,6 +318,9 @@ class Sabre_DAV_Server {
             if (isset($file['etag'])) $newProps['{DAV:}getetag'] = $file['etag'];
             if (isset($file['contenttype'])) $newProps['{DAV:}getcontenttype'] = $file['contenttype'];
             $newProps['href'] = $file['name']; 
+
+            if (in_array('{DAV:}supportedlock',$properties)) $newProps['{DAV:}supportedlock'] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks());
+
             //print_r($newProps);die();
 
             $fileList[$k] = $newProps;
@@ -1028,21 +1030,18 @@ class Sabre_DAV_Server {
      */
     private function generatePropfindResponse($list,$properties) {
 
-        $xw = new XMLWriter();
-        $xw->openMemory();
-        // Windows XP doesn't like indentation
-        //$xw->setIndent(true);
-        $xw->startDocument('1.0','utf-8');
-        $xw->startElementNS('d','multistatus','DAV:');
+        $dom = new DOMDocument('1.0','utf-8');
+        
+        $multiStatus = $dom->createElementNS('DAV:','d:multistatus');
+        $dom->appendChild($multiStatus);
 
         foreach($list as $entry) {
 
-            $this->writeProperty($xw,$this->httpRequest->getUri(),$entry, $properties);
+            $this->writeProperties($multiStatus,$this->httpRequest->getUri(),$entry, $properties);
 
         }
 
-        $xw->endElement();
-        return $xw->outputMemory();
+        return $dom->saveXML();
 
     }
 
@@ -1057,11 +1056,14 @@ class Sabre_DAV_Server {
      * @param array $properties
      * @return void
      */
-    private function writeProperty(XMLWriter $xw,$baseurl,$data, $properties) {
+    private function writeProperties(DOMNode $multistatus,$baseurl,$data, $properties) {
 
-        $xw->startElement('d:response');
-        $xw->startElement('d:href');
+        $document = $multistatus->ownerDocument;
+        
+        $xresponse = $document->createElementNS('DAV:','d:reponse');
+        $multistatus->appendChild($xresponse); 
 
+        /* Figuring out the url */
         // Base url : /services/dav/mydirectory
         $url = rtrim(urldecode($baseurl),'/');
 
@@ -1074,17 +1076,19 @@ class Sabre_DAV_Server {
 
         $url = implode('/',$url);
 
-        // Adding the protocol and hostname. We'll also append a slash if this is a collection
-        $xw->text(/*'http://' . $_SERVER['HTTP_HOST'] .*/ $url . ($data['{DAV:}resourcetype']==self::NODE_DIRECTORY?'/':''));
+        if ($data['{DAV:}resourcetype']==self::NODE_DIRECTORY) $url .='/';
 
-        $xw->endElement(); //d:href
+        $xresponse->appendChild($document->createElementNS('DAV:','d:href',$url));
+        
+        $xpropstat = $document->createElementNS('DAV:','d:propstat');
+        $xresponse->appendChild($xpropstat);
 
-        $xw->startElement('d:propstat');
+        $xprop = $document->createElementNS('DAV:','d:prop');
+        $xpropstat->appendChild($xprop);
 
         // We have to collect the properties we don't know
         $notFound = array();
 
-        $xw->startElement('d:prop');
         if (!$properties) $properties = array_keys($data);
 
         $nsList = array(
@@ -1106,70 +1110,68 @@ class Sabre_DAV_Server {
             $propName = null;
             preg_match('/^{([^}]*)}(.*)$/',$property,$propName);
            
-            if (isset($nsList[$propName[1]])) {
+            if (!isset($nsList[$propName[1]])) {
 
-                $xw->startElement($nsList[$propName[1]] . ':' . $propName[2]);
-
-            } else {
-
-                $xw->startElement($propName[2]);
-                $xw->writeAttribute('xmlns',$propName[1]);
+                $nsList[$propName[1]] = 'x' . count($nsList);
 
             }
+            $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+
+            $xprop->appendChild($currentProperty);
 
             switch($property) {
                 case '{DAV:}getlastmodified' :
-                    $xw->writeAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
-                    $xw->writeAttribute('b:dt','dateTime.rfc1123');
+                    $currentProperty->setAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
+                    $currentProperty->setAttribute('b:dt','dateTime.rfc1123');
                     if (!(int)$value) $value = strtotime($value);
-                    $xw->text(date(DATE_RFC1123,$value));
+                    $currentProperty->textContent = date(DATE_RFC1123,$value);
                     break;
 
                 case '{DAV:}resourcetype' :
-                    if ($value==self::NODE_DIRECTORY) $xw->writeRaw('<d:collection />');
+                    if ($value==self::NODE_DIRECTORY) $currentProperty->appendChild($document->createElementNS('DAV:','d:collection'));
                     break;
 
                 default :
                     if (is_scalar($value)) {
-                        $xw->text($value);
+                        $currentProperty->textContent = $value;
+                    } elseif ($value instanceof Sabre_DAV_Property) {
+                        $value->serialize($currentProperty);
                     } else {
-                        $xw->text($value->textContent);
+                        throw new Sabre_DAV_Exception('Unknown property value type: ' . gettype($value) . ' for property: ' . $property);
                     }
                     break;
 
             }
 
-            $xw->endElement();
-
         }
 
-        $xw->endElement(); // d:prop
-       
-        $xw->writeElement('d:status',$this->httpResponse->getStatusMessage(200));
+        $xpropstat->appendChild($document->createElementNS('DAV:','d:status',$this->httpResponse->getStatusMessage(200)));
 
-        $xw->endElement(); // :d:propstat
+        if ($notFound) {
 
-        if ($notFound) { 
-            $xw->startElement('d:propstat');
-            $xw->startElement('d:prop');
+            $xpropstat = $document->createElementNS('DAV:','d:propstat');
+            $xresponse->appendChild($xpropstat);
+
+            $xprop = $document->createElementNS('DAV:','d:prop');
+            $xpropstat->appendChild($xprop);
+
             foreach($notFound as $property) {
 
                 $tag = null;
-                preg_match('/^{([^}]*)}(.*)$/',$property,$tag);
-                if ($tag[1]=='DAV:') {
-                    $xw->writeElement('d:' . $tag[2],'');
-                } else {
-                    $xw->startElement($tag[2]);
-                    $xw->writeAttribute('xmlns',$tag[1]);
-                    $xw->endElement();
+                preg_match('/^{([^}]*)}(.*)$/',$property,$propName);
+                if (!isset($nsList[$propName[1]])) {
+
+                    $nsList[$propName[1]] = 'x' . count($nsList);
+
                 }
+                $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+
+                $xprop->appendChild($currentProperty);
+
             }
-            $xw->endElement(); // d:prop
-            $xw->writeElement('d:status',$this->httpResponse->getStatusMessage(404));
-            $xw->endElement(); // :d:propstat
+            $xpropstat->appendChild($document->createElementNS('DAV:','d:status',$this->httpResponse->getStatusMessage(404)));
 
         }
-        $xw->endElement(); // d:response
     }
 
     function generateLockResponse($lockInfo) {

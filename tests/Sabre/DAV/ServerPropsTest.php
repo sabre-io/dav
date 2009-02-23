@@ -14,8 +14,8 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
     }
 
-    function testPropFindEmptyBody() {
-        
+    private function sendRequest($body) {
+
         $serverVars = array(
             'REQUEST_URI'    => '/',
             'REQUEST_METHOD' => 'PROPFIND',
@@ -23,8 +23,16 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody($body);
+
         $this->server->setHTTPRequest($request);
         $this->server->exec();
+
+    }
+
+    function testPropFindEmptyBody() {
+       
+        $this->sendRequest("");
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status);
 
@@ -38,14 +46,31 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
 
+        echo $body;
+
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
-        $this->assertEquals('/',(string)$data);
+        $this->assertEquals('/',(string)$data,'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
         $this->assertEquals(1,count($data));
 
     }
 
+    function testSupportedLocks() {
+
+        $xml = '<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:">
+  <d:prop>
+    <d:supportedlock />
+  </d:prop>
+</d:propfind>';
+
+        $this->sendRequest($xml);
+        
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        print_r($body);
+
+    }
 }
 
 ?>

@@ -312,7 +312,7 @@ class Sabre_DAV_Server {
             $newProps = $this->tree->getProperties($path,$properties);
             $newProps['{DAV:}getlastmodified'] =  new Sabre_DAV_Property_GetLastModified(isset($file['lastmodified'])?$file['lastmodified']:time());
             $newProps['{DAV:}getcontentlength'] = (isset($file['size'])?$file['size']:0);
-            $newProps['{DAV:}resourcetype'] =  $file['type'];
+            $newProps['{DAV:}resourcetype'] =  new Sabre_DAV_Property_ResourceType($file['type']);
             if (isset($file['quota-used'])) $newProps['{DAV:}quota-used-bytes'] = $file['quota-used'];
             if (isset($file['quota-available'])) $newProps['{DAV:}quota-available-bytes'] = $file['quota-available'];
             if (isset($file['etag'])) $newProps['{DAV:}getetag'] = $file['etag'];
@@ -1076,7 +1076,7 @@ class Sabre_DAV_Server {
 
         $url = implode('/',$url);
 
-        if ($data['{DAV:}resourcetype']==self::NODE_DIRECTORY) $url .='/';
+        if ($data['{DAV:}resourcetype']->resourceType==self::NODE_DIRECTORY) $url .='/';
 
         $xresponse->appendChild($document->createElementNS('DAV:','d:href',$url));
         
@@ -1127,22 +1127,12 @@ class Sabre_DAV_Server {
 
             }
 
-            switch($property) {
-
-                case '{DAV:}resourcetype' :
-                    if ($value==self::NODE_DIRECTORY) $currentProperty->appendChild($document->createElementNS('DAV:','d:collection'));
-                    break;
-
-                default :
-                    if (is_scalar($value)) {
-                        $currentProperty->nodeValue = $value;
-                    } elseif ($value instanceof Sabre_DAV_Property) {
-                        $value->serialize($currentProperty);
-                    } else {
-                        throw new Sabre_DAV_Exception('Unknown property value type: ' . gettype($value) . ' for property: ' . $property);
-                    }
-                    break;
-
+            if (is_scalar($value)) {
+                $currentProperty->nodeValue = $value;
+            } elseif ($value instanceof Sabre_DAV_Property) {
+                $value->serialize($currentProperty);
+            } else {
+                throw new Sabre_DAV_Exception('Unknown property value type: ' . gettype($value) . ' for property: ' . $property);
             }
 
         }

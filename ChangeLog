@@ -1,6 +1,7 @@
 0.7-alpha (2009-??-??)
 	* Added: System to return complex properties from PROPFIND
 	* Added: support for {DAV:}supportedlock
+	* Added: support for {DAV:}lockDiscovery
 	* Added: 1 unittest
 	* Fixed: bug related to parsing proppatch and propfind requests. Didn't
 	show up in most clients, but it needed fixing regardless.

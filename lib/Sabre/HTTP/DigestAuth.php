@@ -92,8 +92,13 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
     protected function validate() {
 
         $A2 = $this->httpRequest->getMethod() . ':' . $this->digestParts['uri'];
-        
-        if ($this->digestParts['qop']=='auth-int') $A2 .= ':' . md5($this->httpRequest->getBody(true));
+       
+
+        if ($this->digestParts['qop']=='auth-int') {
+            $body = $this->httpRequest->getBody(true);
+            $this->httpRequest->setBody($body);
+            $A2 .= ':' . md5($body);
+        }
 
         $A2 = md5($A2);
 

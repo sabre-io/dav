@@ -6,6 +6,10 @@
  * This object can be used to easily access information about an HTTP request.
  * It can additionally be used to create 'mock' requests.
  *
+ * This class mostly operates indepentend, but because of the nature of a single 
+ * request per run it can operate as a singleton. For more information check out 
+ * the behaviour around 'defaultInputStream'.
+ *
  * @package Sabre
  * @subpackage HTTP 
  * @version $Id: BasicAuth.php 202 2009-01-19 19:38:55Z evertpot $
@@ -30,7 +34,16 @@ class Sabre_HTTP_Request {
      * @var resource 
      */
     protected $body = null;
-    
+
+    /**
+     * This will be set as the 'default' inputStream for a specific HTTP request
+     * We sometimes need to retain, or rebuild this if we need multiple runs 
+     * of parsing the original HTTP request.
+     * 
+     * @var resource 
+     */
+    static $defaultInputStream=null;
+
     /**
      * Sets up the object
      *
@@ -97,10 +110,16 @@ class Sabre_HTTP_Request {
     public function getBody($asString = false) {
 
         if (is_null($this->body)) {
-            $this->body = fopen('php://input','r');
+            if (!is_null(self::$defaultInputStream)) {
+                $this->body = self::$defaultInputStream;
+            } else {
+                $this->body = fopen('php://input','r');
+                self::$defaultInputStream = $this->body;
+            }
         }
         if ($asString) {
-            return stream_get_contents($this->body);
+            $body = stream_get_contents($this->body);
+            return $body;
         } else {
             return $this->body;
         }
@@ -112,19 +131,27 @@ class Sabre_HTTP_Request {
      * 
      * This method can either accept a string, or a readable stream resource.
      *
+     * If the setAsDefaultInputStream is set to true, it means for this run of the 
+     * script the supplied body will be used instead of php://input.
+     *
      * @param mixed $body 
+     * @param bool $setAsDefaultInputStream
      * @return void
      */
-    public function setBody($body) {
+    public function setBody($body,$setAsDefaultInputStream = true) {
 
         if(is_resource($body)) {
             $this->body = $body;
         } else {
+
             $stream = fopen('php://temp','r+');
-            fwrite($stream,$body);
+            fputs($stream,$body);
             rewind($stream);
             // String is assumed
             $this->body = $stream;
+        }
+        if ($setAsDefaultInputStream) {
+            self::$defaultInputStream = $this->body;
         }
 
     }

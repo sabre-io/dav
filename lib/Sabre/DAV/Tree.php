@@ -116,7 +116,7 @@ abstract class Sabre_DAV_Tree {
      */
     public function supportsLocks() {
 
-        return $this->lockManager;
+        return $this->lockManager==true;
 
     }
 

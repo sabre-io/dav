@@ -93,6 +93,26 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype/d:write');
         $this->assertEquals(2,count($data),'We expected two \'d:write\' tags');
     }
+
+    function testLockDiscovery() {
+
+        $xml = '<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:">
+  <d:prop>
+    <d:lockdiscovery />
+  </d:prop>
+</d:propfind>';
+
+        $this->sendRequest($xml);
+        
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:lockdiscovery');
+        $this->assertEquals(1,count($data),'We expected a \'d:lockdiscovery\' tag');
+
+    }
 }
 
 ?>

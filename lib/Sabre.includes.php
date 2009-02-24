@@ -14,9 +14,10 @@ include 'Sabre/DAV/Exception.php';
 
 /* Properties */
 include 'Sabre/DAV/Property.php';
-include 'Sabre/DAV/Property/SupportedLock.php';
 include 'Sabre/DAV/Property/GetLastModified.php';
 include 'Sabre/DAV/Property/ResourceType.php';
+include 'Sabre/DAV/Property/SupportedLock.php';
+include 'Sabre/DAV/Property/LockDiscovery.php';
 
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';

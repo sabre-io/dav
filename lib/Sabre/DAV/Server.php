@@ -320,6 +320,10 @@ class Sabre_DAV_Server {
             $newProps['href'] = $file['name']; 
 
             if (in_array('{DAV:}supportedlock',$properties)) $newProps['{DAV:}supportedlock'] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks());
+            
+            if ($this->tree->supportsLocks()) 
+                if (in_array('{DAV:}lockdiscovery',$properties)) $newProps['{DAV:}lockdiscovery'] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($path));
+             
 
             //print_r($newProps);die();
 

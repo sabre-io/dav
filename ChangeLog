@@ -4,6 +4,7 @@
 	* Added: 1 unittest
 	* Fixed: bug related to parsing proppatch and propfind requests. Didn't
 	show up in most clients, but it needed fixing regardless.
+	* Fixed: auth-int is now properly supported within HTTP Digest.
 
 0.6-alpha (2009-02-16)
 	* Added: Now uses streams for files, instead of strings.

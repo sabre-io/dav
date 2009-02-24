@@ -43,7 +43,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status);
 
         $this->assertEquals(array(
-                'Content-Type' => 'text/xml; charset="utf-8"',
+                'Content-Type' => 'application/xml; charset="utf-8"',
             ),
             $this->response->headers
          );

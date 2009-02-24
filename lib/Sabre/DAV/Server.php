@@ -334,7 +334,7 @@ class Sabre_DAV_Server {
 
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
-        $this->httpResponse->setHeader('Content-Type','text/xml; charset="utf-8"');
+        $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
         $data = $this->generatePropfindResponse($fileList,$properties);
         $this->httpResponse->sendBody($data);
 

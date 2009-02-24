@@ -138,7 +138,7 @@ class Sabre_HTTP_Request {
      * @param bool $setAsDefaultInputStream
      * @return void
      */
-    public function setBody($body,$setAsDefaultInputStream = true) {
+    public function setBody($body,$setAsDefaultInputStream = false) {
 
         if(is_resource($body)) {
             $this->body = $body;

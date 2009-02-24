@@ -2,7 +2,7 @@
 	* Added: System to return complex properties from PROPFIND
 	* Added: support for {DAV:}supportedlock
 	* Added: support for {DAV:}lockDiscovery
-	* Added: 1 unittest
+	* Added: 2 unittests
 	* Fixed: bug related to parsing proppatch and propfind requests. Didn't
 	show up in most clients, but it needed fixing regardless.
 	* Fixed: auth-int is now properly supported within HTTP Digest.

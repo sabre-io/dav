@@ -96,7 +96,7 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
 
         if ($this->digestParts['qop']=='auth-int') {
             $body = $this->httpRequest->getBody(true);
-            $this->httpRequest->setBody($body);
+            $this->httpRequest->setBody($body,true);
             $A2 .= ':' . md5($body);
         }
 

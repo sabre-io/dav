@@ -132,6 +132,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody("");
         $this->server->setHTTPRequest($request);
         $this->server->exec();
 

@@ -215,7 +215,7 @@ class Sabre_DAV_Server {
             // New read/write stream
             $newStream = fopen('php://temp','r+');
 
-            stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
+            stream_copy_to_stream($body, $newStream, $end-$start+1, $start-1);
             rewind($newStream);
 
             $this->httpResponse->setHeader('Content-Length', $end-$start+1);

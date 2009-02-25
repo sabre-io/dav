@@ -207,7 +207,11 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
                     ));
                     
                 } else {
-                    throw new Sabre_DAV_FileNotFoundException();
+                    if ($this->passThroughGets) {
+                        return parent::getNodeInfo($path,$depth);
+                    } else {
+                        throw new Sabre_DAV_FileNotFoundException();
+                    }
                 }
             }
             $props = array(

@@ -39,6 +39,15 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
     private $dataDir = null;
 
     /**
+     * If this is set to true, the TemporaryFileFilter will pass through GET 
+     * through GET requests in the event it's not already stored in the temporary
+     * file directory.
+     * 
+     * @var bool 
+     */
+    public $passThroughGets = false;
+
+    /**
      * This constant is a base64-encoded, gzipped .DS_Store file.
      * We serve this exact file (decoded) for every request for .DS_Store
      * files, because we've found it speeds up Finder (a little bit).
@@ -142,7 +151,13 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
 
             if (!file_exists($tempPath)) {
                 if (strpos(basename($path),'._')===0) return gzuncompress(base64_decode(self::FINDER_FORK));
-                else throw new Sabre_DAV_FileNotFoundException();
+                else {
+                    if ($this->passThroughGets) {
+                        return parent::get($path);
+                    } else {
+                        throw new Sabre_DAV_FileNotFoundException();
+                    }
+                }
             } else { 
                 return fopen($tempPath,'r');
             }

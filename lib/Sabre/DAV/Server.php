@@ -205,7 +205,7 @@ class Sabre_DAV_Server {
 
             } else {
 
-                $start = $nodeInfo[0]['size']-$range[1];
+                $start = $nodeInfo[0]['size']-$range[1]-1;
                 $end  = $nodeInfo[0]['size']-1;
 
                 if ($start<0) $start = 0;
@@ -215,10 +215,10 @@ class Sabre_DAV_Server {
             // New read/write stream
             $newStream = fopen('php://temp','r+');
 
-            stream_copy_to_stream($body, $newStream, $end-$start+1, $start-1);
+            stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
             rewind($newStream);
 
-            $this->httpResponse->setHeader('Content-Length', $end-$start+1);
+            //$this->httpResponse->setHeader('Content-Length', $end-$start+1);
             $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeInfo[0]['size']);
             $this->httpResponse->sendStatus(206);
             $this->httpResponse->sendBody($newStream);

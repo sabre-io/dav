@@ -53,8 +53,7 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
      * files, because we've found it speeds up Finder (a little bit).
      */
     const FINDER_FORK =
-        'eJzt1zFrAjEUB/AXodhbtDh0KkfmInI4uhVdHESoh5Ru8XzScLkk5CLit+pncuq30IhnqcLRzUHej4Rwj/cPuWyBh+cmNAAmIuPTGf/glWMNojD7AK3vsIbv1g6AxXD2BDXe0vQ9LJ1TAn7C/LxqaVT11zAyU/SEtQp7BXqxFF4M8slo7LEYl7PMIeqhsH7t8BRlYV9IALr1uYtUurUhubBKlj5JosdqF1adhF2dLDp3zjdSL83mv/523S0QQgghhBBCCLk1Bn+ebXH6JUvusDRrlyFfGZdzqT1qL40WSm25wpXnCyV0fnwH34HL//8tv0C83x8AUcxHTA==';
-
+        'eJxjYBVjZ2BiYPBNTFbwD1aIUIACkBgDJxAbMTDwbQDSQD7fIwYGRjkGKGBhwAUcQ0KCgBQfRAdDBU6Fo2AUjIJRMApGwSgYBaNgFIyCUTAKRgEVASMUg4FcSEZmsUJRanF+aVFyqkJaflG2QmZeSWpeSWZ+XmJOTqVCTmpaiUJSTmJeNqgfPAwAqv/hwjIMcv//AwA3/xuY';
     /**
      * Sets the directory which should be used for temporary files 
      * 

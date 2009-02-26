@@ -320,7 +320,8 @@ class Sabre_DAV_Server {
             $newProps['href'] = $file['name']; 
 
             if (!$properties || in_array('{DAV:}supportedlock',$properties)) $newProps['{DAV:}supportedlock'] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks());
-            
+            //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
+
             if ($this->tree->supportsLocks()) 
                 if (!$properties || in_array('{DAV:}lockdiscovery',$properties)) $newProps['{DAV:}lockdiscovery'] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($path));
              

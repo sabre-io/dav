@@ -193,6 +193,51 @@ abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * Updates properties
+     *
+     * This method will receive an array, containing arrays with update information
+     * The secondary array will have the following elements:
+     *   0 - 1 = set, 2 = remove
+     *   1 - the name of the element
+     *   2 - the value of the element, represented as a DOMElement 
+     * 
+     * This method should return a similar array, except it should only return the name of the element and a status code for every mutation. The statuscode should be
+     *   200 - if the property was updated
+     *   201 - if a new property was created
+     *   403 - if changing/deleting the property wasn't allowed
+     *   404 - if a non-existent property was attempted to be deleted
+     *   or any other applicable HTTP status code
+     *
+     * The method can also simply return false, if updating properties is not supported
+     *
+     * @param string $uri the uri for this operation 
+     * @param array $mutations 
+     * @return void
+     */
+    public function updateProperties($uri, $mutations) {
+
+        return $this->subject->updateProperties($uri,$mutations);
+
+    }
+
+    /**
+     * Returns a list of properties
+     *
+     * The returned struct should be in the format:
+     *
+     *   namespace#tagName => contents
+     * 
+     * @param string $uri The requested uri
+     * @param array $properties An array with properties, if its left empty it should return all properties
+     * @return void
+     */
+    public function getProperties($uri,$properties) {
+        
+        return $this->subject->getProperties($uri,$properties);
+
+    }
+
 
 }
 

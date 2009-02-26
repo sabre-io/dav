@@ -1174,11 +1174,12 @@ class Sabre_DAV_Server {
     function generateLockResponse($lockInfo) {
 
         $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
         
         $prop = $dom->createElementNS('DAV:','d:prop');
         $dom->appendChild($prop);
 
-        $lockdiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
+        $lockDiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
         $prop->appendChild($lockDiscovery);
 
         $lockObj = new Sabre_DAV_Property_LockDiscovery(array($lockInfo),true);

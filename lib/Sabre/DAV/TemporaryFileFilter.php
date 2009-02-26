@@ -48,13 +48,6 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
     public $passThroughGets = false;
 
     /**
-     * This constant is a base64-encoded, gzipped .DS_Store file.
-     * We serve this exact file (decoded) for every request for .DS_Store
-     * files, because we've found it speeds up Finder (a little bit).
-     */
-    const FINDER_FORK =
-        'eJxjYBVjZ2BiYPBNTFbwD1aIUIACkBgDJxAbMTDwbQDSQD7fIwYGRjkGKGBhwAUcQ0KCgBQfRAdDBU6Fo2AUjIJRMApGwSgYBaNgFIyCUTAKRgEVASMUg4FcSEZmsUJRanF+aVFyqkJaflG2QmZeSWpeSWZ+XmJOTqVCTmpaiUJSTmJeNqgfPAwAqv/hwjIMcv//AwA3/xuY';
-    /**
      * Sets the directory which should be used for temporary files 
      * 
      * @param string $path 
@@ -149,13 +142,10 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
         if ($tempPath = $this->isTempFile($path)) {
 
             if (!file_exists($tempPath)) {
-                if (strpos(basename($path),'._.')===0) return gzuncompress(base64_decode(self::FINDER_FORK));
-                else {
-                    if ($this->passThroughGets) {
-                        return parent::get($path);
-                    } else {
-                        throw new Sabre_DAV_FileNotFoundException();
-                    }
+                if ($this->passThroughGets) {
+                    return parent::get($path);
+                } else {
+                    throw new Sabre_DAV_FileNotFoundException();
                 }
             } else { 
                 return fopen($tempPath,'r');
@@ -195,23 +185,14 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
 
         if (($tempPath = $this->isTempFile($path)) && !$depth) {
 
-            //echo $tempPath;
             if (!file_exists($tempPath)) {
-                if (strpos(basename($path),'._')===0) {
-                    return array(array(
-                        'name'         => '',
-                        'type'         => Sabre_DAV_Server::NODE_FILE,
-                        'lastmodified' => filemtime(__FILE__),
-                        'size'         => 4096, 
-                    ));
-                    
+
+                if ($this->passThroughGets) {
+                    return parent::getNodeInfo($path,$depth);
                 } else {
-                    if ($this->passThroughGets) {
-                        return parent::getNodeInfo($path,$depth);
-                    } else {
-                        throw new Sabre_DAV_FileNotFoundException();
-                    }
+                    throw new Sabre_DAV_FileNotFoundException();
                 }
+
             }
             $props = array(
                 'name'         => '',

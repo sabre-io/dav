@@ -218,7 +218,7 @@ class Sabre_DAV_Server {
             stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
             rewind($newStream);
 
-            //$this->httpResponse->setHeader('Content-Length', $end-$start+1);
+            $this->httpResponse->setHeader('Content-Length', $end-$start+1);
             $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeInfo[0]['size']);
             $this->httpResponse->sendStatus(206);
             $this->httpResponse->sendBody($newStream);

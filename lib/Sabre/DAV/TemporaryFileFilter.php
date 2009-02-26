@@ -149,7 +149,7 @@ class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
         if ($tempPath = $this->isTempFile($path)) {
 
             if (!file_exists($tempPath)) {
-                if (strpos(basename($path),'._')===0) return gzuncompress(base64_decode(self::FINDER_FORK));
+                if (strpos(basename($path),'._.')===0) return gzuncompress(base64_decode(self::FINDER_FORK));
                 else {
                     if ($this->passThroughGets) {
                         return parent::get($path);

@@ -1173,29 +1173,18 @@ class Sabre_DAV_Server {
 
     function generateLockResponse($lockInfo) {
 
-        $xw = new XMLWriter();
-        $xw->openMemory();
-        $xw->setIndent(true);
-        $xw->startDocument('1.0','utf-8');
-        $xw->startElementNS('d','prop','DAV:');
-            $xw->startElement('d:lockdiscovery');
-                $xw->startElement('d:activelock');
-                    $xw->startElement('d:lockscope');
-                        $xw->writeRaw($lockInfo->scope==Sabre_DAV_Lock::EXCLUSIVE?'<d:exclusive />':'<d:shared />');
-                    $xw->endElement();
-                    $xw->startElement('d:locktype');
-                        $xw->writeRaw('<d:write />');
-                    $xw->endElement();
-                    $xw->writeElement('d:depth',($lockInfo->depth == self::DEPTH_INFINITY?'infinity':$lockInfo->depth));
-                    $xw->writeElement('d:timeout','Second-' . $lockInfo->timeout);
-                    $xw->startElement('d:locktoken');
-                        $xw->writeElement('d:href','opaquelocktoken:' . $lockInfo->token);
-                    $xw->endElement();
-                    $xw->writeElement('d:owner',$lockInfo->owner);
-                $xw->endElement();
-            $xw->endElement();    
-        $xw->endElement();
-        return $xw->outputMemory();
+        $dom = new DOMDocument('1.0','utf-8');
+        
+        $prop = $dom->createElementNS('DAV:','d:prop');
+        $dom->appendChild($prop);
+
+        $lockdiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
+        $prop->appendChild($lockDiscovery);
+
+        $lockObj = new Sabre_DAV_Property_LockDiscovery(array($lockInfo),true);
+        $lockObj->serialize($lockDiscovery);
+
+        return $dom->saveXML();
 
     }
 

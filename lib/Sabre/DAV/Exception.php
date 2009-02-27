@@ -179,7 +179,7 @@ class Sabre_DAV_MethodNotAllowedException extends Sabre_DAV_Exception {
  */
 class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
 
-    private $lock;
+    protected $lock;
 
     function __construct($lock = null) {
 
@@ -196,6 +196,26 @@ class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
         
         if ($this->lock) {
             $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');
+            $errorNode->appendChild($error);
+            if (!is_object($this->lock)) var_dump($this->lock);
+            $error->appendChild($errorNode->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));
+        }
+
+    }
+
+}
+
+/**
+ * ConflictingLockException 
+ *
+ * Similar to the LockedException, this exception thrown when a LOCK request was made, on a resource which was already locked
+ */
+class Sabre_DAV_ConflictingLockException extends Sabre_DAV_LockedException {
+
+    function serialize(DOMElement $errorNode) {
+        
+        if ($this->lock) {
+            $error = $errorNode->ownerDocument->createElementNS('DAV:','d:no-conflicting-lock');
             $errorNode->appendChild($error);
             if (!is_object($this->lock)) var_dump($this->lock);
             $error->appendChild($errorNode->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));

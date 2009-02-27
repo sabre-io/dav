@@ -575,7 +575,7 @@ class Sabre_DAV_Server {
             // If ohe existing lock was an exclusive lock, we need to fail
             if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
                 //var_dump($lastLock);
-                throw new Sabre_DAV_LockedException($lastLock);
+                throw new Sabre_DAV_ConflictingLockException($lastLock);
             }
 
         }
@@ -585,7 +585,7 @@ class Sabre_DAV_Server {
             $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
             $lockInfo->depth = $this->getHTTPDepth(0); 
             $lockInfo->uri = $uri;
-            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_LockedException($lastLock);
+            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_ConflictingLockException($lastLock);
 
         } elseif ($lastLock) {
 

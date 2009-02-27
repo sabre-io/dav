@@ -180,6 +180,12 @@ class Sabre_DAV_Server {
 
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
 
+        if ($nodeInfo[0]['type']==self::NODE_DIRECTORY) {
+            
+            throw new Sabre_DAV_NotFoundException('GET is not currently implemented on collections');
+
+        }
+
         $body = $this->tree->get($this->getRequestUri());
 
         // Converting string into stream, if needed.

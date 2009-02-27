@@ -32,6 +32,17 @@ class Sabre_DAV_Exception extends Exception {
 
     }
 
+    /**
+     * This method allows the exception to include additonal information into the WebDAV error response 
+     * 
+     * @param DOMElement $errorNode 
+     * @return void
+     */
+    public function serialize(DOMElement $errorNode) {
+    
+
+    }
+
 }
 
 /**
@@ -125,6 +136,28 @@ class Sabre_DAV_ConflictException extends Sabre_DAV_Exception {
 }
 
 /**
+ * LockTokenMatchesRequestUriException 
+ *
+ * This exception is thrown by UNLOCK if a supplied lock-token is invalid 
+ */
+class Sabre_DAV_LockTokenMatchesRequestUriException extends Sabre_DAV_ConflictException {
+
+    function __construct() {
+
+        $this->message = 'The locktoken supplied does not match any locks on this entity';
+
+    }
+
+    function serialize(DOMElement $errorNode) {
+
+        $error = $node->ownerDocument->createElementNS('DAV:','d:lock-token-matches-request-uri');
+        $errorNode->appendChild($error);
+
+    }
+
+}
+
+/**
  * MethodNotAllowedException 
  *
  * The 405 is thrown when a client tried to create a directory on an already existing directory
@@ -149,6 +182,32 @@ class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
     function getHTTPCode() {
 
         return 423;
+
+    }
+
+}
+/**
+ * LockedException 
+ *
+ * The 423 is thrown when a client tried to access a resource that was locked, without supplying a valid lock token
+ */
+class Sabre_DAV_InvalidLockException extends Sabre_DAV_Exception {
+
+    private $lock;
+
+    function __construct($lock) {
+
+        $this->lock = $lock;
+
+    }
+    
+    function serialize(DOMElement $errorNode) {
+        
+        if ($this->lock) {
+            $error = $node->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');
+            $errorNode->appendChild($error);
+            $error->appendChild($node->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));
+        }
 
     }
 

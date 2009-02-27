@@ -84,10 +84,27 @@ class Sabre_DAV_Server {
 
             $this->invoke();
 
-        } catch (Sabre_DAV_Exception $e) {
+        } catch (Exception $e) {
 
-            $this->httpResponse->sendStatus($e->getHTTPCode());
-            $this->httpResponse->sendBody((string)$e);
+            $DOM = new DOMDocument('1.0','utf-8');
+            $DOM->formatOutput = true;
+
+            $error = $DOM->createElementNS('DAV:','d:error');
+            //$error->setAttribute('xmlns:s','http://www.rooftopsolutions.nl/NS/sabredav');
+            $DOM->appendChild($error);
+            $DOM->appendChild($DOM->createElementNS('http://www.rooftopsolutions.nl/NS/sabredav','s:exception',get_class($e)));
+            $DOM->appendChild($DOM->createElementNS('http://www.rooftopsolutions.nl/NS/sabredav','s:message',$e->getMessage()));
+            $DOM->appendChild($DOM->createElementNS('http://www.rooftopsolutions.nl/NS/sabredav','s:code',$e->getCode()));
+
+            if($e instanceof Sabre_DAV_Exception) {
+                $httpCode = $e->getHTTPCode();
+                $e->serialize($error);
+            } else {
+                $httpCode = 500;
+            }
+            
+            $this->httpResponse->sendStatus($httpCode);
+            $this->httpResponse->sendBody($DOM->saveXML());
 
         } catch (Exception $e) {
 
@@ -353,7 +370,8 @@ class Sabre_DAV_Server {
     protected function httpPropPatch() {
 
         // Checking possible locks
-        if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+        $lastLock = null;
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
        
         $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
@@ -389,7 +407,8 @@ class Sabre_DAV_Server {
             $info = $this->tree->getNodeInfo($this->getRequestUri(),0); 
             
             // Checking potential locks
-            if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+            $lastLock = null;
+            if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
 
             // We got this far, this means the node already exists.
             // This also means we should check for the If-None-Match header
@@ -411,7 +430,8 @@ class Sabre_DAV_Server {
 
             // Validating the lock on the parent collection
             $parent = dirname($this->getRequestUri());
-            if (!$this->validateLock($parent)) throw new Sabre_DAV_LockedException('You\'re creating a new file, but the parent collection is currently locked');
+            $lastLock = null;
+            if (!$this->validateLock($parent,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
 
             // This means the resource doesn't exist yet, and we're creating a new one
             $this->tree->createFile($this->getRequestUri(),$this->httpRequest->getBody());
@@ -453,7 +473,8 @@ class Sabre_DAV_Server {
      */
     protected function httpMkcol() {
 
-        if (!$this->validateLock()) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+        $lastLock = null;
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
 
         $requestUri = $this->getRequestUri();
 
@@ -502,7 +523,8 @@ class Sabre_DAV_Server {
 
         $moveInfo = $this->getCopyAndMoveInfo();
 
-        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']))) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+        $lastLock = null;
+        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']),$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
 
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
@@ -523,7 +545,8 @@ class Sabre_DAV_Server {
 
         $copyInfo = $this->getCopyAndMoveInfo();
 
-        if (!$this->validateLock($copyInfo['destination'])) throw new Sabre_DAV_LockedException('The resource you tried to edit is locked');
+        $lastLock = null;
+        if (!$this->validateLock($copyInfo['destination'],$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
 
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
@@ -555,7 +578,7 @@ class Sabre_DAV_Server {
             // If ohe existing lock was an exclusive lock, we need to fail
             if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
                 //var_dump($lastLock);
-                throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked'  . print_r($lastLock,true));
+                throw new Sabre_DAV_InvalidLockTokenException($lastLock);
             }
 
         }
@@ -635,7 +658,7 @@ class Sabre_DAV_Server {
         }
 
         // If we got here, it means the locktoken was invalid
-        throw new Sabre_DAV_PreconditionFailedException('The uri wasn\'t locked, or the supplied locktoken was incorrect' . print_r($locks,true));
+        throw new Sabre_DAV_LockTokenMatchesRequestUriException();
 
     }
 

@@ -33,6 +33,7 @@ class Sabre_HTTP_Response {
             405 => 'Method not allowed',
             409 => 'Conflict',
             412 => 'Precondition failed',
+            414 => 'Request-URI Too Long',
             415 => 'Unsupported Media Type',
             416 => 'Requested Range Not Satisfiable',
             423 => 'Locked',

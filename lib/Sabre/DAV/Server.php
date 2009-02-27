@@ -90,11 +90,12 @@ class Sabre_DAV_Server {
             $DOM->formatOutput = true;
 
             $error = $DOM->createElementNS('DAV:','d:error');
-            //$error->setAttribute('xmlns:s','http://www.rooftopsolutions.nl/NS/sabredav');
+            $error->setAttribute('xmlns:s','http://www.rooftopsolutions.nl/NS/sabredav');
             $DOM->appendChild($error);
-            $DOM->appendChild($DOM->createElementNS('http://www.rooftopsolutions.nl/NS/sabredav','s:exception',get_class($e)));
-            $DOM->appendChild($DOM->createElementNS('http://www.rooftopsolutions.nl/NS/sabredav','s:message',$e->getMessage()));
-            $DOM->appendChild($DOM->createElementNS('http://www.rooftopsolutions.nl/NS/sabredav','s:code',$e->getCode()));
+
+            $DOM->appendChild($DOM->createElement('s:exception',get_class($e)));
+            $DOM->appendChild($DOM->createElement('s:message',$e->getMessage()));
+            $DOM->appendChild($DOM->createElement('s:code',$e->getCode()));
 
             if($e instanceof Sabre_DAV_Exception) {
                 $httpCode = $e->getHTTPCode();
@@ -105,11 +106,6 @@ class Sabre_DAV_Server {
             
             $this->httpResponse->sendStatus($httpCode);
             $this->httpResponse->sendBody($DOM->saveXML());
-
-        } catch (Exception $e) {
-
-            $this->httpResponse->sendStatus(500);
-            throw $e;
 
         }
 

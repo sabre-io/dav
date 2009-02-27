@@ -133,28 +133,7 @@ abstract class Sabre_DAV_Tree {
     public function getLocks($uri) {
 
         if (!$this->lockManager) return array(); 
-        $lockList = array();
-        $currentPath = '';
-        foreach(explode('/',$uri) as $uriPart) {
-
-            // weird algorithm that can probably be improved, but we're traversing the path top down 
-            if ($currentPath) $currentPath.='/'; 
-            $currentPath.=$uriPart;
-
-            $uriLocks = $this->lockManager->getLocks($uri);
-
-            foreach($uriLocks as $uriLock) {
-
-                // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
-                if($uri==$currentPath || $uriLock->depth!=0) {
-                    $uriLock->uri = $currentPath;
-                    $lockList[] = $uriLock;
-                }
-
-            }
-
-        }
-        return $lockList;
+        return $this->lockManager->getLocks($uri);
     }
 
 

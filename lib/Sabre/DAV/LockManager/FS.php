@@ -45,16 +45,41 @@ class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
     /**
      * Returns a list of Sabre_DAV_Lock objects  
      * 
+     * This method should return all the locks for a particular uri, including
+     * locks that might be set on a parent uri.
+     *
      * @param string $uri 
      * @return array 
      */
     public function getLocks($uri) {
 
-        $locks = $this->getData($uri);
-        foreach($locks as $k=>$lock) {
+        $lockList = array();
+        $currentPath = '';
+        foreach(explode('/',$uri) as $uriPart) {
+
+            // weird algorithm that can probably be improved, but we're traversing the path top down 
+            if ($currentPath) $currentPath.='/'; 
+            $currentPath.=$uriPart;
+
+            $uriLocks = $this->getData($uri);
+
+            foreach($uriLocks as $uriLock) {
+
+                // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
+                if($uri==$currentPath || $uriLock->depth!=0) {
+                    $uriLock->uri = $currentPath;
+                    $lockList[] = $uriLock;
+                }
+
+            }
+
+        }
+
+        // Checking if we can remove any of these locks
+        foreach($lockList as $k=>$lock) {
             if (time() > $lock->timeout + $lock->created) unset($locks[$k]); 
         }
-        return $locks;
+        return $lockList;
 
     }
 

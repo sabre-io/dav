@@ -17,6 +17,9 @@ abstract class Sabre_DAV_LockManager {
     /**
      * Returns a list of Sabre_DAV_Lock objects  
      * 
+     * This method should return all the locks for a particular uri, including
+     * locks that might be set on a parent uri.
+     *
      * @param string $uri 
      * @return array 
      */

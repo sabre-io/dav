@@ -193,7 +193,7 @@ class Sabre_DAV_Server {
         if ($nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
 
             // Determining the exact byte offsets
-            if ($range[0]) {
+            if (!is_null($range[0])) {
 
                 $start = $range[0];
                 $end = $range[1]?$range[1]:$nodeInfo[0]['size']-1;
@@ -205,7 +205,7 @@ class Sabre_DAV_Server {
 
             } else {
 
-                $start = $nodeInfo[0]['size']-$range[1]-1;
+                $start = $nodeInfo[0]['size']-$range[1];
                 $end  = $nodeInfo[0]['size']-1;
 
                 if ($start<0) $start = 0;

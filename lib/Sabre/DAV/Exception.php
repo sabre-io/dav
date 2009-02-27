@@ -150,7 +150,7 @@ class Sabre_DAV_LockTokenMatchesRequestUriException extends Sabre_DAV_ConflictEx
 
     function serialize(DOMElement $errorNode) {
 
-        $error = $node->ownerDocument->createElementNS('DAV:','d:lock-token-matches-request-uri');
+        $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-matches-request-uri');
         $errorNode->appendChild($error);
 
     }
@@ -179,34 +179,26 @@ class Sabre_DAV_MethodNotAllowedException extends Sabre_DAV_Exception {
  */
 class Sabre_DAV_LockedException extends Sabre_DAV_Exception {
 
+    private $lock;
+
+    function __construct($lock = null) {
+
+        $this->lock = $lock;
+
+    }
     function getHTTPCode() {
 
         return 423;
 
     }
 
-}
-/**
- * LockedException 
- *
- * The 423 is thrown when a client tried to access a resource that was locked, without supplying a valid lock token
- */
-class Sabre_DAV_InvalidLockException extends Sabre_DAV_Exception {
-
-    private $lock;
-
-    function __construct($lock) {
-
-        $this->lock = $lock;
-
-    }
-    
     function serialize(DOMElement $errorNode) {
         
         if ($this->lock) {
-            $error = $node->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');
+            $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');
             $errorNode->appendChild($error);
-            $error->appendChild($node->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));
+            if (!is_object($this->lock)) var_dump($this->lock);
+            $error->appendChild($errorNode->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));
         }
 
     }

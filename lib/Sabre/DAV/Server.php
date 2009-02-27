@@ -289,7 +289,8 @@ class Sabre_DAV_Server {
      */
     protected function httpDelete() {
 
-        if (!$this->validateLock()) throw new Sabre_DAV_lockedException('The resource you tried to delete is locked');
+        $lastLock = null;
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
         $this->tree->delete($this->getRequestUri());
         $this->httpResponse->sendStatus(204);
 
@@ -371,7 +372,7 @@ class Sabre_DAV_Server {
 
         // Checking possible locks
         $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
        
         $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
@@ -408,7 +409,7 @@ class Sabre_DAV_Server {
             
             // Checking potential locks
             $lastLock = null;
-            if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+            if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
 
             // We got this far, this means the node already exists.
             // This also means we should check for the If-None-Match header
@@ -431,7 +432,7 @@ class Sabre_DAV_Server {
             // Validating the lock on the parent collection
             $parent = dirname($this->getRequestUri());
             $lastLock = null;
-            if (!$this->validateLock($parent,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+            if (!$this->validateLock($parent,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
 
             // This means the resource doesn't exist yet, and we're creating a new one
             $this->tree->createFile($this->getRequestUri(),$this->httpRequest->getBody());
@@ -474,7 +475,7 @@ class Sabre_DAV_Server {
     protected function httpMkcol() {
 
         $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
 
         $requestUri = $this->getRequestUri();
 
@@ -524,7 +525,7 @@ class Sabre_DAV_Server {
         $moveInfo = $this->getCopyAndMoveInfo();
 
         $lastLock = null;
-        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']),$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']),$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
 
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
@@ -546,7 +547,7 @@ class Sabre_DAV_Server {
         $copyInfo = $this->getCopyAndMoveInfo();
 
         $lastLock = null;
-        if (!$this->validateLock($copyInfo['destination'],$lastLock)) throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+        if (!$this->validateLock($copyInfo['destination'],$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
 
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
@@ -578,7 +579,7 @@ class Sabre_DAV_Server {
             // If ohe existing lock was an exclusive lock, we need to fail
             if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
                 //var_dump($lastLock);
-                throw new Sabre_DAV_InvalidLockTokenException($lastLock);
+                throw new Sabre_DAV_LockedException($lastLock);
             }
 
         }
@@ -588,7 +589,7 @@ class Sabre_DAV_Server {
             $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
             $lockInfo->depth = $this->getHTTPDepth(0); 
             $lockInfo->uri = $uri;
-            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_LockedException('You tried to lock a url that was already locked');
+            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_LockedException($lastLock);
 
         } elseif ($lastLock) {
 

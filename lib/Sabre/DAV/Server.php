@@ -446,8 +446,11 @@ class Sabre_DAV_Server {
      *
      * If a post variable 'redirectUrl' is supplied, it will return a 'Location: ' header, thus redirecting the client to the given location
      */
-    protected function httpPOST() {
+    protected function httpPost() {
 
+        throw new Sabre_DAV_PermissionDeniedException('POST is currently not implemented');
+
+        /*
         foreach($_FILES as $file) {
 
             $this->tree->put($this->getRequestUri().'/' . basename($file['name']),fopen($file['tmp_name'],'r'));
@@ -457,6 +460,7 @@ class Sabre_DAV_Server {
 
         // We assume > 5.1.2, which has the header injection attack prevention
         if (isset($_POST['redirectUrl']) && is_string($_POST['redirectUrl'])) $this->httpResponse->setHeader('Location', $_POST['redirectUrl']);
+        */
 
     }
 

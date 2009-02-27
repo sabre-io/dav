@@ -93,9 +93,9 @@ class Sabre_DAV_Server {
             $error->setAttribute('xmlns:s','http://www.rooftopsolutions.nl/NS/sabredav');
             $DOM->appendChild($error);
 
-            $DOM->appendChild($DOM->createElement('s:exception',get_class($e)));
-            $DOM->appendChild($DOM->createElement('s:message',$e->getMessage()));
-            $DOM->appendChild($DOM->createElement('s:code',$e->getCode()));
+            $error->appendChild($DOM->createElement('s:exception',get_class($e)));
+            $error->appendChild($DOM->createElement('s:message',$e->getMessage()));
+            $error->appendChild($DOM->createElement('s:code',$e->getCode()));
 
             if($e instanceof Sabre_DAV_Exception) {
                 $httpCode = $e->getHTTPCode();
@@ -105,6 +105,7 @@ class Sabre_DAV_Server {
             }
             
             $this->httpResponse->sendStatus($httpCode);
+            $this->httpResponse->setHeader('Content-Type','application/xml');
             $this->httpResponse->sendBody($DOM->saveXML());
 
         }
@@ -182,7 +183,7 @@ class Sabre_DAV_Server {
 
         if ($nodeInfo[0]['type']==self::NODE_DIRECTORY) {
             
-            throw new Sabre_DAV_NotFoundException('GET is not currently implemented on collections');
+            throw new Sabre_DAV_NotImplementedException('GET is not currently implemented on collections');
 
         }
 

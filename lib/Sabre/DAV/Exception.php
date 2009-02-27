@@ -86,11 +86,11 @@ class Sabre_DAV_PermissionDeniedException extends Sabre_DAV_Exception {
 }
 
 /**
- * MethodNotImplementedException 
+ * NotImplementedException 
  *
- * This exception is thrown when the client tried to call an unsupported HTTP method
+ * This exception is thrown when the client tried to call an unsupported HTTP method or other feature
  */
-class Sabre_DAV_MethodNotImplementedException extends Sabre_DAV_Exception {
+class Sabre_DAV_NotImplementedException extends Sabre_DAV_Exception {
 
     /**
      * getHTTPCode 

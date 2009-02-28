@@ -159,7 +159,7 @@ class Sabre_DAV_Server {
     protected function httpOptions() {
 
         $this->httpResponse->setHeader('Allow',strtoupper(implode(' ',$this->getAllowedMethods())));
-        if ($this->tree->supportsLocks()) {
+        if ($this->tree->supportsLocks('')) {
             $this->httpResponse->setHeader('DAV','1,2,3');
         } else {
             $this->httpResponse->setHeader('DAV','1,3');
@@ -340,10 +340,10 @@ class Sabre_DAV_Server {
             if (isset($file['contenttype'])) $newProps['{DAV:}getcontenttype'] = $file['contenttype'];
             $newProps['href'] = $file['name']; 
 
-            if (!$properties || in_array('{DAV:}supportedlock',$properties)) $newProps['{DAV:}supportedlock'] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks());
+            if (!$properties || in_array('{DAV:}supportedlock',$properties)) $newProps['{DAV:}supportedlock'] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks(''));
             //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
 
-            if ($this->tree->supportsLocks()) 
+            if ($this->tree->supportsLocks('')) 
                 if (!$properties || in_array('{DAV:}lockdiscovery',$properties)) $newProps['{DAV:}lockdiscovery'] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($path));
              
 
@@ -690,7 +690,7 @@ class Sabre_DAV_Server {
         } else {
 
             // Unsupported method
-            throw new Sabre_DAV_MethodNotImplementedException();
+            throw new Sabre_DAV_NotImplementedException();
 
         }
 
@@ -704,7 +704,7 @@ class Sabre_DAV_Server {
     protected function getAllowedMethods() {
 
         $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','proppatch','copy','move');
-        if ($this->tree->supportsLocks()) array_push($methods,'lock','unlock');
+        if ($this->tree->supportsLocks('')) array_push($methods,'lock','unlock');
         return $methods;
 
     }

@@ -142,9 +142,9 @@ abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
      *
      * @return bool 
      */
-    public function supportsLocks() {
+    public function supportsLocks($path) {
 
-        return $this->subject->supportsLocks();
+        return $this->subject->supportsLocks($path);
 
     }
 

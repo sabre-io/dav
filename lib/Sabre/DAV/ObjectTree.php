@@ -315,11 +315,16 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      * In case of the ObjectTree, this is determined by checking if the root node implements the Sabre_DAV_ILockable interface.
      * If the Root node does not support this interface, we'll simply check if there's a global lock manager
      *
+     * Additionally, certain parts of the objecttree might support locks, while others don't. We need to check if locks 
+     * are supported on the basis of the path.
+     *
+     * @param string $path
      * @return bool 
      */
-    public function supportsLocks() {
+    public function supportsLocks($path) {
 
-        return $this->rootNode instanceof Sabre_DAV_ILockable || $this->lockManager;
+        $node = $this->getNodeForPath($path);
+        return $node instanceof Sabre_DAV_ILockable || $this->lockManager;
 
     }
 
@@ -351,7 +356,6 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             } catch (Sabre_DAV_FileNotFoundException $e){
                 // In case the node didn't exist, this could be a lock-null request
             }
-            if ($this->lockManager) $uriLocks = array_merge($uriLocks,$this->lockManager->getLocks($uri));
 
             foreach($uriLocks as $uriLock) {
 
@@ -364,6 +368,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             }
 
         }
+        if ($this->lockManager) $lockList = array_merge($lockList,$this->lockManager->getLocks($uri));
         return $lockList;
     }
 

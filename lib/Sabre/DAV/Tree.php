@@ -112,9 +112,12 @@ abstract class Sabre_DAV_Tree {
      * In case of the ObjectTree, this is determined by checking if the root node implements the Sabre_DAV_ILockable interface.
      * If the Root node does not support this interface, we'll simply check if there's a global lock manager
      *
+     * Because certain parts of a WebDAV server can support locks, while others might not a path is supplied.
+     *
+     * @param string $path
      * @return bool 
      */
-    public function supportsLocks() {
+    public function supportsLocks($path) {
 
         return $this->lockManager==true;
 

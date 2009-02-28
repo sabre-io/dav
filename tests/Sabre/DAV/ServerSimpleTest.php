@@ -117,7 +117,9 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->server->setHTTPRequest($request);
         $this->server->exec();
 
-        $this->assertEquals(array(),$this->response->headers);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
         $this->assertNotEquals('Testing new file',file_get_contents($this->tempDir . '/test.txt'));
@@ -238,7 +240,9 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->server->setHTTPRequest($request);
         $this->server->exec();
 
-        $this->assertEquals(array(),$this->response->headers);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
 

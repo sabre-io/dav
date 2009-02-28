@@ -101,6 +101,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'Content-Type' => 'application/xml',
             ),
             $this->response->headers
          );
@@ -125,6 +126,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'Content-Type' => 'application/xml',
             ),
             $this->response->headers
          );

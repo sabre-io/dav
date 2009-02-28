@@ -277,7 +277,12 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      */
     public function get($path) {
 
-        return $this->getNodeForPath($path)->get();
+        $node = $this->getNodeForPath($path);
+
+        if ($node instanceof Sabre_DAV_IDirectory) 
+            throw new Sabre_DAV_NotImplementedException('GET is not currently implemented on collections');
+
+        return $node->get();
 
     }
 

@@ -42,7 +42,7 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
         echo '<head>';
         
         echo '<title>SabreDAV - /' . htmlspecialchars($path,ENT_QUOTES,'UTF-8') . '</title>';
-        echo '<style type="text/css">body { font-family: sans-serif; }</style>';
+        echo '<style type="text/css">body { font-family: sans-serif; } td { padding-right: 30px } </style>';
         echo '</head>';
 
         echo '<body>';
@@ -52,7 +52,7 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
 
         echo '<table>';
         
-        echo '<tr><th></th><th>Name</th><th>Size</th><th>Type</th><th>Modified</th></tr>';
+        echo '<tr><th>Name</th><th>Size</th><th>Type</th><th>Modified</th></tr>';
         foreach($nodes as $node) {
             if ($node['name']!='')
                 $this->generateNodeHTML($node);
@@ -71,11 +71,10 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
     function generateNodeHTML($node) {
 
         echo '<tr>';
-        echo '<td></td>';
         
         echo '<td><a href="' . htmlspecialchars($node['name'],ENT_QUOTES,'UTF-8') . '">' . htmlspecialchars($node['name'],ENT_QUOTES,'UTF-8') . '</td>';
         if (isset($node['size'])) {
-            echo '<td>' . htmlspecialchars($node['size'],ENT_QUOTES,'UTF-8') . '</td>';
+            echo '<td style="text-align: right">' . htmlspecialchars($node['size'],ENT_QUOTES,'UTF-8') . '</td>';
         } else {
             echo '<td></td>';
         }
@@ -90,7 +89,7 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
                 echo '<td></td>';
             }
         }
-        echo '<td>' . date(DateTime::COOKIE,$node['lastmodified']) . '</td>';
+        echo '<td style="text-align: right">' . date(DateTime::COOKIE,$node['lastmodified']) . '</td>';
 
         echo '</tr>';
 

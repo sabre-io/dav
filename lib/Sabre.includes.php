@@ -51,6 +51,7 @@ include 'Sabre/DAV/Tree.php';
 include 'Sabre/DAV/FilterTree.php';
 include 'Sabre/DAV/ObjectTree.php';
 include 'Sabre/DAV/TemporaryFileFilter.php';
+include 'Sabre/DAV/HTMLDirectoriesFilter.php';
 
 /* Server */
 include 'Sabre/DAV/Server.php';

@@ -204,7 +204,7 @@ class Sabre_DAV_Server {
         }
 
         // We're only going to support HTTP ranges if the backend provided a filesize
-        if ($nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
+        if (isset($nodeInfo[0]['size']) && $nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
 
             // Determining the exact byte offsets
             if (!is_null($range[0])) {
@@ -240,7 +240,7 @@ class Sabre_DAV_Server {
 
         } else {
 
-            if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
+            if (isset($nodeInfo[0]['size']) && $nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
             $this->httpResponse->sendStatus(200);
             $this->httpResponse->sendBody($body);
 

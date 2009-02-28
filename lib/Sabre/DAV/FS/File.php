@@ -47,6 +47,17 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
     }
 
     /**
+     * Returns the size of the node, in bytes 
+     * 
+     * @return int 
+     */
+    public function getSize() {
+        
+        return filesize($this->path);
+
+    }
+
+    /**
      * Returns the ETag for a file
      *
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.

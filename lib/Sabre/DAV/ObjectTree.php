@@ -168,13 +168,13 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             'name'         => '',
             'type'         => $fileObject instanceof Sabre_DAV_IDirectory?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
             'lastmodified' => $fileObject->getLastModified(),
-            'size'         => $fileObject->getSize(),
         );
 
         if ($fileObject instanceof Sabre_DAV_IFile) {
 
             if ($etag = $fileObject->getETag()) $props['etag'] = $etag;
             if ($contenttype = $fileObject->getContentType()) $props['contenttype'] = $contenttype;
+            $props['size'] = $fileObject->getSize();
 
         }
 
@@ -196,7 +196,6 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
                     'name'         => $child->getName(), 
                     'type'         => $child instanceof Sabre_DAV_IDirectory?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
                     'lastmodified' => $child->getLastModified(),
-                    'size'         => $child->getSize(),
                 );
 
                 if ($child instanceof Sabre_DAV_IQuota) {
@@ -207,13 +206,13 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
                 }
 
-                if ($fileObject instanceof Sabre_DAV_IFile) {
+                if ($child instanceof Sabre_DAV_IFile) {
 
-                    if ($etag = $fileObject->getETag()) $props['etag'] = $etag;
-                    if ($contenttype = $fileObject->getContentType()) $props['contenttype'] = $contenttype;
+                    $props['size'] = $child->getSize();
+                    if ($etag = $child->getETag()) $props['etag'] = $etag;
+                    if ($contenttype = $child->getContentType()) $props['contenttype'] = $contenttype;
 
                 }
-
                 $fileList[] = $props;
             }
             

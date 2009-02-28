@@ -53,5 +53,12 @@ interface Sabre_DAV_IFile extends Sabre_DAV_INode {
      */
     function getETag();
 
+    /**
+     * Returns the size of the node, in bytes 
+     * 
+     * @return int 
+     */
+    function getSize();
+
 }
 

@@ -41,6 +41,17 @@ abstract class Sabre_DAV_File extends Sabre_DAV_Node implements Sabre_DAV_IFile 
         throw new Sabre_DAV_PermissionDeniedException('Permission denied to read this file');
 
     }
+    
+    /**
+     * Returns the size of the file, in bytes. 
+     * 
+     * @return int 
+     */
+    public function getSize() {
+
+        return 0;
+
+    }
 
     /**
      * Returns the ETag for a file

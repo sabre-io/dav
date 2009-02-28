@@ -24,7 +24,6 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
 
             if ($node['type'] == Sabre_DAV_Server::NODE_DIRECTORY) {
 
-                if (isset($node['size'])) unset($node['size']);
                 $node['contenttype'] = 'text/html; encoding=utf-8';
 
             }

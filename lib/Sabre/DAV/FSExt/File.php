@@ -73,5 +73,16 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
 
     }
 
+    /**
+     * Returns the size of the file, in bytes 
+     * 
+     * @return int 
+     */
+    public function getSize() {
+
+        return filesize($this->path);
+
+    }
+
 }
 

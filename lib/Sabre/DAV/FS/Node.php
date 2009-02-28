@@ -58,16 +58,7 @@ abstract class Sabre_DAV_FS_Node implements Sabre_DAV_INode {
 
     }
 
-    /**
-     * Returns the size of the node, in bytes 
-     * 
-     * @return int 
-     */
-    public function getSize() {
-        
-        return filesize($this->path);
 
-    }
 
     /**
      * Returns the last modification time, as a unix timestamp 

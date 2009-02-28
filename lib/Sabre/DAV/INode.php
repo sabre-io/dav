@@ -34,12 +34,7 @@ interface Sabre_DAV_INode {
      */
     function setName($name);
 
-    /**
-     * Returns the size of the node, in bytes 
-     * 
-     * @return int 
-     */
-    function getSize();
+
 
     /**
      * Returns the last modification time, as a unix timestamp 

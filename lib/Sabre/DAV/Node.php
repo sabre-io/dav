@@ -16,17 +16,6 @@
 abstract class Sabre_DAV_Node implements Sabre_DAV_INode {
 
     /**
-     * A default filesize for directories is 0 
-     * 
-     * @return int
-     */
-    public function getSize() {
-
-        return 0;
-
-    }
-
-    /**
      * Returns the last modification time 
      *
      * In this case, it will simply return the current time

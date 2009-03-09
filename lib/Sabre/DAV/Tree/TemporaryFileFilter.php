@@ -29,7 +29,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_TemporaryFileFilter extends Sabre_DAV_FilterTree {
+class Sabre_DAV_Tree_TemporaryFileFilter extends Sabre_DAV_Tree_Filter {
 
     /**
      * Location for temporary files 

@@ -1,16 +1,18 @@
 <?php
 
-class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
+class Sabre_DAV_Tree_HTMLDirectoriesFilter extends Sabre_DAV_Tree_Filter {
 
     function get($path) {
 
-        try {
+        $info = parent::getNodeInfo($path,0);
+
+        if ($info[0]['type'] == Sabre_DAV_Server::NODE_DIRECTORY) { 
+
+            return $this->generateHTML($path);
+
+        } else {
 
             return parent::get($path);
-
-        } catch (Sabre_DAV_NotImplementedException $e) {
-
-            return $this->generateHTML($path);            
 
         }
 
@@ -55,7 +57,7 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
         echo '<tr><th>Name</th><th>Size</th><th>Type</th><th>Modified</th></tr>';
         foreach($nodes as $node) {
             if ($node['name']!='')
-                $this->generateNodeHTML($node);
+                $this->generateNodeHTML($node,$path.'/'.$node['name']);
         }
 
         echo '</table>';
@@ -68,11 +70,11 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
 
     }
 
-    function generateNodeHTML($node) {
+    function generateNodeHTML($node,$fullPath) {
 
         echo '<tr>';
         
-        echo '<td><a href="' . htmlspecialchars($node['name'],ENT_QUOTES,'UTF-8') . '">' . htmlspecialchars($node['name'],ENT_QUOTES,'UTF-8') . '</td>';
+        echo '<td><a href="' . htmlspecialchars($fullPath,ENT_QUOTES,'UTF-8') . '">' . htmlspecialchars($node['name'],ENT_QUOTES,'UTF-8') . '</td>';
         if (isset($node['size'])) {
             echo '<td style="text-align: right">' . htmlspecialchars($node['size'],ENT_QUOTES,'UTF-8') . '</td>';
         } else {
@@ -89,7 +91,11 @@ class Sabre_DAV_HTMLDirectoriesFilter extends Sabre_DAV_FilterTree {
                 echo '<td></td>';
             }
         }
-        echo '<td style="text-align: right">' . date(DateTime::COOKIE,$node['lastmodified']) . '</td>';
+        if (isset($node['lastmodified'])) {
+            echo '<td style="text-align: right">' . date(DateTime::COOKIE,$node['lastmodified']) . '</td>';
+        } else {
+            echo '<td></td>';
+        }
 
         echo '</tr>';
 

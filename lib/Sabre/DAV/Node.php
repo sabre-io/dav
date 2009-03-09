@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Directory class
+ * Node class
  *
- * This is a helper class, that should aid in getting directory classes setup.
- * Most of its methods are implemented, and throw permission denied exceptions 
+ * This is a helper class, that should aid in getting nodes setup. 
  * 
  * @package Sabre
  * @subpackage DAV

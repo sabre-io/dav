@@ -15,7 +15,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $dir = new Sabre_DAV_FS_Directory($this->tempDir);
         $tree = new Sabre_DAV_ObjectTree($dir);
         $this->server = new Sabre_DAV_Server($tree);
-        $this->server->setHTTPResponse($this->response);
+        $this->server->httpResponse = $this->response;
         file_put_contents($this->tempDir . '/test.txt', 'Test contents');
         file_put_contents($this->tempDir . '/test2.txt', 'Test contents2');
         mkdir($this->tempDir . '/col');
@@ -51,7 +51,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -73,7 +73,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -97,7 +97,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -122,7 +122,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -144,7 +144,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -166,7 +166,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(

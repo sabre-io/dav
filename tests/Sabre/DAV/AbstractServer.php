@@ -14,7 +14,7 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
         $this->response = new Sabre_HTTP_ResponseMock();
         $tree = new Sabre_DAV_ObjectTree($this->getRootNode());
         $this->server = new Sabre_DAV_Server($tree);
-        $this->server->setHTTPResponse($this->response);
+        $this->server->httpResponse = $this->response;
         file_put_contents($this->tempDir . '/test.txt', 'Test contents');
 
     }

@@ -11,7 +11,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
         $this->assertEquals(array(),$conditions);
@@ -25,7 +25,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -56,7 +56,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -86,7 +86,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -116,7 +116,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -151,7 +151,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -191,7 +191,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -236,7 +236,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -265,7 +265,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 
@@ -301,7 +301,7 @@ class Sabre_DAV_ServerIfTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
 

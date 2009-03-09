@@ -13,7 +13,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -39,7 +39,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -65,7 +65,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -91,7 +91,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('HTTP/1.1 416 Requested Range Not Satisfiable',$this->response->status);
@@ -107,7 +107,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setHTTPRequest($request);
+        $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('HTTP/1.1 416 Requested Range Not Satisfiable',$this->response->status);

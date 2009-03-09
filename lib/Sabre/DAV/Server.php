@@ -50,14 +50,28 @@ class Sabre_DAV_Server {
      * 
      * @var Sabre_HTTP_Response 
      */
-    protected $httpResponse;
+    public $httpResponse;
 
     /**
      * httpRequest
      * 
      * @var Sabre_HTTP_Request 
      */
-    protected $httpRequest;
+    public $httpRequest;
+
+    /**
+     * The list of plugins 
+     * 
+     * @var array 
+     */
+    protected $plugins = array();
+
+    /**
+     * This array contains a list of callbacks we should call when certain events are triggered 
+     * 
+     * @var array
+     */
+    protected $eventSubscriptions = array();
 
     /**
      * Class constructor 
@@ -125,26 +139,69 @@ class Sabre_DAV_Server {
     }
 
     /**
-     * Sets an alternative HTTP response object 
+     * Adds a plugin to the server
      * 
-     * @param Sabre_HTTP_Response $response 
+     * For more information, console the documentation of Sabre_DAV_ServerPlugin
+     *
+     * @param Sabre_DAV_ServerPlugin $plugin 
      * @return void
      */
-    public function setHTTPResponse(Sabre_HTTP_Response $response) {
+    public function addPlugin(Sabre_DAV_ServerPlugin $plugin) {
 
-        $this->httpResponse = $response;
+        $this->plugins[] = $plugin;
+        $plugin->initialize($this);
 
     }
 
     /**
-     * Sets an alternative HTTP request object 
+     * Subscribe to an event.
+     *
+     * When the event is triggered, we'll call all the specified callbacks.
      * 
-     * @param Sabre_HTTP_Request $request 
+     * @param string $event 
+     * @param callback $callback 
      * @return void
      */
-    public function setHTTPRequest(Sabre_HTTP_Request $request) {
+    public function subscribeEvent($event, $callback) {
 
-        $this->httpRequest = $request;
+        $supportedEvents = array(
+            'beforeMethod',
+        );
+
+        if (!in_array($event,$supportedEvents)) throw new Sabre_DAV_Exception('Unknown event-type: ' . $event);
+
+        if (!isset($this->eventSubscriptions[$event])) {
+            $this->eventSubscriptions[$event] = array();
+        }
+        $this->eventSubscriptions[$event][] = $callback;
+
+    }
+
+    /**
+     * Broadcasts an event
+     *
+     * This method will call all subscribers. If one of the subscribers returns false, the process stops.
+     *
+     * The arguments parameter will be sent to all subscribers
+     *
+     * @param string $eventName
+     * @param array $arguments
+     * @return bool 
+     */
+    public function broadcastEvent($eventName,$arguments = array()) {
+        
+        if (isset($this->eventSubscriptions[$eventName])) {
+
+            foreach($this->eventSubscriptions[$eventName] as $subscriber) {
+
+                $result = call_user_func_array($subscriber,$arguments);
+                if (!$result) return false;
+
+            }
+
+        }
+
+        return true;
 
     }
 
@@ -158,12 +215,22 @@ class Sabre_DAV_Server {
      */
     protected function httpOptions() {
 
-        $this->httpResponse->setHeader('Allow',strtoupper(implode(' ',$this->getAllowedMethods())));
+        $methods = $this->getAllowedMethods();
+
+        // We're also checking if any of the plugins register any new methods
+        foreach($this->plugins as $plugin) $methods = array_merge($methods,$plugin->getHTTPMethods());
+        array_unique($methods);
+
+        $this->httpResponse->setHeader('Allow',strtoupper(implode(' ',$methods)));
         if ($this->tree->supportsLocks('')) {
-            $this->httpResponse->setHeader('DAV','1,2,3');
+            $features = array('1','2','3');
         } else {
-            $this->httpResponse->setHeader('DAV','1,3');
+            $features = array('1','3');
         }
+
+        foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
+        
+        $this->httpResponse->setHeader('DAV',implode(', ',$features));
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
         $this->httpResponse->setHeader('Accept-Ranges','bytes');
         $this->httpResponse->sendStatus(200);
@@ -195,7 +262,10 @@ class Sabre_DAV_Server {
         else $contentType = 'application/octet-stream';
 
         $this->httpResponse->setHeader('Content-Type', $contentType);
-        $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
+
+        if (isset($nodeInfo[0]['lastmodified'])) {
+            $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
+        }
 
         if (isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']) {
 
@@ -324,10 +394,12 @@ class Sabre_DAV_Server {
         $fileList = $this->tree->getNodeInfo($path,$depth);
 
         foreach($fileList as $k=>$file) {
-            $newProps = $this->tree->getProperties($path,$properties);
+            $newProps = $this->tree->getProperties($path.'/'.$file['name'],$properties);
             $newProps['{DAV:}getlastmodified'] =  new Sabre_DAV_Property_GetLastModified(isset($file['lastmodified'])?$file['lastmodified']:time());
             $newProps['{DAV:}getcontentlength'] = (isset($file['size'])?$file['size']:0);
-            $newProps['{DAV:}resourcetype'] =  new Sabre_DAV_Property_ResourceType($file['type']);
+            if (!isset($newProps['{DAV:}resourcetype'])) {
+                $newProps['{DAV:}resourcetype'] =  new Sabre_DAV_Property_ResourceType($file['type']);
+            } 
             if (isset($file['quota-used'])) $newProps['{DAV:}quota-used-bytes'] = $file['quota-used'];
             if (isset($file['quota-available'])) $newProps['{DAV:}quota-available-bytes'] = $file['quota-available'];
             if (isset($file['etag'])) $newProps['{DAV:}getetag'] = $file['etag'];
@@ -675,6 +747,8 @@ class Sabre_DAV_Server {
     protected function invoke() {
 
         $method = strtolower($this->httpRequest->getMethod()); 
+
+        if (!$this->broadcastEvent('beforeMethod',array(strtoupper($method)))) return;
 
         // Make sure this is a HTTP method we support
         if (in_array($method,$this->getAllowedMethods())) {

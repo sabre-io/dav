@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_FilterTree extends Sabre_DAV_Tree {
+abstract class Sabre_DAV_Tree_Filter extends Sabre_DAV_Tree {
 
     /**
      * subject 

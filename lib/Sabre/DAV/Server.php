@@ -457,6 +457,7 @@ class Sabre_DAV_Server {
         }
 
         $this->httpResponse->sendStatus(207);
+        $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
         echo $this->generatePropPatchResponse($this->getRequestUri(),$result);
 
     }
@@ -692,6 +693,7 @@ class Sabre_DAV_Server {
         }
 
         $this->tree->lockNode($uri,$lockInfo);
+        $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
         $this->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
         echo $this->generateLockResponse($lockInfo);
 

@@ -35,7 +35,7 @@ abstract class Sabre_DAV_Node implements Sabre_DAV_INode {
      */
     public function delete() {
 
-        throw new Sabre_DAV_PermissionDeniedException('Permission denied to delete directory');
+        throw new Sabre_DAV_PermissionDeniedException('Permission denied to delete node');
 
     }
 

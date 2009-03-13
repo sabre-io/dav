@@ -166,6 +166,7 @@ class Sabre_DAV_Server {
 
         $supportedEvents = array(
             'beforeMethod',
+            'unknownProperties',
         );
 
         if (!in_array($event,$supportedEvents)) throw new Sabre_DAV_Exception('Unknown event-type: ' . $event);
@@ -411,7 +412,18 @@ class Sabre_DAV_Server {
 
             if ($this->tree->supportsLocks('')) 
                 if (!$properties || in_array('{DAV:}lockdiscovery',$properties)) $newProps['{DAV:}lockdiscovery'] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($path));
-             
+           
+            $unknownProperties = array();
+            foreach($properties as $prop) {
+                if (!isset($newProps[$prop])) $unknownProperties[] = $prop;
+            }
+
+            if ($unknownProperties) {
+                
+                $arguments = array($path,$unknownProperties,&$newProps);
+                $this->broadcastEvent('unknownProperties',$arguments);
+
+            }
 
             //print_r($newProps);die();
 
@@ -1137,7 +1149,7 @@ class Sabre_DAV_Server {
     private function generatePropfindResponse($list,$properties) {
 
         $dom = new DOMDocument('1.0','utf-8');
-        
+        //$dom->formatOutput = true;
         $multiStatus = $dom->createElementNS('DAV:','d:multistatus');
         $dom->appendChild($multiStatus);
 
@@ -1182,7 +1194,7 @@ class Sabre_DAV_Server {
 
         $url = implode('/',$url);
 
-        if ($data['{DAV:}resourcetype']->resourceType==self::NODE_DIRECTORY) $url .='/';
+        if ($data['{DAV:}resourcetype']->getValue()=='{DAV:}collection') $url .='/';
 
         $xresponse->appendChild($document->createElementNS('DAV:','d:href',$url));
         

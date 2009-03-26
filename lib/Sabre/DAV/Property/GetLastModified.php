@@ -20,6 +20,12 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
 
     }
 
+    public function getTime() {
+
+        return $this->time;
+
+    }
+
 }
 
 ?>

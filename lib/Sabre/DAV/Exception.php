@@ -106,6 +106,22 @@ class Sabre_DAV_NotImplementedException extends Sabre_DAV_Exception {
 }
 
 /**
+ * ReportNotImplementedException 
+ *
+ * This exception is thrown when the client requested an unknown report through the REPORT method
+ */
+class Sabre_DAV_ReportNotImplementedException extends Sabre_DAV_NotImplementedException {
+
+    function serialize(DOMElement $errorNode) {
+
+        $error = $errorNode->ownerDocument->createElementNS('DAV:','d:supported-report');
+        $errorNode->appendChild($error);
+
+    }
+
+}
+
+/**
  * UnSupportedMediaTypeException
  *
  * The 415 Unsupported Media Type status code is generally sent back when the client tried to call an HTTP method, with a body the server didn't understand

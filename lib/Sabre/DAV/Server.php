@@ -109,6 +109,8 @@ class Sabre_DAV_Server {
 
             $error->appendChild($DOM->createElement('s:exception',get_class($e)));
             $error->appendChild($DOM->createElement('s:message',$e->getMessage()));
+            $error->appendChild($DOM->createElement('s:file',$e->getFile()));
+            $error->appendChild($DOM->createElement('s:line',$e->getLine()));
             $error->appendChild($DOM->createElement('s:code',$e->getCode()));
 
             if($e instanceof Sabre_DAV_Exception) {
@@ -127,7 +129,7 @@ class Sabre_DAV_Server {
     }
 
     /**
-     * Sets the base responding uri
+     * Sets the base server uri
      * 
      * @param string $uri
      * @return void
@@ -135,6 +137,17 @@ class Sabre_DAV_Server {
     public function setBaseUri($uri) {
 
         $this->baseUri = $uri;    
+
+    }
+
+    /**
+     * Returns the base responding uri
+     * 
+     * @return string 
+     */
+    public function getBaseUri() {
+
+        return $this->baseUri;
 
     }
 
@@ -166,6 +179,8 @@ class Sabre_DAV_Server {
 
         $supportedEvents = array(
             'beforeMethod',
+            'report',
+            'unknownMethod',
             'unknownProperties',
         );
 
@@ -377,7 +392,6 @@ class Sabre_DAV_Server {
      *
      * It has to return a HTTP 207 Multi-status status code
      *
-     * @todo currently this method doesn't do anything with the request-body, and just returns a default set of properties 
      * @return void
      */
     protected function httpPropfind() {
@@ -391,51 +405,14 @@ class Sabre_DAV_Server {
 
         // The requested path
         $path = $this->getRequestUri();
-
-        $fileList = $this->tree->getNodeInfo($path,$depth);
-
-        foreach($fileList as $k=>$file) {
-            $newProps = $this->tree->getProperties($path.'/'.$file['name'],$properties);
-            $newProps['{DAV:}getlastmodified'] =  new Sabre_DAV_Property_GetLastModified(isset($file['lastmodified'])?$file['lastmodified']:time());
-            $newProps['{DAV:}getcontentlength'] = (isset($file['size'])?$file['size']:0);
-            if (!isset($newProps['{DAV:}resourcetype'])) {
-                $newProps['{DAV:}resourcetype'] =  new Sabre_DAV_Property_ResourceType($file['type']);
-            } 
-            if (isset($file['quota-used'])) $newProps['{DAV:}quota-used-bytes'] = $file['quota-used'];
-            if (isset($file['quota-available'])) $newProps['{DAV:}quota-available-bytes'] = $file['quota-available'];
-            if (isset($file['etag'])) $newProps['{DAV:}getetag'] = $file['etag'];
-            if (isset($file['contenttype'])) $newProps['{DAV:}getcontenttype'] = $file['contenttype'];
-            $newProps['href'] = $file['name']; 
-
-            if (!$properties || in_array('{DAV:}supportedlock',$properties)) $newProps['{DAV:}supportedlock'] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks(''));
-            //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
-
-            if ($this->tree->supportsLocks('')) 
-                if (!$properties || in_array('{DAV:}lockdiscovery',$properties)) $newProps['{DAV:}lockdiscovery'] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($path));
-           
-            $unknownProperties = array();
-            foreach($properties as $prop) {
-                if (!isset($newProps[$prop])) $unknownProperties[] = $prop;
-            }
-
-            if ($unknownProperties) {
-                
-                $arguments = array($path,$unknownProperties,&$newProps);
-                $this->broadcastEvent('unknownProperties',$arguments);
-
-            }
-
-            //print_r($newProps);die();
-
-            $fileList[$k] = $newProps;
-
-        }
+        
+        $newProperties = $this->getPropertiesForPath($path,$properties,$depth);
 
 
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
-        $data = $this->generatePropfindResponse($fileList,$properties);
+        $data = $this->generatePropfindResponse($newProperties,$properties);
         $this->httpResponse->sendBody($data);
 
     }
@@ -521,32 +498,6 @@ class Sabre_DAV_Server {
             $this->httpResponse->sendStatus(201);
 
         }
-
-    }
-
-    /**
-     * HTTP POST method
-     *
-     * This a WebDAV extension. This WebDAV server supports HTTP POST file uploads, coming from for example a browser.
-     * It works the exact same as a PUT, only accepts 1 file and can either create a new file, or update an existing one
-     *
-     * If a post variable 'redirectUrl' is supplied, it will return a 'Location: ' header, thus redirecting the client to the given location
-     */
-    protected function httpPost() {
-
-        throw new Sabre_DAV_PermissionDeniedException('POST is currently not implemented');
-
-        /*
-        foreach($_FILES as $file) {
-
-            $this->tree->put($this->getRequestUri().'/' . basename($file['name']),fopen($file['tmp_name'],'r'));
-            break;
-
-        }
-
-        // We assume > 5.1.2, which has the header injection attack prevention
-        if (isset($_POST['redirectUrl']) && is_string($_POST['redirectUrl'])) $this->httpResponse->setHeader('Location', $_POST['redirectUrl']);
-        */
 
     }
 
@@ -750,6 +701,40 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * HTTP REPORT method implementation
+     *
+     * Although the REPORT method is not part of the standard WebDAV spec (it's from rfc3253)
+     * It's used in a lot of extensions, so it made sense to implement it into the core.
+     * 
+     * @return void
+     */
+    protected function httpReport() {
+
+        $body = $this->httpRequest->getBody(true);
+        //We'll need to change the DAV namespace declaration to something else in order to make it parsable
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+
+        $errorsetting =  libxml_use_internal_errors(true);
+        libxml_clear_errors();
+        $dom = new DOMDocument();
+        $dom->loadXML($body);
+        $dom->preserveWhiteSpace = false;
+     
+        $namespaceUri = $dom->firstChild->namespaceURI;
+        if ($namespaceUri=='urn:DAV') $namespaceUri = 'DAV:';
+
+        $reportName = '{' . $namespaceUri . '}' . $dom->firstChild->localName;
+
+        if ($this->broadcastEvent('report',array($reportName,$dom))) {
+
+            // If broadcastEvent returned true, it means the report was not supported
+            throw new Sabre_DAV_ReportNotImplementedException();
+
+        }
+
+    }
+
     // }}}
     // {{{ HTTP/WebDAV protocol helpers 
 
@@ -771,8 +756,10 @@ class Sabre_DAV_Server {
 
         } else {
 
-            // Unsupported method
-            throw new Sabre_DAV_NotImplementedException();
+            if ($this->broadcastEvent('unknownMethod',array(strtoupper($method)))) {
+                // Unsupported method
+                throw new Sabre_DAV_NotImplementedException();
+            }
 
         }
 
@@ -785,7 +772,7 @@ class Sabre_DAV_Server {
      */
     protected function getAllowedMethods() {
 
-        $methods = array('options','get','head','post','delete','trace','propfind','mkcol','put','proppatch','copy','move');
+        $methods = array('options','get','head','delete','trace','propfind','mkcol','put','proppatch','copy','move','report');
         if ($this->tree->supportsLocks('')) array_push($methods,'lock','unlock');
         return $methods;
 
@@ -1048,7 +1035,14 @@ class Sabre_DAV_Server {
 
     }
 
-    function getTimeoutHeader() {
+    /**
+     * Returns the contents of the HTTP Timeout header. 
+     * 
+     * The method formats the header into an integer.
+     *
+     * @return int
+     */
+    public function getTimeoutHeader() {
 
         $header = $this->httpRequest->getHeader('Timeout');
         
@@ -1082,7 +1076,7 @@ class Sabre_DAV_Server {
      *
      * @return array 
      */
-    function getCopyAndMoveInfo() {
+    protected function getCopyAndMoveInfo() {
 
         $source = $this->getRequestUri();
 
@@ -1134,6 +1128,90 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Returns a list of properties for a given path
+     * 
+     * The path that should be supplied should have the baseUrl stripped out
+     * The list of properties should be supplied in Clark notation. If the list is empty
+     * 'allprops' is assumed.
+     *
+     * If a depth of 1 is requested child elements will also be returned.
+     *
+     * @param string $path 
+     * @param array $properties 
+     * @param int $depth 
+     * @return array
+     */
+    public function getPropertiesForPath($path,$properties = array(),$depth = 0) {
+
+        if ($depth!=0) $depth = 1;
+
+        $returnPropertyList = array();
+
+        $fileList = $this->tree->getNodeInfo($path,$depth);
+
+        foreach($fileList as $k=>$file) {
+
+            $thisPath = $path.'/' . $file['name'];
+
+            $newProperties = array();
+            $newProperties = $this->tree->getProperties($thisPath,$properties);
+            $unknownProperties = array();
+
+            // If the properties array was empty, it means 'everything' was requested.
+            
+            if (!$properties) {
+                $properties = array(
+                    '{DAV:}getlastmodified',
+                    '{DAV:}getcontentlength',
+                    '{DAV:}resourcetype',
+                    '{DAV:}quota-used-bytes',
+                    '{DAV:}quota-available-bytes',
+                    '{DAV:}getetag',
+                    '{DAV:}getcontenttype',
+                );
+            }
+
+            // It's important we add this guy, because other systems depend on it
+            if (!in_array('{DAV:}resourcetype',$properties)) $properties[] = '{DAV:}resourcetype';
+
+            foreach($properties as $prop) {
+                
+                if (isset($newProperties[$prop])) continue;
+
+                switch($prop) {
+                    case '{DAV:}getlastmodified'       : if (isset($file['lastmodified'])) $newProperties[$prop] = new Sabre_DAV_Property_GetLastModified($file['lastmodified']); break;
+                    case '{DAV:}getcontentlength'      : if (isset($file['size']))         $newProperties[$prop] = (int)$file['size']; break;
+                    case '{DAV:}resourcetype'          : $newProperties[$prop] = new Sabre_DAV_Property_ResourceType(isset($file['type'])?$file['type']:self::NODE_FILE); break;
+                    case '{DAV:}quota-used-bytes'      : if (isset($file['quota-used']))   $newProperties[$prop] = $file['quota-used']; break;
+                    case '{DAV:}quota-available-bytes' : if (isset($file['quota-available'])) $newProperties[$prop] = $file['quota-available']; break;
+                    case '{DAV:}getetag'               : if (isset($file['etag']))         $newProperties[$prop] = $file['etag']; break;
+                    case '{DAV:}getcontenttype'        : if (isset($file['contenttype']))  $newProperties[$prop] = $file['contenttype']; break;
+
+                    case '{DAV:}supportedlock'         : $newProperties[$prop] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks($thisPath)); break;
+                    case '{DAV:}lockdiscovery'         : if ($this->tree->supportsLocks($thisPath)) $newProperties[$prop] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($thisPath)); break; 
+
+                }
+
+                if (!isset($newProperties[$prop])) $unknownProperties[] = $prop;
+
+            }
+
+            if ($unknownProperties) {
+                $this->broadcastEvent('unknownProperties',array($thisPath,$unknownProperties,&$newProperties));
+
+            }
+
+            $newProperties['href'] = $file['name']; 
+
+            //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
+            $returnPropertyList[] = $newProperties;
+
+        }
+        
+        return $returnPropertyList;
+
+    }
 
     // }}} 
     // {{{ XML Readers & Writers  

@@ -52,7 +52,7 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_IDir
 
         $path = $this->path . '/' . $name;
 
-        if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException('File could not be located');
+        if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException('File with name ' . $path . ' could not be located');
 
         if (is_dir($path)) {
 

@@ -220,7 +220,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'DAV'           => '1, 3',
             'MS-Author-Via' => 'DAV',
-            'Allow'         => 'OPTIONS GET HEAD POST DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE',
+            'Allow'         => 'OPTIONS GET HEAD DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE REPORT',
             'Accept-Ranges' => 'bytes',
         ),$this->response->headers);
 

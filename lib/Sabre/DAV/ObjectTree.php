@@ -309,8 +309,13 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      */
     public function move($sourcePath, $destinationPath) {
 
-        $this->copy($sourcePath,$destinationPath);
-        $this->delete($sourcePath);
+        if (dirname($sourcePath)==dirname($destinationPath)) {
+            $renameable = $this->getNodeForPath($sourcePath);
+            $renameable->setName(basename($destinationPath));
+        } else {
+            $this->copy($sourcePath,$destinationPath);
+            $this->delete($sourcePath);
+        }
 
     }
     /**

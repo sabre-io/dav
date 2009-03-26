@@ -8,6 +8,9 @@ include 'Sabre/HTTP/AbstractAuth.php';
 include 'Sabre/HTTP/BasicAuth.php';
 include 'Sabre/HTTP/DigestAuth.php';
 
+/* Version */
+include 'Sabre/DAV/Version.php';
+
 /* Basics */
 include 'Sabre/DAV/Lock.php';
 include 'Sabre/DAV/Exception.php';
@@ -55,6 +58,7 @@ include 'Sabre/DAV/Tree/TemporaryFileFilter.php';
 
 /* Server */
 include 'Sabre/DAV/Server.php';
+include 'Sabre/DAV/ServerPlugin.php';
 
 
 ?>

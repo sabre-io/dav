@@ -135,6 +135,23 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testRandomOverwriteHeader() {
+
+        $serverVars = array(
+            'REQUEST_URI'      => '/test.txt',
+            'REQUEST_METHOD'   => 'COPY',
+            'HTTP_DESTINATION' => '/testcol2/test2.txt',
+            'HTTP_OVERWRITE'   => 'SURE!',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 400 Bad request',$this->response->status);
+
+    }
+
     function testCopyDirectory() {
         
         $serverVars = array(

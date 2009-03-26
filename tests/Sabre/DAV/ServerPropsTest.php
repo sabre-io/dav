@@ -113,6 +113,37 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals(1,count($data),'We expected a \'d:lockdiscovery\' tag');
 
     }
+
+    function testUnknownProperty() {
+
+        $xml = '<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:">
+  <d:prop>
+    <d:macaroni />
+  </d:prop>
+</d:propfind>';
+
+        $this->sendRequest($xml);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+        $pathTests = array(
+            '/d:multistatus',
+            '/d:multistatus/d:response',
+            '/d:multistatus/d:response/d:propstat',
+            '/d:multistatus/d:response/d:propstat/d:status',
+            '/d:multistatus/d:response/d:propstat/d:prop',
+            '/d:multistatus/d:response/d:propstat/d:prop/d:macaroni',
+        );
+        foreach($pathTests as $test) {
+            $this->assertTrue(count($xml->xpath($test))==true,'We expected the ' . $test . ' element to appear in the response, we got: ' . $body);
+        }
+
+        $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
+        $this->assertEquals(2,count($val),$body);
+        $this->assertEquals('HTTP/1.1 404 Not Found',(string)$val[1]);
+
+    }
 }
 
 ?>

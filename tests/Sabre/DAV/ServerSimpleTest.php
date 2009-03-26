@@ -258,6 +258,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->setBaseUri('/blabla/');
+        $this->assertEquals('/blabla/',$this->server->getBaseUri());
         $this->server->httpRequest = ($request);
         $this->server->exec();
 

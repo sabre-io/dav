@@ -234,7 +234,24 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
 
     }
 
-    public function delete() {
+    /**
+     * Renames the node
+     *
+     * @param string $name The new name
+     * @return void
+     */
+    public function setName($name) {
+
+        $resourceData = $this->getResourceData();
+        $this->deleteResourceData();
+        rename($this->path,dirname($this->path) . '/' . basename($name));
+        $this->path = dirname($this->path) .'/' . basename($name);
+        $this->putResourceData($resourceData);
+
+
+    }
+
+    public function deleteResourceData() {
 
         // When we're deleting this node, we also need to delete any resource information
         $path = $this->getResourceInfoPath();
@@ -259,6 +276,12 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
         rewind($handle);
         fwrite($handle,serialize($data));
         fclose($handle);
+
+    }
+
+    public function delete() {
+
+        return $this->deleteResourceData();
 
     }
 

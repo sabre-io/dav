@@ -310,6 +310,16 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
     public function move($sourcePath, $destinationPath) {
 
         if (dirname($sourcePath)==dirname($destinationPath)) {
+            try {
+                $destinationNode = $this->getNodeForPath($destinationPath); 
+                // If we got here, it means the destination exists, and needs to be overwritten
+                $destinationNode->delete();
+
+            } catch (Sabre_DAV_FileNotFoundException $e) {
+
+                // If we got here, it means the destination node does not yet exist
+
+            }
             $renameable = $this->getNodeForPath($sourcePath);
             $renameable->setName(basename($destinationPath));
         } else {

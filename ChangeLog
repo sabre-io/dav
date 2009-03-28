@@ -1,11 +1,33 @@
 0.7-alpha (2009-??-??)
-	* Added: System to return complex properties from PROPFIND
-	* Added: support for {DAV:}supportedlock
-	* Added: support for {DAV:}lockDiscovery
-	* Added: 2 unittests
+	* Added: System to return complex properties from PROPFIND.
+	* Added: support for {DAV:}supportedlock.
+	* Added: support for {DAV:}lockdiscovery.
+	* Added: 6 new tests.
+	* Added: New plugin system.
+	* Added: Simple HTML directory plugin, for browser access.
+	* Added: Server class now sends back standard pre-condition error xml
+	bodies. This was new since RFC4918.
+	* Added: Sabre_DAV_Tree_Aggregrate, which can 'host' multiple Tree objects
+	into one.
+	* Added: simple basis for HTTP REPORT method. This method is not used yet,
+	but can be used by plugins to add reports.
+	* Changed: ->getSize is only called for files, no longer for collections.
+	r303
+	* Changed: Sabre_DAV_FilterTree is now Sabre_DAV_Tree_Filter
+	* Changed: Sabre_DAV_TemporaryFileFilter is now called
+	Sabre_DAV_Tree_TemporaryFileFilter.
+	* Changed: removed functions (get(/set)HTTPRequest(/Response)) from Server
+	class, and using a public property instead.
 	* Fixed: bug related to parsing proppatch and propfind requests. Didn't
-	show up in most clients, but it needed fixing regardless.
+	show up in most clients, but it needed fixing regardless. (r255)
 	* Fixed: auth-int is now properly supported within HTTP Digest.
+	* Fixed: Using application/xml for a mimetype vs. text/xml as per RFC4918
+	sec 8.2.
+	* Fixed: TemporaryFileFilter now lets through GET's if they actually
+	exist on the backend. (r274)
+	* FIxed: Some methods didn't get passed through in the FilterTree (r283).
+	* Fixed: LockManager is now slightly more complex, Tree classes slightly
+	less. (r287)
 
 0.6-alpha (2009-02-16)
 	* Added: Now uses streams for files, instead of strings.

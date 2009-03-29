@@ -55,6 +55,7 @@ include 'Sabre/DAV/ObjectTree.php';
 include 'Sabre/DAV/Tree/Aggregate.php';
 include 'Sabre/DAV/Tree/Filter.php';
 include 'Sabre/DAV/Tree/TemporaryFileFilter.php';
+include 'Sabre/DAV/Tree/Filesystem.php';
 
 /* Server */
 include 'Sabre/DAV/Server.php';

@@ -144,7 +144,7 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
             
         $returnProps = array();
 
-        if (in_array('{http://apache.org/dav/props/}executable',$properties)) {
+        if (in_array('{http://apache.org/dav/props/}executable',$properties) && is_file($path)) {
             $returnProps['{http://apache.org/dav/props/}executable']  = is_executable($path)?'T':'F';
         }
 

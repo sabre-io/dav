@@ -374,6 +374,9 @@ class Sabre_DAV_Server {
 
         $lastLock = null;
         if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+
+        // Asking for nodeinfo to make sure the node exists
+        $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri());
         $this->tree->delete($this->getRequestUri());
         $this->httpResponse->sendStatus(204);
 

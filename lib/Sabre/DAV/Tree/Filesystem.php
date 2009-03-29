@@ -138,6 +138,20 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
 
     }
 
+    public function getProperties($path,$properties) {
+
+        $path = $this->getRealPath($path);
+            
+        $returnProps = array();
+
+        if (in_array('{http://apache.org/dav/props/}executable',$properties)) {
+            $returnProps['{http://apache.org/dav/props/}executable']  = is_executable($path)?'T':'F';
+        }
+
+        return $returnProps;
+
+    }
+
 }
 
 ?>

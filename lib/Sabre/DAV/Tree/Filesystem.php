@@ -21,6 +21,7 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
         $source = $this->getRealPath($source);
         $destination = $this->getRealPath($destination);
 
+        if (file_exists($destination)) $this->realDelete($destination);
         $this->realCopy($source,$destination); 
 
     }
@@ -41,9 +42,10 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
 
     }
 
-    protected function getNodeInfo($path,$depth=0) {
+    public function getNodeInfo($path,$depth=0) {
 
         $path = $this->getRealPath($path);
+        if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException($path . ' could not be found');
         $nodeInfo = array();
 
         $nodeInfo[] = array(
@@ -56,7 +58,7 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
             'etag'            => md5(filesize($path) . filemtime($path) . $path),
         );
 
-        if ($depth>0) {
+        if ($depth>0 && is_dir($path)) {
 
             foreach(scandir($path) as $node) {
                 $subPath = $path.'/'.$node;

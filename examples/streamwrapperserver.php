@@ -1,6 +1,20 @@
 <?php
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
+// example:
+// set_include_dir('lib/' . PATH_SEPARATOR . get_include_path(); 
+
+/*
+
+  The following example is a custom tree.
+
+  If your data-structure is going to be very simple, it might be 
+  beneficial to use the lower-level Tree classes.
+
+  These classes are less resource intensive, but might be more 
+  difficult to maintain.
+
+*/
 
 /* Settings */
 

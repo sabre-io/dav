@@ -1,15 +1,45 @@
 <?php
 
+/**
+ * This class represents the {DAV:}supportedlock property
+ *
+ * This property contains information about what kind of locks
+ * this server supports.
+ * 
+ * @package Sabre
+ @ subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_DAV_Property_SupportedLock extends Sabre_DAV_Property {
 
+    /**
+     * supportsLocks 
+     * 
+     * @var mixed
+     */
     public $supportsLocks = false;
 
+    /**
+     * __construct 
+     * 
+     * @param mixed $supportsLocks 
+     * @return void
+     */
     public function __construct($supportsLocks) {
 
         $this->supportsLocks = $supportsLocks;
 
     }
 
+    /**
+     * serialize 
+     * 
+     * @param DOMElement $prop 
+     * @return void
+     */
     public function serialize(DOMElement $prop) {
 
         $doc = $prop->ownerDocument;

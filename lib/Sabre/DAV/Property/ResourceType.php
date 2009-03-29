@@ -1,10 +1,34 @@
 <?php
 
+/**
+ * This class represents the {DAV:}resourcetype property
+ *
+ * Normally for files this is empty, and for collection {DAV:}collection.
+ * However, other specs define different values for this. 
+ * 
+ * @package Sabre
+ * @subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
+    /**
+     * resourceType 
+     * 
+     * @var string 
+     */
     public $resourceType;
 
-    function __construct($resourceType) {
+    /**
+     * __construct 
+     * 
+     * @param mixed $resourceType 
+     * @return void
+     */
+    public function __construct($resourceType) {
 
         if ($resourceType == Sabre_DAV_Server::NODE_FILE)
             $this->resourceType = null;
@@ -15,7 +39,13 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
     }
 
-    function serialize(DOMElement $prop) {
+    /**
+     * serialize 
+     * 
+     * @param DOMElement $prop 
+     * @return void
+     */
+    public function serialize(DOMElement $prop) {
 
         $propName = null;
         if (preg_match('/^{([^}]*)}(.*)$/',$this->resourceType,$propName)) { 
@@ -26,7 +56,14 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
     }
 
-    function getValue() {
+    /**
+     * Returns the value in clark-notation
+     *
+     * For example '{DAV:}collection'
+     * 
+     * @return string 
+     */
+    public function getValue() {
 
         return $this->resourceType;
 

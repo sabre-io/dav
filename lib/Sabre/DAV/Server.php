@@ -1365,7 +1365,13 @@ class Sabre_DAV_Server {
         }
     }
 
-    function generateLockResponse($lockInfo) {
+    /**
+     * Generates the response for successfull LOCK requests 
+     * 
+     * @param Sabre_DAV_Lock $lockInfo 
+     * @return string 
+     */
+    public function generateLockResponse(Sabre_DAV_Lock $lockInfo) {
 
         $dom = new DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
@@ -1431,6 +1437,15 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * This method parses the PROPFIND request and returns its information
+     *
+     * This will either be a list of properties, or an empty array; in which case
+     * an {DAV:}allprop was requested.
+     * 
+     * @param string $body 
+     * @return array 
+     */
     protected function parsePropFindRequest($body) {
 
         // If the propfind body was empty, it means IE is requesting 'all' properties
@@ -1457,6 +1472,12 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Part of parsePropFindRequest 
+     * 
+     * @param DOMNode $prop 
+     * @return array 
+     */
     protected function parseProps(DOMNode $prop) {
 
         $propList = array(); 
@@ -1482,6 +1503,13 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Generates the response for a succesful PROPPATCH request 
+     * 
+     * @param string $href 
+     * @param array $mutations 
+     * @return string
+     */
     protected function generatePropPatchResponse($href,$mutations) {
 
         $xw = new XMLWriter();

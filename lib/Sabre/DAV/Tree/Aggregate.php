@@ -1,9 +1,29 @@
 <?php
 
+/**
+ * Sabre_DAV_Tree_Aggregate 
+ * 
+ * @package Sabre
+ * @version $Id$
+ * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license license http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
+ */
 class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
+    /**
+     * subTrees 
+     * 
+     * @var array
+     */
     private $subTrees = array();
 
+    /**
+     * getSubTree 
+     * 
+     * @param mixed $path 
+     * @return void
+     */
     protected function getSubTree($path) {
 
        $parts = explode('/',$path,2);
@@ -19,6 +39,13 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * addTree 
+     * 
+     * @param mixed $name 
+     * @param Sabre_DAV_Tree $tree 
+     * @return void
+     */
     public function addTree($name,Sabre_DAV_Tree $tree) {
 
         $this->subTrees[$name] = $tree;
@@ -26,6 +53,13 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
     }
 
 
+    /**
+     * getNodeInfo 
+     * 
+     * @param mixed $path 
+     * @param int $depth 
+     * @return void
+     */
     function getNodeInfo($path,$depth=0) {
 
         // We will list contents of the aggregate 
@@ -60,6 +94,12 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
         
     }
 
+    /**
+     * delete 
+     * 
+     * @param mixed $path 
+     * @return void
+     */
     function delete($path) {
 
         $subTree = $this->getSubTree($path);
@@ -68,6 +108,13 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * put 
+     * 
+     * @param mixed $path 
+     * @param mixed $data 
+     * @return void
+     */
     function put($path,$data) {
 
         $subTree = $this->getSubTree($path);
@@ -76,6 +123,13 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * createFile 
+     * 
+     * @param mixed $path 
+     * @param mixed $data 
+     * @return void
+     */
     function createFile($path,$data) {
 
         $subTree = $this->getSubTree($path);
@@ -84,6 +138,12 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * get 
+     * 
+     * @param mixed $path 
+     * @return void
+     */
     function get($path) {
 
         $subTree = $this->getSubTree($path);
@@ -92,6 +152,12 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * createDirectory 
+     * 
+     * @param mixed $path 
+     * @return void
+     */
     function createDirectory($path) {
 
         $subTree = $this->getSubTree($path);
@@ -100,6 +166,13 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * copy 
+     * 
+     * @param mixed $sourcePath 
+     * @param mixed $destinationPath 
+     * @return void
+     */
     function copy($sourcePath,$destinationPath) {
 
         //Obtaining sub-tree's for both paths
@@ -116,6 +189,13 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * move 
+     * 
+     * @param mixed $sourcePath 
+     * @param mixed $destinationPath 
+     * @return void
+     */
     function move($sourcePath,$destinationPath) {
 
         //Obtaining sub-tree's for both paths

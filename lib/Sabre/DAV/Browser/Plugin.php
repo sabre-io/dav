@@ -1,16 +1,49 @@
 <?php
 
+/**
+ * Browser Plugin
+ *
+ * This plugin provides a html representation, so that a WebDAV server may be accessed
+ * using a browser.
+ *
+ * The class intercepts GET requests to collection resources and generates a simple 
+ * html index. It's not really pretty though, extend to skin this listing.
+ * 
+ * @package Sabre
+ * @subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007-2008 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
+    /**
+     * reference to server class 
+     * 
+     * @var Sabre_DAV_Server 
+     */
     protected $server;
 
-    function initialize(Sabre_DAV_Server $server) {
+    /**
+     * Initializes the plugin and subscribes to events 
+     * 
+     * @param Sabre_DAV_Server $server 
+     * @return void
+     */
+    public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
         $this->server->subscribeEvent('beforeMethod',array($this,'httpGetInterceptor'));
 
     }
 
+    /**
+     * This method intercepts GET requests to collections and returns the html 
+     * 
+     * @param string $method 
+     * @return bool 
+     */
     public function httpGetInterceptor($method) {
 
         if ($method!='GET') return true;
@@ -24,6 +57,14 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         
     }
 
+    /**
+     * Handles POST requests for tree operations
+     * 
+     * This method is not yet used.
+     * 
+     * @param string $method 
+     * @return bool
+     */
     public function httpPOSTHandler($method) {
 
         if ($method!='POST') return true;
@@ -31,12 +72,26 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * Escapes a string for html. 
+     * 
+     * @param string $value 
+     * @return void
+     */
     public function escapeHTML($value) {
 
         return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
 
     }
 
+    /**
+     * Generates the html directory index for a given url 
+     *
+     * This method has echo output
+     *
+     * @param string $path 
+     * @return void
+     */
     public function generateDirectoryIndex($path) {
 
         echo "<html>

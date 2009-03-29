@@ -1,9 +1,35 @@
 <?php
 
+/**
+ * This property represents the {DAV:}getlastmodified property.
+ * 
+ * Although this is normally a simple property, windows requires us to add
+ * some new attributes.
+ *
+ * This class uses unix timestamps internally, and converts them to RFC 1123 times for 
+ * serialization
+ *
+ * @package Sabre
+ * @version $Id$
+ * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license license http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
+ */
 class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
 
+    /**
+     * time 
+     * 
+     * @var int 
+     */
     public $time;
 
+    /**
+     * __construct 
+     * 
+     * @param int $time 
+     * @return void
+     */
     function __construct($time) {
 
         if (!(int)$time) $time = strtotime($time);
@@ -11,6 +37,12 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
 
     }
 
+    /**
+     * serialize 
+     * 
+     * @param DOMElement $prop 
+     * @return void
+     */
     public function serialize(DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
@@ -20,6 +52,11 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
 
     }
 
+    /**
+     * getTime 
+     * 
+     * @return int 
+     */
     public function getTime() {
 
         return $this->time;

@@ -1,8 +1,25 @@
 <?php
 
-// !!!! Make sure the Sabre directory is in the include_path !!!
-
 // {$Id$} //
+
+// !!!! Make sure the Sabre directory is in the include_path !!!
+// example:
+// set_include_dir('lib/' . PATH_SEPARATOR . get_include_path(); 
+
+/*
+
+This example demonstrates a simple way to create your own virtual filesystems.
+By extending the _File and Directory classes, you can easily create a tree
+based on various datasources.
+
+The most obvious example is the filesystem itself. A more complete and documented
+example can be found in:
+
+lib/Sabre/DAV/FS/Node.php
+lib/Sabre/DAV/FS/Directory.php
+lib/Sabre/DAV/FS/File.php
+
+*/
 
 // settings
 date_default_timezone_set('Canada/Eastern');

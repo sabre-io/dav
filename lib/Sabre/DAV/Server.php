@@ -340,7 +340,6 @@ class Sabre_DAV_Server {
      * This method is normally used to take a peak at a url, and only get the HTTP response headers, without the body
      * This is used by clients to determine if a remote file was changed, so they can use a local cached version, instead of downloading it again
      *
-     * @todo currently not implemented
      * @return void
      */
     protected function httpHead() {
@@ -426,7 +425,6 @@ class Sabre_DAV_Server {
      * This method is called to update properties on a Node. The request is an XML body with all the mutations.
      * In this XML body it is specified which properties should be set/updated and/or deleted
      *
-     * @todo SabreDAV does not support custom properties yet, so this will be ignored
      * @return void
      */
     protected function httpPropPatch() {

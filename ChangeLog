@@ -1,3 +1,6 @@
+0.8-alpha (2009-??-??)
+	* Added: 11 more unittests
+
 0.7-alpha (2009-03-29)
 	* Added: System to return complex properties from PROPFIND.
 	* Added: support for {DAV:}supportedlock.

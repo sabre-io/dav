@@ -3,7 +3,7 @@
 
     <property name="BUILDDIR" value="SabreDAV/" />
     <svnlastrevision workingcopy="." propertyname="svn.lastrevision"/>
-    <property name="VERSION" value="0.7.${svn.lastrevision}" />
+    <property name="VERSION" value="0.8.${svn.lastrevision}" />
 
     <fileset dir="${BUILDDIR}" id="pkgfiles">
         <include name="*.php" />

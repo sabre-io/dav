@@ -43,7 +43,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status);
 
         $this->assertEquals(array(
-                'Content-Type' => 'application/xml; charset="utf-8"',
+                'Content-Type' => 'application/xml; charset=utf-8',
             ),
             $this->response->headers
          );
@@ -144,6 +144,59 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('HTTP/1.1 404 Not Found',(string)$val[1]);
 
     }
+
+    public function testPropPatch() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'PROPPATCH',
+        );
+
+        $body = '<?xml version="1.0"?>
+<d:propertyupdate xmlns:d="DAV:" xmlns:s="http://www.rooftopsolutions.nl/testnamespace">
+  <d:set><d:prop><s:someprop>somevalue</s:someprop></d:prop></d:set>
+</d:propertyupdate>';
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody($body);
+
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+                'Content-Type' => 'application/xml; charset=utf-8',
+            ),
+            $this->response->headers
+         );
+
+        $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);
+
+    }
+
+    public function testPropPatchAndFetch() {
+
+        $this->testPropPatch();
+        $xml = '<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:" xmlns:s="http://www.rooftopsolutions.nl/testnamespace">
+  <d:prop>
+    <s:someprop />
+  </d:prop>
+</d:propfind>';
+
+        $this->sendRequest($xml);
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('s','http://www.rooftopsolutions.nl/testnamespace');
+ 
+        $xpath='//d:prop/s:someprop';
+        $result = $xml->xpath($xpath);
+        $this->assertEquals('somevalue',(string)$result[0]);
+
+
+    }
+
 }
 
 ?>

@@ -1,9 +1,14 @@
 <?php
 
-require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
+class Sabre_DAV_FSExt_NodesTest extends Sabre_DAV_AbstractServer{
+
+    protected function getRootNode() {
+
+        return new Sabre_DAV_FSExt_Directory($this->tempDir);
+
+    }
 
     function testGet() {
         
@@ -20,6 +25,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'ETag' => md5_file($this->tempDir . '/test.txt'),
             ),
             $this->response->headers
          );
@@ -28,37 +34,6 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
-
-    /**
-     * This test should have the exact same result as testGet.
-     *
-     * The idea is that double slashes // are converted to single ones /
-     * 
-     */
-    function testGetDoubleSlash() {
-        
-        $serverVars = array(
-            'REQUEST_URI'    => '//test.txt',
-            'REQUEST_METHOD' => 'GET',
-        );
-
-        $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
-            ),
-            $this->response->headers
-         );
-
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
-        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
-
-    }
-
 
     function testHEAD() {
         
@@ -75,6 +50,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'ETag' => md5_file($this->tempDir . '/test.txt'),
             ),
             $this->response->headers
          );
@@ -218,9 +194,9 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'           => '1, 3',
+            'DAV'           => '1, 2, 3',
             'MS-Author-Via' => 'DAV',
-            'Allow'         => 'OPTIONS GET HEAD DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE REPORT',
+            'Allow'         => 'OPTIONS GET HEAD DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE REPORT LOCK UNLOCK',
             'Accept-Ranges' => 'bytes',
         ),$this->response->headers);
 
@@ -228,51 +204,6 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('', $this->response->body);
 
     
-    }
-    function testNonExistantMethod() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'BLABLA',
-        );
-
-        $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
-
-        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
-
-
-    }
-
-    function testBaseUri() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/blabla/test.txt',
-            'REQUEST_METHOD' => 'GET',
-        );
-
-        $request = new Sabre_HTTP_Request($serverVars);
-        $this->server->setBaseUri('/blabla/');
-        $this->assertEquals('/blabla/',$this->server->getBaseUri());
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
-            ),
-            $this->response->headers
-         );
-
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
-        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
-
     }
 
 }

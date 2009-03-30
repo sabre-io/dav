@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * Libarry include file
+ *
+ * This file contains all includes to the rest of the SabreDAV library
+ * Make sure the lib/ directory is in PHP's include_path
+ *
+ * @package Sabre
+ * @subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
+
 /* Utilities */
 include 'Sabre/PHP/Exception.php';
 include 'Sabre/HTTP/Response.php';
@@ -61,5 +75,7 @@ include 'Sabre/DAV/Tree/Filesystem.php';
 include 'Sabre/DAV/Server.php';
 include 'Sabre/DAV/ServerPlugin.php';
 
+/* Browser */
+include 'Sabre/DAV/Browser/Plugin.php';
 
 ?>

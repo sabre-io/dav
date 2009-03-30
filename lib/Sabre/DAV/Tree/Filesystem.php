@@ -4,6 +4,7 @@
  * Sabre_DAV_Tree_Filesystem 
  * 
  * @package Sabre
+ * @subpackage DAV
  * @version $Id$
  * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 

@@ -121,7 +121,7 @@ class Sabre_DAV_Server {
             }
             
             $this->httpResponse->sendStatus($httpCode);
-            $this->httpResponse->setHeader('Content-Type','application/xml');
+            $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
             $this->httpResponse->sendBody($DOM->saveXML());
 
         }
@@ -414,7 +414,7 @@ class Sabre_DAV_Server {
 
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
-        $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
+        $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $data = $this->generatePropfindResponse($newProperties,$properties);
         $this->httpResponse->sendBody($data);
 
@@ -449,8 +449,10 @@ class Sabre_DAV_Server {
         }
 
         $this->httpResponse->sendStatus(207);
-        $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
-        echo $this->generatePropPatchResponse($this->getRequestUri(),$result);
+        $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->httpResponse->sendBody(
+            $this->generatePropPatchResponse($this->getRequestUri(),$result)
+        );
 
     }
 
@@ -659,7 +661,7 @@ class Sabre_DAV_Server {
         }
 
         $this->tree->lockNode($uri,$lockInfo);
-        $this->httpResponse->setHeader('Content-Type','application/xml; charset="utf-8"');
+        $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
         echo $this->generateLockResponse($lockInfo);
 

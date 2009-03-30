@@ -4,10 +4,11 @@
  * Sabre_DAV_Tree_Aggregate 
  * 
  * @package Sabre
+ * @subpackage DAV
  * @version $Id$
- * @copyright Copyright (C) 2007, 2008 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
- * @license license http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 

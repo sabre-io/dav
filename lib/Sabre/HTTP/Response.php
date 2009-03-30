@@ -4,7 +4,7 @@
  * Sabre_HTTP_Response 
  * 
  * @package Sabre
- * @subpackage DAV
+ * @subpackage HTTP 
  * @version $Id$
  * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 

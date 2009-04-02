@@ -19,7 +19,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      * 
      * @var Sabre_DAV_IDirectory 
      */
-    private $rootNode;
+    protected $rootNode;
 
 
     /**

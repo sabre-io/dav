@@ -73,12 +73,12 @@ class Sabre_DAV_Tree_TemporaryFileFilter extends Sabre_DAV_Tree_Filter {
         $tempPath = basename($path);
         
         $tempFiles = array(
-            '/^._(.*)$/',      // OS/X resource forks
+            '/^\._(.*)$/',      // OS/X resource forks
             '/^.DS_Store$/',   // OS/X custom folder settings
             '/^desktop.ini$/', // Windows custom folder settings
             '/^Thumbs.db$/',   // Windows thumbnail cache
             '/^.(.*).swp$/',   // ViM temporary files
-            '/.dat(.*)$/',     // Smultron seems to create these
+            '/\.dat(.*)$/',     // Smultron seems to create these
         );
 
         $match = false;

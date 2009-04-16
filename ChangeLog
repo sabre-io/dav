@@ -1,5 +1,6 @@
 0.8-alpha (2009-??-??)
 	* Added: 11 more unittests
+	* Fixed: Locking bug on Windows Vista
 
 0.7-alpha (2009-03-29)
 	* Added: System to return complex properties from PROPFIND.

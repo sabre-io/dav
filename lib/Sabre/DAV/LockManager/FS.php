@@ -55,13 +55,14 @@ class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
 
         $lockList = array();
         $currentPath = '';
+
         foreach(explode('/',$uri) as $uriPart) {
 
             // weird algorithm that can probably be improved, but we're traversing the path top down 
             if ($currentPath) $currentPath.='/'; 
             $currentPath.=$uriPart;
 
-            $uriLocks = $this->getData($uri);
+            $uriLocks = $this->getData($currentPath);
 
             foreach($uriLocks as $uriLock) {
 

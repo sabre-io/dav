@@ -1487,10 +1487,8 @@ class Sabre_DAV_Server {
 
                 foreach($propNode->childNodes as $propNodeData) {
 
-                    /* if ($propNodeData->attributes->getNamedItem('xmlns')->value == "") {
-                        // If the namespace declaration is an empty string, litmus expects us to throw a HTTP400
-                        throw new Sabre_DAV_BadRequestException('Invalid namespace: ""');
-                    } */
+                    /* If there are no elements in here, we actually get 1 text node, this special case is dedicated to netdrive */
+                    if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
 
                     if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
                     $propList['{' . $ns . '}' . $propNodeData->localName] = $propNodeData->textContent;

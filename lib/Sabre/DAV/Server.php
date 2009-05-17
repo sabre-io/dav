@@ -36,7 +36,7 @@ class Sabre_DAV_Server {
      * 
      * @var Sabre_DAV_Tree 
      */
-    protected $tree;
+    public $tree;
 
     /**
      * The base uri 

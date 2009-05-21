@@ -101,7 +101,7 @@
             if ($childName==$name) return $child;
 
         }
-        throw new Sabre_DAV_FileNotFoundException('File not found: ' . $name);
+        throw new Sabre_DAV_Exception_FileNotFound('File not found: ' . $name);
 
     }
 
@@ -127,7 +127,7 @@
     public function get() {
 
         if(auth_quickaclcheck($this->path) < AUTH_READ){
-            throw new Sabre_DAV_PermissionDeniedException('You are not allowed to view this page');
+            throw new Sabre_DAV_Exception_PermissionDenied('You are not allowed to view this page');
         }
         return rawWiki($this->path,'');
 
@@ -144,15 +144,15 @@
         $minor = '';
 
         if(auth_quickaclcheck($id) < AUTH_EDIT)
-            throw new Sabre_DAV_PermissionDeniedException('You are not allowed to edit this page');
+            throw new Sabre_DAV_Exception_PermissionDenied('You are not allowed to edit this page');
 
         // Check, if page is locked
         if(checklock($id))
-            return new Sabre_DAV_PermissionDeniedException('The page is currently locked');
+            return new Sabre_DAV_Exception_PermissionDenied('The page is currently locked');
 
         // SPAM check
         if(checkwordblock()) 
-            return new Sabre_DAV_PermissionDeniedException('Positive wordblock check');
+            return new Sabre_DAV_Exception_PermissionDenied('Positive wordblock check');
 
         // autoset summary on new pages
         if(!page_exists($id) && empty($sum)) {

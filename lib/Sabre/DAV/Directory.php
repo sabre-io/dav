@@ -22,7 +22,7 @@ abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_I
      * Generally its wise to override this, as this can usually be optimized
      * 
      * @param string $name
-     * @throws Sabre_DAV_FileNotFoundException
+     * @throws Sabre_DAV_Exception_FileNotFound
      * @return Sabre_DAV_INode 
      */
     public function getChild($name) {
@@ -32,7 +32,7 @@ abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_I
             if ($child->getName()==$name) return $child;
 
         }
-        throw new Sabre_DAV_FileNotFoundException('File not found: ' . $name);
+        throw new Sabre_DAV_Exception_FileNotFound('File not found: ' . $name);
 
     }
 
@@ -41,12 +41,12 @@ abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_I
      * 
      * @param string $name Name of the file 
      * @param string $data Initial payload 
-     * @throws Sabre_DAV_PermissionDeniedException
+     * @throws Sabre_DAV_Exception_PermissionDenied
      * @return void
      */
     public function createFile($name, $data = null) {
 
-        throw new Sabre_DAV_PermissionDeniedException('Permission denied to create file (filename ' . $name . ')');
+        throw new Sabre_DAV_Exception_PermissionDenied('Permission denied to create file (filename ' . $name . ')');
 
     }
 
@@ -54,12 +54,12 @@ abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_I
      * Creates a new subdirectory 
      * 
      * @param string $name 
-     * @throws Sabre_DAV_PermissonDeniedException
+     * @throws Sabre_DAV_Exception_PermissonDenied
      * @return void
      */
     public function createDirectory($name) {
 
-        throw new Sabre_DAV_PermissionDeniedException('Permission denied to create directory');
+        throw new Sabre_DAV_Exception_PermissionDenied('Permission denied to create directory');
 
     }
 

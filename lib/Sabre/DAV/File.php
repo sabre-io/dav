@@ -25,7 +25,7 @@ abstract class Sabre_DAV_File extends Sabre_DAV_Node implements Sabre_DAV_IFile 
      */
     public function put($data) { 
 
-        throw new Sabre_DAV_PermissionDeniedException('Permission denied to change data');
+        throw new Sabre_DAV_Exception_PermissionDenied('Permission denied to change data');
 
     }
 
@@ -38,7 +38,7 @@ abstract class Sabre_DAV_File extends Sabre_DAV_Node implements Sabre_DAV_IFile 
      */
     public function get() { 
 
-        throw new Sabre_DAV_PermissionDeniedException('Permission denied to read this file');
+        throw new Sabre_DAV_Exception_PermissionDenied('Permission denied to read this file');
 
     }
     

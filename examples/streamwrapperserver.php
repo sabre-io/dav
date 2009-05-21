@@ -51,7 +51,7 @@ class streamTree extends Sabre_DAV_Tree {
                 case '.' :
                     continue;
                 case '..' :
-                    throw new Sabre_DAV_BadRequestException('Invalid path');
+                    throw new Sabre_DAV_Exception_BadRequest('Invalid path');
                     break;
 
 
@@ -61,7 +61,7 @@ class streamTree extends Sabre_DAV_Tree {
         }
 
         $newPath = $this->stream . trim($newPath,'/');
-        if ($mustExist && !file_exists($newPath)) throw new Sabre_DAV_FileNotFoundException('File not found!');
+        if ($mustExist && !file_exists($newPath)) throw new Sabre_DAV_Exception_FileNotFound('File not found!');
         return $newPath;
 
     }

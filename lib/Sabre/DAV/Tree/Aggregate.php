@@ -88,7 +88,7 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
         // If we got to this point, it means we need to access a subtree
         $subTree = $this->getSubtree($path);
-        if (!$subTree) throw new Sabre_DAV_FileNotFoundException('Subtree with this name not found');
+        if (!$subTree) throw new Sabre_DAV_Exception_FileNotFound('Subtree with this name not found');
 
         $nodeInfo = $subTree[0]->getNodeInfo($subTree[1],$depth);
         return $nodeInfo;
@@ -104,7 +104,7 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
     function delete($path) {
 
         $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_PermissionDeniedException();
+        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
         return $subTree[0]->delete($subTree[1]);
 
     }
@@ -119,7 +119,7 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
     function put($path,$data) {
 
         $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_PermissionDeniedException();
+        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
         return $subTree[0]->put($subTree[1],$data);
 
     }
@@ -134,7 +134,7 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
     function createFile($path,$data) {
 
         $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_PermissionDeniedException();
+        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
         return $subTree[0]->createFile($subTree[1],$data);
 
     }
@@ -148,7 +148,7 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
     function get($path) {
 
         $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_PermissionDeniedException();
+        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
         return $subTree[0]->get($subTree[1]);
 
     }
@@ -162,7 +162,7 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
     function createDirectory($path) {
 
         $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_PermissionDeniedException();
+        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
         return $subTree[0]->createDirectory($subTree[1]);
 
     }
@@ -181,10 +181,10 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
         $tree2 = $this->getSubTree($destinationPath);
         
         //If either was not in a sub-tree, we fail
-        if (!$tree1 || !$tree2) throw new Sabre_DAV_NotImplementedException('Copy not supported in the aggregate root');
+        if (!$tree1 || !$tree2) throw new Sabre_DAV_Exception_NotImplemented('Copy not supported in the aggregate root');
 
         //If they are not within the same tree, we fail as well
-        if ($tree1[0]!==$tree2[0]) throw new Sabre_DAV_NotImplementedException('Copy not supported across sub-trees');
+        if ($tree1[0]!==$tree2[0]) throw new Sabre_DAV_Exception_NotImplemented('Copy not supported across sub-trees');
 
         return $tree1[0]->copy($tree1[1],$tree2[1]);
 
@@ -204,10 +204,10 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
         $tree2 = $this->getSubTree($destinationPath);
         
         //If either was not in a sub-tree, we fail
-        if (!$tree1 || !$tree2) throw new Sabre_DAV_NotImplementedException('Copy not supported in the aggregate root');
+        if (!$tree1 || !$tree2) throw new Sabre_DAV_Exception_NotImplemented('Copy not supported in the aggregate root');
 
         //If they are not within the same tree, we fail as well
-        if ($tree1[0]!==$tree2[0]) throw new Sabre_DAV_NotImplementedException('Copy not supported across sub-trees');
+        if ($tree1[0]!==$tree2[0]) throw new Sabre_DAV_Exception_NotImplemented('Copy not supported across sub-trees');
 
         return $tree1[0]->move($tree1[1],$tree2[1]);
 

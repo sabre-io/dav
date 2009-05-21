@@ -1,4 +1,7 @@
 0.8-alpha (2009-??-??)
+	* Changed: Renamed all exceptions! This is a compatibility break. Every
+	  Exception now follows Sabre_DAV_Exception_FileNotFound convention
+	  instead of Sabre_DAV_FileNotFoundException.
 	* Added: 11 more unittests
 	* Fixed: Locking bug on Windows Vista
 	* Fixed: Netdrive support

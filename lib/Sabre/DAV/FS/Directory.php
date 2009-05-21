@@ -45,14 +45,14 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_IDir
      * Returns a specific child node, referenced by its name 
      * 
      * @param string $name 
-     * @throws Sabre_DAV_FileNotFoundException
+     * @throws Sabre_DAV_Exception_FileNotFound
      * @return Sabre_DAV_INode 
      */
     public function getChild($name) {
 
         $path = $this->path . '/' . $name;
 
-        if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException('File with name ' . $path . ' could not be located');
+        if (!file_exists($path)) throw new Sabre_DAV_Exception_FileNotFound('File with name ' . $path . ' could not be located');
 
         if (is_dir($path)) {
 

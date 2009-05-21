@@ -298,9 +298,9 @@ class Sabre_DAV_Server {
                 $start = $range[0];
                 $end = $range[1]?$range[1]:$nodeInfo[0]['size']-1;
                 if($start > $nodeInfo[0]['size']) 
-                    throw new Sabre_DAV_RequestedRangeNotSatisfiableException('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeInfo[0]['size'] . ')');
+                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeInfo[0]['size'] . ')');
 
-                if($end < $start) throw new Sabre_DAV_RequestedRangeNotSatisfiableException('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
+                if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
                 if($end > $nodeInfo[0]['size']) $end = $nodeInfo[0]['size']-1;
 
             } else {
@@ -372,7 +372,7 @@ class Sabre_DAV_Server {
     protected function httpDelete() {
 
         $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
         // Asking for nodeinfo to make sure the node exists
         $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri());
@@ -431,7 +431,7 @@ class Sabre_DAV_Server {
 
         // Checking possible locks
         $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
        
         $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
@@ -471,30 +471,30 @@ class Sabre_DAV_Server {
             
             // Checking potential locks
             $lastLock = null;
-            if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+            if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
             // We got this far, this means the node already exists.
             // This also means we should check for the If-None-Match header
             if ($this->httpRequest->getHeader('If-None-Match')) {
 
-                throw new Sabre_DAV_PreconditionFailedException('The resource already exists, and an If-None-Match header was supplied');
+                throw new Sabre_DAV_Exception_PreconditionFailed('The resource already exists, and an If-None-Match header was supplied');
 
             }
             
             // If the node is a collection, we'll deny it
-            if ($info[0]['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_ConflictException('PUTs on directories are not allowed'); 
+            if ($info[0]['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed'); 
 
             $this->tree->put($this->getRequestUri(),$this->httpRequest->getBody());
             $this->httpResponse->sendStatus(200);
 
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If we got here, the resource didn't exist yet.
 
             // Validating the lock on the parent collection
             $parent = dirname($this->getRequestUri());
             $lastLock = null;
-            if (!$this->validateLock($parent,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+            if (!$this->validateLock($parent,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
             // This means the resource doesn't exist yet, and we're creating a new one
             $this->tree->createFile($this->getRequestUri(),$this->httpRequest->getBody());
@@ -515,26 +515,26 @@ class Sabre_DAV_Server {
     protected function httpMkcol() {
 
         $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
         $requestUri = $this->getRequestUri();
 
         // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
         $requestBody = $this->httpRequest->getBody(true);
-        if ($requestBody) throw new Sabre_DAV_UnsupportedMediaTypeException();
+        if ($requestBody) throw new Sabre_DAV_Exception_UnsupportedMediaType();
 
         // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
         
         try {
             if ($nodeInfo = $this->tree->getNodeInfo(dirname($requestUri),0)) {
                 if ($nodeInfo[0]['type']==self::NODE_FILE) {
-                    throw new Sabre_DAV_ConflictException('Parent node is not a directory');
+                    throw new Sabre_DAV_Exception_Conflict('Parent node is not a directory');
                 }
             }
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // This means the parent node doesn't exist, and we need to throw a 409 Conflict
-            throw new Sabre_DAV_ConflictException('Parent node does not exist');
+            throw new Sabre_DAV_Exception_Conflict('Parent node does not exist');
 
         }
 
@@ -542,9 +542,9 @@ class Sabre_DAV_Server {
             $nodeInfo = $this->tree->getNodeInfo($requestUri);
 
             // If we got here.. it means there's already a node on that url, and we need to throw a 405
-            throw new Sabre_DAV_MethodNotAllowedException('The directory you tried to create already exists');
+            throw new Sabre_DAV_Exception_MethodNotAllowed('The directory you tried to create already exists');
 
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
             // This is correct
         }
 
@@ -565,7 +565,7 @@ class Sabre_DAV_Server {
         $moveInfo = $this->getCopyAndMoveInfo();
 
         $lastLock = null;
-        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']),$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']),$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
@@ -587,7 +587,7 @@ class Sabre_DAV_Server {
         $copyInfo = $this->getCopyAndMoveInfo();
 
         $lastLock = null;
-        if (!$this->validateLock($copyInfo['destination'],$lastLock)) throw new Sabre_DAV_LockedException($lastLock);
+        if (!$this->validateLock($copyInfo['destination'],$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
@@ -619,7 +619,7 @@ class Sabre_DAV_Server {
             // If ohe existing lock was an exclusive lock, we need to fail
             if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
                 //var_dump($lastLock);
-                throw new Sabre_DAV_ConflictingLockException($lastLock);
+                throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
             }
 
         }
@@ -629,7 +629,7 @@ class Sabre_DAV_Server {
             $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
             $lockInfo->depth = $this->getHTTPDepth(0); 
             $lockInfo->uri = $uri;
-            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_ConflictingLockException($lastLock);
+            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
 
         } elseif ($lastLock) {
 
@@ -639,7 +639,7 @@ class Sabre_DAV_Server {
         } else {
             
             // There was neither a lock refresh nor a new lock request
-            throw new Sabre_DAV_BadRequestException('An xml body is required for lock requests');
+            throw new Sabre_DAV_Exception_BadRequest('An xml body is required for lock requests');
 
         }
 
@@ -648,7 +648,7 @@ class Sabre_DAV_Server {
         // If we got this far.. we should go check if this node actually exists. If this is not the case, we need to create it first
         try {
             $nodeInfo = $this->tree->getNodeInfo($uri,0);
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
             
             // It didn't, lets create it 
             $this->tree->createFile($uri,fopen('php://memory','r'));
@@ -680,7 +680,7 @@ class Sabre_DAV_Server {
         $lockToken = $this->httpRequest->getHeader('Lock-Token');
 
         // If the locktoken header is not supplied, we need to throw a bad request exception
-        if (!$lockToken) throw new Sabre_DAV_BadRequestException('No lock token was supplied');
+        if (!$lockToken) throw new Sabre_DAV_Exception_BadRequest('No lock token was supplied');
 
         $locks = $this->tree->getLocks($uri);
 
@@ -700,7 +700,7 @@ class Sabre_DAV_Server {
         }
 
         // If we got here, it means the locktoken was invalid
-        throw new Sabre_DAV_LockTokenMatchesRequestUriException();
+        throw new Sabre_DAV_Exception_LockTokenMatchesRequestUri();
 
     }
 
@@ -732,7 +732,7 @@ class Sabre_DAV_Server {
         if ($this->broadcastEvent('report',array($reportName,$dom))) {
 
             // If broadcastEvent returned true, it means the report was not supported
-            throw new Sabre_DAV_ReportNotImplementedException();
+            throw new Sabre_DAV_Exception_ReportNotImplemented();
 
         }
 
@@ -761,7 +761,7 @@ class Sabre_DAV_Server {
 
             if ($this->broadcastEvent('unknownMethod',array(strtoupper($method)))) {
                 // Unsupported method
-                throw new Sabre_DAV_NotImplementedException();
+                throw new Sabre_DAV_Exception_NotImplemented();
             }
 
         }
@@ -796,7 +796,7 @@ class Sabre_DAV_Server {
      * Calculates the uri for a request, making sure that the base uri is stripped out 
      * 
      * @param string $uri 
-     * @throws Sabre_DAV_PermissionDeniedException A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
+     * @throws Sabre_DAV_Exception_PermissionDenied A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
      * @return string
      */
     public function calculateUri($uri) {
@@ -815,7 +815,7 @@ class Sabre_DAV_Server {
 
         } else {
 
-            throw new Sabre_DAV_PermissionDeniedException('Requested uri (' . $uri . ') is out of base uri (' . $this->baseUri . ')');
+            throw new Sabre_DAV_Exception_PermissionDenied('Requested uri (' . $uri . ') is out of base uri (' . $this->baseUri . ')');
 
         }
 
@@ -970,7 +970,7 @@ class Sabre_DAV_Server {
                     }
                }
                // No conditions matched, so we fail
-               throw new Sabre_DAV_PreconditionFailedException('The tokens provided in the if header did not match');
+               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match');
             }
 
             // Conditions were met, we'll also need to check if all the locks are gone
@@ -1053,7 +1053,7 @@ class Sabre_DAV_Server {
 
             if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
             else if (strtolower($header)=='infinite') $header=Sabre_DAV_Lock::TIMEOUT_INFINITE;
-            else throw new Sabre_DAV_BadRequestException('Invalid HTTP timeout header');
+            else throw new Sabre_DAV_Exception_BadRequest('Invalid HTTP timeout header');
 
         } else {
 
@@ -1084,7 +1084,7 @@ class Sabre_DAV_Server {
         $source = $this->getRequestUri();
 
         // Collecting the relevant HTTP headers
-        if (!$this->httpRequest->getHeader('Destination')) throw new Sabre_DAV_BadRequestException('The destination header was not supplied');
+        if (!$this->httpRequest->getHeader('Destination')) throw new Sabre_DAV_Exception_BadRequest('The destination header was not supplied');
         $destination = $this->calculateUri($this->httpRequest->getHeader('Destination'));
         $overwrite = $this->httpRequest->getHeader('Overwrite');
         if (!$overwrite) $overwrite = 'T';
@@ -1092,18 +1092,18 @@ class Sabre_DAV_Server {
         elseif (strtoupper($overwrite)=='F') $overwrite = false;
 
         // We need to throw a bad request exception, if the header was invalid
-        else throw new Sabre_DAV_BadRequestException('The HTTP Overwrite header should be either T or F');
+        else throw new Sabre_DAV_Exception_BadRequest('The HTTP Overwrite header should be either T or F');
 
         // Collection information on relevant existing nodes
         $sourceInfo = $this->tree->getNodeInfo($source);
 
         try {
             $destinationParentInfo = $this->tree->getNodeInfo(dirname($destination));
-            if ($destinationParentInfo[0]['type'] == self::NODE_FILE) throw new Sabre_DAV_UnsupportedMediaTypeException('The destination node is not a collection');
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+            if ($destinationParentInfo[0]['type'] == self::NODE_FILE) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If the destination parent node is not found, we throw a 409
-            throw new Sabre_DAV_ConflictException('The destination node is not found');
+            throw new Sabre_DAV_Exception_Conflict('The destination node is not found');
 
         }
 
@@ -1113,9 +1113,9 @@ class Sabre_DAV_Server {
             
             // If this succeeded, it means the destination already exists
             // we'll need to throw precondition failed in case overwrite is false
-            if (!$overwrite) throw new Sabre_DAV_PreconditionFailedException('The destination node already exists, and the overwrite header is set to false');
+            if (!$overwrite) throw new Sabre_DAV_Exception_PreconditionFailed('The destination node already exists, and the overwrite header is set to false');
 
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // Destination didn't exist, we're all good
             $destinationInfo = false;
@@ -1413,7 +1413,7 @@ class Sabre_DAV_Server {
                 case 100 :
                     break;
                 default :    
-                    throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request: ' . print_r($error,true));
+                    throw new Sabre_DAV_Exception_BadRequest('The request body was not a valid proppatch request: ' . print_r($error,true));
 
             }
         }
@@ -1463,7 +1463,7 @@ class Sabre_DAV_Server {
                 case 100 :
                     break;
                 default :
-                    throw new Sabre_DAV_BadRequestException('The request body was not a valid proppatch request' . print_r($error,true));
+                    throw new Sabre_DAV_Exception_BadRequest('The request body was not a valid proppatch request' . print_r($error,true));
             }
         }
         libxml_use_internal_errors($errorsetting); 

@@ -145,7 +145,7 @@ class Sabre_DAV_Tree_TemporaryFileFilter extends Sabre_DAV_Tree_Filter {
                 if ($this->passThroughGets) {
                     return parent::get($path);
                 } else {
-                    throw new Sabre_DAV_FileNotFoundException();
+                    throw new Sabre_DAV_Exception_FileNotFound();
                 }
             } else { 
                 return fopen($tempPath,'r');
@@ -190,7 +190,7 @@ class Sabre_DAV_Tree_TemporaryFileFilter extends Sabre_DAV_Tree_Filter {
                 if ($this->passThroughGets) {
                     return parent::getNodeInfo($path,$depth);
                 } else {
-                    throw new Sabre_DAV_FileNotFoundException();
+                    throw new Sabre_DAV_Exception_FileNotFound();
                 }
 
             }

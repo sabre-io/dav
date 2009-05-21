@@ -97,13 +97,13 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
      * 
      * @param string $path 
      * @param int $depth 
-     * @throws Sabre_DAV_FileNotFoundException This exception must be thrown if the node does not exist.
+     * @throws Sabre_DAV_Exception_FileNotFound This exception must be thrown if the node does not exist.
      * @return array 
      */
     public function getNodeInfo($path,$depth=0) {
 
         $path = $this->getRealPath($path);
-        if (!file_exists($path)) throw new Sabre_DAV_FileNotFoundException($path . ' could not be found');
+        if (!file_exists($path)) throw new Sabre_DAV_Exception_FileNotFound($path . ' could not be found');
         $nodeInfo = array();
 
         $nodeInfo[] = array(

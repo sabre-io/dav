@@ -55,11 +55,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             // If this part of the path is just a dot, it actually means we can skip it
             if ($pathPart=='.' || $pathPart=='') continue;
 
-        //    try { 
             $currentNode = $currentNode->getChild($pathPart); 
-        //    } catch (Sabre_DAV_FileNotFoundException $e) { 
-        //       throw new Sabre_DAV_FileNotFoundException('we could not find : ' . $path);
-        //    }
 
         }
 
@@ -86,7 +82,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             // If we got here, it means the destination exists, and needs to be overwritten
             $destinationNode->delete();
 
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If we got here, it means the destination node does not yet exist
 
@@ -279,7 +275,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
         $node = $this->getNodeForPath($path);
 
         if ($node instanceof Sabre_DAV_IDirectory) 
-            throw new Sabre_DAV_NotImplementedException('GET is not currently implemented on collections');
+            throw new Sabre_DAV_Exception_NotImplemented('GET is not currently implemented on collections');
 
         return $node->get();
 
@@ -315,7 +311,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
                 // If we got here, it means the destination exists, and needs to be overwritten
                 $destinationNode->delete();
 
-            } catch (Sabre_DAV_FileNotFoundException $e) {
+            } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
                 // If we got here, it means the destination node does not yet exist
 
@@ -372,7 +368,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
                 $node = $this->getNodeForPath($currentPath);
                 if ($node instanceof Sabre_DAV_ILockable) $uriLocks = $node->getLocks();
 
-            } catch (Sabre_DAV_FileNotFoundException $e){
+            } catch (Sabre_DAV_Exception_FileNotFound $e){
                 // In case the node didn't exist, this could be a lock-null request
             }
 
@@ -406,7 +402,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
         try {
             $node = $this->getNodeForPath($uri);
             if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
             // In case the node didn't exist, this could be a lock-null request
         }
 
@@ -428,7 +424,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
         try {
             $node = $this->getNodeForPath($uri);
             if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);
-        } catch (Sabre_DAV_FileNotFoundException $e) {
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
             // In case the node didn't exist, this could be a lock-null request
         }
 

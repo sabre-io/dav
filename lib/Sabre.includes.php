@@ -29,6 +29,23 @@ include 'Sabre/DAV/Version.php';
 include 'Sabre/DAV/Lock.php';
 include 'Sabre/DAV/Exception.php';
 
+/* Exceptions */
+include 'Sabre/DAV/Exception/BadRequest.php';
+include 'Sabre/DAV/Exception/Conflict.php';
+include 'Sabre/DAV/Exception/FileNotFound.php';
+include 'Sabre/DAV/Exception/InsufficientStorage.php';
+include 'Sabre/DAV/Exception/Locked.php';
+include 'Sabre/DAV/Exception/LockTokenMatchesUri.php';
+include 'Sabre/DAV/Exception/MethodNotAllowed.php';
+include 'Sabre/DAV/Exception/NotImplemented.php';
+include 'Sabre/DAV/Exception/PermissionDenied.php';
+include 'Sabre/DAV/Exception/PreconditionFailed.php';
+include 'Sabre/DAV/Exception/RequestedRangeNotSatisfiable.php';
+include 'Sabre/DAV/Exception/UnsupportedMediaType.php';
+
+include 'Sabre/DAV/Exception/ConflictingLock.php';
+include 'Sabre/DAV/Exception/ReportNotImplemented.php';
+
 /* Properties */
 include 'Sabre/DAV/Property.php';
 include 'Sabre/DAV/Property/GetLastModified.php';

@@ -5,47 +5,29 @@
     <svnlastrevision workingcopy="." propertyname="svn.lastrevision"/>
     <property name="VERSION" value="0.8.${svn.lastrevision}" />
 
-    <fileset dir="${BUILDDIR}" id="pkgfiles">
-        <include name="*.php" />
-        <include name="**/*.php" />
+    <fileset id="pkgfiles" dir=".">
+        <include name="lib/**/*.php" />
+        <include name="lib/**.php" />
+        <include name="examples/*.php" />
+        <include name="examples/**/*.php" />
+        <include name="tests/**.php" />
+        <include name="tests/**/*.php" />
         <include name="README" />
         <include name="LICENCE" />
         <include name="ChangeLog" />
     </fileset>    
         
-
     <target name="prepare">
         <echo msg="Preparing build.." />
         <mkdir dir="${BUILDDIR}" />
-        <copy file="LICENCE" todir="${BUILDDIR}" />
     </target>
 
     <target name="build" depends="prepare">
          <echo msg="Copying source files" />
-         <mkdir dir="${BUILDDIR}/lib" />
-         <copy todir="${BUILDDIR}/lib">
-            <fileset dir="lib/">
-                <include name="*.php" />
-                <include name="**/*.php" />
-            </fileset>    
+         <mkdir dir="${BUILDDIR}" />
+         <copy todir="${BUILDDIR}">
+            <fileset refid="pkgfiles" />
         </copy>
-         <copy todir="${BUILDDIR}/tests">
-            <fileset dir="tests/">
-                <include name="*.php" />
-                <include name="**/*.php" />
-            </fileset>    
-        </copy>
-    </target>
-
-    
-    <target name="buildexamples" depends="prepare">
-        <echo msg="Copying examples" />
-        <mkdir dir="${BUILDDIR}/examples" />
-        <copy todir="${BUILDDIR}/examples">
-            <fileset dir="examples/">
-                <include name="*.php" />
-            </fileset>
-        </copy>    
     </target>
 
     <target name="package" depends="build">
@@ -91,7 +73,7 @@
         <phpdoc title="SabreDAV API Documentation" destdir="build/apidocs" sourcepath="Sabre/" output="HTML:frames:default" />
     </target>
 
-    <target name="dist" depends="build, buildexamples, package, clean">
+    <target name="dist" depends="build, package, clean">
         <echo msg="Creating full featured SabreDAV package" />
     </target>    
 

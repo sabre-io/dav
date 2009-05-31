@@ -8,10 +8,8 @@
     <fileset id="pkgfiles" dir=".">
         <include name="lib/**/*.php" />
         <include name="lib/**.php" />
-        <include name="examples/*.php" />
-        <include name="examples/**/*.php" />
-        <include name="tests/**.php" />
-        <include name="tests/**/*.php" />
+        <include name="examples/**" />
+        <include name="tests/**" />
         <include name="README" />
         <include name="LICENCE" />
         <include name="ChangeLog" />

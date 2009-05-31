@@ -2,9 +2,14 @@
 	* Changed: Renamed all exceptions! This is a compatibility break. Every
 	  Exception now follows Sabre_DAV_Exception_FileNotFound convention
 	  instead of Sabre_DAV_FileNotFoundException.
+	* Added: Browser plugin now allows uploading and creating directories
+	  straight from the browser.
 	* Added: 12 more unittests
 	* Fixed: Locking bug, which became prevalent on Windows Vista.
 	* Fixed: Netdrive support
+	* Fixed: TemporaryFileFilter filtered out too many files. Fixed some
+	  of the regexes.
+	* Fixed: Added README and ChangeLog to package
 
 0.7-alpha (2009-03-29)
 	* Added: System to return complex properties from PROPFIND.

@@ -12,7 +12,7 @@
  *
  * @package Sabre
  * @subpackage HTTP 
- * @version $Id: BasicAuth.php 202 2009-01-19 19:38:55Z evertpot $
+ * @version $Id$
  * @copyright Copyright (C) 2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -118,6 +118,19 @@ class Sabre_HTTP_Request {
     public function getUri() {
 
         return $this->_SERVER['REQUEST_URI'];
+
+    }
+
+    /**
+     * Will return protocol + the hostname + the uri 
+     * 
+     * @return void
+     */
+    public function getAbsoluteUri() {
+
+        // Checking if the request was made through HTTPS. The last in line is for IIS
+        $protocol = isset($this->_SERVER['HTTPS']) && ($this->_SERVER['HTTPS']) && ($this->_SERVER['HTTPS']!='off');
+        return ($protocol?'https':'http') . '://'  . $this->getHeader('Host') . $this->getUri();
 
     }
 

@@ -70,7 +70,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'GET',
-            'HTTP_AUTHENTICATION' => 'Digest username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth,nc='.$nc.',cnonce="' . $cnonce . '"',
+            'HTTP_AUTHORIZATION' => 'Digest username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth,nc='.$nc.',cnonce="' . $cnonce . '"',
         ));
         
         $this->auth->setHTTPRequest($request);

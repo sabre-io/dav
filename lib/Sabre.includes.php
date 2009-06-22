@@ -21,6 +21,7 @@ include 'Sabre/HTTP/Request.php';
 include 'Sabre/HTTP/AbstractAuth.php';
 include 'Sabre/HTTP/BasicAuth.php';
 include 'Sabre/HTTP/DigestAuth.php';
+include 'Sabre/HTTP/AWSAuth.php';
 
 /* Version */
 include 'Sabre/DAV/Version.php';

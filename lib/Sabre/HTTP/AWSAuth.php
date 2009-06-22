@@ -48,7 +48,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
      *
      * This method needs to be called prior to anything else.
      * 
-     * @return void
+     * @return bool 
      */
     public function init() {
 
@@ -57,7 +57,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
 
         if ($authHeader[0]!='AWS' || !isset($authHeader[1])) {
             $this->errorCode = self::ERR_NOAWSHEADER;
-            return;
+             return false;
         }
 
         list($this->accessKey,$this->signature) = explode(':',$authHeader[1]);
@@ -82,9 +82,9 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
      * 
      * @return bool 
      */
-    protected function validate($secretKey) {
+    public function validate($secretKey) {
 
-        $contentMD5 = $this->httpHeaders->getHeader('Content-MD5');
+        $contentMD5 = $this->httpRequest->getHeader('Content-MD5');
 
         if ($contentMD5) {
             // We need to validate the integrity of the request
@@ -102,7 +102,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
         if (!$requestDate = $this->httpRequest->getHeader('x-amz-date')) 
             $requestDate = $this->httpRequest->getHeader('Date');
 
-        if (!$this->validateDate($requestDate)) 
+        if (!$this->validateRFC2616Date($requestDate)) 
             return false;
 
         $amzHeaders = $this->getAmzHeaders();
@@ -114,7 +114,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
                 $this->httpRequest->getHeader('Content-type') . "\n" .
                 $this->httpRequest->getHeader('Date') . "\n" .
                 $amzHeaders . 
-                $resource
+                $this->httpRequest->getURI()
             )
         );
 
@@ -172,8 +172,8 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
         $realDate = 0;
         foreach($patterns as $pattern) {
 
-            if ($date_arr = strptime($pattern)) {
-                $realDate = strtotime($pattern);
+            if ($date_arr = strptime($dateHeader,$pattern)) {
+                $realDate = strtotime($dateHeader);
                 break;
             }
 
@@ -193,7 +193,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
             return false;
         }
 
-        if ($realDate < ($currentDate + (60 * 15))) {
+        if ($realDate < ($currentDate - (60 * 15))) {
             $this->errorCode = self::ERR_REQUESTTIMESKEWED;
             return false;
         }

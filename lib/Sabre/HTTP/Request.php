@@ -75,6 +75,29 @@ class Sabre_HTTP_Request {
     }
 
     /**
+     * Returns all (known) HTTP headers.
+     *
+     * All headers are converted to lower-case, and additionally all underscores
+     * are automatically converted to dashes 
+     * 
+     * @return array 
+     */
+    public function getHeaders() {
+
+        $hdrs = array();
+        foreach($this->_SERVER as $key=>$value) {
+
+            if (strpos($key,'HTTP_')===0) {
+                $hdrs[strtolower(str_replace('_','-',$key))] = $value;
+            }
+
+        }
+
+        return $hdrs;
+
+    }
+
+    /**
      * Returns the HTTP request method
      *
      * This is for example POST or GET 

@@ -91,10 +91,10 @@ class Sabre_HTTP_Response {
      * @param string $value 
      * @return void
      */
-    public function setHeader($name, $value) {
+    public function setHeader($name, $value, $replace = true) {
 
         $value = str_replace(array("\r","\n"),array('\r','\n'),$value);
-        header($name . ': ' . $value);
+        header($name . ': ' . $value, $replace);
 
     }
 

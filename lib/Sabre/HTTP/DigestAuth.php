@@ -140,7 +140,7 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
         if ($digest) return $digest;
 
         // most other servers
-        $digest = $this->httpRequest->getHeader('Authentication');
+        $digest = $this->httpRequest->getHeader('Authorization');
 
         if ($digest && strpos(strtolower($digest),'digest')===0) {
             return substr($digest,7);

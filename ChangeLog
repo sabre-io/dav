@@ -1,3 +1,9 @@
+0.9-alpha (????-??-??)
+	* Added: User authentication addon. 
+	* Added: htdigest Authentcation backend
+	* Added: Comes with an autoloader script. This can be used instead of
+	  the includer script, and is preferered by some people. 
+
 0.8-alpha (2009-05-30)
 	* Changed: Renamed all exceptions! This is a compatibility break. Every
 	  Exception now follows Sabre_DAV_Exception_FileNotFound convention

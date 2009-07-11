@@ -56,6 +56,7 @@ class Sabre_HTTP_Response {
             415 => 'Unsupported Media Type',
             416 => 'Requested Range Not Satisfiable',
             417 => 'Expectation Failed',
+            418 => 'I\'m a teapot', // RFC 2324
             422 => 'Unprocessable Entity', // RFC 4918
             423 => 'Locked', // RFC 4918
             424 => 'Failed Dependency', // RFC 4918

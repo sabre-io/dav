@@ -3,7 +3,21 @@
 /**
  * HTTP Digest Authentication handler
  *
- * Use this class for easy http digest authentication 
+ * Use this class for easy http digest authentication.
+ * Instructions:
+ *
+ *  1. Create the object
+ *  2. Call the setRealm() method with the realm you plan to use
+ *  3. Call the init method function.
+ *  4. Call the getUserName() function. This function may return false if no
+ *     authentication information was supplied. Based on the username you 
+ *     should check your internal database for either the associated password,
+ *     or the so-called A1 hash of the digest.
+ *  5. Call either validatePassword() or validateA1(). This will return true
+ *     or false. 
+ *  6. To make sure an authentication prompt is displayed, call the
+ *     requireLogin() method.
+ * 
  * 
  * @package Sabre
  * @subpackage HTTP 

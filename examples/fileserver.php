@@ -1,6 +1,6 @@
 <?php
 
-// {$Id: simplefsserver.php 400 2009-05-21 22:22:02Z evertpot $} //
+// {$Id$} //
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
 // example:

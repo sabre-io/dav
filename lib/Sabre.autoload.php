@@ -8,7 +8,7 @@
  *
  * @package Sabre
  * @subpackage DAV
- * @version $Id: Sabre.includes.php 420 2009-06-22 19:21:02Z evertpot $
+ * @version $Id$
  * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

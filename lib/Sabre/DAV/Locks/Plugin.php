@@ -1,17 +1,59 @@
 <?php
 
+/**
+ * Locking plugin
+ *
+ * This plugin provides locking support to a WebDAV server.
+ * The easiest way to get started, is by hooking it up as such:
+ *
+ * $lockBackend = new Sabre_DAV_Locks_Backend_FS('./my_lock_directory');
+ * $lockPlugin = new Sabre_DAV_Locks_Plugin($lockBackend);
+ * $server->addPlugin($lockPlugin);
+ * 
+ * @package Sabre
+ * @subpackage DAV
+ * @version $Id$
+ * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
+    /**
+     * locksBackend 
+     * 
+     * @var Sabre_DAV_Locks_Backend_Abstract 
+     */
     private $locksBackend;
+
+    /**
+     * server
+     * 
+     * @var Sabre_DAV_Server 
+     */
     private $server;
 
-    function __construct(Sabre_DAV_Locks_Backend_Abstract $locksBackend = null) {
+    /**
+     * __construct 
+     * 
+     * @param Sabre_DAV_Locks_Backend_Abstract $locksBackend 
+     * @return void
+     */
+    public function __construct(Sabre_DAV_Locks_Backend_Abstract $locksBackend = null) {
 
         $this->locksBackend = $locksBackend;        
 
     }
 
-    function initialize(Sabre_DAV_Server $server) {
+    /**
+     * Initializes the plugin
+     *
+     * This method is automatically called by the Server class after addPlugin.
+     * 
+     * @param Sabre_DAV_Server $server 
+     * @return void
+     */
+    public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
@@ -20,7 +62,16 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    function unknownMethod($method) {
+    /**
+     * This method is called by the Server if the user used an HTTP method 
+     * the server didn't recognize.
+     *
+     * This plugin intercepts the LOCK and UNLOCK methods.
+     * 
+     * @param string $method 
+     * @return bool 
+     */
+    public function unknownMethod($method) {
 
         switch($method) { 
 
@@ -31,7 +82,16 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    function unknownProperties($path,$unknownProperties,&$newProperties) {
+    /**
+     * This method is called if the client requested properties through 
+     * PROPFIND, and the server didn't have a representation for it.
+     * 
+     * @param string $path 
+     * @param array $unknownProperties 
+     * @param array $newProperties 
+     * @return bool 
+     */
+    public function unknownProperties($path,$unknownProperties,&$newProperties) {
 
         foreach($unknownProperties as $propName) {
 
@@ -62,7 +122,16 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
 
-    function beforeMethod($method) {
+    /**
+     * This method is called before the logic for any HTTP method is
+     * handled.
+     *
+     * This plugin uses that feature to intercept access to locked resources.
+     * 
+     * @param string $method 
+     * @return bool 
+     */
+    public function beforeMethod($method) {
 
         switch($method) {
 
@@ -96,13 +165,29 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    function getHTTPMethods() {
+    /**
+     * New HTTP methods defined by this plugin
+     *
+     * This list is only used for the Allow: header in the HTTP OPTIONS
+     * request.
+     * 
+     * @return array 
+     */
+    public function getHTTPMethods() {
 
         return array('lock','unlock');
 
     }
 
-    function getFeatures() {
+    /**
+     * Returns a list of features for the HTTP OPTIONS Dav: header.
+     *
+     * In this case this is only the number 2. The 2 in the Dav: header
+     * indicates the server supports locks.
+     * 
+     * @return array 
+     */
+    public function getFeatures() {
 
         return array(2);
 
@@ -118,7 +203,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $uri 
      * @return array 
      */
-    function getLocks($uri) {
+    public function getLocks($uri) {
 
         $lockList = array();
         $currentPath = '';
@@ -290,7 +375,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Unlocks a uri
      *
-     * This method removes a lock from a uri. It is assumed all the correct information is correct and verified
+     * This method removes a lock from a uri. It is assumed all the supplied information is correct and verified
      * 
      * @param string $uri 
      * @param Sabre_DAV_Locks_LockInfo $lockInfo 
@@ -343,7 +428,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * @param Sabre_DAV_Locks_LockInfo $lockInfo 
      * @return string 
      */
-    public function generateLockResponse(Sabre_DAV_Locks_LockInfo $lockInfo) {
+    protected function generateLockResponse(Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         $dom = new DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
@@ -369,7 +454,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre_DAV_Locks_LockInfo)
      * @return bool
      */
-    public function validateLock($urls = null,&$lastLock = null) {
+    protected function validateLock($urls = null,&$lastLock = null) {
 
         if (is_null($urls)) {
             $urls = array($this->server->getRequestUri());
@@ -526,7 +611,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $body 
      * @return Sabre_DAV_Locks_LockInfo
      */
-    static function parseLockRequest($body) {
+    protected function parseLockRequest($body) {
 
         $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
         $xml->registerXPathNamespace('d','DAV:');

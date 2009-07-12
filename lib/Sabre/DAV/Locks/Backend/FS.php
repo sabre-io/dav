@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
+class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
 
     /**
      * The default data directory 
@@ -43,7 +43,7 @@ class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
 
 
     /**
-     * Returns a list of Sabre_DAV_Lock objects  
+     * Returns a list of Sabre_DAV_Locks_LockInfo objects  
      * 
      * This method should return all the locks for a particular uri, including
      * locks that might be set on a parent uri.
@@ -88,10 +88,10 @@ class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
      * Locks a uri 
      * 
      * @param string $uri 
-     * @param Sabre_DAV_Lock $lockInfo 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
      * @return bool 
      */
-    public function lock($uri,Sabre_DAV_Lock $lockInfo) {
+    public function lock($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         // We're making the lock timeout 30 minutes
         $lockInfo->timeout = 1800;
@@ -109,10 +109,10 @@ class Sabre_DAV_LockManager_FS extends Sabre_DAV_LockManager {
      * Removes a lock from a uri 
      * 
      * @param string $uri 
-     * @param Sabre_DAV_Lock $lockInfo 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
      * @return bool 
      */
-    public function unlock($uri,Sabre_DAV_Lock $lockInfo) {
+    public function unlock($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         $locks = $this->getLocks($uri);
         foreach($locks as $k=>$lock) {

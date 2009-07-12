@@ -101,7 +101,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 if (isset($_POST['name']) && trim($_POST['name'])) {
                     // Using basename() because we won't allow slashes
                     $folderName = trim(basename($_POST['name']));
-                    $this->server->tree->createDirectory(trim($this->server->getRequestUri(),'/').'/'.$folderName);
+                    $parent = $this->server->tree->getNodeForPath(trim($this->server->getRequestUri(),'/'));
+                    $parent->createDirectory($folderName);
 
                 }
                 break;
@@ -113,7 +114,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                     $newName = trim(basename($_POST['name']));
                
                 if (is_uploaded_file($file['tmp_name'])) {
-                    $this->server->tree->createFile(trim($this->server->getRequestUri(),'/').'/'.$newName, fopen($file['tmp_name'],'r'));
+                    $parent = $this->server->tree->getNodeForPath(trim($this->server->getRequestUri(),'/'));
+                    $parent->createFile($newName,fopen($file['tmp_name'],'r'));
                 }
 
         }

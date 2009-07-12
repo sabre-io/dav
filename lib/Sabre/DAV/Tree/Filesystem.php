@@ -34,6 +34,22 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
     }
 
     /**
+     * Returns a new node for the given path 
+     * 
+     * @param string $path 
+     * @return void
+     */
+    public function getNodeForPath($path) {
+
+        $realPath = $this->getRealPath($path);
+        if (!file_exists($realPath)) throw new Sabre_DAV_Exception_FileNotFound('File at location ' . $realPath . ' not found');
+        if (is_dir($realPath)) return new Sabre_DAV_FS_Directory($path);
+        if (is_file($realPath)) return new Sabre_DAV_FS_File($path);
+        throw new Sabre_DAV_Exception('Unkown file type at ' . $realPath);
+
+    }
+
+    /**
      * Returns the real filesystem path for a webdav url. 
      * 
      * @param string $publicPath 
@@ -89,142 +105,6 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
     }
 
     /**
-     * Returns information about a directory or file
-     *
-     * this should be an array for each file. If depth = 0, only the given 
-     * path has to be in there. For depth = 1, it should also have entries
-     * for it's children.
-     * 
-     * @param string $path 
-     * @param int $depth 
-     * @throws Sabre_DAV_Exception_FileNotFound This exception must be thrown if the node does not exist.
-     * @return array 
-     */
-    public function getNodeInfo($path,$depth=0) {
-
-        $path = $this->getRealPath($path);
-        if (!file_exists($path)) throw new Sabre_DAV_Exception_FileNotFound($path . ' could not be found');
-        $nodeInfo = array();
-
-        $nodeInfo[] = array(
-            'name'            => '',
-            'type'            => is_dir($path)?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
-            'size'            => filesize($path),
-            'lastmodified'    => filemtime($path),
-            'quota-used'      => disk_total_space($path)-disk_free_space($path),
-            'quota-available' => disk_free_space($path),
-            'etag'            => md5(filesize($path) . filemtime($path) . $path),
-        );
-
-        if ($depth>0 && is_dir($path)) {
-
-            foreach(scandir($path) as $node) {
-                $subPath = $path.'/'.$node;
-                if ($node=='.' || $node==='..') continue;
-                $nodeInfo[] = array(
-                    'name'            => $node,
-                    'type'            => is_dir($subPath)?Sabre_DAV_Server::NODE_DIRECTORY:Sabre_DAV_Server::NODE_FILE,
-                    'size'            => filesize($subPath),
-                    'lastmodified'    => filemtime($subPath),
-                    'quota-used'      => disk_total_space($subPath)-disk_free_space($subPath),
-                    'quota-available' => disk_free_space($subPath),
-                    'etag'            => md5(filesize($subPath) . filemtime($subPath) . $subPath),
-                );
-            }
-
-        }
-
-        return $nodeInfo;
-
-    }
-
-    /**
-     * Deletes a file or a directory (recursively). 
-     * 
-     * @param string $path 
-     * @return void
-     */
-    public function delete($path) {
-
-        $path = $this->getRealPath($path);
-
-        $this->realDelete($path); 
-
-    }
-
-    /**
-     * Used by self::delete 
-     * 
-     * @param string $path 
-     * @return void
-     */
-    protected function realDelete($path) {
-
-        if (is_file($path)) {
-            unlink($path);
-        } else {
-            foreach(scandir($path) as $subnode) {
-
-                if ($subnode=='.' || $subnode=='..') continue;
-                $this->realDelete($path.'/' . $subnode);
-
-            }
-            rmdir($path);
-        }
-
-    }
-
-    /**
-     * Updates a file
-     * 
-     * @param string $path 
-     * @param resource $data 
-     * @return void
-     */
-    public function put($path,$data) {
-
-        file_put_contents($this->getRealPath($path),$data);
-
-    }
-
-    /**
-     * Creates a new file 
-     * 
-     * @param string $path 
-     * @param resource $data 
-     * @return void
-     */
-    public function createFile($path, $data) {
-
-        file_put_contents($this->getRealPath($path),$data);
-
-    }
-
-    /**
-     * Returns the contents of a file as file stream 
-     * 
-     * @param string $path 
-     * @return resource 
-     */
-    public function get($path) {
-
-        return fopen($this->getRealPath($path),'r');
-
-    }
-
-    /**
-     * Creates a new directory 
-     * 
-     * @param string $path 
-     * @return void
-     */
-    public function createDirectory($path) {
-
-        mkdir($this->getRealPath($path));
-
-    }
-
-    /**
      * Moves a file or directory recursively.
      *
      * If the destination exists, delete it first.
@@ -240,30 +120,6 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
 
         if (file_exists($destination)) $this->realDelete($destination);
         rename($source,$destination);
-
-    }
-
-    /**
-     * Returns the additional properties for a given node.
-     *
-     * In this case we implemented {http://apache.org/dav/props/}executable
-     * which is used by DavFS to tell it a file is an executable.
-     * 
-     * @param string $path 
-     * @param array $properties 
-     * @return array 
-     */
-    public function getProperties($path,$properties) {
-
-        $path = $this->getRealPath($path);
-            
-        $returnProps = array();
-
-        if (in_array('{http://apache.org/dav/props/}executable',$properties) && is_file($path)) {
-            $returnProps['{http://apache.org/dav/props/}executable']  = is_executable($path)?'T':'F';
-        }
-
-        return $returnProps;
 
     }
 

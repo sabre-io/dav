@@ -60,7 +60,7 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
             $lockScope = $doc->createElementNS('DAV:','d:lockscope');
             $activeLock->appendChild($lockScope);
 
-            $lockScope->appendChild($doc->createElementNS('DAV:','d:' . ($lock->scope==Sabre_DAV_Lock::EXCLUSIVE?'exclusive':'shared')));
+            $lockScope->appendChild($doc->createElementNS('DAV:','d:' . ($lock->scope==Sabre_DAV_Locks_LockInfo::EXCLUSIVE?'exclusive':'shared')));
 
             $lockType = $doc->createElementNS('DAV:','d:locktype');
             $activeLock->appendChild($lockType);

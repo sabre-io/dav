@@ -26,11 +26,8 @@ include 'Sabre/HTTP/AWSAuth.php';
 /* Version */
 include 'Sabre/DAV/Version.php';
 
-/* Basics */
-include 'Sabre/DAV/Lock.php';
-include 'Sabre/DAV/Exception.php';
-
 /* Exceptions */
+include 'Sabre/DAV/Exception.php';
 include 'Sabre/DAV/Exception/BadRequest.php';
 include 'Sabre/DAV/Exception/Conflict.php';
 include 'Sabre/DAV/Exception/FileNotFound.php';
@@ -43,6 +40,7 @@ include 'Sabre/DAV/Exception/PermissionDenied.php';
 include 'Sabre/DAV/Exception/PreconditionFailed.php';
 include 'Sabre/DAV/Exception/RequestedRangeNotSatisfiable.php';
 include 'Sabre/DAV/Exception/UnsupportedMediaType.php';
+include 'Sabre/DAV/Exception/NotAuthenticated.php';
 
 include 'Sabre/DAV/Exception/ConflictingLock.php';
 include 'Sabre/DAV/Exception/ReportNotImplemented.php';
@@ -77,9 +75,6 @@ include 'Sabre/DAV/FSExt/Node.php';
 include 'Sabre/DAV/FSExt/File.php';
 include 'Sabre/DAV/FSExt/Directory.php';
 
-/* Lockmanagers */
-include 'Sabre/DAV/LockManager.php';
-include 'Sabre/DAV/LockManager/FS.php';
 
 /* Trees */
 include 'Sabre/DAV/Tree.php';
@@ -95,5 +90,16 @@ include 'Sabre/DAV/ServerPlugin.php';
 
 /* Browser */
 include 'Sabre/DAV/Browser/Plugin.php';
+
+/* Locks */
+include 'Sabre/DAV/Locks/LockInfo.php';
+include 'Sabre/DAV/Locks/Plugin.php';
+include 'Sabre/DAV/Locks/Backend/Abstract.php';
+include 'Sabre/DAV/Locks/Backend/FS.php';
+
+/* Authentication plugin */
+include 'Sabre/DAV/Auth/Plugin.php';
+include 'Sabre/DAV/Auth/Backend/Abstract.php';
+include 'Sabre/DAV/Auth/Backend/File.php';
 
 ?>

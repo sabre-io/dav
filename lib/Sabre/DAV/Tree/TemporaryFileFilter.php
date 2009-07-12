@@ -115,6 +115,18 @@ class Sabre_DAV_Tree_TemporaryFileFilter extends Sabre_DAV_Tree_Filter {
     }
 
     /**
+     * Returns an INode for the given path 
+     * 
+     * @param string $path 
+     * @return Sabre_DAV_INode 
+     */
+    public function getNodeForPath($path) {
+
+        // TODO
+
+    }
+
+    /**
      * Intercepts HTTP PUT requests 
      * 
      * @param string $path 
@@ -168,42 +180,6 @@ class Sabre_DAV_Tree_TemporaryFileFilter extends Sabre_DAV_Tree_Filter {
             return(file_exists($tempPath) && unlink($tempPath));
 
         } else return parent::delete($path);
-
-    }
-
-    /**
-     * Intercepts HTTP PROPFIND requests
-     *
-     * This method will ensure if information is requested for a specific
-     * temporary file, it will be properly returned.
-     * 
-     * @param string $path 
-     * @param int $depth 
-     * @return void
-     */
-    public function getNodeInfo($path,$depth=0) {
-
-        if (($tempPath = $this->isTempFile($path)) && !$depth) {
-
-            if (!file_exists($tempPath)) {
-
-                if ($this->passThroughGets) {
-                    return parent::getNodeInfo($path,$depth);
-                } else {
-                    throw new Sabre_DAV_Exception_FileNotFound();
-                }
-
-            }
-            $props = array(
-                'name'         => '',
-                'type'         => Sabre_DAV_Server::NODE_FILE,
-                'lastmodified' => filemtime($tempPath),
-                'size'         => filesize($tempPath), 
-            );
-
-            return array($props);
-
-        } else return parent::getNodeInfo($path,$depth);
 
     }
 

@@ -90,7 +90,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
             // We need to validate the integrity of the request
             $body = $this->httpRequest->getBody(true);
             $this->httpRequest->setBody($body,true);
-            
+           
             if ($contentMD5!=base64_encode(md5($body,true))) {
                 // content-md5 header did not match md5 signature of body
                 $this->errorCode = self::ERR_MD5CHECKSUMWRONG;
@@ -112,7 +112,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
                 $this->httpRequest->getMethod() . "\n" .
                 $contentMD5 . "\n" . 
                 $this->httpRequest->getHeader('Content-type') . "\n" .
-                $this->httpRequest->getHeader('Date') . "\n" .
+                $requestDate . "\n" .
                 $amzHeaders . 
                 $this->httpRequest->getURI()
             )
@@ -212,7 +212,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
         $amzHeaders = array();
         $headers = $this->httpRequest->getHeaders();
         foreach($headers as $headerName => $headerValue) {
-            if (strpos(strtolower($headerName),'x-amz-')) {
+            if (strpos(strtolower($headerName),'x-amz-')===0) {
                 $amzHeaders[strtolower($headerName)] = str_replace(array("\r\n"),array(' '),$headerValue) . "\n";
             }
         }
@@ -242,7 +242,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
         $key=str_pad($key,$blocksize,chr(0x00));
         $ipad=str_repeat(chr(0x36),$blocksize);
         $opad=str_repeat(chr(0x5c),$blocksize);
-        $hmac = pack('H*',sha1(($key^$opad).pack('H*',sha1(($key^$ipad).$data))));
+        $hmac = pack('H*',sha1(($key^$opad).pack('H*',sha1(($key^$ipad).$message))));
         return $hmac;
 
     }

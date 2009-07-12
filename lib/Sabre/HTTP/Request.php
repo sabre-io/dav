@@ -88,7 +88,7 @@ class Sabre_HTTP_Request {
         foreach($this->_SERVER as $key=>$value) {
 
             if (strpos($key,'HTTP_')===0) {
-                $hdrs[strtolower(str_replace('_','-',$key))] = $value;
+                $hdrs[substr(strtolower(str_replace('_','-',$key)),5)] = $value;
             }
 
         }
@@ -116,7 +116,7 @@ class Sabre_HTTP_Request {
      * @return string 
      */
     public function getUri() {
-
+        
         return $this->_SERVER['REQUEST_URI'];
 
     }

@@ -43,6 +43,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
             'REQUEST_METHOD'      => 'GET',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => 'garbage',
+            'REQUEST_URI'         => '/',
         ));
         
         $this->auth->setHTTPRequest($request);
@@ -145,6 +146,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
             'HTTP_X_AMZ_DATE'     => $time,
+            'REQUEST_URI'         => '/',
         ));
 
         $request->setBody($content);
@@ -167,7 +169,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $time = date(DATE_RFC2822,time()); 
 
         $sig = base64_encode($this->hmacsha1($secretKey,
-            "GET\n$contentMD5\n\n$time\nx-amz-date:$time\n/evert"
+            "POST\n$contentMD5\n\n$time\nx-amz-date:$time\n/evert"
         ));
 
         $request = new Sabre_HTTP_Request(array(
@@ -184,7 +186,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
 
-        $this->assertTrue($result);
+        $this->assertTrue($result,'Signature did not validate, got errorcode ' . $this->auth->errorCode);
         $this->assertEquals($accessKey,$this->auth->getAccessKey());
 
     }
@@ -212,7 +214,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $key=str_pad($key,$blocksize,chr(0x00));
         $ipad=str_repeat(chr(0x36),$blocksize);
         $opad=str_repeat(chr(0x5c),$blocksize);
-        $hmac = pack('H*',sha1(($key^$opad).pack('H*',sha1(($key^$ipad).$data))));
+        $hmac = pack('H*',sha1(($key^$opad).pack('H*',sha1(($key^$ipad).$message))));
         return $hmac;
 
     }

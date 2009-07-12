@@ -53,118 +53,26 @@ class Sabre_DAV_Tree_Aggregate extends Sabre_DAV_Tree {
 
     }
 
-
     /**
-     * getNodeInfo 
+     * Returns an INode for a given path
      * 
-     * @param mixed $path 
-     * @param int $depth 
-     * @return void
+     * @param string $path 
+     * @return Sabre_DAV_INode 
      */
-    function getNodeInfo($path,$depth=0) {
+    public function getNodeForPath($path) {
 
-        // We will list contents of the aggregate 
-        if (!$path) {
-            $items = array();
-            $items[] = array(
-                'name' => '',
-                'type' => Sabre_DAV_Server::NODE_DIRECTORY,
-            );
-
-            if ($depth>0) {
-
-                foreach($this->subTrees as $name=>$tree) {
-
-                    list($treeInfo) = $tree->getNodeInfo('',0);
-                    $treeInfo['name'] = $name;
-                    $items[] = $treeInfo;
-
-                }
-
-            }
-
-            return $items;
+        if(!$path) {
+            // TODO
+            return null;
         }
 
         // If we got to this point, it means we need to access a subtree
         $subTree = $this->getSubtree($path);
         if (!$subTree) throw new Sabre_DAV_Exception_FileNotFound('Subtree with this name not found');
 
-        $nodeInfo = $subTree[0]->getNodeInfo($subTree[1],$depth);
-        return $nodeInfo;
-        
-    }
-
-    /**
-     * delete 
-     * 
-     * @param mixed $path 
-     * @return void
-     */
-    function delete($path) {
-
-        $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
-        return $subTree[0]->delete($subTree[1]);
-
-    }
-
-    /**
-     * put 
-     * 
-     * @param mixed $path 
-     * @param mixed $data 
-     * @return void
-     */
-    function put($path,$data) {
-
-        $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
-        return $subTree[0]->put($subTree[1],$data);
-
-    }
-
-    /**
-     * createFile 
-     * 
-     * @param mixed $path 
-     * @param mixed $data 
-     * @return void
-     */
-    function createFile($path,$data) {
-
-        $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
-        return $subTree[0]->createFile($subTree[1],$data);
-
-    }
-
-    /**
-     * get 
-     * 
-     * @param mixed $path 
-     * @return void
-     */
-    function get($path) {
-
-        $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
-        return $subTree[0]->get($subTree[1]);
-
-    }
-
-    /**
-     * createDirectory 
-     * 
-     * @param mixed $path 
-     * @return void
-     */
-    function createDirectory($path) {
-
-        $subTree = $this->getSubTree($path);
-        if (!$subTree || !$subTree[1]) throw new Sabre_DAV_Exception_PermissionDenied();
-        return $subTree[0]->createDirectory($subTree[1]);
-
+        $node = $subTree[0]->getNodeForPath($subTree[1]);
+        return $node;
+    
     }
 
     /**

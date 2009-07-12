@@ -1,8 +1,18 @@
 0.9-alpha (????-??-??)
+	* Changed: Major refactoring, removed most of the logic from the Tree
+	  objects. The Server class now directly works with the INode, IFile
+	  and IDirectory objects. If you created your own Tree objects,
+	  this will most likely break in this release.
+	* Changed: Moved all the Locking logic from the Tree and Server classes
+	  into a separate plugin.
 	* Added: User authentication addon. 
 	* Added: htdigest Authentcation backend
 	* Added: Comes with an autoloader script. This can be used instead of
-	  the includer script, and is preferered by some people. 
+	  the includer script, and is preferered by some people.
+	* Added: AWS Authentication class.
+	* Added: simpleserversetup.py script. This will quickly get a fileserver
+	  up and running.
+	* Fixed: Exclusive locks could in some case be picked up as shared locks 
 
 0.8-alpha (2009-05-30)
 	* Changed: Renamed all exceptions! This is a compatibility break. Every

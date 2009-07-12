@@ -221,7 +221,6 @@ class Sabre_DAV_Server {
 
     }
 
-
     // {{{ HTTP Method implementations
     
     /**
@@ -238,11 +237,7 @@ class Sabre_DAV_Server {
         array_unique($methods);
 
         $this->httpResponse->setHeader('Allow',strtoupper(implode(' ',$methods)));
-        if ($this->tree->supportsLocks('')) {
-            $features = array('1','2','3');
-        } else {
-            $features = array('1','3');
-        }
+        $features = array('1','3');
 
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
         
@@ -262,9 +257,10 @@ class Sabre_DAV_Server {
      */
     protected function httpGet() {
 
-        $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
+        $node = $this->tree->getNodeForPath($this->getRequestUri(),0);
 
-        $body = $this->tree->get($this->getRequestUri());
+        if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_NotImplemented('GET is only implemented on File objects');
+        $body = $node->get();
 
         // Converting string into stream, if needed.
         if (is_string($body)) {
@@ -274,39 +270,39 @@ class Sabre_DAV_Server {
             $body = $stream;
         }
 
-        if (isset($nodeInfo[0]['contenttype'])) $contentType = $nodeInfo[0]['contenttype'];
-        else $contentType = 'application/octet-stream';
+        if (!$contentType = $node->getContentType())
+            $contentType = 'application/octet-stream';
 
         $this->httpResponse->setHeader('Content-Type', $contentType);
 
-        if (isset($nodeInfo[0]['lastmodified'])) {
-            $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
-        }
+        if($lastModified = $node->getLastModified())
+            $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $lastModified));
+       
 
-        if (isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']) {
+        if ($etag = $node->getETag()) 
+            $this->httpResponse->setHeader('ETag',$etag);
 
-            $this->httpResponse->setHeader('ETag',$nodeInfo[0]['etag']);
 
-        }
+        $nodeSize = $node->getSize();
 
         // We're only going to support HTTP ranges if the backend provided a filesize
-        if (isset($nodeInfo[0]['size']) && $nodeInfo[0]['size'] && $range = $this->getHTTPRange()) {
+        if ($nodeSize && $range = $this->getHTTPRange()) {
 
             // Determining the exact byte offsets
             if (!is_null($range[0])) {
 
                 $start = $range[0];
-                $end = $range[1]?$range[1]:$nodeInfo[0]['size']-1;
-                if($start > $nodeInfo[0]['size']) 
-                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeInfo[0]['size'] . ')');
+                $end = $range[1]?$range[1]:$nodeSize-1;
+                if($start > $nodeSize) 
+                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeSize . ')');
 
                 if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end > $nodeInfo[0]['size']) $end = $nodeInfo[0]['size']-1;
+                if($end > $nodeSize) $end = $nodeSize-1;
 
             } else {
 
-                $start = $nodeInfo[0]['size']-$range[1];
-                $end  = $nodeInfo[0]['size']-1;
+                $start = $nodeSize-$range[1];
+                $end  = $nodeSize-1;
 
                 if ($start<0) $start = 0;
 
@@ -319,14 +315,14 @@ class Sabre_DAV_Server {
             rewind($newStream);
 
             $this->httpResponse->setHeader('Content-Length', $end-$start+1);
-            $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeInfo[0]['size']);
+            $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
             $this->httpResponse->sendStatus(206);
             $this->httpResponse->sendBody($newStream);
 
 
         } else {
 
-            if (isset($nodeInfo[0]['size']) && $nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
+            if ($nodeSize) $this->httpResponse->setHeader('Content-Length',$nodeSize);
             $this->httpResponse->sendStatus(200);
             $this->httpResponse->sendBody($body);
 
@@ -344,20 +340,21 @@ class Sabre_DAV_Server {
      */
     protected function httpHead() {
 
-        $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri(),0);
-        if ($nodeInfo[0]['size']) $this->httpResponse->setHeader('Content-Length',$nodeInfo[0]['size']);
+        $node = $this->tree->getNodeForPath($this->getRequestUri());
+        if ($size = $node->getSize()) 
+            $this->httpResponse->setHeader('Content-Length',$size);
 
-        if (isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']) {
+        if ($etag = $node->getETag()) {
 
-            $this->httpResponse->setHeader('ETag',$nodeInfo[0]['etag']);
+            $this->httpResponse->setHeader('ETag',$etag);
 
         }
 
-        if (isset($nodeInfo[0]['contenttype'])) $contentType = $nodeInfo[0]['contenttype'];
-        else $contentType = 'application/octet-stream';
+        if (!$contentType = $node->getContentType())
+            $contentType = 'application/octet-stream';
 
         $this->httpResponse->setHeader('Content-Type', $contentType);
-        $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $nodeInfo[0]['lastmodified']));
+        $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $node->getLastModified()));
         $this->httpResponse->sendStatus(200);
 
     }
@@ -371,12 +368,9 @@ class Sabre_DAV_Server {
      */
     protected function httpDelete() {
 
-        $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
-
         // Asking for nodeinfo to make sure the node exists
-        $nodeInfo = $this->tree->getNodeInfo($this->getRequestUri());
-        $this->tree->delete($this->getRequestUri());
+        $node = $this->tree->getNodeForPath($this->getRequestUri());
+        $node->delete();
         $this->httpResponse->sendStatus(204);
 
     }
@@ -429,16 +423,16 @@ class Sabre_DAV_Server {
      */
     protected function httpPropPatch() {
 
-        // Checking possible locks
-        $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
-       
         $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
-        $result = $this->tree->updateProperties($this->getRequestUri(),$mutations);
+        $node = $this->tree->getNodeForPath($this->getRequestUri());
+        
+        if ($node instanceof Sabre_DAV_IProperties) {
 
-        if (!$result) {
-            
+            $result = $node->updateProperties($mutations);
+
+        } else {
+
             $result = array();
             foreach($mutations as $mutations) {
                 $result[] = array($mutations[1],403);
@@ -467,12 +461,8 @@ class Sabre_DAV_Server {
 
         // First we'll do a check to see if the resource already exists
         try {
-            $info = $this->tree->getNodeInfo($this->getRequestUri(),0); 
+            $node = $this->tree->getNodeForPath($this->getRequestUri());
             
-            // Checking potential locks
-            $lastLock = null;
-            if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
-
             // We got this far, this means the node already exists.
             // This also means we should check for the If-None-Match header
             if ($this->httpRequest->getHeader('If-None-Match')) {
@@ -482,9 +472,8 @@ class Sabre_DAV_Server {
             }
             
             // If the node is a collection, we'll deny it
-            if ($info[0]['type'] == self::NODE_DIRECTORY) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed'); 
-
-            $this->tree->put($this->getRequestUri(),$this->httpRequest->getBody());
+            if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed'); 
+            $node->put($this->httpRequest->getBody());
             $this->httpResponse->sendStatus(200);
 
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
@@ -492,12 +481,10 @@ class Sabre_DAV_Server {
             // If we got here, the resource didn't exist yet.
 
             // Validating the lock on the parent collection
-            $parent = dirname($this->getRequestUri());
-            $lastLock = null;
-            if (!$this->validateLock($parent,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
+            $parent = $this->tree->getNodeForPath(dirname($this->getRequestUri()));
 
             // This means the resource doesn't exist yet, and we're creating a new one
-            $this->tree->createFile($this->getRequestUri(),$this->httpRequest->getBody());
+            $parent->createFile(basename($this->getRequestUri()),$this->httpRequest->getBody());
             $this->httpResponse->sendStatus(201);
 
         }
@@ -514,11 +501,6 @@ class Sabre_DAV_Server {
      */
     protected function httpMkcol() {
 
-        $lastLock = null;
-        if (!$this->validateLock(null,$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
-
-        $requestUri = $this->getRequestUri();
-
         // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
         $requestBody = $this->httpRequest->getBody(true);
         if ($requestBody) throw new Sabre_DAV_Exception_UnsupportedMediaType();
@@ -526,8 +508,8 @@ class Sabre_DAV_Server {
         // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
         
         try {
-            if ($nodeInfo = $this->tree->getNodeInfo(dirname($requestUri),0)) {
-                if ($nodeInfo[0]['type']==self::NODE_FILE) {
+            if ($parent = $this->tree->getNodeForPath(dirname($this->getRequestUri()))) {
+                if (!$parent instanceof Sabre_DAV_IDirectory) {
                     throw new Sabre_DAV_Exception_Conflict('Parent node is not a directory');
                 }
             }
@@ -539,7 +521,7 @@ class Sabre_DAV_Server {
         }
 
         try {
-            $nodeInfo = $this->tree->getNodeInfo($requestUri);
+            $node = $this->tree->getNodeForPath($this->getRequestUri());
 
             // If we got here.. it means there's already a node on that url, and we need to throw a 405
             throw new Sabre_DAV_Exception_MethodNotAllowed('The directory you tried to create already exists');
@@ -547,8 +529,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
             // This is correct
         }
-
-        $this->tree->createDirectory($this->getRequestUri());
+        $parent->createDirectory(basename($this->getRequestUri()));
         $this->httpResponse->sendStatus(201);
 
     }
@@ -563,9 +544,6 @@ class Sabre_DAV_Server {
     protected function httpMove() {
 
         $moveInfo = $this->getCopyAndMoveInfo();
-
-        $lastLock = null;
-        if (!$this->validateLock(array($moveInfo['source'],$moveInfo['destination']),$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
 
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
@@ -586,9 +564,6 @@ class Sabre_DAV_Server {
 
         $copyInfo = $this->getCopyAndMoveInfo();
 
-        $lastLock = null;
-        if (!$this->validateLock($copyInfo['destination'],$lastLock)) throw new Sabre_DAV_Exception_Locked($lastLock);
-
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -596,113 +571,7 @@ class Sabre_DAV_Server {
 
     }
 
-    /**
-     * Locks an uri
-     *
-     * The WebDAV lock request can be operated to either create a new lock on a file, or to refresh an existing lock
-     * If a new lock is created, a full XML body should be supplied, containing information about the lock such as the type 
-     * of lock (shared or exclusive) and the owner of the lock
-     *
-     * If a lock is to be refreshed, no body should be supplied and there should be a valid If header containing the lock
-     *
-     * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC4918:S7.3
-     * 
-     * @return void
-     */
-    protected function httpLock() {
 
-        $uri = $this->getRequestUri();
-
-        $lastLock = null;
-        if (!$this->validateLock($uri,$lastLock)) {
-
-            // If ohe existing lock was an exclusive lock, we need to fail
-            if (!$lastLock || $lastLock->scope == Sabre_DAV_Lock::EXCLUSIVE) {
-                //var_dump($lastLock);
-                throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
-            }
-
-        }
-
-        if ($body = $this->httpRequest->getBody(true)) {
-            // There as a new lock request
-            $lockInfo = Sabre_DAV_Lock::parseLockRequest($body);
-            $lockInfo->depth = $this->getHTTPDepth(0); 
-            $lockInfo->uri = $uri;
-            if($lastLock && $lockInfo->scope != Sabre_DAV_Lock::SHARED) throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
-
-        } elseif ($lastLock) {
-
-            // This must have been a lock refresh
-            $lockInfo = $lastLock;
-
-        } else {
-            
-            // There was neither a lock refresh nor a new lock request
-            throw new Sabre_DAV_Exception_BadRequest('An xml body is required for lock requests');
-
-        }
-
-        if ($timeout = $this->getTimeoutHeader()) $lockInfo->timeout = $timeout;
-
-        // If we got this far.. we should go check if this node actually exists. If this is not the case, we need to create it first
-        try {
-            $nodeInfo = $this->tree->getNodeInfo($uri,0);
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
-            
-            // It didn't, lets create it 
-            $this->tree->createFile($uri,fopen('php://memory','r'));
-            
-            // We also need to return a 201 in this case
-            $this->httpResponse->sendStatus(201);
-
-        }
-
-        $this->tree->lockNode($uri,$lockInfo);
-        $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
-        echo $this->generateLockResponse($lockInfo);
-
-    }
-
-    /**
-     * Unlocks a uri
-     *
-     * This WebDAV method allows you to remove a lock from a node. The client should provide a valid locktoken through the Lock-token http header
-     * The server should return 204 (No content) on success
-     *
-     * @return void
-     */
-    protected function httpUnlock() {
-
-        $uri = $this->getRequestUri();
-        
-        $lockToken = $this->httpRequest->getHeader('Lock-Token');
-
-        // If the locktoken header is not supplied, we need to throw a bad request exception
-        if (!$lockToken) throw new Sabre_DAV_Exception_BadRequest('No lock token was supplied');
-
-        $locks = $this->tree->getLocks($uri);
-
-        // We're grabbing the node information, just to rely on the fact it will throw a 404 when the node doesn't exist 
-        $this->tree->getNodeInfo($uri,0); 
-
-        foreach($locks as $lock) {
-
-            if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
-
-                $this->tree->unlockNode($uri,$lock);
-                $this->httpResponse->sendStatus(204);
-                return;
-
-            }
-
-        }
-
-        // If we got here, it means the locktoken was invalid
-        throw new Sabre_DAV_Exception_LockTokenMatchesRequestUri();
-
-    }
 
     /**
      * HTTP REPORT method implementation
@@ -776,7 +645,6 @@ class Sabre_DAV_Server {
     protected function getAllowedMethods() {
 
         $methods = array('options','get','head','delete','trace','propfind','mkcol','put','proppatch','copy','move','report');
-        if ($this->tree->supportsLocks('')) array_push($methods,'lock','unlock');
         return $methods;
 
     }
@@ -879,193 +747,9 @@ class Sabre_DAV_Server {
 
     }
 
-    /**
-     * validateLock should be called when a write operation is about to happen
-     * It will check if the requested url is locked, and see if the correct lock tokens are passed 
-     *
-     * @param mixed $urls List of relevant urls. Can be an array, a string or nothing at all for the current request uri
-     * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre_DAV_Lock)
-     * @return bool
-     */
-    protected function validateLock($urls = null,&$lastLock = null) {
-
-        if (is_null($urls)) {
-            $urls = array($this->getRequestUri());
-        } elseif (is_string($urls)) {
-            $urls = array($urls);
-        } elseif (!is_array($urls)) {
-            throw new Sabre_DAV_Exception('The urls parameter should either be null, a string or an array');
-        }
-
-        $conditions = $this->getIfConditions();
-
-        // We're going to loop through the urls and make sure all lock conditions are satisfied
-        foreach($urls as $url) {
-
-            $locks = $this->tree->getLocks($url);
-
-            // If there were no conditions, but there were locks, we fail 
-            if (!$conditions && $locks) {
-                reset($locks);
-                $lastLock = current($locks);
-                return false;
-            }
-          
-            // If there were no locks or conditions, we go to the next url
-            if (!$locks && !$conditions) continue;
-
-            foreach($conditions as $condition) {
-
-                $conditionUri = $condition['uri']?$this->calculateUri($condition['uri']):'';
-
-                // If the condition has a url, and it isn't part of the affected url at all, check the next condition
-                if ($conditionUri && strpos($url,$conditionUri)!==0) continue;
-
-                // The tokens array contians arrays with 2 elements. 0=true/false for normal/not condition, 1=locktoken
-                // At least 1 condition has to be satisfied
-                foreach($condition['tokens'] as $conditionToken) {
-
-                    $etagValid = true;
-                    $lockValid  = true;
-
-                    // key 2 can contain an etag
-                    if ($conditionToken[2]) {
-
-                        $uri = $conditionUri?$conditionUri:$this->getRequestUri(); 
-                        $nodeInfo = $this->tree->getNodeInfo($uri,0);
-                        $etagValid = isset($nodeInfo[0]['etag']) && $nodeInfo[0]['etag']==$conditionToken[2]; 
-
-                    }
-
-                    // key 1 can contain a lock token
-                    if ($conditionToken[1]) {
-
-                        $lockValid = false;
-                        // Match all the locks
-                        foreach($locks as $lockIndex=>$lock) {
-
-                            $lockToken = 'opaquelocktoken:' . $lock->token;
-
-                            // Checking NOT
-                            if (!$conditionToken[0] && $lockToken != $conditionToken[1]) {
-
-                                // Condition valid, onto the next
-                                $lockValid = true;
-                                break;
-                            }
-                            if ($conditionToken[0] && $lockToken == $conditionToken[1]) {
-
-                                $lastLock = $lock;
-                                // Condition valid and lock matched
-                                unset($locks[$lockIndex]);
-                                $lockValid = true;
-                                break;
-
-                            }
-
-                        }
-
-                        if ($etagValid && $lockValid) continue 2;
-
-                    }
-               }
-               // No conditions matched, so we fail
-               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match');
-            }
-
-            // Conditions were met, we'll also need to check if all the locks are gone
-            if (count($locks)) {
-
-                // There's still locks, we fail
-                $lastLock = current($locks);
-                return false;
-
-            }
 
 
-        }
 
-        // We got here, this means every condition was satisfied
-        return true;
-
-    }
-
-    /**
-     * This method is created to extract information from the WebDAV HTTP 'If:' header
-     *
-     * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
-     * The function will return an array, containg structs with the following keys
-     *
-     *   * uri   - the uri the condition applies to. This can be an empty string for 'every relevant url'
-     *   * tokens - The lock token. another 2 dimensional array containg 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
-     *   * etag - an etag, if supplied
-     * 
-     * @return void
-     */
-    public function getIfConditions() {
-
-        $header = $this->httpRequest->getHeader('If'); 
-        if (!$header) return array();
-
-        $matches = array();
-
-        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im'; // (?:\s?)(?:\[(?P<etag>[^\]]*)\])';
-        preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
-
-        $conditions = array();
-
-        foreach($matches as $match) {
-
-            $condition = array(
-                'uri'   => $match['uri'],
-                'tokens' => array(
-                    array($match['not']?0:1,$match['token'],isset($match['etag'])?$match['etag']:'')
-                ),    
-            );
-
-            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array(
-                $match['not']?0:1,
-                $match['token'],
-                isset($match['etag'])?$match['etag']:''
-            );
-            else {
-                $conditions[] = $condition;
-            }
-
-        }
-
-        return $conditions;
-
-    }
-
-    /**
-     * Returns the contents of the HTTP Timeout header. 
-     * 
-     * The method formats the header into an integer.
-     *
-     * @return int
-     */
-    public function getTimeoutHeader() {
-
-        $header = $this->httpRequest->getHeader('Timeout');
-        
-        if ($header) {
-
-            if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
-            else if (strtolower($header)=='infinite') $header=Sabre_DAV_Lock::TIMEOUT_INFINITE;
-            else throw new Sabre_DAV_Exception_BadRequest('Invalid HTTP timeout header');
-
-        } else {
-
-            $header = 0;
-
-        }
-
-        return $header;
-
-    }
-
-    
     /**
      * Returns information about Copy and Move requests
      * 
@@ -1095,21 +779,20 @@ class Sabre_DAV_Server {
         else throw new Sabre_DAV_Exception_BadRequest('The HTTP Overwrite header should be either T or F');
 
         // Collection information on relevant existing nodes
-        $sourceInfo = $this->tree->getNodeInfo($source);
+        $sourceNode = $this->tree->getNodeForPath($source);
 
         try {
-            $destinationParentInfo = $this->tree->getNodeInfo(dirname($destination));
-            if ($destinationParentInfo[0]['type'] == self::NODE_FILE) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
+            $destinationParent = $this->tree->getNodeForPath(dirname($destination));
+            if (!($destinationParent instanceof Sabre_DAV_IDirectory)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If the destination parent node is not found, we throw a 409
             throw new Sabre_DAV_Exception_Conflict('The destination node is not found');
-
         }
 
         try {
 
-            $destinationInfo = $this->tree->getNodeInfo($destination);
+            $destinationNode = $this->tree->getNodeForPath($destination);
             
             // If this succeeded, it means the destination already exists
             // we'll need to throw precondition failed in case overwrite is false
@@ -1118,7 +801,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // Destination didn't exist, we're all good
-            $destinationInfo = false;
+            $destinationNode = false;
 
         }
 
@@ -1126,7 +809,7 @@ class Sabre_DAV_Server {
         return array(
             'source'            => $source,
             'destination'       => $destination,
-            'destinationExists' => $destinationInfo==true,
+            'destinationExists' => $destinationNode==true,
         );
 
     }
@@ -1150,15 +833,22 @@ class Sabre_DAV_Server {
         if ($depth!=0) $depth = 1;
 
         $returnPropertyList = array();
+        
+        $parentNode = $this->tree->getNodeForPath($path);
+        $nodes = array(
+            $path => $parentNode
+        );
+        if ($depth==1) {
+            foreach($parentNode->getChildren() as $childNode)
+                $nodes[$path . '/' . $childNode->getName()] = $childNode;
+        }            
 
-        $fileList = $this->tree->getNodeInfo($path,$depth);
-
-        foreach($fileList as $k=>$file) {
-
-            $thisPath = $path.'/' . $file['name'];
+        foreach($nodes as $myPath=>$node) {
 
             $newProperties = array();
-            $newProperties = $this->tree->getProperties($thisPath,$properties);
+            if ($node instanceof Sabre_DAV_IProperties) 
+                $newProperties = $node->getProperties($properties);
+
             $unknownProperties = array();
 
             // If the properties array was empty, it means 'everything' was requested.
@@ -1183,16 +873,23 @@ class Sabre_DAV_Server {
                 if (isset($newProperties[$prop])) continue;
 
                 switch($prop) {
-                    case '{DAV:}getlastmodified'       : if (isset($file['lastmodified'])) $newProperties[$prop] = new Sabre_DAV_Property_GetLastModified($file['lastmodified']); break;
-                    case '{DAV:}getcontentlength'      : if (isset($file['size']))         $newProperties[$prop] = (int)$file['size']; break;
-                    case '{DAV:}resourcetype'          : $newProperties[$prop] = new Sabre_DAV_Property_ResourceType(isset($file['type'])?$file['type']:self::NODE_FILE); break;
-                    case '{DAV:}quota-used-bytes'      : if (isset($file['quota-used']))   $newProperties[$prop] = $file['quota-used']; break;
-                    case '{DAV:}quota-available-bytes' : if (isset($file['quota-available'])) $newProperties[$prop] = $file['quota-available']; break;
-                    case '{DAV:}getetag'               : if (isset($file['etag']))         $newProperties[$prop] = $file['etag']; break;
-                    case '{DAV:}getcontenttype'        : if (isset($file['contenttype']))  $newProperties[$prop] = $file['contenttype']; break;
-
-                    case '{DAV:}supportedlock'         : $newProperties[$prop] = new Sabre_DAV_Property_SupportedLock($this->tree->supportsLocks($thisPath)); break;
-                    case '{DAV:}lockdiscovery'         : if ($this->tree->supportsLocks($thisPath)) $newProperties[$prop] = new Sabre_DAV_Property_LockDiscovery($this->tree->getLocks($thisPath)); break; 
+                    case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[$prop] = new Sabre_DAV_Property_GetLastModified($node->getLastModified()); break;
+                    case '{DAV:}getcontentlength'      : if ($node instanceof Sabre_DAV_IFile) $newProperties[$prop] = (int)$node->getSize(); break;
+                    case '{DAV:}resourcetype'          : $newProperties[$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_IDirectory?self::NODE_DIRECTORY:self::NODE_FILE); break;
+                    case '{DAV:}quota-used-bytes'      : 
+                        if ($node instanceof Sabre_DAV_IQuota) {
+                            $quotaInfo = $node->getQuotaInfo();
+                            $newProperties[$prop] = $quotaInfo[0];
+                        }
+                        break;
+                    case '{DAV:}quota-available-bytes' : 
+                        if ($node instanceof Sabre_DAV_IQuota) {
+                            $quotaInfo = $node->getQuotaInfo();
+                            $newProperties[$prop] = $quotaInfo[1];
+                        }
+                        break;
+                    case '{DAV:}getetag'               : if ($node instanceof Sabre_DAV_IFile && $etag = $node->getETag())  $newProperties[$prop] = $etag; break;
+                    case '{DAV:}getcontenttype'        : if ($node instanceof Sabre_DAV_IFile && $ct = $node->getContentType())  $newProperties[$prop] = $ct; break;
 
                 }
 
@@ -1201,11 +898,11 @@ class Sabre_DAV_Server {
             }
 
             if ($unknownProperties) {
-                $this->broadcastEvent('unknownProperties',array($thisPath,$unknownProperties,&$newProperties));
+                $this->broadcastEvent('unknownProperties',array($myPath,$unknownProperties,&$newProperties));
 
             }
 
-            $newProperties['href'] = $file['name']; 
+            $newProperties['href'] = trim(substr($myPath,strlen($path)),'/'); 
 
             //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
             $returnPropertyList[] = $newProperties;
@@ -1365,29 +1062,6 @@ class Sabre_DAV_Server {
         }
     }
 
-    /**
-     * Generates the response for successfull LOCK requests 
-     * 
-     * @param Sabre_DAV_Lock $lockInfo 
-     * @return string 
-     */
-    public function generateLockResponse(Sabre_DAV_Lock $lockInfo) {
-
-        $dom = new DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        
-        $prop = $dom->createElementNS('DAV:','d:prop');
-        $dom->appendChild($prop);
-
-        $lockDiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
-        $prop->appendChild($lockDiscovery);
-
-        $lockObj = new Sabre_DAV_Property_LockDiscovery(array($lockInfo),true);
-        $lockObj->serialize($lockDiscovery);
-
-        return $dom->saveXML();
-
-    }
 
     /**
      * This method parses a PropPatch request 

@@ -33,10 +33,10 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     /**
      * Locks this node 
      * 
-     * @param Sabre_DAV_Lock $lockInfo 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
      * @return void
      */
-    function lock(Sabre_DAV_Lock $lockInfo) {
+    function lock(Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         // We're making the lock timeout 30 minutes
         $lockInfo->timeout = 1800;
@@ -55,10 +55,10 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     /**
      * Removes a lock from this node
      * 
-     * @param Sabre_DAV_Lock $lockInfo 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
      * @return bool 
      */
-    function unlock(Sabre_DAV_Lock $lockInfo) {
+    function unlock(Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         //throw new Sabre_DAV_Exception('bla');
         $resourceData = $this->getResourceData();

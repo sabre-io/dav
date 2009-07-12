@@ -1,0 +1,549 @@
+<?php
+
+class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
+
+    private $locksBackend;
+    private $server;
+
+    function __construct(Sabre_DAV_Locks_Backend_Abstract $locksBackend = null) {
+
+        $this->locksBackend = $locksBackend;        
+
+    }
+
+    function initialize(Sabre_DAV_Server $server) {
+
+        $this->server = $server;
+        $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
+        $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
+        $server->subscribeEvent('unknownProperties',array($this,'unknownProperties'));
+
+    }
+
+    function unknownMethod($method) {
+
+        switch($method) { 
+
+            case 'LOCK'   : $this->httpLock(); return false; break;
+            case 'UNLOCK' : $this->httpUnlock(); return false; break;
+            default       : return true;
+        }
+
+    }
+
+    function unknownProperties($path,$unknownProperties,&$newProperties) {
+
+        foreach($unknownProperties as $propName) {
+
+            $node = null;
+
+            switch($propName) {
+
+                case '{DAV:}supportedlock' :
+                    $val = false;
+                    if ($this->locksBackend) $val = true;
+                    else {
+                        if (!$node) $node = $this->server->tree->getNodeForPath($path);
+                        if ($node instanceof Sabre_DAV_ILockable) $val = true;
+                    }
+                    $newProperties[$propName] = new Sabre_DAV_Property_SupportedLock($val);
+                    break;
+
+                case '{DAV:}lockdiscovery' :
+                    $newProperties[$propName] = new Sabre_DAV_Property_LockDiscovery($this->getLocks($path));
+                    break;
+
+            }
+
+
+        }
+        return true;
+
+    }
+
+
+    function beforeMethod($method) {
+
+        switch($method) {
+
+            case 'DELETE' :
+            case 'MKCOL' :
+            case 'PROPPATCH' :
+            case 'PUT' :
+                $lastLock = null;
+                if (!$this->validateLock(null,$lastLock))
+                    throw new Sabre_DAV_Exception_Locked($lastLock);
+                break;
+            case 'MOVE' :
+                $lastLock = null;
+                if (!$this->validateLock(array(
+                      $this->server->getRequestUri(),
+                      $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
+                    ),$lastLock))
+                        throw new Sabre_DAV_Exception_Locked($lastLock);
+                break;
+            case 'COPY' :
+                $lastLock = null;
+                if (!$this->validateLock(
+                      $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
+                      $lastLock))
+                        throw new Sabre_DAV_Exception_Locked($lastLock);
+                break;
+        }
+
+        return true;
+                
+
+    }
+
+    function getHTTPMethods() {
+
+        return array('lock','unlock');
+
+    }
+
+    function getFeatures() {
+
+        return array(2);
+
+    }
+
+    /**
+     * Returns all lock information on a particular uri 
+     * 
+     * This function should return an array with Sabre_DAV_Locks_LockInfo objects. If there are no locks on a file, return an empty array.
+     *
+     * Additionally there is also the possibility of locks on parent nodes, so we'll need to traverse every part of the tree 
+     *
+     * @param string $uri 
+     * @return array 
+     */
+    function getLocks($uri) {
+
+        $lockList = array();
+        $currentPath = '';
+        foreach(explode('/',$uri) as $uriPart) {
+
+            $uriLocks = array();
+            if ($currentPath) $currentPath.='/'; 
+            $currentPath.=$uriPart;
+
+            try {
+
+                $node = $this->server->tree->getNodeForPath($currentPath);
+                if ($node instanceof Sabre_DAV_ILockable) $uriLocks = $node->getLocks();
+
+            } catch (Sabre_DAV_Exception_FileNotFound $e){
+                // In case the node didn't exist, this could be a lock-null request
+            }
+
+            foreach($uriLocks as $uriLock) {
+
+                // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
+                if($uri==$currentPath || $uriLock->depth!=0) {
+                    $uriLock->uri = $currentPath;
+                    $lockList[] = $uriLock;
+                }
+
+            }
+
+        }
+        if ($this->locksBackend) $lockList = array_merge($lockList,$this->locksBackend->getLocks($uri));
+        return $lockList;
+
+    }
+
+    /**
+     * Locks an uri
+     *
+     * The WebDAV lock request can be operated to either create a new lock on a file, or to refresh an existing lock
+     * If a new lock is created, a full XML body should be supplied, containing information about the lock such as the type 
+     * of lock (shared or exclusive) and the owner of the lock
+     *
+     * If a lock is to be refreshed, no body should be supplied and there should be a valid If header containing the lock
+     *
+     * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC4918:S7.3
+     * 
+     * @return void
+     */
+    protected function httpLock() {
+
+        $uri = $this->server->getRequestUri();
+
+        $lastLock = null;
+        if (!$this->validateLock($uri,$lastLock)) {
+
+            // If ohe existing lock was an exclusive lock, we need to fail
+            if (!$lastLock || $lastLock->scope == Sabre_DAV_Locks_LockInfo::EXCLUSIVE) {
+                //var_dump($lastLock);
+                throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
+            }
+
+        }
+
+        if ($body = $this->server->httpRequest->getBody(true)) {
+            // There as a new lock request
+            $lockInfo = $this->parseLockRequest($body);
+            $lockInfo->depth = $this->server->getHTTPDepth(0); 
+            $lockInfo->uri = $uri;
+            if($lastLock && $lockInfo->scope != Sabre_DAV_Locks_LockInfo::SHARED) throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
+
+        } elseif ($lastLock) {
+
+            // This must have been a lock refresh
+            $lockInfo = $lastLock;
+
+        } else {
+            
+            // There was neither a lock refresh nor a new lock request
+            throw new Sabre_DAV_Exception_BadRequest('An xml body is required for lock requests');
+
+        }
+
+        if ($timeout = $this->getTimeoutHeader()) $lockInfo->timeout = $timeout;
+
+        $newFile = false;
+
+        // If we got this far.. we should go check if this node actually exists. If this is not the case, we need to create it first
+        try {
+            $node = $this->server->tree->getNodeForPath($uri);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            
+            // It didn't, lets create it
+            $parent = $this->server->tree->getNodeForPath(dirname($uri));
+            $parent->createFile(basename($uri),fopen('php://memory','r'));
+           
+            $newFile = true; 
+
+        }
+
+        $this->lockNode($uri,$lockInfo);
+        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
+        $this->server->httpResponse->sendStatus($newFile?201:200);
+        $this->server->httpResponse->sendBody($this->generateLockResponse($lockInfo));
+
+    }
+
+    /**
+     * Unlocks a uri
+     *
+     * This WebDAV method allows you to remove a lock from a node. The client should provide a valid locktoken through the Lock-token http header
+     * The server should return 204 (No content) on success
+     *
+     * @return void
+     */
+    protected function httpUnlock() {
+
+        $uri = $this->server->getRequestUri();
+        
+        $lockToken = $this->server->httpRequest->getHeader('Lock-Token');
+
+        // If the locktoken header is not supplied, we need to throw a bad request exception
+        if (!$lockToken) throw new Sabre_DAV_Exception_BadRequest('No lock token was supplied');
+
+        $locks = $this->getLocks($uri);
+
+        // We're grabbing the node information, just to rely on the fact it will throw a 404 when the node doesn't exist 
+        $this->server->tree->getNodeForPath($uri);
+
+        foreach($locks as $lock) {
+
+            if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
+
+                $this->unlockNode($uri,$lock);
+                $this->server->httpResponse->sendStatus(204);
+                return;
+
+            }
+
+        }
+
+        // If we got here, it means the locktoken was invalid
+        throw new Sabre_DAV_Exception_LockTokenMatchesRequestUri();
+
+    }
+
+    /**
+     * Locks a uri
+     *
+     * All the locking information is supplied in the lockInfo object. The object has a suggested timeout, but this can be safely ignored
+     * It is important that if the existing timeout is ignored, the property is overwritten, as this needs to be sent back to the client
+     * 
+     * @param string $uri 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
+     * @return void
+     */
+    public function lockNode($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
+
+        try {
+            $node = $this->server->tree->getNodeForPath($uri);
+            if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            // In case the node didn't exist, this could be a lock-null request
+        }
+
+        if ($this->locksBackend) return $this->locksBackend->lock($uri,$lockInfo);
+
+    }
+
+    /**
+     * Unlocks a uri
+     *
+     * This method removes a lock from a uri. It is assumed all the correct information is correct and verified
+     * 
+     * @param string $uri 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
+     * @return void
+     */
+    public function unlockNode($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
+
+        try {
+            $node = $this->server->tree->getNodeForPath($uri);
+            if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            // In case the node didn't exist, this could be a lock-null request
+        }
+
+        if ($this->locksBackend) return $this->locksBackend->unlock($uri,$lockInfo);
+
+    }
+
+
+    /**
+     * Returns the contents of the HTTP Timeout header. 
+     * 
+     * The method formats the header into an integer.
+     *
+     * @return int
+     */
+    protected function getTimeoutHeader() {
+
+        $header = $this->server->httpRequest->getHeader('Timeout');
+        
+        if ($header) {
+
+            if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
+            else if (strtolower($header)=='infinite') $header=Sabre_DAV_Locks_LockInfo::TIMEOUT_INFINITE;
+            else throw new Sabre_DAV_Exception_BadRequest('Invalid HTTP timeout header');
+
+        } else {
+
+            $header = 0;
+
+        }
+
+        return $header;
+
+    }
+
+    /**
+     * Generates the response for successfull LOCK requests 
+     * 
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
+     * @return string 
+     */
+    public function generateLockResponse(Sabre_DAV_Locks_LockInfo $lockInfo) {
+
+        $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
+        
+        $prop = $dom->createElementNS('DAV:','d:prop');
+        $dom->appendChild($prop);
+
+        $lockDiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
+        $prop->appendChild($lockDiscovery);
+
+        $lockObj = new Sabre_DAV_Property_LockDiscovery(array($lockInfo),true);
+        $lockObj->serialize($lockDiscovery);
+
+        return $dom->saveXML();
+
+    }
+    
+    /**
+     * validateLock should be called when a write operation is about to happen
+     * It will check if the requested url is locked, and see if the correct lock tokens are passed 
+     *
+     * @param mixed $urls List of relevant urls. Can be an array, a string or nothing at all for the current request uri
+     * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre_DAV_Locks_LockInfo)
+     * @return bool
+     */
+    public function validateLock($urls = null,&$lastLock = null) {
+
+        if (is_null($urls)) {
+            $urls = array($this->server->getRequestUri());
+        } elseif (is_string($urls)) {
+            $urls = array($urls);
+        } elseif (!is_array($urls)) {
+            throw new Sabre_DAV_Exception('The urls parameter should either be null, a string or an array');
+        }
+
+        $conditions = $this->getIfConditions();
+
+        // We're going to loop through the urls and make sure all lock conditions are satisfied
+        foreach($urls as $url) {
+
+            $locks = $this->getLocks($url);
+
+            // If there were no conditions, but there were locks, we fail 
+            if (!$conditions && $locks) {
+                reset($locks);
+                $lastLock = current($locks);
+                return false;
+            }
+          
+            // If there were no locks or conditions, we go to the next url
+            if (!$locks && !$conditions) continue;
+
+            foreach($conditions as $condition) {
+
+                $conditionUri = $condition['uri']?$this->server->calculateUri($condition['uri']):'';
+
+                // If the condition has a url, and it isn't part of the affected url at all, check the next condition
+                if ($conditionUri && strpos($url,$conditionUri)!==0) continue;
+
+                // The tokens array contians arrays with 2 elements. 0=true/false for normal/not condition, 1=locktoken
+                // At least 1 condition has to be satisfied
+                foreach($condition['tokens'] as $conditionToken) {
+
+                    $etagValid = true;
+                    $lockValid  = true;
+
+                    // key 2 can contain an etag
+                    if ($conditionToken[2]) {
+
+                        $uri = $conditionUri?$conditionUri:$this->server->getRequestUri(); 
+                        $node = $this->server->tree->getNodeForPath($uri);
+                        $etagValid = $node->getETag()==$conditionToken[2]; 
+
+                    }
+
+                    // key 1 can contain a lock token
+                    if ($conditionToken[1]) {
+
+                        $lockValid = false;
+                        // Match all the locks
+                        foreach($locks as $lockIndex=>$lock) {
+
+                            $lockToken = 'opaquelocktoken:' . $lock->token;
+
+                            // Checking NOT
+                            if (!$conditionToken[0] && $lockToken != $conditionToken[1]) {
+
+                                // Condition valid, onto the next
+                                $lockValid = true;
+                                break;
+                            }
+                            if ($conditionToken[0] && $lockToken == $conditionToken[1]) {
+
+                                $lastLock = $lock;
+                                // Condition valid and lock matched
+                                unset($locks[$lockIndex]);
+                                $lockValid = true;
+                                break;
+
+                            }
+
+                        }
+
+                        if ($etagValid && $lockValid) continue 2;
+
+                    }
+               }
+               // No conditions matched, so we fail
+               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match');
+            }
+
+            // Conditions were met, we'll also need to check if all the locks are gone
+            if (count($locks)) {
+
+                // There's still locks, we fail
+                $lastLock = current($locks);
+                return false;
+
+            }
+
+
+        }
+
+        // We got here, this means every condition was satisfied
+        return true;
+
+    }
+
+    /**
+     * This method is created to extract information from the WebDAV HTTP 'If:' header
+     *
+     * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
+     * The function will return an array, containg structs with the following keys
+     *
+     *   * uri   - the uri the condition applies to. This can be an empty string for 'every relevant url'
+     *   * tokens - The lock token. another 2 dimensional array containg 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
+     *   * etag - an etag, if supplied
+     * 
+     * @return void
+     */
+    public function getIfConditions() {
+
+        $header = $this->server->httpRequest->getHeader('If'); 
+        if (!$header) return array();
+
+        $matches = array();
+
+        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im'; // (?:\s?)(?:\[(?P<etag>[^\]]*)\])';
+        preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
+
+        $conditions = array();
+
+        foreach($matches as $match) {
+
+            $condition = array(
+                'uri'   => $match['uri'],
+                'tokens' => array(
+                    array($match['not']?0:1,$match['token'],isset($match['etag'])?$match['etag']:'')
+                ),    
+            );
+
+            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array(
+                $match['not']?0:1,
+                $match['token'],
+                isset($match['etag'])?$match['etag']:''
+            );
+            else {
+                $conditions[] = $condition;
+            }
+
+        }
+
+        return $conditions;
+
+    }
+
+    /**
+     * Parses a webdav lock xml body, and returns a new Sabre_DAV_Locks_LockInfo object 
+     * 
+     * @param string $body 
+     * @return Sabre_DAV_Locks_LockInfo
+     */
+    static function parseLockRequest($body) {
+
+        $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
+        $xml->registerXPathNamespace('d','DAV:');
+        $lockInfo = new Sabre_DAV_Locks_LockInfo();
+     
+        $lockInfo->owner = (string)$xml->owner;
+
+        $lockToken = '44445502';
+        $id = md5(microtime() . 'somethingrandom');
+        $lockToken.='-' . substr($id,0,4) . '-' . substr($id,4,4) . '-' . substr($id,8,4) . '-' . substr($id,12,12);
+
+        $lockInfo->token = $lockToken;
+        $lockInfo->scope = count($xml->xpath('d:lockscope/d:exclusive'))>0?Sabre_DAV_Locks_LockInfo::EXCLUSIVE:Sabre_DAV_Locks_LockInfo::SHARED;
+
+        return $lockInfo;
+
+    }
+
+
+}

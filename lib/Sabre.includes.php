@@ -79,9 +79,6 @@ include 'Sabre/DAV/FSExt/Directory.php';
 /* Trees */
 include 'Sabre/DAV/Tree.php';
 include 'Sabre/DAV/ObjectTree.php';
-include 'Sabre/DAV/Tree/Aggregate.php';
-include 'Sabre/DAV/Tree/Filter.php';
-include 'Sabre/DAV/Tree/TemporaryFileFilter.php';
 include 'Sabre/DAV/Tree/Filesystem.php';
 
 /* Server */
@@ -96,6 +93,9 @@ include 'Sabre/DAV/Locks/LockInfo.php';
 include 'Sabre/DAV/Locks/Plugin.php';
 include 'Sabre/DAV/Locks/Backend/Abstract.php';
 include 'Sabre/DAV/Locks/Backend/FS.php';
+
+/* Temporary File Filter plugin */
+include 'Sabre/DAV/TemporaryFileFilterPlugin.php';
 
 /* Authentication plugin */
 include 'Sabre/DAV/Auth/Plugin.php';

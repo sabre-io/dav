@@ -35,21 +35,26 @@ $publicDirObj = new Sabre_DAV_FS_Directory($publicDir);
 // Now we create an ObjectTree, which dispatches all requests to your newly created file system
 $objectTree = new Sabre_DAV_ObjectTree($publicDirObj);
 
-// Adding support for Lock/Unlock
-$lockManager = new Sabre_DAV_LockManager_FS($tmpDir);
-$objectTree->setLockManager($lockManager);
-
 // The object tree needs in turn to be passed to the server class
 $server = new Sabre_DAV_Server($objectTree);
 $server->setBaseUri($baseUri);
 
-// Setting up plugins
+// Support for LOCK and UNLOCK 
+$lockBackend = new Sabre_DAV_Locks_Backend_FS($tmpDir);
+$lockPlugin = new Sabre_DAV_Locks_Plugin($lockBackend);
+
+// Support for html frontend
 $browser = new Sabre_DAV_Browser_Plugin();
 $server->addPlugin($browser);
 
+// Authentication backend
 $authBackend = new Sabre_DAV_Auth_Backend_File('.htdigest');
 $auth = new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV');
 $server->addPlugin($auth);
+
+// Temporary file filter
+$tempFF = new Sabre_DAV_TemporaryFileFilterPlugin($tmpDir);
+$server->addPlugin($tempFF);
 
 // And off we go!
 $server->exec();

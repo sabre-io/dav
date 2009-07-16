@@ -924,7 +924,7 @@ class Sabre_DAV_Server {
      * @param array $properties The properties that should be returned
      * @return string 
      */
-    private function generatePropfindResponse($list,$properties) {
+    public function generatePropfindResponse($list,$properties) {
 
         $dom = new DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -1120,7 +1120,7 @@ class Sabre_DAV_Server {
      * @param string $body 
      * @return array 
      */
-    protected function parsePropFindRequest($body) {
+    public function parsePropFindRequest($body) {
 
         // If the propfind body was empty, it means IE is requesting 'all' properties
         if (!$body) return array();
@@ -1137,7 +1137,7 @@ class Sabre_DAV_Server {
                 case 100 :
                     break;
                 default :
-                    throw new Sabre_DAV_Exception_BadRequest('The request body was not a valid proppatch request' . print_r($error,true));
+                    throw new Sabre_DAV_Exception_BadRequest('The request body was not a valid propfind request' . print_r($error,true));
             }
         }
         libxml_use_internal_errors($errorsetting); 

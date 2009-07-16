@@ -225,17 +225,17 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
         $hR->sendStatus(207);
         $hR->setHeader('Content-Type','application/xml; charset=utf-8');
 
-        $requestedProps = $this->parsePropFindRequest($this->server->httpRequest->getBody()); 
+        $requestedProps = $this->server->parsePropFindRequest($this->server->httpRequest->getBody(true)); 
 
         $properties = array(
             '{DAV:}getlastmodified' => new Sabre_DAV_Property_GetLastModified(filemtime($tempLocation)),
             '{DAV:}getcontentlength' => filesize($tempLocation),
-            '{DAV:}resourcetype' => null,
+            '{DAV:}resourcetype' => new Sabre_DAV_Property_ResourceType(null),
             '{http://www.rooftopsolutions.nl/NS/sabredav}tempFile' => true, 
             'href' => '',
          );
 
-        $data = $this->generatePropfindResponse($properties, $requestedProps);
+        $data = $this->server->generatePropfindResponse(array($properties), $requestedProps);
         $hR->sendBody($data);
 
     }

@@ -175,7 +175,7 @@ class Sabre_DAV_Server {
      * @param callback $callback 
      * @return void
      */
-    public function subscribeEvent($event, $callback) {
+    public function subscribeEvent($event, $callback, $priority = 100) {
 
         $supportedEvents = array(
             'beforeMethod',
@@ -189,7 +189,9 @@ class Sabre_DAV_Server {
         if (!isset($this->eventSubscriptions[$event])) {
             $this->eventSubscriptions[$event] = array();
         }
-        $this->eventSubscriptions[$event][] = $callback;
+        while(isset($this->eventSubscriptions[$event][$priority])) $priority++;
+        $this->eventSubscriptions[$event][$priority] = $callback;
+        ksort($this->eventSubscriptions[$event]);
 
     }
 

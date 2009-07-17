@@ -57,7 +57,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
-        $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
+        $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),50);
         $server->subscribeEvent('unknownProperties',array($this,'unknownProperties'));
 
     }

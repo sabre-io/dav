@@ -12,6 +12,9 @@
 	* Added: AWS Authentication class.
 	* Added: simpleserversetup.py script. This will quickly get a fileserver
 	  up and running.
+	* Added: When subscribing to events, it is now possible to supply a
+	  priority. This is for example needed to ensure that the Authentication
+	  Plugin is used before any other Plugin. 
 	* Fixed: Exclusive locks could in some case be picked up as shared locks 
 
 0.8-alpha (2009-05-30)

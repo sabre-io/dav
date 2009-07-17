@@ -58,7 +58,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
-        $this->server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
+        $this->server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),10);
 
     }
 

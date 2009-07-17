@@ -170,9 +170,16 @@ class Sabre_DAV_Server {
      * Subscribe to an event.
      *
      * When the event is triggered, we'll call all the specified callbacks.
+     * It is possible to control the order of the callbacks through the
+     * priority argument.
+     *
+     * This is for example used to make sure that the authentication plugin
+     * is triggered before anything else. If it's not needed to change this
+     * number, it is recommended to ommit.  
      * 
      * @param string $event 
-     * @param callback $callback 
+     * @param callback $callback
+     * @param int $priority
      * @return void
      */
     public function subscribeEvent($event, $callback, $priority = 100) {

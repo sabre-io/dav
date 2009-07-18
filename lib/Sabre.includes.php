@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Libarry include file
+ * Library include file
  *
  * This file contains all includes to the rest of the SabreDAV library
  * Make sure the lib/ directory is in PHP's include_path

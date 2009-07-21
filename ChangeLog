@@ -1,12 +1,11 @@
-0.9-alpha (????-??-??)
+0.9-alpha (2009-07-21)
 	* Changed: Major refactoring, removed most of the logic from the Tree
 	  objects. The Server class now directly works with the INode, IFile
 	  and IDirectory objects. If you created your own Tree objects,
 	  this will most likely break in this release.
 	* Changed: Moved all the Locking logic from the Tree and Server classes
 	  into a separate plugin.
-	* Added: User authentication addon. 
-	* Added: htdigest Authentcation backend
+	* Changed: TemporaryFileFilter is now a plugin.
 	* Added: Comes with an autoloader script. This can be used instead of
 	  the includer script, and is preferered by some people.
 	* Added: AWS Authentication class.
@@ -14,8 +13,14 @@
 	  up and running.
 	* Added: When subscribing to events, it is now possible to supply a
 	  priority. This is for example needed to ensure that the Authentication
-	  Plugin is used before any other Plugin. 
-	* Fixed: Exclusive locks could in some case be picked up as shared locks 
+	  Plugin is used before any other Plugin.
+	* Added: 22 new tests.
+	* Added: Users-manager plugin for .htdigest files. Experimental and
+	  subject to change.
+	* Added: RFC 2324 HTTP 418 status code
+	* Fixed: Exclusive locks could in some cases be picked up as shared locks
+	* Fixed: Digest auth for non-apache servers had a bug (still not actually
+	  tested this well).
 
 0.8-alpha (2009-05-30)
 	* Changed: Renamed all exceptions! This is a compatibility break. Every

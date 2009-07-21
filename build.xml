@@ -6,6 +6,7 @@
     <property name="VERSION" value="0.9.${svn.lastrevision}" />
 
     <fileset id="pkgfiles" dir=".">
+        <include name="bin/**" />
         <include name="lib/**/*.php" />
         <include name="lib/**.php" />
         <include name="examples/**" />

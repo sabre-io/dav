@@ -399,7 +399,7 @@ class Sabre_DAV_Server {
      *
      * @return void
      */
-    protected function httpPropfind() {
+    public function httpPropfind() {
 
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
         $properties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
@@ -847,7 +847,7 @@ class Sabre_DAV_Server {
         $nodes = array(
             $path => $parentNode
         );
-        if ($depth==1) {
+        if ($depth==1 && $parentNode instanceof Sabre_DAV_IDirectory) {
             foreach($parentNode->getChildren() as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }            
@@ -1161,7 +1161,7 @@ class Sabre_DAV_Server {
      * @param DOMNode $prop 
      * @return array 
      */
-    protected function parseProps(DOMNode $prop) {
+    public function parseProps(DOMNode $prop) {
 
         $propList = array(); 
         foreach($prop->childNodes as $propNode) {

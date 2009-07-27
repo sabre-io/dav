@@ -6,7 +6,7 @@ class Sabre_HTTP_ResponseMock extends Sabre_HTTP_Response {
     public $status = '';
     public $body = '';
 
-    function setHeader($name,$value) {
+    function setHeader($name,$value,$overwrite = true) {
 
         $this->headers[$name] = $value;
 

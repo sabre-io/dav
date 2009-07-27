@@ -1,3 +1,10 @@
+0.10-alpha (????-??-??)
+    * Added: Plugin to automatically map GET requests to non-files to
+	  PROPFIND (Sabre_DAV_Browser_MapGetToPropFind). This should allow 
+	  easier debugging of complicated WebDAV setups.
+	* Added: Sabre_DAV_Property_Href class. For future use.
+	* Changed: Made more methods in Sabre_DAV_Server public.
+
 0.9-alpha (2009-07-21)
 	* Changed: Major refactoring, removed most of the logic from the Tree
 	  objects. The Server class now directly works with the INode, IFile

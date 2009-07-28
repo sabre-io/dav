@@ -51,6 +51,7 @@ include 'Sabre/DAV/Property/GetLastModified.php';
 include 'Sabre/DAV/Property/ResourceType.php';
 include 'Sabre/DAV/Property/SupportedLock.php';
 include 'Sabre/DAV/Property/LockDiscovery.php';
+include 'Sabre/DAV/Property/Href.php';
 
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';
@@ -87,6 +88,7 @@ include 'Sabre/DAV/ServerPlugin.php';
 
 /* Browser */
 include 'Sabre/DAV/Browser/Plugin.php';
+include 'Sabre/DAV/Browser/MapGetToPropFind.php';
 
 /* Locks */
 include 'Sabre/DAV/Locks/LockInfo.php';

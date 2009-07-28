@@ -35,7 +35,7 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
 
         foreach(scandir($path) as $node) {
 
-            if ($node[0]=='.') continue;
+            if ($node=='.' || $node=='.svn' || $node=='..') continue;
             $myPath = $path.'/'. $node;
             if (is_file($myPath)) {
                 unlink($myPath);

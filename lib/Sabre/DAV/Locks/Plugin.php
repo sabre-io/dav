@@ -258,7 +258,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $lastLock = null;
         if (!$this->validateLock($uri,$lastLock)) {
 
-            // If ohe existing lock was an exclusive lock, we need to fail
+            // If the existing lock was an exclusive lock, we need to fail
             if (!$lastLock || $lastLock->scope == Sabre_DAV_Locks_LockInfo::EXCLUSIVE) {
                 //var_dump($lastLock);
                 throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
@@ -267,7 +267,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if ($body = $this->server->httpRequest->getBody(true)) {
-            // There as a new lock request
+            // This is a new lock request
             $lockInfo = $this->parseLockRequest($body);
             $lockInfo->depth = $this->server->getHTTPDepth(0); 
             $lockInfo->uri = $uri;

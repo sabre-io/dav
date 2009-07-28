@@ -28,10 +28,17 @@
  */
 class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
 
+    /**
+     * These constants are used in setQOP();
+     */
+    const QOP_AUTH = 1;
+    const QOP_AUTHINT = 2;
+
     protected $nonce;
     protected $opaque;
     protected $digestParts;
     protected $A1;
+    protected $qop = self::QOP_AUTH;
 
     /**
      * Initializes the object 
@@ -55,6 +62,28 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
 
         $digest = $this->getDigest();
         $this->digestParts = $this->parseDigest($digest);
+
+    }
+
+    /**
+     * Sets the quality of protection value.
+     *
+     * Possible values are:
+     *   Sabre_HTTP_DigestAuth::QOP_AUTH
+     *   Sabre_HTTP_DigestAuth::QOP_AUTHINT
+     *
+     * Multiple values can be specified using logical OR.
+     *
+     * QOP_AUTHINT ensures integrity of the request body, but this is not 
+     * supported by most HTTP clients. QOP_AUTHINT also requires the entire 
+     * request body to be md5'ed, which can put strains on CPU and memory.
+     *
+     * @param int $qop 
+     * @return void
+     */
+    public function setQOP($qop) {
+
+        $this->qop = $qop;
 
     }
 
@@ -106,12 +135,18 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
     protected function validate() {
 
         $A2 = $this->httpRequest->getMethod() . ':' . $this->digestParts['uri'];
-       
-
+    
         if ($this->digestParts['qop']=='auth-int') {
+            // Making sure we support this qop value
+            if (!($this->qop & self::QOP_AUTHINT)) return false;
+            // We need to add an md5 of the entire request body to the A2 part of the hash
             $body = $this->httpRequest->getBody(true);
             $this->httpRequest->setBody($body,true);
             $A2 .= ':' . md5($body);
+        } else {
+
+            // We need to make sure we support this qop value 
+            if (!($this->qop & self::QOP_AUTH)) return false; 
         }
 
         $A2 = md5($A2);
@@ -132,7 +167,14 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
      */
     public function requireLogin() {
 
-        $this->httpResponse->setHeader('WWW-Authenticate','Digest realm="' . $this->realm . '",qop="auth,auth-int",nonce="' . $this->nonce . '",opaque="' . $this->opaque . '"');
+        $qop = '';
+        switch($this->qop) {
+            case self::QOP_AUTH    : $qop = 'auth'; break;
+            case self::QOP_AUTHINT : $qop = 'auth-int'; break;
+            case self::QOP_AUTH | self::QOP_AUTHINT : $qop = 'auth,auth-int'; break;
+        }
+
+        $this->httpResponse->setHeader('WWW-Authenticate','Digest realm="' . $this->realm . '",qop="'.$qop.'",nonce="' . $this->nonce . '",opaque="' . $this->opaque . '"');
         $this->httpResponse->sendStatus(401);
 
     }

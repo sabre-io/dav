@@ -20,7 +20,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testDigest() {
-        
+
         list($nonce,$opaque) = $this->getServerTokens();
 
         $username = 'admin';
@@ -113,7 +113,8 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
     public function testDigestAuthInt() {
         
-        list($nonce,$opaque) = $this->getServerTokens();
+        $this->auth->setQOP(Sabre_HTTP_DigestAuth::QOP_AUTHINT);
+        list($nonce,$opaque) = $this->getServerTokens(Sabre_HTTP_DigestAuth::QOP_AUTHINT);
 
         $username = 'admin';
         $password = 12345;
@@ -136,17 +137,20 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
         $request->setBody('body');
         
         $this->auth->setHTTPRequest($request);
+
         $this->auth->init();
         
         $this->assertTrue($this->auth->validateA1(md5($username . ':' . self::REALM . ':' . $password)),'Authentication is deemed invalid through validateA1');
 
     }
 
-    private function getServerTokens() {
+    private function getServerTokens($qop = Sabre_HTTP_DigestAuth::QOP_AUTH) {
 
         $this->auth->requireLogin();
 
-        $test = preg_match('/Digest realm="'.self::REALM.'",qop="auth,auth-int",nonce="([0-9a-f]*)",opaque="([0-9a-f]*)"/',
+        $qopstr = $qop==Sabre_HTTP_DigestAuth::QOP_AUTH?'auth':'auth-int';
+
+        $test = preg_match('/Digest realm="'.self::REALM.'",qop="'.$qopstr.'",nonce="([0-9a-f]*)",opaque="([0-9a-f]*)"/',
             $this->response->headers['WWW-Authenticate'],$matches);
 
         $this->assertTrue($test==true,'The WWW-Authenticate response didn\'t match our pattern');
@@ -156,7 +160,8 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
         // Reset our environment
         $this->setUp();
-        
+        $this->auth->setQOP($qop);
+
         return array($nonce,$opaque);
 
     }

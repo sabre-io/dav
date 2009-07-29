@@ -295,9 +295,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
             
             // It didn't, lets create it
-            $parent = $this->server->tree->getNodeForPath(dirname($uri));
-            $parent->createFile(basename($uri),fopen('php://memory','r'));
-           
+            $this->server->createFile($uri,fopen('php://memory','r')); 
             $newFile = true; 
 
         }

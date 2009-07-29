@@ -184,15 +184,6 @@ class Sabre_DAV_Server {
      */
     public function subscribeEvent($event, $callback, $priority = 100) {
 
-        $supportedEvents = array(
-            'beforeMethod',
-            'report',
-            'unknownMethod',
-            'unknownProperties',
-        );
-
-        if (!in_array($event,$supportedEvents)) throw new Sabre_DAV_Exception('Unknown event-type: ' . $event);
-
         if (!isset($this->eventSubscriptions[$event])) {
             $this->eventSubscriptions[$event] = array();
         }
@@ -488,12 +479,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If we got here, the resource didn't exist yet.
-
-            // Validating the lock on the parent collection
-            $parent = $this->tree->getNodeForPath(dirname($this->getRequestUri()));
-
-            // This means the resource doesn't exist yet, and we're creating a new one
-            $parent->createFile(basename($this->getRequestUri()),$this->httpRequest->getBody());
+            $this->createFile($this->getRequestUri(),$this->httpRequest->getBody());
             $this->httpResponse->sendStatus(201);
 
         }
@@ -919,6 +905,26 @@ class Sabre_DAV_Server {
         }
         
         return $returnPropertyList;
+
+    }
+
+    /**
+     * This method is invoked by sub-systems creating a new file.
+     *
+     * Currently this is done by HTTP PUT and HTTP LOCK (in the Locks_Plugin).
+     * It was important to get this done through a centralized function, 
+     * allowing plugins to intercept this using the beforeCreateFile event.
+     * 
+     * @param string $uri 
+     * @param resource $data 
+     * @return void
+     */
+    public function createFile($uri,$data) {
+
+        if (!$this->broadcastEvent('beforeCreateFile',array($uri,$data))) return;
+
+        $parent = $this->tree->getNodeForPath(dirname($uri));
+        $parent->createFile(basename($uri),$data);
 
     }
 

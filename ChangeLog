@@ -4,8 +4,10 @@
 	  easier debugging of complicated WebDAV setups.
 	* Added: Sabre_DAV_Property_Href class. For future use.
 	* Added: Ability to choose to use auth-int, auth or both for HTTP Digest
-	  authentication.
+	  authentication. (Issue 11)
 	* Changed: Made more methods in Sabre_DAV_Server public.
+	* Fixed: TemporaryFileFilter plugin now intercepts HTTP LOCK requests
+	  to non-existant files. (Issue 12)
 
 0.9-alpha (2009-07-21)
 	* Changed: Major refactoring, removed most of the logic from the Tree

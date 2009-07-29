@@ -73,6 +73,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
         $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
+        $server->subscribeEvent('beforeCreateFile',array($this,'beforeCreateFile'));
 
     }
 
@@ -101,6 +102,29 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
                 return $this->httpDelete($tempLocation);
          }
          return true;
+
+    }
+
+    /**
+     * This method is invoked if some subsystem creates a new file.
+     *
+     * This is used to deal with HTTP LOCK requests which create a new 
+     * file.
+     * 
+     * @param string $uri 
+     * @param resource $data 
+     * @return bool 
+     */
+    public function beforeCreateFile($uri,$data) {
+
+        if ($tempPath = $this->isTempFile($uri)) {
+            
+            $hR = $this->server->httpResponse;
+            $hR->setHeader('X-Sabre-Temp','true');
+            file_put_contents($tempPath,$data);
+            return false;
+        }
+        return true; 
 
     }
 

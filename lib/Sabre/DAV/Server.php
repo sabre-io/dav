@@ -74,6 +74,19 @@ class Sabre_DAV_Server {
     protected $eventSubscriptions = array();
 
     /**
+     * This is a default list of namespaces.
+     *
+     * If you are defining your own custom namespace, add it here to reduce
+     * bandwidth and improve legibility of xml bodies.
+     * 
+     * @var array
+     */
+    public $xmlNamespaces = array(
+        'DAV:' => 'd',
+        'http://www.rooftopsolutions.nl/NS/sabredav' => 's',
+    );
+
+    /**
      * Class constructor 
      * 
      * @param Sabre_DAV_Tree $tree The tree object 
@@ -946,6 +959,12 @@ class Sabre_DAV_Server {
         $multiStatus = $dom->createElementNS('DAV:','d:multistatus');
         $dom->appendChild($multiStatus);
 
+        foreach($this->xmlNamespaces as $namespace=>$prefix) {
+
+            $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
+
+        }
+
         foreach($list as $entry) {
 
             $this->writeProperties($multiStatus,$this->httpRequest->getUri(),$entry, $properties);
@@ -1002,9 +1021,7 @@ class Sabre_DAV_Server {
 
         if (!$properties) $properties = array_keys($data);
 
-        $nsList = array(
-            'DAV:' => 'd',
-        );
+        $nsList = $this->xmlNamespaces;
 
         foreach($properties as $property) {
 
@@ -1033,7 +1050,14 @@ class Sabre_DAV_Server {
                 if (!isset($nsList[$propName[1]])) {
                     $nsList[$propName[1]] = 'x' . count($nsList);
                 }
-                $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+
+                // If the namespace was defined in the top-level xml namespaces, it means 
+                // there was already a namespace declaration, and we don't have to worry about it.
+                if (isset($this->xmlNamespaces[$propName[1]])) {
+                    $currentProperty = $document->createElement($nsList[$propName[1]] . ':' . $propName[2]);
+                } else {
+                    $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+                }
                 $xprop->appendChild($currentProperty);
 
             }
@@ -1067,7 +1091,13 @@ class Sabre_DAV_Server {
                     $nsList[$propName[1]] = 'x' . count($nsList);
 
                 }
-                $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+                // If the namespace was defined in the top-level xml namespaces, it means 
+                // there was already a namespace declaration, and we don't have to worry about it.
+                if (isset($this->xmlNamespaces[$propName[1]])) {
+                    $currentProperty = $document->createElement($nsList[$propName[1]] . ':' . $propName[2]);
+                } else {
+                    $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+                }
 
                 $xprop->appendChild($currentProperty);
 

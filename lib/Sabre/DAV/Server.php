@@ -1233,7 +1233,15 @@ class Sabre_DAV_Server {
         $xw->openMemory();
         $xw->setIndent(true);
         $xw->startDocument('1.0','utf-8');
-        $xw->startElementNS('d','multistatus','DAV:');
+        $xw->startElement('d:multistatus');
+            
+            foreach($this->xmlNamespaces as $ns=>$prefix) {
+
+                $xw->writeAttribute('xmlns:' . $prefix,$ns);
+
+            }
+
+
             $xw->startElement('d:response');
                 $xw->writeElement('d:href',$href);
                 foreach($mutations as $mutation) {
@@ -1242,7 +1250,11 @@ class Sabre_DAV_Server {
                         $xw->startElement('d:prop');
                             $matches = null;
                             preg_match('/^{([^}]*)}(.*)$/',$mutation[0],$matches);
-                            $xw->writeElementNS('X',$matches[2],$matches[1],null);
+                            if (isset($this->xmlNamespaces[$matches[1]])) {
+                                $xw->writeElement($this->xmlNamespaces[$matches[1]] . ':' . $matches[2]);
+                            } else {
+                                $xw->writeElementNS('X',$matches[2],$matches[1],null);
+                            }
                         $xw->endElement(); // d:prop
                         $xw->writeElement('d:status',$this->httpResponse->getStatusMessage($mutation[1]));
                     $xw->endElement(); // d:propstat

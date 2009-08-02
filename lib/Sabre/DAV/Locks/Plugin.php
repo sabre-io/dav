@@ -328,7 +328,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $locks = $this->getLocks($uri);
 
         // We're grabbing the node information, just to rely on the fact it will throw a 404 when the node doesn't exist 
-        $this->server->tree->getNodeForPath($uri);
+        //$this->server->tree->getNodeForPath($uri);
 
         foreach($locks as $lock) {
 

@@ -189,11 +189,12 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('s','http://www.rooftopsolutions.nl/testnamespace');
+        $xml->registerXPathNamespace('bla','http://www.rooftopsolutions.nl/testnamespace');
  
-        $xpath='//d:prop/s:someprop';
+        $xpath='//bla:someprop';
         $result = $xml->xpath($xpath);
-        $this->assertEquals('somevalue',(string)$result[0]);
+        $this->assertEquals(1,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
+        $this->assertEquals('somevalue',(string)$result[0],'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
 
 
     }

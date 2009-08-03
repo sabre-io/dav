@@ -10,6 +10,8 @@
 	  to non-existant files. (Issue 12)
 	* Added: Central list of defined xml namespace prefixes. This can reduce
 	  Bandwidth and legibility for xml bodies with user-defined namespaces.
+	* Added: now a PEAR-compatible package again, thanks to Michael Gauthier
+	* Changed: moved default copy and move logic from ObjectTree to Tree class
 
 0.9-alpha (2009-07-21)
 	* Changed: Major refactoring, removed most of the logic from the Tree

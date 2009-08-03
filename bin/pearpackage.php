@@ -76,7 +76,7 @@ $package->setSummary(
     'application with WebDAV'
 );
 $package->setDescription($description);
-$package->setUri('http://code.google.com/p/sabredav/downloads/list');
+$package->setUri('http://sabredav.googlecode.com/files/Sabre_DAV-' . $releaseVersion);
 $package->setPackageType('php');
 $package->setLicense('BSD', 'http://code.google.com/p/sabredav/wiki/License');
 

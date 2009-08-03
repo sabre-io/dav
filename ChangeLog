@@ -1,5 +1,5 @@
-0.10-alpha (????-??-??)
-    * Added: Plugin to automatically map GET requests to non-files to
+0.10-alpha (2009-08-03)
+	* Added: Plugin to automatically map GET requests to non-files to
 	  PROPFIND (Sabre_DAV_Browser_MapGetToPropFind). This should allow 
 	  easier debugging of complicated WebDAV setups.
 	* Added: Sabre_DAV_Property_Href class. For future use.

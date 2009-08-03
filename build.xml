@@ -3,7 +3,7 @@
 
     <target name="build">
         <exec command="bin/pearpackage.php make" passthru="true" />
-        <exec command="pear package" passthru="true" />
+        <exec command="pear package" />
     </target>
 
     <target name="dist" depends="build, clean">

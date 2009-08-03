@@ -27,9 +27,28 @@ abstract class Sabre_DAV_Tree {
      *
      * @param string $sourcePath The source location
      * @param string $destinationPath The full destination path
-     * @return int
+     * @return void 
      */
-    abstract function copy($sourcePath, $destinationPath); 
+    public function copy($sourcePath, $destinationPath) {
+
+        $sourceNode = $this->getNodeForPath($sourcePath);
+        $destinationParent = $this->getNodeForPath(dirname($destinationPath));
+
+        try {
+            $destinationNode = $destinationParent->getChild(basename($destinationPath));
+
+            // If we got here, it means the destination exists, and needs to be overwritten
+            $destinationNode->delete();
+
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+
+            // If we got here, it means the destination node does not yet exist
+
+        }
+
+        $this->copyNode($sourceNode,$destinationParent,basename($destinationPath));
+
+    }
 
     /**
      * Moves a file from one location to another 
@@ -38,7 +57,81 @@ abstract class Sabre_DAV_Tree {
      * @param string $destinationPath The full destination path, so not just the destination parent node
      * @return int
      */
-    abstract function move($sourcePath, $destinationPath);
+    public function move($sourcePath, $destinationPath) {
+
+        if (dirname($sourcePath)==dirname($destinationPath)) {
+            try {
+                $destinationNode = $this->getNodeForPath($destinationPath); 
+                // If we got here, it means the destination exists, and needs to be overwritten
+                $destinationNode->delete();
+
+            } catch (Sabre_DAV_Exception_FileNotFound $e) {
+
+                // If we got here, it means the destination node does not yet exist
+
+            }
+            $renameable = $this->getNodeForPath($sourcePath);
+            $renameable->setName(basename($destinationPath));
+        } else {
+            $this->copy($sourcePath,$destinationPath);
+            $this->getNodeForPath($sourcePath)->delete();
+        }
+
+    }
+
+    /**
+     * copyNode 
+     * 
+     * @param Sabre_DAV_INode $source 
+     * @param Sabre_DAV_IDirectory $destination 
+     * @return void
+     */
+    protected function copyNode(Sabre_DAV_INode $source,Sabre_DAV_IDirectory $destinationParent,$destinationName = null) {
+
+        if (!$destinationName) $destinationName = $source->getName();
+
+        if ($source instanceof Sabre_DAV_IFile) {
+
+            $data = $source->get();
+
+            // If the body was a string, we need to convert it to a stream
+            if (is_string($data)) {
+                $stream = fopen('php://temp','r+');
+                fwrite($stream,$data);
+                rewind($stream);
+                $data = $stream;
+            } 
+            $destinationParent->createFile($destinationName,$data);
+            $destination = $destinationParent->getChild($destinationName);
+
+        } elseif ($source instanceof Sabre_DAV_IDirectory) {
+
+            $destinationParent->createDirectory($destinationName);
+            
+            $destination = $destinationParent->getChild($destinationName);
+            foreach($source->getChildren() as $child) {
+
+                $this->copyNode($child,$destination);
+
+            }
+
+        }
+        if ($source instanceof Sabre_DAV_IProperties && $destination instanceof Sabre_DAV_IProperties) {
+
+            $props = $source->getProperties(array());
+            $newProps = array();
+            foreach($props as $k=>$v) {
+                $newProps[] = array(
+                    Sabre_DAV_Server::PROP_SET,
+                    $k,
+                    $v
+                );
+            }
+            $destination->updateProperties($newProps);
+
+        }
+
+    }
 
 }
 

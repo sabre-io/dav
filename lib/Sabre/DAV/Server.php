@@ -952,7 +952,9 @@ class Sabre_DAV_Server {
      * @param array $properties The properties that should be returned
      * @return string 
      */
-    public function generatePropfindResponse($list,$properties) {
+    public function generatePropfindResponse($list,$properties,$baseUri = null) {
+
+        if (is_null($baseUri)) $baseUri = $this->httpRequest->getUri();
 
         $dom = new DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -967,7 +969,7 @@ class Sabre_DAV_Server {
 
         foreach($list as $entry) {
 
-            $this->writeProperties($multiStatus,$this->httpRequest->getUri(),$entry, $properties);
+            $this->writeProperties($multiStatus,$baseUri,$entry, $properties);
 
         }
 
@@ -981,12 +983,12 @@ class Sabre_DAV_Server {
      * This method is called by generatePropfindResponse
      * 
      * @param XMLWriter $xw 
-     * @param string $baseurl 
+     * @param string $baseUri 
      * @param array $data
      * @param array $properties
      * @return void
      */
-    private function writeProperties(DOMNode $multistatus,$baseurl,$data, $properties) {
+    private function writeProperties(DOMNode $multistatus,$baseUri,$data, $properties) {
 
         $document = $multistatus->ownerDocument;
         
@@ -995,7 +997,7 @@ class Sabre_DAV_Server {
 
         /* Figuring out the url */
         // Base url : /services/dav/mydirectory
-        $url = rtrim(urldecode($baseurl),'/');
+        $url = rtrim(urldecode($baseUri),'/');
 
         // Adding the node in the directory
         if (isset($data['href']) && trim($data['href'],'/')) $url.= '/' . trim((isset($data['href'])?$data['href']:''),'/');

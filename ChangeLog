@@ -1,6 +1,8 @@
 0.11-alpha (????-??-??)
-	* Updated: generatePropfindResponse now takes a baseUri argument
-	* Updated: ResourceType property can now contain multiple resourcetypes.
+	* Updated: Pear package no longer includes doc/ directory. These just
+	  contained rfc's, which are publically available.
+	* Added: generatePropfindResponse now takes a baseUri argument
+	* Added: ResourceType property can now contain multiple resourcetypes.
 
 0.10-alpha (2009-08-03)
 	* Added: Plugin to automatically map GET requests to non-files to

@@ -52,7 +52,7 @@ $package->setOptions(
         'packagedirectory'           => './',
         'dir_roles'                  => array(
             'bin'                    => 'script',
-            'docs'                   => 'doc',
+//            'docs'                   => 'doc',
             'examples'               => 'doc',
             'lib/Sabre'              => 'php',
             'lib/Sabre.autoload.php' => 'php',

@@ -64,8 +64,9 @@ $package->setOptions(
             'LICENCE'                => 'doc',
         ),
         'ignore'                     => array(
-            'package.php',
-            'build.xml'
+            'build.xml',
+            'bin/*',
+            'docs/*',
         )
     )
 );

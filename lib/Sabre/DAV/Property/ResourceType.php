@@ -48,10 +48,15 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
     public function serialize(DOMElement $prop) {
 
         $propName = null;
-        if (preg_match('/^{([^}]*)}(.*)$/',$this->resourceType,$propName)) { 
-     
-            $prop->appendChild($prop->ownerDocument->createElementNS($propName[1],'d:' . $propName[2]));
+        $rt = $this->resourceType;
+        if (!is_array($rt)) $rt = array($rt);
         
+        foreach($rt as $resourceType) {
+            if (preg_match('/^{([^}]*)}(.*)$/',$resourceType,$propName)) { 
+         
+                $prop->appendChild($prop->ownerDocument->createElementNS($propName[1],'d:' . $propName[2]));
+            
+            }
         }
 
     }

@@ -78,7 +78,7 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
 
         // Checking if we can remove any of these locks
         foreach($lockList as $k=>$lock) {
-            if (time() > $lock->timeout + $lock->created) unset($locks[$k]); 
+            if (time() > $lock->timeout + $lock->created) unset($lockList[$k]); 
         }
         return $lockList;
 

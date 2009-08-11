@@ -1,4 +1,4 @@
-0.11-alpha (????-??-??)
+0.11-alpha (2009-08-11)
 	* Updated: Pear package no longer includes docs/ directory. These just
 	  contained rfc's, which are publically available. This reduces the
 	  package from ~800k to ~60k

@@ -1,3 +1,7 @@
+0.12-beta (????-??-??)
+    * Updated: Browser plugin now shows multiple {DAV:}resourcetype values
+	  if available.
+
 0.11-beta (2009-08-11)
     * Updated: Now in Beta
 	* Updated: Pear package no longer includes docs/ directory. These just

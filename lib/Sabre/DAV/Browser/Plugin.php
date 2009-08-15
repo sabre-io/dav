@@ -70,8 +70,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($method!='GET') return true;
         
-        $nodeInfo = $this->server->getPropertiesForPath($this->server->getRequestUri(),array('{DAV:}resourcetype'));
-        if ($nodeInfo[0]['{DAV:}resourcetype']->getValue()!='{DAV:}collection') return true;
+        $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
+        if ($node instanceof Sabre_DAV_IFile) return true;
 
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
@@ -179,6 +179,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 } else {
                     $type = 'Unknown';
                 }
+            } elseif (is_array($type)) {
+                $type = implode(', ', $type);
             }
         }
         $type = $this->escapeHTML($type);

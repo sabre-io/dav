@@ -1,6 +1,7 @@
 0.12-beta (????-??-??)
     * Updated: Browser plugin now shows multiple {DAV:}resourcetype values
 	  if available.
+	* Added: PDO backend for Locks Manager
 
 0.11-beta (2009-08-11)
     * Updated: Now in Beta

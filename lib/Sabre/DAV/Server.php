@@ -257,6 +257,7 @@ class Sabre_DAV_Server {
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
         $this->httpResponse->setHeader('Accept-Ranges','bytes');
+        $this->httpResponse->setHeader('Content-Length',0);
         $this->httpResponse->sendStatus(200);
 
     }
@@ -385,6 +386,7 @@ class Sabre_DAV_Server {
         $node = $this->tree->getNodeForPath($this->getRequestUri());
         $node->delete();
         $this->httpResponse->sendStatus(204);
+        $this->httpResponse->setHeader('Content-Length','0');
 
     }
 
@@ -487,12 +489,14 @@ class Sabre_DAV_Server {
             // If the node is a collection, we'll deny it
             if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed'); 
             $node->put($this->httpRequest->getBody());
+            $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(200);
 
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If we got here, the resource didn't exist yet.
             $this->createFile($this->getRequestUri(),$this->httpRequest->getBody());
+            $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(201);
 
         }
@@ -538,6 +542,7 @@ class Sabre_DAV_Server {
             // This is correct
         }
         $parent->createDirectory(basename($this->getRequestUri()));
+        $this->httpResponse->setHeader('Content-Length','0');
         $this->httpResponse->sendStatus(201);
 
     }
@@ -556,6 +561,7 @@ class Sabre_DAV_Server {
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
+        $this->httpResponse->setHeader('Content-Length','0');
         $this->httpResponse->sendStatus($moveInfo['destinationExists']?204:201);
 
     }
@@ -575,6 +581,7 @@ class Sabre_DAV_Server {
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
+        $this->httpResponse->setHeader('Content-Length','0');
         $this->httpResponse->sendStatus($copyInfo['destinationExists']?204:201);
 
     }

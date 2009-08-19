@@ -24,7 +24,9 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
-        $this->assertEquals(array(),$this->response->headers);
+        $this->assertEquals(array(
+            'Content-Length' => '0',
+        ),$this->response->headers);
 
         $this->assertEquals('Testing new file',file_get_contents($this->tempDir . '/testput.txt'));
 

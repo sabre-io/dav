@@ -335,6 +335,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
                 $this->unlockNode($uri,$lock);
+                $this->httpResponse->setHeader('Content-Length','0');
                 $this->server->httpResponse->sendStatus(204);
                 return;
 

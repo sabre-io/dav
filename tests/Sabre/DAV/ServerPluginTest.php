@@ -3,7 +3,7 @@
 require_once 'Sabre/DAV/AbstractServer.php';
 require_once 'Sabre/DAV/TestPlugin.php';
 
-class Sabre_DAV_PluginTest extends Sabre_DAV_AbstractServer {
+class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
     protected $testPlugin;
 
@@ -29,10 +29,11 @@ class Sabre_DAV_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'           => '1, 3, drinking',
-            'MS-Author-Via' => 'DAV',
-            'Allow'         => 'OPTIONS GET HEAD DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE REPORT BEER WINE',
-            'Accept-Ranges' => 'bytes',
+            'DAV'            => '1, 3, drinking',
+            'MS-Author-Via'  => 'DAV',
+            'Allow'          => 'OPTIONS GET HEAD DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE REPORT BEER WINE',
+            'Accept-Ranges'  => 'bytes',
+            'Content-Length' =>  '0',
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);

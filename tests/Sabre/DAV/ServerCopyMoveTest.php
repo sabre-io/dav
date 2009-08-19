@@ -55,6 +55,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'Content-Length' => '0',
             ),
             $this->response->headers
          );
@@ -77,6 +78,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'Content-Length' => 0,
             ),
             $this->response->headers
          );
@@ -165,6 +167,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'Content-Length' => '0',
             ),
             $this->response->headers
          );
@@ -187,6 +190,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+            'Content-Length' => '0',
             ),
             $this->response->headers
          );

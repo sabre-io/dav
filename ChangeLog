@@ -4,6 +4,8 @@
 	* Added: PDO backend for Locks Manager
 	* Fixed: Sending Content-Length: 0 for every empty response. This
 	  improves NGinx compatibility.
+	* Fixed: Last modification time is reported in UTC timezone. This improves
+	  Finder compatibility.
 
 0.11-beta (2009-08-11)
     * Updated: Now in Beta

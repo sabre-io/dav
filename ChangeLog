@@ -1,3 +1,6 @@
+0.12.1-beta (2009-09-11)
+	* Fixed: UNLOCK bug. Unlock didn't work at all
+
 0.12-beta (2009-09-10)
     * Updated: Browser plugin now shows multiple {DAV:}resourcetype values
 	  if available.

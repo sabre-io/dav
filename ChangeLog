@@ -1,6 +1,7 @@
 0.13.0-beta (????-??-??)
     * Changed: Custom complex properties now get an instance of
 	  Sabre_DAV_Server as their first argument in serialize()
+	* Changed: Href complex property now prepends server's baseUri
 	* Fixed: Only calling getSize() on IFile instances in httpHead()
 
 0.12.1-beta (2009-09-11)

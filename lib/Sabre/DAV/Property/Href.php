@@ -19,7 +19,7 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property  {
     function serialize(Sabre_DAV_Server $server,DOMElement $dom) {
 
         $elem = $dom->ownerDocument->createElementNS('DAV:','d:href');
-        $elem->nodeValue = $this->href;
+        $elem->nodeValue = $server->getBaseUri() . $this->href;
         $dom->appendChild($elem);
 
     }

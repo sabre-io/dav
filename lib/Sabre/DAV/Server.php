@@ -1074,7 +1074,7 @@ class Sabre_DAV_Server {
             if (is_scalar($value)) {
                 $currentProperty->nodeValue = $value;
             } elseif ($value instanceof Sabre_DAV_Property) {
-                $value->serialize($currentProperty);
+                $value->serialize($this,$currentProperty);
             } else {
                 throw new Sabre_DAV_Exception('Unknown property value type: ' . gettype($value) . ' for property: ' . $property);
             }

@@ -439,7 +439,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $prop->appendChild($lockDiscovery);
 
         $lockObj = new Sabre_DAV_Property_LockDiscovery(array($lockInfo),true);
-        $lockObj->serialize($lockDiscovery);
+        $lockObj->serialize($this->server,$lockDiscovery);
 
         return $dom->saveXML();
 

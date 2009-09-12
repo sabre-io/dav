@@ -14,7 +14,7 @@
  */
 abstract class Sabre_DAV_Property {
 
-    abstract function serialize(DOMElement $prop); 
+    abstract function serialize(Sabre_DAV_Server $server, DOMElement $prop); 
 
 }
 

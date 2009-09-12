@@ -44,7 +44,7 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
      * @param DOMElement $prop 
      * @return void
      */
-    public function serialize(DOMElement $prop) {
+    public function serialize(Sabre_DAV_Server $server, DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
         $prop->setAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');

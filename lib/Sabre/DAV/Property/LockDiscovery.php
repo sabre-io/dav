@@ -48,7 +48,7 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
      * @param DOMElement $prop 
      * @return void
      */
-    public function serialize(DOMElement $prop) {
+    public function serialize(Sabre_DAV_Server $server,DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
 

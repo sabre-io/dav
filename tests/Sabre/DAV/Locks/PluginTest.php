@@ -56,7 +56,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^opaquelocktoken:(.*)$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
 
     }
 

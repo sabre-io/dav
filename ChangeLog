@@ -4,6 +4,7 @@
 	* Changed: Href complex property now prepends server's baseUri
 	* Fixed: Only calling getSize() on IFile instances in httpHead()
 	* Added: beforeBind event. This is invoked upon file or directory creation
+	* Fixed: Copy and Move could fail in the root directory. This is now fixed
 
 0.12.1-beta (2009-09-11)
 	* Fixed: UNLOCK bug. Unlock didn't work at all

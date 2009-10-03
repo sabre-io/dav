@@ -789,15 +789,17 @@ class Sabre_DAV_Server {
         if (!$overwrite) $overwrite = 'T';
         if (strtoupper($overwrite)=='T') $overwrite = true;
         elseif (strtoupper($overwrite)=='F') $overwrite = false;
-
         // We need to throw a bad request exception, if the header was invalid
         else throw new Sabre_DAV_Exception_BadRequest('The HTTP Overwrite header should be either T or F');
+
+        $destinationUri = dirname($destination);
+        if ($destinationUri=='.') $destinationUri='';
 
         // Collection information on relevant existing nodes
         $sourceNode = $this->tree->getNodeForPath($source);
 
         try {
-            $destinationParent = $this->tree->getNodeForPath(dirname($destination));
+            $destinationParent = $this->tree->getNodeForPath($destinationUri);
             if (!($destinationParent instanceof Sabre_DAV_IDirectory)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
@@ -817,6 +819,10 @@ class Sabre_DAV_Server {
 
             // Destination didn't exist, we're all good
             $destinationNode = false;
+
+            // Since a new node will be created, we need to trigger the bind
+            // event
+            $this->broadcastEvent('beforeBind',array($destinationUri));
 
         }
 

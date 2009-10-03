@@ -942,6 +942,7 @@ class Sabre_DAV_Server {
     public function createFile($uri,$data) {
 
         $parentUri = dirname($uri);
+        if ($parentUri=='.') $parentUri = '';
         if (!$this->broadcastEvent('beforeBind',array($parentUri))) return;
         if (!$this->broadcastEvent('beforeCreateFile',array($uri,$data))) return;
 
@@ -959,6 +960,7 @@ class Sabre_DAV_Server {
     public function createDirectory($uri) {
 
         $parentUri = dirname($uri);
+        if ($parentUri=='.') $parentUri = '';
         if (!$this->broadcastEvent('beforeBind',array($parentUri))) return;
 
         $parent = $this->tree->getNodeForPath($parentUri);

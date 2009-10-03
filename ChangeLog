@@ -3,6 +3,7 @@
 	  Sabre_DAV_Server as their first argument in serialize()
 	* Changed: Href complex property now prepends server's baseUri
 	* Fixed: Only calling getSize() on IFile instances in httpHead()
+	* Added: beforeBind event. This is invoked upon file or directory creation
 
 0.12.1-beta (2009-09-11)
 	* Fixed: UNLOCK bug. Unlock didn't work at all

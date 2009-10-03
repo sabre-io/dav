@@ -541,7 +541,7 @@ class Sabre_DAV_Server {
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
             // This is correct
         }
-        $parent->createDirectory(basename($this->getRequestUri()));
+        $this->createDirectory($this->getRequestUri());
         $this->httpResponse->setHeader('Content-Length','0');
         $this->httpResponse->sendStatus(201);
 
@@ -941,10 +941,28 @@ class Sabre_DAV_Server {
      */
     public function createFile($uri,$data) {
 
+        $parentUri = dirname($uri);
+        if (!$this->broadcastEvent('beforeBind',array($parentUri))) return;
         if (!$this->broadcastEvent('beforeCreateFile',array($uri,$data))) return;
 
-        $parent = $this->tree->getNodeForPath(dirname($uri));
+        $parent = $this->tree->getNodeForPath($parentUri);
         $parent->createFile(basename($uri),$data);
+
+    }
+
+    /**
+     * This method is invoked by sub-systems creating a new directory.
+     *
+     * @param string $uri 
+     * @return void
+     */
+    public function createDirectory($uri) {
+
+        $parentUri = dirname($uri);
+        if (!$this->broadcastEvent('beforeBind',array($parentUri))) return;
+
+        $parent = $this->tree->getNodeForPath($parentUri);
+        $parent->createDirectory(basename($uri));
 
     }
 

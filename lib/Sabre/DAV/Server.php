@@ -128,7 +128,7 @@ class Sabre_DAV_Server {
 
             if($e instanceof Sabre_DAV_Exception) {
                 $httpCode = $e->getHTTPCode();
-                $e->serialize($error);
+                $e->serialize($this,$error);
             } else {
                 $httpCode = 500;
             }

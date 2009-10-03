@@ -24,7 +24,7 @@ class Sabre_DAV_Exception_LockTokenMatchesRequestUri extends Sabre_DAV_Exception
 
     }
 
-    function serialize(DOMElement $errorNode) {
+    function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
 
         $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-matches-request-uri');
         $errorNode->appendChild($error);

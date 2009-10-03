@@ -41,7 +41,7 @@ class Sabre_DAV_Exception extends Exception {
      * @param DOMElement $errorNode 
      * @return void
      */
-    public function serialize(DOMElement $errorNode) {
+    public function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
     
 
     }

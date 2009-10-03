@@ -19,7 +19,7 @@
  */
 class Sabre_DAV_Exception_ConflictingLock extends Sabre_DAV_Exception_Locked {
 
-    function serialize(DOMElement $errorNode) {
+    function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
         
         if ($this->lock) {
             $error = $errorNode->ownerDocument->createElementNS('DAV:','d:no-conflicting-lock');

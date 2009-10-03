@@ -31,7 +31,7 @@ class Sabre_DAV_Exception_Locked extends Sabre_DAV_Exception {
 
     }
 
-    function serialize(DOMElement $errorNode) {
+    function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
         
         if ($this->lock) {
             $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');

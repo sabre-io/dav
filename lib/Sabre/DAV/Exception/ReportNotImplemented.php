@@ -19,7 +19,7 @@
  */
 class Sabre_DAV_Exception_ReportNotImplemented extends Sabre_DAV_Exception_NotImplemented {
 
-    function serialize(DOMElement $errorNode) {
+    function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
 
         $error = $errorNode->ownerDocument->createElementNS('DAV:','d:supported-report');
         $errorNode->appendChild($error);

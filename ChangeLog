@@ -1,5 +1,5 @@
 0.13.0-beta (????-??-??)
-    * Changed: Custom complex properties now get an instance of
+	* Changed: Custom complex properties and exceptions now get an instance of
 	  Sabre_DAV_Server as their first argument in serialize()
 	* Changed: Href complex property now prepends server's baseUri
 	* Fixed: Only calling getSize() on IFile instances in httpHead()
@@ -9,7 +9,7 @@
 	* Fixed: UNLOCK bug. Unlock didn't work at all
 
 0.12-beta (2009-09-10)
-    * Updated: Browser plugin now shows multiple {DAV:}resourcetype values
+	* Updated: Browser plugin now shows multiple {DAV:}resourcetype values
 	  if available.
 	* Added: Experimental PDO backend for Locks Manager
 	* Fixed: Sending Content-Length: 0 for every empty response. This
@@ -18,7 +18,7 @@
 	  Finder compatibility.
 
 0.11-beta (2009-08-11)
-    * Updated: Now in Beta
+	* Updated: Now in Beta
 	* Updated: Pear package no longer includes docs/ directory. These just
 	  contained rfc's, which are publically available. This reduces the
 	  package from ~800k to ~60k

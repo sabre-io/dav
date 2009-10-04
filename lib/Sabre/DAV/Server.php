@@ -559,10 +559,10 @@ class Sabre_DAV_Server {
     protected function httpMove() {
 
         $moveInfo = $this->getCopyAndMoveInfo();
-        if ($copyInfo['destinationExists']) {
+        if ($moveInfo['destinationExists']) {
 
-            if (!$this->broadcastEvent('beforeUnbind',array($copyInfo['destination']))) return false;
-            $copyInfo['destinationNode']->delete();
+            if (!$this->broadcastEvent('beforeUnbind',array($moveInfo['destination']))) return false;
+            $moveInfo['destinationNode']->delete();
 
         }
 

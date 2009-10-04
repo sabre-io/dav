@@ -382,9 +382,11 @@ class Sabre_DAV_Server {
      */
     protected function httpDelete() {
 
-        // Asking for nodeinfo to make sure the node exists
-        $node = $this->tree->getNodeForPath($this->getRequestUri());
+        $uri = $this->getRequestUri();
+        $node = $this->tree->getNodeForPath($uri);
+        if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
         $node->delete();
+
         $this->httpResponse->sendStatus(204);
         $this->httpResponse->setHeader('Content-Length','0');
 
@@ -557,6 +559,12 @@ class Sabre_DAV_Server {
     protected function httpMove() {
 
         $moveInfo = $this->getCopyAndMoveInfo();
+        if ($copyInfo['destinationExists']) {
+
+            if (!$this->broadcastEvent('beforeUnbind',array($copyInfo['destination']))) return false;
+            $copyInfo['destinationNode']->delete();
+
+        }
 
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
@@ -577,7 +585,12 @@ class Sabre_DAV_Server {
     protected function httpCopy() {
 
         $copyInfo = $this->getCopyAndMoveInfo();
+        if ($copyInfo['destinationExists']) {
 
+            if (!$this->broadcastEvent('beforeUnbind',array($copyInfo['destination']))) return false;
+            $copyInfo['destinationNode']->delete();
+
+        }
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -831,6 +844,7 @@ class Sabre_DAV_Server {
             'source'            => $source,
             'destination'       => $destination,
             'destinationExists' => $destinationNode==true,
+            'destinationNode'   => $destinationNode,
         );
 
     }

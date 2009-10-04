@@ -33,19 +33,6 @@ abstract class Sabre_DAV_Tree {
 
         $sourceNode = $this->getNodeForPath($sourcePath);
         $destinationParent = $this->getNodeForPath(dirname($destinationPath));
-
-        try {
-            $destinationNode = $destinationParent->getChild(basename($destinationPath));
-
-            // If we got here, it means the destination exists, and needs to be overwritten
-            $destinationNode->delete();
-
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
-
-            // If we got here, it means the destination node does not yet exist
-
-        }
-
         $this->copyNode($sourceNode,$destinationParent,basename($destinationPath));
 
     }
@@ -60,16 +47,6 @@ abstract class Sabre_DAV_Tree {
     public function move($sourcePath, $destinationPath) {
 
         if (dirname($sourcePath)==dirname($destinationPath)) {
-            try {
-                $destinationNode = $this->getNodeForPath($destinationPath); 
-                // If we got here, it means the destination exists, and needs to be overwritten
-                $destinationNode->delete();
-
-            } catch (Sabre_DAV_Exception_FileNotFound $e) {
-
-                // If we got here, it means the destination node does not yet exist
-
-            }
             $renameable = $this->getNodeForPath($sourcePath);
             $renameable->setName(basename($destinationPath));
         } else {

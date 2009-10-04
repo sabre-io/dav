@@ -75,8 +75,6 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
 
         $source = $this->getRealPath($source);
         $destination = $this->getRealPath($destination);
-
-        if (file_exists($destination)) $this->realDelete($destination);
         $this->realCopy($source,$destination); 
 
     }
@@ -117,8 +115,6 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
 
         $source = $this->getRealPath($source);
         $destination = $this->getRealPath($destination);
-
-        if (file_exists($destination)) $this->realDelete($destination);
         rename($source,$destination);
 
     }

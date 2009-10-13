@@ -489,7 +489,9 @@ class Sabre_DAV_Server {
             }
             
             // If the node is a collection, we'll deny it
-            if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed'); 
+            if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed');
+            if (!$this->broadcastEvent('beforeWriteContent',$this->getRequestUri())) return false;
+
             $node->put($this->httpRequest->getBody());
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(200);

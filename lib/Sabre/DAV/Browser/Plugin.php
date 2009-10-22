@@ -165,7 +165,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         $name = $this->escapeHTML(basename($file['href']));
 
-        if ($name=="") continue;
+        // This is the current directory, we can skip it
+        if ($name==$path) continue;
 
         if (isset($file[200]['{DAV:}resourcetype'])) {
             $type = $file[200]['{DAV:}resourcetype']->getValue();

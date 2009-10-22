@@ -163,7 +163,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
     foreach($files as $k=>$file) {
 
-        $name = $this->escapeHTML($file['href']);
+        $name = $this->escapeHTML(basename($file['href']));
 
         if ($name=="") continue;
 
@@ -185,7 +185,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
         $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?date(DATE_ATOM,$file[200]['{DAV:}getlastmodified']->getTime()):'';
 
-        $fullPath = '/' . trim($this->server->getBaseUri() . $this->escapeHTML($path) . '/' . $name,'/');
+        $fullPath = '/' . trim($this->server->getBaseUri() . ($path?$this->escapeHTML($path) . '/':'') . $name,'/');
 
         echo "<tr>
 <td><a href=\"{$fullPath}\">{$name}</a></td>

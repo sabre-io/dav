@@ -609,7 +609,7 @@ class Sabre_DAV_Server {
             $copyInfo['destinationNode']->delete();
 
         }
-        if (!$this->broadcastEvent('beforeBind',array($moveInfo['destination']))) return false;
+        if (!$this->broadcastEvent('beforeBind',array($copyInfo['destination']))) return false;
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201

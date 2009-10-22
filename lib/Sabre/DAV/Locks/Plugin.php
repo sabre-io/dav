@@ -58,7 +58,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
         $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),50);
-        $server->subscribeEvent('unknownProperties',array($this,'unknownProperties'));
+        $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
 
     }
 
@@ -83,17 +83,16 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method is called if the client requested properties through 
-     * PROPFIND, and the server didn't have a representation for it.
+     * This method is called after most properties have been found
+     * it allows us to add in any Lock-related properties
      * 
      * @param string $path 
-     * @param array $unknownProperties 
-     * @param array $newProperties 
+     * @param array $properties 
      * @return bool 
      */
-    public function unknownProperties($path,$unknownProperties,&$newProperties) {
+    public function afterGetProperties($path,&$newProperties) {
 
-        foreach($unknownProperties as $propName) {
+        foreach($newProperties[404] as $propName=>$discard) {
 
             $node = null;
 
@@ -106,11 +105,13 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
                         if (!$node) $node = $this->server->tree->getNodeForPath($path);
                         if ($node instanceof Sabre_DAV_ILockable) $val = true;
                     }
-                    $newProperties[$propName] = new Sabre_DAV_Property_SupportedLock($val);
+                    $newProperties[200][$propName] = new Sabre_DAV_Property_SupportedLock($val);
+                    unset($newProperties[404][$propName]);
                     break;
 
                 case '{DAV:}lockdiscovery' :
-                    $newProperties[$propName] = new Sabre_DAV_Property_LockDiscovery($this->getLocks($path));
+                    $newProperties[200][$propName] = new Sabre_DAV_Property_LockDiscovery($this->getLocks($path));
+                    unset($newProperties[404][$propName]);
                     break;
 
             }
@@ -161,7 +162,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         return true;
-                
 
     }
 
@@ -337,6 +337,8 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($locks as $lock) {
 
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
+
+                if (!$this->server->broadcastEvent('beforeUnlock',array($uri,$lock))) return false;
 
                 $this->unlockNode($uri,$lock);
                 $this->server->httpResponse->setHeader('Content-Length','0');

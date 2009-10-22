@@ -167,13 +167,13 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($name=="") continue;
 
-        if (isset($file['{DAV:}resourcetype'])) {
-            $type = $file['{DAV:}resourcetype']->getValue();
+        if (isset($file[200]['{DAV:}resourcetype'])) {
+            $type = $file[200]['{DAV:}resourcetype']->getValue();
             if ($type=='{DAV:}collection') {
                 $type = 'Directory';
             } elseif ($type=='') {
-                if (isset($file['{DAV:}getcontenttype'])) {
-                    $type = $file['{DAV:}getcontenttype'];
+                if (isset($file[200]['{DAV:}getcontenttype'])) {
+                    $type = $file[200]['{DAV:}getcontenttype'];
                 } else {
                     $type = 'Unknown';
                 }
@@ -182,8 +182,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             }
         }
         $type = $this->escapeHTML($type);
-        $size = isset($file['{DAV:}getcontentlength'])?(int)$file['{DAV:}getcontentlength']:'';
-        $lastmodified = isset($file['{DAV:}getlastmodified'])?date(DATE_ATOM,$file['{DAV:}getlastmodified']->getTime()):'';
+        $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
+        $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?date(DATE_ATOM,$file[200]['{DAV:}getlastmodified']->getTime()):'';
 
         $fullPath = '/' . trim($this->server->getBaseUri() . $this->escapeHTML($path) . '/' . $name,'/');
 

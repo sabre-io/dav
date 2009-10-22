@@ -4,11 +4,32 @@
 	* Changed: Href complex property now prepends server's baseUri
 	* Changed: delete before an overwriting copy/move is now handles by server
 	  class instead of tree classes
+	* Changed: events must now explicitly return false to stop execution.
+	  Before, execution would be stopped by anything loosely evaluating to
+	  false.
+	* Changed: the getPropertiesForPath method now takes a different set of
+	  arguments, and returns a different response. This allows plugin
+	  developers to return statuses for properties other than 200 and 404. The
+	  hrefs are now also always calculated relative to the baseUri, and not
+	  the uri of the request.
+	* Changed: generatePropFindResponse is renamed to generateMultiStatus, and
+	  now takes a list of properties similar to the response of
+	  getPropertiesForPath. This was also needed to improve flexibility for
+	  plugin development.
+	* Removed: unknownProperties event. This is replaced by the
+	  afterGetProperties event, which should provide more flexibility. 
 	* Fixed: Only calling getSize() on IFile instances in httpHead()
 	* Added: beforeBind event. This is invoked upon file or directory creation
 	* Added: beforeWriteContent event, this is invoked by PUT and LOCK on an
 	  existing resource.
-	* Fixed: Copy and Move could fail in the root directory. This is now fixed
+	* Added: beforeUnbind event. This is invoked right before deletion of any
+	  resource.
+	* Added: afterGetProperties event. This event can be used to make
+	  modifications to property responses.
+	* Fixed: Copy and Move could fail in the root directory. This is now
+	  fixed.
+	* Added: Plugins can now be retrieved by their classname. This is useful
+	  for inter-plugin communication.
 
 0.12.1-beta (2009-09-11)
 	* Fixed: UNLOCK bug. Unlock didn't work at all

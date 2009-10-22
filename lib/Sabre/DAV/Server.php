@@ -174,8 +174,23 @@ class Sabre_DAV_Server {
      */
     public function addPlugin(Sabre_DAV_ServerPlugin $plugin) {
 
-        $this->plugins[] = $plugin;
+        $this->plugins[get_class($plugin)] = $plugin;
         $plugin->initialize($this);
+
+    }
+
+    /**
+     * Returns an initialized plugin by it's classname. 
+     *
+     * This function returns null if the plugin was not found.
+     *
+     * @param string $className
+     * @return Sabre_DAV_ServerPlugin 
+     */
+    public function getPlugin($className) {
+
+        if (isset($this->plugins[$className])) return $this->plugins[$className];
+        return null;
 
     }
 
@@ -224,7 +239,7 @@ class Sabre_DAV_Server {
             foreach($this->eventSubscriptions[$eventName] as $subscriber) {
 
                 $result = call_user_func_array($subscriber,$arguments);
-                if (!$result) return false;
+                if ($result===false) return false;
 
             }
 
@@ -410,7 +425,7 @@ class Sabre_DAV_Server {
     public function httpPropfind() {
 
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
-        $properties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
+        $requestedProperties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
 
         $depth = $this->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1 
@@ -419,13 +434,12 @@ class Sabre_DAV_Server {
         // The requested path
         $path = $this->getRequestUri();
         
-        $newProperties = $this->getPropertiesForPath($path,$properties,$depth);
-
+        $newProperties = $this->getPropertiesForPath($path,$requestedProperties,$depth);
 
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $data = $this->generatePropfindResponse($newProperties,$properties);
+        $data = $this->generateMultiStatus($newProperties);
         $this->httpResponse->sendBody($data);
 
     }
@@ -568,6 +582,8 @@ class Sabre_DAV_Server {
 
         }
 
+        if (!$this->broadcastEvent('beforeUnbind',array($moveInfo['source']))) return false;
+        if (!$this->broadcastEvent('beforeBind',array($moveInfo['destination']))) return false;
         $this->tree->move($moveInfo['source'],$moveInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -593,6 +609,7 @@ class Sabre_DAV_Server {
             $copyInfo['destinationNode']->delete();
 
         }
+        if (!$this->broadcastEvent('beforeBind',array($moveInfo['destination']))) return false;
         $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -835,9 +852,7 @@ class Sabre_DAV_Server {
             // Destination didn't exist, we're all good
             $destinationNode = false;
 
-            // Since a new node will be created, we need to trigger the bind
-            // event
-            $this->broadcastEvent('beforeBind',array($destinationUri));
+
 
         }
 
@@ -861,11 +876,11 @@ class Sabre_DAV_Server {
      * If a depth of 1 is requested child elements will also be returned.
      *
      * @param string $path 
-     * @param array $properties 
+     * @param array $propertyNames
      * @param int $depth 
      * @return array
      */
-    public function getPropertiesForPath($path,$properties = array(),$depth = 0) {
+    public function getPropertiesForPath($path,$propertyNames = array(),$depth = 0) {
 
         if ($depth!=0) $depth = 1;
 
@@ -879,19 +894,27 @@ class Sabre_DAV_Server {
             foreach($parentNode->getChildren() as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }            
+       
+        // If the propertyNames array is empty, it means all properties are requested.
+        // We shouldn't actually return everything we know though, and only return a
+        // sensible list. 
+        $allProperties = count($propertyNames)==0;
 
         foreach($nodes as $myPath=>$node) {
 
-            $newProperties = array();
+            $newProperties = array(
+                '200' => array(),
+                '404' => array(),
+            );
             if ($node instanceof Sabre_DAV_IProperties) 
-                $newProperties = $node->getProperties($properties);
+                $newProperties['200'] = $node->getProperties($propertyNames);
 
-            $unknownProperties = array();
+            if ($allProperties) {
 
-            // If the properties array was empty, it means 'everything' was requested.
-            
-            if (!$properties) {
-                $properties = array(
+                // Default list of propertyNames.
+                // note that the list might be bigger due to plugins or Node objects
+                // returning a bigger list.
+                $propertyNames = array(
                     '{DAV:}getlastmodified',
                     '{DAV:}getcontentlength',
                     '{DAV:}resourcetype',
@@ -902,44 +925,43 @@ class Sabre_DAV_Server {
                 );
             }
 
-            // It's important we add this guy, because other systems depend on it
-            if (!in_array('{DAV:}resourcetype',$properties)) $properties[] = '{DAV:}resourcetype';
+            // It's important we add the resourceType, because some systems depend on it
+            // TODO: Needs to be eliminated, we need to find out why this was
+            if (!in_array('{DAV:}resourcetype',$propertyNames)) $propertyNames[] = '{DAV:}resourcetype';
 
-            foreach($properties as $prop) {
+            foreach($propertyNames as $prop) {
                 
-                if (isset($newProperties[$prop])) continue;
+                if (isset($newProperties[200][$prop])) continue;
 
                 switch($prop) {
-                    case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[$prop] = new Sabre_DAV_Property_GetLastModified($node->getLastModified()); break;
-                    case '{DAV:}getcontentlength'      : if ($node instanceof Sabre_DAV_IFile) $newProperties[$prop] = (int)$node->getSize(); break;
-                    case '{DAV:}resourcetype'          : $newProperties[$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_IDirectory?self::NODE_DIRECTORY:self::NODE_FILE); break;
+                    case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Sabre_DAV_Property_GetLastModified($node->getLastModified()); break;
+                    case '{DAV:}getcontentlength'      : if ($node instanceof Sabre_DAV_IFile) $newProperties[200][$prop] = (int)$node->getSize(); break;
+                    case '{DAV:}resourcetype'          : $newProperties[200][$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_IDirectory?self::NODE_DIRECTORY:self::NODE_FILE); break;
                     case '{DAV:}quota-used-bytes'      : 
                         if ($node instanceof Sabre_DAV_IQuota) {
                             $quotaInfo = $node->getQuotaInfo();
-                            $newProperties[$prop] = $quotaInfo[0];
+                            $newProperties[200][$prop] = $quotaInfo[0];
                         }
                         break;
                     case '{DAV:}quota-available-bytes' : 
                         if ($node instanceof Sabre_DAV_IQuota) {
                             $quotaInfo = $node->getQuotaInfo();
-                            $newProperties[$prop] = $quotaInfo[1];
+                            $newProperties[200][$prop] = $quotaInfo[1];
                         }
                         break;
-                    case '{DAV:}getetag'               : if ($node instanceof Sabre_DAV_IFile && $etag = $node->getETag())  $newProperties[$prop] = $etag; break;
-                    case '{DAV:}getcontenttype'        : if ($node instanceof Sabre_DAV_IFile && $ct = $node->getContentType())  $newProperties[$prop] = $ct; break;
+                    case '{DAV:}getetag'               : if ($node instanceof Sabre_DAV_IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
+                    case '{DAV:}getcontenttype'        : if ($node instanceof Sabre_DAV_IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
 
                 }
 
-                if (!isset($newProperties[$prop])) $unknownProperties[] = $prop;
+                // If we were unable to find the property, we will list it as 404.
+                if (!$allProperties && !isset($newProperties[200][$prop])) $newProperties[404][$prop] = null;
 
             }
+         
+            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties));
 
-            if ($unknownProperties) {
-                $this->broadcastEvent('unknownProperties',array($myPath,$unknownProperties,&$newProperties));
-
-            }
-
-            $newProperties['href'] = trim(substr($myPath,strlen($path)),'/'); 
+            $newProperties['href'] = trim($myPath,'/'); 
 
             //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
             $returnPropertyList[] = $newProperties;
@@ -997,13 +1019,11 @@ class Sabre_DAV_Server {
     /**
      * Generates a WebDAV propfind response body based on a list of nodes 
      * 
-     * @param array $list The list with nodes
-     * @param array $properties The properties that should be returned
+     * @param array $fileProperties The list with nodes
+     * @param array $requestedProperties The properties that should be returned
      * @return string 
      */
-    public function generatePropfindResponse($list,$properties,$baseUri = null) {
-
-        if (is_null($baseUri)) $baseUri = $this->httpRequest->getUri();
+    public function generateMultiStatus(array $fileProperties) {
 
         $dom = new DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -1016,9 +1036,9 @@ class Sabre_DAV_Server {
 
         }
 
-        foreach($list as $entry) {
+        foreach($fileProperties as $entry) {
 
-            $this->writeProperties($multiStatus,$baseUri,$entry, $properties);
+            $this->writeMultiStatusItem($multiStatus,$entry);
 
         }
 
@@ -1029,7 +1049,7 @@ class Sabre_DAV_Server {
     /**
      * Generates the xml for a single item in a propfind response.
      *
-     * This method is called by generatePropfindResponse
+     * This method is called by generateMultiStatus
      * 
      * @param XMLWriter $xw 
      * @param string $baseUri 
@@ -1037,95 +1057,41 @@ class Sabre_DAV_Server {
      * @param array $properties
      * @return void
      */
-    private function writeProperties(DOMNode $multistatus,$baseUri,$data, $properties) {
+    private function writeMultiStatusItem(DOMNode $multistatus,$properties) {
 
         $document = $multistatus->ownerDocument;
         
         $xresponse = $document->createElementNS('DAV:','d:response');
         $multistatus->appendChild($xresponse); 
 
-        /* Figuring out the url */
-        // Base url : /services/dav/mydirectory
-        $url = rtrim(urldecode($baseUri),'/');
+        if (!isset($properties['href'])) throw new Sabre_DAV_Exception('href must be provided in properties array');
 
-        // Adding the node in the directory
-        if (isset($data['href']) && trim($data['href'],'/')) $url.= '/' . trim((isset($data['href'])?$data['href']:''),'/');
+        $uri = explode('/',trim($properties['href'],'/'));
 
-        $url = explode('/',$url);
+        // Decoding the uri part-by-part, for instance to make sure we got spaces, and not %20
+        foreach($uri as $k=>$item) $uri[$k] = rawurlencode($item);
 
-        foreach($url as $k=>$item) $url[$k] = rawurlencode($item);
+        $uri = implode('/',$uri);
 
-        $url = implode('/',$url);
+        // TODO: we need a better way to do this
+        if ($uri!='' && $properties[200]['{DAV:}resourcetype']->getValue()=='{DAV:}collection') $uri .='/';
 
-        if ($data['{DAV:}resourcetype']->getValue()=='{DAV:}collection') $url .='/';
+        // Adding the baseurl to the beginning of the url
+        $uri = $this->getBaseUri() . $uri;
 
-        $xresponse->appendChild($document->createElementNS('DAV:','d:href',$url));
-        
-        $xpropstat = $document->createElementNS('DAV:','d:propstat');
-        $xresponse->appendChild($xpropstat);
 
-        $xprop = $document->createElementNS('DAV:','d:prop');
-        $xpropstat->appendChild($xprop);
+        $xresponse->appendChild($document->createElementNS('DAV:','d:href',$uri));
+       
+        // The properties variable is an array containing properties, grouped by
+        // HTTP status
+        foreach($properties as $httpStatus=>$propertyGroup) {
 
-        // We have to collect the properties we don't know
-        $notFound = array();
+            // The 'href' is also in this array, and it's special cased.
+            // We will ignore it
+            if ($httpStatus=='href') continue;
 
-        if (!$properties) $properties = array_keys($data);
-
-        $nsList = $this->xmlNamespaces;
-
-        foreach($properties as $property) {
-
-            // We can skip href
-            if ($property=='href') continue;
-
-            if(!isset($data[$property])) {
-                $notFound[] = $property;
-                continue;
-            }
-
-            $value = $data[$property];
-
-            $propName = null;
-            preg_match('/^{([^}]*)}(.*)$/',$property,$propName);
-        
-            // special case for empty namespaces
-            if ($propName[1]=='') {
-
-                $currentProperty = $document->createElement($propName[2]);
-                $xprop->appendChild($currentProperty);
-                $currentProperty->setAttribute('xmlns','');
-
-            } else {
-
-                if (!isset($nsList[$propName[1]])) {
-                    $nsList[$propName[1]] = 'x' . count($nsList);
-                }
-
-                // If the namespace was defined in the top-level xml namespaces, it means 
-                // there was already a namespace declaration, and we don't have to worry about it.
-                if (isset($this->xmlNamespaces[$propName[1]])) {
-                    $currentProperty = $document->createElement($nsList[$propName[1]] . ':' . $propName[2]);
-                } else {
-                    $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
-                }
-                $xprop->appendChild($currentProperty);
-
-            }
-
-            if (is_scalar($value)) {
-                $currentProperty->nodeValue = $value;
-            } elseif ($value instanceof Sabre_DAV_Property) {
-                $value->serialize($this,$currentProperty);
-            } else {
-                throw new Sabre_DAV_Exception('Unknown property value type: ' . gettype($value) . ' for property: ' . $property);
-            }
-
-        }
-
-        $xpropstat->appendChild($document->createElementNS('DAV:','d:status',$this->httpResponse->getStatusMessage(200)));
-
-        if ($notFound) {
+            // If there are no properties in this group, we can also just carry on
+            if (!count($propertyGroup)) continue;
 
             $xpropstat = $document->createElementNS('DAV:','d:propstat');
             $xresponse->appendChild($xpropstat);
@@ -1133,29 +1099,51 @@ class Sabre_DAV_Server {
             $xprop = $document->createElementNS('DAV:','d:prop');
             $xpropstat->appendChild($xprop);
 
-            foreach($notFound as $property) {
+            $nsList = $this->xmlNamespaces;
 
-                $tag = null;
-                preg_match('/^{([^}]*)}(.*)$/',$property,$propName);
-                if (!isset($nsList[$propName[1]])) {
+            foreach($propertyGroup as $propertyName=>$propertyValue) {
 
-                    $nsList[$propName[1]] = 'x' . count($nsList);
+                $propName = null;
+                preg_match('/^{([^}]*)}(.*)$/',$propertyName,$propName);
+            
+                // special case for empty namespaces
+                if ($propName[1]=='') {
 
-                }
-                // If the namespace was defined in the top-level xml namespaces, it means 
-                // there was already a namespace declaration, and we don't have to worry about it.
-                if (isset($this->xmlNamespaces[$propName[1]])) {
-                    $currentProperty = $document->createElement($nsList[$propName[1]] . ':' . $propName[2]);
+                    $currentProperty = $document->createElement($propName[2]);
+                    $xprop->appendChild($currentProperty);
+                    $currentProperty->setAttribute('xmlns','');
+
                 } else {
-                    $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+
+                    if (!isset($nsList[$propName[1]])) {
+                        $nsList[$propName[1]] = 'x' . count($nsList);
+                    }
+
+                    // If the namespace was defined in the top-level xml namespaces, it means 
+                    // there was already a namespace declaration, and we don't have to worry about it.
+                    if (isset($this->xmlNamespaces[$propName[1]])) {
+                        $currentProperty = $document->createElement($nsList[$propName[1]] . ':' . $propName[2]);
+                    } else {
+                        $currentProperty = $document->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+                    }
+                    $xprop->appendChild($currentProperty);
+
                 }
 
-                $xprop->appendChild($currentProperty);
+                if (is_scalar($propertyValue)) {
+                    $currentProperty->nodeValue = $propertyValue;
+                } elseif ($propertyValue instanceof Sabre_DAV_Property) {
+                    $propertyValue->serialize($this,$currentProperty);
+                } elseif (!is_null($propertyValue)) {
+                    throw new Sabre_DAV_Exception('Unknown property value type: ' . gettype($propertyValue) . ' for property: ' . $propertyName);
+                }
 
             }
-            $xpropstat->appendChild($document->createElementNS('DAV:','d:status',$this->httpResponse->getStatusMessage(404)));
+
+            $xpropstat->appendChild($document->createElementNS('DAV:','d:status',$this->httpResponse->getStatusMessage($httpStatus)));
 
         }
+
     }
 
 
@@ -1291,7 +1279,6 @@ class Sabre_DAV_Server {
                 $xw->writeAttribute('xmlns:' . $prefix,$ns);
 
             }
-
 
             $xw->startElement('d:response');
                 $xw->writeElement('d:href',$href);

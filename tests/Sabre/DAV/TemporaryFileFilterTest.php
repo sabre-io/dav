@@ -158,7 +158,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status, "Incorrect status code received. Full body:\n". $this->response->body);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);

@@ -30,6 +30,7 @@
 	  fixed.
 	* Added: Plugins can now be retrieved by their classname. This is useful
 	  for inter-plugin communication.
+	* Added: The Auth backend can now return usernames and user-id's.
 
 0.12.1-beta (2009-09-11)
 	* Fixed: UNLOCK bug. Unlock didn't work at all

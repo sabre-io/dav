@@ -22,6 +22,22 @@ abstract class Sabre_DAV_Auth_Backend_Abstract {
      */
     abstract public function getDigestHash($username);
 
+    /**
+     * Returns a userid for a username
+     *
+     * The result may be any string, or simply a number.
+     * By default the username is just returned, but it is
+     * possible for backends to supply a different type of userid.
+     * 
+     * @param mixed $username 
+     * @return void
+     */
+    public function getUserId($username) {
+
+        return $username;
+
+    }
+
 }
 
 ?>

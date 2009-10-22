@@ -36,6 +36,21 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     private $realm;
 
     /**
+     * userName of currently logged in user 
+     * 
+     * @var string 
+     */
+    private $userName;
+
+    /**
+     * User id of currently logged in user. 
+     * 
+     * @var string 
+     */
+    private $userId;
+    
+
+    /**
      * __construct 
      * 
      * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
@@ -103,8 +118,37 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_NotAuthenticated('Incorrect username');
         }
 
+        $this->userName = $username;
+        $this->userId = $this->authBackend->getUserId($username);
+
         // Eventhooks must return true to continue processing
         return true;
+
+    }
+
+    /**
+     * Returns the currently logged in username.
+     *
+     * This will only be set after the beforeMethod event has been handled.
+     * 
+     * @return string 
+     */
+    public function getUserName() {
+
+        return $this->userName;
+
+    }
+
+    /**
+     * Returns the currently logged in user's id.
+     *
+     * This will only be set after the beforeMethod event has been handled.
+     * 
+     * @return string 
+     */
+    public function getUserId() {
+
+        return $this->userId;
 
     }
 

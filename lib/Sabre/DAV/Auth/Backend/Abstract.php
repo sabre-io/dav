@@ -38,6 +38,19 @@ abstract class Sabre_DAV_Auth_Backend_Abstract {
 
     }
 
+    /**
+     * Returns the full list of users.
+     *
+     * This method must at least return a userId for each user.
+     * 
+     * @return array 
+     */
+    public function getUsers() {
+
+        return array();
+
+    }
+
 }
 
 ?>

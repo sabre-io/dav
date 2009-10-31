@@ -305,6 +305,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $this->lockNode($uri,$lockInfo);
+
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
         $this->server->httpResponse->sendStatus($newFile?201:200);
@@ -338,8 +339,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
-                if (!$this->server->broadcastEvent('beforeUnlock',array($uri,$lock))) return false;
-
                 $this->unlockNode($uri,$lock);
                 $this->server->httpResponse->setHeader('Content-Length','0');
                 $this->server->httpResponse->sendStatus(204);
@@ -366,13 +365,14 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function lockNode($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
 
+        if (!$this->server->broadcastEvent('beforeLock',array($uri,$lockInfo))) return;
+
         try {
             $node = $this->server->tree->getNodeForPath($uri);
             if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
             // In case the node didn't exist, this could be a lock-null request
         }
-
         if ($this->locksBackend) return $this->locksBackend->lock($uri,$lockInfo);
 
     }
@@ -388,6 +388,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function unlockNode($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
 
+        if (!$this->server->broadcastEvent('beforeUnlock',array($uri,$lockInfo))) return;
         try {
             $node = $this->server->tree->getNodeForPath($uri);
             if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);

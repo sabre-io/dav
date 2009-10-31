@@ -101,7 +101,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 if (isset($_POST['name']) && trim($_POST['name'])) {
                     // Using basename() because we won't allow slashes
                     $folderName = trim(basename($_POST['name']));
-                    $this->server->createDirectory($folderName);
+                    $this->server->createDirectory($this->server->getRequestUri() . '/' . $folderName);
                 }
                 break;
             case 'put' :

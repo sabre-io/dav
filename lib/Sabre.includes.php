@@ -52,6 +52,7 @@ include 'Sabre/DAV/Property/ResourceType.php';
 include 'Sabre/DAV/Property/SupportedLock.php';
 include 'Sabre/DAV/Property/LockDiscovery.php';
 include 'Sabre/DAV/Property/Href.php';
+include 'Sabre/DAV/Property/Response.php';
 
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';
@@ -66,6 +67,9 @@ include 'Sabre/DAV/Node.php';
 include 'Sabre/DAV/File.php';
 include 'Sabre/DAV/Directory.php';
 
+/* Utilities */
+include 'Sabre/DAV/SimpleDirectory.php';
+
 /* Filesystem implementation */
 include 'Sabre/DAV/FS/Node.php';
 include 'Sabre/DAV/FS/File.php';
@@ -75,7 +79,6 @@ include 'Sabre/DAV/FS/Directory.php';
 include 'Sabre/DAV/FSExt/Node.php';
 include 'Sabre/DAV/FSExt/File.php';
 include 'Sabre/DAV/FSExt/Directory.php';
-
 
 /* Trees */
 include 'Sabre/DAV/Tree.php';

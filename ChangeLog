@@ -28,6 +28,8 @@
 	  resource.
 	* Added: afterGetProperties event. This event can be used to make
 	  modifications to property responses.
+	* Added: beforeLock and beforeUnlock events.
+	* Added: afterBind event.
 	* Fixed: Copy and Move could fail in the root directory. This is now
 	  fixed.
 	* Added: Plugins can now be retrieved by their classname. This is useful

@@ -1,4 +1,4 @@
-#!/usr/bin/env php -derror_reporting=0
+#!/usr/bin/env php
 <?php
 
 /**
@@ -111,21 +111,23 @@ function getDirectory($path)
     $files = array();
 
     $ignore = array('.', '..', '.svn','.DS_Store');
+    $pathIgnore = array('lib/Sabre/DAV/Auth');
 
     $d = opendir($path);
 
     while (false !== ($file = readdir($d))) {
-        if (!in_array($file, $ignore)) {
-            if (is_dir($path . '/' . $file)) {
-                $files = array_merge($files, getDirectory($path . '/' . $file));
+        $newPath = $path . '/' . $file;
+        if (!in_array($file, $ignore) && !in_array($newPath,$pathIgnore)) {
+            if (is_dir($newPath)) {
+                $files = array_merge($files, getDirectory($newPath));
             } else {
-                $files[] = $path . '/' . $file;
+                echo 'Including: ', $newPath, "\n";
+                $files[] = $newPath;
             }
         }
     }
 
     closedir($d);
-
     return $files;
 }
 $files = getDirectory('lib');
@@ -134,7 +136,7 @@ foreach ($files as $file) {
     $package->addInstallAs($file, substr($file, 4));
 }
 
-if (   isset($_GET['make'])
+if (isset($_GET['make'])
     || (isset($_SERVER['argv']) && @$_SERVER['argv'][1] == 'make')
 ) {
     $package->writePackageFile();

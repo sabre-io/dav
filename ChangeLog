@@ -18,6 +18,7 @@
 	  now takes a list of properties similar to the response of
 	  getPropertiesForPath. This was also needed to improve flexibility for
 	  plugin development.
+	* Changed: PROPPATCH also used generateMultiStatus now
 	* Removed: unknownProperties event. This is replaced by the
 	  afterGetProperties event, which should provide more flexibility. 
 	* Fixed: Only calling getSize() on IFile instances in httpHead()
@@ -36,6 +37,7 @@
 	  for inter-plugin communication.
 	* Added: The Auth backend can now return usernames and user-id's.
 	* Added: The Auth backend got a getUsers method
+	* Added: Sabre_DAV_FSExt_Directory now returns quota info
 
 0.12.1-beta (2009-09-11)
 	* Fixed: UNLOCK bug. Unlock didn't work at all

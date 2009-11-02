@@ -43,6 +43,18 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
     
     }
 
+    function testGetPlugin() {
+
+        $this->assertEquals($this->testPlugin,$this->server->getPlugin(get_class($this->testPlugin)));
+
+    }
+
+    function testUnknownPlugin() {
+
+        $this->assertNull($this->server->getPlugin('SomeRandomClassName'));
+
+    }
+
 }
 
 ?>

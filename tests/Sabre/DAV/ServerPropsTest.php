@@ -171,6 +171,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
          );
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);
+        $this->markTestIncomplete('Need to evaluate response body');
 
     }
 

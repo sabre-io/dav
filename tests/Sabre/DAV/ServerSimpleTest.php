@@ -286,6 +286,55 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testCalculateUri() {
+
+        $uris = array(
+            'http://www.example.org/root/somepath',
+            '/root/somepath',
+            '/root/somepath/'
+        );
+
+        $this->server->setBaseUri('/root/');
+
+        foreach($uris as $uri) {
+
+            $this->assertEquals('somepath',$this->server->calculateUri($uri));
+
+        }
+
+        $this->server->setBaseUri('/root');
+
+        foreach($uris as $uri) {
+
+            $this->assertEquals('somepath',$this->server->calculateUri($uri));
+
+        }
+
+    }
+
+    function testBaseUriCheck() {
+
+        $uris = array(
+            'http://www.example.org/root/somepath',
+            '/root/somepath',
+            '/root/somepath/'
+        );
+
+        try {
+
+            $this->server->setBaseUri('root/');
+            $this->server->calculateUri('/root/testuri');
+
+            $this->fail('Expected an exception');
+
+        } catch (Sabre_DAV_Exception_PermissionDenied $e) {
+
+            // This was expected
+
+        }
+
+    }
+
 }
 
 ?>

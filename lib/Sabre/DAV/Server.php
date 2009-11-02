@@ -473,8 +473,20 @@ class Sabre_DAV_Server {
 
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+       
+        // Re-arranging result for generateMultiStatus
+        $multiStatusResult = array();
+
+        foreach($result as $row) {
+            if (!isset($multiStatusResult[$row[1]])) {
+                $multiStatusResult[$row[1]] = array();
+            }
+            $multiStatusResult[$row[1]][$row[0]] = null;
+        }
+        $multiStatusResult['href'] = $this->getRequestUri();
+        $multiStatusResult = array($multiStatusResult);
         $this->httpResponse->sendBody(
-            $this->generatePropPatchResponse($this->getRequestUri(),$result)
+            $this->generateMultiStatus($multiStatusResult)
         );
 
     }
@@ -1165,51 +1177,6 @@ class Sabre_DAV_Server {
 
         }
         return $propList; 
-
-    }
-
-    /**
-     * Generates the response for a succesful PROPPATCH request 
-     * 
-     * @param string $href 
-     * @param array $mutations 
-     * @return string
-     */
-    protected function generatePropPatchResponse($href,$mutations) {
-
-        $xw = new XMLWriter();
-        $xw->openMemory();
-        $xw->setIndent(true);
-        $xw->startDocument('1.0','utf-8');
-        $xw->startElement('d:multistatus');
-            
-            foreach($this->xmlNamespaces as $ns=>$prefix) {
-
-                $xw->writeAttribute('xmlns:' . $prefix,$ns);
-
-            }
-
-            $xw->startElement('d:response');
-                $xw->writeElement('d:href',$href);
-                foreach($mutations as $mutation) {
-
-                    $xw->startElement('d:propstat');
-                        $xw->startElement('d:prop');
-                            $matches = null;
-                            preg_match('/^{([^}]*)}(.*)$/',$mutation[0],$matches);
-                            if (isset($this->xmlNamespaces[$matches[1]])) {
-                                $xw->writeElement($this->xmlNamespaces[$matches[1]] . ':' . $matches[2]);
-                            } else {
-                                $xw->writeElementNS('X',$matches[2],$matches[1],null);
-                            }
-                        $xw->endElement(); // d:prop
-                        $xw->writeElement('d:status',$this->httpResponse->getStatusMessage($mutation[1]));
-                    $xw->endElement(); // d:propstat
-
-                }
-            $xw->endElement(); // d:response
-        $xw->endElement(); // d:multistatus
-        return $xw->outputMemory();
 
     }
 

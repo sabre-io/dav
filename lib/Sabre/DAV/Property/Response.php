@@ -90,7 +90,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property  {
         $uri = implode('/',$uri);
 
         // TODO: we need a better way to do this
-        if ($uri!='' && $properties[200]['{DAV:}resourcetype']->getValue()=='{DAV:}collection') $uri .='/';
+        if ($uri!='' && isset($properties[200]['{DAV:}resourcetype']) && $properties[200]['{DAV:}resourcetype']->getValue()=='{DAV:}collection') $uri .='/';
 
         // Adding the baseurl to the beginning of the url
         $uri = $server->getBaseUri() . $uri;

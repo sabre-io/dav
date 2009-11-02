@@ -1,4 +1,4 @@
-0.13.0-beta (????-??-??)
+1.0.0-stable (2009-11-02)
 	* Added: SimpleDirectory class. This class allows creating static
 	  directory structures with ease.
 	* Changed: Custom complex properties and exceptions now get an instance of
@@ -18,7 +18,9 @@
 	  now takes a list of properties similar to the response of
 	  getPropertiesForPath. This was also needed to improve flexibility for
 	  plugin development.
-	* Changed: PROPPATCH also used generateMultiStatus now
+	* Changed: Auth plugins are no longer included. They were not yet stable
+	  quality, so they will probably be reintroduced in a later version.
+	* Changed: PROPPATCH also used generateMultiStatus now.
 	* Removed: unknownProperties event. This is replaced by the
 	  afterGetProperties event, which should provide more flexibility. 
 	* Fixed: Only calling getSize() on IFile instances in httpHead()

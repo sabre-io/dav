@@ -10,7 +10,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IDirectory {
+class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IDirectory, Sabre_DAV_IQuota {
 
     /**
      * Creates a new file in the directory 
@@ -99,6 +99,20 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
         rmdir($this->path);
 
         return parent::delete();
+
+    }
+
+    /**
+     * Returns available diskspace information 
+     * 
+     * @return array 
+     */
+    public function getQuotaInfo() {
+
+        return array(
+            disk_total_space($this->path)-disk_free_space($this->path),
+            disk_free_space($this->path)
+            ); 
 
     }
 

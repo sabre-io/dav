@@ -1,3 +1,6 @@
+1.0.1-stable (????-??-??)
+	* Fixed: Issue 15: typos in examples
+
 1.0.0-stable (2009-11-02)
 	* Added: SimpleDirectory class. This class allows creating static
 	  directory structures with ease.

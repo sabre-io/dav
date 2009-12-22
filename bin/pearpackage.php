@@ -111,7 +111,7 @@ function getDirectory($path)
     $files = array();
 
     $ignore = array('.', '..', '.svn','.DS_Store');
-    $pathIgnore = array('lib/Sabre/DAV/Auth');
+    //$pathIgnore = array('lib/Sabre/DAV/Auth');
 
     $d = opendir($path);
 

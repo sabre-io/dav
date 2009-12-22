@@ -111,13 +111,12 @@ function getDirectory($path)
     $files = array();
 
     $ignore = array('.', '..', '.svn','.DS_Store');
-    //$pathIgnore = array('lib/Sabre/DAV/Auth');
 
     $d = opendir($path);
 
     while (false !== ($file = readdir($d))) {
         $newPath = $path . '/' . $file;
-        if (!in_array($file, $ignore) && !in_array($newPath,$pathIgnore)) {
+        if (!in_array($file, $ignore)) {
             if (is_dir($newPath)) {
                 $files = array_merge($files, getDirectory($newPath));
             } else {

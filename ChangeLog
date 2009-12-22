@@ -1,5 +1,6 @@
-1.0.1-stable (????-??-??)
+1.0.1-stable (2009-12-22)
 	* Fixed: Issue 15: typos in examples
+	* Fixed: Minor pear installation issues
 
 1.0.0-stable (2009-11-02)
 	* Added: SimpleDirectory class. This class allows creating static

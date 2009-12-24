@@ -135,6 +135,17 @@ class Sabre_HTTP_Request {
     }
 
     /**
+     * Returns everything after the ? from the current url 
+     * 
+     * @return string 
+     */
+    public function getQueryString() {
+
+        return $this->_SERVER['QUERY_STRING'];
+
+    }
+
+    /**
      * Returns the HTTP request body body 
      *
      * This method returns a readable stream resource.

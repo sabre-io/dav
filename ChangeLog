@@ -1,3 +1,6 @@
+1.0.2-stable (????-??-??)
+	* Added: RFC4709 support (davmount)
+
 1.0.1-stable (2009-12-22)
 	* Fixed: Issue 15: typos in examples
 	* Fixed: Minor pear installation issues

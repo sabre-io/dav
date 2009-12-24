@@ -67,16 +67,20 @@ class Sabre_HTTP_BasicAuthTest extends PHPUnit_Framework_TestCase {
     function testRequireLogin() {
 
         $this->basicAuth->requireLogin();
+        $this->assertEquals('SabreDAV',$this->basicAuth->getRealm());
         $this->assertEquals(
             'HTTP/1.1 401 Unauthorized',
             $this->response->status,
             'We expected a 401 status to be set'
         );
+
         $this->assertEquals(
             'Basic realm="SabreDAV"',
             $this->response->headers['WWW-Authenticate'],
             'The WWW-Autenticate header was not set!'
         );
+
+
 
     }
 

@@ -83,6 +83,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
+            'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
     }

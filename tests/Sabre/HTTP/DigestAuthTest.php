@@ -45,6 +45,8 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         
+        $this->assertEquals($username,$this->auth->getUserName());
+        $this->assertEquals(self::REALM,$this->auth->getRealm());
         $this->assertTrue($this->auth->validateA1(md5($username . ':' . self::REALM . ':' . $password)),'Authentication is deemed invalid through validateA1');
         $this->assertTrue($this->auth->validatePassword($password),'Authentication is deemed invalid through validatePassword');
 
@@ -111,10 +113,25 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testInvalidDigest2() {
+        
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'GET',
+            'HTTP_AUTHORIZATION' => 'basic blablabla',
+        ));
+        
+        $this->auth->setHTTPRequest($request);
+        $this->auth->init();
+        
+        $this->assertFalse($this->auth->validateA1(md5($username . ':' . self::REALM . ':' . ($password . 'randomness'))));
+
+    }
+
+
     public function testDigestAuthInt() {
         
-        $this->auth->setQOP(Sabre_HTTP_DigestAuth::QOP_AUTHINT);
-        list($nonce,$opaque) = $this->getServerTokens(Sabre_HTTP_DigestAuth::QOP_AUTHINT);
+        $this->auth->setQOP(Sabre_HTTP_DigestAuth::QOP_AUTHINT | Sabre_HTTP_DigestAuth::QOP_AUTH);
+        list($nonce,$opaque) = $this->getServerTokens(Sabre_HTTP_DigestAuth::QOP_AUTHINT| Sabre_HTTP_DigestAuth::QOP_AUTH);
 
         $username = 'admin';
         $password = 12345;
@@ -147,13 +164,17 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
     private function getServerTokens($qop = Sabre_HTTP_DigestAuth::QOP_AUTH) {
 
         $this->auth->requireLogin();
-
-        $qopstr = $qop==Sabre_HTTP_DigestAuth::QOP_AUTH?'auth':'auth-int';
+        
+        switch($qop) {
+            case Sabre_HTTP_DigestAuth::QOP_AUTH    : $qopstr='auth'; break;
+            case Sabre_HTTP_DigestAuth::QOP_AUTHINT : $qopstr='auth-int'; break;
+            default                                 : $qopstr='auth,auth-int'; break;
+        }
 
         $test = preg_match('/Digest realm="'.self::REALM.'",qop="'.$qopstr.'",nonce="([0-9a-f]*)",opaque="([0-9a-f]*)"/',
             $this->response->headers['WWW-Authenticate'],$matches);
 
-        $this->assertTrue($test==true,'The WWW-Authenticate response didn\'t match our pattern');
+        $this->assertTrue($test==true,'The WWW-Authenticate response didn\'t match our pattern. We received: ' . $this->response->headers['WWW-Authenticate']);
 
         $nonce = $matches[1];
         $opaque = $matches[2];

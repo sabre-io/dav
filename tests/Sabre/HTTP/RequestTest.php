@@ -40,6 +40,30 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testSetGetBody() {
+
+        $h = fopen('php://memory','r+');
+        fwrite($h,'testing');
+        rewind($h);
+        $this->request->setBody($h);
+        $this->assertEquals('testing',$this->request->getBody(true),'We didn\'t get our testbody back');
+
+    }
+
+    function testDefaultInputStream() {
+
+        $h = fopen('php://memory','r+');
+        fwrite($h,'testing');
+        rewind($h);
+
+        $previousValue = Sabre_HTTP_Request::$defaultInputStream;
+        Sabre_HTTP_Request::$defaultInputStream = $h;
+
+        $this->assertEquals('testing',$this->request->getBody(true),'We didn\'t get our testbody back');
+        Sabre_HTTP_Request::$defaultInputStream = $previousValue;
+
+    }
+
 }
 
 ?>

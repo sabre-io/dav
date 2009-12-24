@@ -45,8 +45,8 @@ class Sabre_DAV_Mount_Plugin extends Sabre_DAV_ServerPlugin {
         if ($method!='GET') return;
         if ($this->server->httpRequest->getQueryString()!='mount') return;
 
-        $currentUri = $this->server->httpRequest->getRawServerValue('HTTPS')?'https://':'http://';
-        $currentUri.= $this->server->httpRequest->getRawServerValue('HTTP_HOST') . $this->server->httpRequest->getUri();
+        $currentUri = $this->server->httpRequest->getAbsoluteUri();
+
         // Stripping off everything after the ?
         list($currentUri) = explode('?',$currentUri);
 

@@ -35,15 +35,13 @@ class Sabre_HTTP_BasicAuth extends Sabre_HTTP_AbstractAuth {
         }
 
         // Most other webservers 
-        if ($auth = $this->httpRequest->getHeader('Authorization')) {
+        $auth = $this->httpRequest->getHeader('Authorization');
 
-            if (strpos(strtolower($auth),'basic')===0) {
-                return explode(':', base64_decode(substr($auth, 6)));
-            }
+        if (!$auth) return false;
 
-        }
+        if (strpos(strtolower($auth),'basic')!==0) return false; 
 
-        return false;
+        return explode(':', base64_decode(substr($auth, 6)));
 
     }
 

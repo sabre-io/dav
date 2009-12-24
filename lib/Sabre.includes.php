@@ -107,4 +107,7 @@ include 'Sabre/DAV/Auth/Plugin.php';
 include 'Sabre/DAV/Auth/Backend/Abstract.php';
 include 'Sabre/DAV/Auth/Backend/File.php';
 
+/* DavMount plugin */
+include 'Sabre/DAV/Mount/Plugin.php';
+
 ?>

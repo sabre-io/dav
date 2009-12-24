@@ -1,5 +1,6 @@
 1.0.2-stable (????-??-??)
 	* Added: RFC4709 support (davmount)
+	* Added: 2 unittests
 
 1.0.1-stable (2009-12-22)
 	* Fixed: Issue 15: typos in examples

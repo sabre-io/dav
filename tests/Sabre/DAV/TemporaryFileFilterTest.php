@@ -55,6 +55,38 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    function testPutTempIfNoneMatch() {
+
+        // mimicking an OS/X resource fork
+        $serverVars = array(
+            'REQUEST_URI'        => '/._testput.txt',
+            'REQUEST_METHOD'     => 'PUT',
+            'HTTP_IF_NONE_MATCH' => '*',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('Testing new file');
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals(array(
+            'X-Sabre-Temp' => 'true',
+        ),$this->response->headers);
+
+        $this->assertFalse(file_exists($this->tempDir . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
+
+
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+        $this->assertEquals(array(
+            'X-Sabre-Temp' => 'true',
+        ),$this->response->headers);
+
+    }
+
     function testPutGet() {
 
         // mimicking an OS/X resource fork

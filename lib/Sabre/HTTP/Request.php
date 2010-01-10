@@ -13,7 +13,7 @@
  * @package Sabre
  * @subpackage HTTP 
  * @version $Id$
- * @copyright Copyright (C) 2009 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

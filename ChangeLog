@@ -3,6 +3,7 @@
 	* Added: 6 unittests
 	* Added: naturalselection. A tool to keep cache directories below a
 	  specified theshold.
+	* Changed: Now using pearfarm.org channel server.
 
 1.0.1-stable (2009-12-22)
 	* Fixed: Issue 15: typos in examples

@@ -10,7 +10,7 @@
  * @package Sabre
  * @subpackage DAV
  * @version $Id: Sabre.includes.php 489 2009-07-28 19:02:28Z evertpot $
- * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @author Michael Gauthier
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -77,7 +77,7 @@ $package->setSummary(
     'application with WebDAV'
 );
 $package->setDescription($description);
-$package->setUri('http://sabredav.googlecode.com/files/Sabre_DAV-' . $releaseVersion);
+$package->setChannel('evert.pearfarm.org');
 $package->setPackageType('php');
 $package->setLicense('BSD', 'http://code.google.com/p/sabredav/wiki/License');
 

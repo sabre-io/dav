@@ -1,19 +1,49 @@
 <?xml version="1.0"?>
-<project name="SabreDAV" default="dist" basedir=".">
+<project name="SabreDAV" default="build" basedir=".">
 
-    <target name="build">
-        <exec command="bin/pearpackage.php make" passthru="true" />
-        <exec command="pear package" />
+    <target name="build" depends="init">
+        <exec command="bin/pearpackage.php make" checkreturn="true" />
+        <exec command="pear package" passthru="1" />
     </target>
-
-    <target name="dist" depends="build, clean">
-        <echo msg="Creating full featured SabreDAV package" />
-    </target>    
 
     <target name="clean">
         <echo msg="Removing build files (cleaning up distribution)" />
         <delete dir="apidocs" />
         <delete file="package.xml" />
+        <delete file="Sabre_DAV-${sabredav.version}.tgz" />
     </target>    
+
+    <target name="release" depends="init,build">
+        <echo>Creating Subversion release tag</echo>
+        <exec command="svn cp ^/trunk ^/tags/${sabredav.version} -M 'Release tag ${sabredav.version}" checkreturn="true" escape="false" passthru="1" />
+        <echo>Pushing to pearfarm</echo>
+        <exec command="pearfarm push Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passhtru="1" />
+        <echo>Uploading to Google Code</echo>
+        <exec command="bin/googlecode-upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passthru="1" /> 
+    </target
+
+    <target name="init">
+
+        <!-- This sets SabreDAV version information -->
+        <adhoc-task name="sabredav-version"><![CDATA[
+
+            class SabreDAV_VersionTask extends Task {
+
+                public function main() {
+
+                    include 'lib/Sabre/DAV/Version.php';
+                    $this->getProject()->setNewProperty('sabredav.version',Sabre_DAV_Version::VERSION);
+                    $this->getProject()->setNewProperty('sabredav.stability',Sabre_DAV_Version::STABILITY);
+                    $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre_DAV_Version::STABILITY));
+
+                }
+
+            }
+
+        ]]></adhoc-task>
+        <sabredav-version />
+        <echo>SabreDAV version ${sabredav.version}-${sabredav.stability}</echo>
+
+    </target>
 
 </project>

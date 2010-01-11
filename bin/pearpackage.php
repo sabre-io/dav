@@ -77,7 +77,14 @@ $package->setSummary(
     'application with WebDAV'
 );
 $package->setDescription($description);
-$package->setChannel('evert.pearfarm.org');
+
+// We're generating 2 different packages. One for pearfarm, and one for plain download
+if (isset($argv) && in_array('pearfarm',$argv)) {
+    $package->setChannel('evert.pearfarm.org');
+} else {
+    $package->setUri('http://sabredav.googlecode.com/files/Sabre_DAV-' . $releaseVersion);
+}
+
 $package->setPackageType('php');
 $package->setLicense('BSD', 'http://code.google.com/p/sabredav/wiki/License');
 
@@ -135,9 +142,10 @@ foreach ($files as $file) {
 }
 
 if (isset($_GET['make'])
-    || (isset($_SERVER['argv']) && @$_SERVER['argv'][1] == 'make')
+    || (isset($_SERVER['argv']) && @in_array('make',$_SERVER['argv']))
 ) {
     $package->writePackageFile();
+
 } else {
     $package->debugPackageFile();
 }

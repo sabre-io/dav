@@ -15,12 +15,12 @@
 
     <target name="release" depends="init,build">
         <echo>Creating Subversion release tag</echo>
-        <exec command="svn cp ^/trunk ^/tags/${sabredav.version} -M 'Release tag ${sabredav.version}" checkreturn="true" escape="false" passthru="1" />
+        <exec command="svn cp ^/trunk ^/tags/${sabredav.version} -m 'Release tag ${sabredav.version}'" checkreturn="true" passthru="1" />
         <echo>Pushing to pearfarm</echo>
-        <exec command="pearfarm push Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passhtru="1" />
+        <!--<exec command="pearfarm push Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passthru="1" />-->
         <echo>Uploading to Google Code</echo>
-        <exec command="bin/googlecode-upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passthru="1" /> 
-    </target
+        <!--<exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav - -labels=${sabredav.ucstability} Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passthru="1" />--> 
+    </target>
 
     <target name="init">
 

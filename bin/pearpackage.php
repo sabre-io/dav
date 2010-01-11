@@ -120,7 +120,6 @@ function getDirectory($path)
             if (is_dir($newPath)) {
                 $files = array_merge($files, getDirectory($newPath));
             } else {
-                echo 'Including: ', $newPath, "\n";
                 $files[] = $newPath;
             }
         }

@@ -234,8 +234,16 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->markTestIncomplete('Need to verify body');
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
 
+        list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
+        $this->assertEquals('/._testput.txt',(string)$data,'href element should have been /._testput.txt');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
+        $this->assertEquals(1,count($data));
+        
     }
 
 }

@@ -171,10 +171,28 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
          );
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);
-        $this->markTestIncomplete('Need to evaluate response body');
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('bla','http://www.rooftopsolutions.nl/testnamespace');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop');
+        $this->assertEquals(1,count($data),'We expected one \'d:prop\' element');
+
+        $data = $xml->xpath('//bla:someprop');
+        $this->assertEquals(1,count($data),'We expected one \'s:someprop\' element. Response body: ' . $body);
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
+        $this->assertEquals(1,count($data),'We expected one \'s:status\' element. Response body: ' . $body);
+
+        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0]); 
 
     }
 
+    /**
+     * @depends testPropPatch
+     */
     public function testPropPatchAndFetch() {
 
         $this->testPropPatch();

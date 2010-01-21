@@ -1,9 +1,12 @@
-1.0.4-stable (2009-01-11)
+1.0.5-stable (2010-??-??)
+	* Fixed: Improved unittests 
+
+1.0.4-stable (2010-01-11)
 	* Fixed: needed 2 different releases. One for googlecode and one for
 	  pearfarm. This is to retain the old method to install SabreDAV until
 	  pearfarm becomes the standard installation method.
 
-1.0.3-stable (2009-01-11)
+1.0.3-stable (2010-01-11)
 	* Added: RFC4709 support (davmount)
 	* Added: 6 unittests
 	* Added: naturalselection. A tool to keep cache directories below a

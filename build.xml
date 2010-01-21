@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="SabreDAV" default="build" basedir=".">
 
-    <target name="build" depends="init">
+    <target name="build" depends="init,test">
         <exec command="bin/pearpackage.php make pearfarm" checkreturn="true" />
         <exec command="pear package" passthru="1" />
         <move file="Sabre_DAV-${sabredav.version}.tgz" tofile="Sabre_DAV-${sabredav.version}_PEARFARM.tgz" />
@@ -17,7 +17,7 @@
         <delete file="Sabre_DAV-${sabredav.version}_PEARFARM.tgz" />
     </target>    
 
-    <target name="release" depends="init,build">
+    <target name="release" depends="init,test,build">
         <echo>Creating Subversion release tag</echo>
         <exec command="svn cp ^/trunk ^/tags/${sabredav.version} -m 'Release tag ${sabredav.version}'" checkreturn="true" passthru="1" />
         <echo>Pushing to pearfarm</echo>
@@ -26,6 +26,17 @@
         <propertyprompt propertyName="googlecode.username" defaultValue="evertpot" promptText="Enter your googlecode username" />
         <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" />
         <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passthru="1" />
+    </target>
+
+    <target name="test">
+        <phpunit haltonfailure="true" haltonerror="true" bootstrap="tests/bootstrap.php" haltonskipped="true" printsummary="true">
+          <batchtest>
+            <fileset dir="tests">
+              <include name="**/*Test*.php"/>
+              <exclude name="**/Abstract*.php"/>
+            </fileset>
+          </batchtest>
+        </phpunit>
     </target>
 
     <target name="init">

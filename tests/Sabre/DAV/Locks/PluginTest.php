@@ -2,6 +2,8 @@
 
 class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
+    protected $locksPlugin;
+
     function setUp() {
 
         parent::setUp();
@@ -9,6 +11,19 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $locksBackend = new Sabre_DAV_Locks_Backend_FS('temp/locksdir');
         $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
+        $this->locksPlugin = $locksPlugin;
+
+    }
+
+    function testGetFeatures() {
+
+        $this->assertEquals(array(2),$this->locksPlugin->getFeatures()); 
+
+    }
+    
+    function testGetHTTPMethods() {
+
+        $this->assertEquals(array('lock','unlock'),$this->locksPlugin->getHTTPMethods()); 
 
     }
 
@@ -57,9 +72,13 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertTrue(preg_match('/^opaquelocktoken:(.*)$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
+        $this->markTestIncomplete('Need to verify response body');
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testDoubleLock() {
 
         $serverVars = array(
@@ -91,6 +110,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testLockNoFile() {
 
         $serverVars = array(
@@ -118,6 +140,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testUnlockNoToken() {
 
         $serverVars = array(
@@ -139,6 +164,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testUnlockBadToken() {
 
         $serverVars = array(
@@ -161,6 +189,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testLockPutNoToken() {
 
         $serverVars = array(
@@ -203,6 +234,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testLockPutBadToken() {
 
         $serverVars = array(
@@ -246,6 +280,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @depends testLock
+     */
     function testLockPutGoodToken() {
 
         $serverVars = array(

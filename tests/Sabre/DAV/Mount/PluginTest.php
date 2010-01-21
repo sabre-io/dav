@@ -22,7 +22,7 @@ class Sabre_DAV_Mount_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
+        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status,'We expected GET to not be implemented for Directories. Response body: ' . $this->response->body);
 
     }
 

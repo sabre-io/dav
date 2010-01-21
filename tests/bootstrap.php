@@ -1,8 +1,8 @@
 <?php
 
-set_include_path('../lib/' . PATH_SEPARATOR . get_include_path());
+set_include_path(dirname(__FILE__) . PATH_SEPARATOR . dirname(__FILE__) . '/../lib/' . PATH_SEPARATOR . get_include_path());
 
-include 'Sabre.includes.php';
+include 'Sabre.autoload.php';
 
 date_default_timezone_set('UTC');
 

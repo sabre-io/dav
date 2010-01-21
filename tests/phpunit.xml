@@ -9,6 +9,9 @@
   <filter>
     <whitelist>
        <directory suffix=".php">../lib/</directory>
-    </whitelist>   
+    </whitelist> 
+    <blacklist>
+        <file>../lib/Sabre.autoload.php</file>
+    </blacklist>
   </filter>
 </phpunit>

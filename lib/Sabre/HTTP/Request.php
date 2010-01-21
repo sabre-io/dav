@@ -141,7 +141,7 @@ class Sabre_HTTP_Request {
      */
     public function getQueryString() {
 
-        return $this->_SERVER['QUERY_STRING'];
+        return isset($this->_SERVER['QUERY_STRING'])?$this->_SERVER['QUERY_STRING']:'';
 
     }
 

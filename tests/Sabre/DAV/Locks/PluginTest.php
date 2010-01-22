@@ -72,7 +72,36 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertTrue(preg_match('/^opaquelocktoken:(.*)$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
-        $this->markTestIncomplete('Need to verify response body');
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+
+        $elements = array(
+            '/d:prop',
+            '/d:prop/d:lockdiscovery',
+            '/d:prop/d:lockdiscovery/d:activelock',
+            '/d:prop/d:lockdiscovery/d:activelock/d:locktype',
+            '/d:prop/d:lockdiscovery/d:activelock/d:locktype/d:write',
+            '/d:prop/d:lockdiscovery/d:activelock/d:lockscope',
+            '/d:prop/d:lockdiscovery/d:activelock/d:lockscope/d:exclusive',
+            '/d:prop/d:lockdiscovery/d:activelock/d:depth',
+            '/d:prop/d:lockdiscovery/d:activelock/d:owner',
+            '/d:prop/d:lockdiscovery/d:activelock/d:timeout',
+            '/d:prop/d:lockdiscovery/d:activelock/d:locktoken',
+            '/d:prop/d:lockdiscovery/d:activelock/d:locktoken/d:href',
+        );
+
+        foreach($elements as $elem) {
+            $data = $xml->xpath($elem);
+            $this->assertEquals(1,count($data),'We expected 1 match for the xpath expression "' . $elem . '". ' . count($data) . ' were found');
+        }
+
+        $depth = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:depth');
+        $this->assertEquals('infinity',(string)$depth[0]);
+
+        $token = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:locktoken/d:href');
+        $this->assertEquals($this->response->headers['Lock-Token'],(string)$token[0],'Token in response body didn\'t match token in response header.');
 
     }
 
@@ -185,7 +214,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status);
+        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 

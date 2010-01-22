@@ -1,5 +1,7 @@
-1.0.5-stable (2010-??-??)
-	* Fixed: Improved unittests 
+1.0.5-stable (2010-01-22)
+	* Fixed: Fatal error when a malformed url was used for unlocking, in
+	  conjuction with Sabre.autoload.php due to a incorrect filename.
+	* Fixed: Improved unittests and build system 
 
 1.0.4-stable (2010-01-11)
 	* Fixed: needed 2 different releases. One for googlecode and one for

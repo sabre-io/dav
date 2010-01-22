@@ -33,7 +33,7 @@ include 'Sabre/DAV/Exception/Conflict.php';
 include 'Sabre/DAV/Exception/FileNotFound.php';
 include 'Sabre/DAV/Exception/InsufficientStorage.php';
 include 'Sabre/DAV/Exception/Locked.php';
-include 'Sabre/DAV/Exception/LockTokenMatchesUri.php';
+include 'Sabre/DAV/Exception/LockTokenMatchesRequestUri.php';
 include 'Sabre/DAV/Exception/MethodNotAllowed.php';
 include 'Sabre/DAV/Exception/NotImplemented.php';
 include 'Sabre/DAV/Exception/PermissionDenied.php';

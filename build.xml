@@ -29,11 +29,10 @@
     </target>
 
     <target name="test">
-        <phpunit haltonfailure="true" haltonerror="true" bootstrap="tests/bootstrap.php" haltonskipped="true" printsummary="true">
+        <phpunit haltonfailure="1" haltonerror="1" bootstrap="tests/bootstrap.php" haltonskipped="1" printsummary="1" haltonincomplete="1">
           <batchtest>
             <fileset dir="tests">
-              <include name="**/*Test*.php"/>
-              <exclude name="**/Abstract*.php"/>
+              <include name="**/*.php"/>
             </fileset>
           </batchtest>
         </phpunit>

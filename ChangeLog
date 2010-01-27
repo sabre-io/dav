@@ -3,6 +3,7 @@
 	  this.
 	* Added: PDO authentication backend
 	* Fixed: Better error display in browser plugin.
+	* Added: Support for {DAV:}supported-report-set 
 
 1.0.5-stable (2010-01-22)
 	* Fixed: Fatal error when a malformed url was used for unlocking, in

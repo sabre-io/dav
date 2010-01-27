@@ -1,6 +1,7 @@
 1.1.0-alpha (????-??-??)
 	* Removed: Sabre_PHP_Exception. PHP has a built-in ErrorException for
 	  this.
+	* Added: PDO authentication backend
 
 1.0.5-stable (2010-01-22)
 	* Fixed: Fatal error when a malformed url was used for unlocking, in

@@ -20,7 +20,7 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
      * 
      * @var string 
      */
-    public $resourceType;
+    public $resourceType = null;
 
     /**
      * __construct 
@@ -28,11 +28,11 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
      * @param mixed $resourceType 
      * @return void
      */
-    public function __construct($resourceType) {
+    public function __construct($resourceType = null) {
 
-        if ($resourceType == Sabre_DAV_Server::NODE_FILE)
+        if ($resourceType === Sabre_DAV_Server::NODE_FILE)
             $this->resourceType = null;
-        elseif ($resourceType == Sabre_DAV_Server::NODE_DIRECTORY)
+        elseif ($resourceType === Sabre_DAV_Server::NODE_DIRECTORY)
             $this->resourceType = '{DAV:}collection';
         else 
             $this->resourceType = $resourceType;

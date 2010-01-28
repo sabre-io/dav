@@ -4,6 +4,12 @@
 	* Added: PDO authentication backend
 	* Fixed: Better error display in browser plugin.
 	* Added: Support for {DAV:}supported-report-set 
+	* Changed: {DAV:}resourceType defaults to 0
+	* Changed: Any non-null resourceType now gets a / appended to the href
+	  value. Before this was just for {DAV:}collection's, but this is now also
+	  the case for for example {DAV:}principal.
+	* Changed: The Href property class can now optionally create non-relative
+	  uri's.
 
 1.0.5-stable (2010-01-22)
 	* Fixed: Fatal error when a malformed url was used for unlocking, in

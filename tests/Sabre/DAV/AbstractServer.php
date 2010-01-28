@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/HTTP/ResponseMock.php';
+
 abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
 
     protected $response;

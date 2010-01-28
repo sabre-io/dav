@@ -78,10 +78,16 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set');
         $this->assertEquals(1,count($data),'We expected 1 \'d:supported-report-set\' element');
 
-        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/x:myreport');
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:supported-report');
+        $this->assertEquals(2,count($data),'We expected 2 \'d:supported-report\' elements');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:supported-report/d:report');
+        $this->assertEquals(2,count($data),'We expected 2 \'d:report\' elements');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:supported-report/d:report/x:myreport');
         $this->assertEquals(1,count($data),'We expected 1 \'x:myreport\' element. Full body: ' . $this->response->body);
 
-        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:anotherreport');
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:supported-report/d:report/d:anotherreport');
         $this->assertEquals(1,count($data),'We expected 1 \'d:anotherreport\' element. Full body: ' . $this->response->body);
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');

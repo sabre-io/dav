@@ -73,18 +73,24 @@ class Sabre_DAV_Property_SupportedReportSet extends Sabre_DAV_Property {
      */
     public function serialize(Sabre_DAV_Server $server,DOMElement $prop) {
 
-        foreach($this->reports as $report) {
-            
-            preg_match('/^{([^}]*)}(.*)$/',$report,$matches);
+        foreach($this->reports as $reportName) {
+     
+            $supportedReport = $prop->ownerDocument->createElement('d:supported-report');
+            $prop->appendChild($supportedReport);
+
+            $report = $prop->ownerDocument->createElement('d:report');
+            $supportedReport->appendChild($report);
+
+            preg_match('/^{([^}]*)}(.*)$/',$reportName,$matches);
             
             list(, $namespace, $element) = $matches;
        
             $prefix = isset($server->xmlNamespaces[$namespace])?$server->xmlNamespaces[$namespace]:null;
 
             if ($prefix) {
-                $prop->appendChild($prop->ownerDocument->createElement($prefix . ':' . $element));
+                $report->appendChild($prop->ownerDocument->createElement($prefix . ':' . $element));
             } else {
-                $prop->appendChild($prop->ownerDocument->createElementNS($namespace, 'x:' . $element));
+                $report->appendChild($prop->ownerDocument->createElementNS($namespace, 'x:' . $element));
             }
 
         }

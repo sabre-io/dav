@@ -28,13 +28,67 @@ class Sabre_DAV_XMLUtil {
      * @param DOMElement $dom 
      * @return string 
      */
-    static function getClarkNotation(DOMElement $dom) {
+    static function toClarkNotation(DOMElement $dom) {
 
         // Mapping back to the real namespace, in case it was dav
         if ($dom->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $dom->namespaceURI;
         
         // Mapping to clark notation
         return '{' . $ns . '}' . $dom->localName;
+
+    }
+
+    /**
+     * This method takes an XML document (as string) and converts all instances of the
+     * DAV: namespace to urn:DAV
+     *
+     * This is unfortunately needed, because the DAV: namespace violates the xml namespaces
+     * spec, and causes the DOM to throw errors
+     */
+    static function convertDAVNamespace($xmlDocument) {
+
+        // This is used to map the DAV: namespace to urn:DAV. This is needed, because the DAV:
+        // namespace is actually a violation of the XML namespaces specification, and will cause errors
+        return preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$xmlDocument);
+
+    }
+
+    /**
+     * This method provides a generic way to load a DOMDocument for WebDAV use.
+     *
+     * This method throws a Sabre_DAV_Exception_BadRequest exception for any xml errors.
+     * It does not preserve whitespace, and it converts the DAV: namespace to urn:DAV. 
+     * 
+     * @param string $xml
+     * @throws Sabre_DAV_Exception_BadRequest 
+     * @return DOMDocument 
+     */
+    static function loadDOMDocument($xml) {
+
+        if (empty($xml))
+            throw new Sabre_DAV_Exception_BadRequest('Empty XML document sent');
+
+        // Retaining old error setting
+        $oldErrorSetting =  libxml_use_internal_errors(true);
+
+        // Clearing any previous errors 
+        libxml_clear_errors();
+
+        $dom = new DOMDocument();
+        $dom->loadXML(self::convertDAVNamespace($xml),LIBXML_NOWARNING | LIBXML_NOERROR);
+
+        // We don't generally care about any whitespace
+        $dom->preserveWhiteSpace = false;
+
+        if ($error = libxml_get_last_error()) {
+            libxml_clear_errors();
+            throw new Sabre_DAV_Exception_BadRequest('The request body had an invalid XML body. (message: ' . $error->message . ', errorcode: ' . $error->code . ', line: ' . $error->line . ')');
+        }
+
+        // Restoring old mechanism for error handling
+        if ($oldErrorSetting===false) libxml_use_internal_errors(false);
+
+        return $dom;
 
     }
 

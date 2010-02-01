@@ -150,12 +150,24 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             return true;
 
         }
+
+        $node = null;
+
         foreach($properties[404] as $rProperty=>$discard) {
 
             switch($rProperty) {
 
-                case '{DAV:}group' :
                 case '{DAV:}owner' :
+                    if(!$node) $node = $this->server->tree->getNodeForPath($path); 
+                    if ($node instanceof Sabre_DAVACL_IACLNode) {
+                        $properties[200][$rProperty] = new Sabre_DAV_Property_Href($node->getOwner());
+                    } else {
+                        $properties[200][$rProperty] = '';
+                    }
+                    unset($properties[404][$rProperty]);
+                    break;
+
+                case '{DAV:}group' :
                     // according to rfc3744#5.1 and #5.2 we can return these
                     // as empty properties
                     $properties[200][$rProperty] = '';
@@ -285,6 +297,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                                 $currentAce['principal'] = '{DAV:}authenticated';
                                 $currentAce['special'] = true;
                                 break;
+                            case '{DAV:}property' :
                             case '{DAV:}all' :
                             case '{DAV:}unauthenticated' :
                             case '{DAV:}self' :
@@ -392,6 +405,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             case 'GET' :
             case 'HEAD' :
             case 'OPTIONS' :
+                // We only check if the resource does not exist
+                $node = $this->server->tree->getNodeForPath($uri); 
                 $checkPermissions[] = '{DAV:}read';
                 break;
             case 'PROPPATCH' :

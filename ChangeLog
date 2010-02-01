@@ -1,7 +1,10 @@
 1.1.0-alpha (????-??-??)
+	* Added: ACL - RFC 3744
+	* Added: CalDAV - RFC 4791
 	* Removed: Sabre_PHP_Exception. PHP has a built-in ErrorException for
 	  this.
-	* Added: PDO authentication backend
+	* Added: PDO authentication backend.
+	* Added: Example sql for auth, acl, caldav, locks for sqlite.
 	* Fixed: Better error display in browser plugin.
 	* Added: Support for {DAV:}supported-report-set 
 	* Added: XML utility class with helper functions for the WebDAV protocol.

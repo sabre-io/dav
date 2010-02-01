@@ -14,42 +14,48 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProperties {
+class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProperties, Sabre_DAVACL_IACLNode {
+
+    /**
+     * Full uri for this principal resource 
+     * 
+     * @var string 
+     */
+    protected $principalUri;
 
     /**
      * Struct with principal information.
      *
-     * Requirement elements are 'userId' and 'displayName'.
+     * Required elements are 'userId' and 'displayName'.
      * 
-     * @var mixed
+     * @var array 
      */
     protected $principalInfo;
 
     /**
      * Creates the principal object 
-     * 
+     *
+     * @param string $principalUri Full uri to the principal resource
      * @param array $principalInfo 
      */
-    public function __construct(array $principalInfo) {
+    public function __construct($principalUri,array $principalInfo) {
 
-        if (!isset($principalInfo['userId'])) {
-            throw new Sabre_DAV_Exception('The principalInfo array must have a userId element');
-        }
         if (!isset($principalInfo['displayName'])) {
             throw new Sabre_DAV_Exception('The principalInfo array must have a displayName element');
         }
+        $this->principalUri = $principalUri;
         $this->principalInfo = $principalInfo;
 
     }
 
-    /**
+    /**;
      * Returns the name of the element 
      * 
      * @return void
      */
     public function getName() {
 
-        return $this->principalInfo['userId'];
+        return basename($this->principalUri);
 
     }
 
@@ -63,6 +69,18 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProper
         return $this->principalInfo['displayName'];
 
     }
+
+    /**
+     * Returns the owner uri (the same principal in this case). 
+     * 
+     * @return string 
+     */
+    public function getOwner() {
+
+        return $this->principalUri;
+
+    }
+
 
     /**
      * Returns a list of properties 

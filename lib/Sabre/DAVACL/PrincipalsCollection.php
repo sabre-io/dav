@@ -42,7 +42,7 @@ class Sabre_DAVACL_PrincipalsCollection extends Sabre_DAV_Directory {
      */
     public function getName() {
 
-        return 'principals';
+        return Sabre_DAVACL_Plugin::PRINCIPAL_ROOT; 
 
     }
 
@@ -54,9 +54,10 @@ class Sabre_DAVACL_PrincipalsCollection extends Sabre_DAV_Directory {
     public function getChildren() {
 
         $children = array();
-        foreach($this->authBackend->getUsers() as $principal) {
+        foreach($this->authBackend->getUsers() as $principalInfo) {
 
-            $children[] = new Sabre_DAVACL_Principal($principal);
+            $principalUri = $this->getName() . '/' . $principalInfo['userId'];
+            $children[] = new Sabre_DAVACL_Principal($principalUri,$principalInfo);
 
 
         }

@@ -163,7 +163,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     foreach($files as $k=>$file) {
 
         // This is the current directory, we can skip it
-        if ($file['href']==$path) continue;
+        if (rtrim($file['href'],'/')==$path) continue;
 
         $name = $this->escapeHTML(basename($file['href']));
 

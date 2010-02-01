@@ -4,7 +4,7 @@ class Sabre_DAVACL_BackendMock extends Sabre_DAVACL_Backend_Abstract {
 
     protected $acl = array();
 
-    function getPrivilegesForUser($uri,$userId) {
+    function getPrivilegesForPrincipal($uri,$userId) {
 
         echo $uri, $userId, "\n";
         print_r($this->acl);

@@ -141,8 +141,8 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         }
 
         $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(2,count($val),$body);
-        $this->assertEquals('HTTP/1.1 404 Not Found',(string)$val[1]);
+        $this->assertEquals(1,count($val),$body);
+        $this->assertEquals('HTTP/1.1 404 Not Found',(string)$val[0]);
 
     }
 

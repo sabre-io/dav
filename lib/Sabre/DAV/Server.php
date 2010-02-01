@@ -516,7 +516,7 @@ class Sabre_DAV_Server {
             
             // If the node is a collection, we'll deny it
             if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed');
-            if (!$this->broadcastEvent('beforeWriteContent',$this->getRequestUri())) return false;
+            if (!$this->broadcastEvent('beforeWriteContent',array($this->getRequestUri()))) return false;
 
             $node->put($this->httpRequest->getBody());
             $this->httpResponse->setHeader('Content-Length','0');
@@ -939,9 +939,15 @@ class Sabre_DAV_Server {
                 );
             }
 
-            // It's important we add the resourceType, because some systems depend on it
-            // TODO: Needs to be eliminated, we need to find out why this was
-            if (!in_array('{DAV:}resourcetype',$propertyNames)) $propertyNames[] = '{DAV:}resourcetype';
+            // If the resourceType was not part of the list, we manually add it 
+            // and mark it for removal. We need to know the resourcetype in order 
+            // to make certain decisions about the entry.
+            // WebDAV dictates we should add a / and the end of href's for collections
+            $removeRT = false;
+            if (!in_array('{DAV:}resourcetype',$propertyNames)) {
+                $propertyNames[] = '{DAV:}resourcetype';
+                $removeRT = true;
+            }
 
             foreach($propertyNames as $prop) {
                 
@@ -978,7 +984,16 @@ class Sabre_DAV_Server {
 
             $newProperties['href'] = trim($myPath,'/'); 
 
-            //if (!$properties || in_array('{http://www.apple.com/webdav_fs/props/}appledoubleheader',$properties)) $newProps['{http://www.apple.com/webdav_fs/props/}appledoubleheader'] = base64_encode(str_repeat(' ',82)); 
+            // Its is a WebDAV recommendation to add a trailing slash to collectionnames.
+            // Apple's iCal also requires a trailing slash for principals (rfc 3744).
+            // Therefore we add a trailing / for any non-file. This might need adjustments 
+            // if we find there are other edge cases.
+            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype']) && $newProperties[200]['{DAV:}resourcetype']->getValue()!==null) $newProperties['href'] .='/';
+
+            // If the resourcetype property was manually added to the requested property list,
+            // we will remove it again.
+            if ($removeRT) unset($newProperties[200]['{DAV:}resourcetype']);
+
             $returnPropertyList[] = $newProperties;
 
         }

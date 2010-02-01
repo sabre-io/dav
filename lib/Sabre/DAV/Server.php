@@ -1093,37 +1093,22 @@ class Sabre_DAV_Server {
     protected function parsePropPatchRequest($body) {
 
         //We'll need to change the DAV namespace declaration to something else in order to make it parsable
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
-
-        $errorsetting =  libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $dom = new DOMDocument();
-        $dom->loadXML($body,LIBXML_NOWARNING | LIBXML_NOERROR);
-        $dom->preserveWhiteSpace = false;
-
-        
-        if ($error = libxml_get_last_error()) {
-            switch ($error->code) {
-                // Error 100 is a non-absolute namespace, which WebDAV allows
-                case 100 :
-                    break;
-                default :    
-                    throw new Sabre_DAV_Exception_BadRequest('The request body was not a valid proppatch request: ' . print_r($error,true));
-
-            }
-        }
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
         
         $operations = array();
 
         foreach($dom->firstChild->childNodes as $child) {
 
-            if ($child->namespaceURI != 'urn:DAV' || ($child->localName != 'set' && $child->localName !='remove')) continue; 
-            
-            $propList = $this->parseProps($child);
-            foreach($propList as $k=>$propItem) {
+            switch(Sabre_DAV_XMLUtil::toClarkNotation($child)) {
+                case '{DAV:}set' :
+                case '{DAV:}remove' :
+                    $propList = $this->parseProps($child);
+                    foreach($propList as $k=>$propItem) {
 
-                $operations[] = array($child->localName=='set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
+                        $operations[] = array($child->localName=='set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
 
+                    }
+                    break;
             }
 
         }
@@ -1146,22 +1131,7 @@ class Sabre_DAV_Server {
         // If the propfind body was empty, it means IE is requesting 'all' properties
         if (!$body) return array();
 
-        $errorsetting =  libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $dom = new DOMDocument();
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\\2)/","xmlns\\1=\"urn:DAV\"",$body);
-        $dom->preserveWhiteSpace = false;
-        $dom->loadXML($body,LIBXML_NOERROR);
-        if($error = libxml_get_last_error()) {
-            switch($error->code) {
-                // Error 100 is a non-absolute namespace, which WebDAV allows
-                case 100 :
-                    break;
-                default :
-                    throw new Sabre_DAV_Exception_BadRequest('The request body was not a valid propfind request' . print_r($error,true));
-            }
-        }
-        libxml_use_internal_errors($errorsetting); 
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
         $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
         return array_keys($this->parseProps($elem)); 
 
@@ -1186,7 +1156,7 @@ class Sabre_DAV_Server {
                     if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
 
                     if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
-                    $propList['{' . $ns . '}' . $propNodeData->localName] = $propNodeData->textContent;
+                    $propList[Sabre_DAV_XMLUtil::toClarkNotation($propNodeData)] = $propNodeData->textContent;
                 }
 
             }

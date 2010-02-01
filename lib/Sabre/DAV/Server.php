@@ -1099,6 +1099,8 @@ class Sabre_DAV_Server {
 
         foreach($dom->firstChild->childNodes as $child) {
 
+            if ($child->nodeType !== XML_ELEMENT_NODE) continue; 
+
             switch(Sabre_DAV_XMLUtil::toClarkNotation($child)) {
                 case '{DAV:}set' :
                 case '{DAV:}remove' :

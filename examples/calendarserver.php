@@ -1,10 +1,12 @@
 <?php
 
-// {$Id: fileserver.php 479 2009-07-22 18:04:27Z evertpot $} //
+// {$Id$} //
 
 /*
 
-This is the best starting point if you're just interested in setting up a fileserver.
+CalendarServer example
+
+This server features CalDAV and ACL support
 
 */
 

@@ -17,6 +17,17 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @covers Sabre_DAV_ServerPlugin
+     */
+    function testBaseClass() {
+
+        $p = new Sabre_DAV_ServerPluginMock();
+        $this->assertEquals(array(),$p->getFeatures());
+        $this->assertEquals(array(),$p->getHTTPMethods());
+
+    }
+
     function testOptions() {
 
         $serverVars = array(
@@ -55,6 +66,14 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+
+
+}
+
+class Sabre_DAV_ServerPluginMock extends Sabre_DAV_ServerPlugin {
+
+    function initialize(Sabre_DAV_Server $s) { }
+    
 }
 
 ?>

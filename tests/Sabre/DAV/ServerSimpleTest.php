@@ -2,6 +2,7 @@
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
+require_once 'Sabre/DAV/Exception.php';
 
 class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
@@ -347,6 +348,25 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
         }
 
+    }
+
+    function testTriggerException() {
+        
+        $this->server->subscribeEvent('beforeMethod',array($this,'exceptionTrigger'));
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml; charset=utf-8',
+        ),$this->response->headers);
+
+        $this->assertEquals('HTTP/1.1 500 Internal Server Error',$this->response->status);
+
+    }
+
+    function exceptionTrigger() {
+        
+        throw new Sabre_DAV_Exception('Hola');
+        
     }
 
 }

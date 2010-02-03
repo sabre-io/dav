@@ -25,10 +25,14 @@ class Sabre_DAV_XMLUtil {
      * be returned as if they were in the DAV: namespace. This is to avoid
      * compatibility problems.
      *
+     * This function will return null if a nodetype other than an Element is passed.
+     *
      * @param DOMElement $dom 
      * @return string 
      */
-    static function toClarkNotation(DOMElement $dom) {
+    static function toClarkNotation(DOMNode $dom) {
+
+        if ($dom->nodeType !== XML_ELEMENT_NODE) return null;
 
         // Mapping back to the real namespace, in case it was dav
         if ($dom->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $dom->namespaceURI;
@@ -49,7 +53,7 @@ class Sabre_DAV_XMLUtil {
 
         // This is used to map the DAV: namespace to urn:DAV. This is needed, because the DAV:
         // namespace is actually a violation of the XML namespaces specification, and will cause errors
-        return preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$xmlDocument);
+        return preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\\2)/","xmlns\\1=\\2urn:DAV\\2",$xmlDocument);
 
     }
 

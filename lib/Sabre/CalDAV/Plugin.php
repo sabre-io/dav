@@ -127,20 +127,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_PermissionDenied('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
         }
 
-        $body = stream_get_contents($this->server->httpRequest->getBody());
-
-        //We'll need to change the DAV namespace declaration to something else in order to make it parsable
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
-
-        $dom = new DOMDocument();
-        $dom->loadXML($body);
-        $dom->preserveWhiteSpace = false;
-
+        $body = $this->server->httpRequest->getBody(true);
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
 
         $properties = array();
         foreach($dom->firstChild->childNodes as $child) {
 
-            if ($child->namespaceURI != 'urn:DAV' || $child->localName != 'set') continue;
+            if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
             foreach($this->server->parseProps($child) as $k=>$prop) {
                 $properties[$k] = $prop;
             }
@@ -304,9 +297,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         foreach($domNode->childNodes as $child) {
 
-            $fullTag = '{' . $child->namespaceURI . '}' . $child->localName;
-
-            switch($fullTag) {
+            switch(Sabre_DAV_XMLUtil::toClarkNotation($child)) {
 
                 case '{urn:ietf:params:xml:ns:caldav}comp-filter' :
                     

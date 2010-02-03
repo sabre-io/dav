@@ -314,9 +314,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                     case '{DAV:}grant' :
                         foreach($childNode->childNodes as $priv) {
-                            $ns = $priv->firstChild->namespaceURI;
-                            if ($ns=='urn:DAV') $ns = 'DAV:';
-                            $privName = '{' . $ns . '}' . $priv->firstChild->localName;
                             $currentAce['grant'][] = Sabre_DAV_XMLUtil::toClarkNotation($priv->firstChild);
                         }
                         break;

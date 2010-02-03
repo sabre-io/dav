@@ -645,19 +645,9 @@ class Sabre_DAV_Server {
     protected function httpReport() {
 
         $body = $this->httpRequest->getBody(true);
-        //We'll need to change the DAV namespace declaration to something else in order to make it parsable
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
 
-        $errorsetting =  libxml_use_internal_errors(true);
-        libxml_clear_errors();
-        $dom = new DOMDocument();
-        $dom->loadXML($body);
-        $dom->preserveWhiteSpace = false;
-     
-        $namespaceUri = $dom->firstChild->namespaceURI;
-        if ($namespaceUri=='urn:DAV') $namespaceUri = 'DAV:';
-
-        $reportName = '{' . $namespaceUri . '}' . $dom->firstChild->localName;
+        $reportName = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
         if ($this->broadcastEvent('report',array($reportName,$dom))) {
 
@@ -1101,13 +1091,14 @@ class Sabre_DAV_Server {
 
             if ($child->nodeType !== XML_ELEMENT_NODE) continue; 
 
-            switch(Sabre_DAV_XMLUtil::toClarkNotation($child)) {
+            $operation = Sabre_DAV_XMLUtil::toClarkNotation($child);
+            switch($operation) {
                 case '{DAV:}set' :
                 case '{DAV:}remove' :
                     $propList = $this->parseProps($child);
                     foreach($propList as $k=>$propItem) {
 
-                        $operations[] = array($child->localName=='set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
+                        $operations[] = array($operation==='{DAV:}set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
 
                     }
                     break;
@@ -1150,18 +1141,17 @@ class Sabre_DAV_Server {
         $propList = array(); 
         foreach($prop->childNodes as $propNode) {
 
-            if ($propNode->namespaceURI == 'urn:DAV' && $propNode->localName == 'prop') {
+            if (Sabre_DAV_XMLUtil::toClarkNotation($propNode)!=='{DAV:}prop') continue;
 
-                foreach($propNode->childNodes as $propNodeData) {
+            foreach($propNode->childNodes as $propNodeData) {
 
-                    /* If there are no elements in here, we actually get 1 text node, this special case is dedicated to netdrive */
-                    if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
+                /* If there are no elements in here, we actually get 1 text node, this special case is dedicated to netdrive */
+                if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
 
-                    if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
-                    $propList[Sabre_DAV_XMLUtil::toClarkNotation($propNodeData)] = $propNodeData->textContent;
-                }
-
+                if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
+                $propList[Sabre_DAV_XMLUtil::toClarkNotation($propNodeData)] = $propNodeData->textContent;
             }
+
 
         }
         return $propList; 

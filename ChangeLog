@@ -11,6 +11,7 @@
 	* Added: Support for {DAV:}supported-report-set 
 	* Added: XML utility class with helper functions for the WebDAV protocol.
 	* Added: Tons of unittests
+	* Added: PrincipalCollection and Principal classes
 	* Changed: {DAV:}resourceType defaults to 0
 	* Changed: Any non-null resourceType now gets a / appended to the href
 	  value. Before this was just for {DAV:}collection's, but this is now also

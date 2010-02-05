@@ -5,16 +5,16 @@
  *
  * This class represents a user in the directory tree.
  * Many WebDAV specs require a user to show up in the directory 
- * structure, so they can query for information.
+ * structure. The principal is defined in RFC 3744.
  * 
  * @package Sabre
- * @subpackage DAVACL
+ * @subpackage DAV
  * @version $Id$
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProperties, Sabre_DAVACL_IACLNode {
+class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProperties {
 
     /**
      * Full uri for this principal resource 
@@ -48,7 +48,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProper
 
     }
 
-    /**;
+    /**
      * Returns the name of the element 
      * 
      * @return void
@@ -69,18 +69,6 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProper
         return $this->principalInfo['displayName'];
 
     }
-
-    /**
-     * Returns the owner uri (the same principal in this case). 
-     * 
-     * @return string 
-     */
-    public function getOwner() {
-
-        return $this->principalUri;
-
-    }
-
 
     /**
      * Returns a list of properties 
@@ -108,7 +96,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProper
             $newProperties['{DAV:}alternate-URI-set'] = null;
 
         if (in_array('{DAV:}principal-URL',$requestedProperties))
-            $newProperties['{DAV:}principal-URL'] = new Sabre_DAV_Property_Href('principals/' . $this->getName() . '/');
+            $newProperties['{DAV:}principal-URL'] = new Sabre_DAV_Property_Href($this->principalUri);
 
         if (in_array('{DAV:}group-member-set',$requestedProperties))
             $newProperties['{DAV:}group-member-set'] = null;
@@ -137,6 +125,5 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProper
         throw new Sabre_DAV_Exception_PermissionDenied('Updating properties is not supported');
 
     }
-
 
 }

@@ -198,7 +198,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // TODO: this code is not that great. might be good 
             // to find a better way to do this.
             if (!$currentNode) $currentNode = $this->server->tree->getNodeForPath($path);
-            if ($currentNode instanceof Sabre_DAVACL_Principal) {
+            if ($currentNode instanceof Sabre_DAV_Auth_Principal) {
                 $principalId = $currentNode->getName();
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
                 unset($properties[404][$calHome]);

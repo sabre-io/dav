@@ -6,16 +6,23 @@
  * This collection represents a list of users. It uses
  * Sabre_DAV_Auth_Backend to determine which users are available on the list.
  *
- * The users themselves are instances of Sabre_DAVACL_Principal
+ * The users are instances of Sabre_DAV_Auth_Principal
  * 
  * @package Sabre
- * @subpackage DAVACL
+ * @subpackage DAV
  * @version $Id$
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_PrincipalsCollection extends Sabre_DAV_Directory {
+class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
+
+    /**
+     * The name of this object. It is not adviced to change this.
+     * The plugins that depend on the principals collection to exist need to 
+     * be have a common name to find it.
+     */
+    const NODENAME = 'principals';
 
     /**
      * Authentication backend 
@@ -42,7 +49,7 @@ class Sabre_DAVACL_PrincipalsCollection extends Sabre_DAV_Directory {
      */
     public function getName() {
 
-        return Sabre_DAVACL_Plugin::PRINCIPAL_ROOT; 
+        return self::NODENAME; 
 
     }
 
@@ -56,8 +63,8 @@ class Sabre_DAVACL_PrincipalsCollection extends Sabre_DAV_Directory {
         $children = array();
         foreach($this->authBackend->getUsers() as $principalInfo) {
 
-            $principalUri = $this->getName() . '/' . $principalInfo['userId'];
-            $children[] = new Sabre_DAVACL_Principal($principalUri,$principalInfo);
+            $principalUri = self::NODENAME . '/' . $principalInfo['userId'] . '/';
+            $children[] = new Sabre_DAV_Auth_Principal($principalUri,$principalInfo);
 
 
         }

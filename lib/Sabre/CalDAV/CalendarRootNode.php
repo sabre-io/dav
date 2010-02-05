@@ -65,7 +65,7 @@ class Sabre_CalDAV_CalendarRootNode extends Sabre_DAV_Directory {
         $children = array();
         foreach($users as $user) {
 
-            $children[] = new Sabre_CalDAV_User($this->authBackend, $this->caldavBackend, $user);
+            $children[] = new Sabre_CalDAV_User($this->authBackend, $this->caldavBackend, Sabre_DAV_Auth_PrincipalCollection::NODENAME . '/' . $user['userId']);
 
         }
         return $children;

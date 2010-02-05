@@ -26,25 +26,20 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
     /**
      * Struct with principal information.
      *
-     * Required elements are 'userId' and 'displayName'.
-     * 
      * @var array 
      */
-    protected $principalInfo;
+    protected $principalProperties;
 
     /**
      * Creates the principal object 
      *
      * @param string $principalUri Full uri to the principal resource
-     * @param array $principalInfo 
+     * @param array $principalProperties
      */
-    public function __construct($principalUri,array $principalInfo) {
+    public function __construct($principalUri,array $principalProperties = array()) {
 
-        if (!isset($principalInfo['displayName'])) {
-            throw new Sabre_DAV_Exception('The principalInfo array must have a displayName element');
-        }
         $this->principalUri = $principalUri;
-        $this->principalInfo = $principalInfo;
+        $this->principalProperties = $principalProperties;
 
     }
 
@@ -66,7 +61,11 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
      */
     public function getDisplayName() {
 
-        return $this->principalInfo['displayName'];
+        if (isset($this->principalProperties['{DAV:}displayname'])) {
+            return $this->principalProperties['{DAV:}displayname'];
+        } else {
+            return $this->getName();
+        }
 
     }
 
@@ -89,23 +88,34 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
 
         }
 
-        /* Always returning resourcetype (for now) */
-        $newProperties['{DAV:}resourcetype'] = new Sabre_DAV_Property_ResourceType('{DAV:}principal');
+        // We need to always return the resourcetype
+        // This is a bug in the core server, but it is easier to do it this way for now
+        $newProperties = array(
+            '{DAV:}resourcetype' => new Sabre_DAV_Property_ResourceType('{DAV:}principal')
+        );
+        foreach($requestedProperties as $propName) switch($propName) {
+            
+            case '{DAV:}alternate-URI-set' :
+            case '{DAV:}group-member-set' :
+            case '{DAV:}group-membership' :
+                $newProperties[$propName] = null;
+                break;
 
-        if (in_array('{DAV:}alternate-URI-set',$requestedProperties)) 
-            $newProperties['{DAV:}alternate-URI-set'] = null;
+            case '{DAV:}principal-URL' :
+                $newProperties[$propName] = new Sabre_DAV_Property_Href($this->principalUri);
+                break;
 
-        if (in_array('{DAV:}principal-URL',$requestedProperties))
-            $newProperties['{DAV:}principal-URL'] = new Sabre_DAV_Property_Href($this->principalUri);
+            case '{DAV:}displayname' :
+                $newProperties[$propName] = $this->getDisplayName();
+                break;
 
-        if (in_array('{DAV:}group-member-set',$requestedProperties))
-            $newProperties['{DAV:}group-member-set'] = null;
+            default :
+                if (isset($this->principalProperties[$propName])) {
+                    $newProperties[$propName] = $this->principalProperties[$propName];
+                }
+                break;
 
-        if (in_array('{DAV:}group-membership',$requestedProperties))
-            $newProperties['{DAV:}group-membership'] = null;
-        
-        if (in_array('{DAV:}displayname',$requestedProperties)) 
-            $newProperties['{DAV:}displayname'] = $this->getDisplayName();
+        }
 
         return $newProperties;
         

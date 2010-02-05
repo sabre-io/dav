@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_User implements Sabre_DAV_IProperties, Sabre_DAV_IDirectory, Sabre_CalDAV_ICalendarCollection {
+class Sabre_CalDAV_User implements Sabre_DAV_IDirectory, Sabre_CalDAV_ICalendarCollection {
 
     /**
      * Authentication backend 
@@ -26,20 +26,20 @@ class Sabre_CalDAV_User implements Sabre_DAV_IProperties, Sabre_DAV_IDirectory, 
      * 
      * @var array 
      */
-    private $userInfo;
+    private $userUri;
 
     /**
      * Constructor 
      * 
      * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
      * @param Sabre_CalDAV_Backend_Abstract $caldavBackend 
-     * @param mixed $userInfo 
+     * @param mixed $userUri 
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, Sabre_CalDAV_Backend_Abstract $caldavBackend, $userInfo) {
+    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, Sabre_CalDAV_Backend_Abstract $caldavBackend, $userUri) {
 
         $this->authBackend = $authBackend;
         $this->caldavBackend = $caldavBackend;
-        $this->userInfo = $userInfo;
+        $this->userUri = $userUri;
        
     }
 
@@ -50,7 +50,7 @@ class Sabre_CalDAV_User implements Sabre_DAV_IProperties, Sabre_DAV_IDirectory, 
      */
     public function getName() {
        
-        return $this->userInfo['userId'];
+        return basename($this->userUri);
 
     }
 
@@ -85,32 +85,6 @@ class Sabre_CalDAV_User implements Sabre_DAV_IProperties, Sabre_DAV_IDirectory, 
     public function getLastModified() {
 
         return null; 
-
-    }
-
-    /**
-     * Returns a list of properties 
-     * 
-     * @param array $requestedProperties 
-     * @return array 
-     */
-    public function getProperties($requestedProperties) {
-
-        return array(
-            '{DAV:}displayname' => $this->userInfo['displayName'],
-        );
-
-    }
-
-    /**
-     * Updates properties 
-     * 
-     * @param mixed $properties 
-     * @return void
-     */
-    public function updateProperties($properties) {
-
-        return null;
 
     }
 
@@ -168,7 +142,7 @@ class Sabre_CalDAV_User implements Sabre_DAV_IProperties, Sabre_DAV_IDirectory, 
      */
     public function getChildren() {
 
-        $calendars = $this->caldavBackend->getCalendarsForUser($this->userInfo['userId']);
+        $calendars = $this->caldavBackend->getCalendarsForUser($this->userUri);
         $objs = array();
         foreach($calendars as $calendar) {
             $objs[] = new Sabre_CalDAV_Calendar($this->caldavBackend,$calendar);
@@ -188,7 +162,7 @@ class Sabre_CalDAV_User implements Sabre_DAV_IProperties, Sabre_DAV_IDirectory, 
 
         $displayname = isset($properties['{DAV:}displayname'])?$properties['{DAV:}displayname']:$name;
         $description = isset($properties['{urn:ietf:params:xml:ns:caldav}calendar-description'])?$properties['{urn:ietf:params:xml:ns:caldav}calendar-description']:'';
-        $this->caldavBackend->createCalendar($this->userInfo['userId'],$name,$displayname,$description);
+        $this->caldavBackend->createCalendar($this->userUri,$name,$displayname,$description);
 
     }
 

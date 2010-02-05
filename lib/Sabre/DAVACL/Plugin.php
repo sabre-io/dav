@@ -86,10 +86,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $authPlugin = $this->server->getPlugin('Sabre_DAV_Auth_Plugin');
         if (!$authPlugin) throw new Sabre_DAV_Exception('The Sabre_DAV_Auth_Plugin was not loaded');
         
-        $userId = $authPlugin->getUserId();
-        if (!$userId) throw new Sabre_DAV_Exception('The current principal uri was requested, but nobody is currently logged in'); 
+        $userInfo = $authPlugin->getUserInfo();
 
-        return self::PRINCIPAL_ROOT . '/' .$userId;
+        if (!$userInfo) throw new Sabre_DAV_Exception('The current principal uri was requested, but nobody is currently logged in'); 
+
+        return self::PRINCIPAL_ROOT . '/' .$userInfo['userId'];
     
     } 
 

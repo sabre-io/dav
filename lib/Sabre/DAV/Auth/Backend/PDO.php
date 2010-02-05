@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_Abstract {
+class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
 
     private $pdo;
 
@@ -31,19 +31,23 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_Abstract {
     }
 
     /**
-     * Returns the A1 digest hash for a specific user. 
+     * Returns a users' information 
      * 
+     * @param string $realm 
      * @param string $username 
      * @return string 
      */
-    public function getDigestHash($username) {
+    public function getUserInfo($realm,$username) {
 
-        $stmt = $this->pdo->prepare('SELECT digesta1 FROM users WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM users WHERE username = ?');
         $stmt->execute(array($username));
         $result = $stmt->fetchAll();
 
         if (!count($result)) return false;
-        return $result[0]['digesta1'];
+        return array(
+            'userId' => $result[0]['username'],
+            'digestHash' => $result[0]['digesta1'],
+        );
 
     }
 
@@ -56,7 +60,6 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_Abstract {
 
             $rv[] = array(
                 'userId' => $user['username'],
-                'displayName' => $user['username'],
             );
 
         }

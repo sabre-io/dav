@@ -40,15 +40,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      * 
      * @var string 
      */
-    private $userName;
-
-    /**
-     * User id of currently logged in user. 
-     * 
-     * @var string 
-     */
-    private $userId;
-    
+    private $userInfo;
 
     /**
      * __construct 
@@ -86,75 +78,23 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function beforeMethod($method) {
 
-        /* Debug code. Will need to find a more refined solution later *
-        $this->username = 'admin';
-        $this->userId = 'admin';
-        return true;
-        /* */
+        $userInfo = $this->backend->authenticate($this->server,$this->realm);
+        if ($userInfo===false) throw new Sabre_DAV_Exception_NotAuthenticated('Incorrect username or password, or no credentials provided');
+        if (!is_array($userInfo)) throw new Sabre_DAV_Exception('The authenticate method must either return an array, or false');
 
-        $digest = new Sabre_HTTP_DigestAuth();
-
-        // Hooking up request and response objects
-        $digest->setHTTPRequest($this->server->httpRequest);
-        $digest->setHTTPResponse($this->server->httpResponse);
-
-        $digest->setRealm($this->realm);
-        $digest->init();
-
-        $username = $digest->getUsername();
-
-        // No username was given
-        if (!$username) {
-            $digest->requireLogin();
-            throw new Sabre_DAV_Exception_NotAuthenticated('No digest authentication headers were found');
-        }
-
-        // Now checking the backend for the A1 hash
-        $A1 = $this->authBackend->getDigestHash($username);
-
-        // If this was false, the user account didn't exist
-        if (!$A1) {
-            $digest->requireLogin();
-            throw new Sabre_DAV_Exception_NotAuthenticated('The supplied username was not on file');
-        }
-
-        // If this was false, the password or part of the hash was incorrect.
-        if (!$digest->validateA1($A1)) {
-            $digest->requireLogin();
-            throw new Sabre_DAV_Exception_NotAuthenticated('Incorrect username');
-        }
-
-        $this->userName = $username;
-        $this->userId = $this->authBackend->getUserId($username);
-
-        // Eventhooks must return true to continue processing
-        return true;
-
+        $this->userInfo = $userInfo;
     }
 
     /**
-     * Returns the currently logged in username.
+     * Returns the currently logged in user's information.
      *
-     * This will only be set after the beforeMethod event has been handled.
+     * This will only be set if authentication was succesful.
      * 
-     * @return string 
+     * @return array 
      */
-    public function getUserName() {
+    public function getUserInfo() {
 
-        return $this->userName;
-
-    }
-
-    /**
-     * Returns the currently logged in user's id.
-     *
-     * This will only be set after the beforeMethod event has been handled.
-     * 
-     * @return string 
-     */
-    public function getUserId() {
-
-        return $this->userId;
+        return $this->userInfo;
 
     }
 

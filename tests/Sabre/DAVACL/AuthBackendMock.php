@@ -8,9 +8,9 @@ class Sabre_DAVACL_AuthBackendMock extends Sabre_DAV_Auth_Backend_Abstract {
         ),
     );
 
-    function getDigestHash($userId) {
+    function authenticate(Sabre_DAV_Server $server, $realm) {
 
-        return null;
+        return $this->users[0]; 
 
     }
 

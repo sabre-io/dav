@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_Abstract {
+class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest {
 
     /**
      * List of users 
@@ -55,19 +55,23 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_Abstract {
             if (!preg_match('/^[a-zA-Z0-9]{32}$/', $A1))
                 throw new Sabre_DAV_Exception('Malformed htdigest file. Invalid md5 hash');
                 
-            $this->users[$username] = $A1;
+            $this->users[$username] = array(
+                'digestHash' => $A1,
+                'userId'     => $username
+            );
 
         }
 
     }
 
     /**
-     * Returns the A1 digest hash for a specific user. 
+     * Returns a users' information
      * 
+     * @param string $realm 
      * @param string $username 
      * @return string 
      */
-    public function getDigestHash($username) {
+    protected function getUserInfo($realm, $username) {
 
         return isset($this->users[$username])?$this->users[$username]:false;
 

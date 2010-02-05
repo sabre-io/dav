@@ -5,7 +5,7 @@
  *
  * This class can be used by authentication objects wishing to use HTTP Digest
  * Most of the digest logic is handled, implementors just need to worry about 
- * the getUserData method 
+ * the getUserInfo method 
  *
  * @package Sabre
  * @subpackage DAV
@@ -14,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Auth_Backend_AbstractDigest {
+abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Backend_Abstract {
 
     /**
      * Returns a users information based on its username
@@ -29,7 +29,7 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest {
      * @param string $username 
      * @return array 
      */
-    abstract protected function getUserData($realm, $username);
+    abstract public function getUserInfo($realm, $username);
 
     /**
      * Authenticates the user based on the current request.
@@ -59,18 +59,18 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest {
             throw new Sabre_DAV_Exception_NotAuthenticated('No digest authentication headers were found');
         }
 
-        $userData = $this->getUserData($realm, $username);
+        $userData = $this->getUserInfo($realm, $username);
         // If this was false, the user account didn't exist
         if ($userData===false) {
             $digest->requireLogin();
             throw new Sabre_DAV_Exception_NotAuthenticated('The supplied username was not on file');
         }
         if (!is_array($userData)) {
-            throw new Sabre_DAV_Exception('The returntype for getUserData must be either false or an array');
+            throw new Sabre_DAV_Exception('The returntype for getUserInfo must be either false or an array');
         }
 
-        if (!isset($userData['userId']) || isset($userData['digestHash'])) {
-            throw new Sabre_DAV_Exception('The returned array from getUserData must contain at least a userId and digestHash element');
+        if (!isset($userData['userId']) || !isset($userData['digestHash'])) {
+            throw new Sabre_DAV_Exception('The returned array from getUserInfo must contain at least a userId and digestHash element');
         }
 
         // If this was false, the password or part of the hash was incorrect.

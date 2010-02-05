@@ -71,7 +71,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
      * @param string $username 
      * @return string 
      */
-    protected function getUserInfo($realm, $username) {
+    public function getUserInfo($realm, $username) {
 
         return isset($this->users[$username])?$this->users[$username]:false;
 

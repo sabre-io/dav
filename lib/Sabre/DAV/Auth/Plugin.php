@@ -78,7 +78,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function beforeMethod($method) {
 
-        $userInfo = $this->backend->authenticate($this->server,$this->realm);
+        $userInfo = $this->authBackend->authenticate($this->server,$this->realm);
         if ($userInfo===false) throw new Sabre_DAV_Exception_NotAuthenticated('Incorrect username or password, or no credentials provided');
         if (!is_array($userInfo)) throw new Sabre_DAV_Exception('The authenticate method must either return an array, or false');
 

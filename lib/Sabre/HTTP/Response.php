@@ -81,7 +81,9 @@ class Sabre_HTTP_Response {
      */
     public function sendStatus($code) {
 
-        header($this->getStatusMessage($code));
+        if (!headers_sent()) 
+            return header($this->getStatusMessage($code));
+        else return false;
 
     }
 
@@ -95,7 +97,9 @@ class Sabre_HTTP_Response {
     public function setHeader($name, $value, $replace = true) {
 
         $value = str_replace(array("\r","\n"),array('\r','\n'),$value);
-        header($name . ': ' . $value, $replace);
+        if (!headers_sent()) 
+            return header($name . ': ' . $value, $replace);
+        else return false;
 
     }
 

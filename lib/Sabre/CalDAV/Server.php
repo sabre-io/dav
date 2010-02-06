@@ -26,7 +26,6 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
         /* Backends */
         $authBackend = new Sabre_DAV_Auth_Backend_PDO($pdo);
         $calendarBackend = new Sabre_CalDAV_Backend_PDO($pdo);
-        $aclBackend = new Sabre_DAVACL_Backend_PDO($pdo);
 
         /* Directory structure */
         $root = new Sabre_DAV_SimpleDirectory('root');
@@ -46,9 +45,6 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
 
         $caldavPlugin = new Sabre_CalDAV_Plugin();
         $this->addPlugin($caldavPlugin);
-
-        $aclPlugin = new Sabre_DAVACL_Plugin($aclBackend);
-        $this->addPlugin($aclPlugin);
 
     }
 

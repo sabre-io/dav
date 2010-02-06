@@ -1,10 +1,8 @@
 <?php
 
 /**
- * The User object represents a single user.
+ * The UserCalenders class contains all calendars associated to one user 
  * 
- * This user contains a CalendarCollection object.
- *
  * @package Sabre
  * @subpackage CalDAV
  * @version $Id$
@@ -12,7 +10,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_User implements Sabre_DAV_IDirectory, Sabre_CalDAV_ICalendarCollection {
+class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IDirectory, Sabre_CalDAV_ICalendarCollection {
 
     /**
      * Authentication backend 

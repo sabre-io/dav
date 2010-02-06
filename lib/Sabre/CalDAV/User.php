@@ -160,9 +160,7 @@ class Sabre_CalDAV_User implements Sabre_DAV_IDirectory, Sabre_CalDAV_ICalendarC
      */
     public function createCalendar($name, $properties) {
 
-        $displayname = isset($properties['{DAV:}displayname'])?$properties['{DAV:}displayname']:$name;
-        $description = isset($properties['{urn:ietf:params:xml:ns:caldav}calendar-description'])?$properties['{urn:ietf:params:xml:ns:caldav}calendar-description']:'';
-        $this->caldavBackend->createCalendar($this->userUri,$name,$displayname,$description);
+        $this->caldavBackend->createCalendar($this->userUri, $name, $properties);
 
     }
 

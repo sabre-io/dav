@@ -13,37 +13,56 @@
 abstract class Sabre_CalDAV_Backend_Abstract {
 
     /**
-     * Returns a list of calendars for a users' uri 
+     * Returns a list of calendars for a principal
      *
-     * The uri is not a full path, just the actual last part
-     * 
      * @param string $userUri 
      * @return array 
      */
-    abstract function getCalendarsForUser($userUri);
+    abstract function getCalendarsForUser($principalUri);
 
     /**
-     * Creates a new calendar for a user
+     * Creates a new calendar for a principal
      *
-     * The userUri and calendarUri are not full paths, just the 'basename'.
-     *
-     * @param string $userUri
+     * @param string $principalUri
      * @param string $calendarUri
-     * @param string $displayName
-     * @param string $description
+     * @param array $properties
      * @return void
      */
-    abstract function createCalendar($userUri,$calendarUri,$displayName,$description); 
+    abstract function createCalendar($principalUri,$calendarUri,array $properties); 
 
     /**
-     * Updates a calendar's basic information 
-     * 
+     * Updates a calendar's properties
+     *
+     *
+     * The mutations array has 3 elements for each item. The first indicates if the property
+     * is to be removed or updated (Sabre_DAV_Server::PROP_REMOVE and Sabre_DAV_Server::PROP_SET)
+     * the second is the propertyName in Clark notation, the third is the actual value (ommitted
+     * if the property is to be deleted).
+     *
+     * The result of this method should be another array. Each element has 2 subelements with the 
+     * propertyname and statuscode for the change
+     *
+     * For example:
+     *   array(array('{DAV:}prop1',200), array('{DAV:}prop2',200), array('{DAV:}prop3',403))
+     *
+     * The default implementation does not allow any properties to be updated, and thus
+     * will return 403 for each one.
+     *
      * @param string $calendarId
-     * @param string $displayName 
-     * @param string $description 
-     * @return void
+     * @param array $mutations
+     * @return array 
      */
-    abstract function updateCalendar($calendarId,$displayName,$description);
+    public function updateCalendar($calendarId,array $mutations) {
+        
+        $response = array();
+
+        foreach($mutations as $mutation) {
+            $response[] = array($mutation[1],403);
+        }
+        
+        return $response;
+
+    }
 
     /**
      * Delete a calendar and all it's objects 
@@ -64,7 +83,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     /**
      * Returns information from a single calendar object, based on it's object uri. 
      * 
-     * @param mixed $calendarId 
+     * @param string $calendarId 
      * @param string $objectUri 
      * @return array 
      */
@@ -73,7 +92,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     /**
      * Creates a new calendar object. 
      * 
-     * @param mixed $calendarId 
+     * @param string $calendarId 
      * @param string $objectUri 
      * @param string $calendarData 
      * @return void
@@ -83,7 +102,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     /**
      * Updates an existing calendarobject, based on it's uri. 
      * 
-     * @param mixed $calendarId 
+     * @param string $calendarId 
      * @param string $objectUri 
      * @param string $calendarData 
      * @return void
@@ -93,7 +112,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     /**
      * Deletes an existing calendar object. 
      * 
-     * @param mixed $calendarId 
+     * @param string $calendarId 
      * @param string $objectUri 
      * @return void
      */

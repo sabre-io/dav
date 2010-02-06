@@ -65,6 +65,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
+        //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
         $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
 
@@ -73,7 +74,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This function handles support for the MKCALENDAR and ACL methods
+     * This function handles support for the MKCALENDAR method
      * 
      * @param string $method 
      * @return bool 
@@ -83,6 +84,29 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if ($method!=='MKCALENDAR') return;
 
         $this->httpMkCalendar();
+        // false is returned to stop the unknownMethod event
+        return false;
+
+    }
+
+    /**
+     * This function handles support for the ACL method
+     * 
+     * We're not really implementing ACL here, and merely returning HTTP 200.
+     * This will satisfy clients making ACL request, but it isn't the cleanest thing to do. 
+     *
+     * It is given an extremely low priority, so it can easily be overriden
+     * if another plugin really implements acl 
+     *
+     * @param string $method 
+     * @return bool 
+     */
+    public function unknownMethod2($method) {
+
+        if ($method!=='ACL') return;
+
+        $this->server->httpResponse->sendStatus(204);
+        $this->server->httpResponse->setHeader('Content-Length','0');
         // false is returned to stop the unknownMethod event
         return false;
 
@@ -122,10 +146,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Due to unforgivable bugs in iCal, we're completely disabling MKCALENDAR support
         // for clients matching iCal in the user agent
-        $ua = $this->server->httpRequest->getHeader('User-Agent');
-        if (strpos($ua,'iCal/')!==false) {
-            throw new Sabre_DAV_Exception_PermissionDenied('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
-        }
+        //$ua = $this->server->httpRequest->getHeader('User-Agent');
+        //if (strpos($ua,'iCal/')!==false) {
+        //    throw new Sabre_DAV_Exception_PermissionDenied('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
+        //}
 
         $body = $this->server->httpRequest->getBody(true);
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);

@@ -62,40 +62,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function updateProperties($mutations) {
 
-        $displayName = $this->calendarInfo['displayname'];
-        $description = $this->calendarInfo['description'];
-
-        $response = array();
-        foreach($mutations as $mutation) {
-
-            if ($mutation[0] == Sabre_DAV_Server::PROP_REMOVE) {
-                $response[] = array($mutation[1],403);
-            } else {
-                switch($mutation[1]) {
-
-                    case '{DAV:}displayname' :
-                        $displayName = $mutation[2];
-                        $result = 200;
-                        break;
-                    case '{urn:ietf:params:xml:ns:caldav}calendar-description' :
-                        $description = $mutation[2];
-                        $result = 200;
-                        break;
-                    default :
-                        $result = 403;
-                        break;
-
-                }
-
-                $response[] = array($mutation[1],$result);
-
-            }
-
-        }
-
-        $this->caldavBackend->updateCalendar($this->calendarInfo['userid'],$this->calendarInfo['uri'],$displayName,$description);
-
-        return $response;
+        return $this->caldavBackend->updateCalendar($this->calendarInfo['id'],$mutations);
 
     }
 
@@ -111,12 +78,13 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
 
         foreach($requestedProperties as $prop) switch($prop) {
 
-            case '{DAV:}displayname' : $response[$prop] = $this->calendarInfo['displayname']; break;
             case '{DAV:}resourcetype' : $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{urn:ietf:params:xml:ns:caldav}calendar','{DAV:}collection')); break;
-            case '{urn:ietf:params:xml:ns:caldav}description' : $response[$prop] = $this->calendarInfo['description']; break;
             case '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' :  $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')); break;
             case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' : $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarData(); break;
             case '{urn:ietf:params:xml:ns:caldav}supported-collation-set' : $response[$prop] =  new Sabre_CalDAV_Property_SupportedCollationSet(); break;
+            default : 
+                if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];
+                break;
 
         }
         return $response;

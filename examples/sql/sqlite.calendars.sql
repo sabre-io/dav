@@ -8,8 +8,10 @@ CREATE TABLE calendarobjects (
 
 CREATE TABLE calendars (
     id integer primary key asc, 
-    userid text, 
+    principaluri text, 
     displayname text, 
     uri text, 
-    description text 
+    description text,
+	calendarorder integer,
+    calendarcolor text	
 );

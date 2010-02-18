@@ -165,6 +165,29 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    /**
+     * @depends testMkcol
+     */
+    function testMkcolBody() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody("Hello");
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml; charset=utf-8',
+        ),$this->response->headers);
+
+        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type',$this->response->status);
+
+    }
+
     function testPutUpdate() {
 
         $serverVars = array(
@@ -367,6 +390,62 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         
         throw new Sabre_DAV_Exception('Hola');
         
+    }
+
+    function testReportNotFound() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'REPORT',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml; charset=utf-8',
+            ),
+            $this->response->headers
+         );
+
+        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+
+    }
+
+    function testReportIntercepted() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'REPORT',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
+        $this->server->subscribeEvent('report',array($this,'reportHandler'));
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'testheader' => 'testvalue',
+            ),
+            $this->response->headers
+        );
+
+        $this->assertEquals('HTTP/1.1 418 I\'m a teapot',$this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+
+    }
+
+    function reportHandler($reportName) {
+        
+        if ($reportName=='{http://www.rooftopsolutions.nl/NS}myreport') {
+            $this->server->httpResponse->sendStatus(418);
+            $this->server->httpResponse->setHeader('testheader','testvalue');
+            return false;
+        }
+        else return; 
+
     }
 
 }

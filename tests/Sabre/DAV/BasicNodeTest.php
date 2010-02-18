@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @covers Sabre_DAV_Node
- * @covers Sabre_DAV_File
- * @covers Sabre_DAV_Directory
- * @covers Sabre_DAV_SimpleDirectory
- */
 class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
 
     /**

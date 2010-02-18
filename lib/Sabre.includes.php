@@ -106,7 +106,9 @@ include 'Sabre/DAV/TemporaryFileFilterPlugin.php';
 /* Authentication plugin */
 include 'Sabre/DAV/Auth/Plugin.php';
 include 'Sabre/DAV/Auth/Backend/Abstract.php';
+include 'Sabre/DAV/Auth/Backend/AbstractDigest.php';
 include 'Sabre/DAV/Auth/Backend/File.php';
+include 'Sabre/DAV/Auth/Backend/PDO.php';
 
 /* DavMount plugin */
 include 'Sabre/DAV/Mount/Plugin.php';

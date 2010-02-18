@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This script is used to convert ICalendar (rfc2445) objects to a simple
- * XML format.
+ * This script is used to convert ICalendar (rfc2445) objects XCal-Basic
+ * (draft-royer-calsch-xcal-03) format. 
  *
  * Properties are converted to lowercase xml elements. Parameters are
  * converted to attributes. BEGIN:VEVENT is converted to <vevent> and
@@ -14,30 +14,30 @@
  *
  * @package Sabre
  * @subpackage CalDAV
- * @version $Id$
+ * @version $Id: XCalICal.php -1   $
  * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  * @see http://tools.ietf.org/html/draft-royer-calsch-xcal-03
  */
-class Sabre_CalDAV_ICalendarToXML {
+class Sabre_CalDAV_XCalICal {
 
     /**
      * Converts ICalendar data to XML. 
      *
      * @todo Currently quoted attributes are not parsed correctly.
-     * @param string $icalendarData 
+     * @param string $icalData 
      * @return string. 
      */
-    static function toXML($icalendarData) {
+    static function toXCAL($icalData) {
 
         // Detecting line endings
-        if (strpos($icalendarData,"\r\n")) $lb = "\r\n";
-        elseif (strpos($icalendarData,"\n")) $lb = "\n";
-        else $lb = "\r\n";
+        $lb="\r\n";
+        if (strpos($icalData,"\r\n")!==false) $lb = "\r\n";
+        elseif (strpos($icalData,"\n")!==false) $lb = "\n";
 
         // Splitting up items per line
-        $lines = explode($lb,$icalendarData);
+        $lines = explode($lb,$icalData);
 
         // Properties can be folded over 2 lines. In this case the second
         // line will be preceeded by a space or tab.
@@ -45,7 +45,7 @@ class Sabre_CalDAV_ICalendarToXML {
         foreach($lines as $line) {
 
             if (!$line) continue;
-            if ($line[0]==" " || $line[0]=="\t") {
+            if ($line[0]===" " || $line[0]==="\t") {
                 $lines2[count($lines2)-1].=substr($line,1);
                 continue;
             }
@@ -70,12 +70,12 @@ class Sabre_CalDAV_ICalendarToXML {
             $value = $matches[3];
 
             // If the line was in the format BEGIN:COMPONENT or END:COMPONENT, we need to special case it.
-            if ($propertyName == 'begin') {
+            if ($propertyName === 'begin') {
                 $xml.=str_repeat(" ",$spaces);
                 $xml.='<' . strtolower($value) . ">\n";
                 $spaces+=2;
                 continue;
-            } elseif ($propertyName == 'end') {
+            } elseif ($propertyName === 'end') {
                 $spaces-=2;
                 $xml.=str_repeat(" ",$spaces);
                 $xml.='</' . strtolower($value) . ">\n";
@@ -91,7 +91,7 @@ class Sabre_CalDAV_ICalendarToXML {
   
                     list($attName,$attValue) = explode('=',$att,2);
                     $attName = strtolower($attName);
-                    if ($attName = 'language') $attName='xml:lang';
+                    if ($attName === 'language') $attName='xml:lang';
                     $xml.=' ' . $attName . '="' . htmlspecialchars($attValue) . '"';
 
                 }
@@ -100,7 +100,7 @@ class Sabre_CalDAV_ICalendarToXML {
             $xml.='>'. htmlspecialchars($value) . '</' . $propertyName . ">\n";
           
         }
-        $xml.="\n</iCalendar>";
+        $xml.="</iCalendar>";
         return $xml;
 
     }

@@ -391,7 +391,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // We are converting the calendar object to an XML structure
         // This makes it far easier to parse
-        $xCalendarData = Sabre_CalDAV_ICalendarToXML::toXML($calendarData);
+        $xCalendarData = Sabre_CalDAV_XCalICal::toXCal($calendarData);
         $xml = simplexml_load_string($xCalendarData);
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:xcal');
         return $this->validateXMLFilters($xml,$filters);

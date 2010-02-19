@@ -67,6 +67,8 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $stmt = $this->pdo->prepare("INSERT INTO calendars (".implode(', ', $fieldNames).") VALUES (".implode(', ',array_keys($values)).")");
         $stmt->execute($values);
 
+        return $this->pdo->lastInsertId();
+
     }
 
     function updateCalendar($calendarId, array $mutations) {

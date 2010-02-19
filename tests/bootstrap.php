@@ -6,5 +6,7 @@ include 'Sabre.autoload.php';
 
 date_default_timezone_set('UTC');
 
-if (!file_exists('temp')) mkdir('temp');
+define("SABRE_TEMPDIR",__DIR__ . '/temp');
+
+if (!file_exists(SABRE_TEMPDIR)) mkdir(SABRE_TEMPDIR);
 

@@ -15,8 +15,15 @@
  */
 class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
+    /**
+     * This is the official CalDAV namespace
+     */
     const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
 
+    /**
+     * The following constants are used to differentiate
+     * the various filters for the calendar-query report
+     */
     const FILTER_COMPFILTER   = 1;
     const FILTER_ISNOTDEFINED = 2;
     const FILTER_TIMERANGE    = 3;
@@ -24,6 +31,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     const FILTER_PARAMFILTER  = 5;
     const FILTER_TEXTMATCH    = 6;
 
+    /**
+     * The hardcoded root for calendar objects. It is unfortunate
+     * that we're stuck with it, but it will have to do for now
+     */
     const CALENDAR_ROOT = 'calendars';
 
     /**
@@ -316,6 +327,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
 
+    /**
+     * This function parses the calendar-query report request body
+     *
+     * The body is quite complicated, so we're turning it into a PHP
+     * array.
+     * 
+     * @param DOMNode $domNode 
+     * @return array 
+     */
     protected function parseFilters($domNode) {
 
         $filters = array();
@@ -388,6 +408,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * Verify if a list of filters applies to the calendar data object 
+     *
+     * The calendarData object must be a valid iCalendar blob. The list of 
+     * filters must be formatted as parsed by Sabre_CalDAV_Plugin::parseFilters
+     *
+     * @param string $calendarData 
+     * @param array $filters 
+     * @return bool 
+     */
     protected function validateFilters($calendarData,$filters) {
 
         // We are converting the calendar object to an XML structure
@@ -399,6 +429,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         
     }
 
+    /**
+     * This function is simply used by validateFilters 
+     *
+     * A separete function was needed, because it nees to be a recursive function 
+     *
+     * @param SimpleXMLElement $xNode 
+     * @param array $filters 
+     * @param string $xpath 
+     * @return bool 
+     */
     protected function validateXMLFilters($xNode,$filters,$xpath = '/c:iCalendar') {
 
         foreach($filters as $filter) {

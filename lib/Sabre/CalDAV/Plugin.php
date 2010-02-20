@@ -101,6 +101,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
+    /*
     public function unknownMethod2($method) {
 
         if ($method!=='ACL') return;
@@ -110,7 +111,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         // false is returned to stop the unknownMethod event
         return false;
 
-    }
+    }*/
 
     /**
      * This functions handles REPORT requests specific to CalDAV 

@@ -63,4 +63,29 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException Sabre_DAV_Exception_FileNotFound
+     */
+    function testGetChildNotFound() {
+
+        $calendars = $this->backend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(1,count($calendars));
+        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
+        $calendar->getChild('randomname');
+
+    }
+
+    function testGetChildren() {
+
+        $calendars = $this->backend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(1,count($calendars));
+        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
+        
+        $children = $calendar->getChildren();
+        $this->assertEquals(1,count($children));
+
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+
+    }
+
 }

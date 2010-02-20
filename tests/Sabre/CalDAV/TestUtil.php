@@ -33,6 +33,8 @@ CREATE TABLE calendars (
         $pdo->query('INSERT INTO calendars (principaluri,displayname,uri,description,calendarorder,calendarcolor) 
             VALUES ("principals/user1","user1 calendar","UUID-123467","Calendar description", "1", "#FF0000");');
 
+        $pdo->query('INSERT INTO calendarobjects (calendardata, uri, calendarid, lastmodified) VALUES ("calendardata goes here", "UUID-2345", 1, DATETIME("NOW"))');
+
         $backend = new Sabre_CalDAV_Backend_PDO($pdo);
         return $backend;
 

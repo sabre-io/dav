@@ -17,6 +17,9 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
             array(
                 'userId' => 'admin',
             ),
+            array(
+                'userId' => 'user1',
+            ),
         );
 
     }

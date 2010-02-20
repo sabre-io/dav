@@ -73,6 +73,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
             $calendarData = stream_get_contents($calendarData);
 
         $this->caldavBackend->updateCalendarObject($this->objectData['calendarid'],$this->objectData['uri'],$calendarData);
+        $this->objectData['calendardata'] = $calendarData;
 
     }
 

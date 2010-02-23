@@ -370,7 +370,10 @@ class Sabre_DAV_Server {
     protected function httpHead() {
 
         $node = $this->tree->getNodeForPath($this->getRequestUri());
-        if ($node instanceof Sabre_DAV_IFile && $size = $node->getSize())
+
+        if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_NotImplemented('HEAD is only implemented on File objects');
+
+        if ($size = $node->getSize())
             $this->httpResponse->setHeader('Content-Length',$size);
 
         if ($etag = $node->getETag()) {

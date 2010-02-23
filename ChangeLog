@@ -1,3 +1,6 @@
+1.0.6-stable (2010-02-23)
+	* Fixed: Issue 19: HEAD requests on Collections
+
 1.0.5-stable (2010-01-22)
 	* Fixed: Fatal error when a malformed url was used for unlocking, in
 	  conjuction with Sabre.autoload.php due to a incorrect filename.

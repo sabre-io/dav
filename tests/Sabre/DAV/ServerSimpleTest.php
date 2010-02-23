@@ -274,6 +274,44 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testGETOnCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'GET',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml; charset=utf-8',
+        ),$this->response->headers);
+
+        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
+
+    }
+
+    function testHEADOnCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'HEAD',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml; charset=utf-8',
+        ),$this->response->headers);
+
+        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
+
+    }
+
     function testBaseUri() {
 
         $serverVars = array(

@@ -328,11 +328,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
-
-        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
 
     }
 

@@ -20,6 +20,7 @@
 	  uri's.
 	* Changed: Sabre_HTTP_Response now returns false if headers are already
 	  sent and header-methods are called.
+	* Fixed: Issue 19: HEAD requests on Collections
 
 1.0.5-stable (2010-01-22)
 	* Fixed: Fatal error when a malformed url was used for unlocking, in

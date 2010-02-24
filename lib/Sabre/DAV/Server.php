@@ -371,22 +371,28 @@ class Sabre_DAV_Server {
 
         $node = $this->tree->getNodeForPath($this->getRequestUri());
 
-        if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_NotImplemented('HEAD is only implemented on File objects');
+        /* This information is only collection for File objects.
+         * Ideally we want to throw 405 Method Not Allowed for every 
+         * non-file, but MS Office does not like this
+         */
+        if ($node instanceof Sabre_DAV_IFile) { 
+            if ($size = $node->getSize())
+                $this->httpResponse->setHeader('Content-Length',$size);
 
-        if ($size = $node->getSize())
-            $this->httpResponse->setHeader('Content-Length',$size);
+            if ($etag = $node->getETag()) {
 
-        if ($etag = $node->getETag()) {
+                $this->httpResponse->setHeader('ETag',$etag);
 
-            $this->httpResponse->setHeader('ETag',$etag);
+            }
 
+            if (!$contentType = $node->getContentType())
+                $contentType = 'application/octet-stream';
+
+            $this->httpResponse->setHeader('Content-Type', $contentType);
+            if ($lastMod = $node->getLastModified()) {
+                $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $node->getLastModified()));
+            }
         }
-
-        if (!$contentType = $node->getContentType())
-            $contentType = 'application/octet-stream';
-
-        $this->httpResponse->setHeader('Content-Type', $contentType);
-        $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $node->getLastModified()));
         $this->httpResponse->sendStatus(200);
 
     }

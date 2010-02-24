@@ -1,3 +1,6 @@
+1.0.7-stable (2010-02-24)
+	* Fixed: Issue 19 regression for MS Office
+
 1.0.6-stable (2010-02-23)
 	* Fixed: Issue 19: HEAD requests on Collections
 

@@ -1,7 +1,5 @@
 <?php
 
-// {$Id$} //
-
 /*
 
 CalendarServer example

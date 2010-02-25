@@ -1,7 +1,5 @@
 <?php
 
-// {$Id$} //
-
 // !!!! Make sure the Sabre directory is in the include_path !!!
 // example:
 set_include_path('lib/' . PATH_SEPARATOR . get_include_path()); 

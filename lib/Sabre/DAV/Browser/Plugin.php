@@ -11,6 +11,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
+ * @version $Id: Plugin.php 826 2010-02-01 08:09:28Z evertpot@gmail.com $
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -166,20 +167,31 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         $name = $this->escapeHTML(basename($file['href']));
 
+        $type = null;
+
         if (isset($file[200]['{DAV:}resourcetype'])) {
             $type = $file[200]['{DAV:}resourcetype']->getValue();
-            if ($type=='{DAV:}collection') {
-                $type = 'Directory';
-            } elseif ($type=='') {
-                if (isset($file[200]['{DAV:}getcontenttype'])) {
-                    $type = $file[200]['{DAV:}getcontenttype'];
-                } else {
-                    $type = 'Unknown';
-                }
-            } elseif (is_array($type)) {
+
+            // resourcetype can have multiple values
+            if (is_array($type)) {
                 $type = implode(', ', $type);
             }
+
+            // Some name mapping is preferred 
+            switch($type) {
+                case '{DAV:}collection' :
+                    $type = 'Collection';
+                    break;
+            }
         }
+
+        // If no resourcetype was found, we attempt to use
+        // the contenttype property
+        if (!$type && isset($file[200]['{DAV:}getcontenttype'])) {
+            $type = $file[200]['{DAV:}getcontenttype'];
+        }
+        if (!$type) $type = 'Unknown';
+
         $type = $this->escapeHTML($type);
         $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
         $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?date(DATE_ATOM,$file[200]['{DAV:}getlastmodified']->getTime()):'';

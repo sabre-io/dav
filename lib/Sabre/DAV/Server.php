@@ -5,6 +5,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
+ * @version $Id: Server.php 913 2010-02-24 03:14:17Z evertpot@gmail.com $
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -285,7 +286,8 @@ class Sabre_DAV_Server {
      */
     protected function httpGet() {
 
-        $node = $this->tree->getNodeForPath($this->getRequestUri(),0);
+        $uri = $this->getRequestUri();
+        $node = $this->tree->getNodeForPath($uri,0);
 
         if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_NotImplemented('GET is only implemented on File objects');
         $body = $node->get();
@@ -298,10 +300,19 @@ class Sabre_DAV_Server {
             $body = $stream;
         }
 
-        if (!$contentType = $node->getContentType())
-            $contentType = 'application/octet-stream';
+        /*
+         * TODO: getetag, getlastmodified, getsize should also be used using
+         * this method
+         */
+        list($properties) = $this->getPropertiesForPath($uri,array(
+            '{DAV:}getcontenttype',
+        ));
 
-        $this->httpResponse->setHeader('Content-Type', $contentType);
+        if (isset($properties[200]['{DAV:}getcontenttype'])) {
+           $this->httpResponse->setHeader('Content-Type', $properties[200]['{DAV:}getcontenttype']);
+        } else {
+           $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+        }
 
         if($lastModified = $node->getLastModified())
             $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $lastModified));

@@ -13,11 +13,19 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
     function setUp() {
 
+        if (file_exists($this->tempDir.'../.sabredav')) unlink($this->tempDir.'../.sabredav');
         parent::setUp();
         file_put_contents($this->tempDir . '/test2.txt', 'Test contents2');
         mkdir($this->tempDir . '/col');
         file_put_contents($this->tempDir . 'col/test.txt', 'Test contents');
         $this->server->addPlugin(new Sabre_DAV_Locks_Plugin());
+
+    }
+
+    function tearDown() {
+
+        parent::tearDown();
+        if (file_exists($this->tempDir.'../.sabredav')) unlink($this->tempDir.'../.sabredav');
 
     }
 

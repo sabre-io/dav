@@ -62,7 +62,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property  {
      */
     public function getResponseProperties() {
 
-        return $this->responseProperties = $responseProperties;
+        return $this->responseProperties;
 
     }
 

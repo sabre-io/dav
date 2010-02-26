@@ -890,6 +890,23 @@ class Sabre_DAV_Server {
     }
 
     /**
+     * Returns a list of properties for a path
+     *
+     * This is a simplified version getPropertiesForPath.
+     * if you aren't interested in status codes, but you just
+     * want to have a flat list of properties. Use this method.
+     *
+     * @param string $path
+     * @param array $propertyNames
+     */
+    public function getProperties($path, $propertyNames) {
+
+        $result = $this->getPropertiesForPath($path,$propertyNames,0);
+        return $result[0][200];
+
+    }
+
+    /**
      * Returns a list of properties for a given path
      * 
      * The path that should be supplied should have the baseUrl stripped out

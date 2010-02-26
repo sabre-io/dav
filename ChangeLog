@@ -4,6 +4,7 @@
 	  this.
 	* Added: PDO authentication backend.
 	* Added: Example sql for auth, caldav, locks for sqlite.
+	* Added: Sabre_DAV_Browser_GuessContentType plugin
 	* Changed: Authentication plugin refactored, making it possible to
 	  implement non-digest authentication.
 	* Fixed: Better error display in browser plugin.
@@ -11,7 +12,7 @@
 	* Added: XML utility class with helper functions for the WebDAV protocol.
 	* Added: Tons of unittests
 	* Added: PrincipalCollection and Principal classes
-	* Added: Sabre_DAV_Browser_GuessContentType plugin
+	* Added: Sabre_DAV_Server::getProperties for easy property retrieval
 	* Changed: {DAV:}resourceType defaults to 0
 	* Changed: Any non-null resourceType now gets a / appended to the href
 	  value. Before this was just for {DAV:}collection's, but this is now also

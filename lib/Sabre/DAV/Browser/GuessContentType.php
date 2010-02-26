@@ -29,7 +29,7 @@ class Sabre_DAV_Browser_GuessContentType extends Sabre_DAV_ServerPlugin {
     public $extensionMap = array(
 
         // images
-        'jpg' => 'image/jpg',
+        'jpg' => 'image/jpeg',
         'gif' => 'image/gif',
         'png' => 'image/png',
 

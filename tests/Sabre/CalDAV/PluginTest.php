@@ -311,8 +311,8 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $keys = array(
             'uri' => 'NEWCALENDAR',
             'id' => null,
-            '{urn:ietf:params:xml:ns:caldav}description' => 'Calendar restricted to events.',
-            '{DAV:}displayname' => 'Lisa\'s calendar',
+            '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar restricted to events.',
+            '{DAV:}displayname' => 'Lisa\'s Events',
         );
 
         foreach($keys as $key=>$value) {

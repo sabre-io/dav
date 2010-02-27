@@ -67,7 +67,7 @@ CREATE TABLE calendars (
             'id'                => $returnedId,
             'uri'               => 'somerandomid',
             '{DAV:}displayname' => '',
-            '{urn:ietf:params:xml:ns:caldav}description' => '',
+            '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
         );
 
         $this->assertType('array',$calendars);
@@ -107,7 +107,7 @@ CREATE TABLE calendars (
             'id'                => $newId,
             'uri'               => 'somerandomid',
             '{DAV:}displayname' => 'myCalendar',
-            '{urn:ietf:params:xml:ns:caldav}description' => '',
+            '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
         );
 
         $this->assertType('array',$calendars);

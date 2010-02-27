@@ -30,7 +30,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     public $propertyMap = array(
         '{DAV:}displayname'                          => 'displayname',
-        '{urn:ietf:params:xml:ns:caldav}description' => 'description',
+        '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'description',
         '{http://apple.com/ns/ical/}calendar-order'  => 'calendarorder',
         '{http://apple.com/ns/ical/}calendar-color'  => 'calendarcolor',
     );

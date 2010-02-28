@@ -102,6 +102,7 @@ class Sabre_DAV_Auth_Backend_AbstractDigestTest extends PHPUnit_Framework_TestCa
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = new Sabre_HTTP_Request(array(
             'PHP_AUTH_DIGEST' => $header,
+            'REQUEST_METHOD'  => 'PUT',
         ));
         $server->httpRequest = $request;
 

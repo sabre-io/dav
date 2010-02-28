@@ -5,7 +5,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
     function setUp() {
 
         parent::setUp();
-        $plugin = new Sabre_DAV_TemporaryFileFilterPlugin('temp/tff');
+        $plugin = new Sabre_DAV_TemporaryFileFilterPlugin(SABRE_TEMPDIR . '/tff');
         $this->server->addPlugin($plugin);
 
     }
@@ -28,7 +28,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'Content-Length' => '0',
         ),$this->response->headers);
 
-        $this->assertEquals('Testing new file',file_get_contents($this->tempDir . '/testput.txt'));
+        $this->assertEquals('Testing new file',file_get_contents(SABRE_TEMPDIR . '/testput.txt'));
 
     }
 
@@ -51,7 +51,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
 
-        $this->assertFalse(file_exists($this->tempDir . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
+        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
 
     }
 
@@ -75,7 +75,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
 
-        $this->assertFalse(file_exists($this->tempDir . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
+        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
 
 
         $this->server->exec();
@@ -129,8 +129,8 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
 
     function testLockNonExistant() {
 
-        mkdir($this->tempDir . '/locksdir');
-        $locksBackend = new Sabre_DAV_Locks_Backend_FS($this->tempDir . '/locksdir');
+        mkdir(SABRE_TEMPDIR . '/locksdir');
+        $locksBackend = new Sabre_DAV_Locks_Backend_FS(SABRE_TEMPDIR . '/locksdir');
         $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
 
@@ -159,7 +159,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
         $this->assertTrue(preg_match('/^opaquelocktoken:(.*)$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
         $this->assertEquals('true',$this->response->headers['X-Sabre-Temp']);
         
-        $this->assertFalse(file_exists($this->tempDir . '/._testlock.txt'),'._testlock.txt should not exist in the regular file structure.');
+        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testlock.txt'),'._testlock.txt should not exist in the regular file structure.');
 
     }
 

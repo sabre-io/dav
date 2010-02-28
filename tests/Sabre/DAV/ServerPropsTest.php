@@ -7,17 +7,17 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
     protected function getRootNode() {
 
-        return new Sabre_DAV_FSExt_Directory($this->tempDir);
+        return new Sabre_DAV_FSExt_Directory(SABRE_TEMPDIR);
 
     }
 
     function setUp() {
 
-        if (file_exists($this->tempDir.'../.sabredav')) unlink($this->tempDir.'../.sabredav');
+        if (file_exists(SABRE_TEMPDIR.'../.sabredav')) unlink(SABRE_TEMPDIR.'../.sabredav');
         parent::setUp();
-        file_put_contents($this->tempDir . '/test2.txt', 'Test contents2');
-        mkdir($this->tempDir . '/col');
-        file_put_contents($this->tempDir . 'col/test.txt', 'Test contents');
+        file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
+        mkdir(SABRE_TEMPDIR . '/col');
+        file_put_contents(SABRE_TEMPDIR . 'col/test.txt', 'Test contents');
         $this->server->addPlugin(new Sabre_DAV_Locks_Plugin());
 
     }
@@ -25,7 +25,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     function tearDown() {
 
         parent::tearDown();
-        if (file_exists($this->tempDir.'../.sabredav')) unlink($this->tempDir.'../.sabredav');
+        if (file_exists(SABRE_TEMPDIR.'../.sabredav')) unlink(SABRE_TEMPDIR.'../.sabredav');
 
     }
 

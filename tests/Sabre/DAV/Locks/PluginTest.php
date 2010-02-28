@@ -7,8 +7,8 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     function setUp() {
 
         parent::setUp();
-        mkdir('temp/locksdir');
-        $locksBackend = new Sabre_DAV_Locks_Backend_FS('temp/locksdir');
+        mkdir(SABRE_TEMPDIR . '/locksdir');
+        $locksBackend = new Sabre_DAV_Locks_Backend_FS(SABRE_TEMPDIR . '/locksdir');
         $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;

@@ -26,28 +26,11 @@ class Sabre_HTTP_ResponseTest extends PHPUnit_Framework_TestCase {
 
     
     }
-    function testSetHeader2() {
-
-        $response = new Sabre_HTTP_Response();
-        $this->assertFalse(
-            $response->setHeader('Content-Type','text/html')
-        );
-
-    }
 
     function testSendStatus() {
 
         $this->response->sendStatus(404);
         $this->assertEquals('HTTP/1.1 404 Not Found', $this->response->status);
-
-    }
-
-    function testSendStatus2() {
-
-        $response = new Sabre_HTTP_Response();
-        $this->assertFalse( 
-            $response->sendStatus(404)
-        ); 
 
     }
 

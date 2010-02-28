@@ -4,14 +4,14 @@ class Sabre_DAV_Auth_Backend_PDOTest extends PHPUnit_Framework_TestCase {
 
     function tearDown() {
 
-        if (file_exists('temp/pdobackend')) unlink('temp/pdobackend');
-        if (file_exists('temp/pdobackend2')) unlink('temp/pdobackend2');
+        if (file_exists(SABRE_TEMPDIR . '/pdobackend')) unlink(SABRE_TEMPDIR . '/pdobackend');
+        if (file_exists(SABRE_TEMPDIR . '/pdobackend2')) unlink(SABRE_TEMPDIR . '/pdobackend2');
 
     }
 
     function testConstruct() {
 
-        $pdo = new PDO('sqlite:temp/pdobackend');
+        $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
         $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT)');
         $pdo->query('INSERT INTO users VALUES ("user","hash")');
@@ -26,7 +26,7 @@ class Sabre_DAV_Auth_Backend_PDOTest extends PHPUnit_Framework_TestCase {
      */
     function testUserInfo() {
 
-        $pdo = new PDO('sqlite:temp/pdobackend2');
+        $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend2');
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
         $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT)');
         $pdo->query('INSERT INTO users VALUES ("user","hash")');

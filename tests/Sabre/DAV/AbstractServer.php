@@ -7,7 +7,7 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
     protected $response;
     protected $request;
     protected $server;
-    protected $tempDir = 'temp/';
+    protected $tempDir = SABRE_TEMPDIR; 
 
     function setUp() {
 
@@ -15,19 +15,19 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
         $tree = new Sabre_DAV_ObjectTree($this->getRootNode());
         $this->server = new Sabre_DAV_Server($tree);
         $this->server->httpResponse = $this->response;
-        file_put_contents($this->tempDir . '/test.txt', 'Test contents');
+        file_put_contents(SABRE_TEMPDIR . '/test.txt', 'Test contents');
 
     }
 
     function tearDown() {
 
-        $this->deleteTree($this->tempDir,false);
+        $this->deleteTree(SABRE_TEMPDIR,false);
 
     }
 
     protected function getRootNode() {
 
-        return new Sabre_DAV_FS_Directory($this->tempDir);
+        return new Sabre_DAV_FS_Directory(SABRE_TEMPDIR);
 
     }
 

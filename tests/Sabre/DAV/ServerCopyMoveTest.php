@@ -7,19 +7,18 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     private $response;
     private $request;
     private $server;
-    private $tempDir = 'temp/';
 
     function setUp() {
 
         $this->response = new Sabre_HTTP_ResponseMock();
-        $dir = new Sabre_DAV_FS_Directory($this->tempDir);
+        $dir = new Sabre_DAV_FS_Directory(SABRE_TEMPDIR);
         $tree = new Sabre_DAV_ObjectTree($dir);
         $this->server = new Sabre_DAV_Server($tree);
         $this->server->httpResponse = $this->response;
-        file_put_contents($this->tempDir . '/test.txt', 'Test contents');
-        file_put_contents($this->tempDir . '/test2.txt', 'Test contents2');
-        mkdir($this->tempDir . '/col');
-        file_put_contents($this->tempDir . 'col/test.txt', 'Test contents');
+        file_put_contents(SABRE_TEMPDIR . '/test.txt', 'Test contents');
+        file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
+        mkdir(SABRE_TEMPDIR . '/col');
+        file_put_contents(SABRE_TEMPDIR . 'col/test.txt', 'Test contents');
 
     }
 
@@ -27,7 +26,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
 
         $cleanUp = array('test.txt','testput.txt','testcol','test2.txt','test3.txt','col/test.txt','col','col2/test.txt','col2');
         foreach($cleanUp as $file) {
-            $tmpFile = $this->tempDir . '/' . $file;
+            $tmpFile = SABRE_TEMPDIR . '/' . $file;
             if (file_exists($tmpFile)) {
                
                 if (is_dir($tmpFile)) {
@@ -61,7 +60,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
-        $this->assertEquals('Test contents',file_get_contents($this->tempDir . '/test2.txt'));
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test2.txt'));
 
     }
 
@@ -84,8 +83,8 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
-        $this->assertEquals('Test contents',file_get_contents($this->tempDir . '/test2.txt'));
-        $this->assertFalse(file_exists($this->tempDir . '/test.txt'),'The sourcefile test.txt should no longer exist at this point');
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
+        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/test.txt'),'The sourcefile test.txt should no longer exist at this point');
 
     }
 
@@ -109,7 +108,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
-        $this->assertEquals('Test contents2',file_get_contents($this->tempDir . '/test2.txt'));
+        $this->assertEquals('Test contents2',file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
 
 
     }
@@ -173,7 +172,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
-        $this->assertEquals('Test contents',file_get_contents($this->tempDir . '/col2/test.txt'));
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/col2/test.txt'));
 
     }
 
@@ -196,7 +195,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
-        $this->assertEquals('Test contents',file_get_contents($this->tempDir . '/test3.txt'));
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/test3.txt'));
 
     }
 
@@ -219,7 +218,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
          );
 
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
-        $this->assertEquals('Test contents',file_get_contents($this->tempDir . '/col2/test.txt'));
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/col2/test.txt'));
 
     }
 

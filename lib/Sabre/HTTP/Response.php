@@ -103,6 +103,21 @@ class Sabre_HTTP_Response {
     }
 
     /**
+     * Sets a bunch of HTTP Headers
+     *
+     * headersnames are specified as keys, value in the array value
+     * 
+     * @param array $headers 
+     * @return void
+     */
+    public function setHeaders(array $headers) {
+
+        foreach($headers as $key=>$value)
+            $this->setHeader($key, $value);
+
+    }
+
+    /**
      * Sends the entire response body
      *
      * This method can accept either an open filestream, or a string.

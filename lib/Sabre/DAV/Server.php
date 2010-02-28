@@ -304,25 +304,30 @@ class Sabre_DAV_Server {
          * TODO: getetag, getlastmodified, getsize should also be used using
          * this method
          */
-        list($properties) = $this->getPropertiesForPath($uri,array(
-            '{DAV:}getcontenttype',
-        ));
+        $httpHeaders = $this->getHTTPHeaders($uri);
 
-        if (isset($properties[200]['{DAV:}getcontenttype'])) {
-           $this->httpResponse->setHeader('Content-Type', $properties[200]['{DAV:}getcontenttype']);
-        } else {
-           $this->httpResponse->setHeader('Content-Type', 'application/octet-stream');
+        /* ContentType needs to get a default, because many webservers will otherwise
+         * default to text/html, and we don't want this
+         */
+        if (!isset($httpHeaders['Content-Type'])) {
+            $httpHeaders['Content-Type'] = 'application/octet-stream';
         }
 
-        if($lastModified = $node->getLastModified())
-            $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $lastModified));
-       
 
-        if ($etag = $node->getETag()) 
-            $this->httpResponse->setHeader('ETag',$etag);
+        if (isset($httpHeaders['Content-Length'])) {
+
+            $nodeSize = $httpHeaders['Content-Length'];
+
+            // Need to unset Content-Length, because we'll handle that during figuring out the range
+            unset($httpHeaders['Content-Length']);
+
+        } else {
+            $nodeSize = null;
+        }
+        
 
 
-        $nodeSize = $node->getSize();
+        $this->httpResponse->setHeaders($httpHeaders);
 
         // We're only going to support HTTP ranges if the backend provided a filesize
         if ($nodeSize && $range = $this->getHTTPRange()) {
@@ -385,23 +390,9 @@ class Sabre_DAV_Server {
          * Ideally we want to throw 405 Method Not Allowed for every 
          * non-file, but MS Office does not like this
          */
-        if ($node instanceof Sabre_DAV_IFile) { 
-            if ($size = $node->getSize())
-                $this->httpResponse->setHeader('Content-Length',$size);
-
-            if ($etag = $node->getETag()) {
-
-                $this->httpResponse->setHeader('ETag',$etag);
-
-            }
-
-            if (!$contentType = $node->getContentType())
-                $contentType = 'application/octet-stream';
-
-            $this->httpResponse->setHeader('Content-Type', $contentType);
-            if ($lastMod = $node->getLastModified()) {
-                $this->httpResponse->setHeader('Last-Modified', date(DateTime::RFC1123, $node->getLastModified()));
-            }
+        if ($node instanceof Sabre_DAV_IFile) {
+            $headers = $this->getHTTPHeaders($this->getRequestUri());
+            $this->httpResponse->setHeaders($headers);
         }
         $this->httpResponse->sendStatus(200);
 
@@ -904,6 +895,46 @@ class Sabre_DAV_Server {
         $result = $this->getPropertiesForPath($path,$propertyNames,0);
         return $result[0][200];
 
+    }
+
+    /**
+     * Returns a list of HTTP headers for a particular resource
+     *
+     * The generated http headers are based on properties provided by the 
+     * resource. The method basically provides a simple mapping between
+     * DAV property and HTTP header.
+     *
+     * The headers are intended to be used for HEAD and GET requests.
+     * 
+     * @param string $path
+     */
+    public function getHTTPHeaders($path) {
+
+        $propertyMap = array(
+            '{DAV:}getcontenttype'   => 'Content-Type',
+            '{DAV:}getcontentlength' => 'Content-Length',
+            '{DAV:}getlastmodified'  => 'Last-Modified', 
+            '{DAV:}getetag'          => 'ETag',
+        );
+
+        $properties = $this->getProperties($path,array_keys($propertyMap));
+
+        $headers = array();
+        foreach($propertyMap as $property=>$header) {
+            if (isset($properties[$property])) {
+                if (is_scalar($properties[$property])) { 
+                    $headers[$header] = $properties[$property];
+
+                // GetLastModified gets special cased 
+                } elseif ($properties[$property] instanceof Sabre_DAV_Property_GetLastModified) {
+                    $headers[$header] = $properties[$property]->getTime()->format(DateTime::RFC1123);
+                }
+
+            }
+        }
+
+        return $headers;
+        
     }
 
     /**

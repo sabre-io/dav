@@ -125,6 +125,7 @@ class Sabre_DAV_Server {
             $error->appendChild($DOM->createElement('s:file',$e->getFile()));
             $error->appendChild($DOM->createElement('s:line',$e->getLine()));
             $error->appendChild($DOM->createElement('s:code',$e->getCode()));
+            $error->appendChild($DOM->createElement('s:stacktrace',$e->getTraceAsString()));
 
             if($e instanceof Sabre_DAV_Exception) {
                 $httpCode = $e->getHTTPCode();
@@ -517,6 +518,7 @@ class Sabre_DAV_Server {
 
         // First we'll do a check to see if the resource already exists
         try {
+
             $node = $this->tree->getNodeForPath($this->getRequestUri());
             
             // We got this far, this means the node already exists.

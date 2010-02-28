@@ -392,6 +392,9 @@ class Sabre_DAV_Server {
          */
         if ($node instanceof Sabre_DAV_IFile) {
             $headers = $this->getHTTPHeaders($this->getRequestUri());
+            if (!isset($headers['Content-Type'])) {
+                $headers['Content-Type'] = 'application/octet-stream';
+            }
             $this->httpResponse->setHeaders($headers);
         }
         $this->httpResponse->sendStatus(200);

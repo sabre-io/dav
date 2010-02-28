@@ -18,8 +18,8 @@
     </target>    
 
     <target name="release" depends="init,test,build">
-        <echo>Creating Subversion release tag</echo>
-        <exec command="svn cp ^/trunk ^/tags/${sabredav.version} -m 'Release tag ${sabredav.version}'" checkreturn="true" passthru="1" />
+        <echo>Creating Mercurial release tag</echo>
+        <exec command="hg tag version-${sabredav.version}" checkreturn="true" passthru="1" />
         <echo>Pushing to pearfarm</echo>
         <exec command="pearfarm push Sabre_DAV-${sabredav.version}_PEARFARM.tgz" checkreturn="true" passthru="1" />
         <echo>Uploading to Google Code</echo>

@@ -34,10 +34,10 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
 
         if ($time instanceof DateTime) {
             $this->time = $time;
-        } elseif (is_int($time)) {
+        } elseif (is_int($time) || ctype_digit($time)) {
             $this->time = new DateTime('@' . $time);
         } else {
-            $this->time = strtotime($time);
+            $this->time = new DateTime($time);
         }
 
         // Setting timezone to UTC

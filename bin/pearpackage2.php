@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 include dirname(__FILE__) . '/../lib/Sabre/DAV/Version.php';
@@ -64,23 +65,25 @@ $rootDir = realpath(dirname(__FILE__) . '/../');
 $fileList  = parsePath($rootDir.'/lib','php','/^(.*)\.php$/');
 $fileList .= parsePath($rootDir.'/examples','doc');
 $fileList .= parsePath($rootDir.'/tests','test','/^(.*)\.(php|xml)$/');
-$fileList .= parsePath($rootDir.'/bin','script','/^(.*)\.py$/');
+$fileList .= parsePath($rootDir.'/bin','script','/^naturalselection\.py$/');
+$fileList .= parsePath($rootDir.'/ChangeLog','doc');
+$fileList .= parsePath($rootDir.'/LICENSE','doc');
 
 // Lastly the install-list
 $directory = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootDir.'/lib'));
 
 $installList = '';
 foreach($directory as $path) {
-
     $basePath = trim(substr($path,strlen($rootDir)),'/');
 
     // This just takes the 'lib/' off every path name, so it will be installed in the correct location
     $installList .= '        <install name="' . $basePath . '" as="' . substr($basePath,4) . "\" />\n";
 
 }
+$installList .= '        <install name="bin/naturalselection.py" as="naturalselection" />';
 
 
-echo <<<XML
+$package = <<<XML
 <?xml version="1.0"?>
 <package version="2.0" 
     xmlns="http://pear.php.net/dtd/package-2.0"> 
@@ -114,7 +117,7 @@ echo <<<XML
     <dependencies>
       <required>
         <php><min>{$minPHPVersion}</min></php>
-        <pearinstaller><min>1.8</min></pearinstaller>
+        <pearinstaller><min>1.4</min></pearinstaller>
       </required>
     </dependencies>
     <phprelease>
@@ -125,3 +128,8 @@ echo <<<XML
 </package>
 XML;
   
+if (isset($argv) && in_array('make',$argv)) {
+    file_put_contents('package.xml',$package);
+} else {
+    echo $package;
+}

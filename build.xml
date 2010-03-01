@@ -2,10 +2,10 @@
 <project name="SabreDAV" default="build" basedir=".">
 
     <target name="build" depends="init,test">
-        <exec command="bin/pearpackage.php make pearfarm" checkreturn="true" />
+        <exec command="bin/pearpackage2.php make pearfarm" checkreturn="true" />
         <exec command="pear package" passthru="1" />
         <move file="Sabre_DAV-${sabredav.version}.tgz" tofile="Sabre_DAV-${sabredav.version}_PEARFARM.tgz" />
-        <exec command="bin/pearpackage.php make" checkreturn="true" />
+        <exec command="bin/pearpackage2.php make" checkreturn="true" />
         <exec command="pear package" passthru="1" />
     </target>
 

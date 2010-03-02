@@ -60,7 +60,9 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
         // Making fields a comma-delimited list 
         $fields = implode(', ', $fields);
-        $stmt = $this->pdo->query("SELECT " . $fields . " FROM calendars WHERE principalUri = " . $this->pdo->quote($principalUri));
+        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM calendars WHERE principalUri = ?"); 
+        $stmt->execute(array($principalUri));
+
         $calendars = array();
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 

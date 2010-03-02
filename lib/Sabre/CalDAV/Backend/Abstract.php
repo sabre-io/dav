@@ -23,12 +23,15 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      * Creates a new calendar for a principal.
      *
      * If the creation was a success, an id must be returned that can be used to reference
-     * this calendar in other methods, such as updateCalendar
+     * this calendar in other methods, such as updateCalendar.
+     *
+     * This function must return a server-wide unique id that can be used 
+     * later to reference the calendar.
      *
      * @param string $principalUri
      * @param string $calendarUri
      * @param array $properties
-     * @return mixed
+     * @return string|int 
      */
     abstract function createCalendar($principalUri,$calendarUri,array $properties); 
 

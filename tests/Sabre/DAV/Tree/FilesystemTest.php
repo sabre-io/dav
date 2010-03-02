@@ -11,6 +11,7 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
 
     function setUp() {
 
+        Sabre_TestUtil::clearTempDir();
         file_put_contents(SABRE_TEMPDIR. '/file.txt','Body');
         mkdir(SABRE_TEMPDIR.'/dir');
         file_put_contents(SABRE_TEMPDIR.'/dir/subfile.txt','Body');
@@ -19,24 +20,7 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
 
     function tearDown() {
 
-        $files = array(
-            'file.txt',
-            'file2.txt',
-            'dir/subfile.txt',
-            'dir2/subfile.txt',
-            'dir',
-            'dir2',
-        );
-
-        foreach($files as $file) {
-            if (file_exists(SABRE_TEMPDIR.'/'.$file)) {
-                if (is_dir(SABRE_TEMPDIR.'/'.$file)) {
-                    rmdir(SABRE_TEMPDIR . '/'.$file);
-                } else {
-                    unlink(SABRE_TEMPDIR.'/' . $file);
-                }
-            }
-        }
+        Sabre_TestUtil::clearTempDir();
 
     }
 

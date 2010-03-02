@@ -21,14 +21,7 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
      */
     private $dataDir;
 
-    public function __construct($dataDir = null) {
-
-        if (is_null($dataDir)) {
-
-            $dataDir = ini_get('session.save_path') . '/sabredav';
-            if (!is_dir($dataDir)) mkdir($dataDir,0777,true);
-
-        }
+    public function __construct($dataDir) {
 
         $this->dataDir = $dataDir;
 
@@ -102,6 +95,8 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
         }
         $locks[] = $lockInfo;
         $this->putData($uri,$locks);
+        return true;
+
     }
 
     /**

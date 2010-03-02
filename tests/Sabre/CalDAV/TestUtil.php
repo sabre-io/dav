@@ -4,6 +4,13 @@ class Sabre_CalDAV_TestUtil {
 
     static function getBackend() {
 
+        $backend = new Sabre_CalDAV_Backend_PDO(self::getSQLiteDB());
+        return $backend;
+
+    }
+
+    static function getSQLiteDB() {
+
         if (file_exists(SABRE_TEMPDIR . '/testdb.sqlite'))
             unlink(SABRE_TEMPDIR . '/testdb.sqlite');
 
@@ -35,8 +42,7 @@ CREATE TABLE calendars (
 
         $pdo->query('INSERT INTO calendarobjects (calendardata, uri, calendarid, lastmodified) VALUES ("calendardata goes here", "UUID-2345", 1, DATETIME("NOW"))');
 
-        $backend = new Sabre_CalDAV_Backend_PDO($pdo);
-        return $backend;
+        return $pdo;
 
     }
 

@@ -46,4 +46,18 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetProperties() {
+        
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        
+        $result = $obj->getProperties(array('{urn:ietf:params:xml:ns:caldav}calendar-data'));
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-data', $result);
+        $this->assertType('string', $result['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+
+    }
+
 }

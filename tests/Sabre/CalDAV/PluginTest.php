@@ -344,4 +344,48 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testSupportedReportSetPropertyNonCalendar() {
+
+        $props = $this->server->getPropertiesForPath('/calendars/user1',array(
+            '{DAV:}supported-report-set',
+        ));
+
+        $this->assertArrayHasKey(0,$props);
+        $this->assertArrayHasKey(200,$props[0]);
+        $this->assertArrayHasKey('{DAV:}supported-report-set',$props[0][200]);
+       
+        $prop = $props[0][200]['{DAV:}supported-report-set'];
+        
+        $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
+        $value = array(
+        );
+        $this->assertEquals($value,$prop->getValue());
+
+    }
+
+    /**
+     * @depends testSupportedReportSetPropertyNonCalendar
+     */
+    function testSupportedReportSetProperty() {
+
+        $props = $this->server->getPropertiesForPath('/calendars/user1/UUID-123467',array(
+            '{DAV:}supported-report-set',
+        ));
+
+        $this->assertArrayHasKey(0,$props);
+        $this->assertArrayHasKey(200,$props[0]);
+        $this->assertArrayHasKey('{DAV:}supported-report-set',$props[0][200]);
+       
+        $prop = $props[0][200]['{DAV:}supported-report-set'];
+        
+        $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
+        $value = array(
+            '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
+            '{urn:ietf:params:xml:ns:caldav}calendar-query',
+        );
+        $this->assertEquals($value,$prop->getValue());
+
+    }
+
+
 }

@@ -1,4 +1,5 @@
 1.1.1-alpha (2010-??-??)
+	* Fixed: Evolution support for CalDAV
 	* Fixed: PDO-locks backend was pretty much completely broken. This is 
 	  100% unittested now.
 	* Fixed: Comma's between HTTP methods in 'Allow' method.

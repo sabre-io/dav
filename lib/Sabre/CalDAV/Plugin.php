@@ -18,6 +18,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * This is the official CalDAV namespace
      */
     const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
+    
+    /**
+     * This is the namespace for the proprietary calendarserver extensions
+     */
+    const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
      * The following constants are used to differentiate
@@ -80,6 +85,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
+        $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
 
     }
 

@@ -42,7 +42,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals(array(
             'DAV'            => '1, 3, drinking',
             'MS-Author-Via'  => 'DAV',
-            'Allow'          => 'OPTIONS GET HEAD DELETE TRACE PROPFIND MKCOL PUT PROPPATCH COPY MOVE REPORT BEER WINE',
+            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, TRACE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE',
             'Accept-Ranges'  => 'bytes',
             'Content-Length' =>  '0',
         ),$this->response->headers);

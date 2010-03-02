@@ -265,7 +265,7 @@ class Sabre_DAV_Server {
         foreach($this->plugins as $plugin) $methods = array_merge($methods,$plugin->getHTTPMethods());
         array_unique($methods);
 
-        $this->httpResponse->setHeader('Allow',strtoupper(implode(' ',$methods)));
+        $this->httpResponse->setHeader('Allow',strtoupper(implode(', ',$methods)));
         $features = array('1','3');
 
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());

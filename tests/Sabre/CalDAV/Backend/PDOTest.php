@@ -27,7 +27,8 @@ CREATE TABLE calendars (
     id integer primary key asc, 
     principaluri text, 
     displayname text, 
-    uri text, 
+    uri text,
+    ctag integer,
     description text,
 	calendarorder integer,
     calendarcolor text	
@@ -49,6 +50,9 @@ CREATE TABLE calendars (
 
     }
 
+    /**
+     * @depends testConstruct
+     */
     function testGetCalendarsForUserNoCalendars() {
     
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
@@ -57,6 +61,9 @@ CREATE TABLE calendars (
 
     }
 
+    /**
+     * @depends testConstruct
+     */
     function testCreateCalendarAndFetch() {
     
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
@@ -82,6 +89,9 @@ CREATE TABLE calendars (
 
     }
 
+    /**
+     * @depends testConstruct
+     */
     function testUpdateCalendarAndFetch() {
 
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);

@@ -10,7 +10,8 @@ CREATE TABLE calendars (
     id integer primary key asc, 
     principaluri text, 
     displayname text, 
-    uri text, 
+    uri text,
+	ctag integer, 
     description text,
 	calendarorder integer,
     calendarcolor text	

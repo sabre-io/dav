@@ -70,7 +70,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             $calendar = array(
                 'id' => $row['id'],
                 'uri' => $row['uri'],
-                '{' . Sabre_CalDAV_Server::NS_CALENDARSERVER . '}getctag' => $row['ctag'],
+                '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag'],
             );
 
             foreach($this->propertyMap as $xmlName=>$dbName) {

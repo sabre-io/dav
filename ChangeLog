@@ -1,5 +1,9 @@
 1.1.1-alpha (2010-??-??)
-	* Added: More unittesting
+	* Fixed: PDO-locks backend was pretty much completely broken. This is 
+	  100% unittested now.
+	* Changed: default argument for Sabre_DAV_Locks_Backend_FS. This means
+	  a datadirectory must always be specified from now on.
+	* Added: Much more unittests
 
 1.1.0-alpha (2010-03-01)
 	* Added: CalDAV - RFC 4791

@@ -64,6 +64,17 @@ class Sabre_DAV_Property_SupportedReportSet extends Sabre_DAV_Property {
     }
 
     /**
+     * Returns the list of supported reports
+     * 
+     * @return array 
+     */
+    public function getValue() {
+
+        return $this->reports;
+
+    }
+
+    /**
      * Serializes the node 
      *
      * @param Sabre_DAV_Server $server

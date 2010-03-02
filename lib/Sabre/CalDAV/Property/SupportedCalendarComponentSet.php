@@ -35,7 +35,18 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Prop
        $this->components = $components; 
 
     }
-    
+
+    /**
+     * Returns the list of supported components 
+     * 
+     * @return array 
+     */
+    public function getValue() {
+
+        return $this->components;
+
+    }
+
     /**
      * Serializes the property in a DOMDocument 
      * 

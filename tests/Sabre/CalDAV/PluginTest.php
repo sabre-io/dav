@@ -387,5 +387,60 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testSupportedReportSetProperty
+     */
+    function testCalendarMultiGetReport() {
+
+        $body =
+            '<?xml version="1.0"?>' .
+            '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' . 
+            '<d:prop>' .
+            '  <c:calendar-data />' .
+            '  <d:getetag />' .
+            '</d:prop>' .
+            '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
+            '</c:calendar-multiget>';
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/calendars/user1',
+        ));
+        $request->setBody($body);
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status);
+
+        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+
+        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
+
+        $check = array(
+            '/d:multistatus',
+            '/d:multistatus/d:response',
+            '/d:multistatus/d:response/d:href',
+            '/d:multistatus/d:response/d:propstat',
+            '/d:multistatus/d:response/d:propstat/d:prop',
+            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
+            '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
+            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 Ok',
+        );
+
+        foreach($check as $v1=>$v2) {
+
+            $xpath = is_int($v1)?$v2:$v1;
+
+            $result = $xml->xpath($xpath);
+            $this->assertEquals(1,count($result));
+
+            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
+
+        }
+
+    }
+
 
 }

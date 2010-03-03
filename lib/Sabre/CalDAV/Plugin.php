@@ -279,7 +279,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
 
         $filterNode = $dom->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','filter');
-        $filters = $this->parseFilters($filterNode->item(0));
+        $filters = $this->parseCalendarQueryFilters($filterNode->item(0));
 
         // Making sure we're always requesting the calendar-data property
         $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
@@ -316,7 +316,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param DOMNode $domNode 
      * @return array 
      */
-    protected function parseFilters($domNode) {
+    public function parseCalendarQueryFilters($domNode) {
 
         $filters = array();
 
@@ -326,18 +326,18 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 case '{urn:ietf:params:xml:ns:caldav}comp-filter' :
                     
-                    $filters[] = array(
+                    $filter = array(
                         'type' => self::FILTER_COMPFILTER, 
                         'name' => $child->getAttribute('name'),
-                        'filters' => $this->parseFilters($child),
+                        'isnotdefined' => false,
                     );
-                    break;
 
-                case '{urn:ietf:params:xml:ns:caldav}is-not-defined' :
-                
-                    $filters[] = array(
-                        'type' => self::FILTER_ISNOTDEFINED,
-                    );
+                    if ($child->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','is-not-defined')->length==1) {
+                        $filter['isnotdefined'] = true;
+                    } else {
+                        $filter['filters'] = $this->parseCalendarQueryFilters($child);
+                    }
+                    $filters[] = $filter;
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}time-range' :
@@ -351,20 +351,34 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 case '{urn:ietf:params:xml:ns:caldav}prop-filter' :
                 
-                    $filters[] = array(
+                    $filter = array(
                         'type'  => self::FILTER_PROPFILTER,
                         'name' => $child->getAttribute('name'),
-                        'filters' => $this->parseFilters($child),
+                        'isnotdefined' => false,
                     );
+
+                    if ($child->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','is-not-defined')->length==1) {
+                        $filter['isnotdefined'] = true;
+                    } else {
+                        $filter['filters'] = $this->parseCalendarQueryFilters($child);
+                    }
+                    $filters[] = $filter;
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}param-filter' :
                 
-                    $filters[] = array(
+                    $filter = array(
                         'type'  => self::FILTER_PARAMFILTER,
                         'name' => $child->getAttribute('name'),
-                        'filters' => $this->parseFilters($child),
+                        'isnotdefined' => false,
                     );
+
+                    if ($child->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','is-not-defined')->length==1) {
+                        $filter['isnotdefined'] = true;
+                    } else {
+                        $filter['filters'] = $this->parseCalendarQueryFilters($child);
+                    }
+                    $filters[] = $filter;
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}text-match' :
@@ -374,8 +388,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                     $filters[] = array(
                         'type'  => self::FILTER_TEXTMATCH,
-                        'collation' => $child->getAttribute('collation'),
-                        'negate-condition' => $child->getAttribute('negate-condition'),
+                        'collation' => $collation,
+                        'negate-condition' => $child->getAttribute('negate-condition')==='yes',
                         'value' => $child->nodeValue,
                     );
                     break;
@@ -392,7 +406,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * Verify if a list of filters applies to the calendar data object 
      *
      * The calendarData object must be a valid iCalendar blob. The list of 
-     * filters must be formatted as parsed by Sabre_CalDAV_Plugin::parseFilters
+     * filters must be formatted as parsed by Sabre_CalDAV_Plugin::parseCalendarQueryFilters
      *
      * @param string $calendarData 
      * @param array $filters 

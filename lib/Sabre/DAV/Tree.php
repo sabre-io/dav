@@ -59,10 +59,10 @@ abstract class Sabre_DAV_Tree {
      * copyNode 
      * 
      * @param Sabre_DAV_INode $source 
-     * @param Sabre_DAV_IDirectory $destination 
+     * @param Sabre_DAV_ICollection $destination 
      * @return void
      */
-    protected function copyNode(Sabre_DAV_INode $source,Sabre_DAV_IDirectory $destinationParent,$destinationName = null) {
+    protected function copyNode(Sabre_DAV_INode $source,Sabre_DAV_ICollection $destinationParent,$destinationName = null) {
 
         if (!$destinationName) $destinationName = $source->getName();
 
@@ -80,7 +80,7 @@ abstract class Sabre_DAV_Tree {
             $destinationParent->createFile($destinationName,$data);
             $destination = $destinationParent->getChild($destinationName);
 
-        } elseif ($source instanceof Sabre_DAV_IDirectory) {
+        } elseif ($source instanceof Sabre_DAV_ICollection) {
 
             $destinationParent->createDirectory($destinationName);
             

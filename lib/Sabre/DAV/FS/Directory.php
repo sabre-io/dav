@@ -9,7 +9,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_IDirectory, Sabre_DAV_IQuota {
+class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICollection, Sabre_DAV_IQuota {
 
     /**
      * Creates a new file in the directory 

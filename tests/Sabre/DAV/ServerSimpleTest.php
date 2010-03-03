@@ -143,51 +143,6 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
-    function testMkcol() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/testcol',
-            'REQUEST_METHOD' => 'MKCOL',
-        );
-
-        $request = new Sabre_HTTP_Request($serverVars);
-        $request->setBody("");
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Length' => '0',
-        ),$this->response->headers);
-
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
-        $this->assertEquals('', $this->response->body);
-        $this->assertTrue(is_dir($this->tempDir . '/testcol'));
-
-    }
-
-    /**
-     * @depends testMkcol
-     */
-    function testMkcolBody() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/testcol',
-            'REQUEST_METHOD' => 'MKCOL',
-        );
-
-        $request = new Sabre_HTTP_Request($serverVars);
-        $request->setBody("Hello");
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
-
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type',$this->response->status);
-
-    }
-
     function testPutUpdate() {
 
         $serverVars = array(
@@ -266,7 +221,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'            => '1, 3',
+            'DAV'            => '1, 3, extended-mkcol',
             'MS-Author-Via'  => 'DAV',
             'Allow'          => 'OPTIONS, GET, HEAD, DELETE, TRACE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT',
             'Accept-Ranges'  => 'bytes',

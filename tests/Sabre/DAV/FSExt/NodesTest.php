@@ -204,7 +204,7 @@ class Sabre_DAV_FSExt_NodesTest extends Sabre_DAV_AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'            => '1, 3',
+            'DAV'            => '1, 3, extended-mkcol',
             'MS-Author-Via'  => 'DAV',
             'Allow'          => 'OPTIONS, GET, HEAD, DELETE, TRACE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT',
             'Accept-Ranges'  => 'bytes',

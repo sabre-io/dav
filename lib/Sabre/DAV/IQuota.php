@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAV_IQuota extends Sabre_DAV_IDirectory {
+interface Sabre_DAV_IQuota extends Sabre_DAV_ICollection {
 
     /**
      * Returns the quota information

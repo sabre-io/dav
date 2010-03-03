@@ -266,7 +266,7 @@ class Sabre_DAV_Server {
         array_unique($methods);
 
         $this->httpResponse->setHeader('Allow',strtoupper(implode(', ',$methods)));
-        $features = array('1','3');
+        $features = array('1','3', 'extended-mkcol');
 
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
         
@@ -530,7 +530,7 @@ class Sabre_DAV_Server {
             }
             
             // If the node is a collection, we'll deny it
-            if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed');
+            if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
             if (!$this->broadcastEvent('beforeWriteContent',array($this->getRequestUri()))) return false;
 
             $node->put($this->httpRequest->getBody());
@@ -558,35 +558,54 @@ class Sabre_DAV_Server {
      */
     protected function httpMkcol() {
 
-        // If there's a body, we're supposed to send an HTTP 415 Unsupported Media Type exception
         $requestBody = $this->httpRequest->getBody(true);
-        if ($requestBody) throw new Sabre_DAV_Exception_UnsupportedMediaType();
 
-        // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
-        
-        try {
-            if ($parent = $this->tree->getNodeForPath(dirname($this->getRequestUri()))) {
-                if (!$parent instanceof Sabre_DAV_IDirectory) {
-                    throw new Sabre_DAV_Exception_Conflict('Parent node is not a directory');
-                }
+        if ($requestBody) {
+
+            $contentType = $this->httpRequest->getHeader('Content-Type');
+            if (strpos($contentType,'application/xml')!==0 && strpos($contentType,'text/xml')!==0) {
+
+                // We must throw 415 for unsupport mkcol bodies
+                throw new Sabre_DAV_Exception_UnsupportedMediaType('The request body for the MKCOL request must have an xml Content-Type');
+
             }
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
-            // This means the parent node doesn't exist, and we need to throw a 409 Conflict
-            throw new Sabre_DAV_Exception_Conflict('Parent node does not exist');
+            $dom = Sabre_DAV_XMLUtil::loadDOMDocument($requestBody);
+            if (Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)!=='{DAV:}mkcol') {
+
+                // We must throw 415 for unsupport mkcol bodies
+                throw new Sabre_DAV_Exception_UnsupportedMediaType('The request body for the MKCOL request must be a {DAV:}mkcol request construct.');
+
+            }
+
+            $properties = array();
+            foreach($dom->firstChild->childNodes as $childNode) {
+
+                if (Sabre_DAV_XMLUtil::toClarkNotation($childNode)!=='{DAV:}set') continue;
+                $properties = array_merge($properties, Sabre_DAV_XMLUtil::parseProperties($childNode));
+
+            }
+            if (!isset($properties['{DAV:}resourcetype'])) 
+                throw new Sabre_DAV_Exception_BadRequest('The mkcol request must include a {DAV:}resourcetype property');
+
+            unset($properties['{DAV:}resourcetype']);
+
+            $resourceType = array();
+            // Need to parse out all the resourcetypes
+            $rtNode = $dom->firstChild->getElementsByTagNameNS('urn:DAV','resourcetype');
+            $rtNode = $rtNode->item(0);
+            foreach($rtNode->childNodes as $childNode) {;
+                $resourceType[] = Sabre_DAV_XMLUtil::toClarkNotation($childNode);
+            }
+
+        } else {
+
+            $properties = array();
+            $resourceType = array('{DAV:}collection');
 
         }
 
-        try {
-            $node = $this->tree->getNodeForPath($this->getRequestUri());
-
-            // If we got here.. it means there's already a node on that url, and we need to throw a 405
-            throw new Sabre_DAV_Exception_MethodNotAllowed('The directory you tried to create already exists');
-
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
-            // This is correct
-        }
-        $this->createDirectory($this->getRequestUri());
+        $this->createCollection($this->getRequestUri(), $resourceType, $properties);
         $this->httpResponse->setHeader('Content-Length','0');
         $this->httpResponse->sendStatus(201);
 
@@ -851,7 +870,7 @@ class Sabre_DAV_Server {
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationUri);
-            if (!($destinationParent instanceof Sabre_DAV_IDirectory)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
+            if (!($destinationParent instanceof Sabre_DAV_ICollection)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If the destination parent node is not found, we throw a 409
@@ -966,7 +985,7 @@ class Sabre_DAV_Server {
         $nodes = array(
             $path => $parentNode
         );
-        if ($depth==1 && $parentNode instanceof Sabre_DAV_IDirectory) {
+        if ($depth==1 && $parentNode instanceof Sabre_DAV_ICollection) {
             foreach($parentNode->getChildren() as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }            
@@ -1018,7 +1037,7 @@ class Sabre_DAV_Server {
                 switch($prop) {
                     case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Sabre_DAV_Property_GetLastModified($node->getLastModified()); break;
                     case '{DAV:}getcontentlength'      : if ($node instanceof Sabre_DAV_IFile) $newProperties[200][$prop] = (int)$node->getSize(); break;
-                    case '{DAV:}resourcetype'          : $newProperties[200][$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_IDirectory?self::NODE_DIRECTORY:self::NODE_FILE); break;
+                    case '{DAV:}resourcetype'          : $newProperties[200][$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_ICollection?self::NODE_DIRECTORY:self::NODE_FILE); break;
                     case '{DAV:}quota-used-bytes'      : 
                         if ($node instanceof Sabre_DAV_IQuota) {
                             $quotaInfo = $node->getQuotaInfo();
@@ -1096,13 +1115,83 @@ class Sabre_DAV_Server {
      */
     public function createDirectory($uri) {
 
+        $this->createCollection($uri,array('{DAV:}collection'),array());
+
+    }
+
+    public function createCollection($uri, array $resourceType, array $properties) {
+
         $parentUri = dirname($uri);
         if ($parentUri=='.') $parentUri = '';
+
+        // Making sure {DAV:}collection was specified as resourceType
+        if (!in_array('{DAV:}collection', $resourceType)) {
+            throw new Sabre_DAV_Exception_InvalidResourceType('The resourceType for this collection must at least include {DAV:}collection');
+        }
+
+
+        // Making sure the parent exists
+        try {
+
+            $parent = $this->tree->getNodeForPath($parentUri);
+
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+
+            throw new Sabre_DAV_Exception_Conflict('Parent node does not exist');
+
+        }
+
+        // Making sure the parent is a collection
+        if (!$parent instanceof Sabre_DAV_ICollection) {
+            throw new Sabre_DAV_Exception_Conflict('Parent node is not a collection');
+        }
+
+
+
+        // Making sure the child does not already exist
+        try {
+            $parent->getChild(basename($uri));
+
+            // If we got here.. it means there's already a node on that url, and we need to throw a 405
+            throw new Sabre_DAV_Exception_MethodNotAllowed('The resource you tried to create already exists');
+
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            // This is correct
+        }
+
+        
         if (!$this->broadcastEvent('beforeBind',array($uri))) return;
 
-        $parent = $this->tree->getNodeForPath($parentUri);
-        $parent->createDirectory(basename($uri));
+        // There are 2 modes of operation. The standard collection 
+        // creates the directory, and then updates properties
+        // the extended collection can create it directly.
+        if ($parent instanceof Sabre_DAV_IExtendedCollection) {
 
+            $parent->createExtendedCollection(basename($uri), $resourceType, $property);
+
+        } else {
+
+            // No special resourcetypes are supported
+            if (count($resourceType)>1) {
+                throw new Sabre_DAV_Exception_InvalidResourceType('The {DAV:}resourcetype you specified is not supported here.');
+            }
+
+            $parent->createDirectory(basename($uri));
+            
+            if (count($properties)>0) {
+
+                $newNode = $parent->getChild(basename($uri));
+                // TODO: need to rollback if newnode is not a Sabre_DAV_Properties
+                // TODO: need to rollback is updateProperties fails
+                if ($newNode instanceof Sabre_DAV_IProperties) {
+                    $mutations = array();
+                    foreach($properties as $property) {
+                        $mutations[] = array(self::PROP_SET, $propertyName, $propertyValue);
+                    }
+                    $newNode->updateProperties($mutations);
+                }
+            } 
+        }
         $this->broadcastEvent('afterBind',array($uri));
 
     }

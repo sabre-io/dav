@@ -3,7 +3,7 @@
 /**
  * ObjectTree class
  *
- * This implementation of the Tree class makes use of the INode, IFile and IDirectory API's 
+ * This implementation of the Tree class makes use of the INode, IFile and ICollection API's 
  * 
  * @package Sabre
  * @subpackage DAV
@@ -16,7 +16,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
     /**
      * The root node 
      * 
-     * @var Sabre_DAV_IDirectory 
+     * @var Sabre_DAV_ICollection
      */
     protected $rootNode;
 
@@ -26,10 +26,10 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      *
      * This method expects the rootObject to be passed as a parameter
      * 
-     * @param Sabre_DAV_IDirectory $rootNode 
+     * @param Sabre_DAV_ICollection $rootNode 
      * @return void
      */
-    public function __construct(Sabre_DAV_IDirectory $rootNode) {
+    public function __construct(Sabre_DAV_ICollection $rootNode) {
 
         $this->rootNode = $rootNode;
 

@@ -40,7 +40,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'            => '1, 3, drinking',
+            'DAV'            => '1, 3, extended-mkcol, drinking',
             'MS-Author-Via'  => 'DAV',
             'Allow'          => 'OPTIONS, GET, HEAD, DELETE, TRACE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE',
             'Accept-Ranges'  => 'bytes',

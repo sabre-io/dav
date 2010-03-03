@@ -1,4 +1,5 @@
 1.1.1-alpha (2010-??-??)
+	* Added: RFC5689 - Extended MKCOL support
 	* Fixed: Evolution support for CalDAV
 	* Fixed: PDO-locks backend was pretty much completely broken. This is 
 	  100% unittested now.
@@ -7,6 +8,10 @@
 	  a datadirectory must always be specified from now on.
 	* Changed: Moved Sabre_DAV_Server::parseProps to
 	  Sabre_DAV_XMLUtil::parseProperties.
+	* Changed: Sabre_DAV_IDirectory is now Sabre_DAV_ICollection
+	* Changed: Sabre_DAV_Exception_PermissionDenied is now
+	  Sabre_DAV_Exception_Forbidden
+	* Added: Sabre_DAV_IExtendedCollection.
 	* Added: Much more unittests.
 	* Added: support for calendar-timezone property
 

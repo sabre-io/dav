@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_IDirectory {
+abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_ICollection {
 
     /**
      * Returns a child object, by its name.

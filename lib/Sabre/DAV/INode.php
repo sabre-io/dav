@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The INode interface is the base interface, and the parent class of both IDirectory and IFile
+ * The INode interface is the base interface, and the parent class of both ICollection and IFile
  * 
  * @package Sabre
  * @subpackage DAV
@@ -32,8 +32,6 @@ interface Sabre_DAV_INode {
      * @return void
      */
     function setName($name);
-
-
 
     /**
      * Returns the last modification time, as a unix timestamp 

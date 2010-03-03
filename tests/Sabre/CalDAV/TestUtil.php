@@ -35,7 +35,8 @@ CREATE TABLE calendars (
     ctag integer,
     description text,
 	calendarorder integer,
-    calendarcolor text	
+    calendarcolor text,
+    timezone text
 );');
 
         $pdo->query('INSERT INTO calendars (principaluri,displayname,uri,description,calendarorder,calendarcolor) 

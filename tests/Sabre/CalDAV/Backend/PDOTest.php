@@ -31,7 +31,8 @@ CREATE TABLE calendars (
     ctag integer,
     description text,
 	calendarorder integer,
-    calendarcolor text	
+    calendarcolor text,
+    timezone text
 );');
 
     }

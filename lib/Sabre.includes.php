@@ -36,6 +36,7 @@ include 'Sabre/DAV/Exception/Locked.php';
 include 'Sabre/DAV/Exception/LockTokenMatchesRequestUri.php';
 include 'Sabre/DAV/Exception/MethodNotAllowed.php';
 include 'Sabre/DAV/Exception/NotImplemented.php';
+include 'Sabre/DAV/Exception/Forbidden.php';
 include 'Sabre/DAV/Exception/PermissionDenied.php';
 include 'Sabre/DAV/Exception/PreconditionFailed.php';
 include 'Sabre/DAV/Exception/RequestedRangeNotSatisfiable.php';
@@ -57,6 +58,7 @@ include 'Sabre/DAV/Property/Response.php';
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';
 include 'Sabre/DAV/IFile.php';
+include 'Sabre/DAV/ICollection.php';
 include 'Sabre/DAV/IDirectory.php';
 include 'Sabre/DAV/IProperties.php';
 include 'Sabre/DAV/ILockable.php';

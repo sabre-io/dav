@@ -524,7 +524,7 @@ class Sabre_DAV_Server {
             }
             
             // If the node is a collection, we'll deny it
-            if ($node instanceof Sabre_DAV_IDirectory) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed');
+            if ($node instanceof Sabre_DAV_ICollection) throw new Sabre_DAV_Exception_Conflict('PUTs on directories are not allowed');
             if (!$this->broadcastEvent('beforeWriteContent',$this->getRequestUri())) return false;
 
             $node->put($this->httpRequest->getBody());
@@ -560,7 +560,7 @@ class Sabre_DAV_Server {
         
         try {
             if ($parent = $this->tree->getNodeForPath(dirname($this->getRequestUri()))) {
-                if (!$parent instanceof Sabre_DAV_IDirectory) {
+                if (!$parent instanceof Sabre_DAV_ICollection) {
                     throw new Sabre_DAV_Exception_Conflict('Parent node is not a directory');
                 }
             }
@@ -855,7 +855,7 @@ class Sabre_DAV_Server {
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationUri);
-            if (!($destinationParent instanceof Sabre_DAV_IDirectory)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
+            if (!($destinationParent instanceof Sabre_DAV_ICollection)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If the destination parent node is not found, we throw a 409
@@ -913,7 +913,7 @@ class Sabre_DAV_Server {
         $nodes = array(
             $path => $parentNode
         );
-        if ($depth==1 && $parentNode instanceof Sabre_DAV_IDirectory) {
+        if ($depth==1 && $parentNode instanceof Sabre_DAV_ICollection) {
             foreach($parentNode->getChildren() as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }            
@@ -959,7 +959,7 @@ class Sabre_DAV_Server {
                 switch($prop) {
                     case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Sabre_DAV_Property_GetLastModified($node->getLastModified()); break;
                     case '{DAV:}getcontentlength'      : if ($node instanceof Sabre_DAV_IFile) $newProperties[200][$prop] = (int)$node->getSize(); break;
-                    case '{DAV:}resourcetype'          : $newProperties[200][$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_IDirectory?self::NODE_DIRECTORY:self::NODE_FILE); break;
+                    case '{DAV:}resourcetype'          : $newProperties[200][$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_ICollection?self::NODE_DIRECTORY:self::NODE_FILE); break;
                     case '{DAV:}quota-used-bytes'      : 
                         if ($node instanceof Sabre_DAV_IQuota) {
                             $quotaInfo = $node->getQuotaInfo();

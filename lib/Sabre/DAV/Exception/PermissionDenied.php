@@ -16,19 +16,10 @@
 /**
  * PermissionDenied 
  *
- * This exception is thrown whenever a user tries to do an operation that he's not allowed to
+ * This exception is thrown whenever a user tries to do an operation that he's not allowed to.
+ * This class will be deprecated in the future. Update your code to use Sabre_DAV_Exception_Forbidden instead.
  */
-class Sabre_DAV_Exception_PermissionDenied extends Sabre_DAV_Exception {
+class Sabre_DAV_Exception_PermissionDenied extends Sabre_DAV_Exception_Forbidden {
 
-    /**
-     * getHTTPCode 
-     * 
-     * @return int 
-     */
-    public function getHTTPCode() {
-
-        return 403;
-
-    }
 
 }

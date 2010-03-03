@@ -1,6 +1,10 @@
-1.0.8-stable (2010-??-??)
+1.0.8-stable (2010-03-03)
 	* Fixed: Issue 21: typos causing errors
 	* Fixed: Issue 23: Comma's between methods in Allow header.
+	* Added: Sabre_DAV_ICollection interface, to aid in future compatibility.
+	* Added: Sabre_DAV_Exception_Forbidden exception. This will replace
+	  Sabre_DAV_Exception_PermissionDenied in the future, and can already be
+	  used to ensure future compatibility.
 
 1.0.7-stable (2010-02-24)
 	* Fixed: Issue 19 regression for MS Office

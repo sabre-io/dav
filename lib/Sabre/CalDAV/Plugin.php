@@ -182,37 +182,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $requestUri = $this->server->getRequestUri();
+        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
 
-        // We'll check if the parent exists, and if it's a collection. If this is not the case, we need to throw a conflict exception
-        try {
-            if ($parentNode = $this->server->tree->getNodeForPath(dirname($requestUri))) {
-                if (!($parentNode instanceof Sabre_CalDAV_ICalendarCollection)) {
-                    throw new Sabre_DAV_Exception_Conflict('Parent node is not a calendar collection');
-                }
-            }
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        $this->server->createCollection($requestUri,$resourceType,$properties);
 
-            // This means the parent node doesn't exist, and we need to throw a 409 Conflict
-            throw new Sabre_DAV_Exception_Conflict('Parent node does not exist');
-
-        }
-
-        try {
-            $node = $this->server->tree->getNodeForPath($requestUri);
-
-            // If we got here.. it means there's already a node on that url, and we need to throw a 405
-            throw new Sabre_DAV_Exception_MethodNotAllowed('The directory you tried to create already exists');
-
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
-            // This is correct
-        }
-
-        if (!$this->server->broadcastEvent('beforeBind',array($requestUri)));
-        $parentNode->createCalendar(basename($requestUri),$properties);
-        if (!$this->server->broadcastEvent('afterBind',array($requestUri)));
         $this->server->httpResponse->sendStatus(201);
-
-        
+        $this->server->httpResponse->setHeader('Content-Length',0);
     }
 
     /**

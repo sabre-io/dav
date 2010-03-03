@@ -1167,7 +1167,7 @@ class Sabre_DAV_Server {
         // the extended collection can create it directly.
         if ($parent instanceof Sabre_DAV_IExtendedCollection) {
 
-            $parent->createExtendedCollection(basename($uri), $resourceType, $property);
+            $parent->createExtendedCollection(basename($uri), $resourceType, $properties);
 
         } else {
 

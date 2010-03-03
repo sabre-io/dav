@@ -134,7 +134,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 409 Conflict', $this->response->status);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $this->response->status);
 
     }
 
@@ -251,6 +251,29 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/calendars/user1/NEWCALENDAR',
         ));
 
+        $timezone = 'BEGIN:VCALENDAR
+PRODID:-//Example Corp.//CalDAV Client//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:US-Eastern
+LAST-MODIFIED:19870101T000000Z
+BEGIN:STANDARD
+DTSTART:19671029T020000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:Eastern Standard Time (US & Canada)
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:19870405T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:Eastern Daylight Time (US & Canada)
+END:DAYLIGHT
+END:VTIMEZONE
+END:VCALENDAR';
+
         $body = '<?xml version="1.0" encoding="utf-8" ?>
    <C:mkcalendar xmlns:D="DAV:"
                  xmlns:C="urn:ietf:params:xml:ns:caldav">
@@ -262,29 +285,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
          <C:supported-calendar-component-set>
            <C:comp name="VEVENT"/>
          </C:supported-calendar-component-set>
-         <C:calendar-timezone><![CDATA[BEGIN:VCALENDAR
-   PRODID:-//Example Corp.//CalDAV Client//EN
-   VERSION:2.0
-   BEGIN:VTIMEZONE
-   TZID:US-Eastern
-   LAST-MODIFIED:19870101T000000Z
-   BEGIN:STANDARD
-   DTSTART:19671029T020000
-   RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-   TZOFFSETFROM:-0400
-   TZOFFSETTO:-0500
-   TZNAME:Eastern Standard Time (US & Canada)
-   END:STANDARD
-   BEGIN:DAYLIGHT
-   DTSTART:19870405T020000
-   RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
-   TZOFFSETFROM:-0500
-   TZOFFSETTO:-0400
-   TZNAME:Eastern Daylight Time (US & Canada)
-   END:DAYLIGHT
-   END:VTIMEZONE
-   END:VCALENDAR
-   ]]></C:calendar-timezone>
+         <C:calendar-timezone><![CDATA[' . $timezone . ']]></C:calendar-timezone>
        </D:prop>
      </D:set>
    </C:mkcalendar>';
@@ -293,7 +294,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 201 Created', $this->response->status);
+        $this->assertEquals('HTTP/1.1 201 Created', $this->response->status,'Invalid response code received. Full response body: ' .$this->response->body);
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
         $this->assertEquals(2, count($calendars));
@@ -312,6 +313,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
             'uri' => 'NEWCALENDAR',
             'id' => null,
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar restricted to events.',
+            '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => $timezone,
             '{DAV:}displayname' => 'Lisa\'s Events',
         );
 

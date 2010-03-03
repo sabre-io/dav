@@ -9,7 +9,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IDirectory, Sabre_CalDAV_ICalendarCollection {
+class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
 
     /**
      * Authentication backend 
@@ -155,8 +155,11 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IDirectory, Sabre_CalDAV_I
      * @param string $properties 
      * @return void
      */
-    public function createCalendar($name, $properties) {
+    public function createExtendedCollection($name, array $resourceType, array $properties) {
 
+        if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar',$resourceType) || count($resourceType)!==2) {
+            throw new Sabre_DAV_Exception_InvalidResourceType('Unknown resourceType for this collection');
+        }
         $this->caldavBackend->createCalendar($this->userUri, $name, $properties);
 
     }

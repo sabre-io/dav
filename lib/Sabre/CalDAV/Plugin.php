@@ -175,7 +175,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($dom->firstChild->childNodes as $child) {
 
             if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
-            foreach($this->server->parseProps($child) as $k=>$prop) {
+            foreach(Sabre_DAV_XMLUtil::parseProperties($child) as $k=>$prop) {
                 $properties[$k] = $prop;
             }
         
@@ -274,7 +274,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function calendarMultiGetReport($dom) {
 
-        $properties = array_keys($this->server->parseProps($dom->firstChild));
+        $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
 
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
         foreach($hrefElems as $elem) {
@@ -301,7 +301,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function calendarQueryReport($dom) {
 
-        $requestedProperties = array_keys($this->server->parseProps($dom->firstChild));
+        $requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
 
         $filterNode = $dom->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','filter');
         $filters = $this->parseFilters($filterNode->item(0));

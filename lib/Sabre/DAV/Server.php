@@ -1167,7 +1167,7 @@ class Sabre_DAV_Server {
             switch($operation) {
                 case '{DAV:}set' :
                 case '{DAV:}remove' :
-                    $propList = $this->parseProps($child);
+                    $propList = Sabre_DAV_XMLUtil::parseProperties($child);
                     foreach($propList as $k=>$propItem) {
 
                         $operations[] = array($operation==='{DAV:}set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
@@ -1198,35 +1198,7 @@ class Sabre_DAV_Server {
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
         $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
-        return array_keys($this->parseProps($elem)); 
-
-    }
-
-    /**
-     * Part of parsePropFindRequest 
-     * 
-     * @param DOMNode $prop 
-     * @return array 
-     */
-    public function parseProps(DOMNode $prop) {
-
-        $propList = array(); 
-        foreach($prop->childNodes as $propNode) {
-
-            if (Sabre_DAV_XMLUtil::toClarkNotation($propNode)!=='{DAV:}prop') continue;
-
-            foreach($propNode->childNodes as $propNodeData) {
-
-                /* If there are no elements in here, we actually get 1 text node, this special case is dedicated to netdrive */
-                if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
-
-                if ($propNodeData->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $propNodeData->namespaceURI;
-                $propList[Sabre_DAV_XMLUtil::toClarkNotation($propNodeData)] = $propNodeData->textContent;
-            }
-
-
-        }
-        return $propList; 
+        return array_keys(Sabre_DAV_XMLUtil::parseProperties($elem)); 
 
     }
 

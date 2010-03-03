@@ -95,4 +95,39 @@ class Sabre_DAV_XMLUtil {
 
     }
 
+    /**
+     * Parses all WebDAV properties out of a DOM Element
+     *
+     * Generally WebDAV properties are encloded in {DAV:}prop elements. This
+     * method helps by going through all these and pulling out the actual
+     * propertynames, making them array keys and making the property values,
+     * well.. the array values.
+     *
+     * If no value was given (self-closing element) null will be used as the
+     * value. This is used in for example PROPFIND requests.
+     *
+     * @param DOMElement $parentNode
+     * @return array
+     */
+    static function parseProperties(DOMElement $parentNode) {
+
+        $propertyList = array();
+        foreach($parentNode->childNodes as $propNode) {
+
+            if (Sabre_DAV_XMLUtil::toClarkNotation($propNode)!=='{DAV:}prop') continue;
+
+            foreach($propNode->childNodes as $propNodeData) {
+
+                /* If there are no elements in here, we actually get 1 text node, this special case is dedicated to netdrive */
+                if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
+
+                $propList[Sabre_DAV_XMLUtil::toClarkNotation($propNodeData)] = $propNodeData->textContent;
+            }
+
+
+        }
+        return $propList;
+
+    }
+
 }

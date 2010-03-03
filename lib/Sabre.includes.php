@@ -34,6 +34,7 @@ include 'Sabre/DAV/Exception/Locked.php';
 include 'Sabre/DAV/Exception/LockTokenMatchesRequestUri.php';
 include 'Sabre/DAV/Exception/MethodNotAllowed.php';
 include 'Sabre/DAV/Exception/NotImplemented.php';
+include 'Sabre/DAV/Exception/Forbidden.php';
 include 'Sabre/DAV/Exception/PermissionDenied.php';
 include 'Sabre/DAV/Exception/PreconditionFailed.php';
 include 'Sabre/DAV/Exception/RequestedRangeNotSatisfiable.php';

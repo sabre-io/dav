@@ -354,7 +354,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
             $this->fail('Expected an exception');
 
-        } catch (Sabre_DAV_Exception_PermissionDenied $e) {
+        } catch (Sabre_DAV_Exception_Forbidden $e) {
 
             // This was expected
 

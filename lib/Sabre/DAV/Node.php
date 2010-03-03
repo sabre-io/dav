@@ -29,25 +29,25 @@ abstract class Sabre_DAV_Node implements Sabre_DAV_INode {
     /**
      * Deleted the current node
      *
-     * @throws Sabre_DAV_Exception_PermissionDenied
+     * @throws Sabre_DAV_Exception_Forbidden
      * @return void 
      */
     public function delete() {
 
-        throw new Sabre_DAV_Exception_PermissionDenied('Permission denied to delete node');
+        throw new Sabre_DAV_Exception_Forbidden('Permission denied to delete node');
 
     }
 
     /**
      * Renames the node
      * 
-     * @throws Sabre_DAV_Exception_PermissionDenied
+     * @throws Sabre_DAV_Exception_Forbidden
      * @param string $name The new name
      * @return void
      */
     public function setName($name) {
 
-        throw new Sabre_DAV_Exception_PermissionDenied('Permission denied to rename file');
+        throw new Sabre_DAV_Exception_Forbidden('Permission denied to rename file');
 
     }
 

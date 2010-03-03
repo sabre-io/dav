@@ -131,7 +131,7 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
      */
     public function updateProperties($properties) {
 
-        throw new Sabre_DAV_Exception_PermissionDenied('Updating properties is not supported');
+        throw new Sabre_DAV_Exception_Forbidden('Updating properties is not supported');
 
     }
 

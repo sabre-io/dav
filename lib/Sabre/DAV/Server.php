@@ -749,7 +749,7 @@ class Sabre_DAV_Server {
      * Calculates the uri for a request, making sure that the base uri is stripped out 
      * 
      * @param string $uri 
-     * @throws Sabre_DAV_Exception_PermissionDenied A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
+     * @throws Sabre_DAV_Exception_Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
      * @return string
      */
     public function calculateUri($uri) {
@@ -768,7 +768,7 @@ class Sabre_DAV_Server {
 
         } else {
 
-            throw new Sabre_DAV_Exception_PermissionDenied('Requested uri (' . $uri . ') is out of base uri (' . $this->baseUri . ')');
+            throw new Sabre_DAV_Exception_Forbidden('Requested uri (' . $uri . ') is out of base uri (' . $this->baseUri . ')');
 
         }
 

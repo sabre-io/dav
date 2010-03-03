@@ -3,7 +3,7 @@
 class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * @expectedException Sabre_DAV_Exception_PermissionDenied
+     * @expectedException Sabre_DAV_Exception_Forbidden
      */
     public function testPut() {
 
@@ -13,7 +13,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_PermissionDenied
+     * @expectedException Sabre_DAV_Exception_Forbidden
      */
     public function testGet() {
 
@@ -45,7 +45,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_PermissionDenied
+     * @expectedException Sabre_DAV_Exception_Forbidden
      */
     public function testDelete() {
 
@@ -55,7 +55,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_PermissionDenied
+     * @expectedException Sabre_DAV_Exception_Forbidden
      */
     public function testSetName() {
 
@@ -93,7 +93,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_PermissionDenied
+     * @expectedException Sabre_DAV_Exception_Forbidden
      */
     public function testCreateFile() {
 
@@ -103,7 +103,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_PermissionDenied
+     * @expectedException Sabre_DAV_Exception_Forbidden
      */
     public function testCreateDirectory() {
 

@@ -59,7 +59,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      */
     public function setName($name) {
 
-        throw new Sabre_DAV_Exception_PermissionDenied();
+        throw new Sabre_DAV_Exception_Forbidden();
 
     }
 
@@ -70,7 +70,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      */
     public function delete() {
 
-        throw new Sabre_DAV_Exception_PermissionDenied();
+        throw new Sabre_DAV_Exception_Forbidden();
 
     }
 

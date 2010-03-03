@@ -165,7 +165,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         // for clients matching iCal in the user agent
         //$ua = $this->server->httpRequest->getHeader('User-Agent');
         //if (strpos($ua,'iCal/')!==false) {
-        //    throw new Sabre_DAV_Exception_PermissionDenied('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
+        //    throw new Sabre_DAV_Exception_Forbidden('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
         //}
 
         $body = $this->server->httpRequest->getBody(true);

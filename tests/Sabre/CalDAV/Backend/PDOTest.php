@@ -119,6 +119,8 @@ CREATE TABLE calendars (
             'uri'               => 'somerandomid',
             '{DAV:}displayname' => 'myCalendar',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
+            '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
+            '{http://calendarserver.org/ns/}getctag' => '2',
         );
 
         $this->assertType('array',$calendars);

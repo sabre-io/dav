@@ -106,6 +106,9 @@ class Sabre_DAV_XMLUtil {
      * If no value was given (self-closing element) null will be used as the
      * value. This is used in for example PROPFIND requests.
      *
+     * Complex values are not supported, sub-tags are completely ingored and
+     * only the text is pulled out. 
+     *
      * @param DOMElement $parentNode
      * @return array
      */

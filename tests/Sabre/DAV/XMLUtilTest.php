@@ -130,4 +130,75 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
 
     }
+
+    function testParseProperties() {
+
+        $xml='<?xml version="1.0"?>
+<root xmlns="DAV:">
+  <prop>
+    <displayname>Calendars</displayname>
+  </prop>
+</root>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+
+        $this->assertEquals(array(
+            '{DAV:}displayname' => 'Calendars',
+        ), $properties);
+
+
+
+    }
+
+    /**
+     * @depends testParseProperties
+     */
+    function testParsePropertiesEmpty() {
+
+        $xml='<?xml version="1.0"?>
+<root xmlns="DAV:" xmlns:s="http://www.rooftopsolutions.nl/example">
+  <prop>
+    <displayname>Calendars</displayname>
+  </prop>
+  <prop>
+    <s:example />
+  </prop>  
+</root>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+
+        $this->assertEquals(array(
+            '{DAV:}displayname' => 'Calendars',
+            '{http://www.rooftopsolutions.nl/example}example' => null
+        ), $properties);
+
+    }
+
+
+    /**
+     * @depends testParseProperties
+     */
+    function testParsePropertiesComplex() {
+
+        $xml='<?xml version="1.0"?>
+<root xmlns="DAV:">
+  <prop>
+    <displayname>Calendars</displayname>
+  </prop>
+  <prop>
+    <someprop>Complex value <b>right here</b></someprop>
+  </prop>
+</root>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+
+        $this->assertEquals(array(
+            '{DAV:}displayname' => 'Calendars',
+            '{DAV:}someprop'    => 'Complex value right here',
+        ), $properties);
+
+    }
 }

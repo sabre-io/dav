@@ -38,6 +38,26 @@
         </phpunit>
     </target>
 
+    <target name="apidocs" depends="init">
+
+        <echo>Creating api documentation using PHP documentor</echo>
+        <phpdoc title="SabreDAV API documentation"
+            destdir="doc/api"
+            sourcecode="false"
+            output="HTML:frames:phphtmllib">
+
+            <fileset dir="./lib">
+                <include name="**/*.php" />
+            </fileset>
+            <projdocfileset dir=".">
+                <include name="ChangeLog" />
+                <include name="LICENSE" />
+            </projdocfileset>
+
+        </phpdoc>
+
+    </target>
+
     <target name="init">
 
         <!-- This sets SabreDAV version information -->

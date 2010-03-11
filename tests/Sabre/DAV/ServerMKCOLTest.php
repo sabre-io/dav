@@ -323,7 +323,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
-        $this->markTestIncomplete('This test should actually fail. No properties were updated.');
+        $this->markTestIncomplete('This test should actually fail. The displayname property is not updated, and thus the entire request should fail.');
     
     }
 

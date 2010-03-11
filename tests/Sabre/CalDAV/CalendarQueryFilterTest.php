@@ -121,6 +121,8 @@ XML;
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
+
+        $this->markTestIncomplete('Time range filter has not been written yet');
         $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
 
     }

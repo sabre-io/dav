@@ -7,7 +7,9 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
         if ($realm=='failme') return false;
 
         // An empty array == success too
-        return array();
+        return array(
+            'userId' => 'admin',
+        );
 
     }
 

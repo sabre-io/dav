@@ -4,6 +4,9 @@
  * This plugin provides Authentication for a WebDAV server.
  * 
  * It relies on a Backend object, which provides user information.
+ *
+ * Additionally, it provides support for the RFC 5397 current-user-principal
+ * property.
  * 
  * @package Sabre
  * @subpackage DAV
@@ -65,6 +68,28 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
         $this->server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),10);
+        $this->server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
+
+    }
+
+    /**
+     * This method intercepts calls to PROPFIND and similar lookups 
+     * 
+     * This is done to inject the current-user-principal if this is requested.
+     *
+     * @todo support for 'unauthenticated'
+     * @return void  
+     */
+    public function afterGetProperties($href, &$properties) {
+
+        if (array_key_exists('{DAV:}current-user-principal', $properties[404])) {
+            if ($this->userInfo) {
+                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, 'principals/' . $this->userInfo['userId']);
+            } else {
+                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
+            }
+            unset($properties[404]['{DAV:}current-user-principal']);
+        }
 
     }
 

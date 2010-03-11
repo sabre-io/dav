@@ -24,8 +24,32 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET'));
 
-        $this->assertEquals(array(), $plugin->getUserInfo());
+        $this->assertEquals(array(
+            'userId' => 'admin',
+        ), $plugin->getUserInfo());
 
+    }
+
+    function testCurrentUserPrincipal() {
+
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer->addPlugin($plugin);
+
+
+        $props = $fakeServer->getProperties('',array('{DAV:}current-user-principal'));
+        $this->assertArrayHasKey('{DAV:}current-user-principal', $props);
+
+        $this->assertEquals(Sabre_DAV_Property_Principal::UNAUTHENTICATED, $props['{DAV:}current-user-principal']->getType());
+
+        // This will force the login
+        $fakeServer->broadCastEvent('beforeMethod',array('GET'));
+
+        $props = $fakeServer->getProperties('',array('{DAV:}current-user-principal'));
+        $this->assertArrayHasKey('{DAV:}current-user-principal', $props);
+
+        $this->assertEquals(Sabre_DAV_Property_Principal::HREF, $props['{DAV:}current-user-principal']->getType());
+        $this->assertEquals('principals/admin', $props['{DAV:}current-user-principal']->getHref());
     }
 
     /**

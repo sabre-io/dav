@@ -35,14 +35,15 @@ include 'Sabre/DAV/Exception/LockTokenMatchesRequestUri.php';
 include 'Sabre/DAV/Exception/MethodNotAllowed.php';
 include 'Sabre/DAV/Exception/NotImplemented.php';
 include 'Sabre/DAV/Exception/Forbidden.php';
-include 'Sabre/DAV/Exception/PermissionDenied.php';
 include 'Sabre/DAV/Exception/PreconditionFailed.php';
 include 'Sabre/DAV/Exception/RequestedRangeNotSatisfiable.php';
 include 'Sabre/DAV/Exception/UnsupportedMediaType.php';
 include 'Sabre/DAV/Exception/NotAuthenticated.php';
 
+include 'Sabre/DAV/Exception/PermissionDenied.php'; //deprecated
 include 'Sabre/DAV/Exception/ConflictingLock.php';
 include 'Sabre/DAV/Exception/ReportNotImplemented.php';
+include 'Sabre/DAV/Exception/InvalidResourceType.php';
 
 /* Properties */
 include 'Sabre/DAV/Property.php';
@@ -57,10 +58,12 @@ include 'Sabre/DAV/Property/Response.php';
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';
 include 'Sabre/DAV/IFile.php';
-include 'Sabre/DAV/IDirectory.php';
+include 'Sabre/DAV/ICollection.php';
+include 'Sabre/DAV/IDirectory.php'; // deprecated
 include 'Sabre/DAV/IProperties.php';
 include 'Sabre/DAV/ILockable.php';
 include 'Sabre/DAV/IQuota.php';
+include 'Sabre/DAV/IExtendedCollection.php';
 
 /* Node abstract implementations */
 include 'Sabre/DAV/Node.php';
@@ -93,12 +96,14 @@ include 'Sabre/DAV/ServerPlugin.php';
 /* Browser */
 include 'Sabre/DAV/Browser/Plugin.php';
 include 'Sabre/DAV/Browser/MapGetToPropFind.php';
+include 'Sabre/DAV/Browser/GuessContentType.php';
 
 /* Locks */
 include 'Sabre/DAV/Locks/LockInfo.php';
 include 'Sabre/DAV/Locks/Plugin.php';
 include 'Sabre/DAV/Locks/Backend/Abstract.php';
 include 'Sabre/DAV/Locks/Backend/FS.php';
+include 'Sabre/DAV/Locks/Backend/PDO.php';
 
 /* Temporary File Filter plugin */
 include 'Sabre/DAV/TemporaryFileFilterPlugin.php';
@@ -110,7 +115,30 @@ include 'Sabre/DAV/Auth/Backend/AbstractDigest.php';
 include 'Sabre/DAV/Auth/Backend/File.php';
 include 'Sabre/DAV/Auth/Backend/PDO.php';
 
+include 'Sabre/DAV/Auth/Principal.php';
+include 'Sabre/DAV/Auth/PrincipalCollection.php';
+
 /* DavMount plugin */
 include 'Sabre/DAV/Mount/Plugin.php';
+
+/* CalDAV */
+include 'Sabre/CalDAV/Property/SupportedCalendarComponentSet.php';
+include 'Sabre/CalDAV/Property/SupportedCalendarData.php';
+include 'Sabre/CalDAV/Property/SupportedCollationSet.php';
+
+include 'Sabre/CalDAV/Backend/Abstract.php';
+include 'Sabre/CalDAV/Backend/PDO.php';
+
+include 'Sabre/CalDAV/ICalendar.php';
+include 'Sabre/CalDAV/Calendar.php';
+include 'Sabre/CalDAV/CalendarObject.php';
+include 'Sabre/CalDAV/CalendarRootNode.php';
+include 'Sabre/CalDAV/UserCalendars.php';
+
+include 'Sabre/CalDAV/XCalICal.php';
+
+include 'Sabre/CalDAV/Plugin.php';
+
+include 'Sabre/CalDAV/Server.php';
 
 ?>

@@ -5,8 +5,8 @@
 	  100% unittested now.
 	* Added: support for ctags.
 	* Fixed: Comma's between HTTP methods in 'Allow' method.
-	* Changed: default argument for Sabre_DAV_Locks_Backend_FS. This means
-	  a datadirectory must always be specified from now on.
+	* Changed: default argument for Sabre_DAV_Locks_Backend_FS. This means a
+	  datadirectory must always be specified from now on.
 	* Changed: Moved Sabre_DAV_Server::parseProps to
 	  Sabre_DAV_XMLUtil::parseProperties.
 	* Changed: Sabre_DAV_IDirectory is now Sabre_DAV_ICollection.

@@ -2,6 +2,44 @@
 
 class Sabre_CalDAV_CalendarQueryFilterTest extends PHPUnit_Framework_TestCase {
 
+    protected function getTestCalendarData() {
+
+        $calendarData = 'BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Apple Inc.//iCal 4.0.1//EN
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Asia/Seoul
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0900
+RRULE:FREQ=YEARLY;UNTIL=19880507T150000Z;BYMONTH=5;BYDAY=2SU
+DTSTART:19870510T000000
+TZNAME:GMT+09:00
+TZOFFSETTO:+1000
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1000
+DTSTART:19881009T000000
+TZNAME:GMT+09:00
+TZOFFSETTO:+0900
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+CREATED:20100225T154229Z
+UID:39A6B5ED-DD51-4AFE-A683-C35EE3749627
+DTEND;TZID=Asia/Seoul:20100223T070000
+TRANSP:TRANSPARENT
+SUMMARY:Something here
+DTSTART;TZID=Asia/Seoul:20100223T060000
+DTSTAMP:20100228T130202Z
+SEQUENCE:2
+END:VEVENT
+END:VCALENDAR';
+
+        return $calendarData;
+
+    }
+
     function testCompFilter() {
 
         $calendarPlugin = new Sabre_CalDAV_Plugin(Sabre_CalDAV_Util::getBackend());
@@ -34,6 +72,8 @@ XML;
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
+
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
 
     }
 
@@ -81,6 +121,7 @@ XML;
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
+        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
 
     }
 
@@ -134,10 +175,11 @@ XML;
                 ),
             ),
         ));
-        
+
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
+        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
 
     }
 
@@ -209,6 +251,8 @@ XML;
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
+        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
+
 
     }
 
@@ -272,6 +316,7 @@ XML;
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
+        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
 
     }
 }

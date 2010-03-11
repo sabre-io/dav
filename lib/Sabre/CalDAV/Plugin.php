@@ -29,7 +29,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * the various filters for the calendar-query report
      */
     const FILTER_COMPFILTER   = 1;
-    const FILTER_ISNOTDEFINED = 2;
     const FILTER_TIMERANGE    = 3;
     const FILTER_PROPFILTER   = 4;
     const FILTER_PARAMFILTER  = 5;
@@ -331,10 +330,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                         'name' => $child->getAttribute('name'),
                         'isnotdefined' => false,
                     );
-
-                    if ($child->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','is-not-defined')->length==1) {
-                        $filter['isnotdefined'] = true;
-                    } else {
+                    
+                    foreach($child->childNodes as $subFilter) {
+                        if (Sabre_DAV_XMLUtil::toClarkNotation($subFilter)==='{urn:ietf:params:xml:ns:caldav}is-not-defined') {
+                            $filter['isnotdefined'] = true;
+                        }
+                    }
+                    if (!$filter['isnotdefined']) {
                         $filter['filters'] = $this->parseCalendarQueryFilters($child);
                     }
                     $filters[] = $filter;
@@ -357,9 +359,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                         'isnotdefined' => false,
                     );
 
-                    if ($child->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','is-not-defined')->length==1) {
-                        $filter['isnotdefined'] = true;
-                    } else {
+                    foreach($child->childNodes as $subFilter) {
+                        if (Sabre_DAV_XMLUtil::toClarkNotation($subFilter)==='{urn:ietf:params:xml:ns:caldav}is-not-defined') {
+                            $filter['isnotdefined'] = true;
+                        }
+                    }
+                    if (!$filter['isnotdefined']) {
                         $filter['filters'] = $this->parseCalendarQueryFilters($child);
                     }
                     $filters[] = $filter;
@@ -373,9 +378,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                         'isnotdefined' => false,
                     );
 
-                    if ($child->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','is-not-defined')->length==1) {
-                        $filter['isnotdefined'] = true;
-                    } else {
+                    foreach($child->childNodes as $subFilter) {
+                        if (Sabre_DAV_XMLUtil::toClarkNotation($subFilter)==='{urn:ietf:params:xml:ns:caldav}is-not-defined') {
+                            $filter['isnotdefined'] = true;
+                        }
+                    }
+                    if (!$filter['isnotdefined']) {
                         $filter['filters'] = $this->parseCalendarQueryFilters($child);
                     }
                     $filters[] = $filter;
@@ -412,7 +420,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param array $filters 
      * @return bool 
      */
-    protected function validateFilters($calendarData,$filters) {
+    public function validateFilters($calendarData,$filters) {
 
         // We are converting the calendar object to an XML structure
         // This makes it far easier to parse
@@ -443,16 +451,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 case self::FILTER_PROPFILTER :
 
                     $xpath.='/c:' . strtolower($filter['name']);
-                    // First we'll check if there's a is-not-defined
-                    $isNotDefined = false;
 
-                    foreach($filter['filters'] as $subfilter) {
-                        if ($subfilter['type']==self::FILTER_ISNOTDEFINED) {
-                            $isNotDefined = true;
-                            break;
-                        }
-                    }
-                    if ($isNotDefined) {
+                    if ($filter['isnotdefined']) {
                         if($xNode->xpath($xpath))
                             return false; // Node did exist. Filter failed 
                         else

@@ -43,10 +43,13 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
 
         $resourceData = $this->getResourceData();
         if (!isset($resourceData['locks'])) $resourceData['locks'] = array();
+        $current = null;
         foreach($resourceData['locks'] as $k=>$lock) {
-            if ($lock->token == $lockInfo->token) unset($resourceData['locks'][$k]);
+            if ($lock->token === $lockInfo->token) $current = $k;
         }
-        $resourceData['locks'][] = $lockInfo;
+        if (!is_null($current)) $resourceData['locks'][$current] = $lockInfo;
+        else $resourceData['locks'][] = $lockInfo;
+
         $this->putResourceData($resourceData);
 
     }
@@ -63,7 +66,7 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
         $resourceData = $this->getResourceData();
         foreach($resourceData['locks'] as $k=>$lock) {
 
-            if ($lock->token == $lockInfo->token) {
+            if ($lock->token === $lockInfo->token) {
 
                 unset($resourceData['locks'][$k]);
                 $this->putResourceData($resourceData);

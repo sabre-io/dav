@@ -2,7 +2,7 @@
 
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_FSExt_NodesTest extends Sabre_DAV_AbstractServer{
+class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
 
     protected function getRootNode() {
 
@@ -214,7 +214,6 @@ class Sabre_DAV_FSExt_NodesTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
         $this->assertEquals('', $this->response->body);
 
-    
     }
 
 }

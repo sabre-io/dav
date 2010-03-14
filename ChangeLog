@@ -1,3 +1,6 @@
+1.0.9-stable (2010-??-??)
+	* Fixed: Issue 27: Entities not being encoded in PROPFIND responses. 
+
 1.0.8-stable (2010-03-03)
 	* Fixed: Issue 21: typos causing errors
 	* Fixed: Issue 23: Comma's between methods in Allow header.

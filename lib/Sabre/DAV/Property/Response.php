@@ -146,7 +146,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property  {
                 }
 
                 if (is_scalar($propertyValue)) {
-                    $currentProperty->nodeValue = $propertyValue;
+                    $currentProperty->appendChild($document->createTextNode($propertyValue));
                 } elseif ($propertyValue instanceof Sabre_DAV_Property) {
                     $propertyValue->serialize($server,$currentProperty);
                 } elseif (!is_null($propertyValue)) {

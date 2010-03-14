@@ -1,5 +1,7 @@
 1.1.2-alpha (2010-??-??)
 	* Added: RFC5397 - current-user-principal support.
+	* Fixed: Issue 27: encoding entities in property responses.
+	* Added: More unittests
 
 1.1.1-alpha (2010-03-11)
 	* Added: RFC5689 - Extended MKCOL support.

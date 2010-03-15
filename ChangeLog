@@ -1,6 +1,9 @@
 1.1.2-alpha (2010-??-??)
 	* Added: RFC5397 - current-user-principal support.
 	* Fixed: Issue 27: encoding entities in property responses.
+	* Added: naturalselection script now allows the user to specify a 'minimum
+	  number of bytes' for deletion. This should reduce load due to less
+	  crawling
 	* Added: More unittests
 
 1.1.1-alpha (2010-03-11)

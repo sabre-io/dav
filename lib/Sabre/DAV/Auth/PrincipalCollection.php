@@ -72,5 +72,3 @@ class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
     }
 
 }
-
-?>

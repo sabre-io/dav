@@ -123,5 +123,3 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
 }
-
-?>

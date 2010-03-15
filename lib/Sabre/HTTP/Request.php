@@ -218,4 +218,3 @@ class Sabre_HTTP_Request {
 
 }
 
-?>

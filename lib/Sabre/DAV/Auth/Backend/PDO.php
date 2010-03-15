@@ -68,5 +68,3 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
     }
 
 }
-
-?>

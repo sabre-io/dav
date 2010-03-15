@@ -98,5 +98,3 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
     }
 
 }
-
-?>

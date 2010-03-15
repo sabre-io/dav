@@ -73,4 +73,3 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
 
 }
 
-?>

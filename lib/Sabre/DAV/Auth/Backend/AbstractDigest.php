@@ -83,5 +83,3 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Back
     }
 
 }
-
-?>

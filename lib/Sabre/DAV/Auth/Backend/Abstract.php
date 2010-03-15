@@ -38,4 +38,3 @@ abstract class Sabre_DAV_Auth_Backend_Abstract {
 
 }
 
-?>

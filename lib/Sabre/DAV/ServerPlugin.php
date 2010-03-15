@@ -54,4 +54,3 @@ abstract class Sabre_DAV_ServerPlugin {
 
 }
 
-?>

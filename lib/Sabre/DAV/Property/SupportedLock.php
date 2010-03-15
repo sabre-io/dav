@@ -74,4 +74,3 @@ class Sabre_DAV_Property_SupportedLock extends Sabre_DAV_Property {
 
 }
 
-?>

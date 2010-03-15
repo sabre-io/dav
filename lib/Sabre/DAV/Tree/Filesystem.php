@@ -122,4 +122,3 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
 
 }
 
-?>

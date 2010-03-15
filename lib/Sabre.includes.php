@@ -141,4 +141,3 @@ include 'Sabre/CalDAV/Plugin.php';
 
 include 'Sabre/CalDAV/Server.php';
 
-?>

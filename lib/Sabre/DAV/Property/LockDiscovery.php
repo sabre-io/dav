@@ -83,4 +83,3 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
 
 }
 
-?>

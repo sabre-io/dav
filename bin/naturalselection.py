@@ -108,7 +108,7 @@ def main():
         '-m', '--min-erase',
         help="Minimum number of bytes to erase when the treshold is reached. " +
             "Setting this option higher will reduce the amount of times the cache directory will need to be scanned. " +
-            "The default is 10737418240, which is 1GB.", 
+            "(the default is 1073741824, which is 1GB.)", 
         type="int",
         dest="min_erase",
         default=1073741824

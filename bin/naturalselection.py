@@ -6,7 +6,7 @@
 # http://www.rooftopsolutions.nl/
 #
 # This utility is distributed along with SabreDAV
-
+# license: http://code.google.com/p/sabredav/wiki/License Modified BSD License
 
 import os
 from optparse import OptionParser

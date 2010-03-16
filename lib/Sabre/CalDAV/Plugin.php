@@ -277,6 +277,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
 
         $filterNode = $dom->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','filter');
+        if ($filterNode->length!==1) {
+            throw new Sabre_DAV_Exception_BadRequest('The calendar-query report must have a filter element');
+        }
         $filters = $this->parseCalendarQueryFilters($filterNode->item(0));
 
         // Making sure we're always requesting the calendar-data property
@@ -419,60 +422,38 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             if (isset($filter['time-range'])) {
 
-                // Grabbing the DTSTART property
-                $xdtstart = $xml->xpath($xpath.'/c:dtstart');
-                if (!count($xdtstart)) {
-                    throw new Sabre_DAV_Exception_BadRequest('DTSTART property missing from calendar object');
-                }
-                // Determining the timezone
-                if ($tzid = (string)$xdtstart[0]['tzid']) {
-                    $tz = new DateTimeZone($tzid);
-                } else {
-                    $tz = null;
-                }
-                $dtstart = $this->parseICalendarDateTime((string)$xdtstart[0],$tz);
+                switch($elem->getName()) {
+                    case 'vevent' :
+                        $result = $this->validateTimeRangeFilterForEvent($xml,$xpath,$filter);
+                        if ($result===false) return false;
+                        break;
+                    case 'vtodo' :
+                        // TODO: not implemented
+                        break;
+                        $result = $this->validateTimeRangeFilterForTodo($xml,$xpath,$filter);
+                        if ($result===false) return false;
+                        break;
+                    case 'vjournal' :
+                        // TODO: not implemented
+                        break;
+                        $result = $this->validateTimeRangeFilterForJournal($xml,$xpath,$filter);
+                        if ($result===false) return false;
+                        break;
+                    case 'vfreebusy' :
+                        // TODO: not implemented
+                        break;
+                        $result = $this->validateTimeRangeFilterForFreeBusy($xml,$xpath,$filter);
+                        if ($result===false) return false;
+                        break;
+                    case 'valarm' :
+                        // TODO: not implemented
+                        break;
+                        $result = $this->validateTimeRangeFilterForAlarm($xml,$xpath,$filter);
+                        if ($result===false) return false;
+                        break;
 
-                // Grabbing the DTEND property
-                $xdtend = $xml->xpath($xpath.'/c:dtend');
-                $dtend = null;
-
-                if (count($xdtend)) {
-                    // Determining the timezone
-                    if ($tzid = (string)$xdtend[0]['tzid']) {
-                        $tz = new DateTimeZone($tzid);
-                    } else {
-                        $tz = null;
-                    }
-                    $dtend = $this->parseICalendarDateTime((string)$xdtend[0],$tz);
-
-                } 
-                
-                if (is_null($dtend)) {
-                    // The DTEND property was not found. We will first see if the event has a duration
-                    // property
-
-                    $xduration = $xml->xpath($xpath.'/c:duration');
-                    if (count($xduration)) {
-                        // TODO
-                       // DURATION property value is greater than 0 seconds?
-                           // Y: $dtend = $dtstart+$duration
-                           // N: $dtend = $dtstart
-                    }
                 }
 
-                if (is_null($dtend)) {
-                    // The DTEND property and the DURATION property was not found
-                    // TODO
-                    // DTSTART property is a DATE-TIME value?
-                        // Y: $dtend = $dtstart
-                        // N: $dtend = $dtstart + 1day
-                }
-                if (is_null($dtend)) {
-                    throw new Sabre_DAV_Exception_NotImplemented('The entire time-range spec is not yet implemented');
-                }
-               
-                if (!is_null($filter['time-range']['start']) && $filter['time-range']['start'] >= $dtend)  return false;
-                if (!is_null($filter['time-range']['end'])   && $filter['time-range']['end']   <= $dtstart) return false;
             } 
 
             if (isset($filter['text-match'])) {
@@ -487,6 +468,96 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
         return true;
         
+    }
+
+    private function validateTimeRangeFilterForEvent(SimpleXMLElement $xml,$currentXPath,array $currentFilter) {
+
+        // Grabbing the DTSTART property
+        $xdtstart = $xml->xpath($currentXPath.'/c:dtstart');
+        if (!count($xdtstart)) {
+            throw new Sabre_DAV_Exception_BadRequest('DTSTART property missing from calendar object');
+        }
+
+        // The dtstart can be both a date, or datetime property
+        if ((string)$xdtstart[0]['value']==='DATE') {
+            $isDateTime = false;
+        } else {
+            $isDateTime = true;
+        }
+
+        // Determining the timezone
+        if ($tzid = (string)$xdtstart[0]['tzid']) {
+            $tz = new DateTimeZone($tzid);
+        } else {
+            $tz = null;
+        }
+        if ($isDateTime) {
+            $dtstart = $this->parseICalendarDateTime((string)$xdtstart[0],$tz);
+        } else {
+            $dtstart = $this->parseICalendarDate((string)$xdtstart[0]);
+        }
+
+
+        // Grabbing the DTEND property
+        $xdtend = $xml->xpath($currentXPath.'/c:dtend');
+        $dtend = null;
+
+        if (count($xdtend)) {
+            // Determining the timezone
+            if ($tzid = (string)$xdtend[0]['tzid']) {
+                $tz = new DateTimeZone($tzid);
+            } else {
+                $tz = null;
+            }
+
+            // Since the VALUE parameter of both DTSTART and DTEND must be the same
+            // we can assume we don't need to check the VALUE paramter of DTEND.
+            if ($isDateTime) {
+                $dtend = $this->parseICalendarDateTime((string)$xdtend[0],$tz);
+            } else {
+                $dtend = $this->parseICalendarDate((string)$xdtend[0],$tz);
+            }
+
+        } 
+        
+        if (is_null($dtend)) {
+            // The DTEND property was not found. We will first see if the event has a duration
+            // property
+
+            $xduration = $xml->xpath($currentXPath.'/c:duration');
+            if (count($xduration)) {
+                $duration = $this->parseICalendarDuration((string)$xduration[0]);
+
+                // Making sure that the duration is bigger than 0 seconds.
+                $tempDT = clone $dtstart;
+                $tempDT->modify($duration);
+                if ($tempDT > $dtstart) {
+
+                    // use DTEND = DTSTART + DURATION 
+                    $dtend = $tempDT;
+                } else {
+                    // use DTEND = DTSTART
+                    $dtend = $dtstart;
+                }
+
+            }
+        }
+
+        if (is_null($dtend)) {
+            if ($isDateTime) {
+                // DTEND = DTSTART
+                $dtend = $dtstart;
+            } else {
+                // DTEND = DTSTART + 1 DAY
+                $dtend = clone $dtstart;
+                $dtend->modify('+1 day');
+            }
+        }
+       
+        if (!is_null($currentFilter['time-range']['start']) && $currentFilter['time-range']['start'] >= $dtend)  return false;
+        if (!is_null($currentFilter['time-range']['end'])   && $currentFilter['time-range']['end']   <= $dtstart) return false;
+        return true;
+    
     }
 
     public function substringMatch($haystack, $needle, $collation) {
@@ -509,7 +580,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Parses an iCalendar (rfc5545) formatted-date and returns a DateTime object
+     * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
      *
      * Specifying a reference timezone is optional. It will only be used
      * if the non-UTC format is used. The argument is used as a reference, the 
@@ -525,7 +596,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])T([0-2][0-9])([0-5][0-9])([0-5][0-9])([Z]?)$/',$dt,$matches);
 
         if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar date is incorrect: ' . $dt);
+            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar datetime value is incorrect: ' . $dt);
         }
 
         if ($matches[7]==='Z' || is_null($tz)) {
@@ -539,10 +610,64 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
+     *
+     * @param string $date 
+     * @param DateTimeZone $tz 
+     * @return DateTime 
+     */
+    public function parseICalendarDate($date) {
+
+        // Format is YYYYMMDD
+        $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])$/',$date,$matches);
+
+        if (!$result) {
+            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar date value is incorrect: ' . $date);
+        }
+
+        $date = new DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3], new DateTimeZone('UTC'));
+        return $date;
+
+    }
+   
+    /**
+     * Parses an iCalendar (RFC5545) formatted duration and returns a string suitable
+     * for strtotime or DateTime::modify.
+     *
+     * 
+     * NOTE: When we require PHP 5.3 this can be replaced by the DateTimeInterval object, which
+     * supports ISO 8601 Intervals, which is a superset of ICalendar durations.
+     *
+     * For now though, we're just gonna live with this messy system
+     *
+     * @param string $duration
+     * @return string
+     */
     public function parseICalendarDuration($duration) {
 
-        $result = preg_match('/^(\+|-)?P((\d+W)|(\d+D)(T(\d+H)?(\d+M)?(\d+S)?)?)$');
-        return $result;
+        $result = preg_match('/^(?P<plusminus>\+|-)?P((?P<week>\d+)W)?((?P<day>\d+)D)?(T((?P<hour>\d+)H)?((?P<minute>\d+)M)?((?P<second>\d+)S)?)?$/', $duration, $matches);
+        if (!$result) {
+            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar duration value is incorrect: ' . $duration);
+        }
+       
+        $parts = array(
+            'week',
+            'day',
+            'hour',
+            'minute',
+            'second',
+        );
+
+        $newDur = '';
+        foreach($parts as $part) {
+            if (isset($matches[$part]) && $matches[$part]) {
+                $newDur.=' '.$matches[$part] . ' ' . $part . 's';
+            }
+        }
+
+        $newDur = ($matches['plusminus']==='-'?'-':'+') . trim($newDur);
+        return $newDur;
 
     }
 

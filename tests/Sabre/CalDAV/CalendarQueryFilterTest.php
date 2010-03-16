@@ -2,58 +2,9 @@
 
 class Sabre_CalDAV_CalendarQueryFilterTest extends PHPUnit_Framework_TestCase {
 
-    protected function getTestCalendarData($type = 0) {
+    protected function getTestCalendarData($type = 1) {
 
-        $calendarData = 'BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Apple Inc.//iCal 4.0.1//EN
-CALSCALE:GREGORIAN
-BEGIN:VTIMEZONE
-TZID:Asia/Seoul
-BEGIN:DAYLIGHT
-TZOFFSETFROM:+0900
-RRULE:FREQ=YEARLY;UNTIL=19880507T150000Z;BYMONTH=5;BYDAY=2SU
-DTSTART:19870510T000000
-TZNAME:GMT+09:00
-TZOFFSETTO:+1000
-END:DAYLIGHT
-BEGIN:STANDARD
-TZOFFSETFROM:+1000
-DTSTART:19881009T000000
-TZNAME:GMT+09:00
-TZOFFSETTO:+0900
-END:STANDARD
-END:VTIMEZONE
-BEGIN:VEVENT
-CREATED:20100225T154229Z
-UID:39A6B5ED-DD51-4AFE-A683-C35EE3749627
-TRANSP:TRANSPARENT
-SUMMARY:Something here
-DTSTART;TZID=Asia/Seoul:20100223T060000
-DTSTAMP:20100228T130202Z';
-
-        switch($type) {
-            case 0 :
-                $calendarData.="\nDTEND;TZID=Asia/Seoul:20100223T070000\n";
-                break;
-            case 1 :
-                $calendarData.="\nDTEND:20100223T070000\n";
-                break;
-            case 2 :
-                $calendarData.="\nDURATION:PT1H\n";
-                break;
-            case 3 :
-                $calendarData.="\nDURATION:PT0S\n";
-                break;
-        }
-
-
-        $calendarData.='ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:lisa@example.com
-SEQUENCE:2
-END:VEVENT
-END:VCALENDAR';
-
-        return $calendarData;
+        return Sabre_CalDAV_TestUtil::getTestCalendarData($type);
 
     }
 
@@ -105,7 +56,22 @@ END:VCALENDAR';
 
     function testParseICalendarDuration() {
 
-        $this->markTestIncomplete('not yet ready'); 
+        $caldav = new Sabre_CalDAV_Plugin();
+        $this->assertEquals('+1 weeks', $caldav->parseICalendarDuration('P1W'));
+        $this->assertEquals('+5 days', $caldav->parseICalendarDuration('P5D'));
+        $this->assertEquals('+5 days 3 hours 50 minutes 12 seconds', $caldav->parseICalendarDuration('P5DT3H50M12S'));
+        $this->assertEquals('-1 weeks 50 minutes', $caldav->parseICalendarDuration('-P1WT50M'));
+        $this->assertEquals('+50 days 3 hours 2 seconds', $caldav->parseICalendarDuration('+P50DT3H2S'));
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testParseICalendarDurationFail() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+        $caldav->parseICalendarDuration('P1X');
 
     }
 
@@ -186,10 +152,37 @@ XML;
         
         $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$filters));
         $filters['/c:iCalendar/c:vcalendar/c:vevent']['time-range']['end'] = new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC'));
-        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(0),$filters));
-        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(1),$filters));
-        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(2),$filters));
-        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(3),$filters));
+
+        foreach(range(1,7) as $testCase) {
+            $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData($testCase),$filters));
+        }
+
+    }
+
+    /**
+     * @depends testTimeRange
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testTimeRangeNoDTSTART() {
+
+        $calendarPlugin = new Sabre_CalDAV_Plugin(Sabre_CalDAV_Util::getBackend());
+
+        $xml = <<<XML
+<?xml version="1.0"?>
+<C:filter xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  <C:comp-filter name="VCALENDAR">
+    <C:comp-filter name="VEVENT">
+        <C:time-range start="20060104T000000Z" end="20110105T000000Z" />
+    </C:comp-filter>
+ </C:comp-filter>
+</C:filter>
+XML;
+
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $filters = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
+       
+        $calendarPlugin->validateFilters($this->getTestCalendarData('X'),$filters);
 
     }
 
@@ -337,7 +330,5 @@ XML;
         $this->assertTrue($calendarPlugin->validateFilters($this->getTestTodo(),$result));
 
     }
-
-
 
 }

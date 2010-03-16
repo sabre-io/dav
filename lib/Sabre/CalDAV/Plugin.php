@@ -206,7 +206,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
       
         $currentNode = null;
 
-
         // Nasty construct to see if an item exists in an array (it can be null)
         if (array_key_exists($calHome,$properties[404])) {
         
@@ -315,31 +314,19 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param DOMNode $domNode 
      * @return array 
      */
-    public function parseCalendarQueryFilters($domNode) {
-
-        $filters = array();
+    public function parseCalendarQueryFilters($domNode,$basePath = '/c:iCalendar', &$filters = array()) {
 
         foreach($domNode->childNodes as $child) {
 
             switch(Sabre_DAV_XMLUtil::toClarkNotation($child)) {
 
                 case '{urn:ietf:params:xml:ns:caldav}comp-filter' :
-                    
-                    $filter = array(
-                        'type' => self::FILTER_COMPFILTER, 
-                        'name' => $child->getAttribute('name'),
-                        'isnotdefined' => false,
-                    );
-                    
-                    foreach($child->childNodes as $subFilter) {
-                        if (Sabre_DAV_XMLUtil::toClarkNotation($subFilter)==='{urn:ietf:params:xml:ns:caldav}is-not-defined') {
-                            $filter['isnotdefined'] = true;
-                        }
-                    }
-                    if (!$filter['isnotdefined']) {
-                        $filter['filters'] = $this->parseCalendarQueryFilters($child);
-                    }
-                    $filters[] = $filter;
+                case '{urn:ietf:params:xml:ns:caldav}prop-filter' :
+                   
+                    $filterName = $basePath . '/' . 'c:' . strtolower($child->getAttribute('name'));
+                    $filters[$filterName] = array(); 
+
+                    $this->parseCalendarQueryFilters($child, $filterName,$filters);
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}time-range' :
@@ -359,49 +346,21 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                         throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the time-range filter');
                     }
 
-                    $filters[] = array(
-                        'type'  => self::FILTER_TIMERANGE,
+                    $filters[$basePath]['time-range'] = array(
                         'start' => $start,
-                        'end'   => $end,
+                        'end'   => $end
                     );
                     break;
 
-                case '{urn:ietf:params:xml:ns:caldav}prop-filter' :
-                
-                    $filter = array(
-                        'type'  => self::FILTER_PROPFILTER,
-                        'name' => $child->getAttribute('name'),
-                        'isnotdefined' => false,
-                    );
-
-                    foreach($child->childNodes as $subFilter) {
-                        if (Sabre_DAV_XMLUtil::toClarkNotation($subFilter)==='{urn:ietf:params:xml:ns:caldav}is-not-defined') {
-                            $filter['isnotdefined'] = true;
-                        }
-                    }
-                    if (!$filter['isnotdefined']) {
-                        $filter['filters'] = $this->parseCalendarQueryFilters($child);
-                    }
-                    $filters[] = $filter;
+                case '{urn:ietf:params:xml:ns:caldav}is-not-defined' :
+                    $filters[$basePath]['is-not-defined'] = true;
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}param-filter' :
-                
-                    $filter = array(
-                        'type'  => self::FILTER_PARAMFILTER,
-                        'name' => $child->getAttribute('name'),
-                        'isnotdefined' => false,
-                    );
-
-                    foreach($child->childNodes as $subFilter) {
-                        if (Sabre_DAV_XMLUtil::toClarkNotation($subFilter)==='{urn:ietf:params:xml:ns:caldav}is-not-defined') {
-                            $filter['isnotdefined'] = true;
-                        }
-                    }
-                    if (!$filter['isnotdefined']) {
-                        $filter['filters'] = $this->parseCalendarQueryFilters($child);
-                    }
-                    $filters[] = $filter;
+               
+                    $filterName = $basePath . '/@' . strtolower($child->getAttribute('name'));
+                    $filters[$filterName] = array();
+                    $this->parseCalendarQueryFilters($child, $filterName, $filters);
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}text-match' :
@@ -409,8 +368,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     $collation = $child->getAttribute('collation');
                     if (!$collation) $collation = 'i;ascii-casemap';
 
-                    $filters[] = array(
-                        'type'  => self::FILTER_TEXTMATCH,
+                    $filters[$basePath]['text-match'] = array(
                         'collation' => $collation,
                         'negate-condition' => $child->getAttribute('negate-condition')==='yes',
                         'value' => $child->nodeValue,
@@ -442,8 +400,112 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $xCalendarData = Sabre_CalDAV_XCalICal::toXCal($calendarData);
         $xml = simplexml_load_string($xCalendarData);
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:xcal');
-        return $this->validateXMLFilters($xml,$filters);
+
+        foreach($filters as $xpath=>$filter) {
+
+            // if-not-defined comes first
+            if (isset($filter['is-not-defined'])) {
+                if (!$xml->xpath($xpath))
+                    continue;
+                else
+                    return false;
+                
+            }
+
+            $elem = $xml->xpath($xpath);
+            
+            if (!$elem) return false;
+            $elem = $elem[0];
+
+            if (isset($filter['time-range'])) {
+
+                // Grabbing the DTSTART property
+                $xdtstart = $xml->xpath($xpath.'/c:dtstart');
+                if (!count($xdtstart)) {
+                    throw new Sabre_DAV_Exception_BadRequest('DTSTART property missing from calendar object');
+                }
+                // Determining the timezone
+                if ($tzid = (string)$xdtstart[0]['tzid']) {
+                    $tz = new DateTimeZone($tzid);
+                } else {
+                    $tz = null;
+                }
+                $dtstart = $this->parseICalendarDateTime((string)$xdtstart[0],$tz);
+
+                // Grabbing the DTEND property
+                $xdtend = $xml->xpath($xpath.'/c:dtend');
+                $dtend = null;
+
+                if (count($xdtend)) {
+                    // Determining the timezone
+                    if ($tzid = (string)$xdtend[0]['tzid']) {
+                        $tz = new DateTimeZone($tzid);
+                    } else {
+                        $tz = null;
+                    }
+                    $dtend = $this->parseICalendarDateTime((string)$xdtend[0],$tz);
+
+                } 
+                
+                if (is_null($dtend)) {
+                    // The DTEND property was not found. We will first see if the event has a duration
+                    // property
+
+                    $xduration = $xml->xpath($xpath.'/c:duration');
+                    if (count($xduration)) {
+                        // TODO
+                       // DURATION property value is greater than 0 seconds?
+                           // Y: $dtend = $dtstart+$duration
+                           // N: $dtend = $dtstart
+                    }
+                }
+
+                if (is_null($dtend)) {
+                    // The DTEND property and the DURATION property was not found
+                    // TODO
+                    // DTSTART property is a DATE-TIME value?
+                        // Y: $dtend = $dtstart
+                        // N: $dtend = $dtstart + 1day
+                }
+                if (is_null($dtend)) {
+                    throw new Sabre_DAV_Exception_NotImplemented('The entire time-range spec is not yet implemented');
+                }
+               
+                if (!is_null($filter['time-range']['start']) && $filter['time-range']['start'] >= $dtend)  return false;
+                if (!is_null($filter['time-range']['end'])   && $filter['time-range']['end']   <= $dtstart) return false;
+            } 
+
+            if (isset($filter['text-match'])) {
+                $currentString = (string)$elem;
+
+                $isMatching = $this->substringMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
+                if ($filter['text-match']['negate-condition'] && $isMatching) return false;
+                if (!$filter['text-match']['negate-condition'] && !$isMatching) return false;
+                
+            }
+
+        }
+        return true;
         
+    }
+
+    public function substringMatch($haystack, $needle, $collation) {
+
+        switch($collation) {
+            case 'i;ascii-casemap' :
+                // default strtolower takes locale into consideration
+                // we don't want this.
+                $haystack = str_replace(range('a','z'), range('A','Z'), $haystack);
+                $needle = str_replace(range('a','z'), range('A','Z'), $needle);
+                return strpos($haystack, $needle)!==false;
+
+            case 'i;octet' :
+                return strpos($haystack, $needle)!==false;
+            
+            default:
+                throw new Sabre_DAV_Exception_BadRequest('Unknown collation: ' . $collation);
+        }                
+
     }
 
     /**
@@ -477,74 +539,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    /**
-     * This function is simply used by validateFilters 
-     *
-     * A separete function was needed, because it nees to be a recursive function 
-     *
-     * @param SimpleXMLElement $xNode 
-     * @param array $filters 
-     * @param string $xpath 
-     * @return bool 
-     */
-    protected function validateXMLFilters($xNode,$filters,$xpath = '/c:iCalendar') {
+    public function parseICalendarDuration($duration) {
 
-        foreach($filters as $filter) {
-
-            switch($filter['type']) {
-
-                case self::FILTER_COMPFILTER :
-                case self::FILTER_PROPFILTER :
-
-                    $xpath.='/c:' . strtolower($filter['name']);
-
-                    if ($filter['isnotdefined']) {
-                        if($xNode->xpath($xpath))
-                            return false; // Node did exist. Filter failed 
-                        else
-                            break; // Node did not exist, mov on to next filter
-                    }
-
-                    if(!($subNode = $xNode->xpath($xpath)))
-                        return false; // This node did not exist, Filter failed
-
-                    // Validating subfilters
-                    if(!$this->validateXMLFilters($xNode,$filter['filters'],$xpath))
-                        return false;
-
-                    break;
-
-                case self::FILTER_TIMERANGE :
-                    // TODO
-                    break;
-
-                case self::FILTER_PARAMFILTER :
-                    // TODO
-                    break;
-
-                case self::FILTER_TEXTMATCH :
-                    list($string) = $xNode->xpath($xpath);
-                    $string = (string)$string;
-                    switch($filter['collation']) {
-                        case 'i;ascii-casemap' :
-                            if (mb_strpos(mb_strtolower($string),mb_strtolower($filter['value']))===false)
-                                return false;
-                            else 
-                                break 2;
-
-                        case 'i;octet' :
-                            if (strpos($string,$filter['value']) === false)
-                                return false;
-                            else
-                                break 2;
-                    }
-                    break;
-
-            } // end of filter switch
-
-        } // end of filter foreach
-
-        return true;
+        $result = preg_match('/^(\+|-)?P((\d+W)|(\d+D)(T(\d+H)?(\d+M)?(\d+S)?)?)$');
+        return $result;
 
     }
 

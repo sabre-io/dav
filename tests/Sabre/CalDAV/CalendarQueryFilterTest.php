@@ -2,7 +2,7 @@
 
 class Sabre_CalDAV_CalendarQueryFilterTest extends PHPUnit_Framework_TestCase {
 
-    protected function getTestCalendarData() {
+    protected function getTestCalendarData($type = 0) {
 
         $calendarData = 'BEGIN:VCALENDAR
 VERSION:2.0
@@ -27,16 +27,96 @@ END:VTIMEZONE
 BEGIN:VEVENT
 CREATED:20100225T154229Z
 UID:39A6B5ED-DD51-4AFE-A683-C35EE3749627
-DTEND;TZID=Asia/Seoul:20100223T070000
 TRANSP:TRANSPARENT
 SUMMARY:Something here
 DTSTART;TZID=Asia/Seoul:20100223T060000
-DTSTAMP:20100228T130202Z
+DTSTAMP:20100228T130202Z';
+
+        switch($type) {
+            case 0 :
+                $calendarData.="\nDTEND;TZID=Asia/Seoul:20100223T070000\n";
+                break;
+            case 1 :
+                $calendarData.="\nDTEND:20100223T070000\n";
+                break;
+            case 2 :
+                $calendarData.="\nDURATION:PT1H\n";
+                break;
+            case 3 :
+                $calendarData.="\nDURATION:PT0S\n";
+                break;
+        }
+
+
+        $calendarData.='ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:lisa@example.com
 SEQUENCE:2
 END:VEVENT
 END:VCALENDAR';
 
         return $calendarData;
+
+    }
+
+    protected function getTestTODO() {
+
+        $todo = 'BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Example Corp.//CalDAV Client//EN
+BEGIN:VTODO
+DTSTAMP:20060205T235335Z
+DUE;VALUE=DATE:20060104
+STATUS:NEEDS-ACTION
+SUMMARY:Task #1
+UID:DDDEEB7915FA61233B861457@example.com
+BEGIN:VALARM
+ACTION:AUDIO
+TRIGGER;RELATED=START:-PT10M
+END:VALARM
+END:VTODO
+END:VCALENDAR';
+        
+        return $todo;
+
+    }
+
+    function testSubStringMatchAscii() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+
+        $this->assertTrue($caldav->substringMatch('string','string','i;ascii-casemap'));
+        $this->assertTrue($caldav->substringMatch('string','rin', 'i;ascii-casemap'));
+        $this->assertTrue($caldav->substringMatch('STRING','string','i;ascii-casemap'));
+        $this->assertTrue($caldav->substringMatch('string','RIN', 'i;ascii-casemap'));
+        $this->assertFalse($caldav->substringMatch('string','ings', 'i;ascii-casemap'));
+
+    }
+
+    function testSubStringMatchOctet() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+
+        $this->assertTrue($caldav->substringMatch('string','string','i;octet'));
+        $this->assertTrue($caldav->substringMatch('string','rin', 'i;octet'));
+        $this->assertFalse($caldav->substringMatch('STRING','string','i;octet'));
+        $this->assertFalse($caldav->substringMatch('string','RIN', 'i;octet'));
+        $this->assertFalse($caldav->substringMatch('string','ings', 'i;octet'));
+
+    }
+
+    function testParseICalendarDuration() {
+
+        $this->markTestIncomplete('not yet ready'); 
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testSubStringMatchUnknownCollation() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+
+        $caldav->substringMatch('string','string','i;bla');
 
     }
 
@@ -55,19 +135,10 @@ XML;
 
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $expected = array(array(
-            'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-            'name' => 'VCALENDAR',
-            'isnotdefined' => false,
-            'filters' => array(
-                array(
-                    'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-                    'name' => 'VEVENT',
-                    'isnotdefined' => false,
-                    'filters' => array(),
-                ),
-            ),
-        ));
+        $expected = array(
+            '/c:iCalendar/c:vcalendar' => array(),
+            '/c:iCalendar/c:vcalendar/c:vevent' => array(),
+        );
         
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
@@ -80,6 +151,7 @@ XML;
 
     /**
      * @depends testCompFilter
+     * @depends testParseICalendarDuration
      */
     function testTimeRange() {
 
@@ -98,38 +170,33 @@ XML;
 
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $expected = array(array(
-            'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-            'name' => 'VCALENDAR',
-            'isnotdefined' => false,
-            'filters' => array(
-                array(
-                    'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-                    'name' => 'VEVENT',
-                    'isnotdefined' => false,
-                    'filters' => array(
-                        array(
-                            'type' => Sabre_CalDAV_Plugin::FILTER_TIMERANGE,
-                            'start' => new DateTime('2006-01-04 00:00:00',new DateTimeZone('UTC')),
-                            'end' =>   new DateTime('2006-01-05 00:00:00',new DateTimeZone('UTC')),
-                        ),
-                    ),
+        $expected = array(
+            '/c:iCalendar/c:vcalendar' => array(),
+            '/c:iCalendar/c:vcalendar/c:vevent' => array(
+                'time-range' => array(
+                    'start' => new DateTime('2006-01-04 00:00:00',new DateTimeZone('UTC')),
+                    'end' =>   new DateTime('2006-01-05 00:00:00',new DateTimeZone('UTC')),
                 ),
             ),
-        ));
+        );
         
 
-        $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
-        $this->assertEquals($expected, $result);
-
-        $this->markTestIncomplete('Time range filter has not been written yet');
-        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
+        $filters = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
+        $this->assertEquals($expected, $filters);
+        
+        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$filters));
+        $filters['/c:iCalendar/c:vcalendar/c:vevent']['time-range']['end'] = new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC'));
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(0),$filters));
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(1),$filters));
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(2),$filters));
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(3),$filters));
 
     }
 
 
     /**
      * @depends testCompFilter
+     * @depends testSubStringMatchOctet
      */
     function testPropFilter() {
 
@@ -150,43 +217,31 @@ XML;
 
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $expected = array(array(
-            'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-            'name' => 'VCALENDAR',
-            'isnotdefined' => false,
-            'filters' => array(
-                array(
-                    'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-                    'name' => 'VEVENT',
-                    'isnotdefined' => false,
-                    'filters' => array(
-                        array(
-                            'type' => Sabre_CalDAV_Plugin::FILTER_PROPFILTER,
-                            'name' => 'UID',
-                            'isnotdefined' => false,
-                            'filters' => array(
-                                array(
-                                    'type' => Sabre_CalDAV_Plugin::FILTER_TEXTMATCH,
-                                    'collation' => 'i;octet',
-                                    'value' => 'DC6C50A017428C5216A2F1CD@example.com',
-                                    'negate-condition' => false,
-                                ),
-                            ),
-                        ),
-                    ),
+        $expected = array(
+            '/c:iCalendar/c:vcalendar' => array(),
+            '/c:iCalendar/c:vcalendar/c:vevent' => array(),
+            '/c:iCalendar/c:vcalendar/c:vevent/c:uid' => array(
+                'text-match' => array(
+                    'collation' => 'i;octet',
+                    'value' => 'DC6C50A017428C5216A2F1CD@example.com',
+                    'negate-condition' => false,
                 ),
             ),
-        ));
+        );
 
+        $filters = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
+        $this->assertEquals($expected, $filters);
 
-        $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
-        $this->assertEquals($expected, $result);
-        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
+        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$filters));
+        $filters['/c:iCalendar/c:vcalendar/c:vevent/c:uid']['text-match']['value'] = '39A6B5ED-DD51-4AFE-A683-C35EE3749627';
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(),$filters));
+
 
     }
 
     /**
      * @depends testPropFilter
+     * @depends testSubStringMatchAscii
      */
     function testParamFilter() {
 
@@ -200,7 +255,7 @@ XML;
         <C:prop-filter name="ATTENDEE">
             <C:text-match collation="i;ascii-casemap">mailto:lisa@example.com</C:text-match>
             <C:param-filter name="PARTSTAT">
-                <C:text-match collation="i;ascii-casemap">NEEDS-ACTION</C:text-match>
+                <C:text-match collation="i;ascii-casemap">needs-action</C:text-match>
             </C:param-filter>
         </C:prop-filter>
     </C:comp-filter>
@@ -210,50 +265,28 @@ XML;
 
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $expected = array(array(
-            'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-            'name' => 'VCALENDAR',
-            'isnotdefined' => false,
-            'filters' => array(
-                array(
-                    'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-                    'name' => 'VEVENT',
-                    'isnotdefined' => false,
-                    'filters' => array(
-                        array(
-                            'type' => Sabre_CalDAV_Plugin::FILTER_PROPFILTER,
-                            'name' => 'ATTENDEE',
-                            'isnotdefined' => false,
-                            'filters' => array(
-                                array(
-                                    'type' => Sabre_CalDAV_Plugin::FILTER_TEXTMATCH,
-                                    'collation' => 'i;ascii-casemap',
-                                    'negate-condition' => false,
-                                    'value' => 'mailto:lisa@example.com',
-                                ),
-                                array(
-                                    'type' => Sabre_CalDAV_Plugin::FILTER_PARAMFILTER,
-                                    'name' => 'PARTSTAT',
-                                    'isnotdefined' => false,
-                                    'filters' => array(
-                                        array(
-                                            'type' => Sabre_CalDAV_Plugin::FILTER_TEXTMATCH,
-                                            'collation' => 'i;ascii-casemap',
-                                            'negate-condition' => false,
-                                            'value' => 'NEEDS-ACTION',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
+        $expected = array(
+            '/c:iCalendar/c:vcalendar' => array(),
+            '/c:iCalendar/c:vcalendar/c:vevent' => array(),
+            '/c:iCalendar/c:vcalendar/c:vevent/c:attendee' => array(
+                'text-match' => array(
+                    'collation' => 'i;ascii-casemap',
+                    'negate-condition' => false,
+                    'value' => 'mailto:lisa@example.com',
+                ),
+             ),
+             '/c:iCalendar/c:vcalendar/c:vevent/c:attendee/@partstat' => array(
+                'text-match' => array(
+                    'collation' => 'i;ascii-casemap',
+                    'negate-condition' => false,
+                    'value' => 'needs-action',
                 ),
             ),
-        ));
+        );
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
-        $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
 
 
     }
@@ -283,42 +316,28 @@ XML;
 
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $expected = array(array(
-            'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-            'name' => 'VCALENDAR',
-            'isnotdefined' => false,
-            'filters' => array(
-                array(
-                    'type' => Sabre_CalDAV_Plugin::FILTER_COMPFILTER,
-                    'name' => 'VTODO',
-                    'isnotdefined' => false,
-                    'filters' => array(
-                        array(
-                            'type' => Sabre_CalDAV_Plugin::FILTER_PROPFILTER,
-                            'name' => 'COMPLETED',
-                            'isnotdefined' => true,
-                        ),
-                        array(
-                            'type' => Sabre_CalDAV_Plugin::FILTER_PROPFILTER,
-                            'name' => 'STATUS',
-                            'isnotdefined' => false,
-                            'filters' => array(
-                                array(
-                                    'type' => Sabre_CalDAV_Plugin::FILTER_TEXTMATCH,
-                                    'collation' => 'i;ascii-casemap',
-                                    'negate-condition' => true,
-                                    'value' => 'CANCELLED',
-                                ),
-                            ),
-                        ),
-                    ),
+        $expected = array(
+            '/c:iCalendar/c:vcalendar' => array(),
+            '/c:iCalendar/c:vcalendar/c:vtodo' => array(),
+            '/c:iCalendar/c:vcalendar/c:vtodo/c:completed' => array(
+                'is-not-defined' => true,
+            ),
+            '/c:iCalendar/c:vcalendar/c:vtodo/c:status' => array(
+                'text-match' => array(
+                    'collation' => 'i;ascii-casemap',
+                    'negate-condition' => true,
+                    'value'    => 'CANCELLED',
                 ),
             ),
-        ));
+        );
 
         $result = $calendarPlugin->parseCalendarQueryFilters($dom->firstChild);
         $this->assertEquals($expected, $result);
         $this->assertFalse($calendarPlugin->validateFilters($this->getTestCalendarData(),$result));
+        $this->assertTrue($calendarPlugin->validateFilters($this->getTestTodo(),$result));
 
     }
+
+
+
 }

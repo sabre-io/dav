@@ -123,7 +123,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         
-        $this->assertFalse($this->auth->validateA1(md5($username . ':' . self::REALM . ':' . ($password . 'randomness'))));
+        $this->assertFalse($this->auth->validateA1(md5('user:realm:password')));
 
     }
 

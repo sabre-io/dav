@@ -408,7 +408,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @return int
      */
-    protected function getTimeoutHeader() {
+    public function getTimeoutHeader() {
 
         $header = $this->server->httpRequest->getHeader('Timeout');
         

@@ -343,11 +343,26 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     break;
 
                 case '{urn:ietf:params:xml:ns:caldav}time-range' :
-                
+               
+                    if ($start = $child->getAttribute('start')) {
+                        $start = $this->parseICalendarDateTime($start);
+                    } else {
+                        $start = null;
+                    }
+                    if ($end = $child->getAttribute('end')) {
+                        $end = $this->parseICalendarDateTime($end);
+                    } else {
+                        $end = null;
+                    }
+
+                    if (!is_null($start) && !is_null($end) && $end <= $start) {
+                        throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the time-range filter');
+                    }
+
                     $filters[] = array(
                         'type'  => self::FILTER_TIMERANGE,
-                        'start' => $child->getAttribute('start'),
-                        'end'   => $child->getAttribute('end'),
+                        'start' => $start,
+                        'end'   => $end,
                     );
                     break;
 
@@ -429,6 +444,37 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:xcal');
         return $this->validateXMLFilters($xml,$filters);
         
+    }
+
+    /**
+     * Parses an iCalendar (rfc5545) formatted-date and returns a DateTime object
+     *
+     * Specifying a reference timezone is optional. It will only be used
+     * if the non-UTC format is used. The argument is used as a reference, the 
+     * returned DateTime object will still be in the UTC timezone.
+     *
+     * @param string $dt 
+     * @param DateTimeZone $tz 
+     * @return DateTime 
+     */
+    public function parseICalendarDateTime($dt,DateTimeZone $tz = null) {
+
+        // Format is YYYYMMDD + "T" + hhmmss 
+        $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])T([0-2][0-9])([0-5][0-9])([0-5][0-9])([Z]?)$/',$dt,$matches);
+
+        if (!$result) {
+            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar date is incorrect: ' . $dt);
+        }
+
+        if ($matches[7]==='Z' || is_null($tz)) {
+            $tz = new DateTimeZone('UTC');
+        } 
+        $date = new DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] .':' . $matches[6], $tz);
+
+        // Still resetting the timezone, to normalize everything to UTC
+        $date->setTimeZone(new DateTimeZone('UTC'));
+        return $date;
+
     }
 
     /**

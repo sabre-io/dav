@@ -444,5 +444,51 @@ END:VCALENDAR';
 
     }
 
+    function testParseICalendarDateTime() {
 
+        $caldav = new Sabre_CalDAV_Plugin();
+        $dateTime = $caldav->parseICalendarDateTime('20100316T141405');
+
+        $compare = new DateTime('2010-03-16 14:14:05',new DateTimeZone('UTC'));
+
+        $this->assertEquals($compare, $dateTime);
+
+    }
+
+    /** 
+     * @depends testParseICalendarDateTime
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testParseICalendarDateTimeBadFormat() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+        $dateTime = $caldav->parseICalendarDateTime('20100316T141405 ');
+
+    }
+
+    /** 
+     * @depends testParseICalendarDateTime
+     */
+    function testParseICalendarDateTimeUTC() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+        $dateTime = $caldav->parseICalendarDateTime('20100316T141405Z');
+
+        $compare = new DateTime('2010-03-16 14:14:05',new DateTimeZone('UTC'));
+        $this->assertEquals($compare, $dateTime);
+
+    }
+
+    /** 
+     * @depends testParseICalendarDateTime
+     */
+    function testParseICalendarDateTimeCustomTimeZone() {
+
+        $caldav = new Sabre_CalDAV_Plugin();
+        $dateTime = $caldav->parseICalendarDateTime('20100316T141405', new DateTimeZone('Europe/Amsterdam'));
+
+        $compare = new DateTime('2010-03-16 13:14:05',new DateTimeZone('UTC'));
+        $this->assertEquals($compare, $dateTime);
+
+    }
 }

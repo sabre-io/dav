@@ -110,8 +110,8 @@ XML;
                     'filters' => array(
                         array(
                             'type' => Sabre_CalDAV_Plugin::FILTER_TIMERANGE,
-                            'start' => '20060104T000000Z',
-                            'end' => '20060105T000000Z',
+                            'start' => new DateTime('2006-01-04 00:00:00',new DateTimeZone('UTC')),
+                            'end' =>   new DateTime('2006-01-05 00:00:00',new DateTimeZone('UTC')),
                         ),
                     ),
                 ),

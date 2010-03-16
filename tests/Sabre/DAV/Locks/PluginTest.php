@@ -355,5 +355,51 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    function testGetTimeoutHeader() {
 
+        $request = new Sabre_HTTP_Request(array(
+            'HTTP_TIMEOUT' => 'second-100',
+        ));
+
+        $this->server->httpRequest = $request;
+        $this->assertEquals(100, $this->locksPlugin->getTimeoutHeader());
+
+    }
+
+
+    function testGetTimeoutHeaderNotSet() {
+
+        $request = new Sabre_HTTP_Request(array(
+        ));
+
+        $this->server->httpRequest = $request;
+        $this->assertEquals(0, $this->locksPlugin->getTimeoutHeader());
+
+    }
+
+
+    function testGetTimeoutHeaderInfinite() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'HTTP_TIMEOUT' => 'infinite',
+        ));
+
+        $this->server->httpRequest = $request;
+        $this->assertEquals(Sabre_DAV_Locks_LockInfo::TIMEOUT_INFINITE, $this->locksPlugin->getTimeoutHeader());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testGetTimeoutHeaderInvalid() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'HTTP_TIMEOUT' => 'yourmom',
+        ));
+
+        $this->server->httpRequest = $request;
+        $this->locksPlugin->getTimeoutHeader();
+
+    }
 }

@@ -26,6 +26,11 @@ class Sabre_DAV_Locks_LockInfo {
     const EXCLUSIVE = 2;
 
     /**
+     * A never expiring timeout
+     */
+    const TIMEOUT_INFINITE = -1;
+
+    /**
      * The owner of the lock 
      * 
      * @var string 

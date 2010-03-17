@@ -96,7 +96,7 @@ class Sabre_CalDAV_XCalICal {
                 }
             }
 
-            $xml.='>'. htmlspecialchars($value) . '</' . $propertyName . ">\n";
+            $xml.='>'. htmlspecialchars(trim($value)) . '</' . $propertyName . ">\n";
           
         }
         $xml.="</iCalendar>";

@@ -428,8 +428,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                         if ($result===false) return false;
                         break;
                     case 'vtodo' :
-                        // TODO: not implemented
-                        break;
                         $result = $this->validateTimeRangeFilterForTodo($xml,$xpath,$filter);
                         if ($result===false) return false;
                         break;
@@ -558,6 +556,174 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!is_null($currentFilter['time-range']['end'])   && $currentFilter['time-range']['end']   <= $dtstart) return false;
         return true;
     
+    }
+
+    private function validateTimeRangeFilterForTodo(SimpleXMLElement $xml,$currentXPath,array $filter) {
+
+        // Gathering all relevant elements
+
+        $dtStart = null;
+        $duration = null;
+        $due = null;
+        $completed = null;
+        $created = null;
+
+        $xdt = $xml->xpath($currentXPath.'/c:dtstart');
+        if (count($xdt)) {
+            // The dtstart can be both a date, or datetime property
+            if ((string)$xdt[0]['value']==='DATE') {
+                $isDateTime = false;
+            } else {
+                $isDateTime = true;
+            }
+
+            // Determining the timezone
+            if ($tzid = (string)$xdt[0]['tzid']) {
+                $tz = new DateTimeZone($tzid);
+            } else {
+                $tz = null;
+            }
+            if ($isDateTime) {
+                $dtStart = $this->parseICalendarDateTime((string)$xdt[0],$tz);
+            } else {
+                $dtStart = $this->parseICalendarDate((string)$xdt[0]);
+            }
+        }
+
+        // Only need to grab duration if dtStart is set
+        if (!is_null($dtStart)) {
+
+            $xduration = $xml->xpath($currentXPath.'/c:duration');
+            if (count($xduration)) {
+                $duration = $this->parseICalendarDuration((string)$xduration[0]);
+            }
+
+        }
+
+        if (!is_null($dtStart) && !is_null($duration)) {
+
+            // Comparision from RFC 4791:
+            // (start <= DTSTART+DURATION) AND ((end > DTSTART) OR (end >= DTSTART+DURATION))
+
+            $end = clone $dtStart;
+            $end->modify($duration);
+
+            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $end) &&
+                (is_null($filter['time-range']['end']) || $filter['time-range']['end'] > $dtStart || $filter['time-range']['end'] >= $end) ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+        // Need to grab the DUE property
+        $xdt = $xml->xpath($currentXPath.'/c:due');
+        if (count($xdt)) {
+            // The due property can be both a date, or datetime property
+            if ((string)$xdt[0]['value']==='DATE') {
+                $isDateTime = false;
+            } else {
+                $isDateTime = true;
+            }
+            // Determining the timezone
+            if ($tzid = (string)$xdt[0]['tzid']) {
+                $tz = new DateTimeZone($tzid);
+            } else {
+                $tz = null;
+            }
+            if ($isDateTime) {
+                $due = $this->parseICalendarDateTime((string)$xdt[0],$tz);
+            } else {
+                $due = $this->parseICalendarDate((string)$xdt[0]);
+            }
+        }
+
+        if (!is_null($dtStart) && !is_null($due)) {
+
+            // Comparision from RFC 4791:
+            // ((start < DUE) OR (start <= DTSTART)) AND ((end > DTSTART) OR (end >= DUE))
+            
+            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] < $due || $filter['time-range']['start'] < $dtstart) &&
+                (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $due) ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+        if (!is_null($dtStart)) {
+            
+            // Comparision from RFC 4791
+            // (start <= DTSTART)  AND (end > DTSTART)
+            if ( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $dtStart) &&
+                 (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] > $dtStart) ) {
+                 return true;
+            } else {
+                return false;
+            }
+
+        }
+
+        if (!is_null($due)) {
+            
+            // Comparison from RFC 4791
+            // (start < DUE) AND (end >= DUE)
+            if ( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] < $due) &&
+                 (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $due) ) {
+                 return true;
+            } else {
+                return false;
+            }
+
+        }
+        // Need to grab the COMPLETED property
+        $xdt = $xml->xpath($currentXPath.'/c:completed');
+        if (count($xdt)) {
+            $completed = $this->parseICalendarDateTime((string)$xdt[0]);
+        }
+        // Need to grab the CREATED property
+        $xdt = $xml->xpath($currentXPath.'/c:created');
+        if (count($xdt)) {
+            $created = $this->parseICalendarDateTime((string)$xdt[0]);
+        }
+
+        if (!is_null($completed) && !is_null($created)) {
+            // Comparison from RFC 4791
+            // ((start <= CREATED) OR (start <= COMPLETED)) AND ((end >= CREATED) OR (end >= COMPLETED))
+            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $created || $filter['time-range']['start'] <= $completed) &&
+                (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $created   || $filter['time-range']['end'] >= $completed)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (!is_null($completed)) {
+            // Comparison from RFC 4791
+            // (start <= COMPLETED) AND (end  >= COMPLETED)
+            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $completed) &&
+                (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $completed)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (!is_null($created)) {
+            // Comparison from RFC 4791
+            // (end > CREATED)
+            if( (is_null($filter['time-range']['end']) || $filter['time-range']['end'] > $created) ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // Everything else is TRUE
+        return true;
+
     }
 
     public function substringMatch($haystack, $needle, $collation) {

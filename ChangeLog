@@ -4,6 +4,7 @@
 	* Added: naturalselection script now allows the user to specify a 'minimum
 	  number of bytes' for deletion. This should reduce load due to less
 	  crawling
+	* Added: Full support for the calendar-query report.
 	* Added: More unittests.
 	* Fixed: Issue 29: Added TIMEOUT_INFINITE header
 

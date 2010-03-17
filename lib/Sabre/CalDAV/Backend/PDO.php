@@ -59,6 +59,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $fields[] = 'id';
         $fields[] = 'uri';
         $fields[] = 'ctag';
+        $fields[] = 'components';
 
         // Making fields a comma-delimited list 
         $fields = implode(', ', $fields);
@@ -68,11 +69,15 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $calendars = array();
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
+            $components = explode(',',$row['components']);
+
             $calendar = array(
                 'id' => $row['id'],
                 'uri' => $row['uri'],
                 '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag'],
+                '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet($components),
             );
+        
 
             foreach($this->propertyMap as $xmlName=>$dbName) {
                 $calendar[$xmlName] = $row[$dbName];
@@ -110,8 +115,26 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             ':ctag'         => 1,
         );
 
+        // Default value
+        $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
+        $fieldNames[] = 'components';
+        if (!isset($properties[$sccs])) {
+            $values[':components'] = 'VEVENT,VTODO';
+        } else {
+            if (!($properties[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet)) {
+                throw new Sabre_DAV_Exception('The ' . $sccs . ' property must be of type: Sabre_CalDAV_Property_SupportedCalendarComponentSet');
+            }
+            $values[':components'] = implode(',',$properties[$sccs]->getValue());
+        }
+
         foreach($this->propertyMap as $xmlName=>$dbName) {
             if (isset($properties[$xmlName])) {
+
+                $myValue = $properties[$xmlName];
+                if ($myValue instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet) {
+                    $myValue = implode(',',$myValue->getValue());
+                }
+
                 $values[':' . $dbName] = $properties[$xmlName];
                 $fieldNames[] = $dbName;
             }
@@ -161,7 +184,6 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             }
             $value = $mutation[0]===Sabre_DAV_Server::PROP_REMOVE?null:$mutation[2];
             $fieldName = $this->propertyMap[$mutation[1]];
-
             $values[$fieldName] = $value;
 
             // We're assuming early that the property update will succeed

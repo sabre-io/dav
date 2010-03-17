@@ -87,6 +87,15 @@ class Sabre_DAV_Server {
     );
 
     /**
+     * The propertymap can be used to map properties from 
+     * requests to property classes.
+     * 
+     * @var array
+     */
+    public $propertyMap = array(
+    );
+
+    /**
      * Class constructor 
      * 
      * @param Sabre_DAV_Tree $tree The tree object 
@@ -582,7 +591,7 @@ class Sabre_DAV_Server {
             foreach($dom->firstChild->childNodes as $childNode) {
 
                 if (Sabre_DAV_XMLUtil::toClarkNotation($childNode)!=='{DAV:}set') continue;
-                $properties = array_merge($properties, Sabre_DAV_XMLUtil::parseProperties($childNode));
+                $properties = array_merge($properties, Sabre_DAV_XMLUtil::parseProperties($childNode, $this->propertyMap));
 
             }
             if (!isset($properties['{DAV:}resourcetype'])) 
@@ -1255,11 +1264,17 @@ class Sabre_DAV_Server {
             $operation = Sabre_DAV_XMLUtil::toClarkNotation($child);
             switch($operation) {
                 case '{DAV:}set' :
+                    $propList = Sabre_DAV_XMLUtil::parseProperties($child, $this->propertyMap);
+                    foreach($propList as $k=>$propItem) {
+                        $operations[] = array(self::PROP_SET, $k, $propItem);
+                    }
+                    break;
+
                 case '{DAV:}remove' :
                     $propList = Sabre_DAV_XMLUtil::parseProperties($child);
                     foreach($propList as $k=>$propItem) {
 
-                        $operations[] = array($operation==='{DAV:}set'?self::PROP_SET:self::PROP_REMOVE,$k,$propItem);
+                        $operations[] = array(self::PROP_REMOVE,$k);
 
                     }
                     break;

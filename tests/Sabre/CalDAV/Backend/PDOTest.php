@@ -6,34 +6,7 @@ class Sabre_CalDAV_Backend_PDOTest extends PHPUnit_Framework_TestCase {
 
     function setup() {
 
-        $this->pdo = null;
-        if (file_exists(SABRE_TEMPDIR . '/testdb.sqlite'))
-            unlink(SABRE_TEMPDIR . '/testdb.sqlite');
-
-        $this->pdo = new PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-        $this->pdo->query('
-CREATE TABLE calendarobjects ( 
-	id integer primary key asc, 
-    calendardata text, 
-    uri text, 
-    calendarid integer, 
-    lastmodified integer
-);
-');
-
-        $this->pdo->query('
-CREATE TABLE calendars (
-    id integer primary key asc, 
-    principaluri text, 
-    displayname text, 
-    uri text,
-    ctag integer,
-    description text,
-	calendarorder integer,
-    calendarcolor text,
-    timezone text
-);');
+        $this->pdo = Sabre_CalDAV_TestUtil::getSQLiteDB();
 
     }
 

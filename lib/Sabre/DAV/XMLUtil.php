@@ -106,13 +106,18 @@ class Sabre_DAV_XMLUtil {
      * If no value was given (self-closing element) null will be used as the
      * value. This is used in for example PROPFIND requests.
      *
-     * Complex values are not supported, sub-tags are completely ingored and
-     * only the text is pulled out. 
+     * Complex values are supported through the propertyMap argument. The
+     * propertyMap should have the clark-notation properties as it's keys, and
+     * classnames as values. 
+     *
+     * When any of these properties are found, the unserialize() method will be
+     * (statically) called. The result of this method is used as the value.
      *
      * @param DOMElement $parentNode
+     * @param array $propertyMap
      * @return array
      */
-    static function parseProperties(DOMElement $parentNode) {
+    static function parseProperties(DOMElement $parentNode, array $propertyMap = array()) {
 
         $propertyList = array();
         foreach($parentNode->childNodes as $propNode) {
@@ -124,7 +129,12 @@ class Sabre_DAV_XMLUtil {
                 /* If there are no elements in here, we actually get 1 text node, this special case is dedicated to netdrive */
                 if ($propNodeData->nodeType != XML_ELEMENT_NODE) continue;
 
-                $propList[Sabre_DAV_XMLUtil::toClarkNotation($propNodeData)] = $propNodeData->textContent;
+                $propertyName = Sabre_DAV_XMLUtil::toClarkNotation($propNodeData);
+                if (isset($propertyMap[$propertyName])) {
+                    $propList[$propertyName] = call_user_func(array($propertyMap[$propertyName],'unserialize'),$propNodeData); 
+                } else {
+                    $propList[$propertyName] = $propNodeData->textContent;
+                }
             }
 
 

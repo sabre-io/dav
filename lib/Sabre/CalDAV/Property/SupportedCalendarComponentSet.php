@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sabre_CalDAV_Property_SupportedCalendarComponentSet
+ * SupportedCalendarComponentSet
  *
  * @package Sabre
  * @subpackage CalDAV
@@ -13,9 +13,9 @@
 /**
  * Supported component set property
  *
- * This property is a representation of the supported-component-set property
- * in the CalDAV namespace. It simply requires an array of components, such as
- * VEVENT, VTODO
+ * This property is a representation of the supported-calendar_component-set 
+ * property in the CalDAV namespace. It simply requires an array of components,
+ * such as VEVENT, VTODO
  */
 class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Property {
 
@@ -65,6 +65,24 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Prop
             $node->appendChild($xcomp); 
 
        }
+
+    }
+
+    /**
+     * Unserializes the DOMElement back into a Property class.
+     * 
+     * @param DOMElement $node 
+     * @return void
+     */
+    static function unserialize(DOMElement $node) {
+
+        $components = array();
+        foreach($node->childNodes as $childNode) {
+            if (Sabre_DAV_XMLUtil::toClarkNotation($childNode)==='{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}comp') {
+                $components[] = $childNode->getAttribute('name');
+            }
+        }
+        return new self($components);
 
     }
 

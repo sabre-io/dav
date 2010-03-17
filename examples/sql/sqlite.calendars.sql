@@ -15,5 +15,6 @@ CREATE TABLE calendars (
     description text,
 	calendarorder integer,
     calendarcolor text,
-	timezone text
+	timezone text,
+	components text
 );

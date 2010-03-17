@@ -86,6 +86,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
 
+        $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre_CalDAV_Property_SupportedCalendarComponentSet';
+
     }
 
     /**
@@ -174,7 +176,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($dom->firstChild->childNodes as $child) {
 
             if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
-            foreach(Sabre_DAV_XMLUtil::parseProperties($child) as $k=>$prop) {
+            foreach(Sabre_DAV_XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
                 $properties[$k] = $prop;
             }
         

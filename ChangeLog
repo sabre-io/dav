@@ -6,6 +6,9 @@
 	  crawling
 	* Added: Full support for the calendar-query report.
 	* Added: More unittests.
+	* Added: Support for complex property deserialization through the static 
+	  ::unserialize() method.
+	* Added: Support for modifying calendar-component-set
 	* Fixed: Issue 29: Added TIMEOUT_INFINITE header
 
 1.1.1-alpha (2010-03-11)

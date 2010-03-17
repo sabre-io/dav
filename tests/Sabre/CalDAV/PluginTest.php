@@ -316,6 +316,7 @@ END:VCALENDAR';
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar restricted to events.',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => $timezone,
             '{DAV:}displayname' => 'Lisa\'s Events',
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => null,
         );
 
         foreach($keys as $key=>$value) {
@@ -326,8 +327,9 @@ END:VCALENDAR';
             $this->assertEquals($value, $newCalendar[$key]);
 
         }
-
-        $this->markTestIncomplete('More properties need to be tested. There are also some missing');
+        $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
+        $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
+        $this->assertEquals(array('VEVENT'),$newCalendar[$sccs]->getValue());
 
     }
 

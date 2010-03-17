@@ -95,9 +95,20 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 
         $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0],'The status for this property should have been 200');
 
+    }
+
+    function testUnserialize() {
+
+        $doc = new DOMDocument();
+        $elem = $doc->createElement('forkicks');
+        $doc->appendChild($elem);
+        $this->assertNull(Sabre_DAV_Property_SupportedReportSet::unserialize($elem));
 
     }
 
+    /**
+     * This method is used as a callback for afterGetProperties
+     */
     function addProp($path,&$properties) {
 
         if (isset($properties[200]['{DAV:}supported-report-set'])) { 
@@ -106,6 +117,8 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
         }
 
     }
+
+
 
 }
 

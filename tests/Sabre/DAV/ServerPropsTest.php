@@ -18,6 +18,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         mkdir($this->tempDir . '/col');
         file_put_contents($this->tempDir . 'col/test.txt', 'Test contents');
         $this->server->addPlugin(new Sabre_DAV_Locks_Plugin());
+        if (file_exists($this->tempDir . '/../.sabredav')) unlink($this->tempDir . '/../.sabredav');
 
     }
 
@@ -186,7 +187,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1,count($data),'We expected one \'s:status\' element. Response body: ' . $body);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0]); 
+        $this->assertEquals('HTTP/1.1 201 Created',(string)$data[0]); 
 
     }
 

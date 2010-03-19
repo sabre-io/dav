@@ -7,7 +7,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     private $response;
     private $request;
     private $server;
-    private $tempDir = 'temp/';
+    private $tempDir = SABRE_TEMPDIR; 
 
     function setUp() {
 

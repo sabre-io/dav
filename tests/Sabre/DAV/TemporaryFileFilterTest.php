@@ -5,7 +5,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
     function setUp() {
 
         parent::setUp();
-        $plugin = new Sabre_DAV_TemporaryFileFilterPlugin('temp/tff');
+        $plugin = new Sabre_DAV_TemporaryFileFilterPlugin(SABRE_TEMPDIR . '/tff');
         $this->server->addPlugin($plugin);
 
     }

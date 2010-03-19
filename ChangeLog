@@ -1,4 +1,4 @@
-1.1.2-alpha (2010-??-??)
+1.1.2-alpha (2010-03-18)
 	* Added: RFC5397 - current-user-principal support.
 	* Fixed: Issue 27: encoding entities in property responses.
 	* Added: naturalselection script now allows the user to specify a 'minimum

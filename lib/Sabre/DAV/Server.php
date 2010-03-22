@@ -282,6 +282,7 @@ class Sabre_DAV_Server {
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
         $this->httpResponse->setHeader('Accept-Ranges','bytes');
+        $this->httpResponse->setHeader('X-Sabre-Version',Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_VERSION::STABILITY);
         $this->httpResponse->setHeader('Content-Length',0);
         $this->httpResponse->sendStatus(200);
 

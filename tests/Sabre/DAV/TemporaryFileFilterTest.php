@@ -156,7 +156,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
-        $this->assertTrue(preg_match('/^opaquelocktoken:(.*)$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
         $this->assertEquals('true',$this->response->headers['X-Sabre-Temp']);
         
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testlock.txt'),'._testlock.txt should not exist in the regular file structure.');

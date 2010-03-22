@@ -1,5 +1,6 @@
 1.0.10-stable (2010-03-19)
 	* Fixed: Issue 34: Invalid Lock-Token header response.
+	* Added: Issue 35: Addign SabreDAV version to HTTP OPTIONS responses.
 
 1.0.9-stable (2010-03-19)
 	* Fixed: Issue 27: Entities not being encoded in PROPFIND responses. 

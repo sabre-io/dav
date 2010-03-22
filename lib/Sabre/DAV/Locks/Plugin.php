@@ -307,7 +307,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $this->lockNode($uri,$lockInfo);
 
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->setHeader('Lock-Token','opaquelocktoken:' . $lockInfo->token);
+        $this->server->httpResponse->setHeader('Lock-Token','<opaquelocktoken:' . $lockInfo->token . '>');
         $this->server->httpResponse->sendStatus($newFile?201:200);
         $this->server->httpResponse->sendBody($this->generateLockResponse($lockInfo));
 

@@ -1,3 +1,6 @@
+1.0.10-stable (2010-03-19)
+	* Fixed: Issue 34: Invalid Lock-Token header response.
+
 1.0.9-stable (2010-03-19)
 	* Fixed: Issue 27: Entities not being encoded in PROPFIND responses. 
 	* Fixed: Issue 29: Added missing TIMEOUT_INFINITE constant. 

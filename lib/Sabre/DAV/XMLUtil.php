@@ -119,7 +119,7 @@ class Sabre_DAV_XMLUtil {
      */
     static function parseProperties(DOMElement $parentNode, array $propertyMap = array()) {
 
-        $propertyList = array();
+        $propList = array();
         foreach($parentNode->childNodes as $propNode) {
 
             if (Sabre_DAV_XMLUtil::toClarkNotation($propNode)!=='{DAV:}prop') continue;

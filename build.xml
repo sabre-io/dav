@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <project name="SabreDAV" default="build" basedir=".">
 
+    <!-- Any default properties -->
+    <property file="build.properties" />
+
+    <!-- Where to write api documentation -->
+    <property name="sabredav.apidocspath" value="docs/api" />
+
     <target name="build" depends="init,test">
         <exec command="bin/pearpackage2.php make" checkreturn="true" />
         <exec command="pear package" passthru="1" />
@@ -35,8 +41,9 @@
     <target name="apidocs" depends="init">
 
         <echo>Creating api documentation using PHP documentor</echo>
+        <echo>Writing to ${sabredav.apidocspath}</echo>
         <phpdoc title="SabreDAV API documentation"
-            destdir="doc/api"
+            destdir="${sabredav.apidocspath}"
             sourcecode="false"
             output="HTML:frames:phphtmllib">
 

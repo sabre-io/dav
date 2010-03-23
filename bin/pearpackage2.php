@@ -30,14 +30,7 @@ $notes = 'New release. Read the ChangeLog and announcement for more details';
 $minPHPVersion = '5.2.1';
 
 
-// We are generating 2 types of packages:
-// 1. Generated for a uri (direct install)
-// 2. Installed from PearFarm
-if (isset($argv) && in_array('pearfarm',$argv)) {
-    $channel = '<channel>evert.pearfarm.org</channel>';
-} else {
-    $channel = '<uri>http://sabredav.googlecode.com/files/Sabre_DAV-' . $version . '</uri>';
-}
+$channel = '<channel>pear.sabredav.org</channel>';
 
 
 /* This function is intended to generate the full file list */

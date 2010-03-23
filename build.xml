@@ -2,9 +2,6 @@
 <project name="SabreDAV" default="build" basedir=".">
 
     <target name="build" depends="init,test">
-        <exec command="bin/pearpackage2.php make pearfarm" checkreturn="true" />
-        <exec command="pear package" passthru="1" />
-        <move file="Sabre_DAV-${sabredav.version}.tgz" tofile="Sabre_DAV-${sabredav.version}_PEARFARM.tgz" />
         <exec command="bin/pearpackage2.php make" checkreturn="true" />
         <exec command="pear package" passthru="1" />
     </target>
@@ -14,14 +11,11 @@
         <delete dir="apidocs" />
         <delete file="package.xml" />
         <delete file="Sabre_DAV-${sabredav.version}.tgz" />
-        <delete file="Sabre_DAV-${sabredav.version}_PEARFARM.tgz" />
     </target>    
 
     <target name="release" depends="init,test,build">
         <echo>Creating Mercurial release tag</echo>
         <exec command="hg tag version-${sabredav.version}" checkreturn="true" passthru="1" />
-        <echo>Pushing to pearfarm</echo>
-        <exec command="pearfarm push Sabre_DAV-${sabredav.version}_PEARFARM.tgz" checkreturn="true" passthru="1" />
         <echo>Uploading to Google Code</echo>
         <propertyprompt propertyName="googlecode.username" defaultValue="evertpot" promptText="Enter your googlecode username" useExistingValue="true" />
         <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />

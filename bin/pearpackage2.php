@@ -28,17 +28,7 @@ $license = 'Modified BSD';
 $licenseuri = 'http://code.google.com/p/sabredav/wiki/License';
 $notes = 'New release. Read the ChangeLog and announcement for more details';
 $minPHPVersion = '5.2.1';
-
-
-// We are generating 2 types of packages:
-// 1. Generated for a uri (direct install)
-// 2. Installed from PearFarm
-if (isset($argv) && in_array('pearfarm',$argv)) {
-    $channel = '<channel>evert.pearfarm.org</channel>';
-} else {
-    $channel = '<uri>http://sabredav.googlecode.com/files/Sabre_DAV-' . $version . '</uri>';
-}
-
+$channel = 'pear.sabredav.org';
 
 /* This function is intended to generate the full file list */
 function parsePath($fullPath, $role, $fileMatch = '/^(.*)$/', $padding = 4) {
@@ -89,7 +79,7 @@ $package = <<<XML
     xmlns="http://pear.php.net/dtd/package-2.0"> 
 
     <name>{$name}</name>
-    {$channel}
+    <channel>{$channel}</channel>
     <summary>{$summary}</summary>
     <description>{$description}</description>
     <lead>

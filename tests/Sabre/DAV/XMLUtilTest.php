@@ -201,4 +201,47 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         ), $properties);
 
     }
+
+
+    /**
+     * @depends testParseProperties
+     */
+    function testParsePropertiesNoProperties() {
+
+        $xml='<?xml version="1.0"?>
+<root xmlns="DAV:">
+  <prop>
+  </prop>
+</root>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+
+        $this->assertEquals(array(), $properties);
+
+    }
+
+    function testParsePropertiesMapHref() {
+
+        $xml='<?xml version="1.0"?>
+<root xmlns="DAV:">
+  <prop>
+    <displayname>Calendars</displayname>
+  </prop>
+  <prop>
+    <someprop><href>http://sabredav.org/</href></someprop>
+  </prop>
+</root>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild,array('{DAV:}someprop'=>'Sabre_DAV_Property_Href'));
+
+        $this->assertEquals(array(
+            '{DAV:}displayname' => 'Calendars',
+            '{DAV:}someprop'    => new Sabre_DAV_Property_Href('http://sabredav.org/'),
+        ), $properties);
+
+    }
+
 }
+

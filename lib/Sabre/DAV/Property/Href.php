@@ -69,4 +69,21 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property  {
 
     }
 
+    /**
+     * Unserializes this property from a DOM Element 
+     *
+     * This method returns an instance of this class.
+     * It will only decode {DAV:}href values. For non-compatible elements null will be returned.
+     *
+     * @param DOMElement $dom 
+     * @return Sabre_DAV_Property_Href 
+     */
+    static function unserialize(DOMElement $dom) {
+
+        if (Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
+            return new self($dom->firstChild->textContent);
+        }
+
+    } 
+
 }

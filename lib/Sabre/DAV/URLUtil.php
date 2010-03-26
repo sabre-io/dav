@@ -82,28 +82,34 @@ class Sabre_DAV_URLUtil {
     /**
      * Decodes a url-encoded path
      *
-     * It should be noted that this method just uses php's urldecode.
-     * 
      * @param string $path 
      * @return string 
      */
     static function decodePath($path) {
 
-        return urldecode($path);
+        return self::decodePathSegment($path);
 
     }
 
     /**
      * Decodes a url-encoded path segment
      *
-     * It should be noted that this method just uses php's urldecode.
-     * 
      * @param string $path 
      * @return string 
      */
     static function decodePathSegment($path) {
 
-        return urldecode($path);
+        $path = urldecode($path);
+        $encoding = mb_detect_encoding($path, array('UTF-8','ISO-8859-1'));
+        switch($encoding) {
+
+            case 'UTF-8' : 
+                return $path;
+            case 'ISO-8859-1' : 
+                return utf8_encode($path);
+            default : 
+                throw new Sabre_DAV_Exception_BadRequest('Invalid url encoding');
+        }
 
     }
 

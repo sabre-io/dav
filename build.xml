@@ -79,7 +79,7 @@
 
         ]]></adhoc-task>
         <sabredav-version />
-        <echo>SabreDAV version ${sabredav.version}-${sabredav.stability}</echo>
+        <echo>SabreDAV version ${sabredav.version}</echo>
 
     </target>
 

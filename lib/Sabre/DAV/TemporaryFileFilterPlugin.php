@@ -148,18 +148,15 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
             '/^\.dat(.*)$/',   // Smultron seems to create these
         );
 
-        $match = false;
         foreach($tempFiles as $tempFile) {
 
-            if (preg_match($tempFile,$tempPath)) $match = true; 
+            if (preg_match($tempFile,$tempPath)) {
+                return $this->dataDir . '/sabredav_' . md5($path) . '.tempfile';
+            }
 
         }
 
-        if ($match) {
-            return $this->dataDir . '/sabredav_' . md5($path) . '.tempfile';
-        } else {
-            return false;
-        }
+        return false;
 
     }
 

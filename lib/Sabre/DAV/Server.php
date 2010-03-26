@@ -750,7 +750,7 @@ class Sabre_DAV_Server {
 
         if (strpos($uri,$this->baseUri)===0) {
 
-            return trim(urldecode(substr($uri,strlen($this->baseUri))),'/');
+            return trim(Sabre_DAV_URLUtil::decodePath(substr($uri,strlen($this->baseUri))),'/');
 
         } else {
 

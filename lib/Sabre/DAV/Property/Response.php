@@ -82,12 +82,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property  {
         $xresponse = $document->createElementNS('DAV:','d:response');
         $dom->appendChild($xresponse); 
 
-        $uri = explode('/',trim($this->href,'/'));
-
-        // Decoding the uri part-by-part, for instance to make sure we got spaces, and not %20
-        foreach($uri as $k=>$item) $uri[$k] = rawurlencode($item);
-
-        $uri = implode('/',$uri);
+        $uri = Sabre_DAV_URLUtil::encodePath($this->href);
 
         // TODO: we need a better way to do this
         if ($uri!='' && isset($properties[200]['{DAV:}resourcetype']) && $properties[200]['{DAV:}resourcetype']->getValue()=='{DAV:}collection') $uri .='/';

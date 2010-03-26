@@ -146,7 +146,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
             '/^desktop.ini$/', // Windows custom folder settings
             '/^Thumbs.db$/',   // Windows thumbnail cache
             '/^.(.*).swp$/',   // ViM temporary files
-            '/\.dat(.*)$/',     // Smultron seems to create these
+            '/^\.dat(.*)$/',   // Smultron seems to create these
         );
 
         $match = false;

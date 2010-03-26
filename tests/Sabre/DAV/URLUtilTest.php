@@ -48,5 +48,34 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
 
     }
 
+    function testDecode() {
+
+        $str = 'Hello%20Test+Test2.txt';
+        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $this->assertEquals('Hello Test Test2.txt',$newStr);
+
+    }
+
+    /**
+     * @depends testDecode
+     */
+    function testDecodeUmlaut() {
+
+        $str = 'Hello%C3%BC.txt';
+        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $this->assertEquals("Hello\xC3\xBC.txt",$newStr);
+
+    }
+
+    /**
+     * @depends testDecodeUmlaut
+     */
+    function testDecodeUmlautLatin1() {
+
+        $str = 'Hello%FC.txt';
+        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $this->assertEquals("Hello\xC3\xBC.txt",$newStr);
+
+    }
 
 }

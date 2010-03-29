@@ -2,6 +2,8 @@
 	* Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
 	  special characters.
+	* Added: More unittests.
+	* Added: SabreDAV version to all error responses.
 
 1.0.11-stable (2010-03-23)
 	* Non-public release. This release is identical to 1.0.10, but it is used

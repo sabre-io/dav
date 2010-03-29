@@ -125,6 +125,7 @@ class Sabre_DAV_Server {
             $error->appendChild($DOM->createElement('s:file',$e->getFile()));
             $error->appendChild($DOM->createElement('s:line',$e->getLine()));
             $error->appendChild($DOM->createElement('s:code',$e->getCode()));
+            $error->appendChild($DOM->createElement('s:sabredav-version',Sabre_DAV_Version::VERSION));
 
             if($e instanceof Sabre_DAV_Exception) {
                 $httpCode = $e->getHTTPCode();
@@ -272,7 +273,7 @@ class Sabre_DAV_Server {
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
         $this->httpResponse->setHeader('Accept-Ranges','bytes');
-        $this->httpResponse->setHeader('X-Sabre-Version',Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_VERSION::STABILITY);
+        $this->httpResponse->setHeader('X-Sabre-Version',Sabre_DAV_Version::VERSION);
         $this->httpResponse->setHeader('Content-Length',0);
         $this->httpResponse->sendStatus(200);
 

@@ -6,6 +6,7 @@ class Sabre_DAV_Locks_Backend_PDOTest extends Sabre_DAV_Locks_Backend_AbstractTe
 
     function getBackend() {
 
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         Sabre_TestUtil::clearTempDir();
         mkdir(SABRE_TEMPDIR . '/pdolocks');
         $pdo = new PDO('sqlite:' . SABRE_TEMPDIR . '/pdolocks/db.sqlite');

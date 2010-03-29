@@ -9,6 +9,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
     function setup() {
 
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(1,count($calendars));

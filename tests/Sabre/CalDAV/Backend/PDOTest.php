@@ -6,6 +6,7 @@ class Sabre_CalDAV_Backend_PDOTest extends PHPUnit_Framework_TestCase {
 
     function setup() {
 
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->pdo = Sabre_CalDAV_TestUtil::getSQLiteDB();
 
     }

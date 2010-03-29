@@ -11,6 +11,7 @@ class Sabre_DAV_Auth_Backend_PDOTest extends PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
         $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT)');

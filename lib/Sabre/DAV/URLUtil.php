@@ -101,15 +101,14 @@ class Sabre_DAV_URLUtil {
 
         $path = urldecode($path);
         $encoding = mb_detect_encoding($path, array('UTF-8','ISO-8859-1'));
+
         switch($encoding) {
 
-            case 'UTF-8' : 
-                return $path;
             case 'ISO-8859-1' : 
-                return utf8_encode($path);
-            default : 
-                throw new Sabre_DAV_Exception_BadRequest('Invalid url encoding');
+                $path = utf8_encode($path);
         }
+
+        return $path;
 
     }
 

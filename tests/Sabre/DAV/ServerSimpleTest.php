@@ -340,6 +340,40 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testCalculateUriSpecialChars() {
+
+        $uris = array(
+            'http://www.example.org/root/%C3%A0fo%C3%B3',
+            '/root/%C3%A0fo%C3%B3',
+            '/root/%C3%A0fo%C3%B3/'
+        );
+
+        $this->server->setBaseUri('/root/');
+
+        foreach($uris as $uri) {
+
+            $this->assertEquals("\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
+
+        }
+
+        $this->server->setBaseUri('/root');
+
+        foreach($uris as $uri) {
+
+            $this->assertEquals("\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
+
+        }
+       
+        $this->server->setBaseUri('/');
+
+        foreach($uris as $uri) {
+
+            $this->assertEquals("root/\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
+
+        }
+
+    }
+
     function testBaseUriCheck() {
 
         $uris = array(

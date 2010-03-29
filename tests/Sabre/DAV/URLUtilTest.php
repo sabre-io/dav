@@ -78,4 +78,17 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
 
     }
 
+    /**
+     * This testcase was sent by a bug reporter
+     * 
+     * @depends testDecode
+     */
+    function testDecodeAccentsWindows7() {
+        
+        $str = '/webdav/%C3%A0fo%C3%B3';
+        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $this->assertEquals(strtolower($str),Sabre_DAV_URLUtil::encodePath($newStr));
+
+    }
+
 }

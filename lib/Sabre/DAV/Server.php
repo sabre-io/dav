@@ -859,7 +859,7 @@ class Sabre_DAV_Server {
      *
      * @return array 
      */
-    protected function getCopyAndMoveInfo() {
+    public function getCopyAndMoveInfo() {
 
         $source = $this->getRequestUri();
 

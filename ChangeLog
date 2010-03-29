@@ -9,7 +9,8 @@
 	* Added: More unittests.
 	* Added: SabreDAV version to all error responses.
 	* Added: URLUtil class for decoding urls.
-	* Updated: Now using pear.sabredav.org pear channel.
+	* Changed: Now using pear.sabredav.org pear channel.
+	* Changed: Sabre_DAV_Server::getCopyAndMoveInfo is now a public method.
 
 1.1.2-alpha (2010-03-18)
 	* Added: RFC5397 - current-user-principal support.

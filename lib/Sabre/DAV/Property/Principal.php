@@ -104,20 +104,21 @@ class Sabre_DAV_Property_Principal extends Sabre_DAV_Property {
      */
     public function serialize(Sabre_DAV_Server $server, DOMElement $node) {
 
+        $prefix = $server->xmlNamespaces['DAV:'];
         switch($this->type) {
 
             case self::UNAUTHENTICATED :
                 $node->appendChild(
-                    $node->ownerDocument->createElementNS('DAV:','d:unauthenticated')
+                    $node->ownerDocument->createElement($prefix . ':unauthenticated')
                 );
                 break;
             case self::AUTHENTICATED :
                 $node->appendChild(
-                    $node->ownerDocument->createElementNS('DAV:','d:authenticated')
+                    $node->ownerDocument->createElement($prefix . ':authenticated')
                 );
                 break;
             case self::HREF :
-                $href = $node->ownerDocument->createElementNS('DAV:','d:href');
+                $href = $node->ownerDocument->createElement($prefix . ':href');
                 $href->nodeValue = $server->getBaseUri() . $this->href;
                 $node->appendChild($href);
                 break;

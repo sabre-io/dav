@@ -63,7 +63,9 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property  {
      */
     public function serialize(Sabre_DAV_Server $server,DOMElement $dom) {
 
-        $elem = $dom->ownerDocument->createElementNS('DAV:','d:href');
+        $prefix = $server->xmlNamespaces['DAV:'];
+
+        $elem = $dom->ownerDocument->createElement($prefix . ':href');
         $elem->nodeValue = ($this->autoPrefix?$server->getBaseUri():'') . $this->href;
         $dom->appendChild($elem);
 
@@ -81,7 +83,7 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property  {
     static function unserialize(DOMElement $dom) {
 
         if (Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
-            return new self($dom->firstChild->textContent);
+            return new self($dom->firstChild->textContent,false);
         }
 
     } 

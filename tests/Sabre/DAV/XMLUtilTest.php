@@ -238,7 +238,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(
             '{DAV:}displayname' => 'Calendars',
-            '{DAV:}someprop'    => new Sabre_DAV_Property_Href('http://sabredav.org/'),
+            '{DAV:}someprop'    => new Sabre_DAV_Property_Href('http://sabredav.org/',false),
         ), $properties);
 
     }

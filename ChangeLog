@@ -6,6 +6,8 @@
 	* Fixed: Issue 36: Incorrect variable name, throwing error in some
 	  requests.
 	* Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
+	* Added: More unittests.
+	* Added: SabreDAV version to all error responses.
 
 1.1.2-alpha (2010-03-18)
 	* Added: RFC5397 - current-user-principal support.

@@ -4,6 +4,8 @@
 	  special characters.
 	* Added: More unittests.
 	* Added: SabreDAV version to all error responses.
+	* Added: URLUtil class for decoding urls.
+	* Updated: Now using pear.sabredav.org pear channel.
 
 1.0.11-stable (2010-03-23)
 	* Non-public release. This release is identical to 1.0.10, but it is used

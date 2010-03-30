@@ -1,4 +1,4 @@
-1.0.12-stable (2010-??-??)
+1.0.12-stable (2010-03-30)
 	* Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
 	  special characters.

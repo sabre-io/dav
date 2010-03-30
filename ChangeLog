@@ -1,4 +1,6 @@
-1.2.0alpha1 (2010-??-??)
+1.2.0alpha1 (2010-03-30)
+	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
+	  special characters.
 	* Fixed: Issue 34: Incorrect Lock-Token response header for LOCK. Fixes
 	  Office 2010 compatibility.
 	* Added: Issue 35: SabreDAV version to header to OPTIONS response to ease

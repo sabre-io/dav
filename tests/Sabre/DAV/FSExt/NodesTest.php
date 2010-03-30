@@ -209,7 +209,7 @@ class Sabre_DAV_FSExt_NodesTest extends Sabre_DAV_AbstractServer{
             'Allow'          => 'OPTIONS, GET, HEAD, DELETE, TRACE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT',
             'Accept-Ranges'  => 'bytes',
             'Content-Length' => '0',
-            'X-Sabre-Version' => Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY,
+            'X-Sabre-Version' => Sabre_DAV_Version::VERSION,
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);

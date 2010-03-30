@@ -1029,12 +1029,11 @@ class Sabre_DAV_Server {
      */
     public function createDirectory($uri) {
 
-        $parentUri = dirname($uri);
-        if ($parentUri=='.') $parentUri = '';
+        list($dir, $name) = Sabre_DAV_URLUtil::splitPath($uri);
         if (!$this->broadcastEvent('beforeBind',array($uri))) return;
 
-        $parent = $this->tree->getNodeForPath($parentUri);
-        $parent->createDirectory(basename($uri));
+        $parent = $this->tree->getNodeForPath($dir);
+        $parent->createDirectory($name);
 
         $this->broadcastEvent('afterBind',array($uri));
 

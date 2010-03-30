@@ -1,4 +1,4 @@
-1.2.0alpha1 (2010-03-30)
+1.2.0alpha1 (2010-??-??)
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
 	  special characters.
 	* Fixed: Issue 34: Incorrect Lock-Token response header for LOCK. Fixes
@@ -9,7 +9,7 @@
 	  requests.
 	* Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
 	* Fixed: Issue 33: Converting ISO-8859-1 characters to UTF-8.
-	* Fixed: Issue 39: Basename fails on non-utf-8 locales. 
+	* Fixed: Issue 39 & Issue 40: Basename fails on non-utf-8 locales. 
 	* Added: More unittests.
 	* Added: SabreDAV version to all error responses.
 	* Added: URLUtil class for decoding urls.

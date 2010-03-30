@@ -49,7 +49,8 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
      */
     public function getName() {
 
-        return basename($this->principalUri);
+        list(, $name) = Sabre_DAV_URLUtil::splitPath($this->principalUri);
+        return $name;
 
     }
 

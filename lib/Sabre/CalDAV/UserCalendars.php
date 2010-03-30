@@ -46,8 +46,9 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      * @return string
      */
     public function getName() {
-       
-        return basename($this->userUri);
+      
+        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->userUri);
+        return $name; 
 
     }
 

@@ -100,16 +100,21 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             case 'mkcol' :
                 if (isset($_POST['name']) && trim($_POST['name'])) {
                     // Using basename() because we won't allow slashes
-                    $folderName = trim(basename($_POST['name']));
+                    list(, $folderName) = Sabre_DAV_URLUtil::splitPath(trim($_POST['name']));
                     $this->server->createDirectory($this->server->getRequestUri() . '/' . $folderName);
                 }
                 break;
             case 'put' :
                 if ($_FILES) $file = current($_FILES);
                 else break;
-                $newName = basename($file['name']);
+                $newName = trim($file['name']);
+                list(, $newName) = Sabre_DAV_URLUtil::splitPath(trim($file['name']));
                 if (isset($_POST['name']) && trim($_POST['name']))
-                    $newName = trim(basename($_POST['name']));
+                    $newName = trim($_POST['name']);
+
+                // Making sure we only have a 'basename' component
+                list(, $newName) = Sabre_DAV_URLUtil::splitPath($newName);
+                    
                
                 if (is_uploaded_file($file['tmp_name'])) {
                     $parent = $this->server->tree->getNodeForPath(trim($this->server->getRequestUri(),'/'));

@@ -1107,13 +1107,13 @@ class Sabre_DAV_Server {
      */
     public function createFile($uri,$data) {
 
-        $parentUri = dirname($uri);
-        if ($parentUri=='.') $parentUri = '';
+        list($dir,$name) = Sabre_DAV_URLUtil::splitPath($uri);
+
         if (!$this->broadcastEvent('beforeBind',array($uri))) return;
         if (!$this->broadcastEvent('beforeCreateFile',array($uri,$data))) return;
 
-        $parent = $this->tree->getNodeForPath($parentUri);
-        $parent->createFile(basename($uri),$data);
+        $parent = $this->tree->getNodeForPath($dir);
+        $parent->createFile($name,$data);
 
         $this->broadcastEvent('afterBind',array($uri));
     }
@@ -1132,8 +1132,7 @@ class Sabre_DAV_Server {
 
     public function createCollection($uri, array $resourceType, array $properties) {
 
-        $parentUri = dirname($uri);
-        if ($parentUri=='.') $parentUri = '';
+        list($parentUri,$newName) = Sabre_DAV_URLUtil::splitPath($uri);
 
         // Making sure {DAV:}collection was specified as resourceType
         if (!in_array('{DAV:}collection', $resourceType)) {
@@ -1161,7 +1160,7 @@ class Sabre_DAV_Server {
 
         // Making sure the child does not already exist
         try {
-            $parent->getChild(basename($uri));
+            $parent->getChild($newName);
 
             // If we got here.. it means there's already a node on that url, and we need to throw a 405
             throw new Sabre_DAV_Exception_MethodNotAllowed('The resource you tried to create already exists');
@@ -1178,7 +1177,7 @@ class Sabre_DAV_Server {
         // the extended collection can create it directly.
         if ($parent instanceof Sabre_DAV_IExtendedCollection) {
 
-            $parent->createExtendedCollection(basename($uri), $resourceType, $properties);
+            $parent->createExtendedCollection($newName, $resourceType, $properties);
 
         } else {
 
@@ -1187,11 +1186,11 @@ class Sabre_DAV_Server {
                 throw new Sabre_DAV_Exception_InvalidResourceType('The {DAV:}resourcetype you specified is not supported here.');
             }
 
-            $parent->createDirectory(basename($uri));
+            $parent->createDirectory($newName);
             
             if (count($properties)>0) {
 
-                $newNode = $parent->getChild(basename($uri));
+                $newNode = $parent->getChild($newName);
                 // TODO: need to rollback if newnode is not a Sabre_DAV_Properties
                 // TODO: need to rollback is updateProperties fails
                 if ($newNode instanceof Sabre_DAV_IProperties) {

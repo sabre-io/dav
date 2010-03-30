@@ -63,8 +63,8 @@ class Sabre_DAV_Browser_GuessContentType extends Sabre_DAV_ServerPlugin {
     public function afterGetProperties($path, &$properties) {
 
         if (array_key_exists('{DAV:}getcontenttype', $properties[404])) {
-            
-            $fileName = basename($path);
+           
+            list(, $fileName) = Sabre_DAV_URLUtil::splitPath($path);
             $contentType = $this->getContentType($fileName);
 
             if ($contentType) {

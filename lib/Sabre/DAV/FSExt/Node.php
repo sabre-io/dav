@@ -163,7 +163,8 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
      */
     protected function getResourceInfoPath() {
 
-        return dirname($this->path) . '/.sabredav';
+        list($parentDir) = Sabre_DAV_URLUtil::splitPath($this->path);
+        return $parentDir . '/.sabredav';
 
     }
 
@@ -244,10 +245,17 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
      */
     public function setName($name) {
 
+        list($parentPath, ) = Sabre_DAV_URLUtil::splitPath($this->path);
+        list(, $newName) = Sabre_DAV_URLUtil::splitPath($name);
+        $newPath = $parentPath . '/' . $newName;
+
+        // We're deleting the existing resourcedata, and recreating it
+        // for the new path.
         $resourceData = $this->getResourceData();
         $this->deleteResourceData();
-        rename($this->path,dirname($this->path) . '/' . basename($name));
-        $this->path = dirname($this->path) .'/' . basename($name);
+
+        rename($this->path,$newPath);
+        $this->path = $newPath;
         $this->putResourceData($resourceData);
 
 

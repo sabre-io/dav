@@ -42,7 +42,8 @@ abstract class Sabre_DAV_FS_Node implements Sabre_DAV_INode {
      */
     public function getName() {
 
-        return basename($this->path);
+        list(, $name)  = Sabre_DAV_URLUtil::splitPath($this->path);
+        return $name;
 
     }
 
@@ -54,7 +55,13 @@ abstract class Sabre_DAV_FS_Node implements Sabre_DAV_INode {
      */
     public function setName($name) {
 
-        rename($this->path,dirname($this->path) . '/' . basename($name));
+        list($parentPath, ) = Sabre_DAV_URLUtil::splitPath($this->path);
+        list(, $newName) = Sabre_DAV_URLUtil::splitPath($name);
+
+        $newPath = $parentPath . '/' . $newName;
+        rename($this->path,$newPath);
+        
+        $this->path = $newPath;
 
     }
 

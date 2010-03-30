@@ -32,8 +32,12 @@ abstract class Sabre_DAV_Tree {
     public function copy($sourcePath, $destinationPath) {
 
         $sourceNode = $this->getNodeForPath($sourcePath);
-        $destinationParent = $this->getNodeForPath(dirname($destinationPath));
-        $this->copyNode($sourceNode,$destinationParent,basename($destinationPath));
+       
+        // grab the dirname and basename components
+        list($destinationDir, $destinationName) = Sabre_DAV_URLUtil::splitPath($destinationPath);
+
+        $destinationParent = $this->getNodeForPath($destinationDir);
+        $this->copyNode($sourceNode,$destinationParent,$destinationName);
 
     }
 
@@ -46,9 +50,12 @@ abstract class Sabre_DAV_Tree {
      */
     public function move($sourcePath, $destinationPath) {
 
-        if (dirname($sourcePath)==dirname($destinationPath)) {
+        list($sourceDir, $sourceName) = Sabre_DAV_URLUtil::splitPath($sourcePath);
+        list($destinationDir, $destinationName) = Sabre_DAV_URLUtil::splitPath($destinationPath);
+
+        if ($sourceDir===$destinationDir) {
             $renameable = $this->getNodeForPath($sourcePath);
-            $renameable->setName(basename($destinationPath));
+            $renameable->setName($destinationName);
         } else {
             $this->copy($sourcePath,$destinationPath);
             $this->getNodeForPath($sourcePath)->delete();

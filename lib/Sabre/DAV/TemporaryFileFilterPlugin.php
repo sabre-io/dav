@@ -134,11 +134,12 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
      * temporary file storage.
      * 
      * @param string $path 
-     * @return mixed 
+     * @return boolean|string 
      */
     protected function isTempFile($path) {
 
-        $tempPath = basename($path);
+        // We're only interested in the basename.
+        list(, $tempPath) = Sabre_DAV_URLUtil::splitPath($path);
 
         $tempFiles = array(
             '/^\._(.*)$/',      // OS/X resource forks

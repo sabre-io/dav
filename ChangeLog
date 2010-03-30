@@ -3,6 +3,7 @@
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
 	  special characters.
 	* Fixed: Issue 33: Converting ISO-8859-1 characters to UTF-8.
+	* Fixed: Issue 39: Basename fails on non-utf-8 locales. 
 	* Added: More unittests.
 	* Added: SabreDAV version to all error responses.
 	* Added: URLUtil class for decoding urls.

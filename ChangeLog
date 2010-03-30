@@ -6,6 +6,7 @@
 	* Fixed: Issue 36: Incorrect variable name, throwing error in some
 	  requests.
 	* Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
+	* Fixed: Issue 33: Converting ISO-8859-1 characters to UTF-8.
 	* Added: More unittests.
 	* Added: SabreDAV version to all error responses.
 	* Added: URLUtil class for decoding urls.

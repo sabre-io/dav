@@ -112,5 +112,33 @@ class Sabre_DAV_URLUtil {
 
     }
 
+    /**
+     * Returns the 'dirname' and 'basename' for a path. 
+     *
+     * The reason there is a custom function for this purpose, is because
+     * basename() is locale aware (behaviour changes if C locale or a UTF-8 locale is used)
+     * and we need a method that just operates on UTF-8 characters.
+     *
+     * In addition basename and dirname are platform aware, and will treat backslash (\) as a
+     * directory separator on windows.
+     *
+     * This method returns the 2 components as an array.
+     *
+     * If there is no dirname, it will return an empty string. Any / appearing at the end of the
+     * string is stripped off.
+     *
+     * @param string $path 
+     * @return array 
+     */
+    static function splitPath($path) {
+
+        $matches = array();
+        if(preg_match('/^(?:(?:(.*)(?:\/+))?([^\/]+))(?:\/?)$/u',$path,$matches)) {
+            return array($matches[1],$matches[2]);
+        } else {
+            return array(null,null);
+        }
+
+    }
 
 }

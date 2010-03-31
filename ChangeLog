@@ -1,5 +1,5 @@
 1.0.14-stable (2010-??-??)
-	* Fixed: double namepspace declaration in multistatus responses.
+	* Fixed: double namespace declaration in multistatus responses.
 
 1.0.13-stable (2010-03-30)
 	* Fixed: Issue 40: Last references to basename/dirname

@@ -1,3 +1,6 @@
+1.2.0alpha2 (2010-??-??)
+	* Fixed: double namespace declaration in multistatus responses.
+
 1.2.0alpha1 (2010-??-??)
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
 	  special characters.

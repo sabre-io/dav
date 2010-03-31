@@ -1052,8 +1052,9 @@ class Sabre_DAV_Server {
     public function generateMultiStatus(array $fileProperties) {
 
         $dom = new DOMDocument('1.0','utf-8');
+
         //$dom->formatOutput = true;
-        $multiStatus = $dom->createElementNS('DAV:','d:multistatus');
+        $multiStatus = $dom->createElement('d:multistatus');
         $dom->appendChild($multiStatus);
 
         // Adding in default namespaces

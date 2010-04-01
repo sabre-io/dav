@@ -1,5 +1,6 @@
 1.2.0alpha2 (2010-??-??)
 	* Fixed: double namespace declaration in multistatus responses.
+	* Added: MySQL database dumps. MySQL is now also supported next to SQLite. 
 
 1.2.0alpha1 (2010-??-??)
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded

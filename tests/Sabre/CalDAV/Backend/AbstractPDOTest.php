@@ -1,22 +1,8 @@
 <?php
 
-class Sabre_CalDAV_Backend_PDOTest extends PHPUnit_Framework_TestCase {
+abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_TestCase {
     
-    private $pdo;
-
-    function setup() {
-
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $this->pdo = Sabre_CalDAV_TestUtil::getSQLiteDB();
-
-    }
-
-    function teardown() {
-
-        $this->pdo = null;
-        unlink(SABRE_TEMPDIR . '/testdb.sqlite');
-
-    }
+    protected $pdo;
 
     function testConstruct() {
 

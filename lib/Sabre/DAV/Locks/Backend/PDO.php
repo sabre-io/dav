@@ -41,8 +41,7 @@ class Sabre_DAV_Locks_Backend_PDO extends Sabre_DAV_Locks_Backend_Abstract {
         // NOTE: the following 10 lines or so could be easily replaced by 
         // pure sql. MySQL's non-standard string concatination prevents us
         // from doing this though.
-
-        $query = 'SELECT owner, token, timeout, created, scope, depth, uri FROM locks WHERE ((created + timeout) > CAST(? AS INTEGER)) AND ((uri = ?)';
+        $query = 'SELECT owner, token, timeout, created, scope, depth, uri FROM locks WHERE ((created + timeout) > CAST(? AS UNSIGNED INTEGER)) AND ((uri = ?)';
         $params = array(time(),$uri);
 
         // We need to check locks for every part in the uri.

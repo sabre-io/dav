@@ -6,14 +6,17 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
     protected $backend;
     protected $calendar;
+    protected $authBackend;
 
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
+        $this->authBackend = new Sabre_DAV_Auth_MockBackend('realm');
+
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(1,count($calendars));
-        $this->calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
+        $this->calendar = new Sabre_CalDAV_Calendar($this->authBackend,$this->backend, $calendars[0]);
 
     }
 
@@ -36,6 +39,9 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testSetup
+     */
     function testPut() {
 
         $children = $this->calendar->getChildren();
@@ -47,6 +53,9 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testSetup
+     */
     function testGetProperties() {
         
         $children = $this->calendar->getChildren();

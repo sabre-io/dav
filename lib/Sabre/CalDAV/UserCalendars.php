@@ -143,7 +143,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
         $calendars = $this->caldavBackend->getCalendarsForUser($this->userUri);
         $objs = array();
         foreach($calendars as $calendar) {
-            $objs[] = new Sabre_CalDAV_Calendar($this->caldavBackend,$calendar);
+            $objs[] = new Sabre_CalDAV_Calendar($this->authBackend, $this->caldavBackend, $calendar);
         }
         return $objs;
 

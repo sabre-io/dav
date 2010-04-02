@@ -4,10 +4,21 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 
 class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
+    protected $backend;
+    protected $authBackend;
+    protected $calendar;
+    protected $calendars;
+
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
+        $this->authBackend = new Sabre_DAV_Auth_MockBackend('realm');
+        
+        $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(1, count($this->calendars));
+        $this->calendar = new Sabre_CalDAV_Calendar($this->authBackend, $this->backend, $this->calendars[0]);
+
 
     }
 
@@ -19,20 +30,16 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1,count($calendars));
-        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
-        $this->assertEquals($calendars[0]['uri'], $calendar->getName());
+        $this->assertEquals($this->calendars[0]['uri'], $this->calendar->getName());
 
     }
 
+    /**
+     * @depends testSimple
+     */
     function testUpdateProperties() {
 
-        $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1,count($calendars));
-        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
-
-        $result = $calendar->updateProperties(array(
+        $result = $this->calendar->updateProperties(array(
             array(Sabre_DAV_Server::PROP_SET,'{DAV:}displayname','NewName'),
         ));
 
@@ -43,11 +50,10 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testSimple
+     */
     function testGetProperties() {
-
-        $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1,count($calendars));
-        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
 
         $question = array(
             '{DAV:}resourcetype',
@@ -55,7 +61,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
         );
 
-        $result = $calendar->getProperties($question);
+        $result = $this->calendar->getProperties($question);
 
         foreach($question as $q) $this->assertArrayHasKey($q,$result);
 
@@ -70,23 +76,20 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException Sabre_DAV_Exception_FileNotFound
+     * @depends testSimple
      */
     function testGetChildNotFound() {
 
-        $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1,count($calendars));
-        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
-        $calendar->getChild('randomname');
+        $this->calendar->getChild('randomname');
 
     }
 
+    /**
+     * @depends testSimple
+     */
     function testGetChildren() {
 
-        $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1,count($calendars));
-        $calendar = new Sabre_CalDAV_Calendar($this->backend, $calendars[0]);
-        
-        $children = $calendar->getChildren();
+        $children = $this->calendar->getChildren();
         $this->assertEquals(1,count($children));
 
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);

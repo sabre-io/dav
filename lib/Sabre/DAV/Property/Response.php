@@ -78,7 +78,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property implements Sabre_DA
         $document = $dom->ownerDocument;
         $properties = $this->responseProperties;
         
-        $xresponse = $document->createElementNS('DAV:','d:response');
+        $xresponse = $document->createElement('d:response');
         $dom->appendChild($xresponse); 
 
         $uri = Sabre_DAV_URLUtil::encodePath($this->href);
@@ -86,7 +86,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property implements Sabre_DA
         // Adding the baseurl to the beginning of the url
         $uri = $server->getBaseUri() . $uri;
 
-        $xresponse->appendChild($document->createElementNS('DAV:','d:href',$uri));
+        $xresponse->appendChild($document->createElement('d:href',$uri));
        
         // The properties variable is an array containing properties, grouped by
         // HTTP status
@@ -99,10 +99,10 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property implements Sabre_DA
             // If there are no properties in this group, we can also just carry on
             if (!count($propertyGroup)) continue;
 
-            $xpropstat = $document->createElementNS('DAV:','d:propstat');
+            $xpropstat = $document->createElement('d:propstat');
             $xresponse->appendChild($xpropstat);
 
-            $xprop = $document->createElementNS('DAV:','d:prop');
+            $xprop = $document->createElement('d:prop');
             $xpropstat->appendChild($xprop);
 
             $nsList = $server->xmlNamespaces;
@@ -147,7 +147,7 @@ class Sabre_DAV_Property_Response extends Sabre_DAV_Property implements Sabre_DA
 
             }
 
-            $xpropstat->appendChild($document->createElementNS('DAV:','d:status',$server->httpResponse->getStatusMessage($httpStatus)));
+            $xpropstat->appendChild($document->createElement('d:status',$server->httpResponse->getStatusMessage($httpStatus)));
 
         }
 

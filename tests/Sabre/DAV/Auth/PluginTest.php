@@ -52,6 +52,19 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('principals/admin', $props['{DAV:}current-user-principal']->getHref());
     }
 
+    function testPrincipalCollectionSet() {
+
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer->addPlugin($plugin);
+
+        $props = $fakeServer->getProperties('',array('{DAV:}principal-collection-set'));
+        $this->assertArrayHasKey('{DAV:}principal-collection-set', $props);
+
+        $this->assertEquals('principals', $props['{DAV:}principal-collection-set']->getHref());
+
+    }
+
     /**
      * @depends testInit
      * @expectedException Sabre_DAV_Exception_NotAuthenticated

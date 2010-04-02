@@ -5,8 +5,9 @@
  * 
  * It relies on a Backend object, which provides user information.
  *
- * Additionally, it provides support for the RFC 5397 current-user-principal
- * property.
+ * Additionally, it provides support for:
+ *  * {DAV:}current-user-principal property from RFC5397
+ *  * {DAV:}principal-collection-set property from RFC3744
  * 
  * @package Sabre
  * @subpackage DAV
@@ -104,11 +105,16 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
             }
             unset($properties[404]['{DAV:}current-user-principal']);
         }
+        if (array_key_exists('{DAV:}principal-collection-set', $properties[404])) {
+            $properties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_Href('principals');
+            unset($properties[404]['{DAV:}principal-collection-set']);
+        }
         if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
             $properties[200]['{DAV:}supported-report-set']->addReport(array(
                 '{DAV:}expand-property',
             ));
         }
+
 
     }
 

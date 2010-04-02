@@ -2,14 +2,22 @@
 
 class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
 
+    protected $currentUser;
+
     function authenticate(Sabre_DAV_Server $server, $realm) {
 
-        if ($realm=='failme') return false;
+        if ($realm=='failme') throw new Sabre_DAV_Exception_NotAuthenticated('deliberate fail'); 
 
-        // An empty array == success too
-        return array(
+        $this->currentUser = array(
             'userId' => 'admin',
         );
+        return true;
+
+    }
+
+    function getCurrentUser() {
+
+        return $this->currentUser;
 
     }
 

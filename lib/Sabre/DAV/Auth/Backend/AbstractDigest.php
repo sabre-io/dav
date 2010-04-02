@@ -16,6 +16,14 @@
 abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Backend_Abstract {
 
     /**
+     * This variable holds information about the currently
+     * logged in user.
+     * 
+     * @var array|null
+     */
+    protected $currentUser;
+
+    /**
      * Returns a users information based on its username
      *
      * The returned struct must contain at least a userId
@@ -33,11 +41,11 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Back
     /**
      * Authenticates the user based on the current request.
      *
-     * If authentication succeeds, a struct with user-information must be returned
-     * If authentication fails, this method must throw an exception. 
+     * If authentication is succesful, true must be returned.
+     * If authentication fails, an exception must be thrown.
      *
      * @throws Sabre_DAV_Exception_NotAuthenticated
-     * @return void
+     * @return bool 
      */
     public function authenticate(Sabre_DAV_Server $server,$realm) {
 
@@ -78,7 +86,19 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Back
             throw new Sabre_DAV_Exception_NotAuthenticated('Incorrect username');
         }
 
-        return $userData;
+        $this->currentUser = $userData;
+        return true;
+
+    }
+
+    /**
+     * Returns information about the currently logged in user. 
+     * 
+     * @return array|null 
+     */
+    public function getCurrentUser() {
+
+        return $this->currentUser;
 
     }
 

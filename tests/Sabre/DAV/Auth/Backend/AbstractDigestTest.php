@@ -128,7 +128,9 @@ class Sabre_DAV_Auth_Backend_AbstractDigestTest extends PHPUnit_Framework_TestCa
         $server->httpRequest = $request;
 
         $backend = new Sabre_DAV_Auth_Backend_AbstractDigestMock();
-        $result = $backend->authenticate($server,'myRealm');
+        $this->assertTrue($backend->authenticate($server,'myRealm'));
+
+        $result = $backend->getCurrentUser();
 
         $this->assertEquals($backend->getUserInfo('','user'), $result);
 

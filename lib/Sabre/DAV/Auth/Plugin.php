@@ -79,11 +79,11 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This will only be set if authentication was succesful.
      * 
-     * @return array 
+     * @return array|null 
      */
     public function getUserInfo() {
 
-        return $this->userInfo;
+        return $this->authBackend->getCurrentUser();
 
     }
 
@@ -98,8 +98,8 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     public function afterGetProperties($href, &$properties) {
 
         if (array_key_exists('{DAV:}current-user-principal', $properties[404])) {
-            if ($this->userInfo) {
-                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, 'principals/' . $this->userInfo['userId']);
+            if ($ui = $this->getUserInfo()) {
+                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, 'principals/' . $ui['userId']);
             } else {
                 $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
             }
@@ -127,11 +127,8 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function beforeMethod($method) {
 
-        $userInfo = $this->authBackend->authenticate($this->server,$this->realm);
-        if ($userInfo===false) throw new Sabre_DAV_Exception_NotAuthenticated('Incorrect username or password, or no credentials provided');
-        if (!is_array($userInfo)) throw new Sabre_DAV_Exception('The authenticate method must either return an array, or false');
+        $this->authBackend->authenticate($this->server,$this->realm);
 
-        $this->userInfo = $userInfo;
     }
 
     /**

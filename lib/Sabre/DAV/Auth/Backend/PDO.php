@@ -44,7 +44,7 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
 
         if (!count($result)) return false;
         return array(
-            'userId' => $result[0]['username'],
+            'uri' => 'principals/' . $result[0]['username'],
             'digestHash' => $result[0]['digesta1'],
         );
 
@@ -58,7 +58,7 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
         foreach($result as $user) {
 
             $rv[] = array(
-                'userId' => $user['username'],
+                'uri' => 'principals/' . $user['username'],
             );
 
         }

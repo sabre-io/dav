@@ -60,10 +60,11 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $fields[] = 'uri';
         $fields[] = 'ctag';
         $fields[] = 'components';
+        $fields[] = 'principaluri';
 
         // Making fields a comma-delimited list 
         $fields = implode(', ', $fields);
-        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM calendars WHERE principalUri = ?"); 
+        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM calendars WHERE principaluri = ?"); 
         $stmt->execute(array($principalUri));
 
         $calendars = array();
@@ -74,6 +75,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             $calendar = array(
                 'id' => $row['id'],
                 'uri' => $row['uri'],
+                'principaluri' => $row['principaluri'],
                 '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag'],
                 '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet($components),
             );

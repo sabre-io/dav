@@ -25,7 +25,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $fakeServer->broadCastEvent('beforeMethod',array('GET'));
 
         $this->assertEquals(array(
-            'userId' => 'admin',
+            'uri' => 'principals/admin',
         ), $plugin->getUserInfo());
 
     }

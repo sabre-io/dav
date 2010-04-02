@@ -56,7 +56,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
                 
             $this->users[$username] = array(
                 'digestHash' => $A1,
-                'userId'     => $username
+                'uri'        => 'principals/' . $username
             );
 
         }
@@ -80,7 +80,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
     /**
      * Returns the full list of users.
      *
-     * This method must at least return a userId for each user.
+     * This method must at least return a uri for each user.
      * 
      * @return array 
      */
@@ -89,7 +89,9 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
         $re = array();
         foreach($this->users as $userName=>$A1) {
 
-            $re[] = array('userId'=>$userName);
+            $re[] = array(
+                'uri'=>'principals/' . $userName
+            );
 
         }
 

@@ -148,7 +148,7 @@ class Sabre_DAV_Auth_Backend_AbstractDigestMock extends Sabre_DAV_Auth_Backend_A
             case 'null' : return null;
             case 'false' : return false;
             case 'array' : return array();
-            case 'user'  : return array('userId' => 'user', 'digestHash' => 'HELLO');
+            case 'user'  : return array('uri' => 'principals/user', 'digestHash' => 'HELLO');
         }
 
     }

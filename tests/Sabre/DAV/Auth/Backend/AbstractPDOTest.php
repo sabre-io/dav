@@ -20,9 +20,9 @@ abstract class Sabre_DAV_Auth_Backend_AbstractPDOTest extends PHPUnit_Framework_
         $pdo = $this->getPDO();
         $backend = new Sabre_DAV_Auth_Backend_PDO($pdo);
 
-        $this->assertEquals(array(array('userId'=>'user')), $backend->getUsers());
+        $this->assertEquals(array(array('uri'=>'principals/user')), $backend->getUsers());
         $this->assertFalse($backend->getUserInfo('realm','blabla'));
-        $this->assertEquals(array('userId'=>'user','digestHash'=>'hash'), $backend->getUserInfo('realm','user'));
+        $this->assertEquals(array('uri'=>'principals/user','digestHash'=>'hash'), $backend->getUserInfo('realm','user'));
 
     }
 

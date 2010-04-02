@@ -99,7 +99,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
         if (array_key_exists('{DAV:}current-user-principal', $properties[404])) {
             if ($ui = $this->getUserInfo()) {
-                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, 'principals/' . $ui['userId']);
+                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $ui['uri']);
             } else {
                 $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
             }

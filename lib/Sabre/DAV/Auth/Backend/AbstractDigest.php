@@ -26,7 +26,7 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Back
     /**
      * Returns a users information based on its username
      *
-     * The returned struct must contain at least a userId
+     * The returned struct must contain at least a uri 
      * element (which can be identical to username) as well as a digestHash
      * element.
      *
@@ -76,8 +76,8 @@ abstract class Sabre_DAV_Auth_Backend_AbstractDigest extends Sabre_DAV_Auth_Back
             throw new Sabre_DAV_Exception('The returntype for getUserInfo must be either false or an array');
         }
 
-        if (!isset($userData['userId']) || !isset($userData['digestHash'])) {
-            throw new Sabre_DAV_Exception('The returned array from getUserInfo must contain at least a userId and digestHash element');
+        if (!isset($userData['uri']) || !isset($userData['digestHash'])) {
+            throw new Sabre_DAV_Exception('The returned array from getUserInfo must contain at least a uri and digestHash element');
         }
 
         // If this was false, the password or part of the hash was incorrect.

@@ -9,7 +9,7 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
         if ($realm=='failme') throw new Sabre_DAV_Exception_NotAuthenticated('deliberate fail'); 
 
         $this->currentUser = array(
-            'userId' => 'admin',
+            'uri' => 'principals/admin',
         );
         return true;
 
@@ -25,10 +25,10 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
 
         return array(
             array(
-                'userId' => 'admin',
+                'uri' => 'principals/admin',
             ),
             array(
-                'userId' => 'user1',
+                'uri' => 'principals/user1',
             ),
         );
 

@@ -70,6 +70,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function updateProperties($mutations) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         return $this->caldavBackend->updateCalendar($this->calendarInfo['id'],$mutations);
 
     }
@@ -84,12 +85,24 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
 
         $response = array();
 
+        if (!$this->hasPrivilege()) return array(); 
+
         foreach($requestedProperties as $prop) switch($prop) {
 
-            case '{DAV:}resourcetype' : $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{urn:ietf:params:xml:ns:caldav}calendar','{DAV:}collection')); break;
-            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' :  $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')); break;
-            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' : $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarData(); break;
-            case '{urn:ietf:params:xml:ns:caldav}supported-collation-set' : $response[$prop] =  new Sabre_CalDAV_Property_SupportedCollationSet(); break;
+            case '{DAV:}resourcetype' : 
+                $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{urn:ietf:params:xml:ns:caldav}calendar','{DAV:}collection')); 
+                break;
+            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' :  
+                $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')); 
+                break;
+            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' : 
+                $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarData(); 
+                break;
+            case '{urn:ietf:params:xml:ns:caldav}supported-collation-set' : 
+                $response[$prop] =  new Sabre_CalDAV_Property_SupportedCollationSet(); 
+                break;
+            case '{DAV:}owner' :
+                $response[$prop] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF,$this->calendarInfo['principaluri']);
             default : 
                 if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];
                 break;
@@ -109,6 +122,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function getChild($name) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$name);
         if (!$obj) throw new Sabre_DAV_Exception_FileNotFound('Calendar object not found');
         return new Sabre_CalDAV_CalendarObject($this->caldavBackend,$obj);
@@ -122,6 +136,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function getChildren() {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         $objs = $this->caldavBackend->getCalendarObjects($this->calendarInfo['id']);
         $children = array();
         foreach($objs as $obj) {
@@ -141,6 +156,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function createDirectory($name) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         throw new Sabre_DAV_Exception_MethodNotAllowed('Creating collections in calendar objects is not allowed');
 
     }
@@ -156,6 +172,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function createFile($name,$calendarData = null) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         $calendarData = stream_get_contents($calendarData);
         $this->caldavBackend->createCalendarObject($this->calendarInfo['id'],$name,$calendarData);
 
@@ -168,6 +185,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function delete() {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         $this->caldavBackend->deleteCalendar($this->calendarInfo['id']);
 
     }
@@ -181,6 +199,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
      */
     public function setName($newName) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         throw new Sabre_DAV_Exception_MethodNotAllowed('Renaming calendars is not yet supported');
 
     }
@@ -193,6 +212,23 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
     public function getLastModified() {
 
         return null;
+
+    }
+
+    /**
+     * Check if user has access.
+     *
+     * This method does a check if the currently logged in user
+     * has permission to access this calendar. There is only read-write
+     * access, so you're in or you're out.
+     * 
+     * @return bool 
+     */
+    protected function hasPrivilege() {
+
+        if (!$user = $this->authBackend->getCurrentUser()) return false;
+        if ($user['uri']!==$this->calendarInfo['principaluri']) return false;
+        return true;
 
     }
 

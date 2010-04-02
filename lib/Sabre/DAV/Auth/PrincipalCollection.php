@@ -62,7 +62,7 @@ class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
         $children = array();
         foreach($this->authBackend->getUsers() as $principalInfo) {
 
-            $principalUri = self::NODENAME . '/' . $principalInfo['userId'] . '/';
+            $principalUri = $principalInfo['uri'] . '/';
             $children[] = new Sabre_DAV_Auth_Principal($principalUri,$principalInfo);
 
 

@@ -20,7 +20,10 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
         $this->server->exec();
 
     }
-
+    
+    /**
+     * @covers Sabre_DAV_Property_SupportedReportSet
+     */
     function testNoReports() {
 
         $xml = '<?xml version="1.0"?>
@@ -51,6 +54,10 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 
     }
 
+    /**
+     * @covers Sabre_DAV_Property_SupportedReportSet
+     * @depends testNoReports
+     */
     function testCustomReport() {
         
         // Intercepting the report property

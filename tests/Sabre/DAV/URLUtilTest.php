@@ -106,6 +106,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
             'foo/'                     => array('','foo'),
             '/foo/'                    => array('','foo'),
             '/foo'                     => array('','foo'),
+            ''                         => array(null,null),
 
             // UTF-8 
             "/\xC3\xA0fo\xC3\xB3/bar"  => array("/\xC3\xA0fo\xC3\xB3",'bar'), 

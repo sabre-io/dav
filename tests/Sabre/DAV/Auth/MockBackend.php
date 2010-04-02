@@ -15,6 +15,12 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
 
     }
 
+    function setCurrentUser($userUri) {
+
+        $this->currentUser = array('uri' => $userUri);
+
+    }
+
     function getCurrentUser() {
 
         return $this->currentUser;

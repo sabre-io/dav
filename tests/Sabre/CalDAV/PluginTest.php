@@ -16,6 +16,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support'); 
         $this->caldavBackend = Sabre_CalDAV_TestUtil::getBackend();
         $authBackend = new Sabre_DAV_Auth_MockBackend();
+        $authBackend->setCurrentUser('principals/user1');
 
         $calendars = new Sabre_CalDAV_CalendarRootNode($authBackend,$this->caldavBackend);
         $principals = new Sabre_DAV_Auth_PrincipalCollection($authBackend);

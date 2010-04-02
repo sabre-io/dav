@@ -1,8 +1,10 @@
 1.2.0alpha2 (2010-??-??)
 	* Fixed: double namespace declaration in multistatus responses.
 	* Added: MySQL database dumps. MySQL is now also supported next to SQLite. 
+	* Added: expand-properties REPORT from RFC 3253.
+	* Added: Sabre_DAV_Property_IHref interface for properties exposing urls.
 
-1.2.0alpha1 (2010-??-??)
+1.2.0alpha1 (2010-03-31)
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
 	  special characters.
 	* Fixed: Issue 34: Incorrect Lock-Token response header for LOCK. Fixes

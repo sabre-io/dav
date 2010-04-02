@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/TestUtil.php';
+
 class Sabre_DAV_Auth_Backend_PDOMySQLTest extends Sabre_DAV_Auth_Backend_AbstractPDOTest {
 
     function getPDO() {

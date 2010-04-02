@@ -16,7 +16,7 @@
  * The principal property represents a principal from RFC3744 (ACL).
  * The property can be used to specify a principal or pseudo principals. 
  */
-class Sabre_DAV_Property_Principal extends Sabre_DAV_Property {
+class Sabre_DAV_Property_Principal extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
 
     /**
      * To specify a not-logged-in user, use the UNAUTHENTICTED principal

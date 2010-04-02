@@ -65,5 +65,42 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testSupportedReportSet() {
+
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer->addPlugin($plugin);
+
+        $props = $fakeServer->getProperties('',array('{DAV:}supported-report-set'));
+
+        $this->assertArrayHasKey('{DAV:}supported-report-set',$props);
+        $this->assertTrue($props['{DAV:}supported-report-set'] instanceof Sabre_DAV_Property_SupportedReportSet);
+
+        $this->assertEquals(array(
+              '{DAV:}expand-property'
+            ), $props['{DAV:}supported-report-set']->getValue());
+
+    }
+
+    function testReportPassThrough() {
+
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer->addPlugin($plugin);
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'REPORT',
+            'HTTP_CONTENT_TYPE' => 'application/xml',
+        ));
+        $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
+
+        $fakeServer->httpRequest = $request;
+        $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
+        $fakeServer->exec();
+
+        $this->assertEquals('HTTP/1.1 501 Not Implemented', $fakeServer->httpResponse->status);
+
+    }
+
 }
 

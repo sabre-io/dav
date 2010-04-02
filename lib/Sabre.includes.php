@@ -51,6 +51,7 @@ include 'Sabre/DAV/Property/GetLastModified.php';
 include 'Sabre/DAV/Property/ResourceType.php';
 include 'Sabre/DAV/Property/SupportedLock.php';
 include 'Sabre/DAV/Property/LockDiscovery.php';
+include 'Sabre/DAV/Property/IHref.php';
 include 'Sabre/DAV/Property/Href.php';
 include 'Sabre/DAV/Property/SupportedReportSet.php';
 include 'Sabre/DAV/Property/Response.php';

@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_Href extends Sabre_DAV_Property  {
+class Sabre_DAV_Property_Href extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
 
     /**
      * href 

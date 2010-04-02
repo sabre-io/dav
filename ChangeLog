@@ -1,4 +1,5 @@
 1.2.0alpha2 (2010-??-??)
+	* Added: Calendars are now private and can only be read by the owner.
 	* Fixed: double namespace declaration in multistatus responses.
 	* Added: MySQL database dumps. MySQL is now also supported next to SQLite. 
 	* Added: expand-properties REPORT from RFC 3253.

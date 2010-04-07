@@ -4,6 +4,7 @@
 	* Added: MySQL database dumps. MySQL is now also supported next to SQLite. 
 	* Added: expand-properties REPORT from RFC 3253.
 	* Added: Sabre_DAV_Property_IHref interface for properties exposing urls.
+	* Added: Issue 25: Throwing error on broken Finder behaviour.
 	* Changed: Authentication backend is now aware of current user.
 
 1.2.0alpha1 (2010-03-31)

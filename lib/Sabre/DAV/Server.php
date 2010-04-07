@@ -527,6 +527,50 @@ class Sabre_DAV_Server {
      */
     protected function httpPut() {
 
+        $body = $this->httpRequest->getBody();
+
+        // Intercepting the Finder problem
+        if (($expected = $this->httpRequest->getHeader('X-Expected-Entity-Length')) && $expected > 0) {
+           
+            /**
+            Many webservers will not cooperate well with Finder PUT requests, 
+            because it uses 'Chunked' transfer encoding for the request body.
+
+            The symptom of this problem is that Finder sends files to the 
+            server, but they arrive as 0-lenght files in PHP.
+
+            If we don't do anything, the user might think they are uploading
+            files successfully, but they end up empty on the server. Instead,
+            we throw back an error if we detect this.
+
+            The reason Finder uses Chunked, is because it thinks the files
+            might change as it's being uploaded, and therefore the
+            Content-Length can vary.
+
+            Instead it sends the X-Expected-Entity-Length header with the size
+            of the file at the very start of the request. If this header is set,
+            but we don't get a request body we will fail the request to
+            protect the end-user.
+            */
+
+            // Only reading first byte
+            $firstByte = fread($body,1);
+            if (strlen($firstByte)!==1) {
+                throw new Sabre_DAV_Exception_Forbidden('This server is not compatible with OS/X finder. Consider using a different WebDAV client or webserver.');
+            }
+
+            // The body needs to stay intact, so we copy everything to a
+            // temporary stream.
+
+            $newBody = fopen('php://temp','r+');
+            fwrite($newBody,$firstByte);
+            stream_copy_to_stream($body, $newBody);
+            rewind($newBody);
+
+            $body = $newBody;
+
+        }
+
         // First we'll do a check to see if the resource already exists
         try {
 
@@ -544,14 +588,14 @@ class Sabre_DAV_Server {
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
             if (!$this->broadcastEvent('beforeWriteContent',array($this->getRequestUri()))) return false;
 
-            $node->put($this->httpRequest->getBody());
+            $node->put($body);
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(200);
 
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
             // If we got here, the resource didn't exist yet.
-            $this->createFile($this->getRequestUri(),$this->httpRequest->getBody());
+            $this->createFile($this->getRequestUri(),$body);
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(201);
 

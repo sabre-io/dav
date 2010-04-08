@@ -39,13 +39,6 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     private $realm;
 
     /**
-     * userName of currently logged in user 
-     * 
-     * @var string 
-     */
-    private $userInfo;
-
-    /**
      * __construct 
      * 
      * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
@@ -75,19 +68,6 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Returns the currently logged in user's information.
-     *
-     * This will only be set if authentication was succesful.
-     * 
-     * @return array|null 
-     */
-    public function getUserInfo() {
-
-        return $this->authBackend->getCurrentUser();
-
-    }
-
-    /**
      * This method intercepts calls to PROPFIND and similar lookups 
      * 
      * This is done to inject the current-user-principal if this is requested.
@@ -98,7 +78,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     public function afterGetProperties($href, &$properties) {
 
         if (array_key_exists('{DAV:}current-user-principal', $properties[404])) {
-            if ($ui = $this->getUserInfo()) {
+            if ($ui = $this->authBackend->getCurrentUser()) {
                 $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $ui['uri']);
             } else {
                 $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);

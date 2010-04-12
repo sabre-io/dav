@@ -1,3 +1,6 @@
+1.2.0alpha3 (2010-04-??)
+	* Added: text/plain is used for .txt files in GuessContentType plugin.
+
 1.2.0alpha2 (2010-04-08)
 	* Added: Calendars are now private and can only be read by the owner.
 	* Fixed: double namespace declaration in multistatus responses.
@@ -6,7 +9,6 @@
 	* Added: Sabre_DAV_Property_IHref interface for properties exposing urls.
 	* Added: Issue 25: Throwing error on broken Finder behaviour.
 	* Changed: Authentication backend is now aware of current user.
-	* Added: text/plain is used for .txt files in GuessContentType
 
 1.2.0alpha1 (2010-03-31)
 	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded

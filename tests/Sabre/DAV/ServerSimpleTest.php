@@ -314,6 +314,25 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testBaseUriAddSlash() {
+
+        $tests = array( 
+            '/'         => '/',
+            '/foo'      => '/foo/',
+            '/foo/'     => '/foo/',
+            '/foo/bar'  => '/foo/bar/',
+            '/foo/bar/' => '/foo/bar/',
+        );
+        
+        foreach($tests as $test=>$result) {
+            $this->server->setBaseUri($test);
+
+            $this->assertEquals($result, $this->server->getBaseUri());
+
+        }
+
+    }
+
     function testCalculateUri() {
 
         $uris = array(

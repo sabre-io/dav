@@ -1,4 +1,5 @@
 1.2.0alpha3 (2010-04-??)
+	* Fixed: Issue 16, automatically adding trailing / to baseUri.
 	* Added: text/plain is used for .txt files in GuessContentType plugin.
 
 1.2.0alpha2 (2010-04-08)

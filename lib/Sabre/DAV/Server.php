@@ -160,6 +160,10 @@ class Sabre_DAV_Server {
      */
     public function setBaseUri($uri) {
 
+        // If the baseUri does not end with a slash, we must add it
+        if ($uri[strlen($uri)-1]!=='/') 
+            $uri.='/';
+
         $this->baseUri = $uri;    
 
     }

@@ -37,6 +37,9 @@ class Sabre_DAV_Browser_GuessContentType extends Sabre_DAV_ServerPlugin {
         'ics' => 'text/calendar',
         'vcf' => 'text/x-vcard',
 
+        // text
+        'txt' => 'text/plain',
+
     );
 
     /**

@@ -511,39 +511,17 @@ class Sabre_DAV_Server {
      */
     protected function httpPropPatch() {
 
-        $mutations = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
-
-        $node = $this->tree->getNodeForPath($this->getRequestUri());
+        $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
         
-        if ($node instanceof Sabre_DAV_IProperties) {
+        $uri = $this->getRequestUri();
 
-            $result = $node->updateProperties($mutations);
-
-        } else {
-
-            $result = array();
-            foreach($mutations as $mutations) {
-                $result[] = array($mutations[1],403);
-            }
-
-        }
+        $result = $this->updateProperties($uri, $newProperties);
 
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-       
-        // Re-arranging result for generateMultiStatus
-        $multiStatusResult = array();
 
-        foreach($result as $row) {
-            if (!isset($multiStatusResult[$row[1]])) {
-                $multiStatusResult[$row[1]] = array();
-            }
-            $multiStatusResult[$row[1]][$row[0]] = null;
-        }
-        $multiStatusResult['href'] = $this->getRequestUri();
-        $multiStatusResult = array($multiStatusResult);
         $this->httpResponse->sendBody(
-            $this->generateMultiStatus($multiStatusResult)
+            $this->generateMultiStatus(array($result))
         );
 
     }
@@ -1205,6 +1183,19 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Use this method to create a new collection
+     *
+     * The {DAV:}resourcetype is specified using the resourceType array.
+     * At the very least it must contain {DAV:}collection. 
+     *
+     * The properties array can contain a list of additional properties.
+     * 
+     * @param string $uri The new uri 
+     * @param array $resourceType The resourceType(s) 
+     * @param array $properties A list of properties
+     * @return void
+     */
     public function createCollection($uri, array $resourceType, array $properties) {
 
         list($parentUri,$newName) = Sabre_DAV_URLUtil::splitPath($uri);
@@ -1265,19 +1256,106 @@ class Sabre_DAV_Server {
             
             if (count($properties)>0) {
 
-                $newNode = $parent->getChild($newName);
                 // TODO: need to rollback if newnode is not a Sabre_DAV_Properties
                 // TODO: need to rollback is updateProperties fails
-                if ($newNode instanceof Sabre_DAV_IProperties) {
-                    $mutations = array();
-                    foreach($properties as $property) {
-                        $mutations[] = array(self::PROP_SET, $propertyName, $propertyValue);
-                    }
-                    $newNode->updateProperties($mutations);
-                }
+                $this->updateProperties($uri, $properties);
+
             } 
         }
         $this->broadcastEvent('afterBind',array($uri));
+
+    }
+
+    /**
+     * This method updates a resource's properties
+     *
+     * The properties array must be a list of properties. Array-keys are
+     * property names in clarknotation, array-values are it's values.
+     * If a property must be deleted, the value should be null.
+     * 
+     * Note that this request should either completely succeed, or 
+     * completely fail.
+     *
+     * The response is an array with statuscodes for keys, which in turn
+     * contain arrays with propertynames. This response can be used
+     * to generate a multistatus body.
+     * 
+     * @param string $uri 
+     * @param array $properties 
+     * @return array 
+     */
+    public function updateProperties($uri, array $properties) {
+
+        // we'll start by grabbing the node, this will throw the appropriate
+        // exceptions if it doesn't. 
+        $node = $this->tree->getNodeForPath($uri);
+       
+        // If the node is not an instance of Sabre_DAV_IProperties, we can
+        // simply return a 405.
+        if (!($node instanceof Sabre_DAV_IProperties)) {
+            throw new Sabre_DAV_Exception_MethodNotAllowed('This resource does not support modification of properties');
+        }
+
+        $result = array(
+            200 => array(),
+            403 => array(),
+            424 => array(),
+        ); 
+
+        $remainingProperties = $properties;
+        $hasError = false;
+
+        // Running through all properties to make sure none of them are protected
+        foreach($properties as $propertyName => $value) {
+            if(in_array($propertyName, $this->protectedProperties)) {
+                $result[403][$propertyName] = null;
+                unset($remainingProperties[$propertyName]);
+                $hasError = true;
+            }
+        }
+
+        // Only if there were no errors we may attempt to update the resource
+        if (!$hasError) {
+            $updateResult = $node->updateProperties($properties);
+            $remainingProperties = array();
+
+            if ($updateResult===true) {
+                // success
+                foreach($properties as $propertyName=>$value) {
+                    $result[200][$propertyName] = null;
+                }
+
+            } elseif ($updateResult===false) {
+                // The node failed to update the properties for an
+                // unknown reason
+                foreach($properties as $propertyName=>$value) {
+                    $result[403][$propertyName] = null;
+                }
+
+            } elseif (is_array($updateResult)) {
+                // The node has detailed update information
+                $result = $updateResult;
+
+            } else {
+                throw new Sabre_DAV_Exception('Invalid result from updateProperties');
+            }
+
+        }
+
+        foreach($remainingProperties as $propertyName=>$value) {
+            // if there are remaining properties, it must mean
+            // there's a dependency failure
+            $result[424][$propertyName] = null;
+        }
+
+        // Removing empty array values
+        foreach($result as $status=>$props) {
+
+            if (count($props)===0) unset($result[$status]);
+
+        }
+        $result['href'] = $uri;
+        return $result;
 
     }
 
@@ -1321,44 +1399,53 @@ class Sabre_DAV_Server {
     }
 
     /**
-     * This method parses a PropPatch request 
+     * This method parses a PropPatch request
+     *
+     * PropPatch changes the properties for a resource. This method
+     * returns a list of properties.
+     *
+     * The keys in the returned array contain the property name (e.g.: {DAV:}displayname,
+     * and the value contains the property value. If a property is to be removed the value
+     * will be null.
      * 
      * @param string $body xml body
      * @return array list of properties in need of updating or deletion
      */
-    protected function parsePropPatchRequest($body) {
+    public function parsePropPatchRequest($body) {
 
         //We'll need to change the DAV namespace declaration to something else in order to make it parsable
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
         
-        $operations = array();
+        $newProperties = array();
 
         foreach($dom->firstChild->childNodes as $child) {
 
             if ($child->nodeType !== XML_ELEMENT_NODE) continue; 
 
             $operation = Sabre_DAV_XMLUtil::toClarkNotation($child);
-            switch($operation) {
-                case '{DAV:}set' :
-                    $propList = Sabre_DAV_XMLUtil::parseProperties($child, $this->propertyMap);
-                    foreach($propList as $k=>$propItem) {
-                        $operations[] = array(self::PROP_SET, $k, $propItem);
-                    }
-                    break;
 
-                case '{DAV:}remove' :
-                    $propList = Sabre_DAV_XMLUtil::parseProperties($child);
-                    foreach($propList as $k=>$propItem) {
+            if ($operation!=='{DAV:}set' && $operation!=='{DAV:}remove') continue;
+            
+            $innerProperties = Sabre_DAV_XMLUtil::parseProperties($child, $this->propertyMap);
 
-                        $operations[] = array(self::PROP_REMOVE,$k);
+            // There should be exactly one
+            if (count($innerProperties)!==1) 
+                throw new Sabre_DAV_Exception_BadRequest('Only one {DAV:}prop may appear in any ' . $operation);
 
-                    }
-                    break;
+            reset($innerProperties);
+
+            $propertyName = key($innerProperties);
+            $propertyValue = current($innerProperties);
+
+            if ($operation==='{DAV:}remove') {
+                $propertyValue = null;
             }
+
+            $newProperties[$propertyName] = $propertyValue;
 
         }
 
-        return $operations;
+        return $newProperties;
 
     }
 

@@ -127,12 +127,13 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
      *
      * Currently this is not supported
      * 
-     * @param array $properties 
-     * @return void
+     * @param array $properties
+     * @see Sabre_DAV_IProperties::updateProperties
+     * @return bool|array 
      */
     public function updateProperties($properties) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Updating properties is not supported');
+        return false;
 
     }
 

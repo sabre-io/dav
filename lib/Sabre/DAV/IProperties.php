@@ -16,29 +16,47 @@ interface Sabre_DAV_IProperties extends Sabre_DAV_INode {
     /**
      * Updates properties on this node,
      *
-     * The mutations array, contains arrays with mutation information, with the following 3 elements:
-     *   * 0 = mutationtype (1 for set, 2 for remove)
-     *   * 1 = nodename (encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
-     *   * 2 = value, can either be a string or a DOMElement
-     * 
-     * This method should return a similar array, with information about every mutation:
-     *   * 0 - nodename, encoded as in the $mutations argument
-     *   * 1 - statuscode, encoded as http status code, for example
-     *      200 for an updated property or succesful delete
-     *      201 for a new property
-     *      403 for permission denied
-     *      etc..
+     * The properties array uses the propertyName in clark-notation as key,
+     * and the array value for the property value. In the case a property
+     * should be deleted, the property value will be null.
+     *
+     * This method must be atomic. If one property cannot be changed, the
+     * entire operation must fail.
+     *
+     * If the operation was successful, true can be returned.
+     * If the operation failed, false can be returned.
+     *
+     * Deletion of a non-existant property is always succesful.
+     *
+     * Lastly, it is optional to return detailed information about any
+     * failures. In this case an array should be returned with the following
+     * structure:
+     *
+     * array(
+     *   403 => array(
+     *      '{DAV:}displayname' => null,
+     *   ),
+     *   424 => array(
+     *      '{DAV:}owner' => null,
+     *   )
+     * )
+     *
+     * In this example it was forbidden to update {DAV:}displayname. 
+     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
+     * (424 Failed Dependency) because the request needs to be atomic.
      *
      * @param array $mutations 
-     * @return void
+     * @return bool|array 
      */
-    function updateProperties($mutations);
+    function updateProperties($properties);
 
     /**
      * Returns a list of properties for this nodes.
      *
-     * The properties list is a list of propertynames the client requested, encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
-     * If the array is empty, all properties should be returned
+     * The properties list is a list of propertynames the client requested,
+     * encoded in clark-notation {xmlnamespace}tagname
+     *
+     * If the array is empty, it means 'all properties' were requested.
      *
      * @param array $properties 
      * @return void

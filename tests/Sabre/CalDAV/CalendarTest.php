@@ -41,10 +41,10 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     function testUpdateProperties() {
 
         $result = $this->calendar->updateProperties(array(
-            array(Sabre_DAV_Server::PROP_SET,'{DAV:}displayname','NewName'),
+            '{DAV:}displayname' => 'NewName',
         ));
 
-        $this->assertEquals(array(array('{DAV:}displayname',200)), $result);
+        $this->assertEquals(true, $result);
 
         $calendars2 = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals('NewName',$calendars2[0]['{DAV:}displayname']);

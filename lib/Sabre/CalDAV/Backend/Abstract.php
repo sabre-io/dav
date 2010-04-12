@@ -36,36 +36,44 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     abstract function createCalendar($principalUri,$calendarUri,array $properties); 
 
     /**
-     * Updates a calendar's properties
+     * Updates properties on this node,
      *
+     * The properties array uses the propertyName in clark-notation as key,
+     * and the array value for the property value. In the case a property
+     * should be deleted, the property value will be null.
      *
-     * The mutations array has 3 elements for each item. The first indicates if the property
-     * is to be removed or updated (Sabre_DAV_Server::PROP_REMOVE and Sabre_DAV_Server::PROP_SET)
-     * the second is the propertyName in Clark notation, the third is the actual value (ommitted
-     * if the property is to be deleted).
+     * This method must be atomic. If one property cannot be changed, the
+     * entire operation must fail.
      *
-     * The result of this method should be another array. Each element has 2 subelements with the 
-     * propertyname and statuscode for the change
+     * If the operation was successful, true can be returned.
+     * If the operation failed, false can be returned.
      *
-     * For example:
-     *   array(array('{DAV:}prop1',200), array('{DAV:}prop2',200), array('{DAV:}prop3',403))
+     * Deletion of a non-existant property is always succesful.
      *
-     * The default implementation does not allow any properties to be updated, and thus
-     * will return 403 for each one.
+     * Lastly, it is optional to return detailed information about any
+     * failures. In this case an array should be returned with the following
+     * structure:
+     *
+     * array(
+     *   403 => array(
+     *      '{DAV:}displayname' => null,
+     *   ),
+     *   424 => array(
+     *      '{DAV:}owner' => null,
+     *   )
+     * )
+     *
+     * In this example it was forbidden to update {DAV:}displayname. 
+     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
+     * (424 Failed Dependency) because the request needs to be atomic.
      *
      * @param string $calendarId
-     * @param array $mutations
-     * @return array 
+     * @param array $properties
+     * @return bool|array 
      */
-    public function updateCalendar($calendarId,array $mutations) {
+    public function updateCalendar($calendarId, array $properties) {
         
-        $response = array();
-
-        foreach($mutations as $mutation) {
-            $response[] = array($mutation[1],403);
-        }
-        
-        return $response;
+        return false; 
 
     }
 

@@ -129,19 +129,12 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
     /**
      * Updates properties
      * 
-     * @param array $mutations 
+     * @param array $properties
      * @return array 
      */
-    public function updateProperties($mutations) {
+    public function updateProperties($properties) {
 
-        $response = array();
-        foreach($mutations as $mutation) {
-
-            $response[] = array($mutation[1],403);
-
-        }
-
-        return $response;
+        return false;
 
     }
 

@@ -154,6 +154,51 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * @covers Sabre_DAV_Server::parsePropPatchRequest
+     */
+    public function testParsePropPatchRequest() {
+
+        $body = '<?xml version="1.0"?>
+<d:propertyupdate xmlns:d="DAV:" xmlns:s="http://sabredav.org/NS/test">
+  <d:set><d:prop><s:someprop>somevalue</s:someprop></d:prop></d:set>
+  <d:remove><d:prop><s:someprop2 /></d:prop></d:remove>
+  <d:set><d:prop><s:someprop3>removeme</s:someprop3></d:prop></d:set>
+  <d:remove><d:prop><s:someprop3 /></d:prop></d:remove>
+</d:propertyupdate>';
+
+        $result = $this->server->parsePropPatchRequest($body);
+        $this->assertEquals(array(
+            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
+            '{http://sabredav.org/NS/test}someprop2' => null,
+            '{http://sabredav.org/NS/test}someprop3' => null,
+            ), $result);
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::updateProperties
+     */
+    public function testUpdateProperties() {
+
+        $props = array(
+            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
+        );
+        
+        $result = $this->server->updateProperties('/test2.txt',$props);
+        
+        $this->assertEquals(array(
+            '200' => array('{http://sabredav.org/NS/test}someprop' => null),
+            'href' => '/test2.txt',
+        ), $result);
+
+    }
+
+    /**
+     * @depends testParsePropPatchRequest
+     * @depends testUpdateProperties
+     * @covers Sabre_DAV_Server::httpPropPatch
+     */
     public function testPropPatch() {
 
         $serverVars = array(
@@ -186,7 +231,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $xml->registerXPathNamespace('bla','http://www.rooftopsolutions.nl/testnamespace');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop');
-        $this->assertEquals(1,count($data),'We expected one \'d:prop\' element');
+        $this->assertEquals(1,count($data),'We expected one \'d:prop\' element. Response body: ' . $body);
 
         $data = $xml->xpath('//bla:someprop');
         $this->assertEquals(1,count($data),'We expected one \'s:someprop\' element. Response body: ' . $body);
@@ -194,7 +239,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1,count($data),'We expected one \'s:status\' element. Response body: ' . $body);
 
-        $this->assertEquals('HTTP/1.1 201 Created',(string)$data[0]);
+        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0]);
 
     }
 
@@ -222,7 +267,6 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $result = $xml->xpath($xpath);
         $this->assertEquals(1,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
         $this->assertEquals('somevalue',(string)$result[0],'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
-
 
     }
 

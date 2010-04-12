@@ -62,13 +62,11 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
         // Updating the calendar
         $result = $backend->updateCalendar($newId,array(
-            array(Sabre_DAV_Server::PROP_SET,'{DAV:}displayname','myCalendar'),
+            '{DAV:}displayname' => 'myCalendar',
         ));
 
         // Verifying the result of the update
-        $this->assertEquals(array(
-            array('{DAV:}displayname',200),
-        ), $result);
+        $this->assertEquals(true, $result);
 
         // Fetching all calendars from this user
         $calendars = $backend->getCalendarsForUser('principals/user2');

@@ -77,13 +77,11 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException Sabre_DAV_Exception
-     */
     public function testUpdateProperties() {
         
         $principal = new Sabre_DAV_Auth_Principal('principals/admin');
-        $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
+        $result = $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
+        $this->assertEquals(false,$result);
 
     }
 

@@ -81,58 +81,35 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     /**
      * Updates properties on this node,
      *
-     * The mutations array, contains arrays with mutation information, with the following 3 elements:
-     *   * 0 = mutationtype (1 for set, 2 for remove)
-     *   * 1 = nodename (encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
-     *   * 2 = value, can either be a string or a DOMElement
-     * 
-     * This method should return a similar array, with information about every mutation:
-     *   * 0 - nodename, encoded as in the $mutations argument
-     *   * 1 - statuscode, encoded as http status code, for example
-     *      200 for an updated property or succesful delete
-     *      201 for a new property
-     *      403 for permission denied
-     *      etc..
-     *
-     * @param array $mutations 
-     * @return void
+     * @param array $mutations
+     * @see Sabre_DAV_IProperties::updateProperties
+     * @return bool|array 
      */
-    function updateProperties($mutations) {
+    public function updateProperties($properties) {
 
         $resourceData = $this->getResourceData();
         
         $result = array();
 
-        foreach($mutations as $mutation) {
+        foreach($properties as $propertyName=>$propertyValue) {
 
-
-            switch($mutation[0]){ 
-                case Sabre_DAV_Server::PROP_SET :
-                   if (isset($resourceData['properties'][$mutation[1]])) {
-                       $result[] = array($mutation[1],200);
-                   } else {
-                       $result[] = array($mutation[1],201);
-                   }
-                   $resourceData['properties'][$mutation[1]] = $mutation[2];
-                   break;
-                case Sabre_DAV_Server::PROP_REMOVE :
-                   if (isset($resourceData['properties'][$mutation[1]])) {
-                       unset($resourceData['properties'][$mutation[1]]);
-                   }
-                   // Specifying the deletion of a property that does not exist, is _not_ an error
-                   $result[] = array($mutation[1],200);
-                   break;
-
+            // If it was null, we need to delete the property
+            if (is_null($propertyValue)) {
+                if (isset($resourceData['properties'][$propertyName])) {
+                    unset($resourceData['properties'][$propertyName]);
+                }
+            } else {
+                $resourceData['properties'][$propertyName] = $propertyValue;
             }
-
+               
         }
 
         $this->putResourceData($resourceData);
-        return $result;
+        return true; 
     }
 
     /**
-     * Returns a list of properties for this nodes.
+     * Returns a list of properties for this nodes.;
      *
      * The properties list is a list of propertynames the client requested, encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
      * If the array is empty, all properties should be returned

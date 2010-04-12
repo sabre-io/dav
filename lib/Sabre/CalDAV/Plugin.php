@@ -88,6 +88,19 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre_CalDAV_Property_SupportedCalendarComponentSet';
 
+        array_push($server->protectedProperties,
+
+            '{' . self::NS_CALDAV . '}supported-calendar-component-set',
+            '{' . self::NS_CALDAV . '}supported-calendar-data',
+            '{' . self::NS_CALDAV . '}max-resource-size',
+            '{' . self::NS_CALDAV . '}min-date-time',
+            '{' . self::NS_CALDAV . '}max-date-time',
+            '{' . self::NS_CALDAV . '}max-instances',
+            '{' . self::NS_CALDAV . '}max-attendees-per-instance',
+            '{' . self::NS_CALDAV . '}calendar-home-set',
+            '{' . self::NS_CALDAV . '}supported-collation-set'
+
+        );
     }
 
     /**

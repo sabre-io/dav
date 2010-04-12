@@ -95,6 +95,34 @@ class Sabre_DAV_Server {
     public $propertyMap = array(
     );
 
+    public $protectedProperties = array(
+        // RFC4918
+        '{DAV:}getcontentlength',
+        '{DAV:}getetag',
+        '{DAV:}getlastmodified',
+        '{DAV:}lockdiscovery',
+        '{DAV:}resourcetype',
+        '{DAV:}supportedlock',
+
+        // RFC4331
+        '{DAV:}quota-available-bytes',
+        '{DAV:}quota-used-bytes',
+
+        // RFC3744
+        '{DAV:}alternate-URI-set',
+        '{DAV:}principal-URL',
+        '{DAV:}group-membership',
+        '{DAV:}supported-privilege-set',
+        '{DAV:}current-user-privilege-set',
+        '{DAV:}acl',
+        '{DAV:}acl-restrictions',
+        '{DAV:}inherited-acl-set',
+        '{DAV:}principal-collection-set',
+
+        // RFC5397 
+        '{DAV:}current-user-principal',
+    );
+
     /**
      * Class constructor 
      * 

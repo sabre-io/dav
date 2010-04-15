@@ -91,6 +91,45 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
         }
 
+    }
+
+    /**
+     * @depends testUpdateCalendarAndFetch
+     */
+    function testUpdateCalendarUnknownProperty() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+
+        //Creating a new calendar
+        $newId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        // Updating the calendar
+        $result = $backend->updateCalendar($newId,array(
+            '{DAV:}displayname' => 'myCalendar',
+            '{DAV:}yourmom'     => 'wittycomment',
+        ));
+
+        // Verifying the result of the update
+        $this->assertEquals(array(
+            '403' => array('{DAV:}yourmom' => null),
+            '424' => array('{DAV:}displayname' => null),
+        ), $result);
+
+    }
+
+    function testCreateCalendarObject() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+
+        $data = $backend->getCalendarObject($returnedId,'random-id');
+
+        $this->assertEquals('calendar-data', $data['calendardata']);
+        $this->assertEquals($returnedId, $data['calendarid']);
+        $this->assertEquals('random-id', $data['uri']);
+
 
     }
 

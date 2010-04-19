@@ -1,4 +1,6 @@
 1.0.15-stable (2010-05-??)
+	* Added: Issue 31: Hiding exception information by default. Can be turned
+	  on with the Sabre_DAV_Server::$debugExceptions property.
 
 1.0.14-stable (2010-04-15)
 	* Fixed: double namespace declaration in multistatus responses.

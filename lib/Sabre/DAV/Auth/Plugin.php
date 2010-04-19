@@ -116,14 +116,27 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      * 
      * @param string $reportName 
      * @param DOMNode $dom 
-     * @return bool 
+     * @return bool|null 
      */
     public function report($reportName,$dom) {
 
         switch($reportName) { 
             case '{DAV:}expand-property' :
-                return $this->expandPropertyReport($dom);
-
+                $this->expandPropertyReport($dom);
+                return false;
+            case '{DAV:}principal-property-search' :
+                if ($this->server->getRequestUri()==='principals') {
+                    $this->principalPropertySearchReport($dom);
+                    return false;
+                }
+                break;
+            case '{DAV:}principal-search-property-set' :
+                if ($this->server->getRequestUri()==='principals') {
+                    $this->principalSearchPropertySetReport($dom);
+                    return false;
+                }
+                break;
+                 
         }
     
     }
@@ -252,5 +265,170 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    protected function principalSearchPropertySetReport(DOMDocument $dom) {
+
+        $searchProperties = array(
+            '{DAV:}displayname' => 'display name'
+
+        );
+
+        $httpDepth = $this->server->getHTTPDepth(0);
+        if ($httpDepth!==0) {
+            throw new Sabre_DAV_Exception_BadRequest('This report is only defined when Depth: 0');
+        }
+        
+        if ($dom->firstChild->hasChildNodes()) 
+            throw new Sabre_DAV_Exception_BadRequest('The principal-search-property-set report element is not allowed to have child elements'); 
+
+        $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
+        $root = $dom->createElement('d:principal-search-property-set');
+        $dom->appendChild($root);
+        // Adding in default namespaces
+        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+
+            $root->setAttribute('xmlns:' . $prefix,$namespace);
+
+        }
+
+        $nsList = $this->server->xmlNamespaces; 
+
+        foreach($searchProperties as $propertyName=>$description) {
+
+            $psp = $dom->createElement('d:principal-search-property');
+            $root->appendChild($psp);
+
+            $prop = $dom->createElement('d:prop');
+            $psp->appendChild($prop);
+  
+            $propName = null;
+            preg_match('/^{([^}]*)}(.*)$/',$propertyName,$propName);
+
+            //if (!isset($nsList[$propName[1]])) {
+            //    $nsList[$propName[1]] = 'x' . count($nsList);
+            //}
+
+            // If the namespace was defined in the top-level xml namespaces, it means 
+            // there was already a namespace declaration, and we don't have to worry about it.
+            //if (isset($server->xmlNamespaces[$propName[1]])) {
+                $currentProperty = $dom->createElement($nsList[$propName[1]] . ':' . $propName[2]);
+            //} else {
+            //    $currentProperty = $dom->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
+            //}
+            $prop->appendChild($currentProperty);
+
+            $descriptionElem = $dom->createElement('d:description');
+            $descriptionElem->setAttribute('xml:lang','en');
+            $descriptionElem->appendChild($dom->createTextNode($description));
+            $psp->appendChild($descriptionElem);
+
+
+        }
+
+        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody($dom->saveXML());
+
+    }
+
+    protected function principalPropertySearchReport($dom) {
+
+        $searchableProperties = array(
+            '{DAV:}displayname' => 'display name'
+
+        );
+
+        list($searchProperties, $requestedProperties) = $this->parsePrincipalPropertySearchReportRequest($dom);
+
+        $uri = $this->server->getRequestUri();
+        
+        $result = array();
+
+        $lookupResults = $this->server->getPropertiesForPath($uri, array_keys($searchProperties), 1);
+
+        // The first item in the results is the parent, so we get rid of it.
+        array_shift($lookupResults);
+
+        $matches = array();
+
+        foreach($lookupResults as $lookupResult) {
+
+            foreach($searchProperties as $searchProperty=>$searchValue) {
+                if (!isset($searchableProperties[$searchProperty])) {
+                    throw new Sabre_DAV_Exception_BadRequest('Searching for ' . $searchProperty . ' is not supported');
+                }
+                
+                if (isset($lookupResult[200][$searchProperty]) &&
+                    mb_stripos($lookupResult[200][$searchProperty], $searchValue, 0, 'UTF-8')!==false) {
+                        $matches[] = $lookupResult['href'];
+                }
+
+            }
+
+        }
+
+        $matchProperties = array();
+
+        foreach($matches as $match) {
+            
+           list($result) = $this->server->getPropertiesForPath($match, $requestedProperties, 0);
+           $matchProperties[] = $result;
+
+        }
+
+        $xml = $this->server->generateMultiStatus($matchProperties);
+        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->sendBody($xml);
+
+    }
+
+    protected function parsePrincipalPropertySearchReportRequest($dom) {
+
+        $httpDepth = $this->server->getHTTPDepth(0);
+        if ($httpDepth!==0) {
+            throw new Sabre_DAV_Exception_BadRequest('This report is only defined when Depth: 0');
+        }
+
+        $searchProperties = array();
+
+        // Parsing the search request
+        foreach($dom->firstChild->childNodes as $searchNode) {
+
+            if (Sabre_DAV_XMLUtil::toClarkNotation($searchNode)!=='{DAV:}property-search')
+                continue;
+
+            $propertyName = null;
+            $propertyValue = null;
+
+            foreach($searchNode->childNodes as $childNode) {
+
+                switch(Sabre_DAV_XMLUtil::toClarkNotation($childNode)) {
+
+                    case '{DAV:}prop' :
+                        $property = Sabre_DAV_XMLUtil::parseProperties($searchNode);
+                        reset($property); 
+                        $propertyName = key($property);
+                        break;
+
+                    case '{DAV:}match' :
+                        $propertyValue = $childNode->textContent;
+                        break;
+
+                }
+
+
+            }
+
+            if (is_null($propertyName) || is_null($propertyValue))
+                throw new Sabre_DAV_Exception_BadRequest('Invalid search request. propertyname: ' . $propertyName . '. propertvvalue: ' . $propertyValue);
+
+            $searchProperties[$propertyName] = $propertyValue;
+
+        }
+
+        return array($searchProperties, array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild)));
+
+    }
 
 }

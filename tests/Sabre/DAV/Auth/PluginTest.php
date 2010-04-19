@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 

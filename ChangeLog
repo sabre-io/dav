@@ -3,6 +3,8 @@
 	  atomic.
 	* Fixed: Issue 16, automatically adding trailing / to baseUri.
 	* Added: text/plain is used for .txt files in GuessContentType plugin.
+	* Added: support for principal-property-search and
+	  principal-search-property-set reports.
 
 1.2.0alpha2 (2010-04-08)
 	* Added: Calendars are now private and can only be read by the owner.

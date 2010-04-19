@@ -124,6 +124,15 @@ class Sabre_DAV_Server {
     );
 
     /**
+     * This is a flag that allow or not showing file, line and code
+     * of the exception in the returned XML
+     *
+     * @var bool 
+     */
+    public $debugExceptions = false;
+
+
+    /**
      * Class constructor 
      * 
      * @param Sabre_DAV_Tree $tree The tree object 
@@ -159,10 +168,12 @@ class Sabre_DAV_Server {
 
             $error->appendChild($DOM->createElement('s:exception',get_class($e)));
             $error->appendChild($DOM->createElement('s:message',$e->getMessage()));
-            $error->appendChild($DOM->createElement('s:file',$e->getFile()));
-            $error->appendChild($DOM->createElement('s:line',$e->getLine()));
-            $error->appendChild($DOM->createElement('s:code',$e->getCode()));
-            $error->appendChild($DOM->createElement('s:stacktrace',$e->getTraceAsString()));
+            if ($this->debugExceptions) {
+                $error->appendChild($DOM->createElement('s:file',$e->getFile()));
+                $error->appendChild($DOM->createElement('s:line',$e->getLine()));
+                $error->appendChild($DOM->createElement('s:code',$e->getCode()));
+                $error->appendChild($DOM->createElement('s:stacktrace',$e->getTraceAsString()));
+            }
             $error->appendChild($DOM->createElement('s:sabredav-version',Sabre_DAV_Version::VERSION));
 
             if($e instanceof Sabre_DAV_Exception) {

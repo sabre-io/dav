@@ -412,6 +412,7 @@ END:VCALENDAR';
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1',
+            'HTTP_DEPTH'     => '1',
         ));
         $request->setBody($body);
 
@@ -472,6 +473,7 @@ END:VCALENDAR';
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1//UUID-123467',
+            'HTTP_DEPTH'     => '1',
         ));
         $request->setBody($body);
 
@@ -501,7 +503,7 @@ END:VCALENDAR';
             $xpath = is_int($v1)?$v2:$v1;
 
             $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result));
+            $this->assertEquals(1,count($result), 'We expected 1 ' . $xpath . ' elements. We\'ve found ' . count($result) . '. Full result: ' . $this->response->body);
 
             if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
 

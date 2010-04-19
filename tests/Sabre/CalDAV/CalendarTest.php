@@ -58,8 +58,10 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
         $question = array(
             '{DAV:}resourcetype',
+            '{DAV:}owner',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
+            '{urn:ietf:params:xml:ns:caldav}supported-collation-set',
         );
 
         $result = $this->calendar->getProperties($question);
@@ -72,6 +74,10 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
         
+        $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Sabre_CalDAV_Property_SupportedCollationSet);
+
+        $this->assertTrue($result['{DAV:}owner'] instanceof Sabre_DAV_Property_Principal);
+        $this->assertEquals('principals/user1', $result['{DAV:}owner']->getHref());
 
     }
 
@@ -95,6 +101,48 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
 
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testCreateDirectory() {
+
+        $this->calendar->createDirectory('hello');
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetName() {
+
+        $this->calendar->setName('hello');
+
+    }
+
+    function testGetLastModified() {
+
+        $this->assertNull($this->calendar->getLastModified());
+
+    }
+
+    function testCreateFile() {
+
+        $this->calendar->createFile('hello',fopen('php://memory','r'));
+
+        $file = $this->calendar->getChild('hello');
+        $this->assertTrue($file instanceof Sabre_CalDAV_CalendarObject);
+
+
+    }
+
+    function testDelete() {
+
+        $this->calendar->delete();
+
+        $calendars = $this->backend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(0, count($calendars));
     }
 
 }

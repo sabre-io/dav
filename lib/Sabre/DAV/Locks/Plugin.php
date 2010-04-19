@@ -268,7 +268,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         if ($body = $this->server->httpRequest->getBody(true)) {
             // This is a new lock request
             $lockInfo = $this->parseLockRequest($body);
-            $lockInfo->depth = $this->server->getHTTPDepth(0); 
+            $lockInfo->depth = $this->server->getHTTPDepth(); 
             $lockInfo->uri = $uri;
             if($lastLock && $lockInfo->scope != Sabre_DAV_Locks_LockInfo::SHARED) throw new Sabre_DAV_Exception_ConflictingLock($lastLock);
 

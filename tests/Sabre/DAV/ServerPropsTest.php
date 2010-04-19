@@ -195,6 +195,92 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
+     * @covers Sabre_DAV_Server::updateProperties
+     * @depends testUpdateProperties
+     */
+    public function testUpdatePropertiesProtected() {
+
+        $props = array(
+            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
+            '{DAV:}getcontentlength' => 50,
+        );
+        
+        $result = $this->server->updateProperties('/test2.txt',$props);
+        
+        $this->assertEquals(array(
+            '424' => array('{http://sabredav.org/NS/test}someprop' => null),
+            '403' => array('{DAV:}getcontentlength' => null),
+            'href' => '/test2.txt',
+        ), $result);
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::updateProperties
+     * @depends testUpdateProperties
+     */
+    public function testUpdatePropertiesFail1() {
+
+        $dir = new Sabre_DAV_PropTestDirMock('updatepropsfalse');
+        $objectTree = new Sabre_DAV_ObjectTree($dir);
+        $this->server->tree = $objectTree;
+
+        $props = array(
+            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
+        );
+        
+        $result = $this->server->updateProperties('/',$props);
+        
+        $this->assertEquals(array(
+            '403' => array('{http://sabredav.org/NS/test}someprop' => null),
+            'href' => '/',
+        ), $result);
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::updateProperties
+     * @depends testUpdateProperties
+     */
+    public function testUpdatePropertiesFail2() {
+
+        $dir = new Sabre_DAV_PropTestDirMock('updatepropsarray');
+        $objectTree = new Sabre_DAV_ObjectTree($dir);
+        $this->server->tree = $objectTree;
+
+        $props = array(
+            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
+        );
+        
+        $result = $this->server->updateProperties('/',$props);
+        
+        $this->assertEquals(array(
+            '402' => array('{http://sabredav.org/NS/test}someprop' => null),
+            'href' => '/',
+        ), $result);
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::updateProperties
+     * @depends testUpdateProperties
+     * @expectedException Sabre_DAV_Exception
+     */
+    public function testUpdatePropertiesFail3() {
+
+        $dir = new Sabre_DAV_PropTestDirMock('updatepropsobj');
+        $objectTree = new Sabre_DAV_ObjectTree($dir);
+        $this->server->tree = $objectTree;
+
+        $props = array(
+            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
+        );
+        
+        $result = $this->server->updateProperties('/',$props);
+
+    }
+
+    /**
      * @depends testParsePropPatchRequest
      * @depends testUpdateProperties
      * @covers Sabre_DAV_Server::httpPropPatch
@@ -267,6 +353,39 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $result = $xml->xpath($xpath);
         $this->assertEquals(1,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
         $this->assertEquals('somevalue',(string)$result[0],'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
+
+    }
+
+}
+
+class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleDirectory implements Sabre_DAV_IProperties {
+
+    public $type;
+
+    function __construct($type) {
+        
+        $this->type =$type;
+        parent::__construct('root');
+
+    }
+
+    function updateProperties($updateProperties) {
+
+        switch($this->type) {
+            case 'updatepropsfalse' : return false;
+            case 'updatepropsarray' :
+                $r = array(402 => array());
+                foreach($updateProperties as $k=>$v) $r[402][$k] = null;
+                return $r;
+            case 'updatepropsobj' :
+                return new STDClass();
+        }
+
+    }
+
+    function getProperties($requestedPropeties) {
+
+        return array();
 
     }
 

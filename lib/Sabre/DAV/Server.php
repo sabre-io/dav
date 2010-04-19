@@ -670,9 +670,20 @@ class Sabre_DAV_Server {
 
         }
 
-        $this->createCollection($this->getRequestUri(), $resourceType, $properties);
-        $this->httpResponse->setHeader('Content-Length','0');
-        $this->httpResponse->sendStatus(201);
+        $result = $this->createCollection($this->getRequestUri(), $resourceType, $properties);
+
+        if (is_array($result)) {
+            $this->httpResponse->sendStatus(207);
+            $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+
+            $this->httpResponse->sendBody(
+                $this->generateMultiStatus(array($result))
+            );
+
+        } else {
+            $this->httpResponse->setHeader('Content-Length','0');
+            $this->httpResponse->sendStatus(201);
+        }
 
     }
 
@@ -1251,14 +1262,39 @@ class Sabre_DAV_Server {
             }
 
             $parent->createDirectory($newName);
-            
+            $rollBack = false; 
+            $exception = null;
+            $errorResult = null;
+
             if (count($properties)>0) {
 
-                // TODO: need to rollback if newnode is not a Sabre_DAV_Properties
-                // TODO: need to rollback is updateProperties fails
-                $this->updateProperties($uri, $properties);
+                try {
 
-            } 
+                    $errorResult = $this->updateProperties($uri, $properties);
+                    if (!isset($errorResult[200])) {
+                        $rollBack = true;
+                    }
+
+                } catch (Sabre_DAV_Exception $e) {
+
+                    $rollBack = true;
+                    $exception = $e;
+
+                }
+
+            }
+
+            if ($rollBack) {
+                $node = $this->tree->getNodeForPath($uri);
+                if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
+                $node->delete();
+
+                // Re-throwing exception
+                if ($exception) throw $exception;
+
+                return $errorResponse;
+            }
+                
         }
         $this->broadcastEvent('afterBind',array($uri));
 

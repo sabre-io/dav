@@ -318,12 +318,10 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->markTestIncomplete('This test should actually fail. The displayname property is not updated, and thus the entire request should fail. Currently the resource is created, but properties are not updated');
-
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('HTTP/1.1 405 Method Not Allowed',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
         $this->assertEquals(array(
-            'Content-Length' => '0',
+            'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
 

@@ -1,4 +1,4 @@
-1.2.0alpha3 (2010-04-??)
+1.2.0alpha3 (2010-04-20)
 	* Update: Complete rewrite of property updating. Now easier to use and 
 	  atomic.
 	* Fixed: Issue 16, automatically adding trailing / to baseUri.

@@ -7,8 +7,8 @@ class Sabre_DAV_Locks_Backend_PDOMySQLTest extends Sabre_DAV_Locks_Backend_Abstr
     function getBackend() {
 
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or it was not properly configured');
-        $pdo = new PDO(SABRE_MYSQLDSN,SABRE_MYSQLUSER,SABRE_MYSQLPASS);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        $pdo = Sabre_TestUtil::getMySQLDB();
+        if (!$pdo) $this->markTestSkipped('Could not connect to MySQL database');
         $pdo->query('DROP TABLE IF EXISTS locks;');
         $pdo->query("
 CREATE TABLE locks ( 

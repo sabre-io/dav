@@ -1,3 +1,7 @@
+1.2.0alpha4 (2010-04-??)
+	* Added: Support for If-Range, If-Match, If-None-Match, If-Modified-Since,
+	  If-Unmodified-Since.
+
 1.2.0alpha3 (2010-04-20)
 	* Update: Complete rewrite of property updating. Now easier to use and 
 	  atomic.

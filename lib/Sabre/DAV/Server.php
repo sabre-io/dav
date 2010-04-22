@@ -133,14 +133,30 @@ class Sabre_DAV_Server {
 
 
     /**
-     * Class constructor 
+     * Sets up the server
+     *
+     * If a Sabre_DAV_Tree object is passed as an argument, it will
+     * use it as the directory tree. If a Sabre_DAV_INode is passed, it
+     * will create a Sabre_DAV_ObjectTree and use the node as the root.
+     *
+     * If nothing is passed, a Sabre_DAV_SimpleDirectory is created in 
+     * a Sabre_DAV_ObjectTree.
      * 
      * @param Sabre_DAV_Tree $tree The tree object 
      * @return void
      */
-    public function __construct(Sabre_DAV_Tree $tree) {
+    public function __construct($treeOrNode = null) {
 
-        $this->tree = $tree;
+        if ($treeOrNode instanceof Sabre_DAV_Tree) {
+            $this->tree = $treeOrNode;
+        } elseif ($treeOrNode instanceof Sabre_DAV_INode) {
+            $this->tree = new Sabre_DAV_ObjectTree($treeOrNode);
+        } elseif (is_null($treeOrNode)) {
+            $root = new Sabre_DAV_SimpleDirectory('root');
+            $this->tree = new Sabre_DAV_ObjectTree($root);
+        } else {
+            throw new Sabre_DAV_Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre_DAV_Tree, Sabre_DAV_INode or null');
+        }
         $this->httpResponse = new Sabre_HTTP_Response();
         $this->httpRequest = new Sabre_HTTP_Request();
 
@@ -344,6 +360,8 @@ class Sabre_DAV_Server {
         $uri = $this->getRequestUri();
         $node = $this->tree->getNodeForPath($uri,0);
 
+        if (!$this->checkPreconditions()) return false; 
+
         if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_NotImplemented('GET is only implemented on File objects');
         $body = $node->get();
 
@@ -362,7 +380,7 @@ class Sabre_DAV_Server {
         $httpHeaders = $this->getHTTPHeaders($uri);
 
         /* ContentType needs to get a default, because many webservers will otherwise
-         * default to text/html, and we don't want this
+         * default to text/html, and we don't want this for security reasons.
          */
         if (!isset($httpHeaders['Content-Type'])) {
             $httpHeaders['Content-Type'] = 'application/octet-stream';
@@ -380,12 +398,39 @@ class Sabre_DAV_Server {
             $nodeSize = null;
         }
         
-
-
         $this->httpResponse->setHeaders($httpHeaders);
 
+        $range = $this->getHTTPRange();
+        $ifRange = $this->httpRequest->getHeader('If-Range');
+        $ignoreRangeHeader = false;
+
+        // If ifRange is set, and range is specified, we first need to check
+        // the precondition.
+        if ($nodeSize && $range && $ifRange) {
+             
+            // if IfRange is parsable as a date we'll treat it as a DateTime
+            // otherwise, we must treat it as an etag.
+            try {
+                $ifRangeDate = new DateTime($ifRange);
+               
+                // It's a date. We must check if the entity is modified since
+                // the specified date.
+                if (!isset($httpHeaders['Last-Modified'])) $ignoreRangeHeader = true;
+                else {
+                    $modified = new DateTime($httpHeaders['Last-Modified']);
+                    if($modified > $ifRangeDate) $ignoreRangeHeader = true;
+                }
+
+            } catch (Exception $e) {
+               
+                // It's an entity. We can do a simple comparison. 
+                if (!isset($httpHeaders['ETag'])) $ignoreRangeHeader = true;
+                elseif ($httpHeaders['ETag']!==$ifRange) $ignoreRangeHeader = true;
+            }
+        }
+
         // We're only going to support HTTP ranges if the backend provided a filesize
-        if ($nodeSize && $range = $this->getHTTPRange()) {
+        if (!$ignoreRangeHeader && $nodeSize && $range) {
 
             // Determining the exact byte offsets
             if (!is_null($range[0])) {
@@ -596,14 +641,9 @@ class Sabre_DAV_Server {
         try {
 
             $node = $this->tree->getNodeForPath($this->getRequestUri());
-            
-            // We got this far, this means the node already exists.
-            // This also means we should check for the If-None-Match header
-            if ($this->httpRequest->getHeader('If-None-Match')) {
-
-                throw new Sabre_DAV_Exception_PreconditionFailed('The resource already exists, and an If-None-Match header was supplied');
-
-            }
+          
+            // Checking If-None-Match and related headers.
+            if (!$this->checkPreconditions()) return;
             
             // If the node is a collection, we'll deny it
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
@@ -1401,6 +1441,119 @@ class Sabre_DAV_Server {
         }
         $result['href'] = $uri;
         return $result;
+
+    }
+
+    /**
+     * This method checks the main HTTP preconditions.
+     *
+     * Currently these are:
+     *   * If-Match
+     *   * If-None-Match
+     *   * If-Modified-Since
+     *   * If-Unmodified-Since
+     *
+     * The method will return true if all preconditions are met
+     * The method will return false, or throw an exception if preconditions
+     * failed. If false is returned the operation should be aborted, and
+     * the appropriate HTTP response headers are already set.
+     *
+     * @return bool 
+     */
+    public function checkPreconditions() {
+
+        $uri = $this->getRequestUri();
+        $node = null;
+        $lastMod = null;
+        $etag = null;
+
+        if ($ifMatch = $this->httpRequest->getHeader('If-Match')) {
+
+            // If-Match contains an entity tag. Only if the entity-tag
+            // matches we are allowed to make the request succeed.
+            // If the entity-tag is '*' we are only allowed to make the
+            // request succeed if a resource exists at that url.
+            try {
+                $node = $this->tree->getNodeForPath($uri);
+            } catch (Sabre_DAV_Exception_FileNotFound $e) {
+                throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified and the resource did not exist');
+            }
+
+            // Only need to check entity tags if they are not *
+            if ($ifMatch!=='*') {
+                $etag = $node->getETag();
+                if ($etag!==$ifMatch) {
+                     throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified, but the ETag did not match');
+                }
+            }
+        }
+
+        if ($ifNoneMatch = $this->httpRequest->getHeader('If-None-Match')) {
+
+            // The If-None-Match header contains an etag.
+            // Only if the ETag does not match the current ETag, the request will succeed
+            // The header can also contain *, in which case the request
+            // will only succeed if the entity does not exist at all.
+            $nodeExists = true;
+            if (!$node) {
+                try {
+                    $node = $this->tree->getNodeForPath($uri);
+                } catch (Sabre_DAV_Exception_FileNotFound $e) {
+                    $nodeExists = false;
+                }
+            }
+            if ($nodeExists) {
+                if ($ifNoneMatch==='*') {
+                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-None-Match: * header was specified, but the node exists');
+                } elseif (($etag = $node->getETag()) && $etag===$ifNoneMatch) {
+                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-None-Match header was specified, but the node\'s etag matched');
+                }
+            }
+
+        }
+
+        if (!$ifNoneMatch && ($ifModifiedSince = $this->httpRequest->getHeader('If-Modified-Since'))) {
+            
+            // The If-Modified-Since header contains a date. We
+            // will only return the entity if it has been changed since
+            // that date. If it hasn't been changed, we return a 304
+            // header
+            // Note that this header only has to be checked if there was no If-None-Match header
+            // as per the HTTP spec.
+            $date = new DateTime($ifModifiedSince);
+
+            if (is_null($node)) {
+                $node = $this->tree->getNodeForPath($uri);
+            }
+            $lastMod = $node->getLastModified();
+            if ($lastMod) {
+                $lastMod = new DateTime('@' . $lastMod);
+                if ($lastMod < $date) {
+                    $this->httpResponse->sendStatus(304);
+                    return false;
+                } 
+            }
+        }
+
+        if ($ifUnmodifiedSince = $this->httpRequest->getHeader('If-Unmodified-Since')) {
+            
+            // The If-Unmodified-Since will allow allow the request if the
+            // entity has not changed since the specified date.
+            $date = new DateTime($ifUnmodifiedSince);
+            
+            if (is_null($node)) {
+                $node = $this->tree->getNodeForPath($uri);
+            }   
+            $lastMod = $node->getLastModified();
+            if ($lastMod) {
+                $lastMod = new DateTime('@' . $lastMod);
+                if ($lastMod >= $date) {
+                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.');
+                }
+            }
+
+        }
+        return true;
 
     }
 

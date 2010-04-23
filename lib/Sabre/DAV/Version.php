@@ -15,7 +15,7 @@ class Sabre_DAV_Version {
     /**
      * Full version number
      */
-    const VERSION = '1.0.14';
+    const VERSION = '1.0.15';
 
     /**
      * Stability : alpha, beta, stable

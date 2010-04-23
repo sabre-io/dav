@@ -1,3 +1,5 @@
+1.0.15-stable (2010-05-??)
+
 1.0.14-stable (2010-04-15)
 	* Fixed: double namespace declaration in multistatus responses.
 

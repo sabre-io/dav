@@ -10,7 +10,7 @@
 date_default_timezone_set('Canada/Eastern');
 
 // Files we need
-require_once 'Sabre.includes.php';
+require_once 'Sabre.autoload.php';
 
 $u = 'admin';
 $p = '1234';

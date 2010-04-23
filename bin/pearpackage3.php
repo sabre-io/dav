@@ -27,7 +27,31 @@ if (!is_dir('build/' . $packageName)) {
 
 // We'll figure out something better for this one day
 
+$dependencies = array(
+    array(
+        'type' => 'php',
+        'min'  => '5.2.1',
+    ),
+    array(
+        'type' => 'pearinstaller',
+        'min'  => '1.8',
+    ),
+);
+
+
 switch($packageName) {
+
+    case 'Sabre' :
+        $summary = 'Sabretooth base package.';
+        $description = <<<TEXT
+The base package provides some functionality used by all packages. 
+
+Currently this is only an autoloader
+TEXT;
+        $version = '1.0.0';
+        $stability = 'stable';
+        break;
+
     case 'Sabre_DAV' :
         $summary = 'Sabre_DAV is a WebDAV framework for PHP.';
         $description = <<<TEXT
@@ -41,6 +65,19 @@ Feature List:
 * Authentication support
 * Plugin system
 TEXT;
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_HTTP',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.2.0alpha4',
+        );
+
         break;
 
     case 'Sabre_HTTP' :
@@ -51,22 +88,61 @@ allowing for a central interface to deal with this as well as easier unittesting
 
 In addition Sabre_HTTP provides classes for Basic, Digest and Amazon AWS authentication.
 TEXT;
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        break;
+
+    case 'Sabre_CalDAV' :
+        $summary = 'Sabre_CalDAV provides CalDAV extensions to SabreDAV';
+        $description = <<<TEXT
+Sabre_CalDAV provides RFC4791 (CalDAV) support to Sabre_DAV. 
+
+Feature list:
+* Multi-user Calendar Server
+* Support for Apple iCal, Evolution, Sunbird, Lightning
+TEXT;
+
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_HTTP',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.2.0alpha4',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAV',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.2.0alpha4',
+        );
         break;
 
 }
 
-include 'lib/' . str_replace('_','/',$packageName) . '/Version.php';
-$versionClassName = $packageName . '_Version';
+
+if (!isset($version)) {
+    include 'lib/' . str_replace('_','/',$packageName) . '/Version.php';
+    $versionClassName = $packageName . '_Version';
+    $version = $versionClassName::VERSION;
+    $stability = $versionClassName::STABILITY;
+}
 
 $lead = 'Evert Pot';
 $lead_email = 'evert@rooftopsolutions.nl';
 $date = date('Y-m-d');
-$version = $versionClassName::VERSION;
-$stability = $versionClassName::STABILITY;
+
 $license = 'Modified BSD';
 $licenseuri = 'http://code.google.com/p/sabredav/wiki/License';
 $notes = 'New release. Read the ChangeLog and announcement for more details';
-$minPHPVersion = '5.2.1';
 $channel = 'pear.sabredav.org';
 
 /* This function is intended to generate the full file list */
@@ -91,19 +167,20 @@ function parsePath($fullPath, $role, $padding = 4) {
 
 $rootDir = realpath('build/' . $packageName);
 
-$fileList  = parsePath($rootDir . '/php', 'php');
-$fileList .= parsePath($rootDir . '/doc', 'doc');
+$fileList  = parsePath($rootDir . '/Sabre', 'php');
+$fileList .= parsePath($rootDir . '/examples', 'doc');
+$fileList .= parsePath($rootDir . '/ChangeLog', 'doc');
+$fileList .= parsePath($rootDir . '/LICENSE', 'doc');
 
-// Lastly the install-list
-$directory = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootDir.'/php'));
-
-$installList = '';
-foreach($directory as $path) {
-    $basePath = trim(substr($path,strlen($rootDir)),'/');
-
-    // This just takes the 'lib/' off every path name, so it will be installed in the correct location
-    $installList .= '        <install name="' . $basePath . '" as="' . substr($basePath,4) . "\" />\n";
-
+$dependenciesXML = "\n";
+foreach($dependencies as $dep) {
+    $pad = 8;
+    $dependenciesXML.=str_repeat(' ',$pad) . '<' . $dep['type'] . ">\n";
+    foreach($dep as $key=>$value) {
+        if ($key=='type') continue;
+        $dependenciesXML.=str_repeat(' ',$pad+2) . "<$key>$value</$key>\n";
+    }
+    $dependenciesXML.=str_repeat(' ',$pad) . '</' . $dep['type'] . ">\n";
 }
 
 $package = <<<XML
@@ -118,7 +195,7 @@ $package = <<<XML
     <lead>
       <name>{$lead}</name>
       <user>{$lead}</user>
-      <email>{$lead}</email>
+      <email>{$lead_email}</email>
       <active>true</active>
     </lead>
     <date>{$date}</date>
@@ -133,14 +210,11 @@ $package = <<<XML
     <license uri="{$licenseuri}">{$license}</license>
     <notes>{$notes}</notes>
     <contents>
-      <dir name="/">
-{$fileList} 
-      </dir>
+      <dir name="/">{$fileList}
+      </dir> 
     </contents>
     <dependencies>
-      <required>
-        <php><min>{$minPHPVersion}</min></php>
-        <pearinstaller><min>1.4</min></pearinstaller>
+      <required>{$dependenciesXML}
       </required>
     </dependencies>
     <phprelease />

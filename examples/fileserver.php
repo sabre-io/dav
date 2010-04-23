@@ -25,7 +25,7 @@ $tmpDir = 'tmpdata';
 if (!isset($baseUri)) die('Please setup \$baseUri first!');
 
 // Files we need
-require_once 'Sabre.includes.php';
+require_once 'Sabre.autoload.php';
 
 // Create the parent node
 $publicDirObj = new Sabre_DAV_FS_Directory($publicDir);

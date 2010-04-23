@@ -25,7 +25,7 @@ $publicDir = 'public';
 $baseUri = '/';
 
 // Files we need
-require_once 'Sabre.includes.php';
+require_once 'Sabre.autoload.php';
 
 class MyDirectory extends Sabre_DAV_Directory {
 

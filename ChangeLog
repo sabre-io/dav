@@ -1,6 +1,11 @@
 1.2.0alpha4 (2010-04-??)
 	* Added: Support for If-Range, If-Match, If-None-Match, If-Modified-Since,
 	  If-Unmodified-Since.
+	* Changed: Brand new build system. Functionality is split up between
+	  Sabre, Sabre_HTTP, Sabre_DAV and Sabre_CalDAV packages. In addition to
+	  that a new non-pear package will be created with all this functionality
+	  combined.
+	* Changed: Autoloader moved to Sabre/autoload.php
 
 1.2.0alpha3 (2010-04-20)
 	* Update: Complete rewrite of property updating. Now easier to use and 

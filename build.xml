@@ -13,7 +13,7 @@
         <echo msg="Building Sabre pear package" />
         <mkdir dir="build/Sabre" />
         <mkdir dir="build/Sabre/Sabre" />
-        <copy todir="build/Sabre" includeemptydirs="true" >
+        <copy todir="build/Sabre">
             <fileset dir="lib">
                 <include name="Sabre/autoload.php" />
             </fileset>
@@ -57,8 +57,8 @@
             </fileset>
         </copy>
         <mkdir dir="build/Sabre_DAV" />
-        <copy todir="build/Sabre_DAV">
-            <fileset dir=".">
+        <copy todir="build/Sabre_DAV" includeemptydirs="true">
+            <fileset dir="." >
                 <include name="LICENSE" />
                 <include name="ChangeLog" />
                 <include name="examples/fileserver.php" />
@@ -97,6 +97,23 @@
             </fileset>
         </move>
 
+        <echo>Creating combined SabreDAV build</echo>
+        <mkdir dir="build/SabreDAV" />
+        <copy todir="build/SabreDAV" includeemptydirs="true">
+            <fileset dir=".">
+                <include name="lib/**/*.php" />
+                <include name="ChangeLog" />
+                <include name="LICENSE" />
+                <include name="examples/**/*.php" />
+                <include name="examples/**/*.sql" />
+                <include name="bin/naturalselection.py" />
+                <include name="tests/**/*.xml" />
+                <include name="tests/**/*.php" />
+                <include name="tests/temp" />
+            </fileset>
+        </copy>
+        <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" /> 
+
     </target>
 
     <target name="clean" depends="init">
@@ -111,7 +128,7 @@
         <echo>Uploading to Google Code</echo>
         <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
         <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
-        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' Sabre_DAV-${sabredav.version}.tgz" checkreturn="true" passthru="1" />
+        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/Sabre_DAV-${sabredav.version}.zip" checkreturn="true" />
     </target>
 
     <target name="test">

@@ -288,6 +288,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
+            'Allow'        => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT',
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 405 Method Not Allowed',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
@@ -296,6 +297,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
 
     /**
      * @depends testMKCOLSuccess
+     * @depends testMKCOLAlreadyExists
      */
     function testMKCOLAndProps() {
 
@@ -318,7 +320,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 405 Method Not Allowed',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',

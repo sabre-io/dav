@@ -193,14 +193,21 @@ class Sabre_DAV_Server {
             $error->appendChild($DOM->createElement('s:sabredav-version',Sabre_DAV_Version::VERSION));
 
             if($e instanceof Sabre_DAV_Exception) {
+
                 $httpCode = $e->getHTTPCode();
                 $e->serialize($this,$error);
+                $headers = $e->getHTTPHeaders($this);
+
             } else {
+
                 $httpCode = 500;
+                $headers = array();
+
             }
+            $headers['Content-Type'] = 'application/xml; charset=utf-8';
             
             $this->httpResponse->sendStatus($httpCode);
-            $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+            $this->httpResponse->setHeaders($headers);
             $this->httpResponse->sendBody($DOM->saveXML());
 
         }
@@ -873,13 +880,19 @@ class Sabre_DAV_Server {
             'HEAD',
             'DELETE',
             'PROPFIND',
-            'MKCOL',
             'PUT',
             'PROPPATCH',
             'COPY',
             'MOVE',
             'REPORT'
         );
+
+        // The MKCOL is only allowed on an unmapped uri
+        try {
+            $node = $this->tree->getNodeForPath($uri);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            $methods[] = 'MKCOL';
+        }
 
         // We're also checking if any of the plugins register any new methods
         foreach($this->plugins as $plugin) $methods = array_merge($methods,$plugin->getHTTPMethods($uri));
@@ -1371,7 +1384,7 @@ class Sabre_DAV_Server {
                 // Re-throwing exception
                 if ($exception) throw $exception;
 
-                return $errorResponse;
+                return $errorResult;
             }
                 
         }
@@ -1403,23 +1416,28 @@ class Sabre_DAV_Server {
         // exceptions if it doesn't. 
         $node = $this->tree->getNodeForPath($uri);
        
-        // If the node is not an instance of Sabre_DAV_IProperties, we can
-        // simply return a 405.
-        if (!($node instanceof Sabre_DAV_IProperties)) {
-            throw new Sabre_DAV_Exception_MethodNotAllowed('This resource does not support modification of properties');
-        }
-
         $result = array(
             200 => array(),
             403 => array(),
             424 => array(),
         ); 
-
         $remainingProperties = $properties;
         $hasError = false;
 
+
+        // If the node is not an instance of Sabre_DAV_IProperties, every
+        // property is 403 Forbidden
+        // simply return a 405.
+        if (!($node instanceof Sabre_DAV_IProperties)) {
+            $hasError = true;
+            foreach($properties as $propertyName=> $value) {
+                $result[403][$propertyName] = null;
+            }
+            $remainingProperties = array();
+        }
+
         // Running through all properties to make sure none of them are protected
-        foreach($properties as $propertyName => $value) {
+        if (!$hasError) foreach($properties as $propertyName => $value) {
             if(in_array($propertyName, $this->protectedProperties)) {
                 $result[403][$propertyName] = null;
                 unset($remainingProperties[$propertyName]);

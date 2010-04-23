@@ -40,7 +40,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $this->assertEquals(array('MKCALENDAR'), $this->plugin->getHTTPMethods('calendars/user1'));
+        $this->assertEquals(array('MKCALENDAR'), $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
         $this->assertEquals(array('calendar-access'), $this->plugin->getFeatures());
         $this->assertArrayHasKey('urn:ietf:params:xml:ns:caldav', $this->server->xmlNamespaces);
 

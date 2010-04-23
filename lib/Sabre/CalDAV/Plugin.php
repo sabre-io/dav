@@ -59,9 +59,18 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getHTTPMethods($uri) {
 
-        $node = $this->server->tree->getNodeForPath($uri);
+        // The MKCALENDAR is only available on unmapped uri's, whose
+        // parents extend IExtendedCollection
+        list($parent, $name) = Sabre_DAV_URLUtil::splitPath($uri);
+
+        $node = $this->server->tree->getNodeForPath($parent);
+
         if ($node instanceof Sabre_DAV_IExtendedCollection) {
-            return array('MKCALENDAR');
+            try {
+                $node->getChild($name);
+            } catch (Sabre_DAV_Exception_FileNotFound $e) {
+                return array('MKCALENDAR');
+            }
         }
         return array();
 

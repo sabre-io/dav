@@ -9,19 +9,33 @@
 
     <target name="build" depends="init">
         <mkdir dir="build" /> 
+        
+        <echo msg="Building Sabre pear package" />
+        <mkdir dir="build/Sabre" />
+        <mkdir dir="build/Sabre/Sabre" />
+        <copy todir="build/Sabre" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/autoload.php" />
+            </fileset>
+        </copy>
+        <copy todir="build/Sabre">
+            <fileset dir=".">
+                <include name="LICENSE" />
+            </fileset>
+        </copy>
+        <exec command="bin/pearpackage3.php make Sabre" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre" checkreturn="true" />
 
         <echo msg="Building Sabre_HTTP pear package" />
         <mkdir dir="build/Sabre_HTTP" />
-        <mkdir dir="build/Sabre_HTTP/php" />
-        <mkdir dir="build/Sabre_HTTP/php/Sabre" />
-        <mkdir dir="build/Sabre_HTTP/php/Sabre/HTTP" />
-        <copy todir="build/Sabre_HTTP/php" includeemptydirs="true" >
+        <mkdir dir="build/Sabre_HTTP/Sabre" />
+        <mkdir dir="build/Sabre_HTTP/Sabre/HTTP" />
+        <copy todir="build/Sabre_HTTP" includeemptydirs="true" >
             <fileset dir="lib">
                 <include name="Sabre/HTTP/**/*.php" />
             </fileset>
         </copy>
-        <mkdir dir="build/Sabre_HTTP/doc" />
-        <copy todir="build/Sabre_HTTP/doc">
+        <copy todir="build/Sabre_HTTP">
             <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="ChangeLog" />
@@ -29,17 +43,21 @@
                 <include name="examples/digestauth.php" />
             </fileset>
         </copy>
+        <exec command="bin/pearpackage3.php make Sabre_HTTP" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_HTTP" checkreturn="true" />
 
         <echo msg="Building Sabre_DAV pear package" />
         <mkdir dir="build/Sabre_DAV" />
-        <mkdir dir="build/Sabre_DAV/php" />
-        <copy todir="build/Sabre_DAV/php" includeemptydirs="true" >
+        <mkdir dir="build/Sabre_DAV" />
+        <copy todir="build/Sabre_DAV" includeemptydirs="true" >
             <fileset dir="lib">
                 <include name="Sabre/DAV/**/*.php" />
+                <include name="Sabre.includes.php" />
+                <include name="Sabre.autoload.php" />
             </fileset>
         </copy>
-        <mkdir dir="build/Sabre_DAV/doc" />
-        <copy todir="build/Sabre_DAV/doc">
+        <mkdir dir="build/Sabre_DAV" />
+        <copy todir="build/Sabre_DAV">
             <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="ChangeLog" />
@@ -49,17 +67,19 @@
                 <include name="examples/sql/*.users.sql" />
             </fileset>
         </copy>
+        <exec command="bin/pearpackage3.php make Sabre_DAV" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_DAV" checkreturn="true" />
 
         <echo msg="Building Sabre_CalDAV pear package" />
         <mkdir dir="build/Sabre_CalDAV" />
-        <mkdir dir="build/Sabre_CalDAV/php" />
-        <copy todir="build/Sabre_CalDAV/php" includeemptydirs="true" >
+        <mkdir dir="build/Sabre_CalDAV" />
+        <copy todir="build/Sabre_CalDAV" includeemptydirs="true" >
             <fileset dir="lib">
                 <include name="Sabre/CalDAV/**/*.php" />
             </fileset>
         </copy>
-        <mkdir dir="build/Sabre_CalDAV/doc" />
-        <copy todir="build/Sabre_CalDAV/doc">
+        <mkdir dir="build/Sabre_CalDAV" />
+        <copy todir="build/Sabre_CalDAV">
             <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="ChangeLog" />
@@ -67,19 +87,25 @@
                 <include name="examples/sql/*.calendars.sql" />
             </fileset>
         </copy>
+        <exec command="bin/pearpackage3.php make Sabre_CalDAV" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_CalDAV" checkreturn="true" />
 
-        <!--<exec command="bin/pearpackage2.php make" checkreturn="true" />-->
-        <!--<exec command="pear package" checkreturn="true" />-->
+        <move todir="build">
+            <mapper type="flatten" />
+            <fileset dir="build/">
+                <include name="**/*.tgz" />
+            </fileset>
+        </move>
+
     </target>
 
     <target name="clean" depends="init">
         <echo msg="Removing build files (cleaning up distribution)" />
         <delete dir="apidocs" />
-        <delete file="package.xml" />
-        <delete file="Sabre_DAV-${sabredav.version}.tgz" />
+        <delete dir="build" />
     </target>    
 
-    <target name="release" depends="init,test,build">
+    <target name="release" depends="init,clean,test,build">
         <echo>Creating Mercurial release tag</echo>
         <exec command="hg tag version-${sabredav.version}" checkreturn="false" passthru="1" />
         <echo>Uploading to Google Code</echo>

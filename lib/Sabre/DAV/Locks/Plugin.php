@@ -380,7 +380,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             // In case the node didn't exist, this could be a lock-null request
         }
         if ($this->locksBackend) return $this->locksBackend->lock($uri,$lockInfo);
-        throw new Sabre_DAV_Exception_NotImplemented('Locking support not implemented for this resource. No Locking backend was found so if you didn\'t expect this error, please check your configuration.');
+        throw new Sabre_DAV_Exception_MethodNotAllowed('Locking support is not enabled for this resource. No Locking backend was found so if you didn\'t expect this error, please check your configuration.');
 
     }
 

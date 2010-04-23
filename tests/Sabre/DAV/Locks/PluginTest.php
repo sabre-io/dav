@@ -23,7 +23,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     
     function testGetHTTPMethods() {
 
-        $this->assertEquals(array('lock','unlock'),$this->locksPlugin->getHTTPMethods()); 
+        $this->assertEquals(array('LOCK','UNLOCK'),$this->locksPlugin->getHTTPMethods('')); 
 
     }
 

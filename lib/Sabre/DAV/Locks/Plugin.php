@@ -164,17 +164,24 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+
     /**
-     * New HTTP methods defined by this plugin
+     * Use this method to tell the server this plugin defines additional
+     * HTTP methods.
      *
-     * This list is only used for the Allow: header in the HTTP OPTIONS
-     * request.
-     * 
+     * This method is passed a uri. It should only return HTTP methods that are 
+     * available for the specified uri.
+     *
+     * @param string $uri
      * @return array 
      */
-    public function getHTTPMethods() {
+    public function getHTTPMethods($uri) {
 
-        return array('lock','unlock');
+        if ($this->locksBackend ||
+            $this->server->tree->getNodeForPath($uri) instanceof Sabre_DAV_ILocks) {
+            return array('LOCK','UNLOCK');
+        }
+        return array();
 
     }
 

@@ -48,13 +48,22 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     private $server;
 
     /**
-     * Returns a list of supported HTTP methods. 
-     * 
+     * Use this method to tell the server this plugin defines additional
+     * HTTP methods.
+     *
+     * This method is passed a uri. It should only return HTTP methods that are 
+     * available for the specified uri.
+     *
+     * @param string $uri
      * @return array 
      */
-    public function getHTTPMethods() {
+    public function getHTTPMethods($uri) {
 
-        return array('MKCALENDAR');
+        $node = $this->server->tree->getNodeForPath($uri);
+        if ($node instanceof Sabre_DAV_IExtendedCollection) {
+            return array('MKCALENDAR');
+        }
+        return array();
 
     }
 
@@ -118,30 +127,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         return false;
 
     }
-
-    /**
-     * This function handles support for the ACL method
-     * 
-     * We're not really implementing ACL here, and merely returning HTTP 200.
-     * This will satisfy clients making ACL request, but it isn't the cleanest thing to do. 
-     *
-     * It is given an extremely low priority, so it can easily be overriden
-     * if another plugin really implements acl 
-     *
-     * @param string $method 
-     * @return bool 
-     */
-    /*
-    public function unknownMethod2($method) {
-
-        if ($method!=='ACL') return;
-
-        $this->server->httpResponse->sendStatus(204);
-        $this->server->httpResponse->setHeader('Content-Length','0');
-        // false is returned to stop the unknownMethod event
-        return false;
-
-    }*/
 
     /**
      * This functions handles REPORT requests specific to CalDAV 

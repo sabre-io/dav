@@ -10,7 +10,7 @@ class Sabre_DAV_TestPlugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    function getHTTPMethods() {
+    function getHTTPMethods($uri) {
 
         return array('BEER','WINE');
 

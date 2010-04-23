@@ -5,7 +5,9 @@
 	  Sabre, Sabre_HTTP, Sabre_DAV and Sabre_CalDAV packages. In addition to
 	  that a new non-pear package will be created with all this functionality
 	  combined.
-	* Changed: Autoloader moved to Sabre/autoload.php
+	* Changed: Autoloader moved to Sabre/autoload.php.
+	* Changed: The Allow: header is now more accurate, with appropriate HTTP
+	  methods per uri. 
 
 1.2.0alpha3 (2010-04-20)
 	* Update: Complete rewrite of property updating. Now easier to use and 

@@ -328,11 +328,7 @@ class Sabre_DAV_Server {
      */
     protected function httpOptions() {
 
-        $methods = $this->getAllowedMethods();
-
-        // We're also checking if any of the plugins register any new methods
-        foreach($this->plugins as $plugin) $methods = array_merge($methods,$plugin->getHTTPMethods());
-        array_unique($methods);
+        $methods = $this->getAllowedMethods($this->getRequestUri());
 
         $this->httpResponse->setHeader('Allow',strtoupper(implode(', ',$methods)));
         $features = array('1','3', 'extended-mkcol');
@@ -829,18 +825,32 @@ class Sabre_DAV_Server {
      */
     protected function invoke() {
 
-        $method = strtolower($this->httpRequest->getMethod()); 
+        $method = strtoupper($this->httpRequest->getMethod()); 
 
-        if (!$this->broadcastEvent('beforeMethod',array(strtoupper($method)))) return;
+        if (!$this->broadcastEvent('beforeMethod',array($method))) return;
 
         // Make sure this is a HTTP method we support
-        if (in_array($method,$this->getAllowedMethods())) {
+        $internalMethods = array(
+            'OPTIONS',
+            'GET',
+            'HEAD',
+            'DELETE',
+            'PROPFIND',
+            'MKCOL',
+            'PUT',
+            'PROPPATCH',
+            'COPY',
+            'MOVE',
+            'REPORT'
+        );
+
+        if (in_array($method,$internalMethods)) {
 
             call_user_func(array($this,'http' . $method));
 
         } else {
 
-            if ($this->broadcastEvent('unknownMethod',array(strtoupper($method)))) {
+            if ($this->broadcastEvent('unknownMethod',array($method))) {
                 // Unsupported method
                 throw new Sabre_DAV_Exception_NotImplemented();
             }
@@ -850,13 +860,31 @@ class Sabre_DAV_Server {
     }
 
     /**
-     * Returns an array with all the supported HTTP methods 
-     * 
+     * Returns an array with all the supported HTTP methods for a specific uri. 
+     *
+     * @param string $uri 
      * @return array 
      */
-    protected function getAllowedMethods() {
+    public function getAllowedMethods($uri) {
 
-        $methods = array('options','get','head','delete','trace','propfind','mkcol','put','proppatch','copy','move','report');
+        $methods = array(
+            'OPTIONS',
+            'GET',
+            'HEAD',
+            'DELETE',
+            'PROPFIND',
+            'MKCOL',
+            'PUT',
+            'PROPPATCH',
+            'COPY',
+            'MOVE',
+            'REPORT'
+        );
+
+        // We're also checking if any of the plugins register any new methods
+        foreach($this->plugins as $plugin) $methods = array_merge($methods,$plugin->getHTTPMethods($uri));
+        array_unique($methods);
+
         return $methods;
 
     }

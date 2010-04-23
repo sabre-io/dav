@@ -24,7 +24,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
         $p = new Sabre_DAV_ServerPluginMock();
         $this->assertEquals(array(),$p->getFeatures());
-        $this->assertEquals(array(),$p->getHTTPMethods());
+        $this->assertEquals(array(),$p->getHTTPMethods(''));
 
     }
 
@@ -42,7 +42,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals(array(
             'DAV'            => '1, 3, extended-mkcol, drinking',
             'MS-Author-Via'  => 'DAV',
-            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, TRACE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE',
+            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, MKCOL, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE',
             'Accept-Ranges'  => 'bytes',
             'Content-Length' =>  '0',
             'X-Sabre-Version' => Sabre_DAV_Version::VERSION,

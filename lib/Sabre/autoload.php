@@ -17,7 +17,7 @@ function Sabre_autoload($className) {
 
     if(strpos($className,'Sabre_')===0) {
 
-        include dirname(__FILE__) . '/' . str_replace('_','/',$className) . '.php';
+        include dirname(__FILE__) . '/' . str_replace('_','/',substr($className,6)) . '.php';
 
     }
 

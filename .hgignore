@@ -1,5 +1,6 @@
 docs/api
 build.properties
+build
 public
 data
 fileserver.php

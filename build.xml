@@ -7,9 +7,69 @@
     <!-- Where to write api documentation -->
     <property name="sabredav.apidocspath" value="docs/api" />
 
-    <target name="build" depends="init,test">
-        <exec command="bin/pearpackage2.php make" checkreturn="true" />
-        <exec command="pear package" checkreturn="true" />
+    <target name="build" depends="init">
+        <mkdir dir="build" /> 
+
+        <echo msg="Building Sabre_HTTP pear package" />
+        <mkdir dir="build/Sabre_HTTP" />
+        <mkdir dir="build/Sabre_HTTP/php" />
+        <mkdir dir="build/Sabre_HTTP/php/Sabre" />
+        <mkdir dir="build/Sabre_HTTP/php/Sabre/HTTP" />
+        <copy todir="build/Sabre_HTTP/php" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/HTTP/**/*.php" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_HTTP/doc" />
+        <copy todir="build/Sabre_HTTP/doc">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+                <include name="examples/basicauth.php" />
+                <include name="examples/digestauth.php" />
+            </fileset>
+        </copy>
+
+        <echo msg="Building Sabre_DAV pear package" />
+        <mkdir dir="build/Sabre_DAV" />
+        <mkdir dir="build/Sabre_DAV/php" />
+        <copy todir="build/Sabre_DAV/php" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/DAV/**/*.php" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_DAV/doc" />
+        <copy todir="build/Sabre_DAV/doc">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+                <include name="examples/fileserver.php" />
+                <include name="examples/simplefsserver.php" />
+                <include name="examples/sql/*.locks.sql" />
+                <include name="examples/sql/*.users.sql" />
+            </fileset>
+        </copy>
+
+        <echo msg="Building Sabre_CalDAV pear package" />
+        <mkdir dir="build/Sabre_CalDAV" />
+        <mkdir dir="build/Sabre_CalDAV/php" />
+        <copy todir="build/Sabre_CalDAV/php" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/CalDAV/**/*.php" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_CalDAV/doc" />
+        <copy todir="build/Sabre_CalDAV/doc">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+                <include name="examples/calendarserver.php" />
+                <include name="examples/sql/*.calendars.sql" />
+            </fileset>
+        </copy>
+
+        <!--<exec command="bin/pearpackage2.php make" checkreturn="true" />-->
+        <!--<exec command="pear package" checkreturn="true" />-->
     </target>
 
     <target name="clean" depends="init">

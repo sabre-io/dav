@@ -7,12 +7,11 @@
     <!-- Where to write api documentation -->
     <property name="sabredav.apidocspath" value="docs/api" />
 
-    <target name="build" depends="init">
+    <target name="build" depends="init, test, clean">
         <mkdir dir="build" /> 
         
         <echo msg="Building Sabre pear package" />
         <mkdir dir="build/Sabre" />
-        <mkdir dir="build/Sabre/Sabre" />
         <copy todir="build/Sabre">
             <fileset dir="lib">
                 <include name="Sabre/autoload.php" />
@@ -29,10 +28,9 @@
         <echo msg="Building Sabre_HTTP pear package" />
         <mkdir dir="build/Sabre_HTTP" />
         <mkdir dir="build/Sabre_HTTP/Sabre" />
-        <mkdir dir="build/Sabre_HTTP/Sabre/HTTP" />
         <copy todir="build/Sabre_HTTP" includeemptydirs="true" >
             <fileset dir="lib">
-                <include name="Sabre/HTTP/**/*.php" />
+                <include name="Sabre/HTTP/**" />
             </fileset>
         </copy>
         <copy todir="build/Sabre_HTTP">
@@ -48,15 +46,14 @@
 
         <echo msg="Building Sabre_DAV pear package" />
         <mkdir dir="build/Sabre_DAV" />
-        <mkdir dir="build/Sabre_DAV" />
+        <mkdir dir="build/Sabre_DAV/Sabre" />
         <copy todir="build/Sabre_DAV" includeemptydirs="true" >
             <fileset dir="lib">
-                <include name="Sabre/DAV/**/*.php" />
+                <include name="Sabre/DAV/**" />
                 <include name="Sabre.includes.php" />
                 <include name="Sabre.autoload.php" />
             </fileset>
         </copy>
-        <mkdir dir="build/Sabre_DAV" />
         <copy todir="build/Sabre_DAV" includeemptydirs="true">
             <fileset dir="." >
                 <include name="LICENSE" />
@@ -72,10 +69,10 @@
 
         <echo msg="Building Sabre_CalDAV pear package" />
         <mkdir dir="build/Sabre_CalDAV" />
-        <mkdir dir="build/Sabre_CalDAV" />
+        <mkdir dir="build/Sabre_CalDAV/Sabre" />
         <copy todir="build/Sabre_CalDAV" includeemptydirs="true" >
             <fileset dir="lib">
-                <include name="Sabre/CalDAV/**/*.php" />
+                <include name="Sabre/CalDAV/**" />
             </fileset>
         </copy>
         <mkdir dir="build/Sabre_CalDAV" />
@@ -99,19 +96,33 @@
 
         <echo>Creating combined SabreDAV build</echo>
         <mkdir dir="build/SabreDAV" />
+        <mkdir dir="build/SabreDAV/lib" />
+        <mkdir dir="build/SabreDAV/lib/Sabre" />
+        <mkdir dir="build/SabreDAV/lib/Sabre/CalDAV" />
+        <mkdir dir="build/SabreDAV/lib/Sabre/DAV" />
+        <mkdir dir="build/SabreDAV/lib/Sabre/DAV/Auth" />
+        <mkdir dir="build/SabreDAV/lib/Sabre/DAV/Locks" />
+        <mkdir dir="build/SabreDAV/lib/Sabre/HTTP" />
+        <mkdir dir="build/SabreDAV/tests" />
+        <mkdir dir="build/SabreDAV/tests/Sabre" />
+        <mkdir dir="build/SabreDAV/tests/Sabre/CalDAV" />
+        <mkdir dir="build/SabreDAV/tests/Sabre/DAV" />
+        <mkdir dir="build/SabreDAV/tests/Sabre/HTTP" />
+        <mkdir dir="build/SabreDAV/tests/Sabre/DAV/Auth" />
+        <mkdir dir="build/SabreDAV/tests/Sabre/DAV/Locks" />
         <copy todir="build/SabreDAV" includeemptydirs="true">
             <fileset dir=".">
                 <include name="lib/**/*.php" />
                 <include name="ChangeLog" />
                 <include name="LICENSE" />
-                <include name="examples/**/*.php" />
+                <include name="examples/**.php" />
                 <include name="examples/**/*.sql" />
                 <include name="bin/naturalselection.py" />
                 <include name="tests/**/*.xml" />
                 <include name="tests/**/*.php" />
-                <include name="tests/temp" />
             </fileset>
         </copy>
+        <mkdir dir="build/SabreDAV/tests/temp" />
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" /> 
 
     </target>
@@ -128,7 +139,7 @@
         <echo>Uploading to Google Code</echo>
         <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
         <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
-        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/Sabre_DAV-${sabredav.version}.zip" checkreturn="true" />
+        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
     </target>
 
     <target name="test">
@@ -171,7 +182,7 @@
 
                 public function main() {
 
-                    include 'lib/Sabre/DAV/Version.php';
+                    include_once 'lib/Sabre/DAV/Version.php';
                     $this->getProject()->setNewProperty('sabredav.version',Sabre_DAV_Version::VERSION);
                     $this->getProject()->setNewProperty('sabredav.stability',Sabre_DAV_Version::STABILITY);
                     $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre_DAV_Version::STABILITY));

@@ -27,6 +27,14 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    function testGetHTTPMethodsNoBackend() {
+
+        $locksPlugin = new Sabre_DAV_Locks_Plugin();
+        $this->server->addPlugin($locksPlugin);
+        $this->assertEquals(array(),$locksPlugin->getHTTPMethods('')); 
+
+    }
+
     function testLockNoBody() {
 
         $serverVars = array(
@@ -137,6 +145,50 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
         $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status);
+
+    }
+
+    /**
+     * @depends testLock
+     */
+    function testLockRefresh() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $lockToken = $this->response->headers['Lock-Token'];
+
+        $this->response = new Sabre_HTTP_ResponseMock();
+        $this->server->httpResponse = $this->response;
+
+        $serverVars = array(
+            'REQUEST_URI' => '/test.txt',
+            'REQUEST_METHOD' => 'LOCK',
+            'HTTP_IF' => '(' . $lockToken . ')',
+        );
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
 
     }
 

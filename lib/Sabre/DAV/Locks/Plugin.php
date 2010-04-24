@@ -74,9 +74,9 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
         switch($method) { 
 
-            case 'LOCK'   : $this->httpLock(); return false; break;
-            case 'UNLOCK' : $this->httpUnlock(); return false; break;
-            default       : return true;
+            case 'LOCK'   : $this->httpLock(); return false; 
+            case 'UNLOCK' : $this->httpUnlock(); return false; 
+
         }
 
     }

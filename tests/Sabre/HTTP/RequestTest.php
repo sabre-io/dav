@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @covers Sabre_HTTP_Request
+ */
 class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
     private $request;
@@ -61,6 +64,29 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('testing',$this->request->getBody(true),'We didn\'t get our testbody back');
         Sabre_HTTP_Request::$defaultInputStream = $previousValue;
+
+    }
+
+    function testGetAbsoluteUri() {
+
+        $s = array(
+            'HTTP_HOST' => 'sabredav.org',
+            'REQUEST_URI' => '/foo'
+        );
+
+        $r = new Sabre_HTTP_Request($s);
+
+        $this->assertEquals('http://sabredav.org/foo', $r->getAbsoluteUri());
+
+        $s = array(
+            'HTTP_HOST'   => 'sabredav.org',
+            'REQUEST_URI' => '/foo',
+            'HTTPS'       => 'on',
+        );
+
+        $r = new Sabre_HTTP_Request($s);
+
+        $this->assertEquals('https://sabredav.org/foo', $r->getAbsoluteUri());
 
     }
 

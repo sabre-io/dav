@@ -1,4 +1,4 @@
-1.2.0alpha4 (2010-04-??)
+1.2.0alpha4 (2010-04-24)
 	* Added: Support for If-Range, If-Match, If-None-Match, If-Modified-Since,
 	  If-Unmodified-Since.
 	* Changed: Brand new build system. Functionality is split up between

@@ -1,13 +1,16 @@
 <phpunit
   colors="true"
   bootstrap="bootstrap.php"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
   >
   <testsuite name="SabreDAV">
     <directory>Sabre/</directory>
   </testsuite>
 
   <filter>
-    <whitelist>
+    <whitelist addUncoveredFilesFromWhitelist="true">
        <directory suffix=".php">../lib/</directory>
        <exclude>
          <file>../lib/Sabre.includes.php</file>

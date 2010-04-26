@@ -14,6 +14,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $dir = new Sabre_DAV_FS_Directory(SABRE_TEMPDIR);
         $tree = new Sabre_DAV_ObjectTree($dir);
         $this->server = new Sabre_DAV_Server($tree);
+        $this->server->debugExceptions = true;
         $this->server->httpResponse = $this->response;
         file_put_contents(SABRE_TEMPDIR . '/test.txt', 'Test contents');
         file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
@@ -211,13 +212,15 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Incorrect status received. Full response body: ' . $this->response->body);
+
         $this->assertEquals(array(
             'Content-Length' => '0',
             ),
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/col2/test.txt'));
 
     }

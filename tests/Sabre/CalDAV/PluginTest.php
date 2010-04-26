@@ -27,6 +27,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
         $objectTree = new Sabre_DAV_ObjectTree($root);
         $this->server = new Sabre_DAV_Server($objectTree);
+        $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');
         $this->plugin = new Sabre_CalDAV_Plugin();
         $this->server->addPlugin($this->plugin);

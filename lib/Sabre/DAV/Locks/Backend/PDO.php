@@ -68,17 +68,6 @@ class Sabre_DAV_Locks_Backend_PDO extends Sabre_DAV_Locks_Backend_Abstract {
         $stmt->execute($params);
         $result = $stmt->fetchAll();
 
-        $b = 'X-LITMUS: ';
-        if (isset($_SERVER['HTTP_X_LITMUS'])) {
-            $b.= $_SERVER['HTTP_X_LITMUS'];
-        } else {
-            $b.='?';
-        }
-        $b.="\n";
-
-        $b.="query: $query\n";
-        $b.="parmas: " . print_r($params,true) . "\n";
-
         $lockList = array();
         foreach($result as $row) {
 
@@ -93,12 +82,6 @@ class Sabre_DAV_Locks_Backend_PDO extends Sabre_DAV_Locks_Backend_Abstract {
             $lockList[] = $lockInfo;
 
         }
-
-
-        $b.="uri: $uri\n";
-        $b.="locks: " . print_r($lockList,true). "\n\n";
-
-        file_put_contents('/tmp/locklog',$b,FILE_APPEND);
 
         return $lockList;
 
@@ -131,17 +114,6 @@ class Sabre_DAV_Locks_Backend_PDO extends Sabre_DAV_Locks_Backend_Abstract {
             $stmt = $this->pdo->prepare('INSERT INTO locks (owner,timeout,scope,depth,uri,created,token) VALUES (?,?,?,?,?,?,?)');
             $stmt->execute(array($lockInfo->owner,$lockInfo->timeout,$lockInfo->scope,$lockInfo->depth,$uri,$lockInfo->created,$lockInfo->token));
         }
-        $b = 'X-LITMUS: ';
-        if (isset($_SERVER['HTTP_X_LITMUS'])) {
-            $b.= $_SERVER['HTTP_X_LITMUS'];
-        } else {
-            $b.='?';
-        }
-        $b.="\n";
-        $b.="uri: $uri\n";
-        $b.="NEW LOCK: " . print_r($lockInfo,true). "\n\n";
-
-        file_put_contents('/tmp/locklog',$b,FILE_APPEND);
 
         return true;
 
@@ -160,18 +132,6 @@ class Sabre_DAV_Locks_Backend_PDO extends Sabre_DAV_Locks_Backend_Abstract {
 
         $stmt = $this->pdo->prepare('DELETE FROM locks WHERE uri = ? AND token = ?');
         $stmt->execute(array($uri,$lockInfo->token));
-
-        $b = 'X-LITMUS: ';
-        if (isset($_SERVER['HTTP_X_LITMUS'])) {
-            $b.= $_SERVER['HTTP_X_LITMUS'];
-        } else {
-            $b.='?';
-        }
-        $b.="\n";
-        $b.="uri: $uri\n";
-        $b.="DELETE LOCK: " . print_r($lockInfo,true). "\n\n";
-
-        file_put_contents('/tmp/locklog',$b,FILE_APPEND);
 
         return $stmt->rowCount()===1;
 

@@ -284,6 +284,9 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             // This must have been a lock refresh
             $lockInfo = $lastLock;
 
+            // The resource could have been locked through another uri. 
+            if ($uri!=$lockInfo->uri) $uri = $lockInfo->uri;
+
         } else {
             
             // There was neither a lock refresh nor a new lock request

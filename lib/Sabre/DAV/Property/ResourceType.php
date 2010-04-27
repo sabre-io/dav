@@ -52,8 +52,12 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
         
         foreach($rt as $resourceType) {
             if (preg_match('/^{([^}]*)}(.*)$/',$resourceType,$propName)) { 
-         
-                $prop->appendChild($prop->ownerDocument->createElementNS($propName[1],'d:' . $propName[2]));
+        
+                if (isset($this->server->xmlNamespaces[$propName[1]])) {
+                    $prop->appendChild($prop->ownerDocument->createElement($this->server->xmlNamespaces[$propName[1]] . ':' . $propName[2]));
+                } else {
+                    $prop->appendChild($prop->ownerDocument->createElementNS($propName[1],'custom:' . $propName[2]));
+                }
             
             }
         }

@@ -38,28 +38,37 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
      */
     public function getUserInfo($realm,$username) {
 
-        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM users WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT username, digesta1, email FROM users WHERE username = ?');
         $stmt->execute(array($username));
         $result = $stmt->fetchAll();
 
         if (!count($result)) return false;
-        return array(
+        $user = array(
             'uri' => 'principals/' . $result[0]['username'],
             'digestHash' => $result[0]['digesta1'],
         );
+        if ($result[0]['email']) $user['{http://sabredav.org/ns}email-address'] = $result[0]['email'];
+        return $user;
 
     }
 
+    /**
+     * Returns a list of all users
+     *
+     * @return array
+     */
     public function getUsers() {
 
-        $result = $this->pdo->query('SELECT username FROM users')->fetchAll();
+        $result = $this->pdo->query('SELECT username, email FROM users')->fetchAll();
         
         $rv = array();
         foreach($result as $user) {
 
-            $rv[] = array(
+            $r = array(
                 'uri' => 'principals/' . $user['username'],
             );
+            if ($user['email']) $r['{http://sabredav.org/ns}email-address'] = $user['email'];
+            $rv[] = $r;
 
         }
 

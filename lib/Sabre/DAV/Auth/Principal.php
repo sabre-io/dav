@@ -96,6 +96,13 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
         foreach($requestedProperties as $propName) switch($propName) {
             
             case '{DAV:}alternate-URI-set' :
+                if (isset($this->principalProperties['{http://sabredav.org/ns}email-address'])) {
+                    $href = 'mailto:' . $this->principalProperties['{http://sabredav.org/ns}email-address'];
+                    $newProperties[$propName] = new Sabre_DAV_Property_Href($href);
+                } else {
+                    $newProperties[$propName] = null;
+                }
+                break;
             case '{DAV:}group-member-set' :
             case '{DAV:}group-membership' :
                 $newProperties[$propName] = null;

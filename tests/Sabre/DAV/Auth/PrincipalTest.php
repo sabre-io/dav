@@ -32,7 +32,8 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
         $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
             '{DAV:}displayname' => 'Mr. Admin',
-            '{http://www.example.org/custom}' => 'Custom',
+            '{http://www.example.org/custom}custom' => 'Custom',
+            '{http://sabredav.org/ns}email-address' => 'admin@example.org',
         ));
 
         $props = $principal->getProperties(array());
@@ -45,23 +46,26 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Mr. Admin',$props['{DAV:}displayname']);
         $this->assertEquals('{DAV:}principal',$props['{DAV:}resourcetype']->getValue());
 
+
     }
 
     public function testGetProperties() {
 
         $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
             '{DAV:}displayname' => 'Mr. Admin',
-            '{http://www.example.org/custom}' => 'Custom',
+            '{http://www.example.org/custom}custom' => 'Custom',
+            '{http://sabredav.org/ns}email-address' => 'admin@example.org',
         ));
 
         $keys = array(
             '{DAV:}resourcetype',
             '{DAV:}displayname',
-            '{http://www.example.org/custom}',
+            '{http://www.example.org/custom}custom',
             '{DAV:}alternate-URI-set',
             '{DAV:}principal-URL',
             '{DAV:}group-member-set',
             '{DAV:}group-membership',
+            '{http://sabredav.org/ns}email-address',
         );
         $props = $principal->getProperties($keys);
 
@@ -70,11 +74,13 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Mr. Admin',$props['{DAV:}displayname']);
         $this->assertEquals('{DAV:}principal',$props['{DAV:}resourcetype']->getValue());
 
-        $this->assertNull($props['{DAV:}alternate-URI-set']);
         $this->assertEquals('principals/admin',$props['{DAV:}principal-URL']->getHref());
         $this->assertNull($props['{DAV:}group-member-set']);
         $this->assertNull($props['{DAV:}group-membership']);
 
+        $this->assertEquals('admin@example.org', $props['{http://sabredav.org/ns}email-address']);
+        $this->assertType('Sabre_DAV_Property_IHref', $props['{DAV:}alternate-URI-set']);
+        $this->assertEquals('mailto:admin@example.org', $props['{DAV:}alternate-URI-set']->getHref());
     }
 
     public function testUpdateProperties() {

@@ -15,10 +15,11 @@ create table users (
 	id integer unsigned not null primary key auto_increment,
 	username varchar(50),
 	digesta1 varchar(32),
+    email varchar(80),
 	unique(username)
 );");
 
-        $pdo->query("INSERT INTO users (username,digesta1) VALUES ('user','hash')");
+        $pdo->query("INSERT INTO users (username,digesta1,email) VALUES ('user','hash','user@example.org')");
 
         return $pdo;
 

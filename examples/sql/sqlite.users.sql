@@ -1,6 +1,8 @@
 CREATE TABLE users (
+	id integer primary key asc, 
 	username TEXT,
 	digesta1 TEXT,
+	email TEXT,
 	UNIQUE(username)
 );
 

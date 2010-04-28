@@ -116,7 +116,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             '{' . self::NS_CALDAV . '}max-instances',
             '{' . self::NS_CALDAV . '}max-attendees-per-instance',
             '{' . self::NS_CALDAV . '}calendar-home-set',
-            '{' . self::NS_CALDAV . '}supported-collation-set'
+            '{' . self::NS_CALDAV . '}supported-collation-set',
+
+            // scheduling extension
+            '{' . self::NS_CALDAV . '}calendar-user-address-set'
 
         );
     }
@@ -211,28 +214,41 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function afterGetProperties($path, &$properties) {
 
-        $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
-      
-        $currentNode = null;
+        // Find out if we are currently looking at a principal resource
+        $currentNode = $this->server->tree->getNodeForPath($path);
+        if ($currentNode instanceof Sabre_DAV_Auth_Principal) {
 
-        // Nasty construct to see if an item exists in an array (it can be null)
-        if (array_key_exists($calHome,$properties[404])) {
-        
-            // TODO: this code is not that great. might be good 
-            // to find a better way to do this.
-            if (!$currentNode) $currentNode = $this->server->tree->getNodeForPath($path);
-            if ($currentNode instanceof Sabre_DAV_Auth_Principal) {
-                $principalId = $currentNode->getName();
+            // calendar-home-set property
+            $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
+            if (array_key_exists($calHome,$properties[404])) {
+                $principalId = $currentNode->getName(); 
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
                 unset($properties[404][$calHome]);
                 $properties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
             }
+
+            // calendar-user-address-set property
+            $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
+            if (array_key_exists($calProp,$properties[404])) {
+
+                // Do we have an email address?
+                $props = $currentNode->getProperties(array('{http://sabredav.org/ns}email-address'));
+                if (isset($props['{http://sabredav.org/ns}email-address'])) {
+                    $email = $props['{http://sabredav.org/ns}email-address'];
+                } else {
+                    // We're going to make up an emailaddress
+                    $email = $currentNode->getName() . '.sabredav@' . $this->server->getHeader('host');
+                }
+                $properties[200][$calProp] = new Sabre_DAV_Property_Href('mailto:' . $email, false);
+                unset($properties[404][$calProp]);
+
+            }
+
+
         }
 
-         
-        if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
-            if (!$currentNode) $currentNode = $this->server->tree->getNodeForPath($path);
-            if ($currentNode instanceof Sabre_CalDAV_Calendar || $currentNode instanceof Sabre_CalDAV_CalendarObject) {
+        if ($currentNode instanceof Sabre_CalDAV_Calendar || $currentNode instanceof Sabre_CalDAV_CalendarObject) {
+            if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
                 $properties[200]['{DAV:}supported-report-set']->addReport(array(
                      '{' . self::NS_CALDAV . '}calendar-multiget',
                      '{' . self::NS_CALDAV . '}calendar-query',

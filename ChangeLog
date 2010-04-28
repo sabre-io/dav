@@ -1,4 +1,4 @@
-1.0.15-stable (2010-05-??)
+1.0.15-stable (2010-05-28)
 	* Added: Issue 31: Hiding exception information by default. Can be turned
 	  on with the Sabre_DAV_Server::$debugExceptions property.
 	* Added: Moved autoload from lib/ to lib/Sabre/autoload.php. This is also

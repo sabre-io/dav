@@ -255,7 +255,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
                 '{DAV:}getlastmodified' => new Sabre_DAV_Property_GetLastModified(filemtime($tempLocation)),
                 '{DAV:}getcontentlength' => filesize($tempLocation),
                 '{DAV:}resourcetype' => new Sabre_DAV_Property_ResourceType(null),
-                '{http://www.rooftopsolutions.nl/NS/sabredav}tempFile' => true, 
+                '{'.Sabre_DAV_Server::NS_SABREDAV.'}tempFile' => true, 
 
             ),
          );

@@ -30,6 +30,8 @@ class Sabre_DAV_Server {
     const PROP_SET = 1;
     const PROP_REMOVE = 2;
 
+    const NS_SABREDAV = 'http://sabredav.org/ns';
+
 
     /**
      * The tree object
@@ -83,7 +85,7 @@ class Sabre_DAV_Server {
      */
     public $xmlNamespaces = array(
         'DAV:' => 'd',
-        'http://www.rooftopsolutions.nl/NS/sabredav' => 's',
+        'http://sabredav.org/ns' => 's',
     );
 
     /**
@@ -179,7 +181,7 @@ class Sabre_DAV_Server {
             $DOM->formatOutput = true;
 
             $error = $DOM->createElementNS('DAV:','d:error');
-            $error->setAttribute('xmlns:s','http://www.rooftopsolutions.nl/NS/sabredav');
+            $error->setAttribute('xmlns:s',self::NS_SABREDAV);
             $DOM->appendChild($error);
 
             $error->appendChild($DOM->createElement('s:exception',get_class($e)));
@@ -189,6 +191,7 @@ class Sabre_DAV_Server {
                 $error->appendChild($DOM->createElement('s:line',$e->getLine()));
                 $error->appendChild($DOM->createElement('s:code',$e->getCode()));
                 $error->appendChild($DOM->createElement('s:stacktrace',$e->getTraceAsString()));
+
             }
             $error->appendChild($DOM->createElement('s:sabredav-version',Sabre_DAV_Version::VERSION));
 

@@ -1,4 +1,4 @@
-1.2.0beta1 (2010-??-??)
+1.2.0beta1 (2010-04-28)
 	* Fixed: redundant namespace declaration in resourcetypes.
 	* Fixed: 2 locking bugs triggered by litmus when no Sabre_DAV_ILockable
 	  interface is used.

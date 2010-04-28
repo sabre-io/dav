@@ -232,7 +232,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
          
         if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
             if (!$currentNode) $currentNode = $this->server->tree->getNodeForPath($path);
-            if ($currentNode instanceof Sabre_CalDAV_ICalendar || $currentNode instanceof Sabre_CalDAV_CalendarObject) {
+            if ($currentNode instanceof Sabre_CalDAV_Calendar || $currentNode instanceof Sabre_CalDAV_CalendarObject) {
                 $properties[200]['{DAV:}supported-report-set']->addReport(array(
                      '{' . self::NS_CALDAV . '}calendar-multiget',
                      '{' . self::NS_CALDAV . '}calendar-query',
@@ -409,7 +409,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // We are converting the calendar object to an XML structure
         // This makes it far easier to parse
-        $xCalendarData = Sabre_CalDAV_XCalICal::toXCal($calendarData);
+        $xCalendarData = Sabre_CalDAV_ICalendarUtil::toXCal($calendarData);
         $xml = simplexml_load_string($xCalendarData);
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:xcal');
 

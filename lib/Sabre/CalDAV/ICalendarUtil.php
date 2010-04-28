@@ -1,30 +1,76 @@
 <?php
 
 /**
- * This script is used to convert ICalendar (rfc2445) objects XCal-Basic
- * (draft-royer-calsch-xcal-03) format. 
- *
- * Properties are converted to lowercase xml elements. Parameters are
- * converted to attributes. BEGIN:VEVENT is converted to <vevent> and
- * END:VEVENT </vevent> as well as other components.
- *
- * It's a very loose parser. If any line does not conform to the spec, it
- * will simply be ignored. It will try to detect if \r\n or \n line endings
- * are used.
+ * This class contains several utilities related to the ICalendar (rfc2445) format
  *
  * @package Sabre
  * @subpackage CalDAV
- * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
- * @see http://tools.ietf.org/html/draft-royer-calsch-xcal-03
  */
-class Sabre_CalDAV_XCalICal {
+class Sabre_CalDAV_ICalendarUtil {
 
     /**
-     * Converts ICalendar data to XML. 
+     * Validates an ICalendar object
+     *
+     * This method makes sure this ICalendar object is properly formatted.
+     * If we can't parse it, we'll throw exceptions.
+     * 
+     * @param string $icalData 
+     * @param array $allowedComponents 
+     * @return bool 
+     */
+    static function validateICalendarObject($icalData, array $allowedComponents) {
+
+        $xcal = simplexml_load_string(self::toXCal($icalData));
+        if (!$xcal) throw new Sabre_CalDAV_Exception_InvalidICalendarObject('Invalid calendarobject format');
+
+        $xcal->registerXPathNameSpace('cal','urn:ietf:params:xml:ns:xcal');
+        
+        // Check if there's only 1 component
+        $components = array('vevent','vtodo','vjournal','vfreebusy');
+        $componentsFound = array();
+
+        foreach($components as $component) {
+            $test = $xcal->xpath('/cal:iCalendar/cal:vcalendar/cal:' . $component);
+            if (is_array($test)) $componentsFound = array_merge($componentsFound, $test);
+        }
+        if (count($componentsFound)>1) {
+            throw new Sabre_CalDAV_Exception_InvalidICalendarObject('Only 1 of VEVENT, VTODO, VJOURNAL or VFREEBUSY may be specified per calendar object');
+        }
+        if (count($componentsFound)<1) {
+            throw new Sabre_CalDAV_Exception_InvalidICalendarObject('One VEVENT, VTODO, VJOURNAL or VFREEBUSY must be specified. 0 found.');
+        }
+        $component = $componentsFound[0];
+        
+        // Check if the component is allowed
+        $name = $component->getName();
+        if (!in_array(strtoupper($name),$allowedComponents)) {
+            throw new Sabre_CalDAV_Exception_InvalidICalendarObject(strtoupper($name) . ' is not allowed in this calendar.');
+        }
+
+        if (count($xcal->xpath('/cal:iCalendar/cal:vcalendar/cal:method'))>0) {
+            throw new Sabre_CalDAV_Exception_InvalidICalendarObject('The METHOD property is not allowed in calendar objects');
+        }
+
+        return true;
+
+    }
+
+    /**
+     * Converts ICalendar data to XML.
+     *
+     * Properties are converted to lowercase xml elements. Parameters are;
+     * converted to attributes. BEGIN:VEVENT is converted to <vevent> and
+     * END:VEVENT </vevent> as well as other components.
+     *
+     * It's a very loose parser. If any line does not conform to the spec, it
+     * will simply be ignored. It will try to detect if \r\n or \n line endings
+     * are used.
      *
      * @todo Currently quoted attributes are not parsed correctly.
+     * @see http://tools.ietf.org/html/draft-royer-calsch-xcal-03
      * @param string $icalData 
      * @return string. 
      */

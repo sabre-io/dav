@@ -129,7 +129,11 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $this->calendar->createFile('hello',fopen('php://memory','r'));
+        $file = fopen('php://memory','r+');
+        fwrite($file,Sabre_CalDAV_TestUtil::getTestCalendarData());
+        rewind($file);
+
+        $this->calendar->createFile('hello',$file);
 
         $file = $this->calendar->getChild('hello');
         $this->assertTrue($file instanceof Sabre_CalDAV_CalendarObject);

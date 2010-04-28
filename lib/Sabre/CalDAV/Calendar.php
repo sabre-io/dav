@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
+class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IProperties {
 
     /**
      * This is an array with calendar information 
@@ -92,9 +92,6 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
             case '{DAV:}resourcetype' : 
                 $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{urn:ietf:params:xml:ns:caldav}calendar','{DAV:}collection')); 
                 break;
-            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' :  
-                $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')); 
-                break;
             case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' : 
                 $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarData(); 
                 break;
@@ -103,6 +100,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
                 break;
             case '{DAV:}owner' :
                 $response[$prop] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF,$this->calendarInfo['principaluri']);
+                break;
             default : 
                 if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];
                 break;
@@ -125,7 +123,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
         if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$name);
         if (!$obj) throw new Sabre_DAV_Exception_FileNotFound('Calendar object not found');
-        return new Sabre_CalDAV_CalendarObject($this->caldavBackend,$obj);
+        return new Sabre_CalDAV_CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
 
     }
 
@@ -140,7 +138,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
         $objs = $this->caldavBackend->getCalendarObjects($this->calendarInfo['id']);
         $children = array();
         foreach($objs as $obj) {
-            $children[] = new Sabre_CalDAV_CalendarObject($this->caldavBackend,$obj);
+            $children[] = new Sabre_CalDAV_CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
         }
         return $children;
 
@@ -174,6 +172,10 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar {
 
         if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
         $calendarData = stream_get_contents($calendarData);
+
+        $supportedComponents = $this->calendarInfo['{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set']->getValue();
+        Sabre_CalDAV_ICalendarUtil::validateICalendarObject($calendarData, $supportedComponents);
+
         $this->caldavBackend->createCalendarObject($this->calendarInfo['id'],$name,$calendarData);
 
     }

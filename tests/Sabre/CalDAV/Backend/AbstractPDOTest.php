@@ -28,7 +28,9 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
     function testCreateCalendarAndFetch() {
     
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT'))
+        ));
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
         $elementCheck = array(
@@ -114,6 +116,21 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             '403' => array('{DAV:}yourmom' => null),
             '424' => array('{DAV:}displayname' => null),
         ), $result);
+
+    }
+
+    /**
+     * @depends testCreateCalendarAndFetch
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testCreateCalendarIncorrectComponentSet() {;
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+
+        //Creating a new calendar
+        $newId = $backend->createCalendar('principals/user2','somerandomid',array(
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => 'blabla',
+        ));
 
     }
 

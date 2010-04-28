@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Sabre/TestUtil.php';
+require_once 'Sabre/CalDAV/TestUtil.php';
 
 class Sabre_CalDAV_Backend_PDOMySQLTest extends Sabre_CalDAV_Backend_AbstractPDOTest {
     

@@ -48,7 +48,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        $newData = 'testString';
+        $newData = Sabre_CalDAV_TestUtil::getTestCalendarData();
 
         $children[0]->put($newData);
         $this->assertEquals($newData, $children[0]->get());

@@ -133,10 +133,6 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             if (isset($properties[$xmlName])) {
 
                 $myValue = $properties[$xmlName];
-                if ($myValue instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet) {
-                    $myValue = implode(',',$myValue->getValue());
-                }
-
                 $values[':' . $dbName] = $properties[$xmlName];
                 $fieldNames[] = $dbName;
             }

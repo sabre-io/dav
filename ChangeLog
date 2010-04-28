@@ -3,6 +3,7 @@
 	* Fixed: 2 locking bugs triggered by litmus when no Sabre_DAV_ILockable
 	  interface is used.
 	* Changed: using http://sabredav.org/ns for all custom xml properties.
+	* Updated: CalendarObject validation.
 
 1.2.0alpha4 (2010-04-24)
 	* Added: Support for If-Range, If-Match, If-None-Match, If-Modified-Since,

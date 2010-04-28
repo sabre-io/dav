@@ -26,14 +26,22 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
     private $objectData;
 
     /**
+     * Array with information about the containing calendar
+     * 
+     * @var array 
+     */
+    private $calendarInfo;
+
+    /**
      * Constructor 
      * 
      * @param Sabre_CalDAV_Backend_Abstract $caldavBackend 
      * @param array $objectData 
      */
-    public function __construct(Sabre_CalDAV_Backend_Abstract $caldavBackend,$objectData) {
+    public function __construct(Sabre_CalDAV_Backend_Abstract $caldavBackend,$calendarInfo,$objectData) {
 
         $this->caldavBackend = $caldavBackend;
+        $this->calendarInfo = $calendarInfo;
         $this->objectData = $objectData;
 
     }
@@ -70,6 +78,9 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
 
         if (is_resource($calendarData))
             $calendarData = stream_get_contents($calendarData);
+
+        $supportedComponents = $this->calendarInfo['{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set']->getValue();
+        Sabre_CalDAV_ICalendarUtil::validateICalendarObject($calendarData, $supportedComponents);
 
         $this->caldavBackend->updateCalendarObject($this->objectData['calendarid'],$this->objectData['uri'],$calendarData);
         $this->objectData['calendardata'] = $calendarData;

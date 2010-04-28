@@ -120,7 +120,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      * 
      * @param string $name
      * @todo needs optimizing
-     * @return Sabre_CalDAV_ICalendar 
+     * @return Sabre_CalDAV_Calendar 
      */
     public function getChild($name) {
 

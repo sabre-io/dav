@@ -6,5 +6,5 @@ CREATE TABLE users (
 	UNIQUE(username)
 );
 
-INSERT INTO users (username,digesta1) VALUES
-('admin',  '87fd274b7b6c01e48d7c2f965da8ddf7');
+INSERT INTO users (username,digesta1,email) VALUES
+('admin',  '87fd274b7b6c01e48d7c2f965da8ddf7','admin@example.org');

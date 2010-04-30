@@ -99,13 +99,43 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      * @param mixed $addressBookId 
      * @param string $cardUri 
      * @param string $cardData 
-     * @return void
+     * @return bool 
      */
     public function createCard($addressBookId, $cardUri, $cardData) {
 
         $stmt = $this->pdo->prepare('INSERT INTO cards (carddata, uri, lastmodified, addressbookid) VALUES (?, ?, ?, ?)');
-        $stmt->execute(array($cardData, $cardUri, time(), $addressBookId));
+        return $stmt->execute(array($cardData, $cardUri, time(), $addressBookId));
 
     }
 
+    /**
+     * Updates a card
+     * 
+     * @param mixed $addressBookId 
+     * @param string $cardUri 
+     * @param string $cardData 
+     * @return bool 
+     */
+    public function updateCard($addressBookId, $cardUri, $cardData) {
+
+        $stmt = $this->pdo->prepare('UPDATE cards SET carddata = ?, lastmodified = ? WHERE uri = ? AND addressbookid =?');
+        $stmt->execute(array($cardData, time(), $cardUri, $addressBookId));
+
+    }
+
+    /**
+     * Deletes a card
+     * 
+     * @param mixed $addressBookId 
+     * @param string $cardUri 
+     * @return bool 
+     */
+    public function deleteCard($addressBookId, $cardUri) {
+
+        $stmt = $this->pdo->prepare('DELETE FROM cards WHERE addressbookid = ? AND uri = ?');
+        $stmt->execute(array($addressBookId, $cardUri));
+
+        return $stmt->rowCount()===1;
+
+    }
 }

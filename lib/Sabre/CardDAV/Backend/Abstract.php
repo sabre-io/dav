@@ -46,8 +46,28 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param mixed $addressBookId 
      * @param string $cardUri 
      * @param string $cardData 
-     * @return void
+     * @return bool 
      */
     public abstract function createCard($addressBookId, $cardUri, $cardData);
+
+    /**
+     * Updates a card
+     * 
+     * @param mixed $addressBookId 
+     * @param string $cardUri 
+     * @param string $cardData 
+     * @return bool 
+     */
+    public abstract function updateCard($addressBookId, $cardUri, $cardData);
+
+
+    /**
+     * Deletes a card
+     * 
+     * @param mixed $addressBookId 
+     * @param string $cardUri 
+     * @return bool 
+     */
+    public abstract function deleteCard($addressBookId, $cardUri);
 
 }

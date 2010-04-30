@@ -154,7 +154,7 @@ class Sabre_CardDAV_UserAddressBooks implements Sabre_DAV_IExtendedCollection {
         $addressbooks = $this->carddavBackend->getAddressbooksForUser($this->userUri);
         $objs = array();
         foreach($addressbooks as $addressbook) {
-            $objs[] = new Sabre_CardDAV_AddressBook($this->authBackend, $this->carddavBackend, $addressbook);
+            $objs[] = new Sabre_CardDAV_UserAddressBook($this->authBackend, $this->carddavBackend, $addressbook);
         }
         return $objs;
 

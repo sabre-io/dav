@@ -3,7 +3,8 @@ CREATE TABLE addressbooks (
     principaluri text, 
     displayname text, 
     uri text,
-    description text
+    description text,
+	ctag integer
 );
 
 CREATE TABLE cards ( 

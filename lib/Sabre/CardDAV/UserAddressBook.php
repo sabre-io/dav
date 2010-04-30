@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AddressBook class
+ * UserAddressBook class
  *
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2009 Rooftop Solutions. All rights reserved.
@@ -10,18 +10,18 @@
  */
 
 /**
- * The AddressBook class represents a CardDAV addressbook
+ * The AddressBook class represents a CardDAV addressbook, owned by a specific user
  *
  * The AddressBook can contain multiple vcards
  */
-class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IProperties {
+class Sabre_CardDAV_UserAddressBook extends Sabre_CardDAV_AddressBook {
 
     /**
      * This is an array with addressbook information 
      * 
      * @var array 
      */
-    private $addressBookId;
+    private $addressBookInfo;
 
     /**
      * CardDAV backend 
@@ -45,10 +45,11 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      * @param array $addressBookInfo 
      * @return void
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,$addressBookId) {
+    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, Sabre_CardDAV_Backend_Abstract $carddavBackend,$addressBookInfo) {
 
         $this->carddavBackend = $carddavBackend;
-        $this->addressBookId = $addressBookId;
+        $this->authBackend = $authBackend;
+        $this->addressBookInfo = $addressBookInfo;
 
 
     }
@@ -60,7 +61,7 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function getName() {
 
-        return $this->addressBookId;
+        return $this->addressBookInfo['uri'];
 
     }
 
@@ -72,7 +73,8 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function updateProperties($mutations) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Updating this addressbook is not supported');
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
+        throw new Sabre_DAV_Exception_Forbidden('Updating adderssbook properties is currently not supported');
 
     }
 
@@ -86,12 +88,26 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
 
         $response = array();
 
+        if (!$this->hasPrivilege()) return array(); 
+
         foreach($requestedProperties as $prop) switch($prop) {
 
             case '{DAV:}resourcetype' : 
                 $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{'.Sabre_CardDAV_Plugin::NS_CARDDAV.'}addressbook','{DAV:}collection')); 
                 break;
-
+            /*
+            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' : 
+                $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarData(); 
+                break;
+            case '{urn:ietf:params:xml:ns:caldav}supported-collation-set' : 
+                $response[$prop] =  new Sabre_CalDAV_Property_SupportedCollationSet(); 
+                break;*/
+            case '{DAV:}owner' :
+                $response[$prop] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF,$this->addressBookInfo['principaluri']);
+                break;
+            default : 
+                if (isset($this->addressBookInfo[$prop])) $response[$prop] = $this->addressBookInfo[$prop];
+                break;
 
         }
         return $response;
@@ -106,9 +122,10 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function getChild($name) {
 
-        $obj = $this->carddavBackend->getCard($this->addressBookId,$name);
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this addressbook');
+        $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'],$name);
         if (!$obj) throw new Sabre_DAV_Exception_FileNotFound('Card not found');
-        return new Sabre_CardDAV_Card($this->carddavBackend,array('id' => $this->addressBookId),$obj);
+        return new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
 
     }
 
@@ -119,10 +136,11 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function getChildren() {
 
-        $objs = $this->carddavBackend->getCards($this->addressBookId);
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this addressbook');
+        $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
         $children = array();
         foreach($objs as $obj) {
-            $children[] = new Sabre_CardDAV_Card($this->carddavBackend,array('id' => $this->addressBookId),$obj);
+            $children[] = new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
         }
         return $children;
 
@@ -138,6 +156,7 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function createDirectory($name) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this addressbook');
         throw new Sabre_DAV_Exception_MethodNotAllowed('Creating collections in addressbooks is not allowed');
 
     }
@@ -153,8 +172,10 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function createFile($name,$vcardData = null) {
 
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this addressbook');
         $vcardData = stream_get_contents($vcardData);
-        $this->carddavBackend->createCard($this->addressBookId,$name,$vcardData);
+
+        $this->carddavBackend->createCard($this->addressBookInfo['id'],$name,$vcardData);
 
     }
 
@@ -166,6 +187,8 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
     public function delete() {
 
         throw new Sabre_DAV_Exception_Forbidden('Not supported yet');
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
+        $this->caldavBackend->deleteCalendar($this->calendarInfo['id']);
 
     }
 
@@ -178,7 +201,8 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
      */
     public function setName($newName) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Renaming this addressbooks is not supported');
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this addressbook');
+        throw new Sabre_DAV_Exception_MethodNotAllowed('Renaming addressbooks is not yet supported');
 
     }
 
@@ -190,6 +214,23 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
     public function getLastModified() {
 
         return null;
+
+    }
+
+    /**
+     * Check if user has access.
+     *
+     * This method does a check if the currently logged in user
+     * has permission to access this calendar. There is only read-write
+     * access, so you're in or you're out.
+     * 
+     * @return bool 
+     */
+    protected function hasPrivilege() {
+
+        if (!$user = $this->authBackend->getCurrentUser()) return false;
+        if ($user['uri']!==$this->addressBookInfo['principaluri']) return false;
+        return true;
 
     }
 

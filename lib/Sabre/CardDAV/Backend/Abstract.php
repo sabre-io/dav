@@ -38,7 +38,17 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardUri 
      * @return void
      */
-    public abstract function getCard($addressBookId, $cardUri);
+    public function getCard($addressBookId, $cardUri) {
+
+        foreach($this->getCards($addressBookId) as $card) {
+
+            if ($card['uri'] === $cardUri) return $card;
+
+        }
+
+        return false;
+
+    }
 
     /**
      * Creates a new card
@@ -48,7 +58,11 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardData 
      * @return bool 
      */
-    public abstract function createCard($addressBookId, $cardUri, $cardData);
+    public function createCard($addressBookId, $cardUri, $cardData) {
+
+        throw new Sabre_DAV_Exception_Forbidden('Creating new cards is not supported');
+
+    }
 
     /**
      * Updates a card
@@ -58,7 +72,11 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardData 
      * @return bool 
      */
-    public abstract function updateCard($addressBookId, $cardUri, $cardData);
+    public function updateCard($addressBookId, $cardUri, $cardData) {
+
+        throw new Sabre_DAV_Exception_Forbidden('Updating cards is not supported');
+
+    }
 
 
     /**
@@ -68,6 +86,10 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardUri 
      * @return bool 
      */
-    public abstract function deleteCard($addressBookId, $cardUri);
+    public function deleteCard($addressBookId, $cardUri) {
+
+        throw new Sabre_DAV_Exception_Forbidden('Deleting cards is not supported');
+
+    }
 
 }

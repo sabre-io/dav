@@ -69,7 +69,11 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_DAV_IProperties
      */
     public function get() {
 
-        return $this->cardData['carddata'];
+        $cardData = $this->cardData['carddata'];
+        $s = fopen('php://temp','r+');
+        fwrite($s, $cardData);
+        rewind($s);
+        return $s;
 
     }
 
@@ -107,7 +111,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_DAV_IProperties
      */
     public function getContentType() {
 
-        return 'text/calendar';
+        return 'text/vcard';
 
     }
 
@@ -154,7 +158,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_DAV_IProperties
      */
     public function getLastModified() {
 
-        return $this->cardData['lastmodified'];
+        return isset($this->cardData['lastmodified'])?$this->cardData['lastmodified']:null;
 
     }
 

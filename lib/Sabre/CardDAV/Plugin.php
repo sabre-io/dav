@@ -41,7 +41,12 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function initialize(Sabre_DAV_Server $server) {
 
+        /* Events */
         $server->subscribeEvent('afterGetProperties', array($this, 'afterGetProperties'));
+        $server->subscribeEvent('report', array($this,'report'));
+
+        /* Namespaces */
+        $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
 
         $this->server = $server;
 
@@ -73,4 +78,66 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * This functions handles REPORT requests specific to CardDAV 
+     * 
+     * @param string $reportName 
+     * @param DOMNode $dom 
+     * @return bool 
+     */
+    public function report($reportName,$dom) {
+
+        switch($reportName) { 
+            case '{'.self::NS_CARDDAV.'}addressbook-multiget' :
+                $this->addressbookMultiGetReport($dom);
+                return false;
+            default :
+                return;
+
+        }
+
+
+    }
+
+    /**
+     * This function handles the addressbook-multiget REPORT.
+     *
+     * This report is used by the client to fetch the content of a series
+     * of urls. Effectively avoiding a lot of redundant requests.
+     * 
+     * @param DOMNode $dom 
+     * @return void
+     */
+    public function addressbookMultiGetReport($dom) {
+
+        $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
+
+        $hasAddressData = false;
+        $addressDataElem = '{' . self::NS_CARDDAV . '}address-data';
+        if (in_array($addressDataElem, $properties)) {
+            $hasAddressData = true;
+            unset($properties[$addressDataElem]);
+        }
+
+        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
+        foreach($hrefElems as $elem) {
+            $uri = $this->server->calculateUri($elem->nodeValue);
+            list($objProps) = $this->server->getPropertiesForPath($uri,$properties);
+
+            // This needs to be fetched using get()
+            if ($hasAddressData) {
+
+                $node = $this->server->tree->getNodeForPath($uri);
+                $objProps[200][$addressDataElem] = stream_get_contents($node->get());
+
+            }
+            $propertyList[]=$objProps;
+
+        }
+
+        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($propertyList));
+
+    }
 }

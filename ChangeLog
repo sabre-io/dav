@@ -1,5 +1,6 @@
 1.2.0beta2 (2010-??-??)
 	* Updated: some example sql to include email address.
+	* Added: 208 and 508 statuscodes from RFC5842
 
 1.2.0beta1 (2010-04-28)
 	* Fixed: redundant namespace declaration in resourcetypes.

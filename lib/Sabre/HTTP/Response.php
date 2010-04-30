@@ -30,6 +30,7 @@ class Sabre_HTTP_Response {
             205 => 'Reset Content',
             206 => 'Partial Content',
             207 => 'Multi-Status', // RFC 4918
+            208 => 'Already Reported', // RFC 5842
             300 => 'Multiple Choices',
             301 => 'Moved Permanently',
             302 => 'Found',
@@ -66,6 +67,7 @@ class Sabre_HTTP_Response {
             504 => 'Gateway Timeout',
             505 => 'HTTP Version not supported',
             507 => 'Unsufficient Storage', // RFC 4918
+            508 => 'Loop Detected', // RFC 5842
        ); 
 
        return 'HTTP/1.1 ' . $code . ' ' . $msg[$code];

@@ -62,6 +62,7 @@
                 <include name="examples/simplefsserver.php" />
                 <include name="examples/sql/*.locks.sql" />
                 <include name="examples/sql/*.users.sql" />
+                <include name="examples/webserver/*.conf" />
             </fileset>
         </copy>
         <exec command="bin/pearpackage3.php make Sabre_DAV" checkreturn="true" />

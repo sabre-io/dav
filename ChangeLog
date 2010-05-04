@@ -1,4 +1,4 @@
-1.2.0beta2 (2010-05-??)
+1.2.0beta2 (2010-05-04)
 	* Fixed: Issue 46: Fatal error for some non-existant nodes.
 	* Updated: some example sql to include email address.
 	* Added: 208 and 508 statuscodes from RFC5842.

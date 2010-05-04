@@ -1,4 +1,4 @@
-1.2.0beta2 (2010-??-??)
+1.2.0beta2 (2010-05-??)
 	* Updated: some example sql to include email address.
 	* Added: 208 and 508 statuscodes from RFC5842.
 	* Added: Apache2 configuration examples

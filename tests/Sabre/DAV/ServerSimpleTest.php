@@ -44,6 +44,20 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testGetDoesntExist2() {
+       
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt/randomblbla',
+            'REQUEST_METHOD' => 'GET',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+        $this->assertEquals('HTTP/1.1 404 Not Found',$this->response->status);
+
+    }
+
     /**
      * This test should have the exact same result as testGet.
      *

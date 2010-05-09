@@ -1174,9 +1174,7 @@ class Sabre_DAV_Server {
 
             if ($allProperties) {
 
-                // Default list of propertyNames.
-                // note that the list might be bigger due to plugins or Node objects
-                // returning a bigger list.
+                // Default list of propertyNames, when all properties were requested.
                 $propertyNames = array(
                     '{DAV:}getlastmodified',
                     '{DAV:}getcontentlength',
@@ -1186,6 +1184,14 @@ class Sabre_DAV_Server {
                     '{DAV:}getetag',
                     '{DAV:}getcontenttype',
                 );
+
+                // We need to make sure this includes any propertyname already returned from
+                // $node->getProperties();
+                $propertyNames = array_merge($propertyNames, array_keys($newProperties[200]));
+
+                // Making sure there's no double entries
+                $propertyNames = array_unique($propertyNames);
+
             }
 
             // If the resourceType was not part of the list, we manually add it 

@@ -1681,20 +1681,15 @@ class Sabre_DAV_Server {
             
             $innerProperties = Sabre_DAV_XMLUtil::parseProperties($child, $this->propertyMap);
 
-            // There should be exactly one
-            if (count($innerProperties)!==1) 
-                throw new Sabre_DAV_Exception_BadRequest('Only one {DAV:}prop may appear in any ' . $operation);
+            foreach($innerProperties as $propertyName=>$propertyValue) {
 
-            reset($innerProperties);
+                if ($operation==='{DAV:}remove') {
+                    $propertyValue = null;
+                }
 
-            $propertyName = key($innerProperties);
-            $propertyValue = current($innerProperties);
+                $newProperties[$propertyName] = $propertyValue;
 
-            if ($operation==='{DAV:}remove') {
-                $propertyValue = null;
             }
-
-            $newProperties[$propertyName] = $propertyValue;
 
         }
 

@@ -2,6 +2,8 @@
 	* Fixed: Custom properties were not propertly sent back for allprops
 	  requests.
 	* Fixed: Issue 49, incorrect parsing of PROPPATCH, affecting Office 2007.
+	* Changed: Removed CalDAV items from includes.php, and added a few missing
+	  ones.
 
 1.2.0beta2 (2010-05-04)
 	* Fixed: Issue 46: Fatal error for some non-existant nodes.

@@ -1,4 +1,4 @@
-1.2.0beta3 (2010-??-??)
+1.2.0beta3 (2010-05-14)
 	* Fixed: Custom properties were not propertly sent back for allprops
 	  requests.
 	* Fixed: Issue 49, incorrect parsing of PROPPATCH, affecting Office 2007.

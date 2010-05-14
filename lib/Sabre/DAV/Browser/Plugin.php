@@ -170,7 +170,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         // This is the current directory, we can skip it
         if (rtrim($file['href'],'/')==$path) continue;
 
-        $name = $this->escapeHTML(basename($file['href']));
+        list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
+        $name = $this->escapeHTML($name);
 
         $type = null;
 

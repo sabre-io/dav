@@ -54,6 +54,9 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             // If this part of the path is just a dot, it actually means we can skip it
             if ($pathPart=='.' || $pathPart=='') continue;
 
+            if (!($currentNode instanceof Sabre_DAV_ICollection))
+                throw new Sabre_DAV_Exception_FileNotFound('Could not find node at path: ' . $path);
+
             $currentNode = $currentNode->getChild($pathPart); 
 
         }

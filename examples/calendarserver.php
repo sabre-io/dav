@@ -4,7 +4,7 @@
 
 CalendarServer example
 
-This server features CalDAV and ACL support
+This server features CalDAV support
 
 */
 

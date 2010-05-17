@@ -35,7 +35,6 @@ $carddavBackend = new Sabre_CardDAV_Backend_PDO($pdo);
 
 // Setting up the directory tree // 
 $nodes = array(
-    new Sabre_DAV_SimpleDirectory('bla'),
     new Sabre_DAV_Auth_PrincipalCollection($authBackend),
 //    new Sabre_CalDAV_CalendarRootNode($authBackend, $caldavBackend),
     new Sabre_CardDAV_AddressbookRoot($authBackend, $carddavBackend),

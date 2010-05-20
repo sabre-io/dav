@@ -18,14 +18,14 @@ class Sabre_CalDAV_CalendarRootNode extends Sabre_DAV_Directory {
      * 
      * @var Sabre_DAV_Auth_Backend_Abstract 
      */
-    private $authBackend;
+    protected $authBackend;
 
     /**
      * CalDAV backend 
      * 
      * @var Sabre_CalDAV_Backend_Abstract 
      */
-    private $caldavBackend;
+    protected $caldavBackend;
 
     /**
      * Constructor 

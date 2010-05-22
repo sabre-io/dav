@@ -17,7 +17,7 @@
  */
 
 $libDir = realpath(__DIR__ . '/../lib');
-$outputDir = realpath(__DIR__ . '/../doc');
+$outputDir = __DIR__ . '/../doc';
 
 if (!is_dir($outputDir)) mkdir($outputDir);
 

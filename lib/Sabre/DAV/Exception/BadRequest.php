@@ -1,6 +1,9 @@
 <?php
 
 /**
+ * BadRequest
+ *
+ * The BadRequest is thrown when the user submitted an invalid HTTP request
  * BadRequest 
  * 
  * @package Sabre
@@ -9,16 +12,14 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
-
-/**
- * BadRequest
- *
- * The BadRequest is thrown when the user submitted an invalid HTTP request
- */
 class Sabre_DAV_Exception_BadRequest extends Sabre_DAV_Exception {
 
-    function getHTTPCode() {
+    /**
+     * Returns the HTTP statuscode for this exception 
+     *
+     * @return int
+     */
+    public function getHTTPCode() {
 
         return 400; 
 

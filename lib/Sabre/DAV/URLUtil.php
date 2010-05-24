@@ -1,15 +1,6 @@
 <?php
 
 /**
- * URL utilities 
- * 
- * @package Sabre
- * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
- */
-
-/**
  * URL utility class
  *
  * This class provides methods to deal with encoding and decoding url (percent encoded) strings.
@@ -20,6 +11,12 @@
  * Specifically, it was found that GVFS (gnome's webdav client) does not like encoding of ( and
  * ). Since these are reserved, but don't have a reserved meaning in url, these characters are
  * kept as-is.
+ * 
+ * @package Sabre
+ * @subpackage DAV
+ * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_URLUtil {
 

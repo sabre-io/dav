@@ -1,7 +1,11 @@
 <?php
 
 /**
- * SupportedCalendarComponentSet
+ * Supported component set property
+ *
+ * This property is a representation of the supported-calendar_component-set 
+ * property in the CalDAV namespace. It simply requires an array of components,
+ * such as VEVENT, VTODO
  *
  * @package Sabre
  * @subpackage CalDAV
@@ -9,18 +13,10 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
-/**
- * Supported component set property
- *
- * This property is a representation of the supported-calendar_component-set 
- * property in the CalDAV namespace. It simply requires an array of components,
- * such as VEVENT, VTODO
- */
 class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Property {
 
     /**
-     * components 
+     * List of supported components, such as "VEVENT, VTODO" 
      * 
      * @var array 
      */

@@ -1,7 +1,10 @@
 <?php
 
 /**
- * InvalidICalendarObject 
+ * InvalidICalendarObject
+ *
+ * This exception is thrown when an attempt is made to create or update
+ * an invalid ICalendar object
  * 
  * @package Sabre
  * @subpackage CalDAV
@@ -9,13 +12,6 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
-/**
- * InvalidICalendarObject
- *
- * This exception is thrown when an attempt is made to create or update
- * an invalid ICalendar object
- */ 
 class Sabre_CalDAV_Exception_InvalidICalendarObject extends Sabre_DAV_Exception_PreconditionFailed {
 
 

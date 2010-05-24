@@ -1,6 +1,7 @@
-1.2.0beta4 (2010-??-??)
+1.2.0 (2010-05-24)
 	* Fixed: Browser plugin now displays international characters.
-	* Changed: More properties in CalDAV classes are now protected.
+	* Changed: More properties in CalDAV classes are now protected instead of
+	  private.
 
 1.2.0beta3 (2010-05-14)
 	* Fixed: Custom properties were not propertly sent back for allprops

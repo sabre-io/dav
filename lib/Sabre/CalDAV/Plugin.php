@@ -237,7 +237,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     $email = $props['{http://sabredav.org/ns}email-address'];
                 } else {
                     // We're going to make up an emailaddress
-                    $email = $currentNode->getName() . '.sabredav@' . $this->server->getHeader('host');
+                    $email = $currentNode->getName() . '.sabredav@' . $this->server->httpRequest->getHeader('host');
                 }
                 $properties[200][$calProp] = new Sabre_DAV_Property_Href('mailto:' . $email, false);
                 unset($properties[404][$calProp]);

@@ -17,6 +17,9 @@
  *   * .*.swp (vim temporary files)
  *   * .dat.* (smultron temporary files)
  *
+ * Additional patterns can be added, by adding on to the
+ * temporaryFilePatterns property.
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
@@ -25,6 +28,21 @@
  */
 class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
 
+    /**
+     * This is the list of patterns we intercept.
+     * If new patterns are added, they must be valid patterns for preg_match.
+     * 
+     * @var array
+     */
+    public $temporaryFilePatterns = array(
+        '/^\._(.*)$/',     // OS/X resource forks
+        '/^.DS_Store$/',   // OS/X custom folder settings
+        '/^desktop.ini$/', // Windows custom folder settings
+        '/^Thumbs.db$/',   // Windows thumbnail cache
+        '/^.(.*).swp$/',   // ViM temporary files
+        '/^\.dat(.*)$/',   // Smultron seems to create these
+        '/^~lock.(.*)#$/', // Windows 7 lockfiles
+    );
     
     /**
      * This is the directory where this plugin
@@ -140,16 +158,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
         // We're only interested in the basename.
         list(, $tempPath) = Sabre_DAV_URLUtil::splitPath($path);
 
-        $tempFiles = array(
-            '/^\._(.*)$/',      // OS/X resource forks
-            '/^.DS_Store$/',   // OS/X custom folder settings
-            '/^desktop.ini$/', // Windows custom folder settings
-            '/^Thumbs.db$/',   // Windows thumbnail cache
-            '/^.(.*).swp$/',   // ViM temporary files
-            '/^\.dat(.*)$/',   // Smultron seems to create these
-        );
-
-        foreach($tempFiles as $tempFile) {
+        foreach($this->temporaryFilePatterns as $tempFile) {
 
             if (preg_match($tempFile,$tempPath)) {
                 return $this->dataDir . '/sabredav_' . md5($path) . '.tempfile';

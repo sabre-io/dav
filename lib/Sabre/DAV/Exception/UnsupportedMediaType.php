@@ -1,7 +1,10 @@
 <?php
 
 /**
- * UnsupportedMediaType
+ * UnSupportedMediaType
+ *
+ * The 415 Unsupported Media Type status code is generally sent back when the client 
+ * tried to call an HTTP method, with a body the server didn't understand
  *
  * @package Sabre
  * @subpackage DAV
@@ -9,16 +12,14 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
-/**
- * UnSupportedMediaType
- *
- * The 415 Unsupported Media Type status code is generally sent back when the client 
- * tried to call an HTTP method, with a body the server didn't understand
- */
 class Sabre_DAV_Exception_UnsupportedMediaType extends Sabre_DAV_Exception { 
 
-    function getHTTPCode() {
+    /**
+     * returns the http statuscode for this exception 
+     *
+     * @return int
+     */
+    public function getHTTPCode() {
 
         return 415;
 

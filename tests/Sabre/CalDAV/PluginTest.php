@@ -338,17 +338,29 @@ END:VCALENDAR';
 
     function testPrincipalProperties() {
 
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_HOST' => 'sabredav.org',
+        ));
+        $this->server->httpRequest = $httpRequest;
+
         $props = $this->server->getPropertiesForPath('/principals/user1',array(
             '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
+            '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
         ));
 
         $this->assertArrayHasKey(0,$props);
         $this->assertArrayHasKey(200,$props[0]);
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set',$props[0][200]);
+
        
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
         $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
         $this->assertEquals('calendars/user1/',$prop->getHref());
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
+        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
+        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
+        $this->assertEquals('mailto:user1.sabredav@sabredav.org',$prop->getHref());
 
     }
 

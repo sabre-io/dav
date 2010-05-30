@@ -3,6 +3,8 @@
 /**
  * PermissionDenied
  *
+ * This class is kept around for backwards compatibility. Please switch to
+ * Sabre_DAV_Exception_Forbidden
  * 
  * @package Sabre
  * @subpackage DAV
@@ -10,14 +12,6 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  * @deprecated Please use Sabre_DAV_Exception_Forbidden
- */
-
-
-/**
- * PermissionDenied
- *
- * This class is kept around for backwards compatibility. Please switch to
- * Sabre_DAV_Exception_Forbidden
  */
 class Sabre_DAV_Exception_PermissionDenied extends Sabre_DAV_Exception_Forbidden { 
     

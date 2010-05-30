@@ -75,7 +75,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0alpha4',
+            'min'  => '1.2.0',
         );
 
         break;
@@ -116,13 +116,13 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0alpha4',
+            'min'  => '1.2.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0alpha4',
+            'min'  => '1.2.0',
         );
         break;
 

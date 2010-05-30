@@ -16,15 +16,22 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      * 
      * @var Sabre_DAV_Auth_Backend_Abstract 
      */
-    private $authBackend;
+    protected $authBackend;
 
     /**
      * Array with user information 
      * 
      * @var array 
      */
-    private $userUri;
+    protected $userUri;
 
+    /**
+     * CalDAV backend
+     * 
+     * @var Sabre_CalDAV_Backend_Abstract
+     */
+    protected $caldavBackend;
+    
     /**
      * Constructor 
      * 

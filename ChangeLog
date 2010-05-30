@@ -1,5 +1,13 @@
-1.2.0beta4 (2010-??-??)
+1.2.1 (2010-??-??)
+	* Fixed: Issue 50, patch by Mattijs Hoitink.
+	* Fixed: Issue 51, Adding windows 7 lockfiles to TemporaryFileFilter.
+	* Fixed: Issue 38, Allowing custom filters to be added to
+	  TemporaryFileFilter.
+
+1.2.0 (2010-05-24)
 	* Fixed: Browser plugin now displays international characters.
+	* Changed: More properties in CalDAV classes are now protected instead of
+	  private.
 
 1.2.0beta3 (2010-05-14)
 	* Fixed: Custom properties were not propertly sent back for allprops

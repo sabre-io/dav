@@ -36,7 +36,8 @@ class Sabre_DAV_Exception extends Exception {
 
     /**
      * This method allows the exception to include additonal information into the WebDAV error response 
-     * 
+     *
+     * @param Sabre_DAV_Server $server
      * @param DOMElement $errorNode 
      * @return void
      */

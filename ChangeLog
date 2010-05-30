@@ -3,6 +3,8 @@
 	* Fixed: Issue 51, Adding windows 7 lockfiles to TemporaryFileFilter.
 	* Fixed: Issue 38, Allowing custom filters to be added to
 	  TemporaryFileFilter.
+	* Added: Apache Authentication backend, in case authentication through
+	  .htaccess is desired.
 
 1.2.0 (2010-05-24)
 	* Fixed: Browser plugin now displays international characters.

@@ -83,6 +83,26 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('mailto:admin@example.org', $props['{DAV:}alternate-URI-set']->getHref());
     }
 
+    /**
+     * @depends testGetProperties
+     */
+    public function testGetPropertiesNoEmail() {
+
+        $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
+            '{DAV:}displayname' => 'Mr. Admin',
+            '{http://www.example.org/custom}custom' => 'Custom',
+        ));
+
+        $keys = array(
+            '{DAV:}alternate-URI-set',
+        );
+        $props = $principal->getProperties($keys);
+
+        foreach($keys as $key) $this->assertArrayHasKey($key,$props);
+
+        $this->assertType('null', $props['{DAV:}alternate-URI-set']);
+    }
+
     public function testUpdateProperties() {
         
         $principal = new Sabre_DAV_Auth_Principal('principals/admin');

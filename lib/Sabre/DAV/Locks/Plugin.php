@@ -561,6 +561,8 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             // Conditions were met, we'll also need to check if all the locks are gone
             if (count($locks)) {
 
+                reset($locks);
+
                 // There's still locks, we fail
                 $lastLock = current($locks);
                 return false;

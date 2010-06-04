@@ -27,14 +27,11 @@ if (!isset($baseUri)) die('Please setup \$baseUri first!');
 // Files we need
 require_once 'Sabre/autoload.php';
 
-// Create the parent node
-$publicDirObj = new Sabre_DAV_FS_Directory($publicDir);
+// Create the root node
+$root = new Sabre_DAV_FS_Directory($publicDir);
 
-// Now we create an ObjectTree, which dispatches all requests to your newly created file system
-$objectTree = new Sabre_DAV_ObjectTree($publicDirObj);
-
-// The object tree needs in turn to be passed to the server class
-$server = new Sabre_DAV_Server($objectTree);
+// The rootnode needs in turn to be passed to the server class
+$server = new Sabre_DAV_Server($root);
 $server->setBaseUri($baseUri);
 
 // Support for LOCK and UNLOCK 

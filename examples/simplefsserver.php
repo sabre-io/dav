@@ -115,13 +115,10 @@ class MyFile extends Sabre_DAV_File {
 }
 
 // Make sure there is a directory in your current directory named 'public'. We will be exposing that directory to WebDAV
-$rootDir = new MyDirectory($publicDir);
+$rootNode = new MyDirectory($publicDir);
 
-// Now we create an ObjectTree, which dispatches all requests to your newly created file system
-$objectTree = new Sabre_DAV_ObjectTree($rootDir);
-
-// The object tree needs in turn to be passed to the server class
-$server = new Sabre_DAV_Server($objectTree);
+// The rootNode needs to be passed to the server object.
+$server = new Sabre_DAV_Server($rootNode);
 
 $server->setBaseUri($baseUri);
 

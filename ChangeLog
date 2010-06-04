@@ -5,6 +5,7 @@
 	  TemporaryFileFilter.
 	* Added: Apache Authentication backend, in case authentication through
 	  .htaccess is desired.
+	* Updated: Small improvements to example files.
 
 1.2.0 (2010-05-24)
 	* Fixed: Browser plugin now displays international characters.

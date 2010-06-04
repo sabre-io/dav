@@ -3,6 +3,8 @@
 	* Fixed: Issue 51, Adding windows 7 lockfiles to TemporaryFileFilter.
 	* Fixed: Issue 38, Allowing custom filters to be added to
 	  TemporaryFileFilter.
+	* Fixed: Issue ??, ETags in the If: header were always failing. This
+	  behaviour is now corrected.
 	* Added: Apache Authentication backend, in case authentication through
 	  .htaccess is desired.
 	* Updated: Small improvements to example files.

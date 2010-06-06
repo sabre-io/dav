@@ -1,4 +1,4 @@
-1.2.1 (2010-??-??)
+1.2.1 (2010-06-07)
 	* Fixed: Issue 50, patch by Mattijs Hoitink.
 	* Fixed: Issue 51, Adding windows 7 lockfiles to TemporaryFileFilter.
 	* Fixed: Issue 38, Allowing custom filters to be added to

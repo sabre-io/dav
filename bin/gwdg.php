@@ -197,7 +197,7 @@ function createDoc($className, $extendedBy) {
     if (count($methods)>0) {
         foreach($methods as $rMethod) {
 
-            createMethodDoc($rMethod);
+            createMethodDoc($rMethod, $rClass);
 
         }
     } else {
@@ -208,7 +208,7 @@ function createDoc($className, $extendedBy) {
 
 }
 
-function createMethodDoc($rMethod) {
+function createMethodDoc($rMethod, $rClass) {
 
     echo "===`" . $rMethod->getName() . "`===\n";
     echo "\n";
@@ -260,6 +260,11 @@ function createMethodDoc($rMethod) {
     }
     if ($rMethod->isAbstract()) {
         echo "  * This is an abstract method\n";
+        $hasProp = true;
+    }
+
+    if ($rMethod->class != $rClass->name) {
+        echo " * Defined in [" . $rMethod->class . "]\n";
         $hasProp = true;
     }
 

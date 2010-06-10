@@ -352,7 +352,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $uris = array(
             'http://www.example.org/root/somepath',
             '/root/somepath',
-            '/root/somepath/'
+            '/root/somepath/',
         );
 
         $this->server->setBaseUri('/root/');
@@ -370,6 +370,8 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             $this->assertEquals('somepath',$this->server->calculateUri($uri));
 
         }
+
+        $this->assertEquals('', $this->server->calculateUri('/root'));
 
     }
 

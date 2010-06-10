@@ -278,7 +278,6 @@ class Sabre_DAV_Server {
 
         // The fallback is that we're just going to assume the server root. 
         return '/';
-        
 
     }
 
@@ -974,6 +973,12 @@ class Sabre_DAV_Server {
         if (strpos($uri,$this->baseUri)===0) {
 
             return trim(Sabre_DAV_URLUtil::decodePath(substr($uri,strlen($this->baseUri))),'/');
+
+        // A special case, if the baseUri was accessed without a trailing 
+        // slash, we'll accept it as well. 
+        } elseif ($uri.'/' === $this->baseUri) { 
+
+            return '';
 
         } else {
 

@@ -131,6 +131,17 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testLoadDOMDocument
+     */
+    function testLoadDOMDOcumentUTF16() {
+
+        $xml='<?xml version="1.0" encoding="UTF-16"?><root xmlns="DAV:">blabla</root>';
+        $xml = iconv('utf-8','utf-16',$xml);
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+
+    }
+
     function testParseProperties() {
 
         $xml='<?xml version="1.0"?>

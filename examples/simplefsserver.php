@@ -22,7 +22,6 @@ lib/Sabre/DAV/FS/File.php
 // settings
 date_default_timezone_set('Canada/Eastern');
 $publicDir = 'public';
-$baseUri = '/';
 
 // Files we need
 require_once 'Sabre/autoload.php';
@@ -119,8 +118,6 @@ $rootNode = new MyDirectory($publicDir);
 
 // The rootNode needs to be passed to the server object.
 $server = new Sabre_DAV_Server($rootNode);
-
-$server->setBaseUri($baseUri);
 
 // And off we go!
 $server->exec();

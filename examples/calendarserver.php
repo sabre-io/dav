@@ -11,14 +11,9 @@ This server features CalDAV and ACL support
 // settings
 date_default_timezone_set('Canada/Eastern');
 
-// Make sure this setting is turned on and reflect the root url for your WebDAV server.
-// This can be for example the root / or a complete path to your server scripit
-// If this is not setup, we will guess.
+// If you want to run the SabreDAV server in a custom location (using mod_rewrite for instance)
+// You can override the baseUri here.
 // $baseUri = '/';
-if (!isset($baseUri)) {
-    if (!isset($_SERVER['PATH_INFO'])) throw new Exception('Please setup baseUri!');
-    $baseUri = substr($_SERVER['REQUEST_URI'],0,strrpos($_SERVER['REQUEST_URI'],$_SERVER['PATH_INFO'])) . '/';
-}
 
 /* Database */
 $pdo = new PDO('sqlite:data/db.sqlite');
@@ -35,7 +30,9 @@ require_once 'lib/Sabre/autoload.php';
 
 // The object tree needs in turn to be passed to the server class
 $server = new Sabre_CalDAV_Server($pdo);
-$server->setBaseUri($baseUri);
+
+if (isset($baseUri))
+    $server->setBaseUri($baseUri);
 
 // Support for html frontend
 $browser = new Sabre_DAV_Browser_Plugin();

@@ -1,3 +1,6 @@
+1.2.2 (2010-??-??)
+	* Updated: SabreDAV now attempts to guess the BaseURI if it's not set.
+
 1.2.1 (2010-06-07)
 	* Fixed: Issue 50, patch by Mattijs Hoitink.
 	* Fixed: Issue 51, Adding windows 7 lockfiles to TemporaryFileFilter.

@@ -1,5 +1,6 @@
 1.2.2 (2010-??-??)
 	* Updated: SabreDAV now attempts to guess the BaseURI if it's not set.
+	* Updated: Better compatibility with BitKinex
 
 1.2.1 (2010-06-07)
 	* Fixed: Issue 50, patch by Mattijs Hoitink.

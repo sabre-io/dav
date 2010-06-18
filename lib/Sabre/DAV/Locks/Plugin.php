@@ -516,7 +516,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
                         $uri = $conditionUri?$conditionUri:$this->server->getRequestUri(); 
                         $node = $this->server->tree->getNodeForPath($uri);
-                        $etagValid = $node->getETag()==$conditionToken[2]; 
+                        $etagValid = $node->getETag()==$conditionToken[2];
 
                     }
 
@@ -548,9 +548,11 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
                         }
 
-                        if ($etagValid && $lockValid) continue 2;
-
                     }
+
+                    // If, after checking both etags and locks they are stil valid,
+                    // we can continue with the next condition.
+                    if ($etagValid && $lockValid) continue 2;
                }
                // No conditions matched, so we fail
                throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match');
@@ -558,6 +560,8 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             // Conditions were met, we'll also need to check if all the locks are gone
             if (count($locks)) {
+
+                reset($locks);
 
                 // There's still locks, we fail
                 $lastLock = current($locks);
@@ -592,7 +596,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
         $matches = array();
 
-        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im'; // (?:\s?)(?:\[(?P<etag>[^\]]*)\])';
+        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im'; 
         preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
 
         $conditions = array();

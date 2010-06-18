@@ -1,10 +1,17 @@
-1.2.1 (2010-??-??)
+1.2.2 (2010-??-??)
+	* Updated: SabreDAV now attempts to guess the BaseURI if it's not set.
+	* Updated: Better compatibility with BitKinex
+
+1.2.1 (2010-06-07)
 	* Fixed: Issue 50, patch by Mattijs Hoitink.
 	* Fixed: Issue 51, Adding windows 7 lockfiles to TemporaryFileFilter.
 	* Fixed: Issue 38, Allowing custom filters to be added to
 	  TemporaryFileFilter.
+	* Fixed: Issue 53, ETags in the If: header were always failing. This
+	  behaviour is now corrected.
 	* Added: Apache Authentication backend, in case authentication through
 	  .htaccess is desired.
+	* Updated: Small improvements to example files.
 
 1.2.0 (2010-05-24)
 	* Fixed: Browser plugin now displays international characters.

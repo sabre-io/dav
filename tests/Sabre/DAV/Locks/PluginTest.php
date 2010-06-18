@@ -408,6 +408,46 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    function testPutWithIncorrectETag() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'PUT',
+            'HTTP_IF' => '([etag1])',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('newbody');
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+
+    }
+
+    /**
+     * @depends testPutWithIncorrectETag
+     */
+    function testPutWithCorrectETag() {
+
+        // We need an etag-enabled file node.
+        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_FSExt_Directory(SABRE_TEMPDIR));
+        $this->server->tree = $tree;
+
+        $etag = md5(file_get_contents(SABRE_TEMPDIR . '/test.txt'));
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'PUT',
+            'HTTP_IF' => '(['.$etag.'])',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('newbody');
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+
+    }
+
     function testGetTimeoutHeader() {
 
         $request = new Sabre_HTTP_Request(array(
@@ -455,4 +495,6 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->locksPlugin->getTimeoutHeader();
 
     }
+    
+
 }

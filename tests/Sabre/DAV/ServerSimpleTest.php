@@ -352,7 +352,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $uris = array(
             'http://www.example.org/root/somepath',
             '/root/somepath',
-            '/root/somepath/'
+            '/root/somepath/',
         );
 
         $this->server->setBaseUri('/root/');
@@ -370,6 +370,8 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             $this->assertEquals('somepath',$this->server->calculateUri($uri));
 
         }
+
+        $this->assertEquals('', $this->server->calculateUri('/root'));
 
     }
 
@@ -427,6 +429,68 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             // This was expected
 
         }
+
+    }
+    
+    function testGuessBaseUri() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root',
+            'PATH_INFO'   => '/root',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
+
+    }
+
+    function testGuessBaseUri2() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root/',
+            'PATH_INFO'   => '/root/',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
+
+    }
+
+    function testGuessBaseUriNoPathInfo() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/', $server->guessBaseUri());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testGuessBaseUriIncorrectPathInfo() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root',
+            'PATH_INFO'   => '/incorrect',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $server->guessBaseUri();
 
     }
 

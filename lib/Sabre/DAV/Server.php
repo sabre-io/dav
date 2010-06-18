@@ -29,8 +29,10 @@ class Sabre_DAV_Server {
     const PROP_SET = 1;
     const PROP_REMOVE = 2;
 
+    /**
+     * XML namespace for all SabreDAV related elements
+     */
     const NS_SABREDAV = 'http://sabredav.org/ns';
-
 
     /**
      * The tree object
@@ -161,6 +163,8 @@ class Sabre_DAV_Server {
         $this->httpResponse = new Sabre_HTTP_Response();
         $this->httpRequest = new Sabre_HTTP_Request();
 
+        $this->setBaseUri($this->guessBaseUri());
+
     }
 
     /**
@@ -240,6 +244,40 @@ class Sabre_DAV_Server {
     public function getBaseUri() {
 
         return $this->baseUri;
+
+    }
+
+    /**
+     * This method attempts to detect the base uri.
+     * Only the PATH_INFO variable is considered. 
+     * 
+     * If this variable is not set, the root (/) is assumed. 
+     *
+     * @return void
+     */
+    public function guessBaseUri() {
+
+        $pathInfo = $this->httpRequest->getRawServerValue('PATH_INFO');
+        $uri = $this->httpRequest->getRawServerValue('REQUEST_URI');
+
+        // If PATH_INFO is not found, we just return /
+        if (!is_null($pathInfo)) {
+
+            // PATH_INFO is only set for urls, such as: /example.php/path
+            // in that case PATH_INFO contains '/path'.
+
+            // A simple sanity check:
+            if(substr($uri,strlen($uri)-strlen($pathInfo))===$pathInfo) {
+                $baseUri = substr($uri,0,strlen($uri)-strlen($pathInfo));
+                return rtrim($baseUri,'/') . '/';
+            }
+
+            throw new Sabre_DAV_Exception('The REQUEST_URI did not end with the contents of PATH_INFO. This server might be misconfigured.'); 
+
+        }
+
+        // The fallback is that we're just going to assume the server root. 
+        return '/';
 
     }
 
@@ -935,6 +973,12 @@ class Sabre_DAV_Server {
         if (strpos($uri,$this->baseUri)===0) {
 
             return trim(Sabre_DAV_URLUtil::decodePath(substr($uri,strlen($this->baseUri))),'/');
+
+        // A special case, if the baseUri was accessed without a trailing 
+        // slash, we'll accept it as well. 
+        } elseif ($uri.'/' === $this->baseUri) { 
+
+            return '';
 
         } else {
 

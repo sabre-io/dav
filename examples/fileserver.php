@@ -18,24 +18,22 @@ date_default_timezone_set('Canada/Eastern');
 $publicDir = 'public';
 $tmpDir = 'tmpdata';
 
-// Make sure this setting is turned on and reflect the root url for your WebDAV server.
-// This can be for example the root / or a complete path to your server script
+// If you want to run the SabreDAV server in a custom location (using mod_rewrite for instance)
+// You can override the baseUri here.
 // $baseUri = '/';
 
-if (!isset($baseUri)) die('Please setup \$baseUri first!');
 
 // Files we need
 require_once 'Sabre/autoload.php';
 
-// Create the parent node
-$publicDirObj = new Sabre_DAV_FS_Directory($publicDir);
+// Create the root node
+$root = new Sabre_DAV_FS_Directory($publicDir);
 
-// Now we create an ObjectTree, which dispatches all requests to your newly created file system
-$objectTree = new Sabre_DAV_ObjectTree($publicDirObj);
+// The rootnode needs in turn to be passed to the server class
+$server = new Sabre_DAV_Server($root);
 
-// The object tree needs in turn to be passed to the server class
-$server = new Sabre_DAV_Server($objectTree);
-$server->setBaseUri($baseUri);
+if (isset($baseUri))
+    $server->setBaseUri($baseUri);
 
 // Support for LOCK and UNLOCK 
 $lockBackend = new Sabre_DAV_Locks_Backend_FS($tmpDir);

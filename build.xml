@@ -130,7 +130,7 @@
 
     <target name="clean" depends="init">
         <echo msg="Removing build files (cleaning up distribution)" />
-        <delete dir="apidocs" />
+        <delete dir="docs/api" />
         <delete dir="build" />
     </target>    
 

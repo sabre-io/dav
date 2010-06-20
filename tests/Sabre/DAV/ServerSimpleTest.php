@@ -446,6 +446,44 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
+    
+    /**
+     * @depends testGuessBaseUri
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
+    function testGuessBaseUriPercentEncoding() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/dir/path2/path%20with%20spaces',
+            'PATH_INFO'   => '/dir/path2/path with spaces',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
+
+    }
+
+    /**
+     * @depends testGuessBaseUri
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
+    function testGuessBaseUriPercentEncoding2() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/some%20directory+mixed/index.php/dir/path2/path%20with%20spaces',
+            'PATH_INFO'   => '/dir/path2/path with spaces',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/some%20directory+mixed/index.php/', $server->guessBaseUri());
+
+    }
 
     function testGuessBaseUri2() {
 

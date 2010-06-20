@@ -555,7 +555,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
                     if ($etagValid && $lockValid) continue 2;
                }
                // No conditions matched, so we fail
-               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match');
+               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match','If');
             }
 
             // Conditions were met, we'll also need to check if all the locks are gone

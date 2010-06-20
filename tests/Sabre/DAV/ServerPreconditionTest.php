@@ -147,6 +147,25 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
     /**
      * @covers Sabre_DAV_Server::checkPreconditions
      */
+    public function testIfNoneMatchCorrectEtagAsGet() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_NONE_MATCH' => 'abc123',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+        $server->httpResponse = new Sabre_HTTP_ResponseMock();
+
+        $this->assertFalse($server->checkPreconditions(true));
+        $this->assertEquals('HTTP/1.1 304 Not Modified',$server->httpResponse->status);
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     */
     public function testIfModifiedSinceUnModified() {
 
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 

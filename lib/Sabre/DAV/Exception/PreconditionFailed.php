@@ -16,6 +16,29 @@
 class Sabre_DAV_Exception_PreconditionFailed extends Sabre_DAV_Exception {
 
     /**
+     * When this exception is thrown, the header-name might be set.
+     * 
+     * This allows the exception-catching code to determine which HTTP header
+     * caused the exception.
+     * 
+     * @var string 
+     */
+    public $header = null;
+
+    /**
+     * Create the exception 
+     * 
+     * @param string $message 
+     * @param string $header 
+     */
+    public function __construct($message, $header=null) {
+
+        parent::__construct($message);
+        $this->header = $header;
+
+    } 
+
+    /**
      * Returns the HTTP statuscode for this exception 
      *
      * @return int
@@ -23,6 +46,23 @@ class Sabre_DAV_Exception_PreconditionFailed extends Sabre_DAV_Exception {
     public function getHTTPCode() {
 
         return 412; 
+
+    }
+
+    /**
+     * This method allows the exception to include additonal information into the WebDAV error response 
+     *
+     * @param Sabre_DAV_Server $server
+     * @param DOMElement $errorNode 
+     * @return void
+     */
+    public function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
+        
+        if ($this->header) {
+            $prop = $errorNode->ownerDocument->createElement('s:header');
+            $prop->nodeValue = $this->header;
+            $errorNode->appendChild($prop);
+        }
 
     }
 

@@ -403,7 +403,7 @@ class Sabre_DAV_Server {
         $uri = $this->getRequestUri();
         $node = $this->tree->getNodeForPath($uri,0);
 
-        if (!$this->checkPreconditions()) return false; 
+        if (!$this->checkPreconditions(true)) return false; 
 
         if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_NotImplemented('GET is only implemented on File objects');
         $body = $node->get();
@@ -528,7 +528,6 @@ class Sabre_DAV_Server {
     protected function httpHead() {
 
         $node = $this->tree->getNodeForPath($this->getRequestUri());
-
         /* This information is only collection for File objects.
          * Ideally we want to throw 405 Method Not Allowed for every 
          * non-file, but MS Office does not like this
@@ -1094,7 +1093,7 @@ class Sabre_DAV_Server {
             
             // If this succeeded, it means the destination already exists
             // we'll need to throw precondition failed in case overwrite is false
-            if (!$overwrite) throw new Sabre_DAV_Exception_PreconditionFailed('The destination node already exists, and the overwrite header is set to false');
+            if (!$overwrite) throw new Sabre_DAV_Exception_PreconditionFailed('The destination node already exists, and the overwrite header is set to false','Overwrite');
 
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
 
@@ -1556,9 +1555,17 @@ class Sabre_DAV_Server {
      * failed. If false is returned the operation should be aborted, and
      * the appropriate HTTP response headers are already set.
      *
+     * Normally this method will throw 412 Precondition Failed for failures
+     * related to If-None-Match, If-Match and If-Unmodified Since. It will 
+     * set the status to 304 Not Modified for If-Modified_since.
+     *
+     * If the $handleAsGET argument is set to true, it will also return 304 
+     * Not Modified for failure of the If-None-Match precondition. This is the
+     * desired behaviour for HTTP GET and HTTP HEAD requests.
+     *
      * @return bool 
      */
-    public function checkPreconditions() {
+    public function checkPreconditions($handleAsGET = false) {
 
         $uri = $this->getRequestUri();
         $node = null;
@@ -1574,14 +1581,14 @@ class Sabre_DAV_Server {
             try {
                 $node = $this->tree->getNodeForPath($uri);
             } catch (Sabre_DAV_Exception_FileNotFound $e) {
-                throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified and the resource did not exist');
+                throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified and the resource did not exist','If-Match');
             }
 
             // Only need to check entity tags if they are not *
             if ($ifMatch!=='*') {
                 $etag = $node->getETag();
                 if ($etag!==$ifMatch) {
-                     throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified, but the ETag did not match');
+                     throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified, but the ETag did not match','If-Match');
                 }
             }
         }
@@ -1601,10 +1608,13 @@ class Sabre_DAV_Server {
                 }
             }
             if ($nodeExists) {
-                if ($ifNoneMatch==='*') {
-                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-None-Match: * header was specified, but the node exists');
-                } elseif (($etag = $node->getETag()) && $etag===$ifNoneMatch) {
-                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-None-Match header was specified, but the node\'s etag matched');
+                if ($ifNoneMatch==='*' || (($etag = $node->getETag()) && $etag===$ifNoneMatch)) {
+                    if ($handleAsGET) {
+                        $this->httpResponse->sendStatus(304);
+                        return false;
+                    } else {
+                        throw new Sabre_DAV_Exception_PreconditionFailed('An If-None-Match header was specified, but the ETag matched (or * was specified).','If-None-Match');
+                    }
                 }
             }
 
@@ -1646,7 +1656,7 @@ class Sabre_DAV_Server {
             if ($lastMod) {
                 $lastMod = new DateTime('@' . $lastMod);
                 if ($lastMod >= $date) {
-                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.');
+                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.','If-Unmodified-Since');
                 }
             }
 

@@ -472,7 +472,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
      */
     function testGuessBaseUriPercentEncoding2() {
 
-        $this->markTestSkipped('This behaviour is not yet fixed');
+        $this->markTestIncomplete('This behaviour is not yet implemented');
         $serverVars = array(
             'REQUEST_URI' => '/some%20directory+mixed/index.php/dir/path2/path%20with%20spaces',
             'PATH_INFO'   => '/dir/path2/path with spaces',

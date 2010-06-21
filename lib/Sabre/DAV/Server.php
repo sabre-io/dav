@@ -265,10 +265,14 @@ class Sabre_DAV_Server {
 
             // PATH_INFO is only set for urls, such as: /example.php/path
             // in that case PATH_INFO contains '/path'.
+            // Note that REQUEST_URI is percent encoded, while PATH_INFO is
+            // not, Therefore they are only comparable if we first decode
+            // REQUEST_INFO as well.
+            $decodedUri = Sabre_DAV_URLUtil::decodePath($uri);
 
             // A simple sanity check:
-            if(substr($uri,strlen($uri)-strlen($pathInfo))===$pathInfo) {
-                $baseUri = substr($uri,0,strlen($uri)-strlen($pathInfo));
+            if(substr($decodedUri,strlen($decodedUri)-strlen($pathInfo))===$pathInfo) {
+                $baseUri = substr($decodedUri,0,strlen($decodedUri)-strlen($pathInfo));
                 return rtrim($baseUri,'/') . '/';
             }
 

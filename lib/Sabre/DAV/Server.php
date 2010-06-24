@@ -1590,6 +1590,11 @@ class Sabre_DAV_Server {
 
             // Only need to check entity tags if they are not *
             if ($ifMatch!=='*') {
+
+                // Evolution surrounds the ETag in If-Match with double quotes
+                // this is incorrect so we strip them
+                $ifMatch = str_replace('"', '', $ifMatch);
+                
                 $etag = $node->getETag();
                 if ($etag!==$ifMatch) {
                      throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified, but the ETag did not match','If-Match');

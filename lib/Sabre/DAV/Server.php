@@ -1591,9 +1591,9 @@ class Sabre_DAV_Server {
             // Only need to check entity tags if they are not *
             if ($ifMatch!=='*') {
 
-                // Evolution surrounds the ETag in If-Match with double quotes
-                // this is incorrect so we strip them
-                $ifMatch = str_replace('"', '', $ifMatch);
+                // The Etag is surrounded by double-quotes, so those must be 
+                // stripped.
+                $ifMatch = trim($ifMatch,'"');
                 
                 $etag = $node->getETag();
                 if ($etag!==$ifMatch) {
@@ -1617,6 +1617,9 @@ class Sabre_DAV_Server {
                 }
             }
             if ($nodeExists) {
+                // The Etag is surrounded by double-quotes, so those must be 
+                // stripped.
+                $ifNoneMatch = trim($ifNoneMatch,'"');
                 if ($ifNoneMatch==='*' || (($etag = $node->getETag()) && $etag===$ifNoneMatch)) {
                     if ($handleAsGET) {
                         $this->httpResponse->sendStatus(304);

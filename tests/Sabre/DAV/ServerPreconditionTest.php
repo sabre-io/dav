@@ -65,7 +65,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_IF_MATCH' => 'abc123',
+            'HTTP_IF_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;
@@ -117,7 +117,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_IF_NONE_MATCH' => '1234',
+            'HTTP_IF_NONE_MATCH' => '"1234"',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;
@@ -135,7 +135,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_IF_NONE_MATCH' => 'abc123',
+            'HTTP_IF_NONE_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;
@@ -152,7 +152,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_IF_NONE_MATCH' => 'abc123',
+            'HTTP_IF_NONE_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;
@@ -200,6 +200,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     u
      * @covers Sabre_DAV_Server::checkPreconditions
      */
     public function testIfUnmodifiedSinceUnModified() {

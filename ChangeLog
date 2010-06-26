@@ -1,4 +1,4 @@
-1.2.3 (2010-??-??)
+1.2.3 (2010-07-26)
 	* Fixed: Issue 57: Supporting quotes around etags in If-Match and
 	  If-None-Match
 

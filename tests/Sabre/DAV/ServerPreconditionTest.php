@@ -200,7 +200,6 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     u
      * @covers Sabre_DAV_Server::checkPreconditions
      */
     public function testIfUnmodifiedSinceUnModified() {

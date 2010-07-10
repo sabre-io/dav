@@ -431,7 +431,10 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         }
 
     }
-    
+   
+    /**
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
     function testGuessBaseUri() {
 
         $serverVars = array(
@@ -530,6 +533,25 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $server->httpRequest = $httpRequest;
 
         $server->guessBaseUri();
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::guessBaseUri
+     * @depends testGuessBaseUri
+     */
+    function testGuessBaseUriQueryString() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root?query_string=blabla',
+            'PATH_INFO'   => '/root',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
 

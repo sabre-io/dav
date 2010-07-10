@@ -1,8 +1,12 @@
-1.2.3 (2010-07-26)
+1.2.4 (2010-??-??)
+	* Fixed: Issue 62: Guessing baseUrl fails when url contains a
+	  query-string.
+
+1.2.3 (2010-06-26)
 	* Fixed: Issue 57: Supporting quotes around etags in If-Match and
 	  If-None-Match
 
-1.2.2 (2010-07-21)
+1.2.2 (2010-06-21)
 	* Updated: SabreDAV now attempts to guess the BaseURI if it's not set.
 	* Updated: Better compatibility with BitKinex
 	* Fixed: Issue 56: Incorrect behaviour for If-None-Match headers and GET

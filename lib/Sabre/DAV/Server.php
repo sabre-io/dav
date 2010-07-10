@@ -263,6 +263,10 @@ class Sabre_DAV_Server {
         // If PATH_INFO is not found, we just return /
         if (!is_null($pathInfo)) {
 
+            // We need to make sure we ignore the QUERY_STRING part
+            if ($pos = strpos($uri,'?'))
+                $uri = substr($uri,0,$pos);
+
             // PATH_INFO is only set for urls, such as: /example.php/path
             // in that case PATH_INFO contains '/path'.
             // Note that REQUEST_URI is percent encoded, while PATH_INFO is
@@ -276,7 +280,7 @@ class Sabre_DAV_Server {
                 return rtrim($baseUri,'/') . '/';
             }
 
-            throw new Sabre_DAV_Exception('The REQUEST_URI did not end with the contents of PATH_INFO. This server might be misconfigured.'); 
+            throw new Sabre_DAV_Exception('The REQUEST_URI ('. $uri . ') did not end with the contents of PATH_INFO (' . $pathInfo . '). This server might be misconfigured.'); 
 
         }
 

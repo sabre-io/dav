@@ -2,6 +2,8 @@
 	* Fixed: Issue 62: Guessing baseUrl fails when url contains a
 	  query-string.
 	* Added: Apache configuration sample for CGI/FastCGI setups.
+	* Fixed: Issue 64: Only returning calendar-data when it was actually
+	  requested.
 
 1.2.3 (2010-06-26)
 	* Fixed: Issue 57: Supporting quotes around etags in If-Match and

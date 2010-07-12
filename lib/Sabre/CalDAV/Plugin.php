@@ -307,8 +307,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
         $filters = $this->parseCalendarQueryFilters($filterNode->item(0));
 
-        // Making sure we're always requesting the calendar-data property
-        $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
+        $requestedCalendarData = true;
+
+        if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar-data', $requestedProperties)) {
+            // We always retrieve calendar-data, as we need it for filtering.
+            $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
+
+            // If calendar-data wasn't explicitly requested, we need to remove 
+            // it after processing.
+            $requestedCalendarData = false;
+        }
 
         // These are the list of nodes that potentially match the requirement
         $candidateNodes = $this->server->getPropertiesForPath($this->server->getRequestUri(),$requestedProperties,$this->server->getHTTPDepth(0));
@@ -321,6 +329,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) continue;
 
             if ($this->validateFilters($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'],$filters)) {
+                
+                if (!$requestedCalendarData) {
+                    unset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                }
                 $verifiedNodes[] = $node;
             } 
 

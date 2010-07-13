@@ -1,4 +1,4 @@
-1.2.4 (2010-??-??)
+1.2.4 (2010-07-13)
 	* Fixed: Issue 62: Guessing baseUrl fails when url contains a
 	  query-string.
 	* Added: Apache configuration sample for CGI/FastCGI setups.

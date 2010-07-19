@@ -22,6 +22,30 @@ abstract class Sabre_DAV_Tree {
     abstract function getNodeForPath($path);
 
     /**
+     * This function allows you to check if a node exists.
+     *
+     * Implementors of this class should override this method to make 
+     * it cheaper.
+     * 
+     * @param string $path 
+     * @return bool 
+     */
+    public function nodeExists($path) {
+
+        try {
+
+            $this->getNodeForPath($path);
+            return true;
+
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+
+            return false;
+
+        }
+
+    }
+
+    /**
      * Copies a file from path to another
      *
      * @param string $sourcePath The source location

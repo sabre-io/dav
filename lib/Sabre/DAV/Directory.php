@@ -36,10 +36,33 @@ abstract class Sabre_DAV_Directory extends Sabre_DAV_Node implements Sabre_DAV_I
     }
 
     /**
+     * Checks is a child-node exists.
+     *
+     * It is generally a good idea to try and override this. Usually it can be optimized.
+     * 
+     * @param string $name 
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        try {
+
+            $this->getChild($name);
+            return true;
+
+        } catch(Sabre_DAV_Exception_FileNotFound $e) {
+
+            return false;
+
+        }
+
+    }
+
+    /**
      * Creates a new file in the directory 
      * 
      * @param string $name Name of the file 
-     * @param string $data Initial payload 
+     * @param resource $data Initial payload, passed as a readable stream resource. 
      * @throws Sabre_DAV_Exception_Forbidden
      * @return void
      */

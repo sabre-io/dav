@@ -47,5 +47,12 @@ interface Sabre_DAV_ICollection extends Sabre_DAV_INode {
      */
     function getChildren();
 
+    /**
+     * Checks if a child-node with the specified name exists 
+     * 
+     * @return bool 
+     */
+    function childExists($name);
+
 }
 

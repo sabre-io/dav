@@ -65,5 +65,27 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
     }
 
+    /**
+     * This function allows you to check if a node exists.
+     *
+     * @param string $path 
+     * @return bool 
+     */
+    public function nodeExists($path) {
+
+        try {
+
+            list($parent, $base) = Sabre_DAV_URLUtil::splitPath($path);
+            $parentNode = $this->getNodeForPath($parent);
+            return $parentNode->childExists($base);
+
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+
+            return false;
+
+        }
+
+    }
+
 }
 

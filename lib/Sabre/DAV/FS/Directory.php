@@ -79,6 +79,19 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
+     * Checks if a child exists. 
+     * 
+     * @param string $name 
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        $path = $this->path . '/' . $name;
+        return file_exists($path);
+
+    }
+
+    /**
      * Deletes all files in this directory, and then itself 
      * 
      * @return void

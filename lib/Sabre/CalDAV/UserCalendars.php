@@ -141,6 +141,24 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
     }
 
     /**
+     * Checks if a calendar exists.
+     * 
+     * @param string $name
+     * @todo needs optimizing
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        foreach($this->getChildren() as $child) {
+            if ($name==$child->getName())
+                return true; 
+
+        }
+        return false;
+
+    }
+
+    /**
      * Returns a list of calendars
      * 
      * @return array 

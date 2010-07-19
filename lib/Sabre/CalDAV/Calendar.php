@@ -145,6 +145,23 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
     }
 
     /**
+     * Checks if a child-node exists. 
+     * 
+     * @param string $name 
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        if (!$this->hasPrivilege()) throw new Sabre_DAV_Exception_Forbidden('Permission denied to access this calendar');
+        $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$name);
+        if (!$obj) 
+            return false;
+        else 
+            return true;
+
+    }
+
+    /**
      * Creates a new directory
      *
      * We actually block this, as subdirectories are not allowed in calendars.

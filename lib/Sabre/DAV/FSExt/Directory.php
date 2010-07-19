@@ -69,6 +69,22 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     }
 
     /**
+     * Checks if a child exists. 
+     * 
+     * @param string $name 
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        if ($name=='.' || $name=='..')
+            throw new Sabre_DAV_Exception_Forbidden('Permission denied to . and ..');
+
+        $path = $this->path . '/' . $name;
+        return file_exists($path);
+
+    }
+
+    /**
      * Returns an array with all the child nodes 
      * 
      * @return Sabre_DAV_INode[] 

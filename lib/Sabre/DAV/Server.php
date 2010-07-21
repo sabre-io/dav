@@ -1652,7 +1652,7 @@ class Sabre_DAV_Server {
             $lastMod = $node->getLastModified();
             if ($lastMod) {
                 $lastMod = new DateTime('@' . $lastMod);
-                if ($lastMod < $date) {
+                if ($lastMod <= $date) {
                     $this->httpResponse->sendStatus(304);
                     return false;
                 } 
@@ -1671,7 +1671,7 @@ class Sabre_DAV_Server {
             $lastMod = $node->getLastModified();
             if ($lastMod) {
                 $lastMod = new DateTime('@' . $lastMod);
-                if ($lastMod >= $date) {
+                if ($lastMod > $date) {
                     throw new Sabre_DAV_Exception_PreconditionFailed('An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.','If-Unmodified-Since');
                 }
             }

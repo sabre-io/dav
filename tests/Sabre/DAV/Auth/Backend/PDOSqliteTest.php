@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/DAV/Auth/Backend/AbstractPDOTest.php';
+
 class Sabre_DAV_Auth_Backend_PDOSQLiteTest extends Sabre_DAV_Auth_Backend_AbstractPDOTest {
 
     function tearDown() {

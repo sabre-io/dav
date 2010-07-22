@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/CalDAV/Backend/AbstractPDOTest.php';
+
 class Sabre_CalDAV_Backend_PDOSQLiteTest extends Sabre_CalDAV_Backend_AbstractPDOTest {
     
     function setup() {

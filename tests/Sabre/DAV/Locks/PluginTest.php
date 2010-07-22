@@ -182,13 +182,14 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(' . $lockToken . ')',
         );
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('');
         $this->server->httpRequest = $request;
 
         $this->server->exec();
 
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 

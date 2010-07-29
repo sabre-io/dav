@@ -3,6 +3,7 @@
 	break, so if you implement Sabre_DAV_ICollection directly, add the method.
 	* Fixed: If-Modified-Since and If-Unmodified-Since would be incorrect if
 	the date is an exact match.  
+	* Fixed: Improved baseUrl handling.
 
 1.2.4 (2010-07-13)
 	* Fixed: Issue 62: Guessing baseUrl fails when url contains a

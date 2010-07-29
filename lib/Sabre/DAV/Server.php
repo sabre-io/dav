@@ -46,7 +46,7 @@ class Sabre_DAV_Server {
      * 
      * @var string 
      */
-    protected $baseUri = '/';
+    protected $baseUri = null; 
 
     /**
      * httpResponse 
@@ -163,8 +163,6 @@ class Sabre_DAV_Server {
         $this->httpResponse = new Sabre_HTTP_Response();
         $this->httpRequest = new Sabre_HTTP_Request();
 
-        $this->setBaseUri($this->guessBaseUri());
-
     }
 
     /**
@@ -243,6 +241,7 @@ class Sabre_DAV_Server {
      */
     public function getBaseUri() {
 
+        if (is_null($this->baseUri)) $this->baseUri = $this->guessBaseUri();
         return $this->baseUri;
 
     }
@@ -282,9 +281,14 @@ class Sabre_DAV_Server {
 
             throw new Sabre_DAV_Exception('The REQUEST_URI ('. $uri . ') did not end with the contents of PATH_INFO (' . $pathInfo . '). This server might be misconfigured.'); 
 
+        } 
+
+        // If the url ended with .php, we're going to assume that that's the server root
+        if (strpos($uri,'.php')===strlen($uri)-4) {
+            return $uri;
         }
 
-        // The fallback is that we're just going to assume the server root. 
+        // The last fallback is that we're just going to assume the server root. 
         return '/';
 
     }
@@ -977,19 +981,19 @@ class Sabre_DAV_Server {
 
         $uri = str_replace('//','/',$uri);
 
-        if (strpos($uri,$this->baseUri)===0) {
+        if (strpos($uri,$this->getBaseUri())===0) {
 
-            return trim(Sabre_DAV_URLUtil::decodePath(substr($uri,strlen($this->baseUri))),'/');
+            return trim(Sabre_DAV_URLUtil::decodePath(substr($uri,strlen($this->getBaseUri()))),'/');
 
         // A special case, if the baseUri was accessed without a trailing 
         // slash, we'll accept it as well. 
-        } elseif ($uri.'/' === $this->baseUri) { 
+        } elseif ($uri.'/' === $this->getBaseUri()) { 
 
             return '';
 
         } else {
 
-            throw new Sabre_DAV_Exception_Forbidden('Requested uri (' . $uri . ') is out of base uri (' . $this->baseUri . ')');
+            throw new Sabre_DAV_Exception_Forbidden('Requested uri (' . $uri . ') is out of base uri (' . $this->getBaseUri() . ')');
 
         }
 

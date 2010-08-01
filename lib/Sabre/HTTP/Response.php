@@ -123,7 +123,6 @@ class Sabre_HTTP_Response {
      * Sends the entire response body
      *
      * This method can accept either an open filestream, or a string.
-     * Note that this method will first rewind the stream before output.
      * 
      * @param mixed $body 
      * @return void
@@ -132,7 +131,6 @@ class Sabre_HTTP_Response {
 
         if (is_resource($body)) {
         
-            rewind($body);
             fpassthru($body);
 
         } else {

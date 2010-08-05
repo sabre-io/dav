@@ -41,7 +41,6 @@ include 'Sabre/DAV/Exception/RequestedRangeNotSatisfiable.php';
 include 'Sabre/DAV/Exception/UnsupportedMediaType.php';
 include 'Sabre/DAV/Exception/NotAuthenticated.php';
 
-include 'Sabre/DAV/Exception/PermissionDenied.php'; //deprecated
 include 'Sabre/DAV/Exception/ConflictingLock.php';
 include 'Sabre/DAV/Exception/ReportNotImplemented.php';
 include 'Sabre/DAV/Exception/InvalidResourceType.php';
@@ -62,7 +61,6 @@ include 'Sabre/DAV/Property/Principal.php';
 include 'Sabre/DAV/INode.php';
 include 'Sabre/DAV/IFile.php';
 include 'Sabre/DAV/ICollection.php';
-include 'Sabre/DAV/IDirectory.php'; // deprecated
 include 'Sabre/DAV/IProperties.php';
 include 'Sabre/DAV/ILockable.php';
 include 'Sabre/DAV/IQuota.php';

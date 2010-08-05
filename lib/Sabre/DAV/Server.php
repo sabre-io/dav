@@ -285,7 +285,7 @@ class Sabre_DAV_Server {
 
         // If the url ended with .php, we're going to assume that that's the server root
         if (strpos($uri,'.php')===strlen($uri)-4) {
-            return $uri;
+            return $uri . '/';
         }
 
         // The last fallback is that we're just going to assume the server root. 

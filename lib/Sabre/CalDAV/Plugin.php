@@ -305,7 +305,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if ($filterNode->length!==1) {
             throw new Sabre_DAV_Exception_BadRequest('The calendar-query report must have a filter element');
         }
-        $filters = $this->parseCalendarQueryFilters($filterNode->item(0));
+        $filters = Sabre_CalDAV_XMLUtil::parseCalendarQueryFilters($filterNode->item(0));
 
         $requestedCalendarData = true;
 
@@ -344,84 +344,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-
-    /**
-     * This function parses the calendar-query report request body
-     *
-     * The body is quite complicated, so we're turning it into a PHP
-     * array.
-     * 
-     * @param DOMNode $domNode 
-     * @return array 
-     */
-    public function parseCalendarQueryFilters($domNode,$basePath = '/c:iCalendar', &$filters = array()) {
-
-        foreach($domNode->childNodes as $child) {
-
-            switch(Sabre_DAV_XMLUtil::toClarkNotation($child)) {
-
-                case '{urn:ietf:params:xml:ns:caldav}comp-filter' :
-                case '{urn:ietf:params:xml:ns:caldav}prop-filter' :
-                   
-                    $filterName = $basePath . '/' . 'c:' . strtolower($child->getAttribute('name'));
-                    $filters[$filterName] = array(); 
-
-                    $this->parseCalendarQueryFilters($child, $filterName,$filters);
-                    break;
-
-                case '{urn:ietf:params:xml:ns:caldav}time-range' :
-               
-                    if ($start = $child->getAttribute('start')) {
-                        $start = $this->parseICalendarDateTime($start);
-                    } else {
-                        $start = null;
-                    }
-                    if ($end = $child->getAttribute('end')) {
-                        $end = $this->parseICalendarDateTime($end);
-                    } else {
-                        $end = null;
-                    }
-
-                    if (!is_null($start) && !is_null($end) && $end <= $start) {
-                        throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the time-range filter');
-                    }
-
-                    $filters[$basePath]['time-range'] = array(
-                        'start' => $start,
-                        'end'   => $end
-                    );
-                    break;
-
-                case '{urn:ietf:params:xml:ns:caldav}is-not-defined' :
-                    $filters[$basePath]['is-not-defined'] = true;
-                    break;
-
-                case '{urn:ietf:params:xml:ns:caldav}param-filter' :
-               
-                    $filterName = $basePath . '/@' . strtolower($child->getAttribute('name'));
-                    $filters[$filterName] = array();
-                    $this->parseCalendarQueryFilters($child, $filterName, $filters);
-                    break;
-
-                case '{urn:ietf:params:xml:ns:caldav}text-match' :
-               
-                    $collation = $child->getAttribute('collation');
-                    if (!$collation) $collation = 'i;ascii-casemap';
-
-                    $filters[$basePath]['text-match'] = array(
-                        'collation' => $collation,
-                        'negate-condition' => $child->getAttribute('negate-condition')==='yes',
-                        'value' => $child->nodeValue,
-                    );
-                    break;
-
-            }
-
-        }
-
-        return $filters;
-
-    }
 
     /**
      * Verify if a list of filters applies to the calendar data object 
@@ -527,9 +449,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $tz = null;
         }
         if ($isDateTime) {
-            $dtstart = $this->parseICalendarDateTime((string)$xdtstart[0],$tz);
+            $dtstart = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdtstart[0],$tz);
         } else {
-            $dtstart = $this->parseICalendarDate((string)$xdtstart[0]);
+            $dtstart = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdtstart[0]);
         }
 
 
@@ -548,9 +470,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // Since the VALUE parameter of both DTSTART and DTEND must be the same
             // we can assume we don't need to check the VALUE paramter of DTEND.
             if ($isDateTime) {
-                $dtend = $this->parseICalendarDateTime((string)$xdtend[0],$tz);
+                $dtend = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdtend[0],$tz);
             } else {
-                $dtend = $this->parseICalendarDate((string)$xdtend[0],$tz);
+                $dtend = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdtend[0],$tz);
             }
 
         } 
@@ -561,7 +483,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             $xduration = $xml->xpath($currentXPath.'/c:duration');
             if (count($xduration)) {
-                $duration = $this->parseICalendarDuration((string)$xduration[0]);
+                $duration = Sabre_CalDAV_XMLUtil::parseICalendarDuration((string)$xduration[0]);
 
                 // Making sure that the duration is bigger than 0 seconds.
                 $tempDT = clone $dtstart;
@@ -621,9 +543,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $tz = null;
             }
             if ($isDateTime) {
-                $dtStart = $this->parseICalendarDateTime((string)$xdt[0],$tz);
+                $dtStart = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0],$tz);
             } else {
-                $dtStart = $this->parseICalendarDate((string)$xdt[0]);
+                $dtStart = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdt[0]);
             }
         }
 
@@ -632,7 +554,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             $xduration = $xml->xpath($currentXPath.'/c:duration');
             if (count($xduration)) {
-                $duration = $this->parseICalendarDuration((string)$xduration[0]);
+                $duration = Sabre_CalDAV_XMLUtil::parseICalendarDuration((string)$xduration[0]);
             }
 
         }
@@ -670,9 +592,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $tz = null;
             }
             if ($isDateTime) {
-                $due = $this->parseICalendarDateTime((string)$xdt[0],$tz);
+                $due = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0],$tz);
             } else {
-                $due = $this->parseICalendarDate((string)$xdt[0]);
+                $due = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdt[0]);
             }
         }
 
@@ -718,12 +640,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         // Need to grab the COMPLETED property
         $xdt = $xml->xpath($currentXPath.'/c:completed');
         if (count($xdt)) {
-            $completed = $this->parseICalendarDateTime((string)$xdt[0]);
+            $completed = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0]);
         }
         // Need to grab the CREATED property
         $xdt = $xml->xpath($currentXPath.'/c:created');
         if (count($xdt)) {
-            $created = $this->parseICalendarDateTime((string)$xdt[0]);
+            $created = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0]);
         }
 
         if (!is_null($completed) && !is_null($created)) {
@@ -779,98 +701,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             default:
                 throw new Sabre_DAV_Exception_BadRequest('Unknown collation: ' . $collation);
         }                
-
-    }
-
-    /**
-     * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
-     *
-     * Specifying a reference timezone is optional. It will only be used
-     * if the non-UTC format is used. The argument is used as a reference, the 
-     * returned DateTime object will still be in the UTC timezone.
-     *
-     * @param string $dt 
-     * @param DateTimeZone $tz 
-     * @return DateTime 
-     */
-    public function parseICalendarDateTime($dt,DateTimeZone $tz = null) {
-
-        // Format is YYYYMMDD + "T" + hhmmss 
-        $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])T([0-2][0-9])([0-5][0-9])([0-5][0-9])([Z]?)$/',$dt,$matches);
-
-        if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar datetime value is incorrect: ' . $dt);
-        }
-
-        if ($matches[7]==='Z' || is_null($tz)) {
-            $tz = new DateTimeZone('UTC');
-        } 
-        $date = new DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] .':' . $matches[6], $tz);
-
-        // Still resetting the timezone, to normalize everything to UTC
-        $date->setTimeZone(new DateTimeZone('UTC'));
-        return $date;
-
-    }
-
-    /**
-     * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
-     *
-     * @param string $date 
-     * @param DateTimeZone $tz 
-     * @return DateTime 
-     */
-    public function parseICalendarDate($date) {
-
-        // Format is YYYYMMDD
-        $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])$/',$date,$matches);
-
-        if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar date value is incorrect: ' . $date);
-        }
-
-        $date = new DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3], new DateTimeZone('UTC'));
-        return $date;
-
-    }
-   
-    /**
-     * Parses an iCalendar (RFC5545) formatted duration and returns a string suitable
-     * for strtotime or DateTime::modify.
-     *
-     * 
-     * NOTE: When we require PHP 5.3 this can be replaced by the DateTimeInterval object, which
-     * supports ISO 8601 Intervals, which is a superset of ICalendar durations.
-     *
-     * For now though, we're just gonna live with this messy system
-     *
-     * @param string $duration
-     * @return string
-     */
-    public function parseICalendarDuration($duration) {
-
-        $result = preg_match('/^(?P<plusminus>\+|-)?P((?P<week>\d+)W)?((?P<day>\d+)D)?(T((?P<hour>\d+)H)?((?P<minute>\d+)M)?((?P<second>\d+)S)?)?$/', $duration, $matches);
-        if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar duration value is incorrect: ' . $duration);
-        }
-       
-        $parts = array(
-            'week',
-            'day',
-            'hour',
-            'minute',
-            'second',
-        );
-
-        $newDur = '';
-        foreach($parts as $part) {
-            if (isset($matches[$part]) && $matches[$part]) {
-                $newDur.=' '.$matches[$part] . ' ' . $part . 's';
-            }
-        }
-
-        $newDur = ($matches['plusminus']==='-'?'-':'+') . trim($newDur);
-        return $newDur;
 
     }
 

@@ -130,11 +130,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function unknownMethod($method) {
+    public function unknownMethod($method, $uri) {
 
         if ($method!=='MKCALENDAR') return;
 
-        $this->httpMkCalendar();
+        $this->httpMkCalendar($uri);
         // false is returned to stop the unknownMethod event
         return false;
 
@@ -168,9 +168,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * This function handles the MKCALENDAR HTTP method, which creates
      * a new calendar.
      * 
+     * @param string $uri
      * @return void 
      */
-    public function httpMkCalendar() {
+    public function httpMkCalendar($uri) {
 
         // Due to unforgivable bugs in iCal, we're completely disabling MKCALENDAR support
         // for clients matching iCal in the user agent
@@ -192,10 +193,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         
         }
 
-        $requestUri = $this->server->getRequestUri();
         $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
 
-        $this->server->createCollection($requestUri,$resourceType,$properties);
+        $this->server->createCollection($uri,$resourceType,$properties);
 
         $this->server->httpResponse->sendStatus(201);
         $this->server->httpResponse->setHeader('Content-Length',0);

@@ -1,6 +1,11 @@
 1.3.0 (????-??-??)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api
 	  break, so if you implement Sabre_DAV_ICollection directly, add the method.
+	* Changed: Almost all HTTP method implementations now take a uri argument,
+	  including events. This allows for internal rerouting of certain calls.
+	  If you have custom plugins, make sure they use this argument. If they
+	  don't, they will likely still work, but it might get in the way of
+	  future changes.
 	* Removed: Sabre_DAV_PermissionDenied class. Use Sabre_DAV_Forbidden
 	  instead.
 	* Removed: Sabre_DAV_IDirectory interface, use Sabre_DAV_ICollection

@@ -174,7 +174,7 @@ class Sabre_DAV_Server {
 
         try {
 
-            $this->invoke();
+            $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
 
         } catch (Exception $e) {
 
@@ -378,16 +378,60 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Handles a http request, and execute a method based on its name 
+     *
+     * @param string $method
+     * @param string $uri
+     * @return void
+     */
+    public function invokeMethod($method, $uri) {
+
+        $method = strtoupper($method); 
+
+        if (!$this->broadcastEvent('beforeMethod',array($method, $uri))) return;
+
+        // Make sure this is a HTTP method we support
+        $internalMethods = array(
+            'OPTIONS',
+            'GET',
+            'HEAD',
+            'DELETE',
+            'PROPFIND',
+            'MKCOL',
+            'PUT',
+            'PROPPATCH',
+            'COPY',
+            'MOVE',
+            'REPORT'
+        );
+
+        if (in_array($method,$internalMethods)) {
+
+            call_user_func(array($this,'http' . $method), $uri);
+
+        } else {
+
+            if ($this->broadcastEvent('unknownMethod',array($method, $uri))) {
+                // Unsupported method
+                throw new Sabre_DAV_Exception_NotImplemented();
+            }
+
+        }
+
+    }
+
     // {{{ HTTP Method implementations
     
     /**
      * HTTP OPTIONS 
-     * 
+     *
+     * @param string $uri
      * @return void
      */
-    protected function httpOptions() {
+    protected function httpOptions($uri) {
 
-        $methods = $this->getAllowedMethods($this->getRequestUri());
+        $methods = $this->getAllowedMethods($uri);
 
         $this->httpResponse->setHeader('Allow',strtoupper(implode(', ',$methods)));
         $features = array('1','3', 'extended-mkcol');
@@ -407,12 +451,12 @@ class Sabre_DAV_Server {
      * HTTP GET
      *
      * This method simply fetches the contents of a uri, like normal
-     * 
+     *
+     * @param string $uri
      * @return void
      */
-    protected function httpGet() {
+    protected function httpGet($uri) {
 
-        $uri = $this->getRequestUri();
         $node = $this->tree->getNodeForPath($uri,0);
 
         if (!$this->checkPreconditions(true)) return false; 
@@ -535,11 +579,12 @@ class Sabre_DAV_Server {
      * This method is normally used to take a peak at a url, and only get the HTTP response headers, without the body
      * This is used by clients to determine if a remote file was changed, so they can use a local cached version, instead of downloading it again
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpHead() {
+    protected function httpHead($uri) {
 
-        $node = $this->tree->getNodeForPath($this->getRequestUri());
+        $node = $this->tree->getNodeForPath($uri);
         /* This information is only collection for File objects.
          * Ideally we want to throw 405 Method Not Allowed for every 
          * non-file, but MS Office does not like this
@@ -560,11 +605,11 @@ class Sabre_DAV_Server {
      *
      * The HTTP delete method, deletes a given uri
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpDelete() {
+    protected function httpDelete($uri) {
 
-        $uri = $this->getRequestUri();
         $node = $this->tree->getNodeForPath($uri);
         if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
         $node->delete();
@@ -587,9 +632,10 @@ class Sabre_DAV_Server {
      *
      * It has to return a HTTP 207 Multi-status status code
      *
+     * @param string $uri
      * @return void
      */
-    public function httpPropfind() {
+    protected function httpPropfind($uri) {
 
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
         $requestedProperties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
@@ -598,10 +644,7 @@ class Sabre_DAV_Server {
         // The only two options for the depth of a propfind is 0 or 1 
         if ($depth!=0) $depth = 1;
 
-        // The requested path
-        $path = $this->getRequestUri();
-        
-        $newProperties = $this->getPropertiesForPath($path,$requestedProperties,$depth);
+        $newProperties = $this->getPropertiesForPath($uri,$requestedProperties,$depth);
 
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
@@ -617,14 +660,13 @@ class Sabre_DAV_Server {
      * This method is called to update properties on a Node. The request is an XML body with all the mutations.
      * In this XML body it is specified which properties should be set/updated and/or deleted
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpPropPatch() {
+    protected function httpPropPatch($uri) {
 
         $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
         
-        $uri = $this->getRequestUri();
-
         $result = $this->updateProperties($uri, $newProperties);
 
         $this->httpResponse->sendStatus(207);
@@ -643,9 +685,10 @@ class Sabre_DAV_Server {
      *
      * If a new resource was created, a 201 Created status code should be returned. If an existing resource is updated, it's a 200 Ok
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpPut() {
+    protected function httpPut($uri) {
 
         $body = $this->httpRequest->getBody();
 
@@ -694,7 +737,7 @@ class Sabre_DAV_Server {
         // First we'll do a check to see if the resource already exists
         try {
 
-            $node = $this->tree->getNodeForPath($this->getRequestUri());
+            $node = $this->tree->getNodeForPath($uri);
           
             // Checking If-None-Match and related headers.
             if (!$this->checkPreconditions()) return;
@@ -724,9 +767,10 @@ class Sabre_DAV_Server {
      *
      * The MKCOL method is used to create a new collection (directory) on the server
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpMkcol() {
+    protected function httpMkcol($uri) {
 
         $requestBody = $this->httpRequest->getBody(true);
 
@@ -775,7 +819,7 @@ class Sabre_DAV_Server {
 
         }
 
-        $result = $this->createCollection($this->getRequestUri(), $resourceType, $properties);
+        $result = $this->createCollection($uri, $resourceType, $properties);
 
         if (is_array($result)) {
             $this->httpResponse->sendStatus(207);
@@ -796,10 +840,11 @@ class Sabre_DAV_Server {
      * WebDAV HTTP MOVE method
      *
      * This method moves one uri to a different uri. A lot of the actual request processing is done in getCopyMoveInfo
-     * 
+     *
+     * @param string $uri
      * @return void
      */
-    protected function httpMove() {
+    protected function httpMove($uri) {
 
         $moveInfo = $this->getCopyAndMoveInfo();
         if ($moveInfo['destinationExists']) {
@@ -809,9 +854,9 @@ class Sabre_DAV_Server {
 
         }
 
-        if (!$this->broadcastEvent('beforeUnbind',array($moveInfo['source']))) return false;
+        if (!$this->broadcastEvent('beforeUnbind',array($uri))) return false;
         if (!$this->broadcastEvent('beforeBind',array($moveInfo['destination']))) return false;
-        $this->tree->move($moveInfo['source'],$moveInfo['destination']);
+        $this->tree->move($uri,$moveInfo['destination']);
         $this->broadcastEvent('afterBind',array($moveInfo['destination']));
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -825,10 +870,11 @@ class Sabre_DAV_Server {
      *
      * This method copies one uri to a different uri, and works much like the MOVE request
      * A lot of the actual request processing is done in getCopyMoveInfo
-     * 
+     *
+     * @param string $uri
      * @return void
      */
-    protected function httpCopy() {
+    protected function httpCopy($uri) {
 
         $copyInfo = $this->getCopyAndMoveInfo();
         if ($copyInfo['destinationExists']) {
@@ -838,7 +884,7 @@ class Sabre_DAV_Server {
 
         }
         if (!$this->broadcastEvent('beforeBind',array($copyInfo['destination']))) return false;
-        $this->tree->copy($copyInfo['source'],$copyInfo['destination']);
+        $this->tree->copy($uri,$copyInfo['destination']);
         $this->broadcastEvent('afterBind',array($copyInfo['destination']));
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -854,17 +900,18 @@ class Sabre_DAV_Server {
      *
      * Although the REPORT method is not part of the standard WebDAV spec (it's from rfc3253)
      * It's used in a lot of extensions, so it made sense to implement it into the core.
-     * 
+     *
+     * @param string $uri
      * @return void
      */
-    protected function httpReport() {
+    protected function httpReport($uri) {
 
         $body = $this->httpRequest->getBody(true);
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
 
         $reportName = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
-        if ($this->broadcastEvent('report',array($reportName,$dom))) {
+        if ($this->broadcastEvent('report',array($reportName,$dom, $uri))) {
 
             // If broadcastEvent returned true, it means the report was not supported
             throw new Sabre_DAV_Exception_ReportNotImplemented();
@@ -877,43 +924,15 @@ class Sabre_DAV_Server {
     // {{{ HTTP/WebDAV protocol helpers 
 
     /**
-     * Handles a http request, and execute a method based on its name 
-     * 
-     * @return void
+     * This method is kept for backwards compatibility purposes.
+     * Use invokeMethod instead.
+     *
+     * @deprecated
+     * @return void 
      */
     protected function invoke() {
 
-        $method = strtoupper($this->httpRequest->getMethod()); 
-
-        if (!$this->broadcastEvent('beforeMethod',array($method))) return;
-
-        // Make sure this is a HTTP method we support
-        $internalMethods = array(
-            'OPTIONS',
-            'GET',
-            'HEAD',
-            'DELETE',
-            'PROPFIND',
-            'MKCOL',
-            'PUT',
-            'PROPPATCH',
-            'COPY',
-            'MOVE',
-            'REPORT'
-        );
-
-        if (in_array($method,$internalMethods)) {
-
-            call_user_func(array($this,'http' . $method));
-
-        } else {
-
-            if ($this->broadcastEvent('unknownMethod',array($method))) {
-                // Unsupported method
-                throw new Sabre_DAV_Exception_NotImplemented();
-            }
-
-        }
+        $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
 
     }
 
@@ -1056,8 +1075,6 @@ class Sabre_DAV_Server {
     }
 
 
-
-
     /**
      * Returns information about Copy and Move requests
      * 
@@ -1065,15 +1082,12 @@ class Sabre_DAV_Server {
      * WebDAV MOVE and COPY HTTP request. It also validates a lot of information and throws proper exceptions 
      * 
      * The returned value is an array with the following keys:
-     *   * source - Source path
      *   * destination - Destination path
      *   * destinationExists - Wether or not the destination is an existing url (and should therefore be overwritten)
      *
      * @return array 
      */
     public function getCopyAndMoveInfo() {
-
-        $source = $this->getRequestUri();
 
         // Collecting the relevant HTTP headers
         if (!$this->httpRequest->getHeader('Destination')) throw new Sabre_DAV_Exception_BadRequest('The destination header was not supplied');
@@ -1086,9 +1100,6 @@ class Sabre_DAV_Server {
         else throw new Sabre_DAV_Exception_BadRequest('The HTTP Overwrite header should be either T or F');
 
         list($destinationDir) = Sabre_DAV_URLUtil::splitPath($destination);
-
-        // Collection information on relevant existing nodes
-        $sourceNode = $this->tree->getNodeForPath($source);
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationDir);
@@ -1118,7 +1129,6 @@ class Sabre_DAV_Server {
 
         // These are the three relevant properties we need to return
         return array(
-            'source'            => $source,
             'destination'       => $destination,
             'destinationExists' => $destinationNode==true,
             'destinationNode'   => $destinationNode,

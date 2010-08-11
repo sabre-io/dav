@@ -7,7 +7,7 @@
  * using a browser.
  *
  * The class intercepts GET requests to collection resources and generates a simple 
- * html index. It's not really pretty though, extend to skin this listing.
+ * html index. 
  * 
  * @package Sabre
  * @subpackage DAV
@@ -65,18 +65,18 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function httpGetInterceptor($method) {
+    public function httpGetInterceptor($method, $uri) {
 
         if ($method!='GET') return true;
         
-        $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
+        $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof Sabre_DAV_IFile) return true;
 
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
 
         $this->server->httpResponse->sendBody(
-            $this->generateDirectoryIndex($this->server->getRequestUri())
+            $this->generateDirectoryIndex($uri)
         );
 
         return false;
@@ -91,7 +91,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool
      */
-    public function httpPOSTHandler($method) {
+    public function httpPOSTHandler($method, $uri) {
 
         if ($method!='POST') return true;
         if (isset($_POST['action'])) switch($_POST['action']) {
@@ -100,7 +100,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 if (isset($_POST['name']) && trim($_POST['name'])) {
                     // Using basename() because we won't allow slashes
                     list(, $folderName) = Sabre_DAV_URLUtil::splitPath(trim($_POST['name']));
-                    $this->server->createDirectory($this->server->getRequestUri() . '/' . $folderName);
+                    $this->server->createDirectory($uri . '/' . $folderName);
                 }
                 break;
             case 'put' :
@@ -116,7 +116,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                     
                
                 if (is_uploaded_file($file['tmp_name'])) {
-                    $parent = $this->server->tree->getNodeForPath(trim($this->server->getRequestUri(),'/'));
+                    $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
                     $parent->createFile($newName,fopen($file['tmp_name'],'r'));
                 }
 

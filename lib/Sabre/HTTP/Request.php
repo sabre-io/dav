@@ -115,7 +115,7 @@ class Sabre_HTTP_Request {
      * @return string 
      */
     public function getUri() {
-        
+       
         return $this->_SERVER['REQUEST_URI'];
 
     }

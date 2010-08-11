@@ -23,7 +23,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
-        $fakeServer->broadCastEvent('beforeMethod',array('GET'));
+        $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
     }
 
@@ -40,7 +40,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(Sabre_DAV_Property_Principal::UNAUTHENTICATED, $props['{DAV:}current-user-principal']->getType());
 
         // This will force the login
-        $fakeServer->broadCastEvent('beforeMethod',array('GET'));
+        $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
         $props = $fakeServer->getProperties('',array('{DAV:}current-user-principal'));
         $this->assertArrayHasKey('{DAV:}current-user-principal', $props);
@@ -71,7 +71,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'failme');
         $fakeServer->addPlugin($plugin);
-        $fakeServer->broadCastEvent('beforeMethod',array('GET'));
+        $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
     }
 
@@ -101,6 +101,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
+            'REQUEST_URI' => '/',
         ));
         $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
 

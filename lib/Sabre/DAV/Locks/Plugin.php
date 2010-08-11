@@ -70,12 +70,12 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function unknownMethod($method) {
+    public function unknownMethod($method, $uri) {
 
         switch($method) { 
 
-            case 'LOCK'   : $this->httpLock(); return false; 
-            case 'UNLOCK' : $this->httpUnlock(); return false; 
+            case 'LOCK'   : $this->httpLock($uri); return false; 
+            case 'UNLOCK' : $this->httpUnlock($uri); return false; 
 
         }
 
@@ -128,10 +128,11 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This plugin uses that feature to intercept access to locked resources.
      * 
-     * @param string $method 
+     * @param string $method
+     * @param string $uri
      * @return bool 
      */
-    public function beforeMethod($method) {
+    public function beforeMethod($method, $uri) {
 
         switch($method) {
 
@@ -140,13 +141,13 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             case 'PROPPATCH' :
             case 'PUT' :
                 $lastLock = null;
-                if (!$this->validateLock(null,$lastLock))
+                if (!$this->validateLock($uri,$lastLock))
                     throw new Sabre_DAV_Exception_Locked($lastLock);
                 break;
             case 'MOVE' :
                 $lastLock = null;
                 if (!$this->validateLock(array(
-                      $this->server->getRequestUri(),
+                      $uri,
                       $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
                     ),$lastLock))
                         throw new Sabre_DAV_Exception_Locked($lastLock);
@@ -255,11 +256,10 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC4918:S7.3
      * 
+     * @param string $uri
      * @return void
      */
-    protected function httpLock() {
-
-        $uri = $this->server->getRequestUri();
+    protected function httpLock($uri) {
 
         $lastLock = null;
         if (!$this->validateLock($uri,$lastLock)) {
@@ -328,12 +328,11 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * This WebDAV method allows you to remove a lock from a node. The client should provide a valid locktoken through the Lock-token http header
      * The server should return 204 (No content) on success
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpUnlock() {
+    protected function httpUnlock($uri) {
 
-        $uri = $this->server->getRequestUri();
-        
         $lockToken = $this->server->httpRequest->getHeader('Lock-Token');
 
         // If the locktoken header is not supplied, we need to throw a bad request exception

@@ -39,14 +39,14 @@ class Sabre_DAV_Browser_MapGetToPropFind extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function httpGetInterceptor($method) {
+    public function httpGetInterceptor($method, $uri) {
 
         if ($method!='GET') return true;
        
-        $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
-        if ($node instanceof Sabre_DAV_IFile) return true;
+        $node = $this->server->tree->getNodeForPath($uri);
+        if ($node instanceof Sabre_DAV_IFile) return;
 
-        $this->server->httpPropFind();
+        $this->server->invokeMethod('PROPFIND',$uri);
         return false;
         
     }

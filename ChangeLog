@@ -1,3 +1,6 @@
+1.2.5 (2010-08-18)
+	* Fixed: Issue 73: guessBaseUrl fails for some servers.
+
 1.2.4 (2010-07-13)
 	* Fixed: Issue 62: Guessing baseUrl fails when url contains a
 	  query-string.

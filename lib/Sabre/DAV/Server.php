@@ -261,7 +261,7 @@ class Sabre_DAV_Server {
         $uri = $this->httpRequest->getRawServerValue('REQUEST_URI');
 
         // If PATH_INFO is not found, we just return /
-        if (!is_null($pathInfo)) {
+        if (!empty($pathInfo)) {
 
             // We need to make sure we ignore the QUERY_STRING part
             if ($pos = strpos($uri,'?'))

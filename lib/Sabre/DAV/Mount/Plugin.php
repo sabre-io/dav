@@ -39,7 +39,7 @@ class Sabre_DAV_Mount_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return void
      */
-    public function beforeMethod($method) {
+    public function beforeMethod($method, $uri) {
 
         if ($method!='GET') return;
         if ($this->server->httpRequest->getQueryString()!='mount') return;

@@ -105,7 +105,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      * @throws Sabre_DAV_Exception_NotAuthenticated
      * @return bool 
      */
-    public function beforeMethod($method) {
+    public function beforeMethod($method, $uri) {
 
         $this->authBackend->authenticate($this->server,$this->realm);
 

@@ -51,20 +51,22 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'MKBREAKFAST', 
+            'REQUEST_URI'    => '/',
         ));
 
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status);
+        $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status,'Incorrect status returned. Full response body:' . $this->response->body);
 
     }
 
     function testReportPassThrough() {
 
         $request = new Sabre_HTTP_Request(array(
-            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_METHOD'    => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
+            'REQUEST_URI'       => '/',
         ));
         $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
 
@@ -78,7 +80,8 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
     function testMkCalendarEmptyBody() {
 
         $request = new Sabre_HTTP_Request(array(
-            'REQUEST_METHOD' => 'MKCALENDAR', 
+            'REQUEST_METHOD' => 'MKCALENDAR',
+            'REQUEST_URI'    => '/',
         ));
 
     

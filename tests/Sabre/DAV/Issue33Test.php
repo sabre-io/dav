@@ -31,7 +31,6 @@ class Sabre_DAV_Issue33Test extends PHPUnit_FrameWork_TestCase {
 
         $info = $server->getCopyAndMoveInfo();
 
-        $this->assertEquals('foo',$info['source']);
         $this->assertEquals('%C3%A0fo%C3%B3', urlencode($info['destination']));
         $this->assertFalse($info['destinationExists']);
         $this->assertFalse($info['destinationNode']);

@@ -6,6 +6,8 @@
 	  If you have custom plugins, make sure they use this argument. If they
 	  don't, they will likely still work, but it might get in the way of
 	  future changes.
+	* Added: Sabre_DAV_Auth_Backend_AbstractBasic class, which can be used to
+	  easily implement basic authentication.
 	* Removed: Sabre_DAV_PermissionDenied class. Use Sabre_DAV_Forbidden
 	  instead.
 	* Removed: Sabre_DAV_IDirectory interface, use Sabre_DAV_ICollection

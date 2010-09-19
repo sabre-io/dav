@@ -158,6 +158,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     <tr><td colspan=\"4\"><hr /></td></tr>";
     
     $files = $this->server->getPropertiesForPath($path,array(
+        '{DAV:}displayname',
         '{DAV:}resourcetype',
         '{DAV:}getcontenttype',
         '{DAV:}getcontentlength',
@@ -170,7 +171,6 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         if (rtrim($file['href'],'/')==$path) continue;
 
         list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
-        $name = $this->escapeHTML($name);
 
         $type = null;
 
@@ -197,14 +197,19 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         }
         if (!$type) $type = 'Unknown';
 
-        $type = $this->escapeHTML($type);
         $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
         $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(DateTime::ATOM):'';
 
         $fullPath = Sabre_DAV_URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
 
+        $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
+
+        $name = $this->escapeHTML($name);
+        $displayName = $this->escapeHTML($displayName);
+        $type = $this->escapeHTML($type);
+
         $html.= "<tr>
-<td><a href=\"{$fullPath}\">{$name}</a></td>
+<td><a href=\"{$fullPath}\">{$displayName}</a></td>
 <td>{$type}</td>
 <td>{$size}</td>
 <td>{$lastmodified}</td>

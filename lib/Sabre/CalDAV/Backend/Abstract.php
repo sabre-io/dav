@@ -12,9 +12,20 @@
 abstract class Sabre_CalDAV_Backend_Abstract {
 
     /**
-     * Returns a list of calendars for a principal
+     * Returns a list of calendars for a principal.
      *
-     * @param string $userUri 
+     * Every project is an array with the following keys:
+     *  * id, a unique id that will be used by other functions to modify the
+     *    calendar. This can be the same as the uri or a database key.
+     *  * uri, which the basename of the uri with which the calendar is 
+     *    accessed.
+     *  * principalUri. The owner of the calendar. Almost always the same as
+     *    principalUri passed to this method.
+     *
+     * Furthermore it can contain webdav properties in clark notation. A very
+     * common one is '{DAV:}displayname'. 
+     *
+     * @param string $principalUri 
      * @return array 
      */
     abstract function getCalendarsForUser($principalUri);

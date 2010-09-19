@@ -97,7 +97,14 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     abstract function deleteCalendar($calendarId);
 
     /**
-     * Returns all calendar objects within a calendar object. 
+     * Returns all calendar objects within a calendar object.
+     *
+     * Every item contains an array with the following keys:
+     *   * id - unique identifier which will be used for subsequent updates
+     *   * calendardata - The iCalendar-compatible calnedar data
+     *   * uri - a unique key which will be used to construct the uri. This can be any arbitrary string.
+     *   * calendarid - The id of the containing calendar
+     *   * lastmodified - a timestamp of the last modification time
      * 
      * @param string $calendarId 
      * @return array 

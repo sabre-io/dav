@@ -12,6 +12,8 @@
 	  instead.
 	* Removed: Sabre_DAV_IDirectory interface, use Sabre_DAV_ICollection
 	  instead. 
+	* Added: Browser plugin now uses {DAV:}displayname if this property is
+	  available.
 	* Fixed: If-Modified-Since and If-Unmodified-Since would be incorrect if
 	  the date is an exact match.  
 	* Fixed: Improved baseUrl handling.

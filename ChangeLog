@@ -18,6 +18,7 @@
 	  the date is an exact match.  
 	* Fixed: Improved baseUrl handling.
 	* Fixed: Issue 67: Non-seekable stream support in ::put()/::get().
+	* Fixed: Issue 65: Invalid dates are now ignored.
 	* Updated: Refactoring in Sabre_CalDAV to make everything a bit more
 	  ledgable.
 

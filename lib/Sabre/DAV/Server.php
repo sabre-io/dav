@@ -1658,18 +1658,26 @@ class Sabre_DAV_Server {
             // header
             // Note that this header only has to be checked if there was no If-None-Match header
             // as per the HTTP spec.
-            $date = new DateTime($ifModifiedSince);
 
-            if (is_null($node)) {
-                $node = $this->tree->getNodeForPath($uri);
+            try {
+                $date = new DateTime($ifModifiedSince);
+            } catch (Exception $e) {
+                // We must ignore invalid dates.
+                $date = null;
             }
-            $lastMod = $node->getLastModified();
-            if ($lastMod) {
-                $lastMod = new DateTime('@' . $lastMod);
-                if ($lastMod <= $date) {
-                    $this->httpResponse->sendStatus(304);
-                    return false;
-                } 
+
+            if ($date) {
+                if (is_null($node)) {
+                    $node = $this->tree->getNodeForPath($uri);
+                }
+                $lastMod = $node->getLastModified();
+                if ($lastMod) {
+                    $lastMod = new DateTime('@' . $lastMod);
+                    if ($lastMod <= $date) {
+                        $this->httpResponse->sendStatus(304);
+                        return false;
+                    } 
+                }
             }
         }
 

@@ -202,6 +202,25 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
     /**
      * @covers Sabre_DAV_Server::checkPreconditions
      */
+    public function testIfModifiedSinceInvalidDate() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+        $server->httpResponse = new Sabre_HTTP_ResponseMock();
+
+        // Invalid dates must be ignored, so this should return true
+        $this->assertTrue($server->checkPreconditions());
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     */
     public function testIfUnmodifiedSinceUnModified() {
 
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 

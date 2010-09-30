@@ -54,6 +54,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
         $this->assertEquals(array(
                 'Content-Length' => '0',
             ),

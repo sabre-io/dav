@@ -610,9 +610,8 @@ class Sabre_DAV_Server {
      */
     protected function httpDelete($uri) {
 
-        $node = $this->tree->getNodeForPath($uri);
         if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
-        $node->delete();
+        $this->tree->delete($uri);
 
         $this->httpResponse->sendStatus(204);
         $this->httpResponse->setHeader('Content-Length','0');
@@ -734,8 +733,7 @@ class Sabre_DAV_Server {
 
         }
 
-        // First we'll do a check to see if the resource already exists
-        try {
+        if ($this->tree->nodeExists($uri)) { 
 
             $node = $this->tree->getNodeForPath($uri);
           
@@ -750,7 +748,7 @@ class Sabre_DAV_Server {
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(200);
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } else {
 
             // If we got here, the resource didn't exist yet.
             $this->createFile($this->getRequestUri(),$body);
@@ -850,7 +848,7 @@ class Sabre_DAV_Server {
         if ($moveInfo['destinationExists']) {
 
             if (!$this->broadcastEvent('beforeUnbind',array($moveInfo['destination']))) return false;
-            $moveInfo['destinationNode']->delete();
+            $this->tree->delete($moveInfo['destination']);
 
         }
 
@@ -880,7 +878,7 @@ class Sabre_DAV_Server {
         if ($copyInfo['destinationExists']) {
 
             if (!$this->broadcastEvent('beforeUnbind',array($copyInfo['destination']))) return false;
-            $copyInfo['destinationNode']->delete();
+            $this->tree->delete($copyInfo['destination']);
 
         }
         if (!$this->broadcastEvent('beforeBind',array($copyInfo['destination']))) return false;
@@ -1341,6 +1339,7 @@ class Sabre_DAV_Server {
 
         $parent = $this->tree->getNodeForPath($dir);
         $parent->createFile($name,$data);
+        $this->tree->markDirty($dir);
 
         $this->broadcastEvent('afterBind',array($uri));
     }
@@ -1450,9 +1449,8 @@ class Sabre_DAV_Server {
             }
 
             if ($rollBack) {
-                $node = $this->tree->getNodeForPath($uri);
                 if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
-                $node->delete();
+                $this->tree->delete($uri);
 
                 // Re-throwing exception
                 if ($exception) throw $exception;
@@ -1461,6 +1459,7 @@ class Sabre_DAV_Server {
             }
                 
         }
+        $this->tree->markDirty($parentUri);
         $this->broadcastEvent('afterBind',array($uri));
 
     }

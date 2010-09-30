@@ -20,6 +20,12 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      */
     protected $rootNode;
 
+    /**
+     * This is the node cache. Accessed nodes are stored here 
+     * 
+     * @var array 
+     */
+    protected $cache = array();
 
     /**
      * Creates the object
@@ -44,6 +50,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
     public function getNodeForPath($path) {
 
         $path = trim($path,'/');
+        if (isset($this->cache[$path])) return $this->cache[$path];
 
         //if (!$path || $path=='.') return $this->rootNode;
         $currentNode = $this->rootNode;
@@ -61,6 +68,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
         }
 
+        $this->cache[$path] = $currentNode;
         return $currentNode;
 
     }
@@ -84,6 +92,32 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             return false;
 
         }
+
+    }
+
+    /**
+     * This method is called with every tree update
+     *
+     * Examples of tree updates are:
+     *   * node deletions
+     *   * node creations
+     *   * copy
+     *   * move
+     *   * renaming nodes 
+     * 
+     * If Tree classes implement a form of caching, this will allow
+     * them to make sure caches will be expired.
+     * 
+     * If a path is passed, it is assumed that the entire subtree is dirty
+     *
+     * @param string $path 
+     * @return void
+     */
+    public function markDirty($path) {
+
+        // We don't care enough about sub-paths
+        // flushing the entire cache
+        $this->cache = array();
 
     }
 

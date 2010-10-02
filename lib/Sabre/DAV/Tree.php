@@ -62,7 +62,7 @@ abstract class Sabre_DAV_Tree {
         $destinationParent = $this->getNodeForPath($destinationDir);
         $this->copyNode($sourceNode,$destinationParent,$destinationName);
 
-        $this->markDirty($destinationParent);
+        $this->markDirty($destinationDir);
 
     }
 
@@ -103,6 +103,19 @@ abstract class Sabre_DAV_Tree {
         
         list($parent) = Sabre_DAV_URLUtil::splitPath($path);
         $this->markDirty($parent);
+
+    }
+
+    /**
+     * Returns a list of childnodes for a given path. 
+     * 
+     * @param string $path 
+     * @return array 
+     */
+    public function getChildren($path) {
+
+        $node = $this->getNodeForPath($path);
+        return $node->getChildren();
 
     }
 

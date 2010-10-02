@@ -1216,7 +1216,7 @@ class Sabre_DAV_Server {
             $path => $parentNode
         );
         if ($depth==1 && $parentNode instanceof Sabre_DAV_ICollection) {
-            foreach($parentNode->getChildren() as $childNode)
+            foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }            
        

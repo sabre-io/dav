@@ -96,6 +96,25 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
     }
 
     /**
+     * Returns a list of childnodes for a given path. 
+     * 
+     * @param string $path 
+     * @return array 
+     */
+    public function getChildren($path) {
+
+        $node = $this->getNodeForPath($path);
+        $children = $node->getChildren();
+        foreach($children as $child) {
+
+            $this->cache[trim($path,'/') . '/' . $child->getName()] = $child;
+
+        }
+        return $children;
+
+    }
+
+    /**
      * This method is called with every tree update
      *
      * Examples of tree updates are:
@@ -117,7 +136,12 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
         // We don't care enough about sub-paths
         // flushing the entire cache
-        $this->cache = array();
+        $path = trim($path,'/');
+        foreach($this->cache as $nodePath=>$node) {
+            if ($nodePath == $path || strpos($nodePath,$path.'/')===0)
+                unset($this->cache[$nodePath]);
+            
+        }
 
     }
 

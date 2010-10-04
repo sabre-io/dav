@@ -82,7 +82,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
         $supportedComponents = $this->calendarInfo['{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set']->getValue();
         Sabre_CalDAV_ICalendarUtil::validateICalendarObject($calendarData, $supportedComponents);
 
-        $this->caldavBackend->updateCalendarObject($this->objectData['calendarid'],$this->objectData['uri'],$calendarData);
+        $this->caldavBackend->updateCalendarObject($this->calendarInfo['id'],$this->objectData['uri'],$calendarData);
         $this->objectData['calendardata'] = $calendarData;
 
     }
@@ -94,7 +94,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
      */
     public function delete() {
 
-        $this->caldavBackend->deleteCalendarObject($this->objectData['calendarid'],$this->objectData['uri']);
+        $this->caldavBackend->deleteCalendarObject($this->calendarInfo['id'],$this->objectData['uri']);
 
     }
 

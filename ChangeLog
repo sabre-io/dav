@@ -17,7 +17,8 @@
 	* Added: Cache layer in the ObjectTree.
 	* Added: Tree classes now have a delete and getChildren method.
 	* Fixed: If-Modified-Since and If-Unmodified-Since would be incorrect if
-	  the date is an exact match.  
+	  the date is an exact match.
+	* Fixed: Support for multiple ETags in If-Match and If-None-Match headers.
 	* Fixed: Improved baseUrl handling.
 	* Fixed: Issue 67: Non-seekable stream support in ::put()/::get().
 	* Fixed: Issue 65: Invalid dates are now ignored.

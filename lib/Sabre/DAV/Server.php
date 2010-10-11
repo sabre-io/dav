@@ -1608,13 +1608,23 @@ class Sabre_DAV_Server {
             // Only need to check entity tags if they are not *
             if ($ifMatch!=='*') {
 
-                // The Etag is surrounded by double-quotes, so those must be 
-                // stripped.
-                $ifMatch = trim($ifMatch,'"');
-                
-                $etag = $node->getETag();
-                if ($etag!==$ifMatch) {
-                     throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified, but the ETag did not match','If-Match');
+                // There can be multiple etags
+                $ifMatch = explode(',',$ifMatch);
+                $haveMatch = false;
+                foreach($ifMatch as $ifMatchItem) {
+
+                    // The Etag is surrounded by double-quotes, so those must 
+                    // be stripped. We're also stripping any spaces outside the
+                    // quotes.
+                    $ifMatchItem = trim(trim($ifMatchItem,' '),'"');
+                    
+                    $etag = $node->getETag();
+                    if ($etag===$ifMatchItem) {
+                        $haveMatch = true;
+                    }
+                }
+                if (!$haveMatch) {
+                     throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified, but none of the specified the ETags matched.','If-Match');
                 }
             }
         }
@@ -1634,10 +1644,27 @@ class Sabre_DAV_Server {
                 }
             }
             if ($nodeExists) {
-                // The Etag is surrounded by double-quotes, so those must be 
-                // stripped.
-                $ifNoneMatch = trim($ifNoneMatch,'"');
-                if ($ifNoneMatch==='*' || (($etag = $node->getETag()) && $etag===$ifNoneMatch)) {
+                $haveMatch = false;
+                if ($ifNoneMatch==='*') $haveMatch = true;
+                else {
+
+                    // There might be multiple etags
+                    $ifNoneMatch = explode(',', $ifNoneMatch);
+                    $etag = $node->getETag();
+
+                    foreach($ifNoneMatch as $ifNoneMatchItem) {
+                        // The Etag is surrounded by double-quotes, so those must 
+                        // be stripped. We're also stripping any spaces outside the
+                        // quotes.
+                        $ifNoneMatchItem = trim(trim($ifNoneMatchItem,' '),'"');
+                        
+                        if ($etag===$ifNoneMatchItem) $haveMatch = true;
+
+                    }
+
+                }
+
+                if ($haveMatch) {
                     if ($handleAsGET) {
                         $this->httpResponse->sendStatus(304);
                         return false;

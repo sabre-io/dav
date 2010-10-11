@@ -77,6 +77,23 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
     /**
      * @covers Sabre_DAV_Server::checkPreconditions
      */
+    function testIfMatchMultiple() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_MATCH' => '"hellothere", "abc123"',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+
+        $this->assertTrue($server->checkPreconditions());
+
+    } 
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     */
     function testIfNoneMatchNoNode() {
 
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
@@ -124,6 +141,23 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($server->checkPreconditions());
 
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     */
+    function testIfNoneMatchWrongEtagMultiple() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_NONE_MATCH' => '"1234", "5678"',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+
+        $this->assertTrue($server->checkPreconditions());
+
     } 
 
     /**
@@ -136,6 +170,24 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '"abc123"',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+
+        $server->checkPreconditions();
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     * @expectedException Sabre_DAV_Exception_PreconditionFailed
+     */
+    public function testIfNoneMatchCorrectEtagMultiple() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_NONE_MATCH' => '"1234", "abc123"',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;

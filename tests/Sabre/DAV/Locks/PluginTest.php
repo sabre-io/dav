@@ -320,6 +320,45 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     /**
      * @depends testLock
      */
+    function testUnlock() {
+
+        $request = new Sabre_HTTP_Request(array());
+        $this->server->httpRequest = $request;
+
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->invokeMethod('LOCK','test.txt');
+        $lockToken = $this->server->httpResponse->headers['Lock-Token'];
+
+        $serverVars = array(
+            'HTTP_LOCK_TOKEN' => $lockToken, 
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->server->invokeMethod('UNLOCK', 'test.txt');
+
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals(array(
+            'Content-Length' => '0',
+            ),
+            $this->server->httpResponse->headers
+         );
+
+
+    }
+
+    /**
+     * @depends testLock
+     */
     function testLockPutBadToken() {
 
         $serverVars = array(

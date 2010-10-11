@@ -1,6 +1,6 @@
 <?php
 
-define('SABRE_MYSQLDSN','mysql:dbname=sabredav');
+define('SABRE_MYSQLDSN','mysql:host=127.0.0.1;dbname=sabredav');
 define('SABRE_MYSQLUSER','root');
 define('SABRE_MYSQLPASS','');
 

@@ -922,19 +922,6 @@ class Sabre_DAV_Server {
     // {{{ HTTP/WebDAV protocol helpers 
 
     /**
-     * This method is kept for backwards compatibility purposes.
-     * Use invokeMethod instead.
-     *
-     * @deprecated
-     * @return void 
-     */
-    protected function invoke() {
-
-        $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
-
-    }
-
-    /**
      * Returns an array with all the supported HTTP methods for a specific uri. 
      *
      * @param string $uri 

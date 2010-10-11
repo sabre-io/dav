@@ -89,7 +89,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
         $date = new DateTime('@' . time() + (60*20));
         $date->setTimeZone(new DateTimeZone('GMT'));
-        $date = $date->format('D, d M Y H:i:s e');
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
@@ -118,7 +118,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
         $date = new DateTime('@' . time() - (60*20));
         $date->setTimeZone(new DateTimeZone('GMT'));
-        $date = $date->format('D, d M Y H:i:s e');
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
@@ -148,7 +148,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
         $date = new DateTime('now');
         $date->setTimeZone(new DateTimeZone('GMT'));
-        $date = $date->format('D, d M Y H:i:s e');
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
@@ -178,7 +178,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
         $date = new DateTime('now');
         $date->setTimeZone(new DateTimeZone('GMT'));
-        $date = $date->format('D, d M Y H:i:s e');
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
 
         $sig = base64_encode($this->hmacsha1($secretKey,

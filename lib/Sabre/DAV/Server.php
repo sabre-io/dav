@@ -1684,13 +1684,7 @@ class Sabre_DAV_Server {
             // header
             // Note that this header only has to be checked if there was no If-None-Match header
             // as per the HTTP spec.
-
-            try {
-                $date = new DateTime($ifModifiedSince);
-            } catch (Exception $e) {
-                // We must ignore invalid dates.
-                $date = null;
-            }
+            $date = Sabre_HTTP_Util::parseRFC2616Date($ifModifiedSince);
 
             if ($date) {
                 if (is_null($node)) {
@@ -1711,16 +1705,19 @@ class Sabre_DAV_Server {
             
             // The If-Unmodified-Since will allow allow the request if the
             // entity has not changed since the specified date.
-            $date = new DateTime($ifUnmodifiedSince);
-            
-            if (is_null($node)) {
-                $node = $this->tree->getNodeForPath($uri);
-            }   
-            $lastMod = $node->getLastModified();
-            if ($lastMod) {
-                $lastMod = new DateTime('@' . $lastMod);
-                if ($lastMod > $date) {
-                    throw new Sabre_DAV_Exception_PreconditionFailed('An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.','If-Unmodified-Since');
+            $date = Sabre_HTTP_Util::parseRFC2616Date($ifUnmodifiedSince);
+           
+            // We must only check the date if it's valid
+            if ($date) {
+                if (is_null($node)) {
+                    $node = $this->tree->getNodeForPath($uri);
+                }   
+                $lastMod = $node->getLastModified();
+                if ($lastMod) {
+                    $lastMod = new DateTime('@' . $lastMod);
+                    if ($lastMod > $date) {
+                        throw new Sabre_DAV_Exception_PreconditionFailed('An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.','If-Unmodified-Since');
+                    }
                 }
             }
 

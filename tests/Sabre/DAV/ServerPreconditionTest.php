@@ -234,6 +234,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
 
     }
 
+
     /**
      * @covers Sabre_DAV_Server::checkPreconditions
      */
@@ -242,7 +243,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 GMT',
+            'HTTP_IF_MODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;
@@ -273,6 +274,24 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
     /**
      * @covers Sabre_DAV_Server::checkPreconditions
      */
+    public function testIfModifiedSinceInvalidDate2() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+        $server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->assertTrue($server->checkPreconditions());
+
+    }
+
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     */
     public function testIfUnmodifiedSinceUnModified() {
 
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
@@ -286,6 +305,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
 
     }
 
+
     /**
      * @covers Sabre_DAV_Server::checkPreconditions
      * @expectedException Sabre_DAV_Exception_PreconditionFailed
@@ -295,12 +315,29 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 GMT',
+            'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
         $server->httpRequest = $httpRequest;
         $server->httpResponse = new Sabre_HTTP_ResponseMock();
         $server->checkPreconditions();
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::checkPreconditions
+     */
+    public function testIfUnmodifiedSinceInvalidDate() {
+
+        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode())); 
+        $server = new Sabre_DAV_Server($root);
+        $httpRequest = new Sabre_HTTP_Request(array(
+            'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',
+            'REQUEST_URI'   => '/foo'
+        ));
+        $server->httpRequest = $httpRequest;
+        $server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->assertTrue($server->checkPreconditions());
 
     }
 
@@ -317,7 +354,7 @@ class Sabre_DAV_ServerPreconditionsNode extends Sabre_DAV_File {
 
     function getLastModified() {
 
-        /* my birthdy & time, I believe */
+        /* my birthday & time, I believe */
         return strtotime('1985-04-07 01:30 +02:00');
 
     }

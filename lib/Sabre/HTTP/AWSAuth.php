@@ -157,47 +157,24 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
      */
     protected function validateRFC2616Date($dateHeader) {
 
-        $patterns = array(
-             // Matches: Sun, 06 Nov 1994 08:49:37 GMT
-             '%a, %d %h %Y %H:%M:%S %z',
-             '%a, %d %h %Y %H:%M:%S %Z',
-             // Matches: Sunday, 06-Nov-94 08:49:37 GMT
-             '%A, %d-%h-%y %H:%M:%S %z',
-             '%A, %d-%h-%y %H:%M:%S %Z',
-             // Matches: Sun Nov  6 08:49:37 1994
-            '%a %h %e %H:%M:%S %Y'
-         );
-
-        $realDate = 0;
-        foreach($patterns as $pattern) {
-
-            if ($date_arr = strptime($dateHeader,$pattern)) {
-                $realDate = strtotime($dateHeader);
-                break;
-            }
-
-        }
+        $date = Sabre_HTTP_Util::parseRFC2616Date($dateHeader);
 
         // Unknown format
-        if (!$realDate) {
+        if (!$date) {
             $this->errorCode = self::ERR_INVALIDDATEFORMAT;
             return false;
         }
 
-        $currentDate = time();
+        $min = new DateTime('-15 minutes');
+        $max = new DateTime('+15 minutes');
 
         // We allow 15 minutes around the current date/time
-        if ($realDate > ($currentDate + (60 * 15))) {
+        if ($date > $max || $date < $min) {
             $this->errorCode = self::ERR_REQUESTTIMESKEWED;
             return false;
         }
 
-        if ($realDate < ($currentDate - (60 * 15))) {
-            $this->errorCode = self::ERR_REQUESTTIMESKEWED;
-            return false;
-        }
-
-        return $realDate;
+        return $date;
 
     }
     

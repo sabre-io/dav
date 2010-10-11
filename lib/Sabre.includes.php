@@ -14,6 +14,7 @@
  */
 
 /* Utilities */
+include 'Sabre/HTTP/Util.php';
 include 'Sabre/HTTP/Response.php';
 include 'Sabre/HTTP/Request.php';
 include 'Sabre/HTTP/AbstractAuth.php';

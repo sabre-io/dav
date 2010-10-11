@@ -1175,16 +1175,16 @@ class Sabre_DAV_Server {
 
         $headers = array();
         foreach($propertyMap as $property=>$header) {
-            if (isset($properties[$property])) {
-                if (is_scalar($properties[$property])) { 
-                    $headers[$header] = $properties[$property];
+            if (!isset($properties[$property])) continue;
 
-                // GetLastModified gets special cased 
-                } elseif ($properties[$property] instanceof Sabre_DAV_Property_GetLastModified) {
-                    $headers[$header] = $properties[$property]->getTime()->format(DateTime::RFC1123);
-                }
+            if (is_scalar($properties[$property])) { 
+                $headers[$header] = $properties[$property];
 
+            // GetLastModified gets special cased 
+            } elseif ($properties[$property] instanceof Sabre_DAV_Property_GetLastModified) {
+                $headers[$header] = $properties[$property]->getTime()->format(DateTime::RFC1123);
             }
+
         }
 
         return $headers;

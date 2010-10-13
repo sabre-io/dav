@@ -453,7 +453,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF' => '([etag1])',
+            'HTTP_IF' => '(["etag1"])',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -477,7 +477,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF' => '(['.$etag.'])',
+            'HTTP_IF' => '(["'.$etag.'"])',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);

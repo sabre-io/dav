@@ -348,7 +348,7 @@ class Sabre_DAV_ServerPreconditionsNode extends Sabre_DAV_File {
 
     function getETag() {
     
-        return 'abc123';
+        return '"abc123"';
 
     }
 

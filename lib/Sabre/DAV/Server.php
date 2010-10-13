@@ -1600,10 +1600,8 @@ class Sabre_DAV_Server {
                 $haveMatch = false;
                 foreach($ifMatch as $ifMatchItem) {
 
-                    // The Etag is surrounded by double-quotes, so those must 
-                    // be stripped. We're also stripping any spaces outside the
-                    // quotes.
-                    $ifMatchItem = trim(trim($ifMatchItem,' '),'"');
+                    // Stripping any extra spaces
+                    $ifMatchItem = trim($ifMatchItem,' ');
                     
                     $etag = $node->getETag();
                     if ($etag===$ifMatchItem) {
@@ -1640,10 +1638,9 @@ class Sabre_DAV_Server {
                     $etag = $node->getETag();
 
                     foreach($ifNoneMatch as $ifNoneMatchItem) {
-                        // The Etag is surrounded by double-quotes, so those must 
-                        // be stripped. We're also stripping any spaces outside the
-                        // quotes.
-                        $ifNoneMatchItem = trim(trim($ifNoneMatchItem,' '),'"');
+                        
+                        // Stripping any extra spaces
+                        $ifNoneMatchItem = trim($ifNoneMatchItem,' ');
                         
                         if ($etag===$ifNoneMatchItem) $haveMatch = true;
 

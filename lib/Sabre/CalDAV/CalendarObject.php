@@ -110,13 +110,15 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
     }
 
     /**
-     * Returns an ETag for this object 
+     * Returns an ETag for this object.
+     *
+     * The ETag is an arbritrary string, but MUST be surrounded by double-quotes.
      * 
      * @return string 
      */
     public function getETag() {
 
-        return md5($this->objectData['calendardata']);
+        return '"' . md5($this->objectData['calendardata']). '"';
 
     }
 

@@ -25,7 +25,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
-            'ETag' => md5_file($this->tempDir . '/test.txt'),
+            'ETag' => '"'  .md5_file($this->tempDir . '/test.txt') . '"',
             ),
             $this->response->headers
          );
@@ -50,7 +50,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
-            'ETag' => md5_file($this->tempDir . '/test.txt'),
+            'ETag' => '"' . md5_file($this->tempDir . '/test.txt') . '"',
             ),
             $this->response->headers
          );

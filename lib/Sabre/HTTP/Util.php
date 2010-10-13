@@ -19,7 +19,7 @@ class Sabre_HTTP_Util {
      * @param string $dateHeader 
      * @return bool|DateTime 
      */
-    static function parseRFC2616Date($dateHeader) {
+    static function parseHTTPDate($dateHeader) {
 
         $patterns = array(
             // Matches: Sun, 06 Nov 1994 08:49:37 GMT

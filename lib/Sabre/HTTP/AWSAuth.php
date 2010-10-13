@@ -157,7 +157,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
      */
     protected function validateRFC2616Date($dateHeader) {
 
-        $date = Sabre_HTTP_Util::parseRFC2616Date($dateHeader);
+        $date = Sabre_HTTP_Util::parseHTTPDate($dateHeader);
 
         // Unknown format
         if (!$date) {

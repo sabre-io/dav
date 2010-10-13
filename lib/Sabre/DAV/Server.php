@@ -1671,7 +1671,7 @@ class Sabre_DAV_Server {
             // header
             // Note that this header only has to be checked if there was no If-None-Match header
             // as per the HTTP spec.
-            $date = Sabre_HTTP_Util::parseRFC2616Date($ifModifiedSince);
+            $date = Sabre_HTTP_Util::parseHTTPDate($ifModifiedSince);
 
             if ($date) {
                 if (is_null($node)) {
@@ -1692,7 +1692,7 @@ class Sabre_DAV_Server {
             
             // The If-Unmodified-Since will allow allow the request if the
             // entity has not changed since the specified date.
-            $date = Sabre_HTTP_Util::parseRFC2616Date($ifUnmodifiedSince);
+            $date = Sabre_HTTP_Util::parseHTTPDate($ifUnmodifiedSince);
            
             // We must only check the date if it's valid
             if ($date) {

@@ -536,11 +536,11 @@ class Sabre_DAV_Server {
 
                 $start = $range[0];
                 $end = $range[1]?$range[1]:$nodeSize-1;
-                if($start > $nodeSize) 
+                if($start >= $nodeSize) 
                     throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeSize . ')');
 
                 if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end > $nodeSize) $end = $nodeSize-1;
+                if($end >= $nodeSize) $end = $nodeSize-1;
 
             } else {
 

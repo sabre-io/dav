@@ -6,7 +6,8 @@
  * @package Sabre
  * @subpackage HTTP
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @author Paul Voegler
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_HTTP_Util {
@@ -21,34 +22,38 @@ class Sabre_HTTP_Util {
      */
     static function parseHTTPDate($dateHeader) {
 
-        $patterns = array(
-            // Matches: Sun, 06 Nov 1994 08:49:37 GMT
-            '%a, %d %h %Y %H:%M:%S GMT',
-            // Matches: Sunday, 06-Nov-94 08:49:37 GMT
-            '%A, %d-%h-%y %H:%M:%S GMT',
-            // Matches: Sun Nov  6 08:49:37 1994
-            '%a %h %e %H:%M:%S %Y'
-         );
+        //RFC 2616 section 3.3.1 Full Date
+        //Only the format is checked, valid ranges are checked by strtotime below
+        $month = '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
+        $weekday = '(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)';
+        $wkday = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun)';
+        $time = '[0-2]\d(\:[0-5]\d){2}';
+        $date3 = $month . '\ ([1-3]\d|\ \d)';
+        $date2 = '[0-3]\d\-' . $month . '\-\d\d';
+        //4-digit year cannot begin with 0 - unix timestamp begins in 1970
+        $date1 = '[0-3]\d\ ' . $month . '\ [1-9]\d{3}';
 
-        $realDate = 0;
-        foreach($patterns as $pattern) {
-
-            if ($date_arr = strptime($dateHeader,$pattern)) {
-                $realDate = strtotime($dateHeader);
-                break;
-            }
+        //ANSI C's asctime() format
+        //4-digit year cannot begin with 0 - unix timestamp begins in 1970
+        $asctime_date = $wkday . '\ ' . $date3 . '\ ' . $time . '\ [1-9]\d{3}';
+        //RFC 850, obsoleted by RFC 1036
+        $rfc850_date = $weekday . ',\ ' . $date2 . '\ ' . $time . '\ GMT';
+        //RFC 822, updated by RFC 1123
+        $rfc1123_date = $wkday . ',\ ' . $date1 . '\ ' . $time . '\ GMT';
+        //allowed date formats by RFC 2616
+        $HTTP_date = "($rfc1123_date|$rfc850_date|$asctime_date)";
         
-        }
-
-        // Unknown format
-        if (!$realDate) { 
-
+        //allow for space around the string and strip it
+        $dateHeader = trim($dateHeader, ' ');
+        if (!preg_match('/^' . $HTTP_date . '$/', $dateHeader))
             return false;
 
-        }
+        $realDate = strtotime($dateHeader);
+        //strtotime can return -1 or false in case of error
+        if ($realDate !== false && $realDate >= 0)
+            return new DateTime('@' . $realDate, new DateTimeZone('UTC'));
 
-
-        return new DateTime('@' . $realDate, new DateTimeZone('UTC'));
+        return false;
 
     }
 

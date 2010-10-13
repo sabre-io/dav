@@ -24,7 +24,7 @@
 	* Fixed: Issue 65: Invalid dates are now ignored.
 	* Updated: Refactoring in Sabre_CalDAV to make everything a bit more
 	  ledgable.
-
+	* Fixed: Issue 88: Fixed compatibility for running SabreDAV on Windows.
 
 1.2.4 (2010-07-13)
 	* Fixed: Issue 62: Guessing baseUrl fails when url contains a

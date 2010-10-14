@@ -1,4 +1,4 @@
-1.3.0 (????-??-??)
+1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api
 	  break, so if you implement Sabre_DAV_ICollection directly, add the method.
 	* Changed: Almost all HTTP method implementations now take a uri argument,
@@ -28,7 +28,8 @@
 	* Fixed: Issue 65: Invalid dates are now ignored.
 	* Updated: Refactoring in Sabre_CalDAV to make everything a bit more
 	  ledgable.
-	* Fixed: Issue 88: Fixed compatibility for running SabreDAV on Windows.
+	* Fixed: Issue 88, Issue 89: Fixed compatibility for running SabreDAV on 
+	   Windows.
 	* Fixed: Issue 86: Fixed Content-Range top-boundary from 'file size' to
 	  'file size'-1. 
 

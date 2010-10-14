@@ -48,6 +48,11 @@ class Sabre_HTTP_Util {
         if (!preg_match('/^' . $HTTP_date . '$/', $dateHeader))
             return false;
 
+        //append implicit GMT timezone to ANSI C time format
+        if (!preg_match('/\ GMT$/', $dateHeader))
+            $dateHeader .= ' GMT';
+
+
         $realDate = strtotime($dateHeader);
         //strtotime can return -1 or false in case of error
         if ($realDate !== false && $realDate >= 0)

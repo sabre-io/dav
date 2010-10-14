@@ -39,4 +39,15 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testTimezones() {
+
+        $default = date_default_timezone_get();
+        date_default_timezone_set('Europe/Amsterdam');
+
+        $this->testParseHTTPDate();
+
+        date_default_timezone_set($default);
+
+    }
+
 }

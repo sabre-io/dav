@@ -493,7 +493,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         // We're going to loop through the urls and make sure all lock conditions are satisfied
         foreach($urls as $url) {
 
-            $locks = $this->getLocks($url);
+            $locks = $this->getLocks($url, $checkChildLocks);
 
             // If there were no conditions, but there were locks, we fail 
             if (!$conditions && $locks) {

@@ -7,8 +7,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     function setUp() {
 
         parent::setUp();
-        mkdir(SABRE_TEMPDIR . '/locksdir');
-        $locksBackend = new Sabre_DAV_Locks_Backend_FS(SABRE_TEMPDIR . '/locksdir');
+        $locksBackend = new Sabre_DAV_Locks_Backend_File(SABRE_TEMPDIR . '/locksdb');
         $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;
@@ -438,11 +437,10 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
-        $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status);
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }

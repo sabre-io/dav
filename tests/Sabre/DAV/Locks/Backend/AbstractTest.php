@@ -23,6 +23,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
         $lock->timeout = 60;
         $lock->created = time();
         $lock->token = 'MY-UNIQUE-TOKEN';
+        $lock->uri ='someuri';
 
         $this->assertTrue($backend->lock('someuri', $lock));
 

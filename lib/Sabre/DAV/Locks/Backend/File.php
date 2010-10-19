@@ -3,41 +3,31 @@
 /**
  * The Lock manager allows you to handle all file-locks centrally.
  *
- * This Lock Manager is now deprecated. It has a bug that allows parent 
- * collections to be deletes when children deeper in the tree are locked. 
+ * This Lock Manager stores all its data in a single file. 
  *
- * You are recommended to use either the PDO or the File backend instead.
+ * Note that this is not nearly as robust as a database, you are encouraged
+ * to use the PDO backend instead.
  *
- * This Lock Manager stores all its data in the filesystem.
- * 
  * @package Sabre
  * @subpackage DAV
- * @deprecated
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
+class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
 
     /**
      * The default data directory 
      * 
      * @var string 
      */
-    private $dataDir;
+    private $locksFile;
 
-    public function __construct($dataDir) {
+    public function __construct($locksFile) {
 
-        $this->dataDir = $dataDir;
-
-    }
-
-    protected function getFileNameForUri($uri) {
-
-        return $this->dataDir . '/sabredav_' . md5($uri) . '.locks';
+        $this->locksFile = $locksFile;
 
     }
-
 
     /**
      * Returns a list of Sabre_DAV_Locks_LockInfo objects  
@@ -54,34 +44,30 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
      */
     public function getLocks($uri, $returnChildLocks) {
 
-        $lockList = array();
+        $newLocks = array();
         $currentPath = '';
 
-        foreach(explode('/',$uri) as $uriPart) {
+        $locks = $this->getData();
+        foreach($locks as $lock) {
 
-            // weird algorithm that can probably be improved, but we're traversing the path top down 
-            if ($currentPath) $currentPath.='/'; 
-            $currentPath.=$uriPart;
+            if ($lock->uri === $uri ||
+                //deep locks on parents
+                ($lock->depth!=0 && strpos($uri, $lock->uri . '/')===0) ||
 
-            $uriLocks = $this->getData($currentPath);
+                // locks on children
+                ($returnChildLocks && (strpos($lock->uri, $uri . '/')===0)) ) {
 
-            foreach($uriLocks as $uriLock) {
-
-                // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
-                if($uri==$currentPath || $uriLock->depth!=0) {
-                    $uriLock->uri = $currentPath;
-                    $lockList[] = $uriLock;
-                }
+                $newLocks[] = $lock;
 
             }
 
         }
 
         // Checking if we can remove any of these locks
-        foreach($lockList as $k=>$lock) {
-            if (time() > $lock->timeout + $lock->created) unset($lockList[$k]); 
+        foreach($newLocks as $k=>$lock) {
+            if (time() > $lock->timeout + $lock->created) unset($newLocks[$k]); 
         }
-        return $lockList;
+        return $newLocks;
 
     }
 
@@ -97,13 +83,14 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
         // We're making the lock timeout 30 minutes
         $lockInfo->timeout = 1800;
         $lockInfo->created = time();
+        $lockInfo->uri = $uri;
 
         $locks = $this->getLocks($uri,false);
         foreach($locks as $k=>$lock) {
             if ($lock->token == $lockInfo->token) unset($locks[$k]);
         }
         $locks[] = $lockInfo;
-        $this->putData($uri,$locks);
+        $this->putData($locks);
         return true;
 
     }
@@ -123,7 +110,7 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
             if ($lock->token == $lockInfo->token) {
 
                 unset($locks[$k]);
-                $this->putData($uri,$locks);
+                $this->putData($locks);
                 return true;
 
             }
@@ -133,25 +120,20 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
     }
 
     /**
-     * Returns the stored data for a uri
+     * Loads the lockdata from the filesystem.
      *
-     * @param string $uri
      * @return array 
      */
-    protected function getData($uri) {
+    protected function getData() {
 
-        $path = $this->getFilenameForUri($uri);
-        if (!file_exists($path)) return array();
+        if (!file_exists($this->locksFile)) return array();
 
         // opening up the file, and creating a shared lock
-        $handle = fopen($path,'r');
+        $handle = fopen($this->locksFile,'r');
         flock($handle,LOCK_SH);
-        $data = '';
 
         // Reading data until the eof
-        while(!feof($handle)) {
-            $data.=fread($handle,8192);
-        }
+        $data = stream_get_contents($handle);
 
         // We're all good
         fclose($handle);
@@ -164,19 +146,18 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
     }
 
     /**
-     * Updates the lock information
+     * Saves the lockdata
      *
-     * @param string $uri
      * @param array $newData 
      * @return void
      */
-    protected function putData($uri,array $newData) {
+    protected function putData(array $newData) {
 
-        $path = $this->getFileNameForUri($uri);
-
-        // opening up the file, and creating a shared lock
-        $handle = fopen($path,'a+');
+        // opening up the file, and creating an exclusive lock
+        $handle = fopen($this->locksFile,'a+');
         flock($handle,LOCK_EX);
+
+        // We can only truncate and rewind once the lock is acquired.
         ftruncate($handle,0);
         rewind($handle);
 

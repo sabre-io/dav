@@ -100,7 +100,7 @@ class Sabre_CalDAV_XMLUtil {
                     if (!$collation) $collation = 'i;ascii-casemap';
 
                     $filters[$basePath]['text-match'] = array(
-                        'collation' => $collation,
+                        'collation' => ($collation == 'default'?'i;ascii-casemap':$collation),
                         'negate-condition' => $child->getAttribute('negate-condition')==='yes',
                         'value' => $child->nodeValue,
                     );

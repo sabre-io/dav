@@ -168,7 +168,7 @@ XML;
   <C:comp-filter name="VCALENDAR">
     <C:comp-filter name="VEVENT">
         <C:prop-filter name="ATTENDEE">
-            <C:text-match collation="i;ascii-casemap">mailto:lisa@example.com</C:text-match>
+            <C:text-match collation="default">mailto:lisa@example.com</C:text-match>
             <C:param-filter name="PARTSTAT">
                 <C:text-match collation="i;ascii-casemap">needs-action</C:text-match>
             </C:param-filter>

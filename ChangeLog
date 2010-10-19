@@ -1,6 +1,8 @@
 1.3.1 (2010-??-??)
 	* Fixed: Issue 90: lockdiscovery property and LOCK response now include a
 	  {DAV}lockroot element.
+	* Fixed: Issue 96: support for 'default' collation in CalDAV text-match
+	  filters.
 
 1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api

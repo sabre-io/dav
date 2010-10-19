@@ -160,7 +160,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
                 $lastLock = null;
                 if (!$this->validateLock(
                       $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
-                      $lastLock))
+                      $lastLock, true))
                         throw new Sabre_DAV_Exception_Locked($lastLock);
                 break;
         }
@@ -168,7 +168,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         return true;
 
     }
-
 
     /**
      * Use this method to tell the server this plugin defines additional

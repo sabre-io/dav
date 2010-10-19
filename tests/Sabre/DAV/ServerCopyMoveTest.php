@@ -61,8 +61,41 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test2.txt'));
+
+    }
+
+    function testCopyToSelf() {
+        
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'COPY',
+            'HTTP_DESTINATION' => '/test.txt',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 403 Forbidden',$this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test.txt'));
+
+    }
+
+    function testMoveToSelf() {
+        
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'MOVE',
+            'HTTP_DESTINATION' => '/test.txt',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 403 Forbidden',$this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test.txt'));
 
     }
 

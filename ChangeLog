@@ -3,6 +3,8 @@
 	  {DAV}lockroot element.
 	* Fixed: Issue 96: support for 'default' collation in CalDAV text-match
 	  filters.
+	* Fixed: Issue 102: Ensuring that copy and move with identical source and
+	  destination uri's fails.
 
 1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api

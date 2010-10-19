@@ -91,6 +91,8 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             '/d:prop/d:lockdiscovery',
             '/d:prop/d:lockdiscovery/d:activelock',
             '/d:prop/d:lockdiscovery/d:activelock/d:locktype',
+            '/d:prop/d:lockdiscovery/d:activelock/d:lockroot',
+            '/d:prop/d:lockdiscovery/d:activelock/d:lockroot/d:href',
             '/d:prop/d:lockdiscovery/d:activelock/d:locktype/d:write',
             '/d:prop/d:lockdiscovery/d:activelock/d:lockscope',
             '/d:prop/d:lockdiscovery/d:activelock/d:lockscope/d:exclusive',
@@ -103,7 +105,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         foreach($elements as $elem) {
             $data = $xml->xpath($elem);
-            $this->assertEquals(1,count($data),'We expected 1 match for the xpath expression "' . $elem . '". ' . count($data) . ' were found');
+            $this->assertEquals(1,count($data),'We expected 1 match for the xpath expression "' . $elem . '". ' . count($data) . ' were found. Full response body: ' . $this->response->body);
         }
 
         $depth = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:depth');

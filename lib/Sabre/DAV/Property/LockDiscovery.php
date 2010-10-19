@@ -66,6 +66,13 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
 
             $lockType->appendChild($doc->createElementNS('DAV:','d:write'));
 
+            /* {DAV:}lockroot */ 
+            $lockRoot = $doc->createElementNS('DAV:','d:lockroot');
+            $activeLock->appendChild($lockRoot);
+            $href = $doc->createElementNS('DAV:','d:href');
+            $href->appendChild($doc->createTextNode($server->getBaseUri() . $lock->uri));
+            $lockRoot->appendChild($href);
+
             $activeLock->appendChild($doc->createElementNS('DAV:','d:depth',($lock->depth == Sabre_DAV_Server::DEPTH_INFINITY?'infinity':$lock->depth)));
             $activeLock->appendChild($doc->createElementNS('DAV:','d:timeout','Second-' . $lock->timeout));
 

@@ -40,10 +40,14 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
      * This method should return all the locks for a particular uri, including
      * locks that might be set on a parent uri.
      *
+     * If returnChildLocks is set to true, this method should also look for
+     * any locks in the subtree of the uri for locks.
+     *
      * @param string $uri 
+     * @param bool $returnChildLocks
      * @return array 
      */
-    public function getLocks($uri) {
+    public function getLocks($uri, $returnChildLocks) {
 
         $lockList = array();
         $currentPath = '';
@@ -89,7 +93,7 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
         $lockInfo->timeout = 1800;
         $lockInfo->created = time();
 
-        $locks = $this->getLocks($uri);
+        $locks = $this->getLocks($uri,false);
         foreach($locks as $k=>$lock) {
             if ($lock->token == $lockInfo->token) unset($locks[$k]);
         }
@@ -108,7 +112,7 @@ class Sabre_DAV_Locks_Backend_FS extends Sabre_DAV_Locks_Backend_Abstract {
      */
     public function unlock($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
 
-        $locks = $this->getLocks($uri);
+        $locks = $this->getLocks($uri,false);
         foreach($locks as $k=>$lock) {
 
             if ($lock->token == $lockInfo->token) {

@@ -26,7 +26,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $this->assertTrue($backend->lock('someuri', $lock));
 
-        $locks = $backend->getLocks('someuri');
+        $locks = $backend->getLocks('someuri', false);
         
         $this->assertEquals(1,count($locks));
         $this->assertEquals('Sinterklaas',$locks[0]->owner);
@@ -50,7 +50,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $this->assertTrue($backend->lock('someuri', $lock));
 
-        $locks = $backend->getLocks('someuri/child');
+        $locks = $backend->getLocks('someuri/child', false);
         
         $this->assertEquals(1,count($locks));
         $this->assertEquals('Sinterklaas',$locks[0]->owner);
@@ -75,7 +75,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $this->assertTrue($backend->lock('someuri', $lock));
 
-        $locks = $backend->getLocks('someuri/child');
+        $locks = $backend->getLocks('someuri/child', false);
         
         $this->assertEquals(0,count($locks));
 
@@ -100,7 +100,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
         $lock->owner = 'Santa Clause';
         $this->assertTrue($backend->lock('someuri', $lock));
 
-        $locks = $backend->getLocks('someuri');
+        $locks = $backend->getLocks('someuri', false);
         
         $this->assertEquals(1,count($locks));
 
@@ -124,12 +124,12 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $this->assertTrue($backend->lock('someuri', $lock));
 
-        $locks = $backend->getLocks('someuri');
+        $locks = $backend->getLocks('someuri', false);
         $this->assertEquals(1,count($locks));
 
         $this->assertTrue($backend->unlock('someuri',$lock));
         
-        $locks = $backend->getLocks('someuri');
+        $locks = $backend->getLocks('someuri', false);
         $this->assertEquals(0,count($locks));
 
     }
@@ -149,13 +149,13 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $this->assertTrue($backend->lock('someuri', $lock));
 
-        $locks = $backend->getLocks('someuri');
+        $locks = $backend->getLocks('someuri', false);
         $this->assertEquals(1,count($locks));
 
         $lock->token = 'SOME-OTHER-TOKEN';
         $this->assertFalse($backend->unlock('someuri',$lock));
         
-        $locks = $backend->getLocks('someuri');
+        $locks = $backend->getLocks('someuri', false);
         $this->assertEquals(1,count($locks));
 
     }

@@ -885,7 +885,6 @@ class Sabre_DAV_Server {
             throw new Sabre_DAV_Exception_Forbidden('Source and destination uri are identical.');
 
         if ($copyInfo['destinationExists']) {
-
             if (!$this->broadcastEvent('beforeUnbind',array($copyInfo['destination']))) return false;
             $this->tree->delete($copyInfo['destination']);
 

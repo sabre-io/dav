@@ -137,6 +137,10 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         switch($method) {
 
             case 'DELETE' :
+                $lastLock = null;
+                if (!$this->validateLock($uri,$lastLock, true))
+                    throw new Sabre_DAV_Exception_Locked($lastLock);
+                break;
             case 'MKCOL' :
             case 'PROPPATCH' :
             case 'PUT' :
@@ -149,7 +153,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
                 if (!$this->validateLock(array(
                       $uri,
                       $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
-                    ),$lastLock))
+                    ),$lastLock, true))
                         throw new Sabre_DAV_Exception_Locked($lastLock);
                 break;
             case 'COPY' :
@@ -206,11 +210,14 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * This function should return an array with Sabre_DAV_Locks_LockInfo objects. If there are no locks on a file, return an empty array.
      *
      * Additionally there is also the possibility of locks on parent nodes, so we'll need to traverse every part of the tree 
+     * If the $returnChildLocks argument is set to true, we'll also traverse all the children of the object
+     * for any possible locks and return those as well.
      *
      * @param string $uri 
+     * @param bool $returnChildLocks
      * @return array 
      */
-    public function getLocks($uri) {
+    public function getLocks($uri, $returnChildLocks = false) {
 
         $lockList = array();
         $currentPath = '';
@@ -231,7 +238,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             foreach($uriLocks as $uriLock) {
 
-                // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
+                // Unless we're on the leaf of the uri-tree we should ignore locks with depth 0
                 if($uri==$currentPath || $uriLock->depth!=0) {
                     $uriLock->uri = $currentPath;
                     $lockList[] = $uriLock;
@@ -240,7 +247,9 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
-        if ($this->locksBackend) $lockList = array_merge($lockList,$this->locksBackend->getLocks($uri));
+        if ($this->locksBackend) 
+            $lockList = array_merge($lockList,$this->locksBackend->getLocks($uri, $returnChildLocks));
+
         return $lockList;
 
     }
@@ -467,9 +476,10 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param mixed $urls List of relevant urls. Can be an array, a string or nothing at all for the current request uri
      * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre_DAV_Locks_LockInfo)
+     * @param bool $checkChildLocks If set to true, this function will also look for any locks set on child resources of the supplied urls. This is needed for for example deletion of entire trees.
      * @return bool
      */
-    protected function validateLock($urls = null,&$lastLock = null) {
+    protected function validateLock($urls = null,&$lastLock = null, $checkChildLocks = false) {
 
         if (is_null($urls)) {
             $urls = array($this->server->getRequestUri());

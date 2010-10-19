@@ -19,10 +19,14 @@ abstract class Sabre_DAV_Locks_Backend_Abstract {
      * This method should return all the locks for a particular uri, including
      * locks that might be set on a parent uri.
      *
+     * If returnChildLocks is set to true, this method should also look for
+     * any locks in the subtree of the uri for locks.
+     *
      * @param string $uri 
+     * @param bool $returnChildLocks
      * @return array 
      */
-    abstract function getLocks($uri);
+    abstract function getLocks($uri, $returnChildLocks);
 
     /**
      * Locks a uri 

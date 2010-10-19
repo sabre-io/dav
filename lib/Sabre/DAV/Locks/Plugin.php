@@ -6,7 +6,7 @@
  * This plugin provides locking support to a WebDAV server.
  * The easiest way to get started, is by hooking it up as such:
  *
- * $lockBackend = new Sabre_DAV_Locks_Backend_FS('./my_lock_directory');
+ * $lockBackend = new Sabre_DAV_Locks_Backend_File('./mylockdb');
  * $lockPlugin = new Sabre_DAV_Locks_Plugin($lockBackend);
  * $server->addPlugin($lockPlugin);
  * 

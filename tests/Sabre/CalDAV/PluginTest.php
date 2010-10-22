@@ -77,21 +77,6 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testMkCalendarEmptyBody() {
-
-        $request = new Sabre_HTTP_Request(array(
-            'REQUEST_METHOD' => 'MKCALENDAR',
-            'REQUEST_URI'    => '/',
-        ));
-
-    
-        $this->server->httpRequest = $request;
-        $this->server->exec();
-
-        $this->assertEquals('HTTP/1.1 400 Bad request', $this->response->status);
-
-    }
-
     function testMkCalendarBadLocation() {
 
         $request = new Sabre_HTTP_Request(array(
@@ -336,6 +321,52 @@ END:VCALENDAR';
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
         $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
         $this->assertEquals(array('VEVENT'),$newCalendar[$sccs]->getValue());
+
+    }
+
+    function testMkCalendarEmptyBodySucceed() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'MKCALENDAR',
+            'REQUEST_URI'    => '/calendars/user1/NEWCALENDAR',
+        ));
+
+        $request->setBody(''); 
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 201 Created', $this->response->status,'Invalid response code received. Full response body: ' .$this->response->body);
+
+        $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(2, count($calendars));
+
+        $newCalendar = null;
+        foreach($calendars as $calendar) {
+           if ($calendar['uri'] === 'NEWCALENDAR') {
+                $newCalendar = $calendar;
+                break;
+           }
+        }
+
+        $this->assertType('array',$newCalendar);
+
+        $keys = array(
+            'uri' => 'NEWCALENDAR',
+            'id' => null,
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => null,
+        );
+
+        foreach($keys as $key=>$value) {
+
+            $this->assertArrayHasKey($key, $newCalendar);
+
+            if (is_null($value)) continue;
+            $this->assertEquals($value, $newCalendar[$key]);
+
+        }
+        $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
+        $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
+        $this->assertEquals(array('VEVENT','VTODO'),$newCalendar[$sccs]->getValue());
 
     }
 

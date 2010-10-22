@@ -181,16 +181,21 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         //}
 
         $body = $this->server->httpRequest->getBody(true);
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
-
         $properties = array();
-        foreach($dom->firstChild->childNodes as $child) {
 
-            if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
-            foreach(Sabre_DAV_XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
-                $properties[$k] = $prop;
+        if ($body) {
+
+            $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
+
+
+            foreach($dom->firstChild->childNodes as $child) {
+
+                if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
+                foreach(Sabre_DAV_XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
+                    $properties[$k] = $prop;
+                }
+            
             }
-        
         }
 
         $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
@@ -252,7 +257,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $properties[200]['{DAV:}supported-report-set']->addReport(array(
                      '{' . self::NS_CALDAV . '}calendar-multiget',
                      '{' . self::NS_CALDAV . '}calendar-query',
-                //     '{' . self::NS_CALDAV . '}supported-collation-set',
                 //     '{' . self::NS_CALDAV . '}free-busy-query',
                 ));
             }

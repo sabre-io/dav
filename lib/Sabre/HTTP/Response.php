@@ -73,6 +73,7 @@ class Sabre_HTTP_Response {
             506 => 'Variant Also Negotiates',
             507 => 'Unsufficient Storage', // RFC 4918
             508 => 'Loop Detected', // RFC 5842
+            509 => 'Bandwidth Limit Exceeded', // non-standard
             510 => 'Not extended',
        ); 
 

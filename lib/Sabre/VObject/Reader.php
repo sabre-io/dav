@@ -45,8 +45,7 @@ class Sabre_VObject_Reader {
         if (stripos($line,"BEGIN:")===0) {
 
             // This is a component
-            $obj = new Sabre_VObject_Component();
-            $obj->name = strtoupper(substr($line,6));
+            $obj = new Sabre_VObject_Component(strtoupper(substr($line,6)));
 
             $nextLine = current($lines);
             while(stripos($nextLine,"END:")!==0) {
@@ -82,9 +81,7 @@ class Sabre_VObject_Reader {
             throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow icalendar format');
         }
 
-        $obj = new Sabre_VObject_Property();
-        $obj->name = strtoupper($matches['name']);
-        $obj->value = $matches['value'];
+        $obj = new Sabre_VObject_Property(strtoupper($matches['name']), $matches['value']);
 
         if ($matches['parameters']) {
 
@@ -108,15 +105,12 @@ class Sabre_VObject_Reader {
         $params = array();
         foreach($matches as $match) {
 
-            $param = new Sabre_VObject_Parameter();
-            $param->name = $match['paramName'];
-
             $value = $match['paramValue'];
 
             // Stripping quotes, if needed
             if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
-            $param->value = $value;
-            $params[] = $param;
+
+            $params[] = new Sabre_VObject_Parameter($match['paramName'], $value);
 
         }
 

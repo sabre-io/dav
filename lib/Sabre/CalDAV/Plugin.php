@@ -395,23 +395,27 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                         if ($result===false) return false;
                         break;
                     case 'vjournal' :
+                    case 'vfreebusy' :
+                    case 'valarm' :
                         // TODO: not implemented
                         break;
+
+                    /*
+
+                    case 'vjournal' :
                         $result = $this->validateTimeRangeFilterForJournal($xml,$xpath,$filter);
                         if ($result===false) return false;
                         break;
                     case 'vfreebusy' :
-                        // TODO: not implemented
-                        break;
                         $result = $this->validateTimeRangeFilterForFreeBusy($xml,$xpath,$filter);
                         if ($result===false) return false;
                         break;
                     case 'valarm' :
-                        // TODO: not implemented
-                        break;
                         $result = $this->validateTimeRangeFilterForAlarm($xml,$xpath,$filter);
                         if ($result===false) return false;
                         break;
+
+                        */
 
                 }
 
@@ -431,6 +435,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         
     }
 
+    /**
+     * Checks whether a time-range filter matches an event.
+     * 
+     * @param SimpleXMLElement $xml Event as xml object 
+     * @param string $currentXPath XPath to check 
+     * @param array $currentFilter Filter information 
+     * @return void
+     */
     private function validateTimeRangeFilterForEvent(SimpleXMLElement $xml,$currentXPath,array $currentFilter) {
 
         // Grabbing the DTSTART property
@@ -471,7 +483,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $tz = null;
             }
 
-            // Since the VALUE parameter of both DTSTART and DTEND must be the same
+            // Since the VALUE prameter of both DTSTART and DTEND must be the same
             // we can assume we don't need to check the VALUE paramter of DTEND.
             if ($isDateTime) {
                 $dtend = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdtend[0],$tz);

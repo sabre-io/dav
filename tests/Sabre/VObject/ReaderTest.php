@@ -102,17 +102,75 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testReadPropertyAttribute() {
+    function testReadPropertyParameter() {
 
-        $data = "PROPNAME;ATTNAME=attvalue:propValue";
+        $data = "PROPNAME;PARAMNAME=paramvalue:propValue";
         $result = Sabre_VObject_Reader::read($data);
 
         $this->assertType('Sabre_VObject_Property', $result);
         $this->assertEquals('PROPNAME', $result->name);
         $this->assertEquals('propValue', $result->value);
-        $this->assertEquals(1, count($result->attributes));
-        $this->assertEquals('ATTNAME', $result->attributes[0]->name);
-        $this->assertEquals('attvalue', $result->attributes[0]->value);
+        $this->assertEquals(1, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals('paramvalue', $result->parameters[0]->value);
+
+    }
+
+    function testReadPropertyParameterExtraColon() {
+
+        $data = "PROPNAME;PARAMNAME=paramvalue:propValue:anotherrandomstring";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertType('Sabre_VObject_Property', $result);
+        $this->assertEquals('PROPNAME', $result->name);
+        $this->assertEquals('propValue:anotherrandomstring', $result->value);
+        $this->assertEquals(1, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals('paramvalue', $result->parameters[0]->value);
+
+    }
+
+    function testReadProperty2Parameters() {
+
+        $data = "PROPNAME;PARAMNAME=paramvalue;PARAMNAME2=paramvalue2:propValue";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertType('Sabre_VObject_Property', $result);
+        $this->assertEquals('PROPNAME', $result->name);
+        $this->assertEquals('propValue', $result->value);
+        $this->assertEquals(2, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals('paramvalue', $result->parameters[0]->value);
+        $this->assertEquals('PARAMNAME2', $result->parameters[1]->name);
+        $this->assertEquals('paramvalue2', $result->parameters[1]->value);
+
+    }
+
+    function testReadPropertyParameterQuoted() {
+
+        $data = "PROPNAME;PARAMNAME=\"paramvalue\":propValue";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertType('Sabre_VObject_Property', $result);
+        $this->assertEquals('PROPNAME', $result->name);
+        $this->assertEquals('propValue', $result->value);
+        $this->assertEquals(1, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals('paramvalue', $result->parameters[0]->value);
+
+    }
+
+    function testReadPropertyParameterQuotedColon() {
+
+        $data = "PROPNAME;PARAMNAME=\"param:value\":propValue";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertType('Sabre_VObject_Property', $result);
+        $this->assertEquals('PROPNAME', $result->name);
+        $this->assertEquals('propValue', $result->value);
+        $this->assertEquals(1, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals('param:value', $result->parameters[0]->value);
 
     }
 

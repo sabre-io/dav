@@ -69,8 +69,14 @@ class Sabre_VObject_Reader {
         }
 
         // Properties
-        //$result = preg_match('/(?P<name>[A-Z0-9-]+)(?:;(?P<attributes>^(?<!:):))(.*)$/',$line,$matches);
-        $result = preg_match('/^(?P<name>[A-Z0-9-]+):(?P<value>.*)$/i',$line,$matches);
+        //$result = preg_match('/(?P<name>[A-Z0-9-]+)(?:;(?P<parameters>^(?<!:):))(.*)$/',$line,$matches);
+
+
+        $token = '[A-Z0-9-]+';
+        $parameters = "(?:;(?P<parameters>([^:^\"]|\"([^\"]*)\")*))?";
+        $regex = "/^(?P<name>$token)$parameters:(?P<value>.*)$/i";
+
+        $result = preg_match($regex,$line,$matches);
 
         if (!$result) {
             throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow icalendar format');
@@ -80,7 +86,41 @@ class Sabre_VObject_Reader {
         $obj->name = strtoupper($matches['name']);
         $obj->value = $matches['value'];
 
+        if ($matches['parameters']) {
+
+            $obj->parameters = self::readParameters($matches['parameters']);
+        } 
+
         return $obj;
+
+
+    }
+
+    static private function readParameters($parameters) {
+
+        $token = '[A-Z0-9-]+';
+
+        $paramValue = '(?P<paramValue>[^\"^;]*|"[^"]*")';
+
+        $regex = "/(?<=^|;)(?P<paramName>$token)=$paramValue(?=$|;)/";
+        preg_match_all($regex, $parameters, $matches,  PREG_SET_ORDER);
+
+        $params = array();
+        foreach($matches as $match) {
+
+            $param = new Sabre_VObject_Parameter();
+            $param->name = $match['paramName'];
+
+            $value = $match['paramValue'];
+
+            // Stripping quotes, if needed
+            if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
+            $param->value = $value;
+            $params[] = $param;
+
+        }
+
+        return $params;
 
 
     }

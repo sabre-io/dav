@@ -126,6 +126,22 @@ TEXT;
         );
         break;
 
+    case 'Sabre_VObject' :
+        $summary = 'Sabre_VObject is a natural-interface iCalendar and vCard reader';
+        $description = <<<TEXT
+Sabre_VObject is an intuitive reader for iCalendar and vCard objects.
+
+It provides a natural array/object accessor interface to the parsed tree, much like 
+simplexml for XML files.
+TEXT;
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        break;
+
 }
 
 

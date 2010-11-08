@@ -100,4 +100,36 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('VEVENT',$comp->VEVENT->name); 
 
     }
+
+    /**
+     * @expectedException InvalidArgumentException 
+     */
+    function testMagicSetInvalid() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+
+        // Note that 'myProp' is ignored here.
+        $comp->myProp = new StdClass();
+
+        $this->assertEquals(1, count($comp->children));
+
+        $this->assertEquals('VEVENT',$comp->VEVENT->name); 
+
+    }
+
+    function testCount() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+
+        // Note that 'myProp' is ignored here.
+        $comp->children = array(
+            new Sabre_VObject_Component('VEVENT'),
+            new Sabre_VObject_Component('VTODO')
+        );
+
+        $this->assertEquals(2,$comp->count());
+        $this->assertEquals(2,count($comp));
+
+    }
+
 }

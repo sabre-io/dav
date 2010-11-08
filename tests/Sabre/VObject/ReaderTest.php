@@ -94,7 +94,7 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
 
         $this->assertType('Sabre_VObject_Component', $result);
         $this->assertEquals('VCALENDAR', $result->name);
-        $this->assertEquals(1, count($result->children[0]));
+        $this->assertEquals(1, count($result->children));
         $this->assertType('Sabre_VObject_Property', $result->children[0]);
         $this->assertEquals('PROPNAME', $result->children[0]->name);
         $this->assertEquals('propValue', $result->children[0]->value);

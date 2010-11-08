@@ -16,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAccess {
+class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAccess, Countable {
 
     /**
      * Propertyname 
@@ -143,5 +143,31 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
     }
 
     /* }}} */
+
+    /* {{{ Countable interface */
+
+    /**
+     * Returns the number of elements 
+     * 
+     * @return int 
+     */
+    public function count() {
+
+        return count($this->parameters);
+
+    }
+
+    /* }}} */
+
+    /**
+     * Called when this object is being cast to a string 
+     * 
+     * @return string 
+     */
+    public function __toString() {
+
+        return $this->value;
+
+    }
 
 }

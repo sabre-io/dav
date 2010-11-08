@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Component extends Sabre_VObject_Element implements Iterator {
+class Sabre_VObject_Component extends Sabre_VObject_Element implements Iterator, Countable {
 
     /**
      * Name, for example VEVENT 
@@ -101,6 +101,21 @@ class Sabre_VObject_Component extends Sabre_VObject_Element implements Iterator 
     public function rewind() {
 
         $this->key = 0;
+
+    }
+
+    /* }}} */
+
+    /* {{{ Countable interface */
+
+    /**
+     * Returns the number of child elements 
+     * 
+     * @return int 
+     */
+    public function count() {
+
+        return count($this->children);
 
     }
 

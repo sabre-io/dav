@@ -1,7 +1,24 @@
 <?php
 
+/**
+ * VCALENDAR/VCARD reader
+ *
+ * This class reads the vobject file, and returns a full element tree.
+ * 
+ * @package Sabre
+ * @subpackage VObject
+ * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_VObject_Reader {
 
+    /**
+     * Parses the file and returns the top component 
+     * 
+     * @param string $data 
+     * @return Sabre_VObject_Element 
+     */
     static function read($data) {
 
         // Detecting line endings
@@ -35,6 +52,15 @@ class Sabre_VObject_Reader {
        
     }
 
+    /**
+     * Reads and parses a single line.
+     *
+     * This method receives the full array of lines. The array pointer is used
+     * to traverse.
+     * 
+     * @param array $lines 
+     * @return Sabre_VObject_Element 
+     */
     static private function readLine(&$lines) {
 
         $line = current($lines);
@@ -93,6 +119,14 @@ class Sabre_VObject_Reader {
 
     }
 
+    /**
+     * Reads a parameter list from a property 
+     *
+     * This method returns an array of Sabre_VObject_Parameter
+     *
+     * @param string $parameters 
+     * @return array 
+     */
     static private function readParameters($parameters) {
 
         $token = '[A-Z0-9-]+';

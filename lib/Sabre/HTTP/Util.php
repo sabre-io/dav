@@ -28,18 +28,18 @@ class Sabre_HTTP_Util {
         $weekday = '(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)';
         $wkday = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun)';
         $time = '[0-2]\d(\:[0-5]\d){2}';
-        $date3 = $month . '\ ([1-3]\d|\ \d)';
+        $date3 = $month . ' ([1-3]\d| \d)';
         $date2 = '[0-3]\d\-' . $month . '\-\d\d';
         //4-digit year cannot begin with 0 - unix timestamp begins in 1970
-        $date1 = '[0-3]\d\ ' . $month . '\ [1-9]\d{3}';
+        $date1 = '[0-3]\d ' . $month . ' [1-9]\d{3}';
 
         //ANSI C's asctime() format
         //4-digit year cannot begin with 0 - unix timestamp begins in 1970
-        $asctime_date = $wkday . '\ ' . $date3 . '\ ' . $time . '\ [1-9]\d{3}';
+        $asctime_date = $wkday . ' ' . $date3 . ' ' . $time . ' [1-9]\d{3}';
         //RFC 850, obsoleted by RFC 1036
-        $rfc850_date = $weekday . ',\ ' . $date2 . '\ ' . $time . '\ GMT';
+        $rfc850_date = $weekday . ', ' . $date2 . ' ' . $time . ' GMT';
         //RFC 822, updated by RFC 1123
-        $rfc1123_date = $wkday . ',\ ' . $date1 . '\ ' . $time . '\ GMT';
+        $rfc1123_date = $wkday . ', ' . $date1 . ' ' . $time . ' GMT';
         //allowed date formats by RFC 2616
         $HTTP_date = "($rfc1123_date|$rfc850_date|$asctime_date)";
         
@@ -49,7 +49,7 @@ class Sabre_HTTP_Util {
             return false;
 
         //append implicit GMT timezone to ANSI C time format
-        if (!preg_match('/\ GMT$/', $dateHeader))
+        if (strpos($dateHeader, ' GMT') === false)
             $dateHeader .= ' GMT';
 
 

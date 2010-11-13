@@ -2,6 +2,8 @@
 	* BC break: In order to fix Issue 99, a new argument had to be added to
 	  Sabre_DAV_Locks_Backend_*::getLocks classes. Consult the classes for
 	  details.
+	* Added: VObject library, for easy vcard/icalendar parsing using a natural
+	  interface.
 	* Changed: Sabre_DAV_Locks_Backend_FS is now deprecated and will be
 	  removed in a later version. Use PDO or the new File class instead. 
 	* Fixed: Issue 99: Locks on child elements were ignored when their parent

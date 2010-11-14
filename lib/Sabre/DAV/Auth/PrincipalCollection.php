@@ -17,11 +17,11 @@
 class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
 
     /**
-     * The name of this object. It is not adviced to change this.
-     * The plugins that depend on the principals collection to exist need to 
-     * be have a common name to find it.
+     * Node or 'directory' name. 
+     * 
+     * @var string 
      */
-    const NODENAME = 'principals';
+    protected $nodeName;
 
     /**
      * Authentication backend 
@@ -35,8 +35,9 @@ class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
      * 
      * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend) {
+    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, $nodeName = 'principals') {
 
+        $this->nodeName = $nodeName;
         $this->authBackend = $authBackend;
 
     }
@@ -48,7 +49,7 @@ class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
      */
     public function getName() {
 
-        return self::NODENAME; 
+        return $this->nodeName; 
 
     }
 

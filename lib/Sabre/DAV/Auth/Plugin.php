@@ -265,11 +265,21 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * principalSearchPropertySetReport
+     *
+     * This method responsible for handing the 
+     * {DAV:}principal-search-property-set report. This report returns a list
+     * of properties the client may search on, using the
+     * {DAV:}principal-property-search report.
+     * 
+     * @param DOMDocument $dom 
+     * @return void
+     */
     protected function principalSearchPropertySetReport(DOMDocument $dom) {
 
         $searchProperties = array(
             '{DAV:}displayname' => 'display name'
-
         );
 
         $httpDepth = $this->server->getHTTPDepth(0);
@@ -304,17 +314,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
             $propName = null;
             preg_match('/^{([^}]*)}(.*)$/',$propertyName,$propName);
 
-            //if (!isset($nsList[$propName[1]])) {
-            //    $nsList[$propName[1]] = 'x' . count($nsList);
-            //}
-
-            // If the namespace was defined in the top-level xml namespaces, it means 
-            // there was already a namespace declaration, and we don't have to worry about it.
-            //if (isset($server->xmlNamespaces[$propName[1]])) {
-                $currentProperty = $dom->createElement($nsList[$propName[1]] . ':' . $propName[2]);
-            //} else {
-            //    $currentProperty = $dom->createElementNS($propName[1],$nsList[$propName[1]].':' . $propName[2]);
-            //}
+            $currentProperty = $dom->createElement($nsList[$propName[1]] . ':' . $propName[2]);
             $prop->appendChild($currentProperty);
 
             $descriptionElem = $dom->createElement('d:description');
@@ -331,7 +331,18 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    protected function principalPropertySearchReport($dom) {
+    /**
+     * principalPropertySearchReport
+     *
+     * This method is reponsible for handing the 
+     * {DAV:}principal-property-search report. This report can be used for 
+     * clients to search for groups of principals, based on the value of one
+     * or more properties.
+     * 
+     * @param DOMDocument $dom 
+     * @return void
+     */
+    protected function principalPropertySearchReport(DOMDocument $dom) {
 
         $searchableProperties = array(
             '{DAV:}displayname' => 'display name'
@@ -383,6 +394,19 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * parsePrincipalPropertySearchReportRequest
+     *
+     * This method parses the request body from a
+     * {DAV:}principal-property-search report.
+     *
+     * This method returns an array with two elements:
+     *  1. an array with properties to search on, and their values
+     *  2. a list of propertyvalues that should be returned for the request.
+     * 
+     * @param DOMDocument $dom 
+     * @return array 
+     */
     protected function parsePrincipalPropertySearchReportRequest($dom) {
 
         $httpDepth = $this->server->getHTTPDepth(0);

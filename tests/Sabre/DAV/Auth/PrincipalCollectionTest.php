@@ -10,7 +10,7 @@ class Sabre_DAV_Auth_PrincipalCollectionTest extends PHPUnit_Framework_TestCase 
         $pc = new Sabre_DAV_Auth_PrincipalCollection($backend);
         $this->assertTrue($pc instanceof Sabre_DAV_Auth_PrincipalCollection);
 
-        $this->assertEquals(Sabre_DAV_Auth_PrincipalCollection::NODENAME,$pc->getName());
+        $this->assertEquals('principals',$pc->getName());
 
     }
 

@@ -53,7 +53,7 @@ class Sabre_DAV_Auth_Backend_Apache extends Sabre_DAV_Auth_Backend_Abstract {
     public function getCurrentUser() {
 
         return array(
-            'uri' => 'principals/' . $this->remoteUser,
+            'uri' => $this->principalBaseUri . '/' . $this->remoteUser,
         );
 
     }

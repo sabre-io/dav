@@ -56,7 +56,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
                 
             $this->users[$username] = array(
                 'digestHash' => $A1,
-                'uri'        => 'principals/' . $username
+                'uri'        => $this->principalBaseUri . '/' . $username
             );
 
         }
@@ -90,7 +90,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
         foreach($this->users as $userName=>$A1) {
 
             $re[] = array(
-                'uri'=>'principals/' . $userName
+                'uri'=> $this->principalBaseUri . '/' . $userName
             );
 
         }

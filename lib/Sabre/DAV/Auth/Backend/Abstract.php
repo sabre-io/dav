@@ -12,6 +12,18 @@
 abstract class Sabre_DAV_Auth_Backend_Abstract {
 
     /**
+     * The standard prefix for principals.
+     *
+     * Note that backends may or may not actually use this base url. It's up
+     * to the implementor.
+     *
+     * All the default SabreDAV auth backends do use it.
+     *
+     * @var string 
+     */
+    public $principalBaseUri = 'principals';
+
+    /**
      * Authenticates the user based on the current request.
      *
      * If authentication is succesful, true must be returned.

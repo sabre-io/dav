@@ -86,7 +86,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
             unset($properties[404]['{DAV:}current-user-principal']);
         }
         if (array_key_exists('{DAV:}principal-collection-set', $properties[404])) {
-            $properties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_Href('principals');
+            $properties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_Href($this->authBackend->principalBaseUri);
             unset($properties[404]['{DAV:}principal-collection-set']);
         }
         if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
@@ -125,13 +125,13 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
                 $this->expandPropertyReport($dom);
                 return false;
             case '{DAV:}principal-property-search' :
-                if ($this->server->getRequestUri()==='principals') {
+                if ($this->server->getRequestUri()===$this->authBackend->principalBaseUri) {
                     $this->principalPropertySearchReport($dom);
                     return false;
                 }
                 break;
             case '{DAV:}principal-search-property-set' :
-                if ($this->server->getRequestUri()==='principals') {
+                if ($this->server->getRequestUri()===$this->authBackend->principalBaseUri) {
                     $this->principalSearchPropertySetReport($dom);
                     return false;
                 }

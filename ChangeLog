@@ -4,6 +4,11 @@
 	  details.
 	* Added: VObject library, for easy vcard/icalendar parsing using a natural
 	  interface.
+	* Added: You can now pass arrays to the Sabre_DAV_Server constructor. If
+	  it's an array with node-objects, a Root collection will automatically be
+	  created, and the nodes are used as top-level children.
+	* Added: The principal base uri is now customizable. It used to be
+	  hardcoded to 'principals/[user]'. 
 	* Changed: Sabre_DAV_Locks_Backend_FS is now deprecated and will be
 	  removed in a later version. Use PDO or the new File class instead. 
 	* Fixed: Issue 99: Locks on child elements were ignored when their parent
@@ -16,9 +21,7 @@
 	  destination uri's fails.
 	* Fixed: Issue 105: Supporting MKCALENDAR with no body.
 	* Fixed: Issue 109: Small fixes in Sabre_HTTP_Util
-	* Added: You can now pass arrays to the Sabre_DAV_Server constructor. If
-	  it's an array with node-objects, a Root collection will automatically be
-	  created, and the nodes are used as top-level children.
+
 
 1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api

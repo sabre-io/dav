@@ -28,7 +28,10 @@ set_error_handler("exception_error_handler");
 // Files we need
 require_once 'lib/Sabre/autoload.php';
 
-// The object tree needs in turn to be passed to the server class
+// The 'caldav server' only needs the pdo object. Note that if you plan to
+// extend the server in any way, you'll probably don't want to use
+// Sabre_CalDAV_Server, but plain Sabre_DAV_Server instead.
+// You'll need to add your own nodes and plugins manually then.
 $server = new Sabre_CalDAV_Server($pdo);
 
 if (isset($baseUri))

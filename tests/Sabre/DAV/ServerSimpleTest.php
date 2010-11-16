@@ -31,6 +31,15 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testConstructInvalidArg() {
+
+        $server = new Sabre_DAV_Server(1);
+
+    }
+
     function testGet() {
         
         $serverVars = array(

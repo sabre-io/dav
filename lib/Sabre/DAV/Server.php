@@ -144,6 +144,9 @@ class Sabre_DAV_Server {
      *
      * If nothing is passed, a Sabre_DAV_SimpleDirectory is created in 
      * a Sabre_DAV_ObjectTree.
+     *
+     * If an array is passed, we automatically create a root node, and use
+     * the nodes in the array as top-level children. 
      * 
      * @param Sabre_DAV_Tree $tree The tree object 
      * @return void
@@ -154,11 +157,24 @@ class Sabre_DAV_Server {
             $this->tree = $treeOrNode;
         } elseif ($treeOrNode instanceof Sabre_DAV_INode) {
             $this->tree = new Sabre_DAV_ObjectTree($treeOrNode);
+        } elseif (is_array($treeOrNode)) {
+
+            // If it's an array, a list of nodes was passed, and we need to
+            // create the root node.
+            foreach($treeOrNode as $node) {
+                if (!($node instanceof Sabre_DAV_INode)) {
+                    throw new Sabre_DAV_Exception('Invalid argument passed to constructor. If you\'re passing an array, all the values must implement Sabre_DAV_INode');
+                }
+            }
+
+            $root = new Sabre_DAV_SimpleDirectory('root', $treeOrNode);
+            $this->tree = new Sabre_DAV_ObjectTree($root);
+
         } elseif (is_null($treeOrNode)) {
             $root = new Sabre_DAV_SimpleDirectory('root');
             $this->tree = new Sabre_DAV_ObjectTree($root);
         } else {
-            throw new Sabre_DAV_Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre_DAV_Tree, Sabre_DAV_INode or null');
+            throw new Sabre_DAV_Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre_DAV_Tree, Sabre_DAV_INode, an array or null');
         }
         $this->httpResponse = new Sabre_HTTP_Response();
         $this->httpRequest = new Sabre_HTTP_Request();

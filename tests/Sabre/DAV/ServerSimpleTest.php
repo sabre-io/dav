@@ -6,6 +6,31 @@ require_once 'Sabre/DAV/Exception.php';
 
 class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
+    function testConstructArray() {
+
+        $nodes = array(
+            new Sabre_DAV_SimpleDirectory('hello')
+        ); 
+
+        $server = new Sabre_DAV_Server($nodes);
+        $this->assertEquals($nodes[0], $server->tree->getNodeForPath('hello'));
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testConstructIncorrectObj() {
+
+        $nodes = array(
+            new Sabre_DAV_SimpleDirectory('hello'),
+            new STDClass(),
+        ); 
+
+        $server = new Sabre_DAV_Server($nodes);
+
+    }
+
     function testGet() {
         
         $serverVars = array(

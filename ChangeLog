@@ -4,6 +4,8 @@
 	  details.
 	* Added: VObject library, for easy vcard/icalendar parsing using a natural
 	  interface.
+	* Added: Principal listings and calendar-access can now be done privately,
+	  disallowing users from accessing or modifying other users' data. 
 	* Added: You can now pass arrays to the Sabre_DAV_Server constructor. If
 	  it's an array with node-objects, a Root collection will automatically be
 	  created, and the nodes are used as top-level children.

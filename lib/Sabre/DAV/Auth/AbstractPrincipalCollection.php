@@ -18,6 +18,13 @@
 abstract class Sabre_DAV_Auth_AbstractPrincipalCollection extends Sabre_DAV_Directory {
 
     /**
+     * Disallows users to access other users except themselves. 
+     *
+     * @var bool 
+     */
+    public $disallowListing = false;
+
+    /**
      * Node or 'directory' name. 
      * 
      * @var string 
@@ -73,15 +80,46 @@ abstract class Sabre_DAV_Auth_AbstractPrincipalCollection extends Sabre_DAV_Dire
      */
     public function getChildren() {
 
+        if ($this->disallowListing) 
+            throw new Sabre_DAV_Exception_MethodNotAllowed('You are not allowed to list principals');
+
         $children = array();
         foreach($this->authBackend->getUsers() as $principalInfo) {
 
-            $principalUri = $principalInfo['uri'] . '/';
             $children[] = $this->getChildForPrincipal($principalInfo);
 
 
         }
         return $children; 
+
+    }
+
+    /**
+     * Returns a child object, by its name.
+     * 
+     * @param string $name
+     * @throws Sabre_DAV_Exception_FileNotFound
+     * @return Sabre_DAV_INode 
+     */
+    public function getChild($name) {
+
+        if ($this->disallowListing) {
+            $currentUser = $this->authBackend->getCurrentUser();
+            
+            // Not logged in
+            if (is_null($currentUser)) {
+                throw new Sabre_DAV_Exception_Forbidden('Access denied to this principal');
+            }
+
+            list(, $currentUserName) = Sabre_DAV_URLUtil::splitPath($currentUser['uri']);
+
+            // Not the current user
+            if ($currentUserName!==$name) {
+                throw new Sabre_DAV_Exception_Forbidden('Access denied to this principal');
+            }
+            return $this->getChildForPrincipal($currentUser);
+        }
+        return parent::getChild($name);
 
     }
 

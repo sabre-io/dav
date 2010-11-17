@@ -9,6 +9,8 @@
 	  created, and the nodes are used as top-level children.
 	* Added: The principal base uri is now customizable. It used to be
 	  hardcoded to 'principals/[user]'. 
+	* Added: Sabre_DAV_Auth_AbstractPrincipalCollection, allowing you to
+	  easily loop through principals, a common pattern.
 	* Changed: Sabre_DAV_Locks_Backend_FS is now deprecated and will be
 	  removed in a later version. Use PDO or the new File class instead. 
 	* Fixed: Issue 99: Locks on child elements were ignored when their parent

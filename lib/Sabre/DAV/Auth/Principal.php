@@ -16,13 +16,6 @@
 class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProperties {
 
     /**
-     * Full uri for this principal resource 
-     * 
-     * @var string 
-     */
-    protected $principalUri;
-
-    /**
      * Struct with principal information.
      *
      * @var array 
@@ -32,12 +25,13 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
     /**
      * Creates the principal object 
      *
-     * @param string $principalUri Full uri to the principal resource
      * @param array $principalProperties
      */
-    public function __construct($principalUri,array $principalProperties = array()) {
+    public function __construct(array $principalProperties = array()) {
 
-        $this->principalUri = $principalUri;
+        if (!isset($principalProperties['uri'])) {
+            throw new Sabre_DAV_Exception('The principal properties must at least contain the \'uri\' key');
+        }
         $this->principalProperties = $principalProperties;
 
     }
@@ -49,7 +43,7 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
      */
     public function getName() {
 
-        list(, $name) = Sabre_DAV_URLUtil::splitPath($this->principalUri);
+        list(, $name) = Sabre_DAV_URLUtil::splitPath($this->principalProperties['uri']);
         return $name;
 
     }
@@ -109,7 +103,7 @@ class Sabre_DAV_Auth_Principal extends Sabre_DAV_Node implements Sabre_DAV_IProp
                 break;
 
             case '{DAV:}principal-URL' :
-                $newProperties[$propName] = new Sabre_DAV_Property_Href($this->principalUri);
+                $newProperties[$propName] = new Sabre_DAV_Property_Href($this->principalProperties['uri'] . '/');
                 break;
 
             case '{DAV:}displayname' :

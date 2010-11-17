@@ -4,24 +4,34 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testConstruct() {
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin');
+        $principal = new Sabre_DAV_Auth_Principal(array('uri' => 'principals/admin'));
         $this->assertTrue($principal instanceof Sabre_DAV_Auth_Principal);
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    public function testConstructNoUri() {
+
+        $principal = new Sabre_DAV_Auth_Principal(array());
 
     }
 
     public function testGetName() {
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin');
+        $principal = new Sabre_DAV_Auth_Principal(array('uri' => 'principals/admin'));
         $this->assertEquals('admin',$principal->getName());
 
     }
 
     public function testGetDisplayName() {
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin');
+        $principal = new Sabre_DAV_Auth_Principal(array('uri' => 'principals/admin'));
         $this->assertEquals('admin',$principal->getDisplayname());
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
+        $principal = new Sabre_DAV_Auth_Principal(array(
+            'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin'
         ));
         $this->assertEquals('Mr. Admin',$principal->getDisplayname());
@@ -30,7 +40,8 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testGetPropertiesAll() {
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
+        $principal = new Sabre_DAV_Auth_Principal(array(
+            'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
             '{http://sabredav.org/ns}email-address' => 'admin@example.org',
@@ -51,7 +62,9 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testGetProperties() {
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
+        $principal = new Sabre_DAV_Auth_Principal(array(
+            'uri' => 'principals/admin',
+            '{DAV:}displayname' => 'Mr. Admin',
             '{DAV:}displayname' => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
             '{http://sabredav.org/ns}email-address' => 'admin@example.org',
@@ -74,7 +87,7 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('Mr. Admin',$props['{DAV:}displayname']);
         $this->assertEquals('{DAV:}principal',$props['{DAV:}resourcetype']->getValue());
 
-        $this->assertEquals('principals/admin',$props['{DAV:}principal-URL']->getHref());
+        $this->assertEquals('principals/admin/',$props['{DAV:}principal-URL']->getHref());
         $this->assertNull($props['{DAV:}group-member-set']);
         $this->assertNull($props['{DAV:}group-membership']);
 
@@ -88,7 +101,8 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetPropertiesNoEmail() {
 
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin',array(
+        $principal = new Sabre_DAV_Auth_Principal(array(
+            'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
         ));
@@ -105,7 +119,7 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testUpdateProperties() {
         
-        $principal = new Sabre_DAV_Auth_Principal('principals/admin');
+        $principal = new Sabre_DAV_Auth_Principal(array('uri' => 'principals/admin'));
         $result = $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
         $this->assertEquals(false,$result);
 

@@ -14,61 +14,21 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Directory {
+class Sabre_DAV_Auth_PrincipalCollection extends Sabre_DAV_Auth_AbstractPrincipalCollection {
 
     /**
-     * Node or 'directory' name. 
+     * This method returns a node for a principal.
+     *
+     * The passed array contains principal information, and is guaranteed to
+     * at least contain a uri item. Other properties may or may not be
+     * supplied by the authentication backend.
      * 
-     * @var string 
+     * @param array $principal 
+     * @return Sabre_DAV_INode 
      */
-    protected $nodeName;
+    public function getChildForPrincipal(array $principal) {
 
-    /**
-     * Authentication backend 
-     * 
-     * @var Sabre_DAV_Auth_Backend 
-     */
-    protected $authBackend;
-
-    /**
-     * Creates the object 
-     * 
-     * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
-     */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, $nodeName = 'principals') {
-
-        $this->nodeName = $nodeName;
-        $this->authBackend = $authBackend;
-
-    }
-
-    /**
-     * Returns the name of this collection. 
-     * 
-     * @return string 
-     */
-    public function getName() {
-
-        return $this->nodeName; 
-
-    }
-
-    /**
-     * Retursn the list of users 
-     * 
-     * @return void
-     */
-    public function getChildren() {
-
-        $children = array();
-        foreach($this->authBackend->getUsers() as $principalInfo) {
-
-            $principalUri = $principalInfo['uri'] . '/';
-            $children[] = new Sabre_DAV_Auth_Principal($principalUri,$principalInfo);
-
-
-        }
-        return $children; 
+        return new Sabre_DAV_Auth_Principal($principal);
 
     }
 

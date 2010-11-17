@@ -11,14 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarRootNode extends Sabre_DAV_Directory {
-
-    /**
-     * Authentication Backend 
-     * 
-     * @var Sabre_DAV_Auth_Backend_Abstract 
-     */
-    protected $authBackend;
+class Sabre_CalDAV_CalendarRootNode extends Sabre_DAV_Auth_AbstractPrincipalCollection {
 
     /**
      * CalDAV backend 
@@ -37,37 +30,24 @@ class Sabre_CalDAV_CalendarRootNode extends Sabre_DAV_Directory {
      */
     public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend,Sabre_CalDAV_Backend_Abstract $caldavBackend) {
 
-        $this->authBackend = $authBackend;
+        parent::__construct($authBackend, Sabre_CalDAV_Plugin::CALENDAR_ROOT);
         $this->caldavBackend = $caldavBackend;
 
     }
 
     /**
-     * Returns the name of the node 
+     * This method returns a node for a principal.
+     *
+     * The passed array contains principal information, and is guaranteed to
+     * at least contain a uri item. Other properties may or may not be
+     * supplied by the authentication backend.
      * 
-     * @return string 
+     * @param array $principal 
+     * @return Sabre_DAV_INode 
      */
-    public function getName() {
+    public function getChildForPrincipal(array $principal) {
 
-        return Sabre_CalDAV_Plugin::CALENDAR_ROOT;
-
-    }
-
-    /**
-     * Returns the list of users as Sabre_CalDAV_User objects. 
-     * 
-     * @return array 
-     */
-    public function getChildren() {
-
-        $users = $this->authBackend->getUsers();
-        $children = array();
-        foreach($users as $user) {
-
-            $children[] = new Sabre_CalDAV_UserCalendars($this->authBackend, $this->caldavBackend, $user['uri']);
-
-        }
-        return $children;
+        return new Sabre_CalDAV_UserCalendars($this->authBackend, $this->caldavBackend, $principal['uri']);
 
     }
 

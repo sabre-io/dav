@@ -119,6 +119,7 @@ include 'Sabre/DAV/Auth/Backend/File.php';
 include 'Sabre/DAV/Auth/Backend/PDO.php';
 
 include 'Sabre/DAV/Auth/Principal.php';
+include 'Sabre/DAV/Auth/AbstractPrincipalCollection.php';
 include 'Sabre/DAV/Auth/PrincipalCollection.php';
 
 /* DavMount plugin */

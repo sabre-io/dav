@@ -101,6 +101,30 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
 
 
     }
+    function testReadNestedComponent() {
+
+        $data = array(
+            "BEGIN:VCALENDAR",
+            "BEGIN:VTIMEZONE",
+            "BEGIN:DAYLIGHT",
+            "END:DAYLIGHT",
+            "END:VTIMEZONE",
+            "END:VCALENDAR"
+        );
+
+        $result = Sabre_VObject_Reader::read(implode("\r\n",$data));
+
+        $this->assertType('Sabre_VObject_Component', $result);
+        $this->assertEquals('VCALENDAR', $result->name);
+        $this->assertEquals(1, count($result->children));
+        $this->assertType('Sabre_VObject_Component', $result->children[0]);
+        $this->assertEquals('VTIMEZONE', $result->children[0]->name);
+        $this->assertEquals(1, count($result->children[0]->children));
+        $this->assertType('Sabre_VObject_Component', $result->children[0]->children[0]);
+        $this->assertEquals('DAYLIGHT', $result->children[0]->children[0]->name);
+
+
+    }
 
     function testReadPropertyParameter() {
 

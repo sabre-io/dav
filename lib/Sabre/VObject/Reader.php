@@ -74,6 +74,7 @@ class Sabre_VObject_Reader {
             $obj = new Sabre_VObject_Component(strtoupper(substr($line,6)));
 
             $nextLine = current($lines);
+
             while(stripos($nextLine,"END:")!==0) {
 
                 $obj->children[] = self::readLine($lines);
@@ -88,6 +89,7 @@ class Sabre_VObject_Reader {
             if (substr($nextLine,4)!==$obj->name) {
                 throw new Sabre_VObject_ParseException('Invalid VObject, expected: "END:' . $obj->name . '" got: "' . $nextLine . '"');
             }
+            next($lines);
 
             return $obj;
 

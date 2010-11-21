@@ -238,6 +238,9 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
      */
     public function count() {
 
+        if ($this->iterator && $this->iterator instanceof Countable) {
+            return $this->iterator->count();
+        } 
         return count($this->parameters);
 
     }

@@ -66,6 +66,19 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $this->assertType('Sabre_VObject_Property',$comp->MYPROP); 
         $this->assertEquals('myValue',$comp->MYPROP->value); 
 
+    
+    }
+
+    function testMagicSetScalarTwice() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp->myProp = 'myValue';
+        $comp->myProp = 'myValue';
+
+        $this->assertEquals(1,count($comp->children));
+        $this->assertType('Sabre_VObject_Property',$comp->MYPROP); 
+        $this->assertEquals('myValue',$comp->MYPROP->value); 
+
     }
 
     function testMagicSetComponent() {

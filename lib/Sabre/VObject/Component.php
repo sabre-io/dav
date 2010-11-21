@@ -151,12 +151,15 @@ class Sabre_VObject_Component extends Sabre_VObject_Element implements IteratorA
     /* {{{ Countable interface */
 
     /**
-     * Returns the number of child elements 
+     * Returns the number of elements 
      * 
      * @return int 
      */
     public function count() {
 
+        if ($this->iterator && $this->iterator instanceof Countable) {
+            return $this->iterator->count();
+        } 
         return count($this->children);
 
     }
@@ -229,6 +232,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element implements IteratorA
      */
     public function __set($name, $value) {
 
+        $name = strtoupper($name);
         $arrayKey = null;
         foreach($this->children as $key=>$child) {
 
@@ -240,9 +244,17 @@ class Sabre_VObject_Component extends Sabre_VObject_Element implements IteratorA
         }
 
         if ($value instanceof Sabre_VObject_Component || $value instanceof Sabre_VObject_Property) {
-            $this->children[$arrayKey] = $value;
+            if (!is_null($arrayKey)) {
+                $this->children[$arrayKey] = $value;
+            } else {
+                $this->children[] = $value;
+            }
         } elseif (is_scalar($value)) {
-            $this->children[$arrayKey] = new Sabre_VObject_Property($name,$value);
+            if (!is_null($arrayKey)) {
+                $this->children[$arrayKey] = new Sabre_VObject_Property($name,$value);
+            } else {
+                $this->children[] = new Sabre_VObject_Property($name,$value);
+            }
         } else {
             throw new InvalidArgumentException('You must pass a Sabre_VObject_Component, Sabre_VObject_Property or scalar type');
         }

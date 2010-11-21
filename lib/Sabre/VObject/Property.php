@@ -16,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAccess, Countable {
+class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAccess, Countable, IteratorAggregate {
 
     /**
      * Propertyname 
@@ -40,17 +40,102 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
     public $value;
 
     /**
-     * Creates a new property object 
+     * Iterator override 
+     * 
+     * @var Sabre_VObject_ElementList 
+     */
+    protected $iterator = null;
+
+    /**
+     * Creates a new property object
+     * 
+     * By default this object will iterate over its own children, but this can 
+     * be overridden with the iterator argument
      * 
      * @param string $name 
      * @param string $value
+     * @param Sabre_VObject_ElementList $iterator
      */
-    public function __construct($name, $value = null) {
+    public function __construct($name, $value = null, $iterator = null) {
 
         $this->name = strtoupper($name);
         $this->value = $value;
+        if (!is_null($iterator)) $this->iterator = $iterator;
 
     }
+
+    /**
+     * Turns the object back into a serialized blob. 
+     * 
+     * @return string 
+     */
+    public function serialize() {
+
+        $str = $this->name;
+        if (count($this->parameters)) {
+            foreach($this->parameters as $param) {
+                
+                $str.=';' . $param->serialize();
+
+            }
+        }
+        $src = array(
+            '\\',
+            "\n",
+        );
+        $out = array(
+            '\\\\',
+            '\n',
+        );
+        $str.=':' . str_replace($src, $out, $this->value);
+
+        $out = '';
+        while(strlen($str)>0) {
+            if (strlen($str)>75) {
+                $out.= substr($str,0,75) . "\r\n";
+                $str = ' ' . substr($str,75);
+            } else {
+                $out.=$str . "\r\n";
+                $str='';
+                break;
+            }
+        }
+
+        return $out;
+
+    }
+
+    /* {{{ IteratorAggregator interface */
+
+    /**
+     * Returns the iterator for this object 
+     * 
+     * @return Sabre_VObject_ElementList 
+     */
+    public function getIterator() {
+
+        if (!is_null($this->iterator)) 
+            return $this->iterator;
+
+        return new Sabre_VObject_ElementList(array($this));
+
+    }
+
+    /**
+     * Sets the overridden iterator
+     *
+     * Note that this is not actually part of the iterator interface
+     * 
+     * @param Sabre_VObject_ElementList $iterator 
+     * @return void
+     */
+    public function setIterator(Sabre_VObject_ElementList $iterator) {
+
+        $this->iterator = $iterator;
+
+    }
+
+    /* }}} */
 
     /* ArrayAccess interface {{{ */
 
@@ -169,5 +254,6 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
         return $this->value;
 
     }
+
 
 }

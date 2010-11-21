@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_ElementList extends Sabre_VObject_Element implements Iterator, Countable {
+class Sabre_VObject_ElementList implements Iterator, Countable {
 
     /**
      * Inner elements 
@@ -113,36 +113,4 @@ class Sabre_VObject_ElementList extends Sabre_VObject_Element implements Iterato
 
     /* }}} */
 
-    /* Magic property accessors {{{ */
-
-    /**
-     * We use 'get' to forward any requests for properties
-     * to the currently selected object in the iteration.
-     *
-     * @param string $name 
-     * @return void
-     */
-    public function __get($name) {
-
-        if (isset($this->elements[$this->key]->$name)) {
-            return $this->elements[$this->key]->$name;
-        }
-
-        return null;
-
-    }
-
-    /**
-     * This method checks if a sub-element with the specified name exists. 
-     * 
-     * @param string $name 
-     * @return bool 
-     */
-    public function __isset($name) {
-
-        return isset($this->elements[$this->key]->$name);
-
-    }
-
-    /* }}} */
 }

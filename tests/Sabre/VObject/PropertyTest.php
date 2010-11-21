@@ -131,5 +131,58 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testSerialize() {
 
+        $property = new Sabre_VObject_Property('propname','propvalue');
+
+        $this->assertEquals("PROPNAME:propvalue\r\n",$property->serialize());
+
+    }
+
+    public function testSerializeParam() {
+
+        $property = new Sabre_VObject_Property('propname','propvalue');
+        $property->parameters[] = new Sabre_VObject_Parameter('paramname','paramvalue');
+        $property->parameters[] = new Sabre_VObject_Parameter('paramname2','paramvalue2');
+
+        $this->assertEquals("PROPNAME;PARAMNAME=paramvalue;PARAMNAME2=paramvalue2:propvalue\r\n",$property->serialize());
+
+    }
+
+    public function testSerializeNewLine() {
+
+        $property = new Sabre_VObject_Property('propname',"line1\nline2");
+
+        $this->assertEquals("PROPNAME:line1\\nline2\r\n",$property->serialize());
+
+    }
+
+    public function testSerializeLongLine() {
+
+        $value = str_repeat('!',200);
+        $property = new Sabre_VObject_Property('propname',$value);
+
+        $expected = "PROPNAME:" . str_repeat('!',66) . "\r\n " . str_repeat('!',74) . "\r\n " . str_repeat('!',60) . "\r\n";
+
+        $this->assertEquals($expected,$property->serialize());
+
+    }
+
+    public function testGetIterator() {
+
+        $it = new Sabre_VObject_ElementList(array());
+        $property = new Sabre_VObject_Property('propname','propvalue', $it);
+        $this->assertEquals($it,$property->getIterator());
+
+    }
+
+
+    public function testGetIteratorDefault() {
+
+        $property = new Sabre_VObject_Property('propname','propvalue');
+        $it = $property->getIterator();
+        $this->assertTrue($it instanceof Sabre_VObject_ElementList);
+        $this->assertEquals(1,count($it));
+
+    }
 }

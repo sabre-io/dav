@@ -11,5 +11,12 @@
  */
 abstract class Sabre_VObject_Element {
 
+    /**
+     * Turns the object back into a serialized blob. 
+     * 
+     * @return string 
+     */
+    abstract function serialize();
+
 
 }

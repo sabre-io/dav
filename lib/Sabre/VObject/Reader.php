@@ -112,7 +112,7 @@ class Sabre_VObject_Reader {
             throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow icalendar format');
         }
 
-        $obj = new Sabre_VObject_Property(strtoupper($matches['name']), $matches['value']);
+        $obj = new Sabre_VObject_Property(strtoupper($matches['name']), stripcslashes($matches['value']));
 
         if ($matches['parameters']) {
 
@@ -149,7 +149,7 @@ class Sabre_VObject_Reader {
             // Stripping quotes, if needed
             if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
 
-            $params[] = new Sabre_VObject_Parameter($match['paramName'], $value);
+            $params[] = new Sabre_VObject_Parameter($match['paramName'], stripcslashes($value));
 
         }
 

@@ -44,6 +44,30 @@ class Sabre_VObject_Parameter extends Sabre_VObject_Element {
     } 
 
     /**
+     * Turns the object back into a serialized blob. 
+     * 
+     * @return string 
+     */
+    public function serialize() {
+
+        $src = array(
+            '\\',
+            "\n",
+            ';',
+            ',',
+        );
+        $out = array(
+            '\\\\',
+            '\n',
+            '\;',
+            '\,',
+        );
+
+        return $this->name . '=' . str_replace($src, $out, $this->value);
+
+    }
+
+    /**
      * Called when this object is being cast to a string 
      * 
      * @return string 

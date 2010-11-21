@@ -36,6 +36,9 @@ class Sabre_VObject_Reader {
         $lines2 = array();
         foreach($lines as $line) {
 
+            // Skipping empty lines
+            if (!$line) continue;
+
             if ($line[0]===" " || $line[0]==="\t") {
                 $lines2[count($lines2)-1].=substr($line,1);
             } else {

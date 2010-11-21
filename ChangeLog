@@ -4,6 +4,9 @@
 	  details.
 	* Added: VObject library, for easy vcard/icalendar parsing using a natural
 	  interface.
+	* Added: Ability to automatically generate full .ics feeds off calendars.
+	  To use: Add the Sabre_CalDAV_ICSExportPlugin, and add ?export to your
+	  calendar url.
 	* Added: Principal listings and calendar-access can now be done privately,
 	  disallowing users from accessing or modifying other users' data. 
 	* Added: You can now pass arrays to the Sabre_DAV_Server constructor. If

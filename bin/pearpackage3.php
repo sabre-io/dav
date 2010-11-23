@@ -124,6 +124,12 @@ TEXT;
             'channel' => 'pear.sabredav.org',
             'min'  => '1.3.0',
         );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_VObject',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '0.1',
+        );
         break;
 
     case 'Sabre_VObject' :

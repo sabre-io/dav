@@ -87,7 +87,7 @@ class Sabre_CalDAV_ICSExportPlugin extends Sabre_DAV_ServerPlugin {
             $nodeData = $node->get();
             $nodeComp = Sabre_VObject_Reader::read($nodeData);
 
-            foreach($nodeComp as $child) {
+            foreach($nodeComp->children() as $child) {
 
                 switch($child->name) {
                     case 'VEVENT' :

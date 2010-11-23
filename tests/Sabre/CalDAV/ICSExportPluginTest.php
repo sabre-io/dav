@@ -51,7 +51,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
 
         $obj = Sabre_VObject_Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj));
+        $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));

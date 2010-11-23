@@ -13,7 +13,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $comp->children[] = $sub;
 
         $count = 0;
-        foreach($comp as $key=>$subcomponent) {
+        foreach($comp->children() as $key=>$subcomponent) {
 
            $count++;
            $this->assertType('Sabre_VObject_Component',$subcomponent);
@@ -107,6 +107,64 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testArrayAccessGet() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+
+        $event = new Sabre_VObject_Component('VEVENT');
+        $event->summary = 'Event 1';
+
+        $comp->add($event);
+
+        $event2 = clone $event;
+        $event2->summary = 'Event 2';
+
+        $comp->add($event2);
+
+        $this->assertEquals(2,count($comp->children()));
+        $this->assertTrue($comp->vevent[1] instanceof Sabre_VObject_Component);
+        $this->assertEquals('Event 2', (string)$comp->vevent[1]->summary);
+
+    }
+
+    function testArrayAccessExists() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+
+        $event = new Sabre_VObject_Component('VEVENT');
+        $event->summary = 'Event 1';
+
+        $comp->add($event);
+
+        $event2 = clone $event;
+        $event2->summary = 'Event 2';
+
+        $comp->add($event2);
+        
+        $this->assertTrue(isset($comp->vevent[0]));
+        $this->assertTrue(isset($comp->vevent[1]));
+
+    }
+
+    /**
+     * @expectedException LogicException
+     */
+    function testArrayAccessSet() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp['hey'] = 'hi there';
+
+    }
+    /**
+     * @expectedException LogicException
+     */
+    function testArrayAccessUnset() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+        unset($comp[0]);
+
+    }
+
     function testAddScalar() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');
@@ -195,15 +253,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
     function testCount() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');
-
-        // Note that 'myProp' is ignored here.
-        $comp->children = array(
-            new Sabre_VObject_Component('VEVENT'),
-            new Sabre_VObject_Component('VTODO')
-        );
-
-        $this->assertEquals(2,$comp->count());
-        $this->assertEquals(2,count($comp));
+        $this->assertEquals(1,$comp->count());
 
     }
 

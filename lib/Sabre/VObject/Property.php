@@ -16,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAccess, Countable, IteratorAggregate {
+class Sabre_VObject_Property extends Sabre_VObject_Element {
 
     /**
      * Propertyname 
@@ -38,13 +38,6 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
      * @var string 
      */
     public $value;
-
-    /**
-     * Iterator override 
-     * 
-     * @var Sabre_VObject_ElementList 
-     */
-    protected $iterator = null;
 
     /**
      * Creates a new property object
@@ -105,38 +98,6 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
 
     }
 
-    /* {{{ IteratorAggregator interface */
-
-    /**
-     * Returns the iterator for this object 
-     * 
-     * @return Sabre_VObject_ElementList 
-     */
-    public function getIterator() {
-
-        if (!is_null($this->iterator)) 
-            return $this->iterator;
-
-        return new Sabre_VObject_ElementList(array($this));
-
-    }
-
-    /**
-     * Sets the overridden iterator
-     *
-     * Note that this is not actually part of the iterator interface
-     * 
-     * @param Sabre_VObject_ElementList $iterator 
-     * @return void
-     */
-    public function setIterator(Sabre_VObject_ElementList $iterator) {
-
-        $this->iterator = $iterator;
-
-    }
-
-    /* }}} */
-
     /* ArrayAccess interface {{{ */
 
     /**
@@ -146,6 +107,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
      * @return bool 
      */
     public function offsetExists($name) {
+
+        if (is_int($name)) return parent::offsetExists($name);
 
         $name = strtoupper($name);
 
@@ -164,6 +127,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
      */
     public function offsetGet($name) {
 
+        if (is_int($name)) return parent::offsetGet($name);
         $name = strtoupper($name);
         
         $result = array();
@@ -191,6 +155,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
      */
     public function offsetSet($name, $value) {
 
+        if (is_int($name)) return parent::offsetSet($name, $value);
         if (is_scalar($value)) {
             if (!is_string($name)) 
                 throw new InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
@@ -215,6 +180,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
      */
     public function offsetUnset($name) {
 
+        if (is_int($name)) return parent::offsetUnset($name, $value);
         $name = strtoupper($name);
         
         $result = array();
@@ -224,24 +190,6 @@ class Sabre_VObject_Property extends Sabre_VObject_Element implements ArrayAcces
             }
 
         }
-
-    }
-
-    /* }}} */
-
-    /* {{{ Countable interface */
-
-    /**
-     * Returns the number of elements 
-     * 
-     * @return int 
-     */
-    public function count() {
-
-        if ($this->iterator && $this->iterator instanceof Countable) {
-            return $this->iterator->count();
-        } 
-        return count($this->parameters);
 
     }
 

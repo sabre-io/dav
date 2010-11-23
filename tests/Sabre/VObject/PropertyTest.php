@@ -127,7 +127,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
         $property->parameters[] = $param;
         $property->parameters[] = clone $param;
 
-        $this->assertEquals(2,count($property));
+        $this->assertEquals(2,count($property->parameters));
 
     }
 

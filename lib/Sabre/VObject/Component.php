@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Component extends Sabre_VObject_Element implements IteratorAggregate, Countable {
+class Sabre_VObject_Component extends Sabre_VObject_Element {
 
     /**
      * Name, for example VEVENT 
@@ -28,13 +28,6 @@ class Sabre_VObject_Component extends Sabre_VObject_Element implements IteratorA
      * @var array
      */
     public $children = array();
-
-    /**
-     * Iterator override 
-     * 
-     * @var Sabre_VObject_ElementList 
-     */
-    protected $iterator = null;
 
 
     /**
@@ -115,56 +108,6 @@ class Sabre_VObject_Component extends Sabre_VObject_Element implements IteratorA
         return new Sabre_VObject_ElementList($this->children);
 
     }
-
-    /* {{{ IteratorAggregator interface */
-
-    /**
-     * Returns the iterator for this object 
-     * 
-     * @return Sabre_VObject_ElementList 
-     */
-    public function getIterator() {
-
-        if (!is_null($this->iterator)) 
-            return $this->iterator;
-
-        return new Sabre_VObject_ElementList($this->children);
-
-    }
-
-    /**
-     * Sets the overridden iterator
-     *
-     * Note that this is not actually part of the iterator interface
-     * 
-     * @param Sabre_VObject_ElementList $iterator 
-     * @return void
-     */
-    public function setIterator(Sabre_VObject_ElementList $iterator) {
-
-        $this->iterator = $iterator;
-
-    }
-
-    /* }}} */
-
-    /* {{{ Countable interface */
-
-    /**
-     * Returns the number of elements 
-     * 
-     * @return int 
-     */
-    public function count() {
-
-        if ($this->iterator && $this->iterator instanceof Countable) {
-            return $this->iterator->count();
-        } 
-        return count($this->children);
-
-    }
-
-    /* }}} */
 
     /* Magic property accessors {{{ */
 

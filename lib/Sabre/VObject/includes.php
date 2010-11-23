@@ -15,6 +15,7 @@
 
 include dirname(__FILE__) . '/ParseException.php';
 
+include dirname(__FILE__) . '/Node.php';
 include dirname(__FILE__) . '/Element.php';
 include dirname(__FILE__) . '/ElementList.php';
 include dirname(__FILE__) . '/Parameter.php';

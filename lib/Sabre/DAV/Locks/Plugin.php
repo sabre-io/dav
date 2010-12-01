@@ -644,8 +644,9 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
         $xml->registerXPathNamespace('d','DAV:');
         $lockInfo = new Sabre_DAV_Locks_LockInfo();
-     
-        $lockInfo->owner = (string)$xml->owner;
+
+        $children = $xml->children("DAV:");
+        $lockInfo->owner = (string)$children->owner;
 
         $lockToken = '44445502';
         $id = md5(microtime() . 'somethingrandom');

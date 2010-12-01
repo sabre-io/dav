@@ -360,6 +360,31 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     /**
      * @depends testLock
      */
+    function testLockRetainOwner() {
+
+        $request = new Sabre_HTTP_Request(array());
+        $this->server->httpRequest = $request;
+
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner>Evert</D:owner> 
+</D:lockinfo>');
+
+        $this->server->invokeMethod('LOCK','test.txt');
+        $lockToken = $this->server->httpResponse->headers['Lock-Token'];
+
+        $locks = $this->locksPlugin->getLocks('test.txt');
+        $this->assertEquals(1,count($locks));
+        $this->assertEquals('Evert',$locks[0]->owner);
+
+
+    }
+
+    /**
+     * @depends testLock
+     */
     function testLockPutBadToken() {
 
         $serverVars = array(

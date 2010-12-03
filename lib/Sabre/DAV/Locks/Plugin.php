@@ -62,6 +62,20 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a plugin name.
+     * 
+     * Using this name other plugins will be able to access other plugins
+     * using Sabre_DAV_Server::getPlugin 
+     * 
+     * @return string 
+     */
+    public function getPluginName() {
+
+        return 'locks';
+
+    }
+
+    /**
      * This method is called by the Server if the user used an HTTP method 
      * the server didn't recognize.
      *
@@ -355,6 +369,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
+                $this->server->broadcastEvent('beforeUnlock',array($uri, $lock));
                 $this->unlockNode($uri,$lock);
                 $this->server->httpResponse->setHeader('Content-Length','0');
                 $this->server->httpResponse->sendStatus(204);

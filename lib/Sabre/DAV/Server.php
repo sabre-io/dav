@@ -319,22 +319,29 @@ class Sabre_DAV_Server {
      */
     public function addPlugin(Sabre_DAV_ServerPlugin $plugin) {
 
-        $this->plugins[get_class($plugin)] = $plugin;
+        $this->plugins[$plugin->getPluginName()] = $plugin;
         $plugin->initialize($this);
 
     }
 
     /**
-     * Returns an initialized plugin by it's classname. 
+     * Returns an initialized plugin by it's name.
      *
      * This function returns null if the plugin was not found.
      *
-     * @param string $className
+     * @param string $name
      * @return Sabre_DAV_ServerPlugin 
      */
-    public function getPlugin($className) {
+    public function getPlugin($name) {
 
-        if (isset($this->plugins[$className])) return $this->plugins[$className];
+        if (isset($this->plugins[$name])) 
+            return $this->plugins[$name];
+
+        // This is a fallback and deprecated.
+        foreach($this->plugins as $plugin) {
+            if (get_class($plugin)===$name) return $plugin;
+        }
+
         return null;
 
     }

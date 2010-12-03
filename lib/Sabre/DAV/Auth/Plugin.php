@@ -68,6 +68,20 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a plugin name.
+     * 
+     * Using this name other plugins will be able to access other plugins
+     * using Sabre_DAV_Server::getPlugin 
+     * 
+     * @return string 
+     */
+    public function getPluginName() {
+
+        return 'auth';
+
+    }
+
+    /**
      * This method intercepts calls to PROPFIND and similar lookups 
      * 
      * This is done to inject the current-user-principal if this is requested.

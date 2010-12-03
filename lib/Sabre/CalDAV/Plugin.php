@@ -88,6 +88,20 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a plugin name.
+     * 
+     * Using this name other plugins will be able to access other plugins
+     * using Sabre_DAV_Server::getPlugin 
+     * 
+     * @return string 
+     */
+    public function getPluginName() {
+
+        return 'caldav';
+
+    }
+
+    /**
      * Initializes the plugin 
      * 
      * @param Sabre_DAV_Server $server 

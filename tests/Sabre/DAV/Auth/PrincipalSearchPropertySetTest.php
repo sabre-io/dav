@@ -17,7 +17,7 @@ class Sabre_DAV_Auth_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Te
         $plugin = new Sabre_DAV_Auth_Plugin($backend,'realm');
         $this->assertTrue($plugin instanceof Sabre_DAV_Auth_Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('Sabre_DAV_Auth_Plugin'));
+        $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
 
         return $fakeServer;
 

@@ -11,7 +11,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
         $this->assertTrue($plugin instanceof Sabre_DAV_Auth_Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('Sabre_DAV_Auth_Plugin'));
+        $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
 
     }
 

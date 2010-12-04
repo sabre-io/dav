@@ -48,6 +48,21 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a plugin name.
+     * 
+     * Using this name other plugins will be able to access other plugins
+     * using Sabre_DAV_Server::getPlugin 
+     * 
+     * @return string 
+     */
+    public function getPluginName() {
+
+        return 'acl';
+
+    }
+
+
+    /**
      * Checks if the current user has the specified privilege(s). 
      * 
      * You can specify a single privilege, or a list of privileges.
@@ -59,7 +74,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @throws Sabre_DAVACL_Exception_NeedPrivileges
      * @return bool 
      */
-    public function checkPrivileges($uri,$privileges,$recursive) {
+    public function checkPrivileges($uri,$privileges,$recursive = false) {
 
         if (!is_array($privileges)) $privileges = array($privileges);            
         throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
@@ -77,9 +92,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
-        $server->subscribeEvent('beforeMethod',array($this,'beforeRead'),20);
-        $server->subscribeEvent('beforeBind',  array($this,'beforeBind'),20);
-        $server->subscribeEvent('afterGetProperties', array($this,'afterGetProperties',220));
+        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'),20);
+        $server->subscribeEvent('beforeBind', array($this,'beforeBind'),20);
+        $server->subscribeEvent('beforeUnbind', array($this,'beforeUnbind'),20);
+        $server->subscribeEvent('afterGetProperties', array($this,'afterGetProperties'),220);
         $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
 
     }
@@ -97,16 +113,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $exists = $this->server->tree->nodeExists($uri);
 
+        // If the node doesn't exists, none of these checks apply
+        if (!$exists) return;
+
         switch($method) {
 
             case 'GET' :
             case 'HEAD' :
             case 'OPTIONS' :
                 // For these 3 we only need to know if the node is readable.
-                // We only check if the node exist. 
-                if ($exists) 
-                    $this->checkPrivileges($uri,'{DAV:}read');
-
+                $this->checkPrivileges($uri,'{DAV:}read');
                 break;
 
             case 'PUT' :
@@ -115,22 +131,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 // already exists, and bind on the parent if the node is being 
                 // created. 
                 // The bind privilege is handled in the beforeBind event. 
-                if ($exists)
-                    $this->checkPrivileges($uri,'{DAV:}write-content');
-
+                $this->checkPrivileges($uri,'{DAV:}write-content');
                 break;
             
 
             case 'PROPPATCH' :
-                if ($exists)
-                    $this->checkPrivileges($uri,'{DAV:}write-properties');
-
+                $this->checkPrivileges($uri,'{DAV:}write-properties');
                 break;
 
             case 'ACL' :
-                if ($exists)
-                    $this->checkPrivileges($uri,'{DAV:}write-acl');
-
+                $this->checkPrivileges($uri,'{DAV:}write-acl');
                 break;
 
             case 'COPY' :
@@ -146,8 +156,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 //
                 // If MOVE is used beforeUnbind will also be used to check if 
                 // the sourcenode can be deleted. 
-                if ($exists)
-                    $this->checkPrivileges($uri,'{DAV:}read',true);
+                $this->checkPrivileges($uri,'{DAV:}read',true);
 
                 break;
 
@@ -159,7 +168,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Triggered before a new node is created.
      * 
      * This allows us to check permissions for any operation that creates a
-     * new node, such as PUT, MKCOL and MKCALENDAR. 
+     * new node, such as PUT, MKCOL, MKCALENDAR, LOCK, COPY and MOVE.
      * 
      * @param string $uri 
      * @return void
@@ -168,6 +177,22 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         list($parentUri,$nodeName) = Sabre_DAV_URLUtil::splitPath($uri);
         $this->checkPrivileges($parentUri,'{DAV:}bind');
+
+    }
+
+    /**
+     * Triggered before a node is deleted 
+     * 
+     * This allows us to check permissions for any operation that will delete 
+     * an existing node. 
+     * 
+     * @param string $uri 
+     * @return void
+     */
+    public function beforeUnbind($uri) {
+
+        list($parentUri,$nodeName) = Sabre_DAV_URLUtil::splitPath($uri);
+        $this->checkPrivileges($parentUri,'{DAV:}unbind',true);
 
     }
 
@@ -187,12 +212,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             $this->checkPrivileges($uri,'{DAV:}read');
     
-        } catch (Sabre_DAVACL_NeedPrivileges $e) {
+        } catch (Sabre_DAVACL_Exception_NeedPrivileges $e) {
 
             // Access to properties was denied
             
             if (!isset($properties[403])) $properties[403] = array();
-            foreach($properties as $httpStatus=>$properties) {
+            foreach($properties as $httpStatus=>$propList) {
 
                 // The odd one out
                 if ($httpStatus === 'href') continue;
@@ -200,7 +225,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 // No need to do anything if they are already 403
                 if ($httpStatus == 403) continue;
 
-                foreach($properties as $propName=>$propValue) {
+                foreach($propList as $propName=>$propValue) {
 
                     $properties[403][$propName] = null;
 
@@ -209,6 +234,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 unset($properties[$httpStatus]); 
 
             }
+            return;
 
         }
 
@@ -220,7 +246,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                 $this->checkPrivileges($uri,'{DAV:}read-acl');
 
-            } catch (Sabre_DAVACL_NeedPrivileges $e) {
+            } catch (Sabre_DAVACL_Exception_NeedPrivileges $e) {
 
                 if (!isset($properties[403])) $properties[403] = array();
 
@@ -236,7 +262,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                 $this->checkPrivileges($uri,'{DAV:}read-acl');
 
-            } catch (Sabre_DAVACL_NeedPrivileges $e) {
+            } catch (Sabre_DAVACL_Exception_NeedPrivileges $e) {
 
                 if (!isset($properties[403])) $properties[403] = array();
 

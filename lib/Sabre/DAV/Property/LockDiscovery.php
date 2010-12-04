@@ -28,6 +28,14 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
     public $revealLockToken;
 
     /**
+     * Hides the {DAV:}lockroot element from the response.
+     *
+     * It was reported that showing the lockroot in the response can break
+     * Office 2000 compatibility.
+     */
+    static public $hideLockRoot = false;
+
+    /**
      * __construct 
      * 
      * @param array $locks 
@@ -67,11 +75,13 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
             $lockType->appendChild($doc->createElementNS('DAV:','d:write'));
 
             /* {DAV:}lockroot */ 
-            $lockRoot = $doc->createElementNS('DAV:','d:lockroot');
-            $activeLock->appendChild($lockRoot);
-            $href = $doc->createElementNS('DAV:','d:href');
-            $href->appendChild($doc->createTextNode($server->getBaseUri() . $lock->uri));
-            $lockRoot->appendChild($href);
+            if (!self::$hideLockRoot) {
+                $lockRoot = $doc->createElementNS('DAV:','d:lockroot');
+                $activeLock->appendChild($lockRoot);
+                $href = $doc->createElementNS('DAV:','d:href');
+                $href->appendChild($doc->createTextNode($server->getBaseUri() . $lock->uri));
+                $lockRoot->appendChild($href);
+            }
 
             $activeLock->appendChild($doc->createElementNS('DAV:','d:depth',($lock->depth == Sabre_DAV_Server::DEPTH_INFINITY?'infinity':$lock->depth)));
             $activeLock->appendChild($doc->createElementNS('DAV:','d:timeout','Second-' . $lock->timeout));

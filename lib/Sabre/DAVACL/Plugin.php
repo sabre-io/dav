@@ -15,6 +15,27 @@
 class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
+     * Recursion constants
+     *
+     * This only checks the base node
+     */
+    const R_PARENT = 1;
+
+    /**
+     * Recursion constants
+     *
+     * This checks every node in the tree
+     */
+    const R_RECURSIVE = 2;
+
+    /**
+     * Recursion constants
+     *
+     * This checks every parentnode in the tree, but not leaf-nodes.
+     */
+    const R_RECURSIVEPARENTS = 3;
+
+    /**
      * Reference to server object. 
      * 
      * @var Sabre_DAV_Server 
@@ -74,12 +95,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @throws Sabre_DAVACL_Exception_NeedPrivileges
      * @return bool 
      */
-    public function checkPrivileges($uri,$privileges,$recursive = false) {
+    public function checkPrivileges($uri,$privileges,$recursion = self::R_PARENT) {
 
         if (!is_array($privileges)) $privileges = array($privileges);            
         throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
 
-    } 
+    }
 
     /**
      * Sets up the plugin
@@ -92,11 +113,19 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
+        $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
+
         $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'),20);
         $server->subscribeEvent('beforeBind', array($this,'beforeBind'),20);
         $server->subscribeEvent('beforeUnbind', array($this,'beforeUnbind'),20);
         $server->subscribeEvent('afterGetProperties', array($this,'afterGetProperties'),220);
         $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
+
+        array_push($server->protectedProperties,
+            '{DAV:}alternate-URI-set',
+            '{DAV:}principal-URL',
+            '{DAV:}group-membership'
+        );
 
     }
 
@@ -156,7 +185,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 //
                 // If MOVE is used beforeUnbind will also be used to check if 
                 // the sourcenode can be deleted. 
-                $this->checkPrivileges($uri,'{DAV:}read',true);
+                $this->checkPrivileges($uri,'{DAV:}read',self::R_RECURSIVE);
 
                 break;
 
@@ -192,7 +221,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function beforeUnbind($uri) {
 
         list($parentUri,$nodeName) = Sabre_DAV_URLUtil::splitPath($uri);
-        $this->checkPrivileges($parentUri,'{DAV:}unbind',true);
+        $this->checkPrivileges($parentUri,'{DAV:}unbind',self::R_RECURSIVEPARENTS);
 
     }
 
@@ -286,6 +315,54 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function beforeUnlock($uri, Sabre_DAV_Locks_LockInfo $lock) {
            
+
+    }
+
+    /**
+     * Triggered before properties are looked up in specific nodes. 
+     * 
+     * @param string $uri 
+     * @param Sabre_DAV_INode $node 
+     * @param array $requestedProperties 
+     * @param array $returnedProperties 
+     * @return void
+     */
+    public function beforeGetProperties($uri, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
+
+        if ($node instanceof Sabre_DAVACL_IPrincipal) {
+
+            if (false !== ($index = array_search('{DAV:}alternate-URI-set', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}alternate-URI-set'] = new Sabre_DAV_Property_HrefList($node->getAlternateUriSet());
+
+            }
+            if (false !== ($index = array_search('{DAV:}principal-URL', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}principal-URL'] = new Sabre_DAV_Property_Href($node->getPrincipalUrl());
+
+            }
+            if (false !== ($index = array_search('{DAV:}group-member-set', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}group-member-set'] = new Sabre_DAV_Property_HrefList($node->getGroupMemberSet());
+
+            }
+            if (false !== ($index = array_search('{DAV:}group-membership', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}group-membership'] = new Sabre_DAV_Property_HrefList($node->getGroupMembership());
+
+            }
+
+            if (false !== ($index = array_search('{DAV:}resourcetype', $requestedProperties))) {
+
+                $returnedProperties[200]['{DAV:}resourcetype'] = new Sabre_DAV_Property_ResourceType('{DAV:}principal');
+
+            }
+
+        }
 
     }
 

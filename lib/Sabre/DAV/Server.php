@@ -1249,6 +1249,10 @@ class Sabre_DAV_Server {
                 '200' => array(),
                 '404' => array(),
             );
+
+            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$propertyNames, &$newProperties));
+
+
             if ($node instanceof Sabre_DAV_IProperties) 
                 $newProperties['200'] = $node->getProperties($propertyNames);
 

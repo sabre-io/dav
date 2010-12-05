@@ -3,11 +3,15 @@
 /**
  * This class contains several utilities related to the ICalendar (rfc2445) format
  *
+ * This class is now deprecated, and won't be further maintained. Please use 
+ * the Sabre_VObject package for your ics parsing needs.
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @deprecated Use Sabre_VObject instead.
  */
 class Sabre_CalDAV_ICalendarUtil {
 

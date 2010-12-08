@@ -82,7 +82,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-
     /**
      * Checks if the current user has the specified privilege(s). 
      * 
@@ -97,8 +96,47 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function checkPrivileges($uri,$privileges,$recursion = self::R_PARENT) {
 
-        if (!is_array($privileges)) $privileges = array($privileges);            
+        if (!is_array($privileges)) $privileges = array($privileges);
         throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
+
+    }
+
+    /**
+     * Returns a list of principals that's associated to the current
+     * user, either directly or through group membership. 
+     * 
+     * @return array 
+     */
+    public function getCurrentUserPrincipals() {
+
+        $authPlugin = $this->server->getPlugin('auth');
+        $currentUser = $authPlugin->getCurrentUserPrincipal();
+
+        $check = array($currentUser);
+        $principals = array($currentUser);
+
+        while(count($check)) {
+
+            $principal = array_shift($check);
+            
+            $node = $this->server->objectTree->getNodeForPath($principal);
+            if ($node instanceof Sabre_DAVACL_Principal) {
+                foreach($node->getGroupMembership() as $groupMember) {
+
+                    if (!in_array($groupMember, $principals)) {
+
+                        $check[] = $groupMember;
+                        $principals[] = $groupMember;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return $principals;
 
     }
 
@@ -128,6 +166,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         );
 
     }
+
 
     /* {{{ Event handlers */
 

@@ -60,6 +60,6 @@ interface Sabre_DAVACL_IPrincipal extends Sabre_DAV_INode {
      * @param array $principals 
      * @return void 
      */
-    function setGroupMemberSet($principals);
+    function setGroupMemberSet(array $principals);
 
 }

@@ -28,7 +28,7 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
 
         /* Directory structure */
         $root = new Sabre_DAV_SimpleDirectory('root');
-        $principals = new Sabre_DAV_Auth_PrincipalCollection($authBackend);
+        $principals = new Sabre_DAVACL_PrincipalCollection($authBackend);
         $root->addChild($principals);
         $calendars = new Sabre_CalDAV_CalendarRootNode($authBackend, $calendarBackend);
         $root->addChild($calendars);

@@ -235,7 +235,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Find out if we are currently looking at a principal resource
         $currentNode = $this->server->tree->getNodeForPath($path);
-        if ($currentNode instanceof Sabre_DAV_Auth_Principal) {
+        if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
@@ -262,7 +262,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 unset($properties[404][$calProp]);
 
             }
-
 
         }
 

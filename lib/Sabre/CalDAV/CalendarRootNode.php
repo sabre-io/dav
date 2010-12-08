@@ -11,7 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarRootNode extends Sabre_DAV_Auth_AbstractPrincipalCollection {
+class Sabre_CalDAV_CalendarRootNode extends Sabre_DAVACL_AbstractPrincipalCollection {
 
     /**
      * CalDAV backend 

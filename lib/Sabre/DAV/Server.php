@@ -1250,14 +1250,7 @@ class Sabre_DAV_Server {
                 '404' => array(),
             );
 
-            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$propertyNames, &$newProperties));
-
-
-            if ($node instanceof Sabre_DAV_IProperties) 
-                $newProperties['200'] = $node->getProperties($propertyNames);
-
             if ($allProperties) {
-
                 // Default list of propertyNames, when all properties were requested.
                 $propertyNames = array(
                     '{DAV:}getlastmodified',
@@ -1268,14 +1261,6 @@ class Sabre_DAV_Server {
                     '{DAV:}getetag',
                     '{DAV:}getcontenttype',
                 );
-
-                // We need to make sure this includes any propertyname already returned from
-                // $node->getProperties();
-                $propertyNames = array_merge($propertyNames, array_keys($newProperties[200]));
-
-                // Making sure there's no double entries
-                $propertyNames = array_unique($propertyNames);
-
             }
 
             // If the resourceType was not part of the list, we manually add it 
@@ -1287,6 +1272,16 @@ class Sabre_DAV_Server {
                 $propertyNames[] = '{DAV:}resourcetype';
                 $removeRT = true;
             }
+
+            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$propertyNames, &$newProperties));
+
+            if (count($propertyNames) > 0) {
+
+                if ($node instanceof Sabre_DAV_IProperties) 
+                    $newProperties['200'] = $newProperties[200] + $node->getProperties($propertyNames);
+
+            }
+
 
             foreach($propertyNames as $prop) {
                 

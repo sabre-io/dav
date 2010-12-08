@@ -25,6 +25,8 @@ class Sabre_DAV_Auth_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
+        $this->markTestSkipped('Not ready for prime-time');
+
         $xml = '<?xml version="1.0"?>
 <d:expand-property xmlns:d="DAV:">
   <d:property name="displayname" />

@@ -82,6 +82,22 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns the current users' principal uri.
+     * 
+     * If nobody is logged in, this will return null. 
+     * 
+     * @return string|null 
+     */
+    public function getCurrentUserPrincipal() {
+
+        $userInfo = $this->authBackend->getCurrentUser();
+        if (!$userInfo) return null;
+
+        return $userInfo['uri'];
+
+    }
+
+    /**
      * This method intercepts calls to PROPFIND and similar lookups 
      * 
      * This is done to inject the current-user-principal if this is requested.
@@ -92,8 +108,8 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
     public function afterGetProperties($href, &$properties) {
 
         if (array_key_exists('{DAV:}current-user-principal', $properties[404])) {
-            if ($ui = $this->authBackend->getCurrentUser()) {
-                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $ui['uri']);
+            if ($url = $this->getCurrentUserPrincipal()) {
+                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $url);
             } else {
                 $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
             }

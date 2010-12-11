@@ -4,68 +4,24 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCase {
     
-    function setUp() {
-
-        $this->markTestSkipped('Not quite ready for prime time');
-
-    }
-
     function getServer() {
 
         $backend = new Sabre_DAV_Auth_MockBackend();
 
         $dir = new Sabre_DAV_SimpleDirectory('root');
-        $principals = new Sabre_DAV_Auth_PrincipalCollection($backend);
+        $principals = new Sabre_DAVACL_PrincipalCollection($backend);
         $dir->addChild($principals);
 
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
         $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
-        $plugin = new Sabre_DAV_Auth_Plugin($backend,'realm');
-        $this->assertTrue($plugin instanceof Sabre_DAV_Auth_Plugin);
+        $plugin = new Sabre_DAVACL_Plugin($backend,'realm');
+        $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
+        $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
         return $fakeServer;
 
     }
-
-    function testUnsupportedUri() {
-
-        $xml = '<?xml version="1.0"?>
-<d:principal-property-search xmlns:d="DAV:">
-  <d:property-search>
-     <d:prop>
-       <d:displayname />
-     </d:prop>
-     <d:match>user1</d:match>
-  </d:property-search>
-  <d:prop>
-    <d:displayname />
-    <d:getcontentlength />
-  </d:prop>
-</d:principal-property-search>';
-
-        $serverVars = array(
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/',
-        );
-
-        $request = new Sabre_HTTP_Request($serverVars);
-        $request->setBody($xml);
-
-        $server = $this->getServer();
-        $server->httpRequest = $request;
-
-        $server->exec();
-
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $server->httpResponse->status);
-        $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ), $server->httpResponse->headers);
-
-    }
-
     
     function testDepth1() {
 
@@ -135,7 +91,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 400 Bad request', $server->httpResponse->status);
+        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);

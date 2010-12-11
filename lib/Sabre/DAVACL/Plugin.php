@@ -685,6 +685,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         foreach($lookupResults as $lookupResult) {
 
+            // We're only looking for principals 
+            if (!isset($lookupResult[200]['{DAV:}resourcetype']) || 
+                (!($lookupResult[200]['{DAV:}resourcetype'] instanceof Sabre_DAV_Property_ResourceType)) ||
+                !$lookupResult[200]['{DAV:}resourcetype']->is('{DAV:}principal')) continue;
+
             foreach($searchProperties as $searchProperty=>$searchValue) {
                 if (!isset($searchableProperties[$searchProperty])) {
                     // If a property is not 'searchable', the spec dictates 

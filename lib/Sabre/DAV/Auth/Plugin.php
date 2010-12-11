@@ -62,7 +62,6 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
         $this->server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),10);
-        $this->server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
 
     }
 
@@ -93,31 +92,6 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$userInfo) return null;
 
         return $userInfo['uri'];
-
-    }
-
-    /**
-     * This method intercepts calls to PROPFIND and similar lookups 
-     * 
-     * This is done to inject the current-user-principal if this is requested.
-     *
-     * @return void  
-     */
-    public function afterGetProperties($href, &$properties) {
-
-        if (array_key_exists('{DAV:}current-user-principal', $properties[404])) {
-            if ($url = $this->getCurrentUserPrincipal()) {
-                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $url);
-            } else {
-                $properties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
-            }
-            unset($properties[404]['{DAV:}current-user-principal']);
-        }
-        if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
-            $properties[200]['{DAV:}supported-report-set']->addReport(array(
-                '{DAV:}expand-property',
-            ));
-        }
 
     }
 

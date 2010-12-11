@@ -32,9 +32,9 @@ class Sabre_DAV_Property_SupportedReportSet extends Sabre_DAV_Property {
      * @param mixed $reports 
      * @return void
      */
-    public function __construct($report = null) {
+    public function __construct($reports = null) {
 
-        if (!is_null($report)) 
+        if (!is_null($reports)) 
             $this->addReport($reports);
 
     }

@@ -118,8 +118,6 @@ class Sabre_DAV_Server {
         '{DAV:}acl-restrictions',
         '{DAV:}inherited-acl-set',
 
-        // RFC5397 
-        '{DAV:}current-user-principal',
     );
 
     /**
@@ -1301,7 +1299,13 @@ class Sabre_DAV_Server {
                         break;
                     case '{DAV:}getetag'               : if ($node instanceof Sabre_DAV_IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
                     case '{DAV:}getcontenttype'        : if ($node instanceof Sabre_DAV_IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
-                    case '{DAV:}supported-report-set'  : $newProperties[200][$prop] = new Sabre_DAV_Property_SupportedReportSet(); break;
+                    case '{DAV:}supported-report-set'  :
+                        $reports = array();
+                        foreach($this->plugins as $plugin) {
+                            $reports = array_merge($reports, $plugin->getSupportedReportSet($myPath));
+                        }
+                        $newProperties[200][$prop] = new Sabre_DAV_Property_SupportedReportSet($reports); 
+                        break;
 
                 }
 

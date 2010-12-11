@@ -4,7 +4,11 @@
  * SabreDAV ACL Plugin
  *
  * This plugin provides funcitonality to enforce ACL permissions.
- * ACL is defined in RFC3744. 
+ * ACL is defined in RFC3744.
+ *
+ * In addition it also provides support for the {DAV:}current-user-principal 
+ * property, defined in RFC5397 and the {DAV:}expand-properties report, as 
+ * defined in RFC3253. 
  * 
  * @package Sabre
  * @subpackage DAVACL
@@ -93,6 +97,27 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a list of reports this plugin supports.
+     *
+     * This will be used in the {DAV:}supported-report-set property.
+     * Note that you still need to subscribe to the 'report' event to actually 
+     * implement them 
+     * 
+     * @param string $uri
+     * @return array 
+     */
+    public function getSupportedReportSet($uri) {
+
+        return array(
+            '{DAV:}expand-properties',
+            '{DAV:}principal-property-search',
+            '{DAV:}principal-search-property-set', 
+        );
+
+    }
+
+
+    /**
      * Checks if the current user has the specified privilege(s). 
      * 
      * You can specify a single privilege, or a list of privileges.
@@ -113,6 +138,20 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns the standard users' principal.
+     *
+     * This is one authorative principal url for the current user. 
+     * 
+     * @return string 
+     */
+    public function getCurrentUserPrincipal() {
+
+        $authPlugin = $this->server->getPlugin('auth');
+        return $authPlugin->getCurrentUserPrincipal();
+
+    }
+
+    /**
      * Returns a list of principals that's associated to the current
      * user, either directly or through group membership. 
      * 
@@ -120,8 +159,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getCurrentUserPrincipals() {
 
-        $authPlugin = $this->server->getPlugin('auth');
-        $currentUser = $authPlugin->getCurrentUserPrincipal();
+        $currentUser = $this->getCurrentUserPrincipal();
 
         $check = array($currentUser);
         $principals = array($currentUser);
@@ -175,7 +213,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}alternate-URI-set',
             '{DAV:}principal-URL',
             '{DAV:}group-membership',
-            '{DAV:}principal-collection-set'
+            '{DAV:}principal-collection-set',
+            '{DAV:}current-user-principal'
         );
 
     }
@@ -418,6 +457,17 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if (false !== ($index = array_search('{DAV:}principal-collection-set', $requestedProperties))) {
 
             unset($requestedProperties[$index]);
+            $returnedProperties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_HrefList($this->principalCollectionSet);
+
+        }
+        if (false !== ($index = array_search('{DAV:}current-user-principal', $requestedProperties))) {
+
+            unset($requestedProperties[$index]);
+            if ($url = $this->getCurrentUserPrincipal()) {
+                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $url);
+            } else {
+                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
+            }
             $returnedProperties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_HrefList($this->principalCollectionSet);
 
         }

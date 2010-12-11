@@ -70,5 +70,21 @@ abstract class Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * Returns a list of reports this plugin supports.
+     *
+     * This will be used in the {DAV:}supported-report-set property.
+     * Note that you still need to subscribe to the 'report' event to actually 
+     * implement them 
+     * 
+     * @param string $uri
+     * @return array 
+     */
+    public function getSupportedReportSet($uri) {
+
+        return array();
+
+    }
+
 }
 

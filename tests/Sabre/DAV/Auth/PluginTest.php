@@ -63,23 +63,6 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testSupportedReportSet() {
-
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
-        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
-        $fakeServer->addPlugin($plugin);
-
-        $props = $fakeServer->getProperties('',array('{DAV:}supported-report-set'));
-
-        $this->assertArrayHasKey('{DAV:}supported-report-set',$props);
-        $this->assertTrue($props['{DAV:}supported-report-set'] instanceof Sabre_DAV_Property_SupportedReportSet);
-
-        $this->assertEquals(array(
-              '{DAV:}expand-property'
-            ), $props['{DAV:}supported-report-set']->getValue());
-
-    }
-
     function testReportPassThrough() {
 
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));

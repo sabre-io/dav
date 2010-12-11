@@ -112,15 +112,11 @@ class Sabre_DAV_Server {
         '{DAV:}quota-used-bytes',
 
         // RFC3744
-        '{DAV:}alternate-URI-set',
-        '{DAV:}principal-URL',
-        '{DAV:}group-membership',
         '{DAV:}supported-privilege-set',
         '{DAV:}current-user-privilege-set',
         '{DAV:}acl',
         '{DAV:}acl-restrictions',
         '{DAV:}inherited-acl-set',
-        '{DAV:}principal-collection-set',
 
         // RFC5397 
         '{DAV:}current-user-principal',

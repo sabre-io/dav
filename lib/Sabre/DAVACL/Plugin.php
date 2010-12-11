@@ -43,6 +43,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     protected $server;
 
     /**
+     * List of urls containing principal collections.
+     * Modify this if your principals are located elsewhere. 
+     * 
+     * @var array
+     */
+    public $principalCollectionSet = array(
+        'principals',
+    );
+
+    /**
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
@@ -164,7 +174,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',
             '{DAV:}principal-URL',
-            '{DAV:}group-membership'
+            '{DAV:}group-membership',
+            '{DAV:}principal-collection-set'
         );
 
     }
@@ -404,6 +415,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
+        if (false !== ($index = array_search('{DAV:}principal-collection-set', $requestedProperties))) {
+
+            unset($requestedProperties[$index]);
+            $returnedProperties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_HrefList($this->principalCollectionSet);
+
+        }
 
     }
 
@@ -641,16 +658,28 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         );
 
-        list($searchProperties, $requestedProperties) = $this->parsePrincipalPropertySearchReportRequest($dom);
+        list($searchProperties, $requestedProperties, $applyToPrincipalCollectionSet) = $this->parsePrincipalPropertySearchReportRequest($dom);
 
-        $uri = $this->server->getRequestUri();
-        
         $result = array();
 
-        $lookupResults = $this->server->getPropertiesForPath($uri, array_keys($searchProperties), 1);
+        if (!in_array('{DAV:}resourcetype', $requestedProperties))
+            $requestedProperties[] = '{DAV:}resourcetype';
 
-        // The first item in the results is the parent, so we get rid of it.
-        array_shift($lookupResults);
+        if ($applyToPrincipalCollectionSet) {
+            $uris = array();
+        } else {
+            $uris = array($this->server->getRequestUri());
+        }
+
+        $lookupResults = array();
+        foreach($uris as $uri) {
+            $r = $this->server->getPropertiesForPath($uri, array_keys($searchProperties), 1);
+
+            // The first item in the results is the parent, so we get rid of it.
+            array_shift($r);
+            $lookupResults = array_merge($lookupResults, $r);
+        } 
+
 
         $matches = array();
 
@@ -658,9 +687,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             foreach($searchProperties as $searchProperty=>$searchValue) {
                 if (!isset($searchableProperties[$searchProperty])) {
-                    throw new Sabre_DAV_Exception_BadRequest('Searching for ' . $searchProperty . ' is not supported');
+                    // If a property is not 'searchable', the spec dictates 
+                    // this is not a match. 
+                    continue;
                 }
-                
                 if (isset($lookupResult[200][$searchProperty]) &&
                     mb_stripos($lookupResult[200][$searchProperty], $searchValue, 0, 'UTF-8')!==false) {
                         $matches[] = $lookupResult['href'];
@@ -708,8 +738,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $searchProperties = array();
 
+        $applyToPrincipalCollectionSet = false;
+
         // Parsing the search request
         foreach($dom->firstChild->childNodes as $searchNode) {
+
+            if (Sabre_DAV_XMLUtil::toClarkNotation($searchNode) == '{DAV:}apply-to-principal-collection-set')
+                $applyToPrincipalCollectionSet = true;
 
             if (Sabre_DAV_XMLUtil::toClarkNotation($searchNode)!=='{DAV:}property-search')
                 continue;
@@ -743,7 +778,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        return array($searchProperties, array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild)));
+        return array($searchProperties, array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild)), $applyToPrincipalCollectionSet);
 
     }
 

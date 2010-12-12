@@ -32,9 +32,11 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
         return array(
             array(
                 'uri' => 'principals/admin',
+                '{DAV:}displayname' => 'Admin',
             ),
             array(
                 'uri' => 'principals/user1',
+                '{DAV:}displayname' => 'User 1',
             ),
         );
 

@@ -15,6 +15,8 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
         $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
         $plugin = new Sabre_DAVACL_Plugin($backend,'realm');
+        $plugin->allowAccessToNodesWithoutACL = true;
+
         $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
@@ -31,7 +33,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
      <d:prop>
        <d:displayname />
      </d:prop>
-     <d:match>user1</d:match>
+     <d:match>user</d:match>
   </d:property-search>
   <d:prop>
     <d:displayname />
@@ -69,7 +71,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
      <d:prop>
        <d:yourmom />
      </d:prop>
-     <d:match>user1</d:match>
+     <d:match>user</d:match>
   </d:property-search>
   <d:prop>
     <d:displayname />
@@ -106,7 +108,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
      <d:prop>
        <d:displayname />
      </d:prop>
-     <d:match>user1</d:match>
+     <d:match>user</d:match>
   </d:property-search>
   <d:prop>
     <d:displayname />

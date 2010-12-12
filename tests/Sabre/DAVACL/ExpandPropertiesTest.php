@@ -2,30 +2,33 @@
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_DAV_Auth_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
+class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
 
     function getServer() {
 
         $backend = new Sabre_DAV_Auth_MockBackend();
 
         $dir = new Sabre_DAV_SimpleDirectory('root');
-        $principals = new Sabre_DAV_Auth_PrincipalCollection($backend);
+        $principals = new Sabre_DAVACL_PrincipalCollection($backend);
         $dir->addChild($principals);
 
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
         $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
-        $plugin = new Sabre_DAV_Auth_Plugin($backend,'realm');
-        $this->assertTrue($plugin instanceof Sabre_DAV_Auth_Plugin);
+        $plugin = new Sabre_DAVACL_Plugin();
+        $plugin->allowAccessToNodesWithoutACL = true;
+
+        $authPlugin = new Sabre_DAV_Auth_Plugin($backend,'SabreDAV');
+        $fakeServer->addPlugin($authPlugin);
+
+        $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
+        $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
         return $fakeServer;
 
     }
 
     function testSimple() {
-
-        $this->markTestSkipped('Not ready for prime-time');
 
         $xml = '<?xml version="1.0"?>
 <d:expand-property xmlns:d="DAV:">
@@ -76,7 +79,7 @@ class Sabre_DAV_Auth_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count,count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result));
+            $this->assertEquals($count,count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response: ' . $server->httpResponse->body);
 
         }
 

@@ -145,11 +145,45 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         if (!is_array($privileges)) $privileges = array($privileges);
 
-        if ($this->allowAccessToNodesWithoutACL) {
-            return true;
+        $acl = $this->getCurrentUserPrivilegeSet($uri);
+
+        if (is_null($acl)) {
+            if ($this->allowAccessToNodesWithoutACL) {
+                return true;
+            } else {
+                throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
+            }
         }
 
-        throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
+        // Now we need to figure out per-privilege what it's 'real' concrete 
+        // privilege is, and see if it's in the ACL list.
+
+        $list = $this->getFlatPrivileges();
+        $failed = array();
+
+        foreach($privileges as $priv) {
+
+            if (!isset($list[$priv])) {
+                $failed[] = $priv;
+                continue;
+            }
+
+            $concrete = $list[$priv]['concrete'];
+
+            foreach($acl as $ace) {
+                if ($ace['privilege'] == $concrete) {
+                    continue 2;
+                }
+            }
+
+            $failed[] = $priv; 
+
+        }
+
+        if ($failed) {
+            throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$failed);
+        }
+        return true;
 
     }
 
@@ -208,6 +242,156 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns the supported privilege structure for this ACL plugin.
+     *
+     * See RFC3744 for more details. Currently we default on a simple,
+     * standard structure. 
+     * 
+     * @return array 
+     */
+    public function getSupportedPrivilegeSet() {
+
+        return array(
+            'privilege'  => '{DAV:}all',
+            'abstract'   => true,
+            'aggregates' => array(
+                array(
+                    'privilege'  => '{DAV:}read',
+                    'aggregates' => array(
+                        array(
+                            'privilege' => '{DAV:}read-acl',
+                            'abstract'  => true,
+                        ),
+                        array(
+                            'privilege' => '{DAV:}read-current-user-privilege-set',
+                            'abstract'  => true,
+                        ),
+                    ),
+                ), // {DAV:}read
+                array(
+                    'privilege'  => '{DAV:}write',
+                    'aggregates' => array(
+                        array(
+                            'privilege' => '{DAV:}write-acl',
+                            'abstract'  => true,
+                        ),
+                        array(
+                            'privilege' => '{DAV:}write-properties',
+                            'abstract'  => true,
+                        ),
+                        array(
+                            'privilege' => '{DAV:}write-content',
+                            'abstract'  => true,
+                        ),
+                        array(
+                            'privilege' => '{DAV:}unlock',
+                            'abstract'  => true,
+                        ),
+                    ),
+                ), // {DAV:}write
+            ), 
+        ); // {DAV:}all
+
+    }
+
+    /**
+     * Returns the supported privilege set as a flat list
+     *
+     * This is much easier to parse.
+     *
+     * The returned list will be index by privilege name.
+     * The value is a struct containing the following properties:
+     *   - aggregates
+     *   - abstract
+     *   - concrete
+     * 
+     * @return array 
+     */
+    final public function getFlatPrivilegeSet() {
+
+        $privs = $this->getSupportedPrivilegeSet();
+
+        $flat = array();
+
+        $traverse = function($priv, $concrete = null) use ($flat, $traverse) {
+
+            $myPriv = array(
+                'abstract' => isset($priv['abstract']) && $priv['abstract'],
+                'aggregates' => isset($priv['aggregates'])?$priv['aggregates']:array(),
+                'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
+            );
+
+            $flat[] = $myPriv;
+
+            foreach($myPriv['aggregates'] as $subPriv) {
+                
+                $traverse($subPriv,$myPriv['concrete']);
+
+            }
+
+        };
+
+        $traverse($privs);
+
+        return $flat;
+
+    }
+
+    /**
+     * Returns the full ACL list.
+     *
+     * Either a uri or a Sabre_DAV_INode may be passed.
+     *
+     * null will be returned if the node doesn't support ACLs. 
+     * 
+     * @param string|Sabre_DAV_INode $node
+     * @return array
+     */
+    public function getACL($node) {
+
+        if (is_string($node)) {
+            $node = $this->server->getNodeForPath($node);
+        }
+        if ($node instanceof Sabre_DAVACL_IACL) {
+            return $node->getACL();
+        }
+        return null; 
+
+    }
+
+    /**
+     * Returns a list of privileges the current user has
+     * on a particular node.
+     *
+     * Either a uri or a Sabre_DAV_INode may be passed.
+     *
+     * null will be returned if the node doesn't support ACLs. 
+     * 
+     * @param string|Sabre_DAV_INode $node 
+     * @return array 
+     */
+    public function getCurrentUserPrivilegeSet($node) {
+
+        $acl = $this->getACL($node);
+        if (is_null($acl)) return null;
+
+        $principals = $this->getCurrentUserPrincipals();
+
+        $collected = array();
+
+        foreach($acl as $ace) {
+
+            if (in_array($ace['principal'], $principals)) {
+                $collected[] = $ace;
+            }
+
+        }
+
+        return $collected;
+
+    }
+
+    /**
      * Sets up the plugin
      *
      * This method is automatically called by the server class.
@@ -232,7 +416,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}principal-URL',
             '{DAV:}group-membership',
             '{DAV:}principal-collection-set',
-            '{DAV:}current-user-principal'
+            '{DAV:}current-user-principal',
+            '{DAV:}supported-privilege-set',
+            '{DAV:}current-user-privilege-set',
+            '{DAV:}acl',
+            '{DAV:}acl-restrictions',
+            '{DAV:}inherited-acl-set'
         );
 
     }
@@ -486,6 +675,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             } else {
                 $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
             }
+
+        }
+        if (false !== ($index = array_search('{DAV:}supported-privilege-set', $requestedProperties))) {
+
+            unset($requestedProperties[$index]);
+            $returnedProperties[200]['{DAV:}supported-privilege-set'] = new Sabre_DAVACL_Property_SupportedPrivilegeSet($this->getSupportedPrivilegeSet());
 
         }
 

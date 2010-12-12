@@ -53,6 +53,17 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testSetGetBodyStream() {
+
+        $h = fopen('php://memory','r+');
+        fwrite($h,'testing');
+        rewind($h);
+        $this->request->setBody($h);
+        $this->assertEquals('testing',stream_get_contents($this->request->getBody()),'We didn\'t get our testbody back');
+
+    }
+
+
     function testDefaultInputStream() {
 
         $h = fopen('php://memory','r+');
@@ -87,6 +98,22 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
         $r = new Sabre_HTTP_Request($s);
 
         $this->assertEquals('https://sabredav.org/foo', $r->getAbsoluteUri());
+
+    }
+
+    function testGetQueryString() {
+
+        $s = array(
+            'QUERY_STRING' => 'bla',
+        );
+
+        $r = new Sabre_HTTP_Request($s);
+        $this->assertEquals('bla', $r->getQueryString());
+
+        $s = array();
+
+        $r = new Sabre_HTTP_Request($s);
+        $this->assertEquals('', $r->getQueryString());
 
     }
 

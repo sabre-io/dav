@@ -167,7 +167,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         while(count($check)) {
 
             $principal = array_shift($check);
-            
+ 
             $node = $this->server->objectTree->getNodeForPath($principal);
             if ($node instanceof Sabre_DAVACL_Principal) {
                 foreach($node->getGroupMembership() as $groupMember) {

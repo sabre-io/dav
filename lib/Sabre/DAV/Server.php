@@ -1239,6 +1239,8 @@ class Sabre_DAV_Server {
 
         foreach($nodes as $myPath=>$node) {
 
+            $currentPropertyNames = $propertyNames;
+
             $newProperties = array(
                 '200' => array(),
                 '404' => array(),
@@ -1246,7 +1248,7 @@ class Sabre_DAV_Server {
 
             if ($allProperties) {
                 // Default list of propertyNames, when all properties were requested.
-                $propertyNames = array(
+                $currentPropertyNames = array(
                     '{DAV:}getlastmodified',
                     '{DAV:}getcontentlength',
                     '{DAV:}resourcetype',
@@ -1262,22 +1264,22 @@ class Sabre_DAV_Server {
             // to make certain decisions about the entry.
             // WebDAV dictates we should add a / and the end of href's for collections
             $removeRT = false;
-            if (!in_array('{DAV:}resourcetype',$propertyNames)) {
-                $propertyNames[] = '{DAV:}resourcetype';
+            if (!in_array('{DAV:}resourcetype',$currentPropertyNames)) {
+                $currentPropertyNames[] = '{DAV:}resourcetype';
                 $removeRT = true;
             }
 
-            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$propertyNames, &$newProperties));
+            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$currentPropertyNames, &$newProperties));
 
-            if (count($propertyNames) > 0) {
+            if (count($currentPropertyNames) > 0) {
 
                 if ($node instanceof Sabre_DAV_IProperties) 
-                    $newProperties['200'] = $newProperties[200] + $node->getProperties($propertyNames);
+                    $newProperties['200'] = $newProperties[200] + $node->getProperties($currentPropertyNames);
 
             }
 
 
-            foreach($propertyNames as $prop) {
+            foreach($currentPropertyNames as $prop) {
                 
                 if (isset($newProperties[200][$prop])) continue;
 

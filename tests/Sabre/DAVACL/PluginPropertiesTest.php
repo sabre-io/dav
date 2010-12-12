@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/DAV/Auth/MockBackend.php';
+
 class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
     function testPrincipalCollectionSet() {
@@ -79,6 +81,73 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         $this->assertType('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
         $this->assertEquals(Sabre_DAV_Property_Principal::HREF, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
         $this->assertEquals('principals/admin', $returnedProperties[200]['{DAV:}current-user-principal']->getHref());
+
+    }
+
+    function testSupportedPrivilegeSet() {
+
+        $plugin = new Sabre_DAVACL_Plugin();
+
+        $requestedProperties = array(
+            '{DAV:}supported-privilege-set',
+        );
+
+        $returnedProperties = array(
+            200 => array(),
+            404 => array(),
+        );
+
+
+        $this->assertNull($plugin->beforeGetProperties('/', new Sabre_DAV_SimpleDirectory('root'), $requestedProperties, $returnedProperties));
+
+        $this->assertEquals(1,count($returnedProperties[200]));
+        $this->assertArrayHasKey('{DAV:}supported-privilege-set',$returnedProperties[200]);
+        $this->assertType('Sabre_DAVACL_Property_SupportedPrivilegeSet', $returnedProperties[200]['{DAV:}supported-privilege-set']);
+
+        $server = new Sabre_DAV_Server();
+        $prop = $returnedProperties[200]['{DAV:}supported-privilege-set'];
+
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $root = $dom->createElement('d:root');
+        $root->setAttribute('xmlns:d','DAV:');
+        $dom->appendChild($root);
+        $prop->serialize($server, $root);
+
+
+        $xpaths = array(
+            '/d:root' => 1,
+            '/d:root/d:supported-privilege' => 1,
+            '/d:root/d:supported-privilege/d:privilege' => 1,
+            '/d:root/d:supported-privilege/d:privilege/d:all' => 1,
+            '/d:root/d:supported-privilege/d:abstract' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege' => 2,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:privilege' => 2,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:privilege/d:read' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:privilege/d:write' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege' => 6,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege' => 6,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:read-acl' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:read-current-user-privilege-set' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-content' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-properties' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-acl' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unlock' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:abstract' => 6,
+        );
+
+
+        // reloading because php dom sucks 
+        $dom2 = new DOMDocument('1.0', 'utf-8');
+        $dom2->loadXML($dom->saveXML());
+
+        $dxpath = new DOMXPath($dom2);
+        $dxpath->registerNamespace('d','DAV:');
+        foreach($xpaths as $xpath=>$count) {
+
+            $this->assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : ' . $xpath . ', we could only find ' . $dxpath->query($xpath)->length . ' elements, while we expected ' . $count);
+
+        }
+
     }
 
 }

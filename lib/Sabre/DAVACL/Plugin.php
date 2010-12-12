@@ -57,6 +57,18 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     );
 
     /**
+     * By default the user van only access nodes that have built-in support for 
+     * ACL (though the Sabre_DAVACL_IACL interface). When nodes are encountered 
+     * that don't implement this interface, access is denied.
+     *
+     * This is useful for some setups, but not for others. This setting allows 
+     * you to open up access to all nodes without ACL support. 
+     * 
+     * @var mixed
+     */
+    public $allowAccessToNodesWithoutACL = false;
+
+    /**
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
@@ -132,7 +144,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function checkPrivileges($uri,$privileges,$recursion = self::R_PARENT) {
 
         if (!is_array($privileges)) $privileges = array($privileges);
-        //return true;
+
+        if ($this->allowAccessToNodesWithoutACL) {
+            return true;
+        }
+
         throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
 
     }
@@ -147,6 +163,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function getCurrentUserPrincipal() {
 
         $authPlugin = $this->server->getPlugin('auth');
+        if (is_null($authPlugin)) return null;
+
         return $authPlugin->getCurrentUserPrincipal();
 
     }
@@ -468,7 +486,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             } else {
                 $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
             }
-            $returnedProperties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_HrefList($this->principalCollectionSet);
 
         }
 
@@ -712,9 +729,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $result = array();
 
-        if (!in_array('{DAV:}resourcetype', $requestedProperties))
-            $requestedProperties[] = '{DAV:}resourcetype';
-
         if ($applyToPrincipalCollectionSet) {
             $uris = array();
         } else {
@@ -723,13 +737,15 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $lookupResults = array();
         foreach($uris as $uri) {
-            $r = $this->server->getPropertiesForPath($uri, array_keys($searchProperties), 1);
+
+            $p = array_keys($searchProperties);
+            $p[] = '{DAV:}resourcetype';
+            $r = $this->server->getPropertiesForPath($uri, $p, 1);
 
             // The first item in the results is the parent, so we get rid of it.
             array_shift($r);
             $lookupResults = array_merge($lookupResults, $r);
         } 
-
 
         $matches = array();
 
@@ -746,6 +762,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                     // this is not a match. 
                     continue;
                 }
+
                 if (isset($lookupResult[200][$searchProperty]) &&
                     mb_stripos($lookupResult[200][$searchProperty], $searchValue, 0, 'UTF-8')!==false) {
                         $matches[] = $lookupResult['href'];

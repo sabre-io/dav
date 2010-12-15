@@ -62,9 +62,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * that don't implement this interface, access is denied.
      *
      * This is useful for some setups, but not for others. This setting allows 
-     * you to open up access to all nodes without ACL support. 
-     * 
-     * @var mixed
+     * @var bool 
      */
     public $allowAccessToNodesWithoutACL = false;
 

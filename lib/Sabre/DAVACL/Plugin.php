@@ -348,7 +348,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function getACL($node) {
 
         if (is_string($node)) {
-            $node = $this->server->getNodeForPath($node);
+            $node = $this->server->tree->getNodeForPath($node);
         }
         if ($node instanceof Sabre_DAVACL_IACL) {
             return $node->getACL();

@@ -139,7 +139,7 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
             ),
         );
 
-        $r = $this->server->broadcastEvent('afterGetProperties',array('foo',&$properties));
+        $r = $this->server->broadcastEvent('afterGetProperties',array('testdir',&$properties));
         $this->assertTrue($r);
 
         $this->assertEquals($expected, $properties);

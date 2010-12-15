@@ -311,21 +311,26 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $flat = array();
 
-        $traverse = function($priv, $concrete = null) use ($flat, $traverse) {
+        $traverse = null;
+        $traverse = function($priv, $concrete = null) use (&$flat, &$traverse) {
 
             $myPriv = array(
                 'abstract' => isset($priv['abstract']) && $priv['abstract'],
-                'aggregates' => isset($priv['aggregates'])?$priv['aggregates']:array(),
+                'aggregates' => array(),
                 'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
             );
 
-            $flat[] = $myPriv;
+            if (isset($priv['aggregates']))
+                foreach($priv['aggregates'] as $subPriv) $myPriv['aggregates'][] = $subPriv['privilege'];
 
-            foreach($myPriv['aggregates'] as $subPriv) {
+            $flat[$priv['privilege']] = $myPriv;
+
+            if (isset($priv['aggregates']))
+                foreach($priv['aggregates'] as $subPriv) {
                 
-                $traverse($subPriv,$myPriv['concrete']);
+                    $traverse($subPriv,$myPriv['concrete']);
 
-            }
+                }
 
         };
 

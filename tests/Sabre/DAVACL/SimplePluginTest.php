@@ -1,6 +1,8 @@
 <?php
 
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipal.php';
+require_once 'Sabre/DAVACL/MockACLNode.php';
 
 class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
 
@@ -156,59 +158,87 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected,$acl->getCurrentUserPrincipals());
 
     }
+
+    function testGetACL() {
+
+        $acl = array(
+            array(
+                'principal' => 'principals/admin',
+                'privilege' => '{DAV:}read',
+            ),
+            array(
+                'principal' => 'principals/admin',
+                'privilege' => '{DAV:}write',
+            ),
+        );
+
+
+        $tree = array(
+            new Sabre_DAVACL_MockACLNode('foo',$acl),
+        );
+
+        $server = new Sabre_DAV_Server($tree);
+        $aclPlugin = new Sabre_DAVACL_Plugin();
+        $server->addPlugin($aclPlugin);
+
+        $this->assertEquals($acl,$aclPlugin->getACL('foo'));
+
+    }
+
+    function testGetCurrentUserPrivilegeSet() {
+
+        $acl = array(
+            array(
+                'principal' => 'principals/admin',
+                'privilege' => '{DAV:}read',
+            ),
+            array(
+                'principal' => 'principals/user1',
+                'privilege' => '{DAV:}read',
+            ),
+            array(
+                'principal' => 'principals/admin',
+                'privilege' => '{DAV:}write',
+            ),
+        );
+
+
+        $tree = array(
+            new Sabre_DAVACL_MockACLNode('foo',$acl),
+
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                new Sabre_DAVACL_MockPrincipal('admin','principals/admin'),
+            )),
+
+        );
+
+        $server = new Sabre_DAV_Server($tree);
+        $aclPlugin = new Sabre_DAVACL_Plugin();
+        $server->addPlugin($aclPlugin);
+
+        $auth = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'SabreDAV');
+        $server->addPlugin($auth);
+
+        //forcing login
+        $auth->beforeMethod('GET','/');
+
+        $expected = array(
+            array(
+                'principal' => 'principals/admin',
+                'privilege' => '{DAV:}read',
+            ),
+            array(
+                'principal' => 'principals/admin',
+                'privilege' => '{DAV:}write',
+            ),
+        );
+
+        $this->assertEquals($expected,$aclPlugin->getCurrentUserPrivilegeSet('foo'));
+
+    }
+
 }
 
 
-class Sabre_DAVACL_MockPrincipal extends Sabre_DAV_Node implements Sabre_DAVACL_IPrincipal {
 
-    public $name;
-    public $principalUrl;
-    public $groupMembership = array();
-    public $groupMemberSet = array();
-
-    function __construct($name,$principalUrl,array $groupMembership = array(), array $groupMemberSet = array()) {
-
-        $this->name = $name;
-        $this->principalUrl = $principalUrl;
-        $this->groupMembership = $groupMembership;
-        $this->groupMemberSet = $groupMemberSet;
-
-    }
-
-    function getName() {
-
-        return $this->name;
-
-    }
-
-    function getAlternateUriSet() {
-
-        return array();
-
-    }
-
-    function getPrincipalUrl() {
-
-        return $this->principalUrl;
-
-    }
-
-    function getGroupMemberSet() {
-
-        return $this->groupMemberSet;
-
-    }
-
-    function getGroupMemberShip() {
-
-        return $this->groupMembership;
-
-    }
-
-    function setGroupMemberSet(array $groupMemberSet) {
-
-        throw new Exception('Not implemented');
-
-    }
-}
 

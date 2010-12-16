@@ -53,6 +53,6 @@ interface Sabre_DAVACL_IACL extends Sabre_DAV_INode {
      * @param array $acl 
      * @return void
      */
-    function setACL($acl);
+    function setACL(array $acl);
 
 }

@@ -211,6 +211,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $currentUser = $this->getCurrentUserPrincipal();
 
+        if (is_null($currentUser)) return array();
+
         $check = array($currentUser);
         $principals = array($currentUser);
 
@@ -218,8 +220,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             $principal = array_shift($check);
  
-            $node = $this->server->objectTree->getNodeForPath($principal);
-            if ($node instanceof Sabre_DAVACL_Principal) {
+            $node = $this->server->tree->getNodeForPath($principal);
+            if ($node instanceof Sabre_DAVACL_IPrincipal) {
                 foreach($node->getGroupMembership() as $groupMember) {
 
                     if (!in_array($groupMember, $principals)) {

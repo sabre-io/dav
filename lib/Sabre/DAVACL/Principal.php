@@ -7,6 +7,9 @@
  * 
  * Many WebDAV specs require a user to show up in the directory 
  * structure. 
+ *
+ * This principal also has basic ACL settings, only allowing the principal
+ * access it's own principal. 
  * 
  * @package Sabre
  * @subpackage DAVACL
@@ -14,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPrincipal, Sabre_DAV_IProperties {
+class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPrincipal, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
 
     /**
      * Struct with principal information.
@@ -172,6 +175,71 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
     public function updateProperties($properties) {
 
         return false;
+
+    }
+
+    /**
+     * Returns the owner principal
+     *
+     * This must be a url to a principal, or null if there's no owner 
+     * 
+     * @return string|null
+     */
+    public function getOwner() {
+
+        return $this->principalProperties['uri'];
+
+
+    }
+
+    /**
+     * Returns a group principal
+     *
+     * This must be a url to a principal, or null if there's no owner
+     * 
+     * @return string|null 
+     */
+    public function getGroup() {
+
+        return null;
+
+    }
+
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are 
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to 
+     *      be updated. 
+     * 
+     * @return array 
+     */
+    public function getACL() {
+
+        return array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalProperties['uri'],
+                'protected' => true,
+            ),
+        );
+
+    }
+
+    /**
+     * Updates the ACL
+     *
+     * This method will receive a list of new ACE's. 
+     * 
+     * @param array $acl 
+     * @return void
+     */
+    public function setACL(array $acl) {
+
+        throw new Sabre_DAV_Exception_MethodNotAllowed('Updating ACLs is not allowed here');
 
     }
 

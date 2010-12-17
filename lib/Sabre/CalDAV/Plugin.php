@@ -88,6 +88,43 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a plugin name.
+     * 
+     * Using this name other plugins will be able to access other plugins
+     * using Sabre_DAV_Server::getPlugin 
+     * 
+     * @return string 
+     */
+    public function getPluginName() {
+
+        return 'caldav';
+
+    }
+
+    /**
+     * Returns a list of reports this plugin supports.
+     *
+     * This will be used in the {DAV:}supported-report-set property.
+     * Note that you still need to subscribe to the 'report' event to actually 
+     * implement them 
+     * 
+     * @param string $uri
+     * @return array 
+     */
+    public function getSupportedReportSet($uri) {
+
+        $node = $this->server->tree->getNodeForPath($uri);
+        if ($node instanceof Sabre_CalDAV_Calendar || $node instanceof Sabre_CalDAV_CalendarObject) {
+            return array(
+                 '{' . self::NS_CALDAV . '}calendar-multiget',
+                 '{' . self::NS_CALDAV . '}calendar-query',
+            );
+        }
+        return array();
+
+    }
+
+    /**
      * Initializes the plugin 
      * 
      * @param Sabre_DAV_Server $server 
@@ -156,8 +193,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             case '{'.self::NS_CALDAV.'}calendar-query' :
                 $this->calendarQueryReport($dom);
                 return false;
-            default :
-                return true;
 
         }
 
@@ -221,7 +256,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Find out if we are currently looking at a principal resource
         $currentNode = $this->server->tree->getNodeForPath($path);
-        if ($currentNode instanceof Sabre_DAV_Auth_Principal) {
+        if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
@@ -249,19 +284,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
-
         }
-
-        if ($currentNode instanceof Sabre_CalDAV_Calendar || $currentNode instanceof Sabre_CalDAV_CalendarObject) {
-            if (array_key_exists('{DAV:}supported-report-set', $properties[200])) {
-                $properties[200]['{DAV:}supported-report-set']->addReport(array(
-                     '{' . self::NS_CALDAV . '}calendar-multiget',
-                     '{' . self::NS_CALDAV . '}calendar-query',
-                //     '{' . self::NS_CALDAV . '}free-busy-query',
-                ));
-            }
-        }
-
         
     }
 

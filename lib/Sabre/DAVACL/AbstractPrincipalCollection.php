@@ -3,19 +3,18 @@
 /**
  * Principals Collection
  *
- * You can use this abstract collection to automatically create a collection
- * that lists all users. The node returned for each user can be specified
- * by yourself, by implementing the getChildForPrincipal method.
- *
- * The users are instances of Sabre_DAV_Auth_Principal
+ * This is a helper class that easily allows you to create a collection that 
+ * has a childnode for every principal.
  * 
+ * To use this class, simply implement the getChildForPrincipal method. 
+ *
  * @package Sabre
- * @subpackage DAV
+ * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Auth_AbstractPrincipalCollection extends Sabre_DAV_Directory {
+abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Directory  {
 
     /**
      * Disallows users to access other users except themselves. 

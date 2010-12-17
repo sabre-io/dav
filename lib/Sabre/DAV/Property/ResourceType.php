@@ -17,9 +17,9 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
     /**
      * resourceType 
      * 
-     * @var string 
+     * @var array
      */
-    public $resourceType = null;
+    public $resourceType = array();
 
     /**
      * __construct 
@@ -27,14 +27,16 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
      * @param mixed $resourceType 
      * @return void
      */
-    public function __construct($resourceType = null) {
+    public function __construct($resourceType = array()) {
 
         if ($resourceType === Sabre_DAV_Server::NODE_FILE)
-            $this->resourceType = null;
+            $this->resourceType = array();
         elseif ($resourceType === Sabre_DAV_Server::NODE_DIRECTORY)
-            $this->resourceType = '{DAV:}collection';
-        else 
+            $this->resourceType = array('{DAV:}collection');
+        elseif (is_array($resourceType)) 
             $this->resourceType = $resourceType;
+        else
+            $this->resourceType = array($resourceType);
 
     }
 
@@ -48,7 +50,6 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
         $propName = null;
         $rt = $this->resourceType;
-        if (!is_array($rt)) $rt = array($rt);
         
         foreach($rt as $resourceType) {
             if (preg_match('/^{([^}]*)}(.*)$/',$resourceType,$propName)) { 
@@ -65,15 +66,27 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
     }
 
     /**
-     * Returns the value in clark-notation
+     * Returns the values in clark-notation
      *
-     * For example '{DAV:}collection'
+     * For example array('{DAV:}collection')
      * 
-     * @return string 
+     * @return array 
      */
     public function getValue() {
 
         return $this->resourceType;
+
+    }
+
+    /**
+     * Checks if the principal contains a certain value 
+     * 
+     * @param string $type 
+     * @return bool 
+     */
+    public function is($type) {
+
+        return in_array($type, $this->resourceType);
 
     }
 

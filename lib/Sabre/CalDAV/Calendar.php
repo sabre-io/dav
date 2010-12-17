@@ -251,4 +251,6 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
 
     }
 
+    
+
 }

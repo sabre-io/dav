@@ -55,7 +55,7 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($keys,array_keys($props));
         $this->assertEquals('Mr. Admin',$props['{DAV:}displayname']);
-        $this->assertEquals('{DAV:}principal',$props['{DAV:}resourcetype']->getValue());
+        $this->assertEquals(array('{DAV:}principal'),$props['{DAV:}resourcetype']->getValue());
 
 
     }
@@ -85,7 +85,7 @@ class Sabre_DAV_Auth_PrincipalTest extends PHPUnit_Framework_TestCase {
         foreach($keys as $key) $this->assertArrayHasKey($key,$props);
 
         $this->assertEquals('Mr. Admin',$props['{DAV:}displayname']);
-        $this->assertEquals('{DAV:}principal',$props['{DAV:}resourcetype']->getValue());
+        $this->assertEquals(array('{DAV:}principal'),$props['{DAV:}resourcetype']->getValue());
 
         $this->assertEquals('principals/admin/',$props['{DAV:}principal-URL']->getHref());
         $this->assertNull($props['{DAV:}group-member-set']);

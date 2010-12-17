@@ -112,18 +112,12 @@ class Sabre_DAV_Server {
         '{DAV:}quota-used-bytes',
 
         // RFC3744
-        '{DAV:}alternate-URI-set',
-        '{DAV:}principal-URL',
-        '{DAV:}group-membership',
         '{DAV:}supported-privilege-set',
         '{DAV:}current-user-privilege-set',
         '{DAV:}acl',
         '{DAV:}acl-restrictions',
         '{DAV:}inherited-acl-set',
-        '{DAV:}principal-collection-set',
 
-        // RFC5397 
-        '{DAV:}current-user-principal',
     );
 
     /**
@@ -319,22 +313,29 @@ class Sabre_DAV_Server {
      */
     public function addPlugin(Sabre_DAV_ServerPlugin $plugin) {
 
-        $this->plugins[get_class($plugin)] = $plugin;
+        $this->plugins[$plugin->getPluginName()] = $plugin;
         $plugin->initialize($this);
 
     }
 
     /**
-     * Returns an initialized plugin by it's classname. 
+     * Returns an initialized plugin by it's name.
      *
      * This function returns null if the plugin was not found.
      *
-     * @param string $className
+     * @param string $name
      * @return Sabre_DAV_ServerPlugin 
      */
-    public function getPlugin($className) {
+    public function getPlugin($name) {
 
-        if (isset($this->plugins[$className])) return $this->plugins[$className];
+        if (isset($this->plugins[$name])) 
+            return $this->plugins[$name];
+
+        // This is a fallback and deprecated.
+        foreach($this->plugins as $plugin) {
+            if (get_class($plugin)===$name) return $plugin;
+        }
+
         return null;
 
     }
@@ -1238,17 +1239,16 @@ class Sabre_DAV_Server {
 
         foreach($nodes as $myPath=>$node) {
 
+            $currentPropertyNames = $propertyNames;
+
             $newProperties = array(
                 '200' => array(),
                 '404' => array(),
             );
-            if ($node instanceof Sabre_DAV_IProperties) 
-                $newProperties['200'] = $node->getProperties($propertyNames);
 
             if ($allProperties) {
-
                 // Default list of propertyNames, when all properties were requested.
-                $propertyNames = array(
+                $currentPropertyNames = array(
                     '{DAV:}getlastmodified',
                     '{DAV:}getcontentlength',
                     '{DAV:}resourcetype',
@@ -1257,14 +1257,6 @@ class Sabre_DAV_Server {
                     '{DAV:}getetag',
                     '{DAV:}getcontenttype',
                 );
-
-                // We need to make sure this includes any propertyname already returned from
-                // $node->getProperties();
-                $propertyNames = array_merge($propertyNames, array_keys($newProperties[200]));
-
-                // Making sure there's no double entries
-                $propertyNames = array_unique($propertyNames);
-
             }
 
             // If the resourceType was not part of the list, we manually add it 
@@ -1272,12 +1264,22 @@ class Sabre_DAV_Server {
             // to make certain decisions about the entry.
             // WebDAV dictates we should add a / and the end of href's for collections
             $removeRT = false;
-            if (!in_array('{DAV:}resourcetype',$propertyNames)) {
-                $propertyNames[] = '{DAV:}resourcetype';
+            if (!in_array('{DAV:}resourcetype',$currentPropertyNames)) {
+                $currentPropertyNames[] = '{DAV:}resourcetype';
                 $removeRT = true;
             }
 
-            foreach($propertyNames as $prop) {
+            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$currentPropertyNames, &$newProperties));
+
+            if (count($currentPropertyNames) > 0) {
+
+                if ($node instanceof Sabre_DAV_IProperties) 
+                    $newProperties['200'] = $newProperties[200] + $node->getProperties($currentPropertyNames);
+
+            }
+
+
+            foreach($currentPropertyNames as $prop) {
                 
                 if (isset($newProperties[200][$prop])) continue;
 
@@ -1299,7 +1301,13 @@ class Sabre_DAV_Server {
                         break;
                     case '{DAV:}getetag'               : if ($node instanceof Sabre_DAV_IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
                     case '{DAV:}getcontenttype'        : if ($node instanceof Sabre_DAV_IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
-                    case '{DAV:}supported-report-set'  : $newProperties[200][$prop] = new Sabre_DAV_Property_SupportedReportSet(); break;
+                    case '{DAV:}supported-report-set'  :
+                        $reports = array();
+                        foreach($this->plugins as $plugin) {
+                            $reports = array_merge($reports, $plugin->getSupportedReportSet($myPath));
+                        }
+                        $newProperties[200][$prop] = new Sabre_DAV_Property_SupportedReportSet($reports); 
+                        break;
 
                 }
 

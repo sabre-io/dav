@@ -589,6 +589,23 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
+   
+    /**
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
+    function testGuessBaseUriPHProot() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
+
+    }
 
     function testTriggerException() {
         

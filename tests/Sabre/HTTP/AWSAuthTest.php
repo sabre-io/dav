@@ -87,7 +87,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true)); 
 
-        $date = new DateTime('@' . time() + (60*20));
+        $date = new DateTime('@' . (time() + (60*20)));
         $date->setTimeZone(new DateTimeZone('GMT'));
         $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
@@ -116,7 +116,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true)); 
 
-        $date = new DateTime('@' . time() - (60*20));
+        $date = new DateTime('@' . (time() - (60*20)));
         $date->setTimeZone(new DateTimeZone('GMT'));
         $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 

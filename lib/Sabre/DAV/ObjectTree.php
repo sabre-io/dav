@@ -83,7 +83,11 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
 
         try {
 
+            // The root always exists
+            if ($path==='') return true;
+
             list($parent, $base) = Sabre_DAV_URLUtil::splitPath($path);
+
             $parentNode = $this->getNodeForPath($parent);
             return $parentNode->childExists($base);
 

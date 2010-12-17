@@ -156,7 +156,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         // Now we need to figure out per-privilege what it's 'real' concrete 
         // privilege is, and see if it's in the ACL list.
 
-        $list = $this->getFlatPrivileges();
+        $list = $this->getFlatPrivilegeSet();
         $failed = array();
 
         foreach($privileges as $priv) {

@@ -22,6 +22,12 @@ class Sabre_DAVACL_MockPrincipal extends Sabre_DAV_Node implements Sabre_DAVACL_
 
     }
 
+    function getDisplayName() {
+
+        return $this->getName();
+
+    }
+
     function getAlternateUriSet() {
 
         return array();

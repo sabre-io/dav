@@ -62,4 +62,14 @@ interface Sabre_DAVACL_IPrincipal extends Sabre_DAV_INode {
      */
     function setGroupMemberSet(array $principals);
 
+    /**
+     * Returns the displayname
+     *
+     * This should be a human readable name for the principal.
+     * If none is available, return the nodename. 
+     * 
+     * @return string 
+     */
+    function getDisplayName();
+
 }

@@ -665,6 +665,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
+            if (false !== ($index = array_search('{DAV:}displayname', $requestedProperties))) {
+
+                $returnedProperties[200]['{DAV:}displayname'] = $node->getDisplayName();
+
+            }
+
         }
         if (false !== ($index = array_search('{DAV:}principal-collection-set', $requestedProperties))) {
 

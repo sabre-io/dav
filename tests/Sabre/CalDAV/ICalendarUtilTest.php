@@ -194,30 +194,6 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
      * @expectedException Sabre_CalDAV_Exception_InvalidICalendarObject
      * @depends testValidateICalendarObjectValid
      */
-    function testValidateICalendarObject2Objects() {
-
-        $in = array(
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'PRODID:-//hacksw/handcal//NONSGML v1.0//EN',
-            'BEGIN:VEVENT',
-            'SUMMARY;LANGUAGE=nl-NL:meeting',
-            'X-SABRE;att1=val1;att2=val2:This is the property content',
-            'END:VEVENT',
-            'BEGIN:VEVENT',
-            'SUMMARY;LANGUAGE=nl-NL:meeting',
-            'X-SABRE;att1=val1;att2=val2:This is the property content',
-            'END:VEVENT',
-            'END:VCALENDAR');
-
-        Sabre_CalDAV_ICalendarUtil::validateICalendarObject(implode("\n",$in),array('VEVENT'));
-
-    }
-
-    /**
-     * @expectedException Sabre_CalDAV_Exception_InvalidICalendarObject
-     * @depends testValidateICalendarObjectValid
-     */
     function testValidateICalendarObjectWrongObject() {
 
         $in = array(

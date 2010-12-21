@@ -40,9 +40,6 @@ class Sabre_CalDAV_ICalendarUtil {
             $test = $xcal->xpath('/cal:iCalendar/cal:vcalendar/cal:' . $component);
             if (is_array($test)) $componentsFound = array_merge($componentsFound, $test);
         }
-        if (count($componentsFound)>1) {
-            throw new Sabre_CalDAV_Exception_InvalidICalendarObject('Only 1 of VEVENT, VTODO, VJOURNAL or VFREEBUSY may be specified per calendar object');
-        }
         if (count($componentsFound)<1) {
             throw new Sabre_CalDAV_Exception_InvalidICalendarObject('One VEVENT, VTODO, VJOURNAL or VFREEBUSY must be specified. 0 found.');
         }

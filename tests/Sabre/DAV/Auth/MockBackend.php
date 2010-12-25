@@ -1,6 +1,6 @@
 <?php
 
-class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
+class Sabre_DAV_Auth_MockBackend implements Sabre_DAV_Auth_IBackend {
 
     protected $currentUser;
 
@@ -8,37 +8,19 @@ class Sabre_DAV_Auth_MockBackend extends Sabre_DAV_Auth_Backend_Abstract {
 
         if ($realm=='failme') throw new Sabre_DAV_Exception_NotAuthenticated('deliberate fail'); 
 
-        $this->currentUser = array(
-            'uri' => 'principals/admin',
-        );
-        return true;
+        $this->currentUser = 'admin'; 
 
     }
 
-    function setCurrentUser($userUri) {
+    function setCurrentUser($user) {
 
-        $this->currentUser = array('uri' => $userUri);
+        $this->currentUser = $user;
 
     }
 
     function getCurrentUser() {
 
         return $this->currentUser;
-
-    }
-
-    function getUsers() {
-
-        return array(
-            array(
-                'uri' => 'principals/admin',
-                '{DAV:}displayname' => 'Admin',
-            ),
-            array(
-                'uri' => 'principals/user1',
-                '{DAV:}displayname' => 'User 1',
-            ),
-        );
 
     }
 

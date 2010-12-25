@@ -27,16 +27,11 @@ abstract class Sabre_DAV_Auth_Backend_AbstractPDOTest extends PHPUnit_Framework_
             ),
         );
 
-        $this->assertEquals($expected, $backend->getUsers());
-        $this->assertFalse($backend->getUserInfo('realm','blabla'));
+        $this->assertNull($backend->getDigestHash('realm','blabla'));
 
-        $expected = array(
-            'uri' => 'principals/user',
-            'digestHash' => 'hash',
-            '{http://sabredav.org/ns}email-address' => 'user@example.org',
-        );
+        $expected = 'hash'; 
 
-        $this->assertEquals($expected, $backend->getUserInfo('realm','user'));
+        $this->assertEquals($expected, $backend->getDigestHash('realm','user'));
 
     }
 

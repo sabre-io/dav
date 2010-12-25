@@ -4,13 +4,6 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_DAV_Auth_Backend_AbstractDigestTest extends PHPUnit_Framework_TestCase {
 
-    public function testGetUsers() {
-
-        $backend = new Sabre_DAV_Auth_Backend_AbstractDigestMock();
-        $this->assertEquals(array(),$backend->getUsers());
-
-    }
-
     /**
      * @expectedException Sabre_DAV_Exception_NotAuthenticated
      */
@@ -132,7 +125,8 @@ class Sabre_DAV_Auth_Backend_AbstractDigestTest extends PHPUnit_Framework_TestCa
 
         $result = $backend->getCurrentUser();
 
-        $this->assertEquals($backend->getUserInfo('','user'), $result);
+        $this->assertEquals('user', $result);
+        $this->assertEquals('HELLO', $backend->getDigestHash('myRealm', $result));
 
     }
 
@@ -142,13 +136,13 @@ class Sabre_DAV_Auth_Backend_AbstractDigestTest extends PHPUnit_Framework_TestCa
 
 class Sabre_DAV_Auth_Backend_AbstractDigestMock extends Sabre_DAV_Auth_Backend_AbstractDigest {
 
-    function getUserInfo($realm, $userName) {
+    function getDigestHash($realm, $userName) {
 
         switch($userName) {
             case 'null' : return null;
             case 'false' : return false;
             case 'array' : return array();
-            case 'user'  : return array('uri' => 'principals/user', 'digestHash' => 'HELLO');
+            case 'user'  : return 'HELLO';
         }
 
     }

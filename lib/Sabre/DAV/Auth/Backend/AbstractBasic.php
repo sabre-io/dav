@@ -4,7 +4,7 @@
  *
  * This class can be used by authentication objects wishing to use HTTP Basic
  * Most of the digest logic is handled, implementors just need to worry about
- * the authenticateInternal and getUserInfo methods
+ * the validateUserPass method.
  *
  * @package Sabre
  * @subpackage DAV
@@ -16,31 +16,28 @@
 abstract class Sabre_DAV_Auth_Backend_AbstractBasic extends Sabre_DAV_Auth_Backend_Abstract {
 
     /**
-     * This variable holds information about the currently
-     * logged in user.
+     * This variable holds the currently logged in username.
      *
-     * @var array|null
+     * @var string|null
      */
     protected $currentUser;
 
     /**
      * Validates a username and password
      *
-     * If the username and password were correct, this method must return
-     * an array with at least a 'uri' key.  
+     * This method should return true or false depending on if login
+     * succeeded.
      *
-     * If the credentials are incorrect, this method must return false.
-     *
-     * @return bool|array
+     * @return bool
      */
     abstract protected function validateUserPass($username, $password);
 
     /**
-     * Returns information about the currently logged in user.
+     * Returns information about the currently logged in username.
      *
      * If nobody is currently logged in, this method should return null.
      *
-     * @return array|null
+     * @return string|null
      */
     public function getCurrentUser() {
         return $this->currentUser;
@@ -69,14 +66,11 @@ abstract class Sabre_DAV_Auth_Backend_AbstractBasic extends Sabre_DAV_Auth_Backe
         }
 
         // Authenticates the user
-        if (!($userData = $this->validateUserPass($userpass[0],$userpass[1]))) {
+        if (!$this->validateUserPass($userpass[0],$userpass[1])) {
             $auth->requireLogin();
             throw new Sabre_DAV_Exception_NotAuthenticated('Username or password does not match');
         }
-        if (!isset($userData['uri'])) {
-            throw new Sabre_DAV_Exception('The returned array from validateUserPass must contain at a uri element');
-        }
-        $this->currentUser = $userData;
+        $this->currentUser = $userPass[0];
         return true;
     }
 

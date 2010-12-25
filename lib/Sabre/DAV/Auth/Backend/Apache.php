@@ -3,7 +3,7 @@
 /**
  * Apache authenticator
  *
- * This authentication backend assumes that auhtentication has been
+ * This authentication backend assumes that authentication has been
  * conifgured in apache, rather than within SabreDAV.
  *
  * Make sure apache is properly configured for this to work.
@@ -14,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Auth_Backend_Apache extends Sabre_DAV_Auth_Backend_Abstract {
+class Sabre_DAV_Auth_Backend_Apache implements Sabre_DAV_Auth_IBackend {
 
     /**
      * Current apache user 
@@ -52,24 +52,7 @@ class Sabre_DAV_Auth_Backend_Apache extends Sabre_DAV_Auth_Backend_Abstract {
      */
     public function getCurrentUser() {
 
-        return array(
-            'uri' => $this->principalBaseUri . '/' . $this->remoteUser,
-        );
-
-    }
-
-    /**
-     * Returns the full list of users.
-     *
-     * This method must at least return a uri for each user.
-     *
-     * It is optional to implement this.
-     * 
-     * @return array 
-     */
-    public function getUsers() {
-
-        return array($this->getCurrentUser());
+        return $this->remoteUser;
 
     }
 

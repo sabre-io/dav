@@ -45,7 +45,7 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $realm 
      * @return void
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, $realm) {
+    public function __construct(Sabre_DAV_Auth_IBackend $authBackend, $realm) {
 
         $this->authBackend = $authBackend;
         $this->realm = $realm;
@@ -86,12 +86,12 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      * 
      * @return string|null 
      */
-    public function getCurrentUserPrincipal() {
+    public function getCurrentUser() {
 
         $userInfo = $this->authBackend->getCurrentUser();
         if (!$userInfo) return null;
 
-        return $userInfo['uri'];
+        return $userInfo;
 
     }
 

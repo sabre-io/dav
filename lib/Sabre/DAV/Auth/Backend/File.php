@@ -54,10 +54,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
             if (!preg_match('/^[a-zA-Z0-9]{32}$/', $A1))
                 throw new Sabre_DAV_Exception('Malformed htdigest file. Invalid md5 hash');
                 
-            $this->users[$username] = array(
-                'digestHash' => $A1,
-                'uri'        => $this->principalBaseUri . '/' . $username
-            );
+            $this->users[$username] = $A1;
 
         }
 
@@ -70,32 +67,9 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
      * @param string $username 
      * @return string 
      */
-    public function getUserInfo($realm, $username) {
+    public function getDigestHash($realm, $username) {
 
         return isset($this->users[$username])?$this->users[$username]:false;
-
-    }
-
-
-    /**
-     * Returns the full list of users.
-     *
-     * This method must at least return a uri for each user.
-     * 
-     * @return array 
-     */
-    public function getUsers() {
-
-        $re = array();
-        foreach($this->users as $userName=>$A1) {
-
-            $re[] = array(
-                'uri'=> $this->principalBaseUri . '/' . $userName
-            );
-
-        }
-
-        return $re;
 
     }
 

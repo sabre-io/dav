@@ -17,35 +17,36 @@
 abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Directory  {
 
     /**
-     * Disallows users to access other users except themselves. 
-     *
-     * @var bool 
-     */
-    public $disallowListing = false;
-
-    /**
      * Node or 'directory' name. 
      * 
      * @var string 
      */
-    protected $nodeName;
+    protected $path;
 
     /**
-     * Authentication backend 
+     * Principal backend 
      * 
-     * @var Sabre_DAV_Auth_Backend 
+     * @var Sabre_DAVACL_IPrincipalBackend 
      */
-    protected $authBackend;
+    protected $principalBackend;
 
     /**
-     * Creates the object 
+     * Creates the object
+     *
+     * This object must be passed the principal backend. This object will 
+     * filter all principals from a specfied prefix ($principalPrefix). The 
+     * default is 'principals', if your principals are stored in a different 
+     * collection, override $principalPrefix
      * 
-     * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
+     * 
+     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend 
+     * @param string $principalPrefix
+     * @param string $nodeName
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, $nodeName = 'principals') {
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, $principalPrefix = 'principals') {
 
-        $this->nodeName = $nodeName;
-        $this->authBackend = $authBackend;
+        $this->principalPrefix = $principalPrefix;
+        $this->principalBackend = $principalBackend;
 
     }
 
@@ -56,10 +57,10 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Direct
      * at least contain a uri item. Other properties may or may not be
      * supplied by the authentication backend.
      * 
-     * @param array $principal 
-     * @return Sabre_DAV_INode 
+     * @param array $principalInfo 
+     * @return Sabre_DAVACL_IPrincipal
      */
-    abstract function getChildForPrincipal(array $principal);
+    abstract function getChildForPrincipal(array $principalInfo);
 
     /**
      * Returns the name of this collection. 
@@ -68,7 +69,8 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Direct
      */
     public function getName() {
 
-        return $this->nodeName; 
+        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->principalPrefix);
+        return $name; 
 
     }
 
@@ -79,11 +81,8 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Direct
      */
     public function getChildren() {
 
-        if ($this->disallowListing) 
-            throw new Sabre_DAV_Exception_MethodNotAllowed('You are not allowed to list principals');
-
         $children = array();
-        foreach($this->authBackend->getUsers() as $principalInfo) {
+        foreach($this->principalBackend->getPrincipalsByPrefix($this->principalPrefix) as $principalInfo) {
 
             $children[] = $this->getChildForPrincipal($principalInfo);
 
@@ -98,27 +97,13 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Direct
      * 
      * @param string $name
      * @throws Sabre_DAV_Exception_FileNotFound
-     * @return Sabre_DAV_INode 
+     * @return Sabre_DAV_IPrincipal
      */
     public function getChild($name) {
 
-        if ($this->disallowListing) {
-            $currentUser = $this->authBackend->getCurrentUser();
-            
-            // Not logged in
-            if (is_null($currentUser)) {
-                throw new Sabre_DAV_Exception_Forbidden('Access denied to this principal');
-            }
-
-            list(, $currentUserName) = Sabre_DAV_URLUtil::splitPath($currentUser['uri']);
-
-            // Not the current user
-            if ($currentUserName!==$name) {
-                throw new Sabre_DAV_Exception_Forbidden('Access denied to this principal');
-            }
-            return $this->getChildForPrincipal($currentUser);
-        }
-        return parent::getChild($name);
+        $principalInfo = $this->principalBackend->getPrincipalByPath($this->principalPrefix . '/' . $name);
+        if (!$principalInfo) throw new Sabre_DAV_Exception_FileNotFound('Principal with name ' . $name . ' not found');
+        return $this->getChildForPrincipal($principalInfo);
 
     }
 

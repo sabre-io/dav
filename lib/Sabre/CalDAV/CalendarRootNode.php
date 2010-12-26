@@ -25,13 +25,27 @@ class Sabre_CalDAV_CalendarRootNode extends Sabre_DAVACL_AbstractPrincipalCollec
      *
      * This constructor needs both an authentication and a caldav backend.
      *
-     * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
+     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend 
      * @param Sabre_CalDAV_Backend_Abstract $caldavBackend 
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend,Sabre_CalDAV_Backend_Abstract $caldavBackend) {
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend,Sabre_CalDAV_Backend_Abstract $caldavBackend, $principalPrefix = 'principals') {
 
-        parent::__construct($authBackend, Sabre_CalDAV_Plugin::CALENDAR_ROOT);
+        parent::__construct($principalBackend, $principalPrefix);
         $this->caldavBackend = $caldavBackend;
+
+    }
+
+    /**
+     * Returns the nodename
+     *
+     * We're overriding this, because the default will be the 'principalPrefix',
+     * and we want it to be Sabre_CalDAV_Plugin::CALENDAR_ROOT 
+     * 
+     * @return void
+     */
+    public function getName() {
+
+        return Sabre_CalDAV_Plugin::CALENDAR_ROOT;
 
     }
 
@@ -47,7 +61,7 @@ class Sabre_CalDAV_CalendarRootNode extends Sabre_DAVACL_AbstractPrincipalCollec
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new Sabre_CalDAV_UserCalendars($this->authBackend, $this->caldavBackend, $principal['uri']);
+        return new Sabre_CalDAV_UserCalendars($this->principalBackend, $this->caldavBackend, $principal['uri']);
 
     }
 

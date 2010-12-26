@@ -6,6 +6,10 @@
  * This script is a convenience script. It quickly sets up a WebDAV server
  * with caldav and ACL support, and it creates the root 'principals' and
  * 'calendars' collections.
+ *
+ * Note that if you plan to do anything moderately complex, you are advised to 
+ * not subclass this server, but use Sabre_DAV_Server directly instead. This 
+ * class is nothing more than an 'easy setup'.
  * 
  * @package Sabre
  * @subpackage CalDAV
@@ -25,12 +29,13 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
         /* Backends */
         $authBackend = new Sabre_DAV_Auth_Backend_PDO($pdo);
         $calendarBackend = new Sabre_CalDAV_Backend_PDO($pdo);
+        $principalBackend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
 
         /* Directory structure */
         $root = new Sabre_DAV_SimpleDirectory('root');
-        $principals = new Sabre_DAVACL_PrincipalCollection($authBackend);
+        $principals = new Sabre_DAVACL_PrincipalCollection($principalBackend);
         $root->addChild($principals);
-        $calendars = new Sabre_CalDAV_CalendarRootNode($authBackend, $calendarBackend);
+        $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend, $calendarBackend);
         $root->addChild($calendars);
 
         $objectTree = new Sabre_DAV_ObjectTree($root);

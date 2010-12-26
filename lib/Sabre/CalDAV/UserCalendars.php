@@ -12,11 +12,11 @@
 class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
 
     /**
-     * Authentication backend 
+     * Principal backend 
      * 
-     * @var Sabre_DAV_Auth_Backend_Abstract 
+     * @var Sabre_DAVACL_IPrincipalBackend
      */
-    protected $authBackend;
+    protected $principalBackend;
 
     /**
      * Array with user information 
@@ -35,13 +35,13 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
     /**
      * Constructor 
      * 
-     * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
+     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
      * @param Sabre_CalDAV_Backend_Abstract $caldavBackend 
      * @param mixed $userUri 
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, Sabre_CalDAV_Backend_Abstract $caldavBackend, $userUri) {
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_Abstract $caldavBackend, $userUri) {
 
-        $this->authBackend = $authBackend;
+        $this->principalBackend = $principalBackend;
         $this->caldavBackend = $caldavBackend;
         $this->userUri = $userUri;
        
@@ -168,7 +168,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
         $calendars = $this->caldavBackend->getCalendarsForUser($this->userUri);
         $objs = array();
         foreach($calendars as $calendar) {
-            $objs[] = new Sabre_CalDAV_Calendar($this->authBackend, $this->caldavBackend, $calendar);
+            $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
         }
         return $objs;
 

@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Auth_Backend_AbstractBasic extends Sabre_DAV_Auth_Backend_Abstract {
+abstract class Sabre_DAV_Auth_Backend_AbstractBasic implements Sabre_DAV_Auth_IBackend {
 
     /**
      * This variable holds the currently logged in username.
@@ -70,7 +70,7 @@ abstract class Sabre_DAV_Auth_Backend_AbstractBasic extends Sabre_DAV_Auth_Backe
             $auth->requireLogin();
             throw new Sabre_DAV_Exception_NotAuthenticated('Username or password does not match');
         }
-        $this->currentUser = $userPass[0];
+        $this->currentUser = $userpass[0];
         return true;
     }
 

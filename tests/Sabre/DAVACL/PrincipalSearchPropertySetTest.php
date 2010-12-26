@@ -1,12 +1,13 @@
 <?php
 
 require_once 'Sabre/HTTP/ResponseMock.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_TestCase {
 
     function getServer() {
 
-        $backend = new Sabre_DAV_Auth_MockBackend();
+        $backend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $dir = new Sabre_DAV_SimpleDirectory('root');
         $principals = new Sabre_DAVACL_PrincipalCollection($backend);

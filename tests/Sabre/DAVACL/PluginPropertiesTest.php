@@ -41,7 +41,6 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         $plugin = new Sabre_DAVACL_Plugin();
         $fakeServer->addPlugin($plugin);
 
-
         
         $requestedProperties = array(
             '{DAV:}current-user-principal',

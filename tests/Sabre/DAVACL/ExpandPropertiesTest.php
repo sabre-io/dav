@@ -6,7 +6,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
 
     function getServer() {
 
-        $backend = new Sabre_DAV_Auth_MockBackend();
+        $backend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $dir = new Sabre_DAV_SimpleDirectory('root');
         $principals = new Sabre_DAVACL_PrincipalCollection($backend);
@@ -17,12 +17,12 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
         $plugin = new Sabre_DAVACL_Plugin();
         $plugin->allowAccessToNodesWithoutACL = true;
 
-        $authPlugin = new Sabre_DAV_Auth_Plugin($backend,'SabreDAV');
-        $fakeServer->addPlugin($authPlugin);
-
         $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
+
+        $authBackend = new Sabre_DAV_Auth_MockBackend();
+        $fakeServer->addPlugin(new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV'));
 
         return $fakeServer;
 

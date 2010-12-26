@@ -7,7 +7,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
     
     function getServer() {
 
-        $backend = new Sabre_DAV_Auth_MockBackend();
+        $backend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $dir = new Sabre_DAV_SimpleDirectory('root');
         $principals = new Sabre_DAVACL_PrincipalCollection($backend);

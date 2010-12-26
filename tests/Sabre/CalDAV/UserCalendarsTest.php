@@ -1,7 +1,7 @@
 <?php
 
 require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 /**
  * @covers Sabre_CalDAV_UserCalendars
@@ -10,15 +10,14 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
 
     protected $usercalendars;
     protected $backend;
-    protected $authBackend;
+    protected $principalBackend;
 
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
-        $this->authBackend = new Sabre_DAV_Auth_MockBackend('realm');
-        //$this->authBackend->setCurrentUser('principals/user1');
-        $this->usercalendars = new Sabre_CalDAV_UserCalendars($this->authBackend, $this->backend, 'principals/user1'); 
+        $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend('realm');
+        $this->usercalendars = new Sabre_CalDAV_UserCalendars($this->principalBackend, $this->backend, 'principals/user1'); 
 
     }
 

@@ -12,6 +12,7 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
 
         $this->server = new Sabre_DAV_Server($nodes);
         $aclPlugin = new Sabre_DAVACL_Plugin();
+        $aclPlugin->allowAccessToNodesWithoutACL = false;
         $this->server->addPlugin($aclPlugin);
 
     }

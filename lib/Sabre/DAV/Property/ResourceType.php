@@ -90,4 +90,17 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
     }
 
+    /**
+     * Adds a resourcetype value to this property
+     *
+     * @param string $type
+     * @return void
+     */
+    public function add($type) {
+
+        $this->resourceType[] = $type;
+        $this->resourceType = array_unique($this->resourceType);
+
+    }
+
 }

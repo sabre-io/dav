@@ -1,5 +1,6 @@
 1.4.0 (2010-??-??)
 	* Added: RFC3744 ACL support.
+	* Added: Calendar-delegation (caldav-proxy) support. 
 	* BC break: In order to fix Issue 99, a new argument had to be added to
 	  Sabre_DAV_Locks_Backend_*::getLocks classes. Consult the classes for
 	  details.
@@ -27,6 +28,7 @@
 	  hardcoded to 'principals/[user]'. 
 	* Added: getSupportedReportSet method in ServerPlugin class. This allows
 	  you to easily specify which reports you're implementing.
+	* Added: A '..' link to the HTML browser.
 	* Fixed: Issue 99: Locks on child elements were ignored when their parent
 	  nodes were deleted. 
 	* Fixed: Issue 90: lockdiscovery property and LOCK response now include a
@@ -41,6 +43,8 @@
 	  string)
 	* Fixed: Sabre_DAV_ObjectTree::nodeExist always returned false for the
 	  root node.
+	* Added: Global way to easily supply new resourcetypes for cetain node
+	  classes.
 
 1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api

@@ -86,9 +86,6 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
 
         foreach($requestedProperties as $prop) switch($prop) {
 
-            case '{DAV:}resourcetype' : 
-                $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{urn:ietf:params:xml:ns:caldav}calendar','{DAV:}collection')); 
-                break;
             case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' : 
                 $response[$prop] = new Sabre_CalDAV_Property_SupportedCalendarData(); 
                 break;
@@ -270,6 +267,27 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
                 'principal' => $this->calendarInfo['principaluri'],
                 'protected' => true,
             ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->calendarInfo['principaluri'],
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                'protected' => true,
+            ),
+
         );
 
     }

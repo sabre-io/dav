@@ -83,7 +83,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('calendar-access');
+        return array('calendar-access', 'calendar-proxy');
 
     }
 
@@ -142,6 +142,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
 
         $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre_CalDAV_Property_SupportedCalendarComponentSet';
+
+        $server->resourceTypeMapping['Sabre_CalDAV_Calendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
+        $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
+        $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
 
         array_push($server->protectedProperties,
 
@@ -256,6 +260,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Find out if we are currently looking at a principal resource
         $currentNode = $this->server->tree->getNodeForPath($path);
+
         if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
@@ -267,6 +272,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $properties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
             }
 
+            /*
             // calendar-user-address-set property
             $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
             if (array_key_exists($calProp,$properties[404])) {
@@ -282,7 +288,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $properties[200][$calProp] = new Sabre_DAV_Property_Href('mailto:' . $email, false);
                 unset($properties[404][$calProp]);
 
-            }
+            }*/
 
         }
         

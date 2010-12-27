@@ -219,6 +219,27 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
                 'principal' => $this->calendarInfo['principaluri'],
                 'protected' => true,
             ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->calendarInfo['principaluri'],
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                'protected' => true,
+            ),
+
         );
 
     }

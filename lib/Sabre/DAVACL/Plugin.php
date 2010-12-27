@@ -299,6 +299,14 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                             'abstract'  => true,
                         ),
                         array(
+                            'privilege' => '{DAV:}bind',
+                            'abstract'  => true,
+                        ),
+                        array(
+                            'privilege' => '{DAV:}unbind',
+                            'abstract'  => true,
+                        ),
+                        array(
                             'privilege' => '{DAV:}unlock',
                             'abstract'  => true,
                         ),
@@ -443,6 +451,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}acl-restrictions',
             '{DAV:}inherited-acl-set'
         );
+
+        $server->resourceTypeMapping['Sabre_DAVACL_IPrincipal'] = '{DAV:}principal';
 
     }
 
@@ -620,7 +630,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-
     }
 
     /**
@@ -671,12 +680,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                 unset($requestedProperties[$index]);
                 $returnedProperties[200]['{DAV:}group-membership'] = new Sabre_DAV_Property_HrefList($node->getGroupMembership());
-
-            }
-
-            if (false !== ($index = array_search('{DAV:}resourcetype', $requestedProperties))) {
-
-                $returnedProperties[200]['{DAV:}resourcetype'] = new Sabre_DAV_Property_ResourceType('{DAV:}principal');
 
             }
 

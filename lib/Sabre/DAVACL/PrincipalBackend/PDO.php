@@ -64,7 +64,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         // This backend only support principals in one collection
         if ($prefixPath !== $this->prefix) return array();
 
-        $result = $this->pdo->query('SELECT username, email FROM users');
+        $result = $this->pdo->query('SELECT username, email, displayname FROM users');
 
         $users = array();
 
@@ -72,7 +72,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
 
             $users[] = array(
                 'uri' => $this->prefix . '/' . $row['username'],
-                '{DAV:}displayname' => $row['username'],
+                '{DAV:}displayname' => $row['displayname']?$row['displayname']:$row['username'],
                 '{http://sabredav.org/ns}email-address' => $row['email'],
             );
 
@@ -97,7 +97,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         // This backend only support principals in one collection
         if ($prefixPath !== $this->prefix) return null; 
 
-        $stmt = $this->pdo->prepare('SELECT username, email FROM users WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT username, email, displayname FROM users WHERE username = ?');
         $stmt->execute(array($userName));
 
         $users = array();
@@ -107,7 +107,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
 
         return array(
             'uri' => $this->prefix . '/' . $row['username'],
-            '{DAV:}displayname' => $row['username'],
+            '{DAV:}displayname' => $row['displayname']?$row['displayname']:$row['username'],
             '{http://sabredav.org/ns}email-address' => $row['email'],
         );
 

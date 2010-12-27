@@ -20,13 +20,6 @@ abstract class Sabre_DAV_Auth_Backend_AbstractPDOTest extends PHPUnit_Framework_
         $pdo = $this->getPDO();
         $backend = new Sabre_DAV_Auth_Backend_PDO($pdo);
 
-        $expected = array(
-            array(
-                'uri' => 'principals/user',
-                '{http://sabredav.org/ns}email-address' => 'user@example.org',
-            ),
-        );
-
         $this->assertNull($backend->getDigestHash('realm','blabla'));
 
         $expected = 'hash'; 

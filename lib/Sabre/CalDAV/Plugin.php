@@ -272,23 +272,18 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $properties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
             }
 
-            /*
+            
             // calendar-user-address-set property
             $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
             if (array_key_exists($calProp,$properties[404])) {
 
-                // Do we have an email address?
-                $props = $currentNode->getProperties(array('{http://sabredav.org/ns}email-address'));
-                if (isset($props['{http://sabredav.org/ns}email-address'])) {
-                    $email = $props['{http://sabredav.org/ns}email-address'];
-                } else {
-                    // We're going to make up an emailaddress
-                    $email = $currentNode->getName() . '.sabredav@' . $this->server->httpRequest->getHeader('host');
-                }
-                $properties[200][$calProp] = new Sabre_DAV_Property_Href('mailto:' . $email, false);
+                $addresses = $currentNode->getAlternateUriSet();
+                $addresses[] = $currentNode->getPrincipalURL();
+
+                $properties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses);
                 unset($properties[404][$calProp]);
 
-            }*/
+            }
 
         }
         

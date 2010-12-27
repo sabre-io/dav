@@ -86,7 +86,7 @@ class Sabre_DAV_SimpleDirectory extends Sabre_DAV_Directory {
     public function getChild($name) {
 
         if (isset($this->children[$name])) return $this->children[$name];
-        throw new Sabre_DAV_Exception_FileNotFound('File not found: ' . $name);
+        throw new Sabre_DAV_Exception_FileNotFound('File not found: ' . $name . ' in \'' . $this->getName() . '\'');
 
     }
 

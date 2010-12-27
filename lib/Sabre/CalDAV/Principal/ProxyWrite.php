@@ -1,6 +1,6 @@
 <?php
 
-class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_ICollection {
+class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
 
     protected $principalInfo;
 
@@ -17,13 +17,9 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
      */
     public function getName() {
 
-        $uri = $this->principalInfo['uri'];
-        list(, $name) = Sabre_DAV_URLUtil::splitPath($uri);
-
-        return $name;
+        return 'calendar-proxy-write';
 
     }
-
 
     /**
      * Returns the last modification time 
@@ -63,77 +59,6 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
 
     }
 
-    /**
-     * Creates a new file in the directory 
-     * 
-     * @param string $name Name of the file 
-     * @param resource $data Initial payload, passed as a readable stream resource. 
-     * @throws Sabre_DAV_Exception_Forbidden
-     * @return void
-     */
-    public function createFile($name, $data = null) {
-
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to create file (filename ' . $name . ')');
-
-    }
-
-
-
-    /**
-     * Creates a new subdirectory 
-     * 
-     * @param string $name 
-     * @throws Sabre_DAV_Exception_Forbidden
-     * @return void
-     */
-    public function createDirectory($name) {
-
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to create directory');
-
-    }
-
-    /**
-     * Returns a specific child node, referenced by its name 
-     * 
-     * @param string $name 
-     * @return Sabre_DAV_INode 
-     */
-    public function getChild($name) {
-
-        if ($name === 'calendar-proxy-read')
-            return new Sabre_CalDAV_Principal_ProxyRead($this->principalInfo);
-
-        if ($name === 'calendar-proxy-write')
-            return new Sabre_CalDAV_Principal_ProxyWrite($this->principalInfo);
-
-        throw new Sabre_DAV_Exception_FileNotFound('Node with name ' . $name . ' was not found');
-
-    }
-
-    /**
-     * Returns an array with all the child nodes 
-     * 
-     * @return Sabre_DAV_INode[] 
-     */
-    public function getChildren() {
-
-        return array(
-            new Sabre_CalDAV_Principal_ProxyRead($this->principalInfo),
-            new Sabre_CalDAV_Principal_ProxyWrite($this->principalInfo),
-        );
-
-    }
-
-    /**
-     * Checks if a child-node with the specified name exists 
-     * 
-     * @return bool 
-     */
-    public function childExists($name) {
-
-        return $name === 'calendar-proxy-read' ||  $name === 'calendar-proxy-write';
-
-    }
 
     /**
      * Returns a list of altenative urls for a principal
@@ -155,7 +80,7 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
      */
     public function getPrincipalUrl() {
 
-        return $this->principalInfo['uri']; 
+        return $this->principalInfo['uri'] . '/' . $this->getName(); 
 
     }
 
@@ -214,9 +139,8 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
      */
     public function getDisplayName() {
 
-        return isset($this->principalInfo['{DAV:}displayname'])?$this->principalInfo['{DAV:}displayname']:$this->getName();
+        return $this->getName();
 
     }
-
 
 }

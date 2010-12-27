@@ -128,6 +128,19 @@ class Sabre_DAV_Server {
      */
     public $debugExceptions = false;
 
+    /**
+     * This property allows you to automatically add the 'resourcetype' value 
+     * based on a node's classname or interface.
+     *
+     * The preset ensures that {DAV:}collection is automaticlly added for nodes 
+     * implementing Sabre_DAV_ICollection.
+     * 
+     * @var array
+     */
+    public $resourceTypeMapping = array(
+        'Sabre_DAV_ICollection' => '{DAV:}collection',
+    );
+
 
     /**
      * Sets up the server
@@ -665,6 +678,14 @@ class Sabre_DAV_Server {
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+
+        // Normally this header is only needed for OPTIONS responses, however.. 
+        // iCal seems to also depend on these being set for PROPFIND. Since 
+        // this is not harmful, we'll add it.
+        $features = array('1','3', 'extended-mkcol');
+        foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
+        $this->httpResponse->setHeader('DAV',implode(', ',$features));
+
         $data = $this->generateMultiStatus($newProperties);
         $this->httpResponse->sendBody($data);
 
@@ -1286,7 +1307,6 @@ class Sabre_DAV_Server {
                 switch($prop) {
                     case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Sabre_DAV_Property_GetLastModified($node->getLastModified()); break;
                     case '{DAV:}getcontentlength'      : if ($node instanceof Sabre_DAV_IFile) $newProperties[200][$prop] = (int)$node->getSize(); break;
-                    case '{DAV:}resourcetype'          : $newProperties[200][$prop] = new Sabre_DAV_Property_ResourceType($node instanceof Sabre_DAV_ICollection?self::NODE_DIRECTORY:self::NODE_FILE); break;
                     case '{DAV:}quota-used-bytes'      : 
                         if ($node instanceof Sabre_DAV_IQuota) {
                             $quotaInfo = $node->getQuotaInfo();
@@ -1307,6 +1327,12 @@ class Sabre_DAV_Server {
                             $reports = array_merge($reports, $plugin->getSupportedReportSet($myPath));
                         }
                         $newProperties[200][$prop] = new Sabre_DAV_Property_SupportedReportSet($reports); 
+                        break;
+                    case '{DAV:}resourcetype' :
+                        $newProperties[200]['{DAV:}resourcetype'] = new Sabre_DAV_Property_ResourceType();
+                        foreach($this->resourceTypeMapping as $className => $resourceType) {
+                            if ($node instanceof $className) $newProperties[200]['{DAV:}resourcetype']->add($resourceType);
+                        }
                         break;
 
                 }

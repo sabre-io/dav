@@ -144,7 +144,11 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
      */
     public function getAlternateUriSet() {
 
-        return array();
+        if (isset($this->principalProperties['{http://sabredav.org/ns}email-address'])) {
+            return array('mailto:' . $this->principalProperties['{http://sabredav.org/ns}email-address']);
+        } else {
+            return array();
+        }
 
     }
 

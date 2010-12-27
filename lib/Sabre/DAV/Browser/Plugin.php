@@ -165,6 +165,21 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         '{DAV:}getlastmodified',
     ),1);
 
+
+    if ($path) {
+
+        list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
+        $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+
+        $html.= "<tr>
+<td><a href=\"{$fullPath}\">..</a></td>
+<td>[parent]</td>
+<td></td>
+<td></td>
+</tr>";
+
+    }
+
     foreach($files as $k=>$file) {
 
         // This is the current directory, we can skip it
@@ -178,16 +193,22 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             $type = $file[200]['{DAV:}resourcetype']->getValue();
 
             // resourcetype can have multiple values
-            if (is_array($type)) {
-                $type = implode(', ', $type);
-            }
+            if (!is_array($type)) $type = array($type);
 
-            // Some name mapping is preferred 
-            switch($type) {
-                case '{DAV:}collection' :
-                    $type = 'Collection';
-                    break;
+            foreach($type as $k=>$v) { 
+
+                // Some name mapping is preferred 
+                switch($v) {
+                    case '{DAV:}collection' :
+                        $type[$k] = 'Collection';
+                        break;
+                    case '{DAV:}principal' :
+                        $type[$k] = 'Principal';
+                        break;
+                }
+
             }
+            $type = implode(', ', $type);
         }
 
         // If no resourcetype was found, we attempt to use

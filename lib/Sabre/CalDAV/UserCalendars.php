@@ -9,7 +9,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
+class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre_DAVACL_IACL {
 
     /**
      * Principal backend 
@@ -19,18 +19,18 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
     protected $principalBackend;
 
     /**
-     * Array with user information 
-     * 
-     * @var array 
-     */
-    protected $userUri;
-
-    /**
      * CalDAV backend
      * 
      * @var Sabre_CalDAV_Backend_Abstract
      */
     protected $caldavBackend;
+
+    /**
+     * Principal information 
+     * 
+     * @var array 
+     */
+    protected $principalInfo;
     
     /**
      * Constructor 
@@ -43,7 +43,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
 
         $this->principalBackend = $principalBackend;
         $this->caldavBackend = $caldavBackend;
-        $this->userUri = $userUri;
+        $this->principalInfo = $principalBackend->getPrincipalByPath($userUri);
        
     }
 
@@ -54,7 +54,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      */
     public function getName() {
       
-        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->userUri);
+        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->principalInfo['uri']);
         return $name; 
 
     }
@@ -165,7 +165,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
      */
     public function getChildren() {
 
-        $calendars = $this->caldavBackend->getCalendarsForUser($this->userUri);
+        $calendars = $this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']);
         $objs = array();
         foreach($calendars as $calendar) {
             $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
@@ -186,8 +186,95 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection {
         if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar',$resourceType) || count($resourceType)!==2) {
             throw new Sabre_DAV_Exception_InvalidResourceType('Unknown resourceType for this collection');
         }
-        $this->caldavBackend->createCalendar($this->userUri, $name, $properties);
+        $this->caldavBackend->createCalendar($this->principalInfo['uri'], $name, $properties);
 
     }
+
+    /**
+     * Returns the owner principal
+     *
+     * This must be a url to a principal, or null if there's no owner 
+     * 
+     * @return string|null
+     */
+    public function getOwner() {
+
+        return $this->principalInfo['uri'];
+
+    }
+
+    /**
+     * Returns a group principal
+     *
+     * This must be a url to a principal, or null if there's no owner
+     * 
+     * @return string|null 
+     */
+    public function getGroup() {
+
+        return null;
+
+    }
+
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are 
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to 
+     *      be updated. 
+     * 
+     * @return array 
+     */
+    public function getACL() {
+
+        return array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalInfo['uri'],
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->principalInfo['uri'],
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalInfo['uri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->principalInfo['uri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalInfo['uri'] . '/calendar-proxy-read',
+                'protected' => true,
+            ),
+
+        );
+
+    }
+
+    /**
+     * Updates the ACL
+     *
+     * This method will receive a list of new ACE's. 
+     * 
+     * @param array $acl 
+     * @return void
+     */
+    public function setACL(array $acl) {
+
+        throw new Sabre_DAV_Exception_MethodNotAllowed('Changing ACL is not yet supported');
+
+    }
+
+
 
 }

@@ -282,6 +282,18 @@ XML;
     /** 
      * @depends testParseICalendarDateTime
      */
+    function testParseICalendarDateTimeUTC2() {
+
+        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20101211T160000Z');
+
+        $compare = new DateTime('2010-12-11 16:00:00',new DateTimeZone('UTC'));
+        $this->assertEquals($compare, $dateTime);
+
+    }
+
+    /** 
+     * @depends testParseICalendarDateTime
+     */
     function testParseICalendarDateTimeCustomTimeZone() {
 
         $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20100316T141405', new DateTimeZone('Europe/Amsterdam'));

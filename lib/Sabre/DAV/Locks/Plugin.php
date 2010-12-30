@@ -663,11 +663,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $children = $xml->children("DAV:");
         $lockInfo->owner = (string)$children->owner;
 
-        $lockToken = '44445502';
-        $id = md5(microtime() . 'somethingrandom');
-        $lockToken.='-' . substr($id,0,4) . '-' . substr($id,4,4) . '-' . substr($id,8,4) . '-' . substr($id,12,12);
-
-        $lockInfo->token = $lockToken;
+        $lockInfo->token = Sabre_DAV_UUIDUtil::getUUID();
         $lockInfo->scope = count($xml->xpath('d:lockscope/d:exclusive'))>0?Sabre_DAV_Locks_LockInfo::EXCLUSIVE:Sabre_DAV_Locks_LockInfo::SHARED;
 
         return $lockInfo;

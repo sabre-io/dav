@@ -23,6 +23,13 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
     protected $principalInfo;
 
     /**
+     * principalBackend 
+     * 
+     * @var Sabre_DAV_IPrincipalBackend 
+     */
+    protected $principalBackend;
+
+    /**
      * Creates the principal 
      * 
      * @param array $principalInfo 
@@ -30,6 +37,7 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
     public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalInfo) {
 
         $this->principalInfo = $principalInfo;
+        $this->principalBackend = $principalBackend;
 
     }
 

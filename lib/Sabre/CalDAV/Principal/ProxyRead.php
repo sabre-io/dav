@@ -3,10 +3,12 @@
 class Sabre_CalDAV_Principal_ProxyRead implements Sabre_DAVACL_IPrincipal {
 
     protected $principalInfo;
+    protected $principalBackend;
 
-    function __construct(array $principalInfo) {
+    function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalInfo) {
 
         $this->principalInfo = $principalInfo;
+        $this->principalBackend = $principalBackend;
 
     }
 

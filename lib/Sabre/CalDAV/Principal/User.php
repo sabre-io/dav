@@ -1,10 +1,33 @@
 <?php
 
+/**
+ * CalDAV principal 
+ *
+ * This is a standard user-principal for CalDAV. This principal is also a 
+ * collection and returns the caldav-proxy-read and caldav-proxy-write child 
+ * principals.
+ * 
+ * @package Sabre
+ * @subpackage CalDAV
+ * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_ICollection {
 
+    /**
+     * Principal information 
+     * 
+     * @var array 
+     */
     protected $principalInfo;
 
-    function __construct(array $principalInfo) {
+    /**
+     * Creates the principal 
+     * 
+     * @param array $principalInfo 
+     */
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalInfo) {
 
         $this->principalInfo = $principalInfo;
 
@@ -27,8 +50,6 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
 
     /**
      * Returns the last modification time 
-     *
-     * In this case, it will simply return the current time
      *
      * @return int 
      */
@@ -77,8 +98,6 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
 
     }
 
-
-
     /**
      * Creates a new subdirectory 
      * 
@@ -101,10 +120,10 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
     public function getChild($name) {
 
         if ($name === 'calendar-proxy-read')
-            return new Sabre_CalDAV_Principal_ProxyRead($this->principalInfo);
+            return new Sabre_CalDAV_Principal_ProxyRead($this->principalBackend, $this->principalInfo);
 
         if ($name === 'calendar-proxy-write')
-            return new Sabre_CalDAV_Principal_ProxyWrite($this->principalInfo);
+            return new Sabre_CalDAV_Principal_ProxyWrite($this->principalBackend, $this->principalInfo);
 
         throw new Sabre_DAV_Exception_FileNotFound('Node with name ' . $name . ' was not found');
 
@@ -118,8 +137,8 @@ class Sabre_CalDAV_Principal_User implements Sabre_DAVACL_IPrincipal, Sabre_DAV_
     public function getChildren() {
 
         return array(
-            new Sabre_CalDAV_Principal_ProxyRead($this->principalInfo),
-            new Sabre_CalDAV_Principal_ProxyWrite($this->principalInfo),
+            new Sabre_CalDAV_Principal_ProxyRead($this->principalBackend, $this->principalInfo),
+            new Sabre_CalDAV_Principal_ProxyWrite($this->principalBackend, $this->principalInfo),
         );
 
     }

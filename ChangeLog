@@ -45,6 +45,8 @@
 	  root node.
 	* Added: Global way to easily supply new resourcetypes for cetain node
 	  classes.
+	* Fixed: Issue 59: Allowing the user to override the authentication realm
+	  in Sabre_CalDAV_Server.
 
 1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api

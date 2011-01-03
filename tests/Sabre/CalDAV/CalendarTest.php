@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Sabre/CalDAV/TestUtil.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
@@ -56,7 +57,6 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     function testGetProperties() {
 
         $question = array(
-            '{DAV:}resourcetype',
             '{DAV:}owner',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
@@ -66,10 +66,6 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $result = $this->calendar->getProperties($question);
 
         foreach($question as $q) $this->assertArrayHasKey($q,$result);
-
-        $this->assertTrue($result['{DAV:}resourcetype'] instanceof Sabre_DAV_Property_ResourceType);
-        $rt = array('{urn:ietf:params:xml:ns:caldav}calendar','{DAV:}collection');
-        foreach($rt as $rte) $this->assertTrue(in_array($rte, $result['{DAV:}resourcetype']->resourceType));
 
         $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
         

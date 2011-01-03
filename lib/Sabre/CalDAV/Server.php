@@ -20,6 +20,16 @@
 class Sabre_CalDAV_Server extends Sabre_DAV_Server {
 
     /**
+     * The authentication realm
+     *
+     * Note that if this changes, the hashes in the auth backend must also 
+     * be recalculated. 
+     * 
+     * @var string
+     */
+    public $authRealm = 'SabreDAV';
+
+    /**
      * Sets up the object. A PDO object must be passed to setup all the backends.
      * 
      * @param PDO $pdo 
@@ -32,19 +42,16 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
         $principalBackend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
 
         /* Directory structure */
-        $root = new Sabre_DAV_SimpleDirectory('root');
-        $principals = new Sabre_DAVACL_PrincipalCollection($principalBackend);
-        $root->addChild($principals);
-        $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend, $calendarBackend);
-        $root->addChild($calendars);
+        $tree = array(
+            new Sabre_DAVACL_PrincipalCollection($principalBackend),
+            new Sabre_CalDAV_CalendarRootNode($principalBackend, $calendarBackend),
+        );
 
-        $objectTree = new Sabre_DAV_ObjectTree($root);
-        
         /* Initializing server */
-        parent::__construct($objectTree);
+        parent::__construct($tree);
 
         /* Server Plugins */
-        $authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV');
+        $authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,$this->authRealm);
         $this->addPlugin($authPlugin);
 
         $caldavPlugin = new Sabre_CalDAV_Plugin();

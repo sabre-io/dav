@@ -43,7 +43,7 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
 
         /* Directory structure */
         $tree = array(
-            new Sabre_DAVACL_PrincipalCollection($principalBackend),
+            new Sabre_CalDAV_Principal_Collection($principalBackend),
             new Sabre_CalDAV_CalendarRootNode($principalBackend, $calendarBackend),
         );
 

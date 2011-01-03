@@ -54,6 +54,9 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
         $authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,$this->authRealm);
         $this->addPlugin($authPlugin);
 
+        $aclPlugin = new Sabre_DAVACL_Plugin();
+        $this->addPlugin($aclPlugin);
+
         $caldavPlugin = new Sabre_CalDAV_Plugin();
         $this->addPlugin($caldavPlugin);
 

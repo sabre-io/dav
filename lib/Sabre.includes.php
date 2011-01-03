@@ -54,8 +54,10 @@ include 'Sabre/DAV/Property/SupportedLock.php';
 include 'Sabre/DAV/Property/LockDiscovery.php';
 include 'Sabre/DAV/Property/IHref.php';
 include 'Sabre/DAV/Property/Href.php';
+include 'Sabre/DAV/Property/HrefList.php';
 include 'Sabre/DAV/Property/SupportedReportSet.php';
 include 'Sabre/DAV/Property/Response.php';
+include 'Sabre/DAV/Property/ResponseList.php';
 include 'Sabre/DAV/Property/Principal.php';
 
 /* Node interfaces */

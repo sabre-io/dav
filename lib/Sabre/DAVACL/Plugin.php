@@ -778,10 +778,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        foreach($result as $entry) {
-
-            $entry->serialize($this->server,$multiStatus);
-
+        foreach($result as $response) {
+            $response->serialize($this->server, $multiStatus);
         }
 
         $xml = $dom->saveXML();
@@ -851,10 +849,18 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 // We only have to do the expansion if the property was found
                 // and it contains an href element.
                 if (!array_key_exists($propertyName,$node[200])) continue;
-                if (!($node[200][$propertyName] instanceof Sabre_DAV_Property_IHref)) continue;
 
-                $href = $node[200][$propertyName]->getHref();
-                list($node[200][$propertyName]) = $this->expandProperties($href,$childRequestedProperties,0);
+                if ($node[200][$propertyName] instanceof Sabre_DAV_Property_IHref) {
+                    $hrefs = array($node[200][$propertyName]->getHref());
+                } elseif ($node[200][$propertyName] instanceof Sabre_DAV_Property_HrefList) {
+                    $hrefs = $node[200][$propertyName]->getHrefs();
+                }
+
+                $childProps = array();
+                foreach($hrefs as $href) {
+                    $childProps = array_merge($childProps, $this->expandProperties($href,$childRequestedProperties,0));
+                }
+                $node[200][$propertyName] = new Sabre_DAV_Property_ResponseList($childProps);
 
             }
             $result[] = new Sabre_DAV_Property_Response($path, $node);

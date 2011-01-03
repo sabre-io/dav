@@ -7,7 +7,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  */
 class Sabre_DAV_Mount_Plugin extends Sabre_DAV_ServerPlugin {

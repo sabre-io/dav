@@ -16,8 +16,8 @@ class Sabre_DAVACL_PrincipalBackend_PDOSQLiteTest extends Sabre_DAVACL_Principal
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-        $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT, email VARCHAR(80))');
-        $pdo->query('INSERT INTO users VALUES ("user","hash","user@example.org")');
+        $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT, email VARCHAR(80), displayname VARCHAR(80))');
+        $pdo->query('INSERT INTO users VALUES ("user","hash","user@example.org","User")');
 
         return $pdo;
 

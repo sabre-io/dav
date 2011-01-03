@@ -59,6 +59,8 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
                     '{DAV:}write-acl',
                     '{DAV:}write-properties',
                     '{DAV:}write-content',
+                    '{DAV:}bind',
+                    '{DAV:}unbind',
                     '{DAV:}unlock',
                 ),
                 'concrete' => '{DAV:}write',
@@ -83,6 +85,17 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
             ),
+            '{DAV:}bind' => array(
+                'abstract' => true,
+                'aggregates' => array(),
+                'concrete' => '{DAV:}write',
+            ),
+            '{DAV:}unbind' => array(
+                'abstract' => true,
+                'aggregates' => array(),
+                'concrete' => '{DAV:}write',
+            ),
+
         );
         
         $plugin = new Sabre_DAVACL_Plugin();

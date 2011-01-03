@@ -16,10 +16,11 @@ create table users (
 	username varchar(50),
 	digesta1 varchar(32),
     email varchar(80),
+    displayname varchar(80),
 	unique(username)
 );");
 
-        $pdo->query("INSERT INTO users (username,digesta1,email) VALUES ('user','hash','user@example.org')");
+        $pdo->query("INSERT INTO users (username,digesta1,email,displayname) VALUES ('user','hash','user@example.org','User')");
 
         return $pdo;
 

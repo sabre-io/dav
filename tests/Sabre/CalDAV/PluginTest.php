@@ -39,7 +39,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
     function testSimple() {
 
         $this->assertEquals(array('MKCALENDAR'), $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
-        $this->assertEquals(array('calendar-access'), $this->plugin->getFeatures());
+        $this->assertEquals(array('calendar-access','calendar-proxy'), $this->plugin->getFeatures());
         $this->assertArrayHasKey('urn:ietf:params:xml:ns:caldav', $this->server->xmlNamespaces);
 
     }
@@ -390,8 +390,8 @@ END:VCALENDAR';
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
-        $this->assertEquals('mailto:user1.sabredav@sabredav.org',$prop->getHref());
+        $this->assertTrue($prop instanceof Sabre_DAV_Property_HrefList);
+        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org'),$prop->getHrefs());
 
     }
 

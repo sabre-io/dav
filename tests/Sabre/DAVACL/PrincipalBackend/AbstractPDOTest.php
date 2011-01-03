@@ -24,7 +24,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
             array(
                 'uri' => 'principals/user',
                 '{http://sabredav.org/ns}email-address' => 'user@example.org',
-                '{DAV:}displayname' => 'user',
+                '{DAV:}displayname' => 'User',
             ),
         );
 
@@ -44,7 +44,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
         $expected = array(
             'uri' => 'principals/user',
             '{http://sabredav.org/ns}email-address' => 'user@example.org',
-            '{DAV:}displayname' => 'user',
+            '{DAV:}displayname' => 'User',
         );
 
         $this->assertEquals($expected, $backend->getPrincipalByPath('principals/user'));

@@ -123,15 +123,17 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
             '/d:root/d:supported-privilege/d:supported-privilege/d:privilege' => 2,
             '/d:root/d:supported-privilege/d:supported-privilege/d:privilege/d:read' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:privilege/d:write' => 1,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege' => 6,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege' => 6,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege' => 8,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege' => 8,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:read-acl' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:read-current-user-privilege-set' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-content' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-properties' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-acl' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:bind' => 1,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unbind' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unlock' => 1,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:abstract' => 6,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:abstract' => 8,
         );
 
 

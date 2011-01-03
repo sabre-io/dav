@@ -2,6 +2,7 @@
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCase {
     

@@ -28,7 +28,7 @@ class Sabre_DAVACL_PrincipalCollection extends Sabre_DAVACL_AbstractPrincipalCol
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new Sabre_DAVACL_Principal($principal);
+        return new Sabre_DAVACL_Principal($this->principalBackend, $principal);
 
     }
 

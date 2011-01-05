@@ -96,7 +96,7 @@ class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
      */
     public function getGroupMemberSet() {
 
-        return array();
+        return $this->principalBackend->getGroupMemberSet($this->getPrincipalUrl()); 
 
     }
 
@@ -110,7 +110,7 @@ class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
      */
     public function getGroupMembership() {
 
-        return array();
+        return $this->principalBackend->getGroupMembership($this->getPrincipalUrl()); 
 
     }
 

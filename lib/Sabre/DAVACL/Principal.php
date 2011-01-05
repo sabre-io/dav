@@ -27,15 +27,23 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
     protected $principalProperties;
 
     /**
+     * Principal backend 
+     * 
+     * @var Sabre_DAVACL_IPrincipalBackend 
+     */
+    protected $principalBackend;
+
+    /**
      * Creates the principal object 
      *
      * @param array $principalProperties
      */
-    public function __construct(array $principalProperties = array()) {
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalProperties = array()) {
 
         if (!isset($principalProperties['uri'])) {
             throw new Sabre_DAV_Exception('The principal properties must at least contain the \'uri\' key');
         }
+        $this->principalBackend = $principalBackend;
         $this->principalProperties = $principalProperties;
 
     }
@@ -78,7 +86,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      */
     public function getGroupMemberSet() {
 
-        return array();
+        return $this->principalBackend->getGroupMemberSet($this->principalProperties['uri']);
 
     }
 
@@ -92,7 +100,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      */
     public function getGroupMembership() {
 
-        return array();
+        return $this->principalBackend->getGroupMemberShip($this->principalProperties['uri']);
 
     }
 
@@ -116,13 +124,15 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
 
 
     /**
-     * Returns the name of the element 
+     * Returns this principals name.
      * 
-     * @return void
+     * @return string 
      */
     public function getName() {
 
-        list(, $name) = Sabre_DAV_URLUtil::splitPath($this->principalProperties['uri']);
+        $uri = $this->principalProperties['uri'];
+        list(, $name) = Sabre_DAV_URLUtil::splitPath($uri);
+
         return $name;
 
     }

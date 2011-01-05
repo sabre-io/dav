@@ -65,7 +65,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
 
             $principals[] = array(
                 'uri' => $row['uri'],
-                '{DAV:}displayname' => $row['displayname']?$row['displayname']:$row['username'],
+                '{DAV:}displayname' => $row['displayname']?$row['displayname']:basename($row['uri']),
                 '{http://sabredav.org/ns}email-address' => $row['email'],
             );
 
@@ -85,7 +85,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
      */
     public function getPrincipalByPath($path) {
 
-        $stmt = $this->pdo->prepare('SELECT uri, email, displayname FROM principals WHERE uri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, email, displayname FROM principals WHERE uri = ?');
         $stmt->execute(array($path));
 
         $users = array();
@@ -94,10 +94,51 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         if (!$row) return;
 
         return array(
+            'id'  => $row['id'],
             'uri' => $row['uri'],
-            '{DAV:}displayname' => $row['displayname']?$row['displayname']:$row['username'],
+            '{DAV:}displayname' => $row['displayname']?$row['displayname']:basename($row['uri']),
             '{http://sabredav.org/ns}email-address' => $row['email'],
         );
+
+    }
+
+    /**
+     * Returns the list of members for a group-principal 
+     * 
+     * @param string $principal 
+     * @return array 
+     */
+    public function getGroupMemberSet($principal) {
+
+        $principal = $this->getPrincipalByPath($principal);
+        $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM groupmembers LEFT JOIN principals ON groupmembers.member_id = principals.id WHERE groupmembers.principal_id = ?');
+        $stmt->execute(array($principal['id']));
+
+        $result = array();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = $row['uri'];
+        }
+        return $result;
+    
+    }
+
+    /**
+     * Returns the list of groups a principal is a member of 
+     * 
+     * @param string $principal 
+     * @return array 
+     */
+    public function getGroupMembership($principal) {
+
+        $principal = $this->getPrincipalByPath($principal);
+        $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM groupmembers LEFT JOIN principals ON groupmembers.principal_id = principals.id WHERE groupmembers.member_id = ?');
+        $stmt->execute(array($principal['id']));
+
+        $result = array();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = $row['uri'];
+        }
+        return $result;
 
     }
 

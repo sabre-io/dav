@@ -43,5 +43,20 @@ interface Sabre_DAVACL_IPrincipalBackend {
      */
     function getPrincipalByPath($path);
 
+    /**
+     * Returns the list of members for a group-principal 
+     * 
+     * @param string $principal 
+     * @return array 
+     */
+    function getGroupMemberSet($principal);
+
+    /**
+     * Returns the list of groups a principal is a member of 
+     * 
+     * @param string $principal 
+     * @return array 
+     */
+    function getGroupMembership($principal);
 
 }

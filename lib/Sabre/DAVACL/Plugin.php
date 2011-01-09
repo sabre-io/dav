@@ -164,28 +164,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
         }
 
-        // Now we need to figure out per-privilege what it's 'real' concrete 
-        // privilege is, and see if it's in the ACL list.
-
-        $list = $this->getFlatPrivilegeSet();
         $failed = array();
-
         foreach($privileges as $priv) {
 
-            if (!isset($list[$priv])) {
+            if (!in_array($priv, $acl)) {
                 $failed[] = $priv;
-                continue;
             }
-
-            $concrete = $list[$priv]['concrete'];
-
-            foreach($acl as $ace) {
-                if ($ace['privilege'] == $concrete) {
-                    continue 2;
-                }
-            }
-
-            $failed[] = $priv; 
 
         }
 
@@ -340,6 +324,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $traverse = function($priv, $concrete = null) use (&$flat, &$traverse) {
 
             $myPriv = array(
+                'privilege' => $priv['privilege'],
                 'abstract' => isset($priv['abstract']) && $priv['abstract'],
                 'aggregates' => array(),
                 'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
@@ -415,7 +400,21 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        return $collected;
+        // Now we deduct all aggregated privileges.
+        $flat = $this->getFlatPrivilegeSet();
+
+        $collected2 = array();
+        foreach($collected as $privilege) {
+
+            $collected2[] = $privilege['privilege'];
+            foreach($flat[$privilege['privilege']]['aggregates'] as $subPriv) {
+                if (!in_array($subPriv, $collected2)) 
+                    $collected2[] = $subPriv;
+            }
+
+        }
+
+        return $collected2;
 
     }
 
@@ -713,6 +712,15 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             unset($requestedProperties[$index]);
             $returnedProperties[200]['{DAV:}supported-privilege-set'] = new Sabre_DAVACL_Property_SupportedPrivilegeSet($this->getSupportedPrivilegeSet());
+
+        }
+        if (false !== ($index = array_search('{DAV:}current-user-privilege-set', $requestedProperties))) {
+
+            $val = $this->getCurrentUserPrivilegeSet($node);
+            if (!is_null($val)) {
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}current-user-privilege-set'] = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($val);
+            }
 
         }
 

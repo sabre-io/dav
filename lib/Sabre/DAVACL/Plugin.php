@@ -693,14 +693,17 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if (false !== ($index = array_search('{DAV:}principal-collection-set', $requestedProperties))) {
 
             unset($requestedProperties[$index]);
-            $returnedProperties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_HrefList($this->principalCollectionSet);
+            $val = $this->principalCollectionSet;
+            // Ensuring all collections end with a slash
+            foreach($val as $k=>$v) $val[$k] = $v . '/';
+            $returnedProperties[200]['{DAV:}principal-collection-set'] = new Sabre_DAV_Property_HrefList($val);
 
         }
         if (false !== ($index = array_search('{DAV:}current-user-principal', $requestedProperties))) {
 
             unset($requestedProperties[$index]);
             if ($url = $this->getCurrentUserPrincipal()) {
-                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $url);
+                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $url . '/');
             } else {
                 $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
             }

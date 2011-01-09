@@ -14,7 +14,7 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             array(
-                '{DAV:}expand-properties',
+                '{DAV:}expand-property',
                 '{DAV:}principal-property-search',
                 '{DAV:}principal-search-property-set'
             ), 

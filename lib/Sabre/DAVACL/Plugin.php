@@ -7,7 +7,7 @@
  * ACL is defined in RFC3744.
  *
  * In addition it also provides support for the {DAV:}current-user-principal 
- * property, defined in RFC5397 and the {DAV:}expand-properties report, as 
+ * property, defined in RFC5397 and the {DAV:}expand-property report, as 
  * defined in RFC3253. 
  * 
  * @package Sabre
@@ -130,7 +130,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public function getSupportedReportSet($uri) {
 
         return array(
-            '{DAV:}expand-properties',
+            '{DAV:}expand-property',
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set', 
         );

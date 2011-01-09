@@ -28,6 +28,18 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
             if ($principal['uri'] === $path) return $principal;
         }
 
-    } 
+    }
+
+    function getGroupMemberSet($path) {
+
+        return array();
+
+    }
+
+    function getGroupMembership($path) {
+
+        return array();
+
+    }
 
 }

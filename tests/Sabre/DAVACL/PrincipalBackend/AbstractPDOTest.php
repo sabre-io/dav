@@ -42,6 +42,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
         $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
 
         $expected = array(
+            'id' => 1,
             'uri' => 'principals/user',
             '{http://sabredav.org/ns}email-address' => 'user@example.org',
             '{DAV:}displayname' => 'User',

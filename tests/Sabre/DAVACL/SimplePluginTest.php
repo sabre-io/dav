@@ -28,6 +28,7 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
 
         $expected = array(
             '{DAV:}all' => array(
+                'privilege' => '{DAV:}all',
                 'abstract' => true,
                 'aggregates' => array(
                     '{DAV:}read',
@@ -36,6 +37,7 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
                 'concrete' => null,
             ),
             '{DAV:}read' => array(
+                'privilege' => '{DAV:}read',
                 'abstract' => false,
                 'aggregates' => array(
                     '{DAV:}read-acl',
@@ -44,16 +46,19 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
                 'concrete' => '{DAV:}read',
             ),
             '{DAV:}read-acl' => array(
+                'privilege' => '{DAV:}read-acl',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}read',
             ),
             '{DAV:}read-current-user-privilege-set' => array(
+                'privilege' => '{DAV:}read-current-user-privilege-set',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}read',
             ),
             '{DAV:}write' => array(
+                'privilege' => '{DAV:}write',
                 'abstract' => false,
                 'aggregates' => array(
                     '{DAV:}write-acl',
@@ -66,31 +71,37 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
                 'concrete' => '{DAV:}write',
             ),
             '{DAV:}write-acl' => array(
+                'privilege' => '{DAV:}write-acl',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
             ),
             '{DAV:}write-properties' => array(
+                'privilege' => '{DAV:}write-properties',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
             ),
             '{DAV:}write-content' => array(
+                'privilege' => '{DAV:}write-content',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
             ),
             '{DAV:}unlock' => array(
+                'privilege' => '{DAV:}unlock',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
             ),
             '{DAV:}bind' => array(
+                'privilege' => '{DAV:}bind',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
             ),
             '{DAV:}unbind' => array(
+                'privilege' => '{DAV:}unbind',
                 'abstract' => true,
                 'aggregates' => array(),
                 'concrete' => '{DAV:}write',
@@ -236,14 +247,16 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
         $auth->beforeMethod('GET','/');
 
         $expected = array(
-            array(
-                'principal' => 'principals/admin',
-                'privilege' => '{DAV:}read',
-            ),
-            array(
-                'principal' => 'principals/admin',
-                'privilege' => '{DAV:}write',
-            ),
+            '{DAV:}read',
+            '{DAV:}read-acl',
+            '{DAV:}read-current-user-privilege-set',
+            '{DAV:}write',
+            '{DAV:}write-acl',
+            '{DAV:}write-properties',
+            '{DAV:}write-content',
+            '{DAV:}bind',
+            '{DAV:}unbind',
+            '{DAV:}unlock',
         );
 
         $this->assertEquals($expected,$aclPlugin->getCurrentUserPrivilegeSet('foo'));

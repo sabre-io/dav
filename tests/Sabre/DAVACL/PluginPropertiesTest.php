@@ -26,9 +26,15 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}principal-collection-set',$returnedProperties[200]);
-        $this->assertType('Sabre_DAV_Property_HrefList', $returnedProperties[200]['{DAV:}principal-collection-set']);
+        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $returnedProperties[200]['{DAV:}principal-collection-set']);
 
-        $this->assertEquals($plugin->principalCollectionSet, $returnedProperties[200]['{DAV:}principal-collection-set']->getHrefs());
+        $expected = array(
+            'principals1/',
+            'principals2/',
+        );
+        
+
+        $this->assertEquals($expected, $returnedProperties[200]['{DAV:}principal-collection-set']->getHrefs());
 
 
     }
@@ -55,7 +61,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}current-user-principal',$returnedProperties[200]);
-        $this->assertType('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
+        $this->assertInstanceOf('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
         $this->assertEquals(Sabre_DAV_Property_Principal::UNAUTHENTICATED, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
 
         // This will force the login
@@ -77,9 +83,9 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}current-user-principal',$returnedProperties[200]);
-        $this->assertType('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
+        $this->assertInstanceOf('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
         $this->assertEquals(Sabre_DAV_Property_Principal::HREF, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
-        $this->assertEquals('principals/admin', $returnedProperties[200]['{DAV:}current-user-principal']->getHref());
+        $this->assertEquals('principals/admin/', $returnedProperties[200]['{DAV:}current-user-principal']->getHref());
 
     }
 
@@ -101,7 +107,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}supported-privilege-set',$returnedProperties[200]);
-        $this->assertType('Sabre_DAVACL_Property_SupportedPrivilegeSet', $returnedProperties[200]['{DAV:}supported-privilege-set']);
+        $this->assertInstanceOf('Sabre_DAVACL_Property_SupportedPrivilegeSet', $returnedProperties[200]['{DAV:}supported-privilege-set']);
 
         $server = new Sabre_DAV_Server();
         $prop = $returnedProperties[200]['{DAV:}supported-privilege-set'];

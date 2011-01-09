@@ -1350,7 +1350,7 @@ class Sabre_DAV_Server {
             // Apple's iCal also requires a trailing slash for principals (rfc 3744).
             // Therefore we add a trailing / for any non-file. This might need adjustments 
             // if we find there are other edge cases.
-            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype']) && in_array("{DAV:}collection", $newProperties[200]['{DAV:}resourcetype']->getValue())) $newProperties['href'] .='/';
+            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype']) && count($newProperties[200]['{DAV:}resourcetype']->getValue())>0) $newProperties['href'] .='/';
 
             // If the resourcetype property was manually added to the requested property list,
             // we will remove it again.

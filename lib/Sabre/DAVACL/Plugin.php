@@ -667,7 +667,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             if (false !== ($index = array_search('{DAV:}principal-URL', $requestedProperties))) {
 
                 unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}principal-URL'] = new Sabre_DAV_Property_Href($node->getPrincipalUrl());
+                $returnedProperties[200]['{DAV:}principal-URL'] = new Sabre_DAV_Property_Href($node->getPrincipalUrl() . '/');
 
             }
             if (false !== ($index = array_search('{DAV:}group-member-set', $requestedProperties))) {

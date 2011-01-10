@@ -160,7 +160,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             '{' . self::NS_CALDAV . '}supported-collation-set',
 
             // scheduling extension
-            '{' . self::NS_CALDAV . '}calendar-user-address-set'
+            '{' . self::NS_CALDAV . '}calendar-user-address-set',
+
+            // CalendarServer extensions
+            '{' . self::NS_CALENDARSERVER . '}getctag',
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for'
 
         );
     }
@@ -281,6 +286,41 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $addresses[] = $this->server->getBaseUri() . $currentNode->getPrincipalUrl();
                 $properties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
                 unset($properties[404][$calProp]);
+
+            }
+
+            // These two properties are shortcuts for ical to easily find 
+            // other principals this principal has access to.
+            $propRead = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for';
+            $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
+            if (array_key_exists($propRead,$properties[404]) || array_key_exists($propWrite,$properties[404])) {
+                $membership = $currentNode->getGroupMembership();
+                $readList = array();
+                $writeList = array();
+
+                foreach($membership as $group) {
+
+                    $groupNode = $this->server->tree->getNodeForPath($group);
+
+                    // If the node is either ap proxy-read or proxy-write 
+                    // group, we grab the parent principal and add it to the 
+                    // list.
+                    if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyRead) {
+                        list($readList[]) = Sabre_DAV_URLUtil::splitPath($group);
+                    }
+                    if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyWrite) {
+                        list($writeList[]) = Sabre_DAV_URLUtil::splitPath($group);
+                    }
+
+                }
+                if (array_key_exists($propRead,$properties[404])) {
+                    unset($properties[404][$propRead]);
+                    $properties[200][$propRead] = new Sabre_DAV_Property_HrefList($readList);
+                }
+                if (array_key_exists($propWrite,$properties[404])) {
+                    unset($properties[404][$propWrite]);
+                    $properties[200][$propWrite] = new Sabre_DAV_Property_HrefList($writeList);
+                }
 
             }
 

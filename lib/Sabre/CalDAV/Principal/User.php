@@ -85,5 +85,38 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
 
     }
 
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are 
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to 
+     *      be updated. 
+     * 
+     * @return array 
+     */
+    public function getACL() {
+
+        return array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalProperties['uri'],
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalProperties['uri'] . '/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalProperties['uri'] . '/calendar-proxy-write',
+                'protected' => true,
+            ),
+        );
+
+    }
 
 }

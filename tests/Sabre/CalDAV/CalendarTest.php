@@ -99,6 +99,19 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testGetChildren
+     */
+    function testChildExists() {
+
+        $this->assertFalse($this->calendar->childExists('foo'));
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($this->calendar->childExists($children[0]->getName()));
+    }
+
+
+
+    /**
      * @expectedException Sabre_DAV_Exception_MethodNotAllowed
      */
     function testCreateDirectory() {
@@ -143,5 +156,60 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(0, count($calendars));
     }
+
+    function testGetOwner() {
+
+        $this->assertEquals('principals/user1',$this->calendar->getOwner());
+
+    }
+
+    function testGetGroup() {
+
+        $this->assertNull($this->calendar->getGroup());
+
+    }
+
+    function testGetACL() {
+
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ), 
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ), 
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ), 
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ), 
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => true,
+            ), 
+        );
+        $this->assertEquals($expected, $this->calendar->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetACL() {
+
+        $this->calendar->setACL(array());
+
+    }
+
 
 }

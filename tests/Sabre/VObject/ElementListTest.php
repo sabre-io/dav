@@ -20,7 +20,7 @@ class Sabre_VObject_ElementListTest extends PHPUnit_Framework_TestCase {
         foreach($elemList as $key=>$subcomponent) {
 
            $count++;
-           $this->assertType('Sabre_VObject_Component',$subcomponent);
+           $this->assertInstanceOf('Sabre_VObject_Component',$subcomponent);
 
         }
         $this->assertEquals(3,$count);

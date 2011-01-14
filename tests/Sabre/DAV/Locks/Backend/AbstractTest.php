@@ -7,7 +7,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
     function testSetup() {
 
        $backend = $this->getBackend();
-       $this->assertType('Sabre_DAV_Locks_Backend_Abstract', $backend);
+       $this->assertInstanceOf('Sabre_DAV_Locks_Backend_Abstract', $backend);
 
     }
 

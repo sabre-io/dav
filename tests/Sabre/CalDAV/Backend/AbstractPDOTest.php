@@ -40,7 +40,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
         );
 
-        $this->assertType('array',$calendars);
+        $this->assertInternalType('array',$calendars);
         $this->assertEquals(1,count($calendars));
        
         foreach($elementCheck as $name=>$value) {
@@ -83,7 +83,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             '{http://calendarserver.org/ns/}getctag' => '2',
         );
 
-        $this->assertType('array',$calendars);
+        $this->assertInternalType('array',$calendars);
         $this->assertEquals(1,count($calendars));
        
         foreach($elementCheck as $name=>$value) {

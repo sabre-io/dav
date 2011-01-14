@@ -230,7 +230,7 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
      */
     public function getOwner() {
 
-        return $this->calendarInfo['principalUri'];
+        return $this->calendarInfo['principaluri'];
 
     }
 

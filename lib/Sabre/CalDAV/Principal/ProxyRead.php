@@ -1,11 +1,43 @@
 <?php
 
+/**
+ * ProxyRead principal
+ *
+ * This class represents a principal group, hosted under the main principal.
+ * This is needed to implement 'Calendar delegation' support. This class is 
+ * instantiated by Sabre_CalDAV_Principal_User.
+ * 
+ * @package Sabre
+ * @subpackage CalDAV
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_CalDAV_Principal_ProxyRead implements Sabre_DAVACL_IPrincipal {
 
+    /**
+     * Principal information from the parent principal. 
+     * 
+     * @var array 
+     */
     protected $principalInfo;
+
+    /**
+     * Principal backend 
+     * 
+     * @var Sabre_DAVACL_IPrincipalBackend 
+     */
     protected $principalBackend;
 
-    function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalInfo) {
+    /**
+     * Creates the object.
+     *
+     * Note that you MUST supply the parent principal information. 
+     * 
+     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend 
+     * @param array $principalInfo 
+     */
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalInfo) {
 
         $this->principalInfo = $principalInfo;
         $this->principalBackend = $principalBackend;
@@ -26,9 +58,7 @@ class Sabre_CalDAV_Principal_ProxyRead implements Sabre_DAVACL_IPrincipal {
     /**
      * Returns the last modification time 
      *
-     * In this case, it will simply return the current time
-     *
-     * @return int 
+     * @return null 
      */
     public function getLastModified() {
 
@@ -37,7 +67,7 @@ class Sabre_CalDAV_Principal_ProxyRead implements Sabre_DAVACL_IPrincipal {
     }
 
     /**
-     * Deleted the current node
+     * Deletes the current node
      *
      * @throws Sabre_DAV_Exception_Forbidden
      * @return void 

@@ -68,6 +68,26 @@
         <exec command="bin/pearpackage3.php make Sabre_DAV" checkreturn="true" />
         <exec command="pear package" dir="build/Sabre_DAV" checkreturn="true" />
 
+        <!-- DAVACL -->
+        <echo msg="Building Sabre_DAVACL pear package" />
+        <mkdir dir="build/Sabre_DAVACL" />
+        <mkdir dir="build/Sabre_DAVACL/Sabre" />
+        <copy todir="build/Sabre_DAVACL" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/DAVACL/**" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_DAVACL" />
+        <copy todir="build/Sabre_DAVACL">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+                <include name="examples/sql/*.principals.sql" />
+            </fileset>
+        </copy>
+        <exec command="bin/pearpackage3.php make Sabre_DAVACL" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_DAVACL" checkreturn="true" />
+
         <!-- CalDAV -->
         <echo msg="Building Sabre_CalDAV pear package" />
         <mkdir dir="build/Sabre_CalDAV" />

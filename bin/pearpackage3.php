@@ -96,6 +96,26 @@ TEXT;
         );
         break;
 
+    case 'Sabre_DAVACL' :
+        $summary = 'Sabre_DAVACL provides rfc3744 support.';
+        $description = <<<TEXT
+Sabre_DAVACL is the RFC3744 implementation for SabreDAV. It provides principals
+(users and groups) and access control.
+TEXT;
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAV',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.4.0',
+        );
+        break;
+
     case 'Sabre_CalDAV' :
         $summary = 'Sabre_CalDAV provides CalDAV extensions to SabreDAV';
         $description = <<<TEXT
@@ -122,13 +142,19 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.3.0',
+            'min'  => '1.4.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAVACL',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.4.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_VObject',
             'channel' => 'pear.sabredav.org',
-            'min'  => '0.1',
+            'min'  => '1.0.0',
         );
         break;
 

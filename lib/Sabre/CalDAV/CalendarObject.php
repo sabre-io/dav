@@ -182,7 +182,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
      */
     public function getOwner() {
 
-        return $this->calendarInfo['principalUri'];
+        return $this->calendarInfo['principaluri'];
 
     }
 

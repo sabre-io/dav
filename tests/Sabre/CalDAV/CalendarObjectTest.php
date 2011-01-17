@@ -2,6 +2,7 @@
 
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
@@ -128,6 +129,77 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $size = $obj->getSize();
         $this->assertInternalType('int', $size);
+
+    }
+
+    function testGetOwner() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $this->assertEquals('principals/user1', $obj->getOwner());
+
+    }
+
+    function testGetGroup() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $this->assertNull($obj->getGroup());
+
+    }
+
+    function testGetACL() {
+
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => 'true',
+            ),
+        );
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $this->assertEquals($expected, $obj->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetACL() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $obj->setACL(array());
 
     }
 

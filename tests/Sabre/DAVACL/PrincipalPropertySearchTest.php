@@ -16,7 +16,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
 
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
         $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
-        $plugin = new Sabre_DAVACL_Plugin($backend,'realm');
+        $plugin = new Sabre_DAVACL_MockPlugin($backend,'realm');
         $plugin->allowAccessToNodesWithoutACL = true;
 
         $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
@@ -167,4 +167,15 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
     }
 }
 
+class Sabre_DAVACL_MockPlugin extends Sabre_DAVACL_Plugin {
 
+    function getCurrentUserPrivilegeSet($node) {
+
+        return array(
+            '{DAV:}read',
+            '{DAV:}write',
+        );
+
+    }
+
+}

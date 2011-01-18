@@ -111,6 +111,8 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     public function getGroupMemberSet($principal) {
 
         $principal = $this->getPrincipalByPath($principal);
+        if (!$principal) throw new Sabre_DAV_Exception('Principal not found');
+
         $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM groupmembers LEFT JOIN principals ON groupmembers.member_id = principals.id WHERE groupmembers.principal_id = ?');
         $stmt->execute(array($principal['id']));
 
@@ -131,6 +133,8 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     public function getGroupMembership($principal) {
 
         $principal = $this->getPrincipalByPath($principal);
+        if (!$principal) throw new Sabre_DAV_Exception('Principal not found');
+
         $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM groupmembers LEFT JOIN principals ON groupmembers.principal_id = principals.id WHERE groupmembers.member_id = ?');
         $stmt->execute(array($principal['id']));
 

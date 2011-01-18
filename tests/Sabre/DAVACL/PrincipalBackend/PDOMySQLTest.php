@@ -20,7 +20,7 @@ create table principals (
 );");
 
         $pdo->query("INSERT INTO principals (uri,email,displayname) VALUES ('principals/user','user@example.org','User')");
-        $pdo->query("INSERT INTO principals (uri,email,displayname) VALUES ('principals/group','user@example.org','Group')");
+        $pdo->query("INSERT INTO principals (uri,email,displayname) VALUES ('principals/group','group@example.org','Group')");
         $pdo->query("DROP TABLE IF EXISTS groupmembers");
         $pdo->query("CREATE TABLE groupmembers (
                 id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,

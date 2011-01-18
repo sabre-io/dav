@@ -75,4 +75,94 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testGetPrincipalUrl() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertEquals('principals/admin',$principal->getPrincipalUrl());
+
+    }
+
+    public function testGetAlternateUriSet() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array(
+            'uri' => 'principals/admin',
+            '{DAV:}displayname' => 'Mr. Admin',
+            '{http://www.example.org/custom}custom' => 'Custom',
+            '{http://sabredav.org/ns}email-address' => 'admin@example.org',
+        ));
+
+        $expected = array(
+            'mailto:admin@example.org',
+        );
+
+        $this->assertEquals($expected,$principal->getAlternateUriSet());
+
+    }
+    public function testGetAlternateUriSetEmpty() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array(
+            'uri' => 'principals/admin',
+        ));
+
+        $expected = array();
+
+        $this->assertEquals($expected,$principal->getAlternateUriSet());
+
+    }
+
+    public function testGetGroupMemberSet() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertEquals(array(),$principal->getGroupMemberSet());
+
+    }
+    public function testGetGroupMembership() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertEquals(array(),$principal->getGroupMembership());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_Forbidden
+     */
+    public function testSetGroupMemberSet() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principal->setGroupMemberSet(array());
+
+    }
+
+    public function testGetOwner() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertEquals('principals/admin',$principal->getOwner());
+
+    }
+
+    public function testGetGroup() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertNull($principal->getGroup());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    public function testSetACl() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principal->setACL(array());
+
+    }
 }

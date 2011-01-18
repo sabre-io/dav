@@ -26,6 +26,11 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
                 '{http://sabredav.org/ns}email-address' => 'user@example.org',
                 '{DAV:}displayname' => 'User',
             ),
+            array(
+                'uri' => 'principals/group',
+                '{http://sabredav.org/ns}email-address' => 'group@example.org',
+                '{DAV:}displayname' => 'Group',
+            ),
         );
 
         $this->assertEquals($expected, $backend->getPrincipalsByPrefix('principals'));
@@ -50,6 +55,26 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
 
         $this->assertEquals($expected, $backend->getPrincipalByPath('principals/user'));
         $this->assertEquals(null, $backend->getPrincipalByPath('foo'));
+
+    }
+
+    function testGetGroupMemberSet() {
+
+        $pdo = $this->getPDO();
+        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $expected = array('principals/user');
+
+        $this->assertEquals($expected,$backend->getGroupMemberSet('principals/group'));
+
+    }
+
+    function testGetGroupMembership() {
+
+        $pdo = $this->getPDO();
+        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $expected = array('principals/group');
+
+        $this->assertEquals($expected,$backend->getGroupMembership('principals/user'));
 
     }
 

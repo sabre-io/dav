@@ -157,7 +157,7 @@ class Sabre_CalDAV_Principal_ProxyRead implements Sabre_DAVACL_IPrincipal {
      */
     public function setGroupMemberSet(array $principals) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Updating the group member-set is not yet supported');
+        $this->principalBackend->setGroupMemberSet($this->getPrincipalUrl(), $principals);
 
     }
 

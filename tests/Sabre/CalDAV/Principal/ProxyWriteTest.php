@@ -8,6 +8,7 @@ class Sabre_CalDAV_Principal_ProxyWriteTest extends Sabre_CalDAV_Principal_Proxy
         $principal = new Sabre_CalDAV_Principal_ProxyWrite($backend, array(
             'uri' => 'principal/user',
         ));
+        $this->backend = $backend;
         return $principal;
 
     }

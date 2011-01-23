@@ -2,15 +2,18 @@
 
 class Sabre_CalDAV_Principal_ProxyReadTest extends PHPUnit_Framework_TestCase {
 
+    protected $backend;
+
     function getInstance() {
 
         $backend = new Sabre_DAVACL_MockPrincipalBackend();
         $principal = new Sabre_CalDAV_Principal_ProxyRead($backend, array(
             'uri' => 'principal/user',
         ));
+        $this->backend = $backend;
         return $principal;
 
-    }
+   }
 
     function testGetName() {
 
@@ -80,13 +83,16 @@ class Sabre_CalDAV_Principal_ProxyReadTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
-     */
     function testSetGroupMemberSet() {
 
         $i = $this->getInstance();
-        $i->setGroupMemberSet(array());
+        $i->setGroupMemberSet(array('principals/foo'));
+
+        $expected = array(
+            $i->getPrincipalUrl() => array('principals/foo')
+        );
+
+        $this->assertEquals($expected, $this->backend->groupMembers);
 
     }
 }

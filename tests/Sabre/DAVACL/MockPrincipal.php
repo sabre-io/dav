@@ -54,7 +54,7 @@ class Sabre_DAVACL_MockPrincipal extends Sabre_DAV_Node implements Sabre_DAVACL_
 
     function setGroupMemberSet(array $groupMemberSet) {
 
-        throw new Exception('Not implemented');
+        $this->groupMemberSet = $groupMemberSet;
 
     }
 }

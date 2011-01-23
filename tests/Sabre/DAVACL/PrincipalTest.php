@@ -156,6 +156,20 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testGetACl() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertEquals(array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/admin',
+                'protected' => true,
+            )
+        ),$principal->getACL());
+
+    }
+
     /**
      * @expectedException Sabre_DAV_Exception_MethodNotAllowed
      */

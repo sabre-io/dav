@@ -31,6 +31,14 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Direct
     protected $principalBackend;
 
     /**
+     * If this value is set to true, it effectively disables listing of users
+     * it still allows user to find other users if they have an exact url. 
+     * 
+     * @var bool 
+     */
+    public $disableListing = false;
+
+    /**
      * Creates the object
      *
      * This object must be passed the principal backend. This object will 
@@ -80,6 +88,9 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Direct
      * @return void
      */
     public function getChildren() {
+
+        if ($this->disableListing)
+            throw new Sabre_DAV_Exception_MethodNotAllowed('Listing members of this collection is disabled');
 
         $children = array();
         foreach($this->principalBackend->getPrincipalsByPrefix($this->principalPrefix) as $principalInfo) {

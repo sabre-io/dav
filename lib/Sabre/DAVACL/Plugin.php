@@ -435,7 +435,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('beforeBind', array($this,'beforeBind'),20);
         $server->subscribeEvent('beforeUnbind', array($this,'beforeUnbind'),20);
         $server->subscribeEvent('afterGetProperties', array($this,'afterGetProperties'),220);
-        $server->subscribeEvent('updateProperties,',array($this,'updateProperties'));
+        $server->subscribeEvent('updateProperties',array($this,'updateProperties'));
         $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
         $server->subscribeEvent('report',array($this,'report'));
 
@@ -755,7 +755,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception('The group-member-set property MUST be an instance of Sabre_DAV_Property_HrefList or null');
         }
 
-        if (!($node instanceof Sabre_DAV_IPrincipal)) {
+        if (!($node instanceof Sabre_DAVACL_IPrincipal)) {
             $result[403]['{DAV:}group-member-set'] = null;
             unset($propertyDelta['{DAV:}group-member-set']);
 

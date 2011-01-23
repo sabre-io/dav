@@ -31,5 +31,18 @@ class Sabre_DAVACL_PrincipalCollectionTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testBasic
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    public function testGetChildrenDisable() {
+
+        $backend = new Sabre_DAVACL_MockPrincipalBackend();
+        $pc = new Sabre_DAVACL_PrincipalCollection($backend);
+        $pc->disableListing = true;
+        
+        $children = $pc->getChildren();
+
+    }
 
 }

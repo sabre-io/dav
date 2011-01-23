@@ -392,7 +392,7 @@ class Sabre_DAV_Server {
      * @return bool 
      */
     public function broadcastEvent($eventName,$arguments = array()) {
-        
+
         if (isset($this->eventSubscriptions[$eventName])) {
 
             foreach($this->eventSubscriptions[$eventName] as $subscriber) {
@@ -1590,8 +1590,17 @@ class Sabre_DAV_Server {
                     }
 
                 } elseif (is_array($updateResult)) {
+
                     // The node has detailed update information
-                    $result = array_merge_recursive($result, $updateResult);
+                    // We need to merge the results with the earlier results.
+                    foreach($updateResult as $status => $props) {
+                        if (is_array($props)) {
+                            if (!isset($result[$status]))
+                                $result[$status] = array();
+
+                            $result[$status] = array_merge($result[$status], $updateResult[$status]);
+                        }
+                    }
 
                 } else {
                     throw new Sabre_DAV_Exception('Invalid result from updateProperties');

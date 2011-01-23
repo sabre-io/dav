@@ -42,4 +42,10 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
 
     }
 
+    function setGroupMemberSet($path, array $members) {
+
+        throw new Exception('Not implemented');
+
+    }
+
 }

@@ -16,12 +16,12 @@ class Sabre_DAVACL_PrincipalBackend_PDOSQLiteTest extends Sabre_DAVACL_Principal
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-        $pdo->query('CREATE TABLE principals (id INT ASC, uri TEXT, email VARCHAR(80), displayname VARCHAR(80))');
+        $pdo->query('CREATE TABLE principals (id INTEGER PRIMARY KEY ASC, uri TEXT, email VARCHAR(80), displayname VARCHAR(80))');
         $pdo->query('INSERT INTO principals VALUES (1, "principals/user","user@example.org","User")');
         $pdo->query('INSERT INTO principals VALUES (2, "principals/group","group@example.org","Group")');
 
         $pdo->query("CREATE TABLE groupmembers (
-                id INTEGER INT ASC,
+                id INTEGER PRIMARY KEY ASC,
                 principal_id INT,
                 member_id INT,
                 UNIQUE(principal_id, member_id)

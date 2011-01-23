@@ -59,4 +59,15 @@ interface Sabre_DAVACL_IPrincipalBackend {
      */
     function getGroupMembership($principal);
 
+    /**
+     * Updates the list of group members for a group principal.
+     *
+     * The principals should be passed as a list of uri's. 
+     * 
+     * @param string $principal 
+     * @param array $members 
+     * @return void
+     */
+    function setGroupMemberSet($principal, array $members); 
+
 }

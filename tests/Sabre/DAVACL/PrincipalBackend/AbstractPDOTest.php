@@ -78,4 +78,23 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
 
     }
 
+    function testSetGroupMemberSet() {
+
+        $pdo = $this->getPDO();
+
+        // Start situation
+        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $this->assertEquals(array('principals/user'), $backend->getGroupMemberSet('principals/group'));
+
+        // Removing all principals
+        $backend->setGroupMemberSet('principals/group', array());
+        $this->assertEquals(array(), $backend->getGroupMemberSet('principals/group'));
+
+        // Adding principals again
+        $backend->setGroupMemberSet('principals/group', array('principals/user'));
+        $this->assertEquals(array('principals/user'), $backend->getGroupMemberSet('principals/group'));
+
+
+    }
+
 }

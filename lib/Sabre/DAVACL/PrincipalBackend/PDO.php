@@ -146,4 +146,44 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
 
     }
 
+    /**
+     * Updates the list of group members for a group principal.
+     *
+     * The principals should be passed as a list of uri's. 
+     * 
+     * @param string $principal 
+     * @param array $members 
+     * @return void
+     */
+    public function setGroupMemberSet($principal, array $members) {
+
+        // Grabbing the list of principal id's.
+        $stmt = $this->pdo->prepare('SELECT id, uri FROM principals WHERE uri IN (? ' . str_repeat(', ? ', count($members)) . ');');
+        $stmt->execute(array_merge(array($principal), $members));
+
+        $memberIds = array();
+        $principalId = null;
+
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if ($row['uri'] == $principal) {
+                $principalId = $row['id'];
+            } else {
+                $memberIds[] = $row['id'];
+            }
+        }
+        if (!$principalId) throw new Sabre_DAV_Exception('Principal not found');
+
+        // Wiping out old members
+        $stmt = $this->pdo->prepare('DELETE FROM groupmembers WHERE principal_id = ?;');
+        $stmt->execute(array($principalId));
+
+        foreach($memberIds as $memberId) {
+
+            $stmt = $this->pdo->prepare('INSERT INTO groupmembers (principal_id, member_id) VALUES (?, ?);');
+            $stmt->execute(array($principalId, $memberId));
+
+        }
+
+    }
+
 }

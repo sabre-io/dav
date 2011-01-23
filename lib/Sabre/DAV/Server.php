@@ -1541,18 +1541,6 @@ class Sabre_DAV_Server {
         $remainingProperties = $properties;
         $hasError = false;
 
-
-        // If the node is not an instance of Sabre_DAV_IProperties, every
-        // property is 403 Forbidden
-        // simply return a 405.
-        if (!($node instanceof Sabre_DAV_IProperties)) {
-            $hasError = true;
-            foreach($properties as $propertyName=> $value) {
-                $result[403][$propertyName] = null;
-            }
-            $remainingProperties = array();
-        }
-
         // Running through all properties to make sure none of them are protected
         if (!$hasError) foreach($properties as $propertyName => $value) {
             if(in_array($propertyName, $this->protectedProperties)) {
@@ -1562,30 +1550,53 @@ class Sabre_DAV_Server {
             }
         }
 
+        if (!$hasError) {
+            // Allowing plugins to take care of property updating
+            $hasError = !$this->broadcastEvent('updateProperties',array(
+                &$remainingProperties,
+                &$result,
+                $node
+            ));
+        }
+
+        // If the node is not an instance of Sabre_DAV_IProperties, every
+        // property is 403 Forbidden
+        if (!$hasError && count($remainingProperties) && !($node instanceof Sabre_DAV_IProperties)) {
+            $hasError = true;
+            foreach($properties as $propertyName=> $value) {
+                $result[403][$propertyName] = null;
+            }
+            $remainingProperties = array();
+        }
+
         // Only if there were no errors we may attempt to update the resource
         if (!$hasError) {
-            $updateResult = $node->updateProperties($properties);
-            $remainingProperties = array();
 
-            if ($updateResult===true) {
-                // success
-                foreach($properties as $propertyName=>$value) {
-                    $result[200][$propertyName] = null;
+            if (count($remainingProperties)>0) {
+
+                $updateResult = $node->updateProperties($remainingProperties);
+
+                if ($updateResult===true) {
+                    // success
+                    foreach($remainingProperties as $propertyName=>$value) {
+                        $result[200][$propertyName] = null;
+                    }
+
+                } elseif ($updateResult===false) {
+                    // The node failed to update the properties for an
+                    // unknown reason
+                    foreach($remainingProperties as $propertyName=>$value) {
+                        $result[403][$propertyName] = null;
+                    }
+
+                } elseif (is_array($updateResult)) {
+                    // The node has detailed update information
+                    $result = array_merge_recursive($result, $updateResult);
+
+                } else {
+                    throw new Sabre_DAV_Exception('Invalid result from updateProperties');
                 }
-
-            } elseif ($updateResult===false) {
-                // The node failed to update the properties for an
-                // unknown reason
-                foreach($properties as $propertyName=>$value) {
-                    $result[403][$propertyName] = null;
-                }
-
-            } elseif (is_array($updateResult)) {
-                // The node has detailed update information
-                $result = $updateResult;
-
-            } else {
-                throw new Sabre_DAV_Exception('Invalid result from updateProperties');
+                $remainingProperties = array();
             }
 
         }

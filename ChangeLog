@@ -19,6 +19,7 @@
 	* Added: Plugins can now specify a pluginname, for easy access using
 	  Sabre_DAV_Server::getPlugin().
 	* Added: beforeGetProperties event.
+	* Added: updateProperties event.
 	* Added: Principal listings and calendar-access can now be done privately,
 	  disallowing users from accessing or modifying other users' data. 
 	* Added: You can now pass arrays to the Sabre_DAV_Server constructor. If

@@ -435,6 +435,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('beforeBind', array($this,'beforeBind'),20);
         $server->subscribeEvent('beforeUnbind', array($this,'beforeUnbind'),20);
         $server->subscribeEvent('afterGetProperties', array($this,'afterGetProperties'),220);
+        $server->subscribeEvent('updateProperties,',array($this,'updateProperties'));
         $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
         $server->subscribeEvent('report',array($this,'report'));
 
@@ -451,7 +452,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}inherited-acl-set'
         );
 
+        // Automatically mapping nodes implementing IPrincipal to the 
+        // {DAV:}principal resourcetype.
         $server->resourceTypeMapping['Sabre_DAVACL_IPrincipal'] = '{DAV:}principal';
+
+        // Mapping the group-member-set property to the HrefList property 
+        // class.
+        $server->propertyMap['{DAV:}group-member-set'] = 'Sabre_DAV_Property_HrefList';
 
     }
 
@@ -723,6 +730,43 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
+
+    }
+
+    /**
+     * This method intercepts PROPPATCH methods and make sure the 
+     * group-member-set is updated correctly. 
+     * 
+     * @param array $propertyDelta 
+     * @param array $result 
+     * @param Sabre_DAV_INode $node 
+     * @return void
+     */
+    public function updateProperties(&$propertyDelta, &$result, Sabre_DAV_INode $node) {
+
+        if (!array_key_exists('{DAV:}group-member-set', $propertyDelta))
+            return;
+
+        if (is_null($propertyDelta['{DAV:}group-member-set'])) {
+            $memberSet = array();
+        } elseif ($propertyDelta['{DAV:}group-member-set'] instanceof Sabre_DAV_Property_HrefList) {
+            $memberSet = $propertyDelta['{DAV:}group-member-set']->getHrefs();
+        } else {
+            throw new Sabre_DAV_Exception('The group-member-set property MUST be an instance of Sabre_DAV_Property_HrefList or null');
+        }
+
+        if (!($node instanceof Sabre_DAV_IPrincipal)) {
+            $result[403]['{DAV:}group-member-set'] = null;
+            unset($propertyDelta['{DAV:}group-member-set']);
+
+            // Returning false will stop the updateProperties process
+            return false;
+        }
+
+        $node->setGroupMemberSet($memberSet);
+        
+        $result[200]['{DAV:}group-member-set'] = null;
+        unset($propertyDelta['{DAV:}group-member-set']);
 
     }
 

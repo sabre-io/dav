@@ -128,14 +128,15 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
-     */
     public function testSetGroupMemberSet() {
 
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
-        $principal->setGroupMemberSet(array());
+        $principal->setGroupMemberSet(array('principals/foo'));
+
+        $this->assertEquals(array(
+            'principals/admin' => array('principals/foo'),
+        ), $principalBackend->groupMembers);
 
     }
 

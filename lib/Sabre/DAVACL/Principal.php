@@ -118,7 +118,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      */
     public function setGroupMemberSet(array $groupMembers) {
 
-        throw new Sabre_DAV_Exception_Forbidden('This principal does not allow setting group members');
+        $this->principalBackend->setGroupMemberSet($this->principalProperties['uri'], $groupMembers);
 
     }
 

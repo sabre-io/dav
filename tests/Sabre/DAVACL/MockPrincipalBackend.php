@@ -2,6 +2,8 @@
 
 class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBackend {
 
+    public $groupMembers = array();
+
     function getPrincipalsByPrefix($prefix) {
 
         if ($prefix=='principals') {
@@ -32,19 +34,23 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
 
     function getGroupMemberSet($path) {
 
-        return array();
+        return isset($this->groupMembers[$path]) ? $this->groupMembers[$path] : array();
 
     }
 
     function getGroupMembership($path) {
 
-        return array();
+        $membership = array();
+        foreach($this->groupMembers as $group=>$members) {
+            if (in_array($path, $members)) $membership[] = $group;
+        } 
+        return $membership; 
 
     }
 
     function setGroupMemberSet($path, array $members) {
 
-        throw new Exception('Not implemented');
+        $this->groupMembers[$path] = $members;
 
     }
 

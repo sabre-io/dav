@@ -589,9 +589,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $dtend->modify('+1 day');
             }
         }
+        // TODO: we need to properly parse RRULE's, but it's very difficult.
+        // For now, we're always returning events if they have an RRULE at all.
+        $rrule = $xml->xpath($currentXPath.'/c:rrule');
+        $hasRrule = (count($rrule))>0; 
        
         if (!is_null($currentFilter['time-range']['start']) && $currentFilter['time-range']['start'] >= $dtend)  return false;
-        if (!is_null($currentFilter['time-range']['end'])   && $currentFilter['time-range']['end']   <= $dtstart) return false;
+        if (!is_null($currentFilter['time-range']['end'])   && $currentFilter['time-range']['end']   <= $dtstart && !$hasRrule) return false;
         return true;
     
     }

@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipal.php';
 
 class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
@@ -157,4 +158,157 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testAlternateUriSet() {
+
+        $tree = array(
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
+            )),
+        );
+
+        $fakeServer = new Sabre_DAV_Server($tree);
+        //$plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        //$fakeServer->addPlugin($plugin);
+        $plugin = new Sabre_DAVACL_Plugin();
+        $fakeServer->addPlugin($plugin);
+
+        $requestedProperties = array(
+            '{DAV:}alternate-URI-set',
+        );
+        $returnedProperties = array();
+
+        $result = $plugin->beforeGetProperties('principals/user',$principal,$requestedProperties,$returnedProperties);
+
+        $this->assertNull($result);
+
+        $this->assertTrue(isset($returnedProperties[200]));
+        $this->assertTrue(isset($returnedProperties[200]['{DAV:}alternate-URI-set']));
+        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $returnedProperties[200]['{DAV:}alternate-URI-set']);
+
+        $this->assertEquals(array(), $returnedProperties[200]['{DAV:}alternate-URI-set']->getHrefs());
+
+    }
+
+    function testPrincipalURL() {
+
+        $tree = array(
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
+            )),
+        );
+
+        $fakeServer = new Sabre_DAV_Server($tree);
+        //$plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        //$fakeServer->addPlugin($plugin);
+        $plugin = new Sabre_DAVACL_Plugin();
+        $fakeServer->addPlugin($plugin);
+
+        $requestedProperties = array(
+            '{DAV:}principal-URL',
+        );
+        $returnedProperties = array();
+
+        $result = $plugin->beforeGetProperties('principals/user',$principal,$requestedProperties,$returnedProperties);
+
+        $this->assertNull($result);
+
+        $this->assertTrue(isset($returnedProperties[200]));
+        $this->assertTrue(isset($returnedProperties[200]['{DAV:}principal-URL']));
+        $this->assertInstanceOf('Sabre_DAV_Property_Href', $returnedProperties[200]['{DAV:}principal-URL']);
+
+        $this->assertEquals('principals/user/', $returnedProperties[200]['{DAV:}principal-URL']->getHref());
+
+    }
+
+    function testGroupMemberSet() {
+
+        $tree = array(
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
+            )),
+        );
+
+        $fakeServer = new Sabre_DAV_Server($tree);
+        //$plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        //$fakeServer->addPlugin($plugin);
+        $plugin = new Sabre_DAVACL_Plugin();
+        $fakeServer->addPlugin($plugin);
+
+        $requestedProperties = array(
+            '{DAV:}group-member-set',
+        );
+        $returnedProperties = array();
+
+        $result = $plugin->beforeGetProperties('principals/user',$principal,$requestedProperties,$returnedProperties);
+
+        $this->assertNull($result);
+
+        $this->assertTrue(isset($returnedProperties[200]));
+        $this->assertTrue(isset($returnedProperties[200]['{DAV:}group-member-set']));
+        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $returnedProperties[200]['{DAV:}group-member-set']);
+
+        $this->assertEquals(array(), $returnedProperties[200]['{DAV:}group-member-set']->getHrefs());
+
+    }
+
+    function testGroupMemberShip() {
+
+        $tree = array(
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
+            )),
+        );
+
+        $fakeServer = new Sabre_DAV_Server($tree);
+        //$plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        //$fakeServer->addPlugin($plugin);
+        $plugin = new Sabre_DAVACL_Plugin();
+        $fakeServer->addPlugin($plugin);
+
+        $requestedProperties = array(
+            '{DAV:}group-membership',
+        );
+        $returnedProperties = array();
+
+        $result = $plugin->beforeGetProperties('principals/user',$principal,$requestedProperties,$returnedProperties);
+
+        $this->assertNull($result);
+
+        $this->assertTrue(isset($returnedProperties[200]));
+        $this->assertTrue(isset($returnedProperties[200]['{DAV:}group-membership']));
+        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $returnedProperties[200]['{DAV:}group-membership']);
+
+        $this->assertEquals(array(), $returnedProperties[200]['{DAV:}group-membership']->getHrefs());
+
+    }
+
+    function testGetDisplayName() {
+
+        $tree = array(
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
+            )),
+        );
+
+        $fakeServer = new Sabre_DAV_Server($tree);
+        //$plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        //$fakeServer->addPlugin($plugin);
+        $plugin = new Sabre_DAVACL_Plugin();
+        $fakeServer->addPlugin($plugin);
+
+        $requestedProperties = array(
+            '{DAV:}displayname',
+        );
+        $returnedProperties = array();
+
+        $result = $plugin->beforeGetProperties('principals/user',$principal,$requestedProperties,$returnedProperties);
+
+        $this->assertNull($result);
+
+        $this->assertTrue(isset($returnedProperties[200]));
+        $this->assertTrue(isset($returnedProperties[200]['{DAV:}displayname']));
+
+        $this->assertEquals('user', $returnedProperties[200]['{DAV:}displayname']);
+
+    }
 }

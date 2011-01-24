@@ -48,6 +48,8 @@
 	  classes.
 	* Fixed: Issue 59: Allowing the user to override the authentication realm
 	  in Sabre_CalDAV_Server.
+	* Update: Issue 97: Looser time-range checking if there's a reccurrence
+	  rule in an event. This fixes 'missing recurring events'.
 
 1.3.0 (2010-10-14)
 	* Added: childExists method to Sabre_DAV_ICollection. This is an api

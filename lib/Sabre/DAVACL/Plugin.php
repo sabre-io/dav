@@ -457,7 +457,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}current-user-privilege-set',
             '{DAV:}acl',
             '{DAV:}acl-restrictions',
-            '{DAV:}inherited-acl-set'
+            '{DAV:}inherited-acl-set',
+            '{DAV:}owner',
+            '{DAV:}group'
         );
 
         $server->resourceTypeMapping['Sabre_DAVACL_IPrincipal'] = '{DAV:}principal';
@@ -730,6 +732,15 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             if (!is_null($val)) {
                 unset($requestedProperties[$index]);
                 $returnedProperties[200]['{DAV:}current-user-privilege-set'] = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($val);
+            }
+
+        }
+        if (false !== ($index = array_search('{DAV:}acl', $requestedProperties))) {
+
+            $acl = $this->getACL($node);
+            if (!is_null($acl)) {
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}acl'] = new Sabre_DAVACL_Property_Acl($this->getACL($node));
             }
 
         }

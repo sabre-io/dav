@@ -319,34 +319,43 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $privs = $this->getSupportedPrivilegeSet();
 
         $flat = array();
-
-        $traverse = null;
-        $traverse = function($priv, $concrete = null) use (&$flat, &$traverse) {
-
-            $myPriv = array(
-                'privilege' => $priv['privilege'],
-                'abstract' => isset($priv['abstract']) && $priv['abstract'],
-                'aggregates' => array(),
-                'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
-            );
-
-            if (isset($priv['aggregates']))
-                foreach($priv['aggregates'] as $subPriv) $myPriv['aggregates'][] = $subPriv['privilege'];
-
-            $flat[$priv['privilege']] = $myPriv;
-
-            if (isset($priv['aggregates']))
-                foreach($priv['aggregates'] as $subPriv) {
-                
-                    $traverse($subPriv,$myPriv['concrete']);
-
-                }
-
-        };
-
-        $traverse($privs);
+        $this->getFPSTraverse($privs, null, $flat);
 
         return $flat;
+
+    }
+
+    /**
+     * Traverses the privilege set tree for reordering
+     *
+     * This function is solely used by getFlatPrivilegeSet, and would have been 
+     * a closure if it wasn't for the fact I need to support PHP 5.2.
+     * 
+     * @return void
+     */
+    final private function getFPSTraverse($priv, $concrete, &$flat) {
+
+        $myPriv = array(
+            'privilege' => $priv['privilege'],
+            'abstract' => isset($priv['abstract']) && $priv['abstract'],
+            'aggregates' => array(),
+            'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
+        );
+
+        if (isset($priv['aggregates']))
+            foreach($priv['aggregates'] as $subPriv) $myPriv['aggregates'][] = $subPriv['privilege'];
+
+        $flat[$priv['privilege']] = $myPriv;
+
+        if (isset($priv['aggregates'])) {
+
+            foreach($priv['aggregates'] as $subPriv) {
+            
+                $this->getFPSTraverse($subPriv, $myPriv['concrete'], $flat);
+
+            }
+
+        }
 
     }
 
@@ -449,7 +458,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}current-user-privilege-set',
             '{DAV:}acl',
             '{DAV:}acl-restrictions',
-            '{DAV:}inherited-acl-set'
+            '{DAV:}inherited-acl-set',
+            '{DAV:}owner',
+            '{DAV:}group'
         );
 
         // Automatically mapping nodes implementing IPrincipal to the 
@@ -490,6 +501,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             case 'PUT' :
             case 'LOCK' :
+            case 'UNLOCK' : 
                 // This method requires the write-content priv if the node 
                 // already exists, and bind on the parent if the node is being 
                 // created. 
@@ -727,6 +739,15 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             if (!is_null($val)) {
                 unset($requestedProperties[$index]);
                 $returnedProperties[200]['{DAV:}current-user-privilege-set'] = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($val);
+            }
+
+        }
+        if (false !== ($index = array_search('{DAV:}acl', $requestedProperties))) {
+
+            $acl = $this->getACL($node);
+            if (!is_null($acl)) {
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}acl'] = new Sabre_DAVACL_Property_Acl($this->getACL($node));
             }
 
         }

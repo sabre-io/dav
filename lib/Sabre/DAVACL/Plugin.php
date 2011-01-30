@@ -319,34 +319,43 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $privs = $this->getSupportedPrivilegeSet();
 
         $flat = array();
-
-        $traverse = null;
-        $traverse = function($priv, $concrete = null) use (&$flat, &$traverse) {
-
-            $myPriv = array(
-                'privilege' => $priv['privilege'],
-                'abstract' => isset($priv['abstract']) && $priv['abstract'],
-                'aggregates' => array(),
-                'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
-            );
-
-            if (isset($priv['aggregates']))
-                foreach($priv['aggregates'] as $subPriv) $myPriv['aggregates'][] = $subPriv['privilege'];
-
-            $flat[$priv['privilege']] = $myPriv;
-
-            if (isset($priv['aggregates']))
-                foreach($priv['aggregates'] as $subPriv) {
-                
-                    $traverse($subPriv,$myPriv['concrete']);
-
-                }
-
-        };
-
-        $traverse($privs);
+        $this->getFPSTraverse($privs, null, $flat);
 
         return $flat;
+
+    }
+
+    /**
+     * Traverses the privilege set tree for reordering
+     *
+     * This function is solely used by getFlatPrivilegeSet, and would have been 
+     * a closure if it wasn't for the fact I need to support PHP 5.2.
+     * 
+     * @return void
+     */
+    final private function getFPSTraverse($priv, $concrete, &$flat) {
+
+        $myPriv = array(
+            'privilege' => $priv['privilege'],
+            'abstract' => isset($priv['abstract']) && $priv['abstract'],
+            'aggregates' => array(),
+            'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
+        );
+
+        if (isset($priv['aggregates']))
+            foreach($priv['aggregates'] as $subPriv) $myPriv['aggregates'][] = $subPriv['privilege'];
+
+        $flat[$priv['privilege']] = $myPriv;
+
+        if (isset($priv['aggregates'])) {
+
+            foreach($priv['aggregates'] as $subPriv) {
+            
+                $this->getFPSTraverse($subPriv, $myPriv['concrete'], $flat);
+
+            }
+
+        }
 
     }
 
@@ -483,6 +492,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             case 'PUT' :
             case 'LOCK' :
+            case 'UNLOCK' : 
                 // This method requires the write-content priv if the node 
                 // already exists, and bind on the parent if the node is being 
                 // created. 

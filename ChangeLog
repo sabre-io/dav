@@ -1,5 +1,5 @@
-1.4.0 (2010-??-??)
-	* Added: RFC3744 ACL support.
+1.4.0-beta (2010-02-12)
+	* Added: Partly RFC3744 ACL support.
 	* Added: Calendar-delegation (caldav-proxy) support. 
 	* BC break: In order to fix Issue 99, a new argument had to be added to
 	  Sabre_DAV_Locks_Backend_*::getLocks classes. Consult the classes for

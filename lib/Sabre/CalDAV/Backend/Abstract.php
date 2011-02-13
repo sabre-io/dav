@@ -104,6 +104,16 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      *   * calendardata - The iCalendar-compatible calnedar data
      *   * uri - a unique key which will be used to construct the uri. This can be any arbitrary string.
      *   * lastmodified - a timestamp of the last modification time
+     *   * etag - An arbitrary string, surrounded by double-quotes. (e.g.: 
+     *   '  "abcdef"')
+     *   * calendarid - The calendarid as it was passed to this function.
+     *
+     * Note that the etag is optional, but it's highly encouraged to return for 
+     * speed reasons.
+     *
+     * The calendardata is also optional. If it's not returned 
+     * 'getCalendarObject' will be called later, which *is* expected to return 
+     * calendardata.
      * 
      * @param string $calendarId 
      * @return array 
@@ -111,7 +121,12 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     abstract function getCalendarObjects($calendarId);
 
     /**
-     * Returns information from a single calendar object, based on it's object uri. 
+     * Returns information from a single calendar object, based on it's object
+     * uri.
+     *
+     * The returned array must have the same keys as getCalendarObjects. The 
+     * 'calendardata' object is required here though, while it's not required 
+     * for getCalendarObjects.
      * 
      * @param string $calendarId 
      * @param string $objectUri 

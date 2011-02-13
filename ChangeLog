@@ -2,6 +2,8 @@
 	* Fixed: Sabre_DAV_Locks_Backend_PDO returned too many locks.
 	* Fixed: Sabre_HTTP_Request::getHeader didn't return Content-Type when
 	  running on apache, so a few workarounds were added.
+	* Change: Slightly changed CalDAV Backend API's, to allow for heavy
+	  optimizations. This is non-bc breaking.
 
 1.4.0-beta (2011-02-12)
 	* Added: Partly RFC3744 ACL support.

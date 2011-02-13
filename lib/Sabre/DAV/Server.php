@@ -354,6 +354,19 @@ class Sabre_DAV_Server {
     }
 
     /**
+     * Returns all plugins 
+     * 
+     * @return array 
+     */
+    public function getPlugins() {
+
+        return $this->plugins;
+
+    }
+
+
+
+    /**
      * Subscribe to an event.
      *
      * When the event is triggered, we'll call all the specified callbacks.

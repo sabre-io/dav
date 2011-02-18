@@ -7,7 +7,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -19,10 +19,14 @@ abstract class Sabre_DAV_Locks_Backend_Abstract {
      * This method should return all the locks for a particular uri, including
      * locks that might be set on a parent uri.
      *
+     * If returnChildLocks is set to true, this method should also look for
+     * any locks in the subtree of the uri for locks.
+     *
      * @param string $uri 
+     * @param bool $returnChildLocks
      * @return array 
      */
-    abstract function getLocks($uri);
+    abstract function getLocks($uri, $returnChildLocks);
 
     /**
      * Locks a uri 

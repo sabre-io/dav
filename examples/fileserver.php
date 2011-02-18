@@ -36,7 +36,7 @@ if (isset($baseUri))
     $server->setBaseUri($baseUri);
 
 // Support for LOCK and UNLOCK 
-$lockBackend = new Sabre_DAV_Locks_Backend_FS($tmpDir);
+$lockBackend = new Sabre_DAV_Locks_Backend_File($tmpDir . '/locksdb');
 $lockPlugin = new Sabre_DAV_Locks_Plugin($lockBackend);
 $server->addPlugin($lockPlugin);
 

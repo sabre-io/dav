@@ -6,13 +6,13 @@
  * This plugin provides locking support to a WebDAV server.
  * The easiest way to get started, is by hooking it up as such:
  *
- * $lockBackend = new Sabre_DAV_Locks_Backend_FS('./my_lock_directory');
+ * $lockBackend = new Sabre_DAV_Locks_Backend_File('./mylockdb');
  * $lockPlugin = new Sabre_DAV_Locks_Plugin($lockBackend);
  * $server->addPlugin($lockPlugin);
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -62,6 +62,20 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a plugin name.
+     * 
+     * Using this name other plugins will be able to access other plugins
+     * using Sabre_DAV_Server::getPlugin 
+     * 
+     * @return string 
+     */
+    public function getPluginName() {
+
+        return 'locks';
+
+    }
+
+    /**
      * This method is called by the Server if the user used an HTTP method 
      * the server didn't recognize.
      *
@@ -70,12 +84,12 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function unknownMethod($method) {
+    public function unknownMethod($method, $uri) {
 
         switch($method) { 
 
-            case 'LOCK'   : $this->httpLock(); return false; 
-            case 'UNLOCK' : $this->httpUnlock(); return false; 
+            case 'LOCK'   : $this->httpLock($uri); return false; 
+            case 'UNLOCK' : $this->httpUnlock($uri); return false; 
 
         }
 
@@ -128,34 +142,39 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This plugin uses that feature to intercept access to locked resources.
      * 
-     * @param string $method 
+     * @param string $method
+     * @param string $uri
      * @return bool 
      */
-    public function beforeMethod($method) {
+    public function beforeMethod($method, $uri) {
 
         switch($method) {
 
             case 'DELETE' :
+                $lastLock = null;
+                if (!$this->validateLock($uri,$lastLock, true))
+                    throw new Sabre_DAV_Exception_Locked($lastLock);
+                break;
             case 'MKCOL' :
             case 'PROPPATCH' :
             case 'PUT' :
                 $lastLock = null;
-                if (!$this->validateLock(null,$lastLock))
+                if (!$this->validateLock($uri,$lastLock))
                     throw new Sabre_DAV_Exception_Locked($lastLock);
                 break;
             case 'MOVE' :
                 $lastLock = null;
                 if (!$this->validateLock(array(
-                      $this->server->getRequestUri(),
+                      $uri,
                       $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
-                    ),$lastLock))
+                    ),$lastLock, true))
                         throw new Sabre_DAV_Exception_Locked($lastLock);
                 break;
             case 'COPY' :
                 $lastLock = null;
                 if (!$this->validateLock(
                       $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
-                      $lastLock))
+                      $lastLock, true))
                         throw new Sabre_DAV_Exception_Locked($lastLock);
                 break;
         }
@@ -163,7 +182,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         return true;
 
     }
-
 
     /**
      * Use this method to tell the server this plugin defines additional
@@ -205,11 +223,14 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * This function should return an array with Sabre_DAV_Locks_LockInfo objects. If there are no locks on a file, return an empty array.
      *
      * Additionally there is also the possibility of locks on parent nodes, so we'll need to traverse every part of the tree 
+     * If the $returnChildLocks argument is set to true, we'll also traverse all the children of the object
+     * for any possible locks and return those as well.
      *
      * @param string $uri 
+     * @param bool $returnChildLocks
      * @return array 
      */
-    public function getLocks($uri) {
+    public function getLocks($uri, $returnChildLocks = false) {
 
         $lockList = array();
         $currentPath = '';
@@ -230,7 +251,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             foreach($uriLocks as $uriLock) {
 
-                // Unless we're on the leaf of the uri-tree we should ingore locks with depth 0
+                // Unless we're on the leaf of the uri-tree we should ignore locks with depth 0
                 if($uri==$currentPath || $uriLock->depth!=0) {
                     $uriLock->uri = $currentPath;
                     $lockList[] = $uriLock;
@@ -239,7 +260,9 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
-        if ($this->locksBackend) $lockList = array_merge($lockList,$this->locksBackend->getLocks($uri));
+        if ($this->locksBackend) 
+            $lockList = array_merge($lockList,$this->locksBackend->getLocks($uri, $returnChildLocks));
+
         return $lockList;
 
     }
@@ -255,11 +278,10 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * Additionally, a lock can be requested for a non-existant file. In these case we're obligated to create an empty file as per RFC4918:S7.3
      * 
+     * @param string $uri
      * @return void
      */
-    protected function httpLock() {
-
-        $uri = $this->server->getRequestUri();
+    protected function httpLock($uri) {
 
         $lastLock = null;
         if (!$this->validateLock($uri,$lastLock)) {
@@ -328,12 +350,11 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * This WebDAV method allows you to remove a lock from a node. The client should provide a valid locktoken through the Lock-token http header
      * The server should return 204 (No content) on success
      *
+     * @param string $uri
      * @return void
      */
-    protected function httpUnlock() {
+    protected function httpUnlock($uri) {
 
-        $uri = $this->server->getRequestUri();
-        
         $lockToken = $this->server->httpRequest->getHeader('Lock-Token');
 
         // If the locktoken header is not supplied, we need to throw a bad request exception
@@ -348,6 +369,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
+                $this->server->broadcastEvent('beforeUnlock',array($uri, $lock));
                 $this->unlockNode($uri,$lock);
                 $this->server->httpResponse->setHeader('Content-Length','0');
                 $this->server->httpResponse->sendStatus(204);
@@ -468,9 +490,10 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param mixed $urls List of relevant urls. Can be an array, a string or nothing at all for the current request uri
      * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre_DAV_Locks_LockInfo)
+     * @param bool $checkChildLocks If set to true, this function will also look for any locks set on child resources of the supplied urls. This is needed for for example deletion of entire trees.
      * @return bool
      */
-    protected function validateLock($urls = null,&$lastLock = null) {
+    protected function validateLock($urls = null,&$lastLock = null, $checkChildLocks = false) {
 
         if (is_null($urls)) {
             $urls = array($this->server->getRequestUri());
@@ -485,7 +508,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         // We're going to loop through the urls and make sure all lock conditions are satisfied
         foreach($urls as $url) {
 
-            $locks = $this->getLocks($url);
+            $locks = $this->getLocks($url, $checkChildLocks);
 
             // If there were no conditions, but there were locks, we fail 
             if (!$conditions && $locks) {
@@ -555,7 +578,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
                     if ($etagValid && $lockValid) continue 2;
                }
                // No conditions matched, so we fail
-               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match');
+               throw new Sabre_DAV_Exception_PreconditionFailed('The tokens provided in the if header did not match','If');
             }
 
             // Conditions were met, we'll also need to check if all the locks are gone
@@ -636,14 +659,11 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
         $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
         $xml->registerXPathNamespace('d','DAV:');
         $lockInfo = new Sabre_DAV_Locks_LockInfo();
-     
-        $lockInfo->owner = (string)$xml->owner;
 
-        $lockToken = '44445502';
-        $id = md5(microtime() . 'somethingrandom');
-        $lockToken.='-' . substr($id,0,4) . '-' . substr($id,4,4) . '-' . substr($id,8,4) . '-' . substr($id,12,12);
+        $children = $xml->children("DAV:");
+        $lockInfo->owner = (string)$children->owner;
 
-        $lockInfo->token = $lockToken;
+        $lockInfo->token = Sabre_DAV_UUIDUtil::getUUID();
         $lockInfo->scope = count($xml->xpath('d:lockscope/d:exclusive'))>0?Sabre_DAV_Locks_LockInfo::EXCLUSIVE:Sabre_DAV_Locks_LockInfo::SHARED;
 
         return $lockInfo;

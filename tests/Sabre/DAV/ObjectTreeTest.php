@@ -27,14 +27,14 @@ class Sabre_DAV_ObjectTreeTest extends PHPUnit_Framework_TestCase {
     function testGetRootNode() {
 
         $root = $this->tree->getNodeForPath('');
-        $this->assertType('Sabre_DAV_FSExt_Directory',$root);
+        $this->assertInstanceOf('Sabre_DAV_FSExt_Directory',$root);
 
     }
 
     function testGetSubDir() {
 
         $root = $this->tree->getNodeForPath('subdir');
-        $this->assertType('Sabre_DAV_FSExt_Directory',$root);
+        $this->assertInstanceOf('Sabre_DAV_FSExt_Directory',$root);
 
     }
 

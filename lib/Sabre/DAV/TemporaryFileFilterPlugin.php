@@ -22,7 +22,7 @@
  *
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -103,9 +103,9 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function beforeMethod($method) {
+    public function beforeMethod($method, $uri) {
 
-        if (!$tempLocation = $this->isTempFile($this->server->getRequestUri()))
+        if (!$tempLocation = $this->isTempFile($uri))
             return true;
 
         switch($method) {
@@ -114,7 +114,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
             case 'PUT' :
                 return $this->httpPut($tempLocation);
             case 'PROPFIND' :
-                return $this->httpPropfind($tempLocation);
+                return $this->httpPropfind($tempLocation, $uri);
             case 'DELETE' :
                 return $this->httpDelete($tempLocation);
          }
@@ -247,7 +247,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
      * @param string $tempLocation 
      * @return void
      */
-    public function httpPropfind($tempLocation) {
+    public function httpPropfind($tempLocation, $uri) {
 
         if (!file_exists($tempLocation)) return true;
        
@@ -259,7 +259,7 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
         $requestedProps = $this->server->parsePropFindRequest($this->server->httpRequest->getBody(true)); 
 
         $properties = array(
-            'href' => $this->server->getRequestUri(),
+            'href' => $uri,
             200 => array(
                 '{DAV:}getlastmodified' => new Sabre_DAV_Property_GetLastModified(filemtime($tempLocation)),
                 '{DAV:}getcontentlength' => filesize($tempLocation),

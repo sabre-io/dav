@@ -236,6 +236,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('');
 
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -259,6 +260,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('');
 
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -282,6 +284,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('');
 
         $this->server->httpRequest = ($request);
         $this->server->exec();

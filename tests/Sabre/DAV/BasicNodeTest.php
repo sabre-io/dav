@@ -82,6 +82,20 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testChildExists() {
+
+        $dir = new Sabre_DAV_DirectoryMock();
+        $this->assertTrue($dir->childExists('mockfile')); 
+
+    }
+
+    public function testChildExistsFalse() {
+
+        $dir = new Sabre_DAV_DirectoryMock();
+        $this->assertFalse($dir->childExists('mockfile2')); 
+
+    }
+
     /**
      * @expectedException Sabre_DAV_Exception_FileNotFound
      */

@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -75,6 +75,19 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
         $nodes = array();
         foreach(scandir($this->path) as $node) if($node!='.' && $node!='..') $nodes[] = $this->getChild($node);
         return $nodes;
+
+    }
+
+    /**
+     * Checks if a child exists. 
+     * 
+     * @param string $name 
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        $path = $this->path . '/' . $name;
+        return file_exists($path);
 
     }
 

@@ -12,7 +12,7 @@
  *
  * @package Sabre
  * @subpackage HTTP 
- * @copyright Copyright (C) 2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -68,8 +68,23 @@ class Sabre_HTTP_Request {
      */
     public function getHeader($name) {
 
-        $serverName = 'HTTP_' . strtoupper(str_replace(array('-'),array('_'),$name));
-        return isset($this->_SERVER[$serverName])?$this->_SERVER[$serverName]:null;
+        $name = strtoupper(str_replace(array('-'),array('_'),$name));
+        if (isset($this->_SERVER['HTTP_' . $name])) {
+            return $this->_SERVER['HTTP_' . $name];
+        } 
+
+        // There's a few headers that seem to end up in the top-level 
+        // server array.
+        switch($name) {
+            case 'CONTENT_TYPE' :
+            case 'CONTENT_LENGTH' :
+                if (isset($this->_SERVER[$name])) {
+                    return $this->_SERVER[$name];
+                }
+                break;
+
+        }
+        return;
 
     }
 
@@ -86,8 +101,16 @@ class Sabre_HTTP_Request {
         $hdrs = array();
         foreach($this->_SERVER as $key=>$value) {
 
-            if (strpos($key,'HTTP_')===0) {
-                $hdrs[substr(strtolower(str_replace('_','-',$key)),5)] = $value;
+            switch($key) {
+                case 'CONTENT_LENGTH' :
+                case 'CONTENT_TYPE' :
+                    $hdrs[strtolower(str_replace('_','-',$key))] = $value;
+                    break;
+                default :
+                    if (strpos($key,'HTTP_')===0) {
+                        $hdrs[substr(strtolower(str_replace('_','-',$key)),5)] = $value;
+                    }
+                    break;
             }
 
         }
@@ -115,7 +138,7 @@ class Sabre_HTTP_Request {
      * @return string 
      */
     public function getUri() {
-        
+       
         return $this->_SERVER['REQUEST_URI'];
 
     }
@@ -173,7 +196,7 @@ class Sabre_HTTP_Request {
     }
 
     /**
-     * Sets the contents of the HTTP requet body 
+     * Sets the contents of the HTTP request body 
      * 
      * This method can either accept a string, or a readable stream resource.
      *

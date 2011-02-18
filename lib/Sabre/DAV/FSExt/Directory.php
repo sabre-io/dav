@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -65,6 +65,22 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
             return new Sabre_DAV_FSExt_File($path);
 
         }
+
+    }
+
+    /**
+     * Checks if a child exists. 
+     * 
+     * @param string $name 
+     * @return bool 
+     */
+    public function childExists($name) {
+
+        if ($name=='.' || $name=='..')
+            throw new Sabre_DAV_Exception_Forbidden('Permission denied to . and ..');
+
+        $path = $this->path . '/' . $name;
+        return file_exists($path);
 
     }
 

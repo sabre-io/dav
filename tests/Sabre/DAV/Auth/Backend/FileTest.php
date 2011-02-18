@@ -32,9 +32,8 @@ class Sabre_DAV_Auth_Backend_FileTest extends PHPUnit_Framework_TestCase {
         $file = new Sabre_DAV_Auth_Backend_File();
         $file->loadFile(SABRE_TEMPDIR . '/backend');
 
-        $this->assertEquals(array(array('uri'=>'principals/user')), $file->getUsers());
-        $this->assertFalse($file->getUserInfo('realm','blabla'));
-        $this->assertEquals(array('uri'=>'principals/user','digestHash'=>md5('user:realm:password')), $file->getUserInfo('realm','user'));
+        $this->assertFalse($file->getDigestHash('realm','blabla'));
+        $this->assertEquals(md5('user:realm:password'), $file->getDigesthash('realm','user'));
 
     }
 

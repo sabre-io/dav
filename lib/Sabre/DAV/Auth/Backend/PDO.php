@@ -7,7 +7,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -30,49 +30,21 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
     }
 
     /**
-     * Returns a users' information 
+     * Returns the digest hash for a user. 
      * 
      * @param string $realm 
      * @param string $username 
-     * @return string 
+     * @return string|null 
      */
-    public function getUserInfo($realm,$username) {
+    public function getDigestHash($realm,$username) {
 
-        $stmt = $this->pdo->prepare('SELECT username, digesta1, email FROM users WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM users WHERE username = ?');
         $stmt->execute(array($username));
         $result = $stmt->fetchAll();
 
-        if (!count($result)) return false;
-        $user = array(
-            'uri' => 'principals/' . $result[0]['username'],
-            'digestHash' => $result[0]['digesta1'],
-        );
-        if ($result[0]['email']) $user['{http://sabredav.org/ns}email-address'] = $result[0]['email'];
-        return $user;
+        if (!count($result)) return;
 
-    }
-
-    /**
-     * Returns a list of all users
-     *
-     * @return array
-     */
-    public function getUsers() {
-
-        $result = $this->pdo->query('SELECT username, email FROM users')->fetchAll();
-        
-        $rv = array();
-        foreach($result as $user) {
-
-            $r = array(
-                'uri' => 'principals/' . $user['username'],
-            );
-            if ($user['email']) $r['{http://sabredav.org/ns}email-address'] = $user['email'];
-            $rv[] = $r;
-
-        }
-
-        return $rv;
+        return $result[0]['digesta1'];
 
     }
 

@@ -13,6 +13,7 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
             'HTTP_HOST'      => 'www.example.org',
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI'    => '/testuri/',
+            'CONTENT_TYPE'   => 'text/xml',
         );
 
         $this->request = new Sabre_HTTP_Request($server);
@@ -21,13 +22,26 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
     function testGetHeader() {
 
-        $this->assertEquals('www.example.org', $this->request->getHeader('Host'), 'We didn\'t get back a valid value while requesting for an HTTP header');
+        $this->assertEquals('www.example.org', $this->request->getHeader('Host'));
+        $this->assertEquals('text/xml', $this->request->getHeader('Content-Type'));
 
     }
 
     function testGetNonExistantHeader() {
 
-        $this->assertEquals(null,$this->request->getHeader('doesntexist'), 'When we ask for a header that doesn\'t exist, a null-value is expected');
+        $this->assertNull($this->request->getHeader('doesntexist'));
+        $this->assertNull($this->request->getHeader('Content-Length'));
+
+    }
+
+    function testGetHeaders() {
+
+        $expected = array(
+            'host' => 'www.example.org',
+            'content-type' => 'text/xml',
+        );
+
+        $this->assertEquals($expected, $this->request->getHeaders());
 
     }
 
@@ -52,6 +66,17 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('testing',$this->request->getBody(true),'We didn\'t get our testbody back');
 
     }
+
+    function testSetGetBodyStream() {
+
+        $h = fopen('php://memory','r+');
+        fwrite($h,'testing');
+        rewind($h);
+        $this->request->setBody($h);
+        $this->assertEquals('testing',stream_get_contents($this->request->getBody()),'We didn\'t get our testbody back');
+
+    }
+
 
     function testDefaultInputStream() {
 
@@ -89,6 +114,25 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('https://sabredav.org/foo', $r->getAbsoluteUri());
 
     }
+
+    function testGetQueryString() {
+
+        $s = array(
+            'QUERY_STRING' => 'bla',
+        );
+
+        $r = new Sabre_HTTP_Request($s);
+        $this->assertEquals('bla', $r->getQueryString());
+
+        $s = array();
+
+        $r = new Sabre_HTTP_Request($s);
+        $this->assertEquals('', $r->getQueryString());
+
+    }
+
+
+
 
 }
 

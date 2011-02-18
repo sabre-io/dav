@@ -1,6 +1,6 @@
 <?php
 
-define('SABRE_MYSQLDSN','mysql:dbname=sabredav');
+define('SABRE_MYSQLDSN','mysql:host=127.0.0.1;dbname=sabredav');
 define('SABRE_MYSQLUSER','root');
 define('SABRE_MYSQLPASS','');
 
@@ -8,7 +8,7 @@ set_include_path(dirname(__FILE__) . PATH_SEPARATOR . dirname(__FILE__) . '/../l
 
 include 'Sabre.autoload.php';
 
-date_default_timezone_set('UTC');
+date_default_timezone_set('GMT');
 
 define("SABRE_TEMPDIR",dirname(__FILE__) . '/temp/');
 

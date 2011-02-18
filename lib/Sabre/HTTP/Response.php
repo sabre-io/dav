@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage HTTP 
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -22,6 +22,7 @@ class Sabre_HTTP_Response {
         $msg = array(
             100 => 'Continue',
             101 => 'Switching Protocols',
+            102 => 'Processing',
             200 => 'Ok',
             201 => 'Created',
             202 => 'Accepted',
@@ -31,12 +32,14 @@ class Sabre_HTTP_Response {
             206 => 'Partial Content',
             207 => 'Multi-Status', // RFC 4918
             208 => 'Already Reported', // RFC 5842
+            226 => 'IM Used', // RFC 3229
             300 => 'Multiple Choices',
             301 => 'Moved Permanently',
             302 => 'Found',
             303 => 'See Other',
             304 => 'Not Modified',
             305 => 'Use Proxy',
+            306 => 'Reserved',
             307 => 'Temporary Redirect',
             400 => 'Bad request',
             401 => 'Unauthorized',
@@ -60,14 +63,18 @@ class Sabre_HTTP_Response {
             422 => 'Unprocessable Entity', // RFC 4918
             423 => 'Locked', // RFC 4918
             424 => 'Failed Dependency', // RFC 4918
+            426 => 'Upgrade required',
             500 => 'Internal Server Error',
             501 => 'Not Implemented',
             502 => 'Bad Gateway',
             503 => 'Service Unavailable',
             504 => 'Gateway Timeout',
             505 => 'HTTP Version not supported',
+            506 => 'Variant Also Negotiates',
             507 => 'Unsufficient Storage', // RFC 4918
             508 => 'Loop Detected', // RFC 5842
+            509 => 'Bandwidth Limit Exceeded', // non-standard
+            510 => 'Not extended',
        ); 
 
        return 'HTTP/1.1 ' . $code . ' ' . $msg[$code];
@@ -123,7 +130,6 @@ class Sabre_HTTP_Response {
      * Sends the entire response body
      *
      * This method can accept either an open filestream, or a string.
-     * Note that this method will first rewind the stream before output.
      * 
      * @param mixed $body 
      * @return void
@@ -132,7 +138,6 @@ class Sabre_HTTP_Response {
 
         if (is_resource($body)) {
         
-            rewind($body);
             fpassthru($body);
 
         } else {

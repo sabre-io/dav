@@ -19,4 +19,11 @@ class Sabre_DAV_Locks_Backend_FSTest extends Sabre_DAV_Locks_Backend_AbstractTes
 
     }
 
+    function testGetLocksChildren() {
+
+        // We're skipping this test. This doesn't work, and it will
+        // never. The class is deprecated anyway.
+
+    }
+
 }

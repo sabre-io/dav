@@ -15,10 +15,10 @@ class Sabre_CalDAV_ServerTest extends PHPUnit_Framework_TestCase {
         $pdo = Sabre_CalDAV_TestUtil::getSQLiteDB();
         $server = new Sabre_CalDAV_Server($pdo);
 
-        $authPlugin = $server->getPlugin('Sabre_DAV_Auth_Plugin');
+        $authPlugin = $server->getPlugin('auth');
         $this->assertTrue($authPlugin instanceof Sabre_DAV_Auth_Plugin);
 
-        $caldavPlugin = $server->getPlugin('Sabre_CalDAV_Plugin');
+        $caldavPlugin = $server->getPlugin('caldav');
         $this->assertTrue($caldavPlugin instanceof Sabre_CalDAV_Plugin);
 
         $node = $server->tree->getNodeForPath('');

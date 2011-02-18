@@ -6,6 +6,40 @@ require_once 'Sabre/DAV/Exception.php';
 
 class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
+    function testConstructArray() {
+
+        $nodes = array(
+            new Sabre_DAV_SimpleDirectory('hello')
+        ); 
+
+        $server = new Sabre_DAV_Server($nodes);
+        $this->assertEquals($nodes[0], $server->tree->getNodeForPath('hello'));
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testConstructIncorrectObj() {
+
+        $nodes = array(
+            new Sabre_DAV_SimpleDirectory('hello'),
+            new STDClass(),
+        ); 
+
+        $server = new Sabre_DAV_Server($nodes);
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testConstructInvalidArg() {
+
+        $server = new Sabre_DAV_Server(1);
+
+    }
+
     function testGet() {
         
         $serverVars = array(
@@ -431,7 +465,10 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         }
 
     }
-    
+   
+    /**
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
     function testGuessBaseUri() {
 
         $serverVars = array(
@@ -446,6 +483,46 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
+    
+    /**
+     * @depends testGuessBaseUri
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
+    function testGuessBaseUriPercentEncoding() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/dir/path2/path%20with%20spaces',
+            'PATH_INFO'   => '/dir/path2/path with spaces',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
+
+    }
+
+    /**
+     * @depends testGuessBaseUri
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
+    /*
+    function testGuessBaseUriPercentEncoding2() {
+
+        $this->markTestIncomplete('This behaviour is not yet implemented');
+        $serverVars = array(
+            'REQUEST_URI' => '/some%20directory+mixed/index.php/dir/path2/path%20with%20spaces',
+            'PATH_INFO'   => '/dir/path2/path with spaces',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/some%20directory+mixed/index.php/', $server->guessBaseUri());
+
+    }*/
 
     function testGuessBaseUri2() {
 
@@ -491,6 +568,42 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $server->httpRequest = $httpRequest;
 
         $server->guessBaseUri();
+
+    }
+
+    /**
+     * @covers Sabre_DAV_Server::guessBaseUri
+     * @depends testGuessBaseUri
+     */
+    function testGuessBaseUriQueryString() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root?query_string=blabla',
+            'PATH_INFO'   => '/root',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
+
+    }
+   
+    /**
+     * @covers Sabre_DAV_Server::guessBaseUri
+     */
+    function testGuessBaseUriPHProot() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php',
+        );
+
+        $httpRequest = new Sabre_HTTP_Request($serverVars);
+        $server = new Sabre_DAV_Server();
+        $server->httpRequest = $httpRequest;
+
+        $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
 

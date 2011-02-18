@@ -7,11 +7,11 @@
  * using a browser.
  *
  * The class intercepts GET requests to collection resources and generates a simple 
- * html index. It's not really pretty though, extend to skin this listing.
+ * html index. 
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -65,18 +65,18 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool 
      */
-    public function httpGetInterceptor($method) {
+    public function httpGetInterceptor($method, $uri) {
 
         if ($method!='GET') return true;
         
-        $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
+        $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof Sabre_DAV_IFile) return true;
 
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
 
         $this->server->httpResponse->sendBody(
-            $this->generateDirectoryIndex($this->server->getRequestUri())
+            $this->generateDirectoryIndex($uri)
         );
 
         return false;
@@ -91,7 +91,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $method 
      * @return bool
      */
-    public function httpPOSTHandler($method) {
+    public function httpPOSTHandler($method, $uri) {
 
         if ($method!='POST') return true;
         if (isset($_POST['action'])) switch($_POST['action']) {
@@ -100,7 +100,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 if (isset($_POST['name']) && trim($_POST['name'])) {
                     // Using basename() because we won't allow slashes
                     list(, $folderName) = Sabre_DAV_URLUtil::splitPath(trim($_POST['name']));
-                    $this->server->createDirectory($this->server->getRequestUri() . '/' . $folderName);
+                    $this->server->createDirectory($uri . '/' . $folderName);
                 }
                 break;
             case 'put' :
@@ -116,7 +116,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                     
                
                 if (is_uploaded_file($file['tmp_name'])) {
-                    $parent = $this->server->tree->getNodeForPath(trim($this->server->getRequestUri(),'/'));
+                    $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
                     $parent->createFile($newName,fopen($file['tmp_name'],'r'));
                 }
 
@@ -158,11 +158,27 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     <tr><td colspan=\"4\"><hr /></td></tr>";
     
     $files = $this->server->getPropertiesForPath($path,array(
+        '{DAV:}displayname',
         '{DAV:}resourcetype',
         '{DAV:}getcontenttype',
         '{DAV:}getcontentlength',
         '{DAV:}getlastmodified',
     ),1);
+
+
+    if ($path) {
+
+        list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
+        $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+
+        $html.= "<tr>
+<td><a href=\"{$fullPath}\">..</a></td>
+<td>[parent]</td>
+<td></td>
+<td></td>
+</tr>";
+
+    }
 
     foreach($files as $k=>$file) {
 
@@ -170,7 +186,6 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         if (rtrim($file['href'],'/')==$path) continue;
 
         list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
-        $name = $this->escapeHTML($name);
 
         $type = null;
 
@@ -178,16 +193,22 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             $type = $file[200]['{DAV:}resourcetype']->getValue();
 
             // resourcetype can have multiple values
-            if (is_array($type)) {
-                $type = implode(', ', $type);
-            }
+            if (!is_array($type)) $type = array($type);
 
-            // Some name mapping is preferred 
-            switch($type) {
-                case '{DAV:}collection' :
-                    $type = 'Collection';
-                    break;
+            foreach($type as $k=>$v) { 
+
+                // Some name mapping is preferred 
+                switch($v) {
+                    case '{DAV:}collection' :
+                        $type[$k] = 'Collection';
+                        break;
+                    case '{DAV:}principal' :
+                        $type[$k] = 'Principal';
+                        break;
+                }
+
             }
+            $type = implode(', ', $type);
         }
 
         // If no resourcetype was found, we attempt to use
@@ -197,14 +218,19 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         }
         if (!$type) $type = 'Unknown';
 
-        $type = $this->escapeHTML($type);
         $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
         $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(DateTime::ATOM):'';
 
-        $fullPath = '/' . trim($this->server->getBaseUri() . ($path?$this->escapeHTML($path) . '/':'') . $name,'/');
+        $fullPath = Sabre_DAV_URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
+
+        $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
+
+        $name = $this->escapeHTML($name);
+        $displayName = $this->escapeHTML($displayName);
+        $type = $this->escapeHTML($type);
 
         $html.= "<tr>
-<td><a href=\"{$fullPath}\">{$name}</a></td>
+<td><a href=\"{$fullPath}\">{$displayName}</a></td>
 <td>{$type}</td>
 <td>{$size}</td>
 <td>{$lastmodified}</td>
@@ -232,7 +258,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
   }
 
   $html.= "</table>
-  <address>Generated by SabreDAV " . Sabre_DAV_Version::VERSION ."-". Sabre_DAV_Version::STABILITY . " (c)2007-2010 <a href=\"http://code.google.com/p/sabredav/\">http://code.google.com/p/sabredav/</a></address>
+  <address>Generated by SabreDAV " . Sabre_DAV_Version::VERSION ."-". Sabre_DAV_Version::STABILITY . " (c)2007-2011 <a href=\"http://code.google.com/p/sabredav/\">http://code.google.com/p/sabredav/</a></address>
 </body>
 </html>";
 

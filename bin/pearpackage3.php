@@ -75,7 +75,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0',
+            'min'  => '1.3.0',
         );
 
         break;
@@ -93,6 +93,26 @@ TEXT;
             'name' => 'Sabre',
             'channel' => 'pear.sabredav.org',
             'min'  => '1.0.0',
+        );
+        break;
+
+    case 'Sabre_DAVACL' :
+        $summary = 'Sabre_DAVACL provides rfc3744 support.';
+        $description = <<<TEXT
+Sabre_DAVACL is the RFC3744 implementation for SabreDAV. It provides principals
+(users and groups) and access control.
+TEXT;
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAV',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.4.0',
         );
         break;
 
@@ -116,13 +136,41 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0',
+            'min'  => '1.3.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0',
+            'min'  => '1.4.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAVACL',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.4.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_VObject',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
+        );
+        break;
+
+    case 'Sabre_VObject' :
+        $summary = 'Sabre_VObject is a natural-interface iCalendar and vCard reader';
+        $description = <<<TEXT
+Sabre_VObject is an intuitive reader for iCalendar and vCard objects.
+
+It provides a natural array/object accessor interface to the parsed tree, much like 
+simplexml for XML files.
+TEXT;
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.0.0',
         );
         break;
 

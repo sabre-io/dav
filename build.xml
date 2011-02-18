@@ -68,6 +68,27 @@
         <exec command="bin/pearpackage3.php make Sabre_DAV" checkreturn="true" />
         <exec command="pear package" dir="build/Sabre_DAV" checkreturn="true" />
 
+        <!-- DAVACL -->
+        <echo msg="Building Sabre_DAVACL pear package" />
+        <mkdir dir="build/Sabre_DAVACL" />
+        <mkdir dir="build/Sabre_DAVACL/Sabre" />
+        <copy todir="build/Sabre_DAVACL" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/DAVACL/**" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_DAVACL" />
+        <copy todir="build/Sabre_DAVACL">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+                <include name="examples/sql/*.principals.sql" />
+            </fileset>
+        </copy>
+        <exec command="bin/pearpackage3.php make Sabre_DAVACL" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_DAVACL" checkreturn="true" />
+
+        <!-- CalDAV -->
         <echo msg="Building Sabre_CalDAV pear package" />
         <mkdir dir="build/Sabre_CalDAV" />
         <mkdir dir="build/Sabre_CalDAV/Sabre" />
@@ -88,12 +109,33 @@
         <exec command="bin/pearpackage3.php make Sabre_CalDAV" checkreturn="true" />
         <exec command="pear package" dir="build/Sabre_CalDAV" checkreturn="true" />
 
+        <!-- VObject -->
+        <echo msg="Building Sabre_VObject pear package" />
+        <mkdir dir="build/Sabre_VObject" />
+        <mkdir dir="build/Sabre_VObject/Sabre" />
+        <copy todir="build/Sabre_VObject" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/VObject/**" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_VObject" />
+        <copy todir="build/Sabre_VObject">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+            </fileset>
+        </copy>
+        <exec command="bin/pearpackage3.php make Sabre_VObject" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_VObject" checkreturn="true" />
+
+        <!-- moving tgz files -->
         <move todir="build">
             <mapper type="flatten" />
             <fileset dir="build/">
                 <include name="**/*.tgz" />
             </fileset>
         </move>
+
 
         <echo>Creating combined SabreDAV build</echo>
         <mkdir dir="build/SabreDAV" />
@@ -104,6 +146,7 @@
         <mkdir dir="build/SabreDAV/lib/Sabre/DAV/Auth" />
         <mkdir dir="build/SabreDAV/lib/Sabre/DAV/Locks" />
         <mkdir dir="build/SabreDAV/lib/Sabre/HTTP" />
+        <mkdir dir="build/SabreDAV/lib/Sabre/VObject" />
         <mkdir dir="build/SabreDAV/tests" />
         <mkdir dir="build/SabreDAV/tests/Sabre" />
         <mkdir dir="build/SabreDAV/tests/Sabre/CalDAV" />
@@ -111,6 +154,7 @@
         <mkdir dir="build/SabreDAV/tests/Sabre/HTTP" />
         <mkdir dir="build/SabreDAV/tests/Sabre/DAV/Auth" />
         <mkdir dir="build/SabreDAV/tests/Sabre/DAV/Locks" />
+        <mkdir dir="build/SabreDAV/tests/Sabre/VObject" />
         <copy todir="build/SabreDAV" includeemptydirs="true">
             <fileset dir=".">
                 <include name="lib/**/*.php" />
@@ -130,7 +174,7 @@
 
     <target name="clean" depends="init">
         <echo msg="Removing build files (cleaning up distribution)" />
-        <delete dir="apidocs" />
+        <delete dir="docs/api" />
         <delete dir="build" />
     </target>    
 

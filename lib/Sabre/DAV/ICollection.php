@@ -7,7 +7,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -46,6 +46,13 @@ interface Sabre_DAV_ICollection extends Sabre_DAV_INode {
      * @return Sabre_DAV_INode[] 
      */
     function getChildren();
+
+    /**
+     * Checks if a child-node with the specified name exists 
+     * 
+     * @return bool 
+     */
+    function childExists($name);
 
 }
 

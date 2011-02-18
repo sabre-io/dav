@@ -3,6 +3,7 @@
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/CalDAV/TestUtil.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
@@ -15,11 +16,10 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support'); 
         $this->caldavBackend = Sabre_CalDAV_TestUtil::getBackend();
-        $authBackend = new Sabre_DAV_Auth_MockBackend();
-        $authBackend->setCurrentUser('principals/user1');
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
 
-        $calendars = new Sabre_CalDAV_CalendarRootNode($authBackend,$this->caldavBackend);
-        $principals = new Sabre_DAV_Auth_PrincipalCollection($authBackend);
+        $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend,$this->caldavBackend);
+        $principals = new Sabre_DAVACL_PrincipalCollection($principalBackend);
 
         $root = new Sabre_DAV_SimpleDirectory('root');
         $root->addChild($calendars);
@@ -32,8 +32,6 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->plugin = new Sabre_CalDAV_Plugin();
         $this->server->addPlugin($this->plugin);
 
-
-
         $this->response = new Sabre_HTTP_ResponseMock();
         $this->server->httpResponse = $this->response;
 
@@ -42,7 +40,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
     function testSimple() {
 
         $this->assertEquals(array('MKCALENDAR'), $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
-        $this->assertEquals(array('calendar-access'), $this->plugin->getFeatures());
+        $this->assertEquals(array('calendar-access','calendar-proxy'), $this->plugin->getFeatures());
         $this->assertArrayHasKey('urn:ietf:params:xml:ns:caldav', $this->server->xmlNamespaces);
 
     }
@@ -51,20 +49,22 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'MKBREAKFAST', 
+            'REQUEST_URI'    => '/',
         ));
 
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status);
+        $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status,'Incorrect status returned. Full response body:' . $this->response->body);
 
     }
 
     function testReportPassThrough() {
 
         $request = new Sabre_HTTP_Request(array(
-            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_METHOD'    => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
+            'REQUEST_URI'       => '/',
         ));
         $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
 
@@ -72,20 +72,6 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status);
-
-    }
-
-    function testMkCalendarEmptyBody() {
-
-        $request = new Sabre_HTTP_Request(array(
-            'REQUEST_METHOD' => 'MKCALENDAR', 
-        ));
-
-    
-        $this->server->httpRequest = $request;
-        $this->server->exec();
-
-        $this->assertEquals('HTTP/1.1 400 Bad request', $this->response->status);
 
     }
 
@@ -311,7 +297,7 @@ END:VCALENDAR';
            }
         }
 
-        $this->assertType('array',$newCalendar);
+        $this->assertInternalType('array',$newCalendar);
 
         $keys = array(
             'uri' => 'NEWCALENDAR',
@@ -333,6 +319,52 @@ END:VCALENDAR';
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
         $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
         $this->assertEquals(array('VEVENT'),$newCalendar[$sccs]->getValue());
+
+    }
+
+    function testMkCalendarEmptyBodySucceed() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'MKCALENDAR',
+            'REQUEST_URI'    => '/calendars/user1/NEWCALENDAR',
+        ));
+
+        $request->setBody(''); 
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 201 Created', $this->response->status,'Invalid response code received. Full response body: ' .$this->response->body);
+
+        $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(2, count($calendars));
+
+        $newCalendar = null;
+        foreach($calendars as $calendar) {
+           if ($calendar['uri'] === 'NEWCALENDAR') {
+                $newCalendar = $calendar;
+                break;
+           }
+        }
+
+        $this->assertInternalType('array',$newCalendar);
+
+        $keys = array(
+            'uri' => 'NEWCALENDAR',
+            'id' => null,
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => null,
+        );
+
+        foreach($keys as $key=>$value) {
+
+            $this->assertArrayHasKey($key, $newCalendar);
+
+            if (is_null($value)) continue;
+            $this->assertEquals($value, $newCalendar[$key]);
+
+        }
+        $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
+        $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
+        $this->assertEquals(array('VEVENT','VTODO'),$newCalendar[$sccs]->getValue());
 
     }
 
@@ -359,8 +391,8 @@ END:VCALENDAR';
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
-        $this->assertEquals('mailto:user1.sabredav@sabredav.org',$prop->getHref());
+        $this->assertTrue($prop instanceof Sabre_DAV_Property_HrefList);
+        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1'),$prop->getHrefs());
 
     }
 
@@ -551,73 +583,4 @@ END:VCALENDAR';
 
     }
 
-    function testParseICalendarDateTime() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-        $dateTime = $caldav->parseICalendarDateTime('20100316T141405');
-
-        $compare = new DateTime('2010-03-16 14:14:05',new DateTimeZone('UTC'));
-
-        $this->assertEquals($compare, $dateTime);
-
-    }
-
-    /** 
-     * @depends testParseICalendarDateTime
-     * @expectedException Sabre_DAV_Exception_BadRequest
-     */
-    function testParseICalendarDateTimeBadFormat() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-        $dateTime = $caldav->parseICalendarDateTime('20100316T141405 ');
-
-    }
-
-    /** 
-     * @depends testParseICalendarDateTime
-     */
-    function testParseICalendarDateTimeUTC() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-        $dateTime = $caldav->parseICalendarDateTime('20100316T141405Z');
-
-        $compare = new DateTime('2010-03-16 14:14:05',new DateTimeZone('UTC'));
-        $this->assertEquals($compare, $dateTime);
-
-    }
-
-    /** 
-     * @depends testParseICalendarDateTime
-     */
-    function testParseICalendarDateTimeCustomTimeZone() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-        $dateTime = $caldav->parseICalendarDateTime('20100316T141405', new DateTimeZone('Europe/Amsterdam'));
-
-        $compare = new DateTime('2010-03-16 13:14:05',new DateTimeZone('UTC'));
-        $this->assertEquals($compare, $dateTime);
-
-    }
-
-    function testParseICalendarDate() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-        $dateTime = $caldav->parseICalendarDate('20100316');
-
-        $compare = new DateTime('2010-03-16 00:00:00',new DateTimeZone('UTC'));
-
-        $this->assertEquals($compare, $dateTime);
-
-    }
-
-    /** 
-     * @depends testParseICalendarDate
-     * @expectedException Sabre_DAV_Exception_BadRequest
-     */
-    function testParseICalendarDateBadFormat() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-        $dateTime = $caldav->parseICalendarDate('20100316T141405');
-
-    }
 }

@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -20,6 +20,30 @@ abstract class Sabre_DAV_Tree {
      * @return Sabre_DAV_INode 
      */
     abstract function getNodeForPath($path);
+
+    /**
+     * This function allows you to check if a node exists.
+     *
+     * Implementors of this class should override this method to make 
+     * it cheaper.
+     * 
+     * @param string $path 
+     * @return bool 
+     */
+    public function nodeExists($path) {
+
+        try {
+
+            $this->getNodeForPath($path);
+            return true;
+
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+
+            return false;
+
+        }
+
+    }
 
     /**
      * Copies a file from path to another
@@ -37,6 +61,8 @@ abstract class Sabre_DAV_Tree {
 
         $destinationParent = $this->getNodeForPath($destinationDir);
         $this->copyNode($sourceNode,$destinationParent,$destinationName);
+
+        $this->markDirty($destinationDir);
 
     }
 
@@ -59,6 +85,60 @@ abstract class Sabre_DAV_Tree {
             $this->copy($sourcePath,$destinationPath);
             $this->getNodeForPath($sourcePath)->delete();
         }
+        $this->markDirty($sourceDir);
+        $this->markDirty($destinationDir);
+
+    }
+
+    /**
+     * Deletes a node from the tree 
+     * 
+     * @param string $path 
+     * @return void
+     */
+    public function delete($path) {
+
+        $node = $this->getNodeForPath($path);
+        $node->delete();
+        
+        list($parent) = Sabre_DAV_URLUtil::splitPath($path);
+        $this->markDirty($parent);
+
+    }
+
+    /**
+     * Returns a list of childnodes for a given path. 
+     * 
+     * @param string $path 
+     * @return array 
+     */
+    public function getChildren($path) {
+
+        $node = $this->getNodeForPath($path);
+        return $node->getChildren();
+
+    }
+
+    /**
+     * This method is called with every tree update
+     *
+     * Examples of tree updates are:
+     *   * node deletions
+     *   * node creations
+     *   * copy
+     *   * move
+     *   * renaming nodes 
+     * 
+     * If Tree classes implement a form of caching, this will allow
+     * them to make sure caches will be expired.
+     * 
+     * If a path is passed, it is assumed that the entire subtree is dirty
+     *
+     * @param string $path 
+     * @return void
+     */
+    public function markDirty($path) {
+
 
     }
 

@@ -87,13 +87,15 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true)); 
 
+        $date = new DateTime('@' . (time() + (60*20)));
+        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
-            'HTTP_DATE'           => date(DATE_RFC2822,time()+(60*20)),
-            8
+            'HTTP_DATE'           => $date,
         ));
 
         $request->setBody($content);
@@ -114,12 +116,15 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true)); 
 
+        $date = new DateTime('@' . (time() - (60*20)));
+        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
-            'HTTP_X_AMZ_DATE'     => date(DATE_RFC2822,time()-(60*20)),
+            'HTTP_X_AMZ_DATE'     => $date,
         ));
 
         $request->setBody($content);
@@ -138,14 +143,18 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
+
         $contentMD5 = base64_encode(md5($content,true)); 
-        $time = date(DATE_RFC2822,time()); 
+
+        $date = new DateTime('now');
+        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
-            'HTTP_X_AMZ_DATE'     => $time,
+            'HTTP_X_AMZ_DATE'     => $date,
             'REQUEST_URI'         => '/',
         ));
 
@@ -166,17 +175,21 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true)); 
-        $time = date(DATE_RFC2822,time()); 
+
+        $date = new DateTime('now');
+        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
+
 
         $sig = base64_encode($this->hmacsha1($secretKey,
-            "POST\n$contentMD5\n\n$time\nx-amz-date:$time\n/evert"
+            "POST\n$contentMD5\n\n$date\nx-amz-date:$date\n/evert"
         ));
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:$sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
-            'HTTP_X_AMZ_DATE'     => $time,
+            'HTTP_X_AMZ_DATE'     => $date,
             'REQUEST_URI'         => '/evert',
         ));
 

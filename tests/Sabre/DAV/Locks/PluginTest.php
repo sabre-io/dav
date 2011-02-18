@@ -7,8 +7,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     function setUp() {
 
         parent::setUp();
-        mkdir(SABRE_TEMPDIR . '/locksdir');
-        $locksBackend = new Sabre_DAV_Locks_Backend_FS(SABRE_TEMPDIR . '/locksdir');
+        $locksBackend = new Sabre_DAV_Locks_Backend_File(SABRE_TEMPDIR . '/locksdb');
         $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;
@@ -32,6 +31,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $locksPlugin = new Sabre_DAV_Locks_Plugin();
         $this->server->addPlugin($locksPlugin);
         $this->assertEquals(array(),$locksPlugin->getHTTPMethods('')); 
+
+    }
+
+    function testUnknownMethodPassthough() {
+
+        $this->assertNull($this->locksPlugin->unknownMethod('BLA','/'));
 
     }
 
@@ -91,6 +96,8 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             '/d:prop/d:lockdiscovery',
             '/d:prop/d:lockdiscovery/d:activelock',
             '/d:prop/d:lockdiscovery/d:activelock/d:locktype',
+            '/d:prop/d:lockdiscovery/d:activelock/d:lockroot',
+            '/d:prop/d:lockdiscovery/d:activelock/d:lockroot/d:href',
             '/d:prop/d:lockdiscovery/d:activelock/d:locktype/d:write',
             '/d:prop/d:lockdiscovery/d:activelock/d:lockscope',
             '/d:prop/d:lockdiscovery/d:activelock/d:lockscope/d:exclusive',
@@ -103,7 +110,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         foreach($elements as $elem) {
             $data = $xml->xpath($elem);
-            $this->assertEquals(1,count($data),'We expected 1 match for the xpath expression "' . $elem . '". ' . count($data) . ' were found');
+            $this->assertEquals(1,count($data),'We expected 1 match for the xpath expression "' . $elem . '". ' . count($data) . ' were found. Full response body: ' . $this->response->body);
         }
 
         $depth = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:depth');
@@ -182,13 +189,14 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(' . $lockToken . ')',
         );
         $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('');
         $this->server->httpRequest = $request;
 
         $this->server->exec();
 
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 
@@ -319,6 +327,70 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     /**
      * @depends testLock
      */
+    function testUnlock() {
+
+        $request = new Sabre_HTTP_Request(array());
+        $this->server->httpRequest = $request;
+
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->invokeMethod('LOCK','test.txt');
+        $lockToken = $this->server->httpResponse->headers['Lock-Token'];
+
+        $serverVars = array(
+            'HTTP_LOCK_TOKEN' => $lockToken, 
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->server->invokeMethod('UNLOCK', 'test.txt');
+
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals(array(
+            'Content-Length' => '0',
+            ),
+            $this->server->httpResponse->headers
+         );
+
+
+    }
+
+    /**
+     * @depends testLock
+     */
+    function testLockRetainOwner() {
+
+        $request = new Sabre_HTTP_Request(array());
+        $this->server->httpRequest = $request;
+
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner>Evert</D:owner> 
+</D:lockinfo>');
+
+        $this->server->invokeMethod('LOCK','test.txt');
+        $lockToken = $this->server->httpResponse->headers['Lock-Token'];
+
+        $locks = $this->locksPlugin->getLocks('test.txt');
+        $this->assertEquals(1,count($locks));
+        $this->assertEquals('Evert',$locks[0]->owner);
+
+
+    }
+
+    /**
+     * @depends testLock
+     */
     function testLockPutBadToken() {
 
         $serverVars = array(
@@ -359,6 +431,303 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
         $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+
+    }
+
+    /**
+     * @depends testLock
+     */
+    function testLockDeleteParent() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir',
+            'REQUEST_METHOD' => 'DELETE',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status);
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+    }
+    /**
+     * @depends testLock
+     */
+    function testLockDeleteSucceed() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'DELETE',
+            'HTTP_IF' => '(' . $this->response->headers['Lock-Token'] . ')',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+    }
+
+    /**
+     * @depends testLock
+     */
+    function testLockCopyLockSource() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'COPY',
+            'HTTP_DESTINATION' => '/dir/child2.txt',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+    }
+    /**
+     * @depends testLock
+     */
+    function testLockCopyLockDestination() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child2.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'COPY',
+            'HTTP_DESTINATION' => '/dir/child2.txt',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+    }
+    /**
+     * @depends testLock
+     */
+    function testLockMoveLockSource() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'MOVE',
+            'HTTP_DESTINATION' => '/dir/child2.txt',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+    }
+    /**
+     * @depends testLock
+     */
+    function testLockMoveLockDestination() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child2.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'MOVE',
+            'HTTP_DESTINATION' => '/dir/child2.txt',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+
+    }
+    /**
+     * @depends testLock
+     */
+    function testLockMoveLockParent() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir',
+            'REQUEST_METHOD' => 'LOCK',
+            'HTTP_DEPTH' => 'infinite',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:"> 
+    <D:lockscope><D:exclusive/></D:lockscope> 
+    <D:locktype><D:write/></D:locktype> 
+    <D:owner> 
+        <D:href>http://example.org/~ejw/contact.html</D:href> 
+    </D:owner> 
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
+
+        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir/child.txt',
+            'REQUEST_METHOD' => 'MOVE',
+            'HTTP_DESTINATION' => '/dir/child2.txt',
+            'HTTP_IF' => '(' . $this->response->headers['Lock-Token'] . ')',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'We locked the parent of both the source and destination, but the move didn\'t succeed.');
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
 
@@ -413,7 +782,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF' => '([etag1])',
+            'HTTP_IF' => '(["etag1"])',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -437,7 +806,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF' => '(['.$etag.'])',
+            'HTTP_IF' => '(["'.$etag.'"])',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);

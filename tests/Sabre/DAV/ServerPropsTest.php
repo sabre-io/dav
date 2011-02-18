@@ -53,6 +53,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals(array(
                 'Content-Type' => 'application/xml; charset=utf-8',
+                'DAV' => '1, 3, extended-mkcol, 2', 
             ),
             $this->response->headers
          );

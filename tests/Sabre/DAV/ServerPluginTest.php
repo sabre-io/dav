@@ -67,6 +67,12 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    function testGetSupportedReportSet() {
+
+        $this->assertEquals(array(), $this->testPlugin->getSupportedReportSet('/'));
+
+    }
+
 
 
 }

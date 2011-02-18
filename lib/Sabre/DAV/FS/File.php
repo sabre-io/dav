@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage DAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -60,6 +60,7 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
      * Returns the ETag for a file
      *
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.
+     * The ETag is an arbritrary string, but MUST be surrounded by double-quotes.
      *
      * Return null if the ETag can not effectively be determined
      * 

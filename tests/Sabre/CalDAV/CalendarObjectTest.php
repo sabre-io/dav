@@ -2,23 +2,23 @@
 
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
     protected $backend;
     protected $calendar;
-    protected $authBackend;
+    protected $principalBackend;
 
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
-        $this->authBackend = new Sabre_DAV_Auth_MockBackend('realm');
-        $this->authBackend->setCurrentUser('principals/user1');
+        $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend;
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(1,count($calendars));
-        $this->calendar = new Sabre_CalDAV_Calendar($this->authBackend,$this->backend, $calendars[0]);
+        $this->calendar = new Sabre_CalDAV_Calendar($this->principalBackend,$this->backend, $calendars[0]);
 
     }
 
@@ -34,9 +34,9 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
         
-        $this->assertType('string',$children[0]->getName());
-        $this->assertType('string',$children[0]->get());
-        $this->assertType('string',$children[0]->getETag());
+        $this->assertInternalType('string',$children[0]->getName());
+        $this->assertInternalType('string',$children[0]->get());
+        $this->assertInternalType('string',$children[0]->getETag());
         $this->assertEquals('text/calendar', $children[0]->getContentType());
 
     }
@@ -68,7 +68,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $result = $obj->getProperties(array('{urn:ietf:params:xml:ns:caldav}calendar-data'));
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-data', $result);
-        $this->assertType('string', $result['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+        $this->assertInternalType('string', $result['{urn:ietf:params:xml:ns:caldav}calendar-data']);
 
     }
 
@@ -113,7 +113,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
-        $this->assertType('int', $lastMod);
+        $this->assertInternalType('int', $lastMod);
 
     }
 
@@ -128,7 +128,78 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $obj = $children[0];
 
         $size = $obj->getSize();
-        $this->assertType('int', $size);
+        $this->assertInternalType('int', $size);
+
+    }
+
+    function testGetOwner() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $this->assertEquals('principals/user1', $obj->getOwner());
+
+    }
+
+    function testGetGroup() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $this->assertNull($obj->getGroup());
+
+    }
+
+    function testGetACL() {
+
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => 'true',
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => 'true',
+            ),
+        );
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $this->assertEquals($expected, $obj->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetACL() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        
+        $obj = $children[0];
+        $obj->setACL(array());
 
     }
 

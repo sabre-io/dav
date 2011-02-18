@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Sabre/TestUtil.php';
+require_once 'Sabre/DAV/Locks/Backend/AbstractTest.php';
 
 class Sabre_DAV_Locks_Backend_PDOTest extends Sabre_DAV_Locks_Backend_AbstractTest {
 

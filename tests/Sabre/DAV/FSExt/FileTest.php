@@ -44,7 +44,7 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
     function testGetETag() {
 
        $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
-       $this->assertEquals(md5('Contents'),$file->getETag());
+       $this->assertEquals('"' . md5('Contents') . '"',$file->getETag());
 
     }
 

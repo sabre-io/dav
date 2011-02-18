@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 /**
@@ -17,7 +18,7 @@
  */
 
 $libDir = realpath(__DIR__ . '/../lib');
-$outputDir = __DIR__ . '/../doc';
+$outputDir = __DIR__ . '/../docs/wikidocs';
 
 if (!is_dir($outputDir)) mkdir($outputDir);
 

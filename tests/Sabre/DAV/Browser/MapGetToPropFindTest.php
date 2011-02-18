@@ -25,6 +25,7 @@ class Sabre_DAV_Browser_MapGetToPropFindTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
+            'DAV' => '1, 3, extended-mkcol',
             ),
             $this->response->headers
          );

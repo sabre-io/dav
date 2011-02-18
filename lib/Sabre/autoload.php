@@ -4,7 +4,7 @@
  * SabreDAV's PHP autoloader
  *
  * If you love the autoloader, and don't care as much about performance, this
- * file register a new autoload function using spl_autoload_register. 
+ * file register a new autoload function using spl_autoload_register.
  *
  * @package Sabre
  * @subpackage DAV

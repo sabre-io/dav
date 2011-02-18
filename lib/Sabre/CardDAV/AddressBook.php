@@ -5,7 +5,7 @@
  *
  * @package Sabre
  * @subpackage CardDAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -32,16 +32,8 @@ class Sabre_CardDAV_AddressBook implements Sabre_DAV_ICollection, Sabre_DAV_IPro
     private $carddavBackend;
 
     /**
-     * Authentication backend
-     * 
-     * @var Sabre_DAV_Auth_Backend_Abstract 
-     */
-    private $authBackend;
-
-    /**
      * Constructor 
      * 
-     * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
      * @param Sabre_CardDAV_Backend_Abstract $carddavBackend 
      * @param array $addressBookInfo 
      * @return void

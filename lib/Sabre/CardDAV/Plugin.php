@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage CardDAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -53,6 +53,42 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Returns a list of supported features.
+     *
+     * This is used in the DAV: header in the OPTIONS and PROPFIND requests. 
+     * 
+     * @return array
+     */
+    public function getFeatures() {
+
+        return array('addressbook');
+
+    }
+
+    /**
+     * Returns a list of reports this plugin supports.
+     *
+     * This will be used in the {DAV:}supported-report-set property.
+     * Note that you still need to subscribe to the 'report' event to actually 
+     * implement them 
+     * 
+     * @param string $uri
+     * @return array 
+     */
+    public function getSupportedReportSet($uri) {
+
+        $node = $this->server->tree->getNodeForPath($uri);
+        if ($node instanceof Sabre_CardDAV_AddressBook || $node instanceof Sabre_CardDAV_Card) {
+            return array(
+                 '{' . self::NS_CARDDAV . '}addressbook-multiget',
+            );
+        }
+        return array();
+
+    }
+
+
+    /**
      * Adds all CardDAV-specific properties 
      * 
      * @param string $path 
@@ -63,7 +99,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Find out if we are currently looking at a principal resource
         $currentNode = $this->server->tree->getNodeForPath($path);
-        if ($currentNode instanceof Sabre_DAV_Auth_Principal) {
+        if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
             $addHome = '{' . self::NS_CARDDAV . '}addressbook-home-set';

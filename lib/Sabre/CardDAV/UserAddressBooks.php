@@ -5,7 +5,7 @@
  * 
  * @package Sabre
  * @subpackage CardDAV
- * @copyright Copyright (C) 2007-2010 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -14,13 +14,6 @@
  * The UserAddressBooks collection contains a list of addressbooks associated with a user
  */
 class Sabre_CardDAV_UserAddressBooks implements Sabre_DAV_IExtendedCollection {
-
-    /**
-     * Authentication backend 
-     * 
-     * @var Sabre_DAV_Auth_Backend_Abstract 
-     */
-    protected $authBackend;
 
     /**
      * Principal uri
@@ -39,13 +32,11 @@ class Sabre_CardDAV_UserAddressBooks implements Sabre_DAV_IExtendedCollection {
     /**
      * Constructor 
      * 
-     * @param Sabre_DAV_Auth_Backend_Abstract $authBackend 
      * @param Sabre_CardDAV_Backend_Abstract $carddavBackend 
      * @param string $userUri 
      */
-    public function __construct(Sabre_DAV_Auth_Backend_Abstract $authBackend, Sabre_CardDAV_Backend_Abstract $carddavBackend, $userUri) {
+    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend, $userUri) {
 
-        $this->authBackend = $authBackend;
         $this->carddavBackend = $carddavBackend;
         $this->userUri = $userUri;
        
@@ -154,7 +145,7 @@ class Sabre_CardDAV_UserAddressBooks implements Sabre_DAV_IExtendedCollection {
         $addressbooks = $this->carddavBackend->getAddressbooksForUser($this->userUri);
         $objs = array();
         foreach($addressbooks as $addressbook) {
-            $objs[] = new Sabre_CardDAV_UserAddressBook($this->authBackend, $this->carddavBackend, $addressbook);
+            $objs[] = new Sabre_CardDAV_UserAddressBook($this->carddavBackend, $addressbook);
         }
         return $objs;
 

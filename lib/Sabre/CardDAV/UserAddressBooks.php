@@ -13,7 +13,7 @@
 /**
  * The UserAddressBooks collection contains a list of addressbooks associated with a user
  */
-class Sabre_CardDAV_UserAddressBooks implements Sabre_DAV_IExtendedCollection {
+class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Directory implements Sabre_DAV_IExtendedCollection {
 
     /**
      * Principal uri

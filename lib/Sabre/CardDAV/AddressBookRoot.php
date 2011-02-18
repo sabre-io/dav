@@ -63,7 +63,7 @@ class Sabre_CardDAV_AddressBookRoot extends Sabre_DAVACL_AbstractPrincipalCollec
      * @param array $principal 
      * @return Sabre_DAV_INode 
      */
-    public function getChildForPrincipal($principal) {
+    public function getChildForPrincipal(array $principal) {
 
         return new Sabre_CardDAV_UserAddressBooks($this->carddavBackend, $principal['uri']);
 

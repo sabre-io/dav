@@ -19,21 +19,21 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
      * 
      * @var array 
      */
-    private $calendarInfo;
+    protected $calendarInfo;
 
     /**
      * CalDAV backend 
      * 
      * @var Sabre_CalDAV_Backend_Abstract 
      */
-    private $caldavBackend;
+    protected $caldavBackend;
 
     /**
      * Principal backend
      * 
      * @var Sabre_DAVACL_IPrincipalBackend
      */
-    private $principalBackend;
+    protected $principalBackend;
 
     /**
      * Constructor 

@@ -1,4 +1,4 @@
-1.4.1-beta (2011-02-??)
+1.4.1-beta (2011-02-26)
 	* Fixed: Sabre_DAV_Locks_Backend_PDO returned too many locks.
 	* Fixed: Sabre_HTTP_Request::getHeader didn't return Content-Type when
 	  running on apache, so a few workarounds were added.

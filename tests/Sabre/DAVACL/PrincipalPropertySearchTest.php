@@ -16,6 +16,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
 
         $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
         $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
+        $fakeServer->debugExceptions = true;
         $plugin = new Sabre_DAVACL_MockPlugin($backend,'realm');
         $plugin->allowAccessToNodesWithoutACL = true;
 

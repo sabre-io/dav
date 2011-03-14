@@ -1303,7 +1303,10 @@ class Sabre_DAV_Server {
                 $removeRT = true;
             }
 
-            $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$currentPropertyNames, &$newProperties));
+            $result = $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$currentPropertyNames, &$newProperties));
+            // If this method explicitly returned false, we must ignore this 
+            // node as it is inacessible.
+            if ($result===false) continue;
 
             if (count($currentPropertyNames) > 0) {
 

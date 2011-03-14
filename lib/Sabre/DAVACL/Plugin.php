@@ -69,6 +69,17 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public $allowAccessToNodesWithoutACL = true;
 
     /**
+     * By default nodes that are inaccessible by the user, can still be seen
+     * in directory listings (PROPFIND on parent with Depth: 1)
+     *
+     * In certain cases it's desirable to hide inaccessible nodes. Setting this 
+     * to true will cause these nodes to be hidden from directory listings.
+     * 
+     * @var bool 
+     */
+    public $hideNodesFromListings = false;
+
+    /**
      * This string is prepended to the username of the currently logged in 
      * user. This allows the plugin to determine the principal path based on 
      * the username.
@@ -147,10 +158,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $uri
      * @param array|string $privileges
+     * @param bool $throwExceptions if set to false, this method won't through exceptions. 
      * @throws Sabre_DAVACL_Exception_NeedPrivileges
      * @return bool 
      */
-    public function checkPrivileges($uri,$privileges,$recursion = self::R_PARENT) {
+    public function checkPrivileges($uri,$privileges,$recursion = self::R_PARENT, $throwExceptions = true) {
 
         if (!is_array($privileges)) $privileges = array($privileges);
 
@@ -160,7 +172,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             if ($this->allowAccessToNodesWithoutACL) {
                 return true;
             } else {
-                throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
+                if ($throwExceptions) 
+                    throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
+                else
+                    return false;
+
             }
         }
 
@@ -174,7 +190,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if ($failed) {
-            throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$failed);
+            if ($throwExceptions) 
+                throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$failed);
+            else
+                return false;
         }
         return true;
 
@@ -394,6 +413,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getCurrentUserPrivilegeSet($node) {
 
+        if (is_string($node)) {
+            $node = $this->server->tree->getNodeForPath($node);
+        }
+
         $acl = $this->getACL($node);
         if (is_null($acl)) return null;
 
@@ -443,7 +466,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'),20);
         $server->subscribeEvent('beforeBind', array($this,'beforeBind'),20);
         $server->subscribeEvent('beforeUnbind', array($this,'beforeUnbind'),20);
-        $server->subscribeEvent('afterGetProperties', array($this,'afterGetProperties'),220);
         $server->subscribeEvent('updateProperties',array($this,'updateProperties'));
         $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
         $server->subscribeEvent('report',array($this,'report'));
@@ -572,90 +594,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Triggered after all properties are received.
-     * 
-     * This allows us to deny access to any properties if there's no
-     * permission to grab them. 
-     * 
-     * @param string $uri 
-     * @param array $properties 
-     * @return void
-     */
-    public function afterGetProperties($uri, array &$properties) {
-
-        try {
-
-            $this->checkPrivileges($uri,'{DAV:}read');
-    
-        } catch (Sabre_DAVACL_Exception_NeedPrivileges $e) {
-
-            // Access to properties was denied
-            
-            if (!isset($properties[403])) $properties[403] = array();
-            foreach($properties as $httpStatus=>$propList) {
-
-                // The odd one out
-                if ($httpStatus === 'href') continue;
-
-                // No need to do anything if they are already 403
-                if ($httpStatus == 403) continue;
-
-                foreach($propList as $propName=>$propValue) {
-
-                    $properties[403][$propName] = null;
-
-                }
-
-                unset($properties[$httpStatus]); 
-
-            }
-            return;
-
-        }
-
-        // We need to do specific checks for the {DAV:}acl and 
-        // {DAV:}current-user-privilege-set properties.
-        if (isset($properties[200]['{DAV:}acl'])) {
-
-            try {
-
-                $this->checkPrivileges($uri,'{DAV:}read-acl');
-
-            } catch (Sabre_DAVACL_Exception_NeedPrivileges $e) {
-
-                if (!isset($properties[403])) $properties[403] = array();
-
-                $properties[403]['{DAV:}acl'] = null;
-                unset($properties[200]['{DAV:}acl']);
-
-            }
-
-        }
-        if (isset($properties[200]['{DAV:}read-current-user-privilege-set'])) {
-
-            try {
-
-                $this->checkPrivileges($uri,'{DAV:}read-acl');
-
-            } catch (Sabre_DAVACL_Exception_NeedPrivileges $e) {
-
-                if (!isset($properties[403])) $properties[403] = array();
-
-                $properties[403]['{DAV:}acl'] = null;
-                unset($properties[200]['{DAV:}acl']);
-
-            }
-
-        }
-
-    }
-
-    /**
      * Triggered before a node is unlocked. 
      * 
      * @param string $uri 
      * @param Sabre_DAV_Locks_LockInfo $lock
-     * @param TODO: not yet implemented 
+     * @TODO: not yet implemented 
      * @return void
      */
     public function beforeUnlock($uri, Sabre_DAV_Locks_LockInfo $lock) {
@@ -669,11 +612,30 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $uri 
      * @param Sabre_DAV_INode $node 
      * @param array $requestedProperties 
-     * @param array $returnedProperties 
+     * @param array $returnedProperties
+     * @TODO really should be broken into multiple methods, or even a class. 
      * @return void
      */
     public function beforeGetProperties($uri, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
 
+        // Checking the read permission
+        if (!$this->checkPrivileges($uri,'{DAV:}read',self::R_PARENT,false)) {
+
+            // User is not allowed to read properties
+            if ($this->hideNodesFromListings) {
+                return false;
+            }
+
+            // Marking all requested properties as '403'.
+            foreach($requestedProperties as $key=>$requestedProperty) {
+                unset($requestedProperties[$key]);
+                $returnedProperties[403][$requestedProperty] = null;
+            }
+            return;
+
+        } 
+
+        /* Adding principal properties */
         if ($node instanceof Sabre_DAVACL_IPrincipal) {
 
             if (false !== ($index = array_search('{DAV:}alternate-URI-set', $requestedProperties))) {
@@ -735,19 +697,35 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
         if (false !== ($index = array_search('{DAV:}current-user-privilege-set', $requestedProperties))) {
 
-            $val = $this->getCurrentUserPrivilegeSet($node);
-            if (!is_null($val)) {
+            if (!$this->checkPrivileges($uri, '{DAV:}read-current-user-privilege-set', self::R_PARENT, false)) {
+                $returnedProperties[403]['{DAV:}current-user-privilege-set'] = null;
                 unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}current-user-privilege-set'] = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($val);
+            } else {
+                $val = $this->getCurrentUserPrivilegeSet($node);
+                if (!is_null($val)) {
+                    unset($requestedProperties[$index]);
+                    $returnedProperties[200]['{DAV:}current-user-privilege-set'] = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($val);
+                }
             }
 
         }
+
+        /* The ACL property contains all the permissions */
         if (false !== ($index = array_search('{DAV:}acl', $requestedProperties))) {
 
-            $acl = $this->getACL($node);
-            if (!is_null($acl)) {
+            if (!$this->checkPrivileges($uri, '{DAV:}read-acl', self::R_PARENT, false)) {
+
                 unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}acl'] = new Sabre_DAVACL_Property_Acl($this->getACL($node));
+                $returnedProperties[403]['{DAV:}acl'] = null;
+
+            } else {
+
+                $acl = $this->getACL($node);
+                if (!is_null($acl)) {
+                    unset($requestedProperties[$index]);
+                    $returnedProperties[200]['{DAV:}acl'] = new Sabre_DAVACL_Property_Acl($this->getACL($node));
+                }
+
             }
 
         }

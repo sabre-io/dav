@@ -282,7 +282,7 @@ class Sabre_DAV_Server {
         $pathInfo = $this->httpRequest->getRawServerValue('PATH_INFO');
         $uri = $this->httpRequest->getRawServerValue('REQUEST_URI');
 
-        // If PATH_INFO is not found, we just return /
+        // If PATH_INFO is found, we can assume it's accurate.
         if (!empty($pathInfo)) {
 
             // We need to make sure we ignore the QUERY_STRING part
@@ -305,11 +305,6 @@ class Sabre_DAV_Server {
             throw new Sabre_DAV_Exception('The REQUEST_URI ('. $uri . ') did not end with the contents of PATH_INFO (' . $pathInfo . '). This server might be misconfigured.'); 
 
         } 
-
-        // If the url ended with .php, we're going to assume that that's the server root
-        if (strpos($uri,'.php')===strlen($uri)-4) {
-            return $uri . '/';
-        }
 
         // The last fallback is that we're just going to assume the server root. 
         return '/';

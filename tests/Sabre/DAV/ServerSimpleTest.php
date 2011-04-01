@@ -553,23 +553,20 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
-    /**
-     * @expectedException Sabre_DAV_Exception
-     */
-    function testGuessBaseUriIncorrectPathInfo() {
+    function testGuessBaseUriNoPathInfo2() {
 
         $serverVars = array(
-            'REQUEST_URI' => '/index.php/root',
-            'PATH_INFO'   => '/incorrect',
+            'REQUEST_URI' => '/a/b/c/test.php',
         );
 
         $httpRequest = new Sabre_HTTP_Request($serverVars);
         $server = new Sabre_DAV_Server();
         $server->httpRequest = $httpRequest;
 
-        $server->guessBaseUri();
+        $this->assertEquals('/', $server->guessBaseUri());
 
     }
+
 
     /**
      * @covers Sabre_DAV_Server::guessBaseUri
@@ -590,23 +587,6 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
    
-    /**
-     * @covers Sabre_DAV_Server::guessBaseUri
-     */
-    function testGuessBaseUriPHProot() {
-
-        $serverVars = array(
-            'REQUEST_URI' => '/index.php',
-        );
-
-        $httpRequest = new Sabre_HTTP_Request($serverVars);
-        $server = new Sabre_DAV_Server();
-        $server->httpRequest = $httpRequest;
-
-        $this->assertEquals('/index.php/', $server->guessBaseUri());
-
-    }
-
     function testTriggerException() {
         
         $this->server->subscribeEvent('beforeMethod',array($this,'exceptionTrigger'));

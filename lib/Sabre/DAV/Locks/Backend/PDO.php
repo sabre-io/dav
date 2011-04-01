@@ -69,7 +69,7 @@ class Sabre_DAV_Locks_Backend_PDO extends Sabre_DAV_Locks_Backend_Abstract {
         if ($returnChildLocks) {
 
             $query.=' OR (uri LIKE ?)';
-            $params[] = $uri . '%';
+            $params[] = $uri . '/%';
 
         }
         $query.=')';

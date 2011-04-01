@@ -1,4 +1,4 @@
-1.4.2-beta (2011-04-??)
+1.4.2-beta (2011-04-01)
 	* Added: It's not possible to disable listing of nodes that are denied
 	  read access by ACL.
 	* Fixed: Changed a few properties in CalDAV classes from private to

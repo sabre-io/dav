@@ -6,6 +6,8 @@
 	* Fixed: Issue 119: Terrible things could happen when relying on
 	  guessBaseUri, the server was running on the root of the domain and a user
 	  tried to access a file ending in .php. This is a slight BC break.
+	* Fixed: Issue 118: Lock tokens in If headers without a uri should be
+  	  treated as the request uri, not 'all relevant uri's. 
 
 1.4.1-beta (2011-02-26)
 	* Fixed: Sabre_DAV_Locks_Backend_PDO returned too many locks.

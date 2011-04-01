@@ -522,7 +522,11 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
             foreach($conditions as $condition) {
 
-                $conditionUri = $condition['uri']?$this->server->calculateUri($condition['uri']):'';
+                if (!$condition['uri']) {
+                    $conditionUri = $this->server->getRequestUri();
+                } else {
+                    $conditionUri = $this->server->calculateUri($condition['uri']);
+                }
 
                 // If the condition has a url, and it isn't part of the affected url at all, check the next condition
                 if ($conditionUri && strpos($url,$conditionUri)!==0) continue;
@@ -606,7 +610,8 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
      * The function will return an array, containg structs with the following keys
      *
-     *   * uri   - the uri the condition applies to. This can be an empty string for 'every relevant url'
+     *   * uri   - the uri the condition applies to. If this is returned as an 
+     *     empty string, this implies it's referring to the request url.
      *   * tokens - The lock token. another 2 dimensional array containg 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
      *   * etag - an etag, if supplied
      * 

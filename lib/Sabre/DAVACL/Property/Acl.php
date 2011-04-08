@@ -71,18 +71,18 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
         $grant = $doc->createElementNS('DAV:','d:grant');
         $xace->appendChild($grant);
 
-        foreach($ace['grant'] as $privName) {
+        $privParts = null;
 
-            $privParts = null;
+        preg_match('/^{([^}]*)}(.*)$/',$ace['privilege'],$privParts);
 
-            preg_match('/^{([^}]*)}(.*)$/',$privName,$privParts);
+        $xprivilege = $doc->createElementNS('DAV:','d:privilege');
+        $grant->appendChild($xprivilege);
 
-            $xprivilege = $doc->createElementNS('DAV:','d:privilege');
-            $grant->appendChild($xprivilege);
+        $xprivilege->appendChild($doc->createElementNS($privParts[1],'d:'.$privParts[2]));
 
-            $xprivilege->appendChild($doc->createElementNS($privParts[1],'d:'.$privParts[2]));
+        if (isset($ace['protected']) && $ace['protected'])
+            $xace->appendChild($doc->createElement('d:protected'));
 
-        }
 
     }
 

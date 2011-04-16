@@ -96,6 +96,7 @@ class Sabre_DAV_Server {
      * @var array
      */
     public $propertyMap = array(
+        '{DAV:}resourcetype' => 'Sabre_DAV_Property_ResourceType',
     );
 
     public $protectedProperties = array(
@@ -846,15 +847,8 @@ class Sabre_DAV_Server {
             if (!isset($properties['{DAV:}resourcetype'])) 
                 throw new Sabre_DAV_Exception_BadRequest('The mkcol request must include a {DAV:}resourcetype property');
 
+            $resourceType = $properties['{DAV:}resourcetype']->getValue();
             unset($properties['{DAV:}resourcetype']);
-
-            $resourceType = array();
-            // Need to parse out all the resourcetypes
-            $rtNode = $dom->firstChild->getElementsByTagNameNS('urn:DAV','resourcetype');
-            $rtNode = $rtNode->item(0);
-            foreach($rtNode->childNodes as $childNode) {;
-                $resourceType[] = Sabre_DAV_XMLUtil::toClarkNotation($childNode);
-            }
 
         } else {
 

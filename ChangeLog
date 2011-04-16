@@ -2,6 +2,7 @@
 	* Fixed: datatype of lastmodified field in mysql.calendars.sql. Please
 	  change the DATETIME field to an INT to ensure this field will work
 	  correctly.
+	* Added: deserializer for {DAV:}resourcetype properties.
 
 1.4.2-beta (2011-04-01)
 	* Added: It's not possible to disable listing of nodes that are denied

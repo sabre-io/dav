@@ -22,13 +22,28 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
      * Constructor
      *
      * This object requires a structure similar to the return value from 
-     * Sabre_DAVACL_Plugin::getACL() 
+     * Sabre_DAVACL_Plugin::getACL().
+     *
+     * Each privilege is a an array with at least a 'privilege' property, and a 
+     * 'principal' property. A privilege may have a 'protected' property as 
+     * well. 
      * 
      * @param array $privileges 
      */
     public function __construct(array $privileges) {
 
         $this->privileges = $privileges;
+
+    }
+
+    /**
+     * Returns the list of privileges for this property 
+     * 
+     * @return array 
+     */
+    public function getPrivileges() {
+
+        return $this->privileges;
 
     }
 
@@ -45,6 +60,22 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
         foreach($this->privileges as $ace) {
 
             $this->serializeAce($doc, $node, $ace, $server);
+
+        }
+
+    }
+
+    /**
+     * Unserializes the {DAV:}acl xml element. 
+     * 
+     * @param DOMElement $dom 
+     * @return Sabre_DAVACL_Property_Acl 
+     */
+    static public function unserialize(DOMElement $dom) {
+
+        $privileges = array();
+        foreach($dom->getElementsByTagNameNS('DAV:','ace') as $xace) {
+
 
         }
 
@@ -71,18 +102,17 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
         $grant = $doc->createElementNS('DAV:','d:grant');
         $xace->appendChild($grant);
 
-        foreach($ace['grant'] as $privName) {
+        $privParts = null;
 
-            $privParts = null;
+        preg_match('/^{([^}]*)}(.*)$/',$ace['privilege'],$privParts);
 
-            preg_match('/^{([^}]*)}(.*)$/',$privName,$privParts);
+        $xprivilege = $doc->createElementNS('DAV:','d:privilege');
+        $grant->appendChild($xprivilege);
 
-            $xprivilege = $doc->createElementNS('DAV:','d:privilege');
-            $grant->appendChild($xprivilege);
+        $xprivilege->appendChild($doc->createElementNS($privParts[1],'d:'.$privParts[2]));
 
-            $xprivilege->appendChild($doc->createElementNS($privParts[1],'d:'.$privParts[2]));
-
-        }
+        if (isset($ace['protected']) && $ace['protected'])
+            $xace->appendChild($doc->createElement('d:protected'));
 
     }
 

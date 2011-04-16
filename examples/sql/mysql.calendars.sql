@@ -3,7 +3,7 @@ CREATE TABLE calendarobjects (
     calendardata TEXT, 
     uri VARCHAR(100), 
     calendarid INTEGER UNSIGNED NOT NULL, 
-    lastmodified DATETIME 
+    lastmodified INT(11) 
 );
 
 CREATE TABLE calendars (

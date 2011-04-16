@@ -103,4 +103,17 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
     }
 
+    static public function unserialize(DOMElement $dom) {
+
+        $value = array();
+        foreach($dom->childNodes as $child) {
+
+            $value[] = Sabre_DAV_XMLUtil::toClarkNotation($child);
+
+        }
+
+        return new self($value);
+
+    }
+
 }

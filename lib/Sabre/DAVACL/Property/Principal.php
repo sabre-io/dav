@@ -136,17 +136,16 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
             $parent = $parent->nextSibling;
         }
 
-        $parent = Sabre_DAV_XMLUtil::toClarkNotation($parent);
-        switch($parent) {
+        switch(Sabre_DAV_XMLUtil::toClarkNotation($parent)) {
 
             case '{DAV:}unauthenticated' :
                 return new self(self::UNAUTHENTICATED);
             case '{DAV:}authenticated' :
                 return new self(self::AUTHENTICATED);
             case '{DAV:}href':
-                return new self(self::HREF, $dom->firstChild->textContent);
+                return new self(self::HREF, $parent->textContent);
             default :
-                throw new Sabre_DAV_Exception_BadRequest('Unexpected element (' . $parent . '). Could not deserialize');
+                throw new Sabre_DAV_Exception_BadRequest('Unexpected element (' . Sabre_DAV_XMLUtil::toClarkNotation($parent) . '). Could not deserialize');
 
         }
 

@@ -5,6 +5,8 @@
 	  correctly.
 	* Added: deserializer for {DAV:}resourcetype properties.
 	* Fixed: Bug in serializing {DAV:}acl property.
+	* Change: Sabre_DAV_Property_Principal is now renamed to
+	  Sabre_DAVACL_Property_Principal.
 
 1.4.2-beta (2011-04-01)
 	* Added: It's not possible to disable listing of nodes that are denied

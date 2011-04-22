@@ -123,4 +123,33 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
 
     }
 
+    /**
+     * Deserializes a DOM element into a property object. 
+     * 
+     * @param DOMElement $dom 
+     * @return Sabre_DAV_Property_Principal 
+     */
+    static public function unserialize(DOMElement $dom) {
+
+        $parent = $dom->firstChild;
+        while(!Sabre_DAV_XMLUtil::toClarkNotation($parent)) {
+            $parent = $parent->nextSibling;
+        }
+
+        $parent = Sabre_DAV_XMLUtil::toClarkNotation($parent);
+        switch($parent) {
+
+            case '{DAV:}unauthenticated' :
+                return new self(self::UNAUTHENTICATED);
+            case '{DAV:}authenticated' :
+                return new self(self::AUTHENTICATED);
+            case '{DAV:}href':
+                return new self(self::HREF, $dom->firstChild->textContent);
+            default :
+                throw new Sabre_DAV_Exception_BadRequest('Unexpected element (' . $parent . '). Could not deserialize');
+
+        }
+
+    }
+
 }

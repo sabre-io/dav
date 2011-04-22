@@ -17,7 +17,7 @@ abstract class Sabre_DAV_Property {
 
     static function unserialize(DOMElement $prop) {
 
-        return null;
+        throw new Sabre_DAV_Exception('Unserialize has not been implemented for this class');
 
     }
 

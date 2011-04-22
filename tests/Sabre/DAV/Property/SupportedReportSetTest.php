@@ -104,15 +104,6 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 
     }
 
-    function testUnserialize() {
-
-        $doc = new DOMDocument();
-        $elem = $doc->createElement('forkicks');
-        $doc->appendChild($elem);
-        $this->assertNull(Sabre_DAV_Property_SupportedReportSet::unserialize($elem));
-
-    }
-
     /**
      * This method is used as a callback for afterGetProperties
      */

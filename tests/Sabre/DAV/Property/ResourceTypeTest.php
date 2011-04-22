@@ -97,8 +97,7 @@ class Sabre_DAV_Property_ResourceTypeTest extends PHPUnit_Framework_TestCase {
 <d:anything xmlns:d="DAV:"><d:collection/><d:principal/></d:anything>
 ';
 
-        $dom = new DOMDocument();
-        $dom->loadXML($xml);
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
 
         $resourceType = Sabre_DAV_Property_ResourceType::unserialize($dom->firstChild);
         $this->assertEquals(array('{DAV:}collection','{DAV:}principal'),$resourceType->getValue());

@@ -58,7 +58,6 @@ include 'Sabre/DAV/Property/HrefList.php';
 include 'Sabre/DAV/Property/SupportedReportSet.php';
 include 'Sabre/DAV/Property/Response.php';
 include 'Sabre/DAV/Property/ResponseList.php';
-include 'Sabre/DAV/Property/Principal.php';
 
 /* Node interfaces */
 include 'Sabre/DAV/INode.php';

@@ -683,9 +683,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             unset($requestedProperties[$index]);
             if ($url = $this->getCurrentUserPrincipal()) {
-                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF, $url . '/');
+                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::HREF, $url . '/');
             } else {
-                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::UNAUTHENTICATED);
+                $returnedProperties[200]['{DAV:}current-user-principal'] = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::UNAUTHENTICATED);
             }
 
         }

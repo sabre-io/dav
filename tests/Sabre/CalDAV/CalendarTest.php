@@ -71,7 +71,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         
         $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Sabre_CalDAV_Property_SupportedCollationSet);
 
-        $this->assertTrue($result['{DAV:}owner'] instanceof Sabre_DAV_Property_Principal);
+        $this->assertTrue($result['{DAV:}owner'] instanceof Sabre_DAVACL_Property_Principal);
         $this->assertEquals('principals/user1', $result['{DAV:}owner']->getHref());
 
     }

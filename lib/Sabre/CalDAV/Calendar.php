@@ -93,7 +93,7 @@ class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IPropert
                 $response[$prop] =  new Sabre_CalDAV_Property_SupportedCollationSet(); 
                 break;
             case '{DAV:}owner' :
-                $response[$prop] = new Sabre_DAV_Property_Principal(Sabre_DAV_Property_Principal::HREF,$this->calendarInfo['principaluri']);
+                $response[$prop] = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::HREF,$this->calendarInfo['principaluri']);
                 break;
             default : 
                 if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];

@@ -7,12 +7,12 @@
  * The property can be used to specify a principal or pseudo principals. 
  *
  * @package Sabre
- * @subpackage DAV
+ * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_Principal extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
+class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
 
     /**
      * To specify a not-logged-in user, use the UNAUTHENTICTED principal

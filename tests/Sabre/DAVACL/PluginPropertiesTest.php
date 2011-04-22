@@ -64,8 +64,8 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}current-user-principal',$returnedProperties[200]);
-        $this->assertInstanceOf('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
-        $this->assertEquals(Sabre_DAV_Property_Principal::UNAUTHENTICATED, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
+        $this->assertInstanceOf('Sabre_DAVACL_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
+        $this->assertEquals(Sabre_DAVACL_Property_Principal::UNAUTHENTICATED, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
 
         // This will force the login
         $fakeServer->broadCastEvent('beforeMethod',array('GET',''));
@@ -86,8 +86,8 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}current-user-principal',$returnedProperties[200]);
-        $this->assertInstanceOf('Sabre_DAV_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
-        $this->assertEquals(Sabre_DAV_Property_Principal::HREF, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
+        $this->assertInstanceOf('Sabre_DAVACL_Property_Principal', $returnedProperties[200]['{DAV:}current-user-principal']);
+        $this->assertEquals(Sabre_DAVACL_Property_Principal::HREF, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
         $this->assertEquals('principals/admin/', $returnedProperties[200]['{DAV:}current-user-principal']->getHref());
 
     }

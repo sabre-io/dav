@@ -48,6 +48,12 @@ class Sabre_DAVACL_AllowAccessTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testACL() {
+
+        $this->assertTrue($this->server->broadcastEvent('beforeMethod',array('ACL','testdir')));
+
+    }
+
     function testPROPPATCH() {
 
         $this->assertTrue($this->server->broadcastEvent('beforeMethod',array('PROPPATCH','testdir')));

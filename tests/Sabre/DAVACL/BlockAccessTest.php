@@ -91,6 +91,15 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException Sabre_DAVACL_Exception_NeedPrivileges
      */
+    function testACL() {
+
+        $this->server->broadcastEvent('beforeMethod',array('ACL','testdir'));
+
+    }
+
+    /**
+     * @expectedException Sabre_DAVACL_Exception_NeedPrivileges
+     */
     function testLOCK() {
 
         $this->server->broadcastEvent('beforeMethod',array('LOCK','testdir'));

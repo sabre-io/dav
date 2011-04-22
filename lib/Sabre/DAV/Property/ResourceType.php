@@ -103,6 +103,12 @@ class Sabre_DAV_Property_ResourceType extends Sabre_DAV_Property {
 
     }
 
+    /**
+     * Unserializes a DOM element into a ResourceType property. 
+     * 
+     * @param DOMElement $dom 
+     * @return void
+     */
     static public function unserialize(DOMElement $dom) {
 
         $value = array();

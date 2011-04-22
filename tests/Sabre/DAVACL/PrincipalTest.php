@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+
 class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testConstruct() {

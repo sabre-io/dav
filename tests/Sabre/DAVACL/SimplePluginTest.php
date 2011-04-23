@@ -20,7 +20,7 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
             ), 
             $aclPlugin->getSupportedReportSet(''));
 
-        $this->assertEquals(array(), $aclPlugin->getMethods(''));
+        $this->assertEquals(array('ACL'), $aclPlugin->getMethods(''));
 
     }
 

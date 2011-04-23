@@ -109,8 +109,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getMethods($uri) {
 
-        // TODO: needs to support ACL.
-        return array();
+        return array('ACL');
 
     }
 
@@ -469,6 +468,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('updateProperties',array($this,'updateProperties'));
         $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
         $server->subscribeEvent('report',array($this,'report'));
+        $server->subscribeEvent('unknownMethod', array($this, 'unknownMethod'));
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',
@@ -791,6 +791,100 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 return false;
 
         }
+
+    }
+
+    /**
+     * This event is triggered for any HTTP method that is not known by the 
+     * webserver. 
+     *
+     * @param string $method 
+     * @param string $uri 
+     * @return void
+     */
+    public function unknownMethod($method, $uri) {
+
+        if ($method!=='ACL') return;
+
+        $this->httpACL($uri);
+        return false;
+
+    }
+
+    /**
+     * This method is responsible for handling the 'ACL' event.
+     *
+     * @param string $uri
+     * @return void
+     */
+    public function httpACL($uri) { 
+
+        $body = $this->server->httpRequest->getBody(true);
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
+
+        $newAcl = 
+            Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild)
+            ->getPrivileges();
+
+        // Normalizing urls
+        foreach($newAcl as $k=>$newAce) {
+            $newAcl[$k]['principal'] = $this->server->calculateUrl($newAce['principal']);
+        }
+
+        $node = $this->server->objectTree->getNodeForPath($uri);
+
+        if (!($node instanceof Sabre_DAVACL_IACL)) {
+            throw new Sabre_DAV_Exception_MethodNotAllowed('This node does not support the ACL method');
+        }
+
+        $oldAcl = $this->getACL($node);
+
+        $supportedPrivileges = $this->getFlatPrivilegeSet(); 
+
+        /* Checking if protected principals from the existing principal set are 
+           not overwritten. */
+        foreach($oldAcl as $k=>$oldAce) {
+
+            if (!$oldAce['protected']) continue; 
+
+            $found = false;
+            foreach($newAcl as $newAce) {
+                if (
+                    $newAce['privilege'] === $oldAce['privilege'] &&
+                    $newAce['principal'] === $oldAce['principal'] &&
+                    $newAce['protected']
+                ) 
+                $found = true;
+            }
+
+            if (!$found) 
+                throw new Sabre_DAVACL_Exception_AceConflict('This resource contained a protected {DAV:}ace, but this privilege did not occur in the ACL request');
+
+        }
+
+        foreach($newAcl as $k=>$newAce) {
+
+            // Do we recognize the privilege
+            if (!isset($supportedPrivileges[$newAce['privilege']])) {
+                throw new Sabre_DAVACL_Exception_NotSupportedPrivilege('The privilege you specified (' . $newAce['privilege'] . ') is not recognized by this server');
+            }
+
+            if ($supportedPrivileges[$newAce['privilege']]['abstract']) {
+                throw new Sabre_DAVACL_Exception_NoAbstract('The privilege you specified (' . $newAce['privilege'] . ') is an abstract privilege');
+            }
+
+            // Looking up the principal
+            try {
+                $principal = $this->server->tree->getNodeForPath($newAce['principal']);
+            } catch (Sabre_DAV_Exception_NotFound $e) {
+                throw new Sabre_DAVACL_Exception_NotRecognizedPrincipal('The specified principal (' . $newAce['principal'] . ') does not exist');
+            }
+            if (!($principal instanceof Sabre_DAVACL_IPrincipal)) {
+                throw new Sabre_DAVACL_Exception_NotRecognizedPrincipal('The specified uri (' . $newAce['principal'] . ') is not a principal');
+            } 
+
+        }
+        $node->setACL($newAcl);
 
     }
 

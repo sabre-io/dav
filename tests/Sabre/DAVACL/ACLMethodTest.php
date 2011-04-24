@@ -15,6 +15,18 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testCallbackPassthru() {
+
+        $acl = new Sabre_DAVACL_Plugin();
+        $server = new Sabre_DAV_Server();
+        $server->addPlugin($acl);
+
+        $this->assertNull($acl->unknownMethod('FOO','test')); 
+
+    }
+
+    /**
+
     /**
      * @expectedException Sabre_DAV_Exception_MethodNotAllowed 
      */
@@ -295,7 +307,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $this->assertFalse($acl->unknownMethod('ACL','test')); 
 
         $this->assertEquals(array(
             array(

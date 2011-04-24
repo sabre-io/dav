@@ -113,7 +113,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
-        $this->assertInternalType('int', $lastMod);
+        $this->assertTrue(is_int($lastMod) || ctype_digit($lastMod));
 
     }
 

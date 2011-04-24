@@ -167,7 +167,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
      */
     public function getLastModified() {
 
-        return strtotime($this->objectData['lastmodified']);
+        return $this->objectData['lastmodified'];
 
     }
 

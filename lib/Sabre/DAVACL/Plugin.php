@@ -828,10 +828,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Normalizing urls
         foreach($newAcl as $k=>$newAce) {
-            $newAcl[$k]['principal'] = $this->server->calculateUrl($newAce['principal']);
+            $newAcl[$k]['principal'] = $this->server->calculateUri($newAce['principal']);
         }
 
-        $node = $this->server->objectTree->getNodeForPath($uri);
+        $node = $this->server->tree->getNodeForPath($uri);
 
         if (!($node instanceof Sabre_DAVACL_IACL)) {
             throw new Sabre_DAV_Exception_MethodNotAllowed('This node does not support the ACL method');
@@ -845,7 +845,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
            not overwritten. */
         foreach($oldAcl as $k=>$oldAce) {
 
-            if (!$oldAce['protected']) continue; 
+            if (!isset($oldAce['protected']) || !$oldAce['protected']) continue; 
 
             $found = false;
             foreach($newAcl as $newAce) {
@@ -876,7 +876,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             // Looking up the principal
             try {
                 $principal = $this->server->tree->getNodeForPath($newAce['principal']);
-            } catch (Sabre_DAV_Exception_NotFound $e) {
+            } catch (Sabre_DAV_Exception_FileNotFound $e) {
                 throw new Sabre_DAVACL_Exception_NotRecognizedPrincipal('The specified principal (' . $newAce['principal'] . ') does not exist');
             }
             if (!($principal instanceof Sabre_DAVACL_IPrincipal)) {

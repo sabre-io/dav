@@ -5,6 +5,7 @@
 	  correctly.
 	* Change: Sabre_DAV_Property_Principal is now renamed to
 	  Sabre_DAVACL_Property_Principal.
+	* Added: API level support for ACL HTTP method.
 	* Fixed: Bug in serializing {DAV:}acl property.
 	* Added: deserializer for {DAV:}resourcetype property.
 	* Added: deserializer for {DAV:}acl property.

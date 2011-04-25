@@ -1,4 +1,4 @@
-1.4.3-stable (2011-??-??)
+1.4.3-stable (2011-04-25)
 	* Fixed: Issue 123: Added workaround for Windows 7 UNLOCK bug.
 	* Fixed: datatype of lastmodified field in mysql.calendars.sql. Please
 	  change the DATETIME field to an INT to ensure this field will work

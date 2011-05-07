@@ -1,3 +1,7 @@
+1.4.4-stable (2011-??-??)
+	* Fixed: Issue 124: 'File' authentication backend now takes realm into
+	  consideration.
+
 1.4.3-stable (2011-04-25)
 	* Fixed: Issue 123: Added workaround for Windows 7 UNLOCK bug.
 	* Fixed: datatype of lastmodified field in mysql.calendars.sql. Please

@@ -54,7 +54,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
             if (!preg_match('/^[a-zA-Z0-9]{32}$/', $A1))
                 throw new Sabre_DAV_Exception('Malformed htdigest file. Invalid md5 hash');
                 
-            $this->users[$username] = $A1;
+            $this->users[$realm . ':' . $username] = $A1;
 
         }
 
@@ -69,7 +69,7 @@ class Sabre_DAV_Auth_Backend_File extends Sabre_DAV_Auth_Backend_AbstractDigest 
      */
     public function getDigestHash($realm, $username) {
 
-        return isset($this->users[$username])?$this->users[$username]:false;
+        return isset($this->users[$realm . ':' . $username])?$this->users[$realm . ':' . $username]:false;
 
     }
 

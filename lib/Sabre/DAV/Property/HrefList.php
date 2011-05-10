@@ -84,7 +84,7 @@ class Sabre_DAV_Property_HrefList extends Sabre_DAV_Property {
     static function unserialize(DOMElement $dom) {
 
         $hrefs = array();
-        foreach($dom->children as $child) {
+        foreach($dom->childNodes as $child) {
             if (Sabre_DAV_XMLUtil::toClarkNotation($child)==='{DAV:}href') {
                 $hrefs[] = $child->textContent;
             }

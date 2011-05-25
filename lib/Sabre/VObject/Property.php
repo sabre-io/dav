@@ -53,8 +53,20 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public function __construct($name, $value = null, $iterator = null) {
 
         $this->name = strtoupper($name);
-        $this->value = $value;
         if (!is_null($iterator)) $this->iterator = $iterator;
+        $this->setValue($value);
+
+    }
+
+    /**
+     * Updates the internal value 
+     * 
+     * @param string $value 
+     * @return void
+     */
+    public function setValue($value) {
+
+        $this->value = $value;
 
     }
 

@@ -3,6 +3,7 @@
 	  consideration.
 	* Fixed: Sabre_DAV_Property_HrefList now properly deserializes. This
 	  allows users to update the {DAV:}group-member-set property.
+	* Added: Helper functions for DateTime-values in Sabre_VObject package.
 
 1.4.3-stable (2011-04-25)
 	* Fixed: Issue 123: Added workaround for Windows 7 UNLOCK bug.

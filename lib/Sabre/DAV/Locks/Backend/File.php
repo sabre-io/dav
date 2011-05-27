@@ -17,12 +17,17 @@
 class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
 
     /**
-     * The default data directory 
+     * The storage file
      * 
      * @var string 
      */
     private $locksFile;
 
+    /**
+     * Constructor
+     *
+     * @param string $locksFile path to file 
+     */
     public function __construct($locksFile) {
 
         $this->locksFile = $locksFile;

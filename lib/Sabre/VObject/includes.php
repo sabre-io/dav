@@ -23,6 +23,7 @@ include dirname(__FILE__) . '/Property.php';
 include dirname(__FILE__) . '/Component.php';
 
 include dirname(__FILE__) . '/Element/DateTime.php';
+include dirname(__FILE__) . '/Element/MultiDateTime.php';
 
 include dirname(__FILE__) . '/Reader.php';
 include dirname(__FILE__) . '/Version.php';

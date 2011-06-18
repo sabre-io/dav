@@ -119,6 +119,7 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
         $elem = new Sabre_VObject_Element_DateTime('DTSTART','19850704');
         $dt = $elem->getDateTime();
 
+        $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 00:00:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals(Sabre_VObject_Element_DateTime::DATE, $elem->getDateType());
 
@@ -130,6 +131,7 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
         $elem = new Sabre_VObject_Element_DateTime('DTSTART','19850704T013000');
         $dt = $elem->getDateTime();
 
+        $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals(Sabre_VObject_Element_DateTime::LOCAL, $elem->getDateType());
 
@@ -140,6 +142,7 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
         $elem = new Sabre_VObject_Element_DateTime('DTSTART','19850704T013000Z');
         $dt = $elem->getDateTime();
 
+        $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals('UTC', $dt->getTimeZone()->getName());
         $this->assertEquals(Sabre_VObject_Element_DateTime::UTC, $elem->getDateType());
@@ -153,6 +156,7 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
 
         $dt = $elem->getDateTime();
 
+        $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals('Europe/Amsterdam', $dt->getTimeZone()->getName());
         $this->assertEquals(Sabre_VObject_Element_DateTime::LOCALTZ, $elem->getDateType());

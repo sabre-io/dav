@@ -113,7 +113,10 @@ class Sabre_VObject_Element_DateTime extends Sabre_VObject_Property {
         if ($this->dateTime)
             return $this->dateTime;
 
-        $this->parseData();
+        list(
+            $this->dateType,
+            $this->dateTime
+        ) = self::parseData($this->value, $this->offsetGet('TZID'));
         return $this->dateTime;
 
     }
@@ -131,38 +134,48 @@ class Sabre_VObject_Element_DateTime extends Sabre_VObject_Property {
         if ($this->dateType)
             return $this->dateType;
 
-        $this->parseData();
+        list(
+            $this->dateType,
+            $this->dateTime,
+        ) = self::parseData($this->value, $this->offsetGet('TZID'));
         return $this->dateType;
 
     }
 
     /**
      * Parses the internal data structure to figure out what the current date 
-     * and time is. 
-     * 
-     * @return void
+     * and time is.
+     *
+     * The returned array contains two elements:
+     *   1. A 'DateType' constant (as defined on this class), or null. 
+     *   2. A DateTime object (or null)
+     *
+     * @param string|null $propertyValue The string to parse (yymmdd or 
+     *    ymmddThhmmss, etc..)
+     * @param string|null $tzid The value of the 'TZID' property.
+     * @return array 
      */
-    protected function parseData() {
+    static public function parseData($propertyValue, $tzid) {
+        
 
-        if (is_null($this->value)) {
-            $this->dateTime = null;
-            $this->dateType = null;
-            return;
+        if (is_null($propertyValue)) {
+            return array(null, null);
         }
 
         $date = '(?P<year>[1-2][0-9]{3})(?P<month>[0-1][0-9])(?P<date>[0-3][0-9])';
         $time = '(?P<hour>[0-2][0-9])(?P<minute>[0-5][0-9])(?P<second>[0-5][0-9])';
         $regex = "/^$date(T$time(?P<isutc>Z)?)?$/";
 
-        if (!preg_match($regex, $this->value, $matches)) {
-            throw new InvalidArgumentException($this->value . ' is not a valid DateTime or Date string');
+        if (!preg_match($regex, $propertyValue, $matches)) {
+            throw new InvalidArgumentException($propertyValue . ' is not a valid DateTime or Date string');
         }
 
         if (!isset($matches['hour'])) {
             // Date-only
-            $this->dateType = self::DATE;
-            $this->dateTime = new DateTime($matches['year'] . '-' . $matches['month'] . '-' . $matches['date'] . ' 00:00:00');
-            return;
+            return array(
+                self::DATE,
+                new DateTime($matches['year'] . '-' . $matches['month'] . '-' . $matches['date'] . ' 00:00:00'),
+            );
         }
 
         $dateStr = 
@@ -174,23 +187,29 @@ class Sabre_VObject_Element_DateTime extends Sabre_VObject_Property {
             $matches['second']; 
 
         if (isset($matches['isutc'])) {
-            $this->dateType = self::UTC;
-            $this->dateTime = new DateTime($dateStr,new DateTimeZone('UTC'));
-            $this->dateTime->setTimeZone(new DateTimeZone('UTC'));
-            return;
+            $dt = new DateTime($dateStr,new DateTimeZone('UTC'));
+            $dt->setTimeZone(new DateTimeZone('UTC'));
+            return array(
+                self::UTC,
+                $dt
+            );
         }
 
-        $tzid = $this->offsetGet('TZID');
         if (!$tzid) {
-            $this->dateType = self::LOCAL;
-            $this->dateTime = new DateTime($dateStr);
-            return;
+            return array(
+                self::LOCAL,
+                new DateTime($dateStr)
+            );
         }
 
-        $this->dateType = self::LOCALTZ;
         $tz = new DateTimeZone($tzid->value);
-        $this->dateTime = new DateTime($dateStr, $tz);
-        $this->dateTime->setTimeZone($tz);
+        $dt = new DateTime($dateStr, $tz);
+        $dt->setTimeZone($tz);
+
+        return array(
+            self::LOCALTZ,
+            $dt
+        );
 
     }
 

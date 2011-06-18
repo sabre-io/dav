@@ -31,6 +31,7 @@ class Sabre_VObject_Reader {
         'DTEND'     => 'Sabre_VObject_Element_DateTime',
         'COMPLETED' => 'Sabre_VObject_Element_DateTime',
         'DUE'       => 'Sabre_VObject_Element_DateTime',
+        'EXDATE'    => 'Sabre_VObject_Element_MultiDateTime',
     );
 
     /**

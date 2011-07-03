@@ -1,4 +1,5 @@
 1.4.4-stable (2011-??-??)
+	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.
 	* Added: The option to override the default tablename all PDO backends
 	  use. (Issue 60).
 	* Fixed: Issue 124: 'File' authentication backend now takes realm into

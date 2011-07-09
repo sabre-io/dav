@@ -58,8 +58,8 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
     public function __construct(PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects') {
 
         $this->pdo = $pdo;
-        $this->calendarTableName = 'calendars';
-        $this->calendarObjectTableName = 'calendarobjects';
+        $this->calendarTableName = $calendarTableName;
+        $this->calendarObjectTableName = $calendarObjectTableName;
 
     }
 

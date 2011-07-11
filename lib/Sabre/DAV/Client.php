@@ -176,7 +176,7 @@ class Sabre_DAV_Client {
             throw new Sabre_DAV_Exception('[CURL] Error while making request: ' . curl_error($curl) . ' (error code: ' . curl_errno($curl) . ')');
         } 
 
-        if ($response['statuscode']>=400) {
+        if ($response['statusCode']>=400) {
             throw new Sabre_DAV_Exception('HTTP error response. (errorcode ' . $response['statusCode'] . ')');
         }
 
@@ -218,9 +218,10 @@ class Sabre_DAV_Client {
      */
     protected function parseMultiStatus($body) {
 
-        $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
+        $body = Sabre_DAV_XMLUtil::convertDAVNamespace($body);
 
-        if (!$responseXML) {
+        $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
+        if (!$responseXML===false) {
             throw new InvalidArgumentException('The passed data is not valid XML');
         }
          

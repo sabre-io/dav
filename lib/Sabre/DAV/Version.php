@@ -19,6 +19,6 @@ class Sabre_DAV_Version {
     /**
      * Stability : alpha, beta, stable
      */
-    const STABILITY = 'stable';
+    const STABILITY = 'alpha';
 
 }

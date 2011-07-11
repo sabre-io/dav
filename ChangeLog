@@ -1,3 +1,8 @@
+1.5.0-stable (????-??-??)
+	* Added: WebDAV client
+	* Fixed: Problem with overriding tablenames for the CalDAV backend.
+	* Added: Clark-notation parser to XML utility
+
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.
 	* Added: The option to override the default tablename all PDO backends

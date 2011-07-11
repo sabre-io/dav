@@ -63,39 +63,39 @@ class Sabre_DAV_XSendFile_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function beforeMethod($method, $uri) {
 
-        if ($method == 'GET') {
+        if ($method !== 'GET') return;
 
-            $node = $this->server->tree->getNodeForPath($uri, 0);
+        $node = $this->server->tree->getNodeForPath($uri, 0);
 
-            /* Run the default GET handler if the node doesn't implement the correct interface,
-             * or the preconditions aren't met
-             */
-            if (!$node instanceof Sabre_DAV_XSendFile_IFile) return true;
-            if (!$this->server->checkPreconditions(true)) return true;
+        /* Run the default GET handler if the node doesn't implement the correct interface,
+         * or the preconditions aren't met
+         */
+        if (!$node instanceof Sabre_DAV_XSendFile_IFile) 
+            return;
 
-            /*
-             * TODO: getetag, getlastmodified, getsize should also be used using
-             * this method
-             */
-            $httpHeaders = $this->server->getHTTPHeaders($uri);
+        if (!$this->server->checkPreconditions(true))
+            return;
 
-            // Send the physical path of the file in the X-Sendfile header
-            $httpHeaders['X-Sendfile'] = $node->getPhysicalPath();
+        /*
+         * TODO: getetag, getlastmodified, getsize should also be used using
+         * this method
+         */
+        $httpHeaders = $this->server->getHTTPHeaders($uri);
 
-            /* ContentType needs to get a default, because many webservers will otherwise
-             * default to text/html, and we don't want this for security reasons.
-             */
-            if (!isset($httpHeaders['Content-Type'])) {
-                $httpHeaders['Content-Type'] = 'application/octet-stream';
-            }
+        // Send the physical path of the file in the X-Sendfile header
+        $httpHeaders['X-Sendfile'] = $node->getPhysicalPath();
 
-            $this->server->httpResponse->setHeaders($httpHeaders);
-
-            // Don't run the default GET handler
-            return false;
+        /* ContentType needs to get a default, because many webservers will otherwise
+         * default to text/html, and we don't want this for security reasons.
+         */
+        if (!isset($httpHeaders['Content-Type'])) {
+            $httpHeaders['Content-Type'] = 'application/octet-stream';
         }
 
-        return true;
+        $this->server->httpResponse->setHeaders($httpHeaders);
+
+        // Don't run the default GET handler
+        return false;
 
     }
 

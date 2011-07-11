@@ -219,6 +219,11 @@ class Sabre_DAV_Client {
     protected function parseMultiStatus($body) {
 
         $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
+
+        if (!$responseXML) {
+            throw new InvalidArgumentException('The passed data is not valid XML');
+        }
+         
         $responseXML->registerXPathNamespace('d','DAV:');
 
         $propResult = array();

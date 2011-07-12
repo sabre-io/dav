@@ -195,10 +195,40 @@ class Sabre_DAV_Client {
     }
 
     /**
+     * Performs an HTTP options request
+     *
+     * This method returns all the features from the 'DAV:' header as an array. 
+     * If there was no DAV header, or no contents this method will return an 
+     * empty array. 
+     * 
+     * @return array 
+     */
+    public function options() {
+
+        $result = $this->request('OPTIONS');
+        if (!isset($result['headers']['dav'])) {
+            return array();
+        }
+
+        $features = explode(',', $result['headers']['dav']);
+        foreach($features as &$v) {
+            $v = trim($v);
+        }
+        return $features;
+
+    }
+
+    /**
      * Performs an actual HTTP request, and returns the result.
      *
      * If the specified url is relative, it will be expanded based on the base 
      * url.
+     *
+     * The returned array contains 3 keys:
+     *   * body - the response body
+     *   * httpCode - a HTTP code (200, 404, etc)
+     *   * headers - a list of response http headers. The header names have 
+     *     been lowercased.
      *
      * @param string $method 
      * @param string $url 
@@ -206,14 +236,16 @@ class Sabre_DAV_Client {
      * @param array $headers 
      * @return array 
      */
-    protected function request($method, $url, $body = null, $headers = array()) {
+    protected function request($method, $url = '', $body = null, $headers = array()) {
 
         $url = $this->getAbsoluteUrl($url);
 
         $curlSettings = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_POSTFIELDS => $body
+            CURLOPT_POSTFIELDS => $body,
+            // Return headers as part of the response
+            CURLOPT_HEADER => true
         );
 
         // Adding HTTP headers
@@ -237,12 +269,33 @@ class Sabre_DAV_Client {
         $curl = curl_init($url);
         curl_setopt_array($curl, $curlSettings);
 
-        $responseBody = curl_exec($curl);
-
+        $response = curl_exec($curl);
         $curlInfo = curl_getinfo($curl);
+
+        $headerBlob = substr($response, 0, $curlInfo['header_size']);
+        $response = substr($response, $curlInfo['header_size']);
+
+        // In the case of 100 Continue, or redirects we'll have multiple lists 
+        // of headers for each separate HTTP response. We can easily split this 
+        // because they are separated by \r\n\r\n
+        $headerBlob = explode("\r\n\r\n", trim($headerBlob, "\r\n"));
+        
+        // We only care about the last set of headers
+        $headerBlob = $headerBlob[count($headerBlob)-1];
+
+        // Splitting headers
+        $headerBlob = explode("\r\n", $headerBlob);
+        
+        $headers = array();
+        foreach($headerBlob as $header) {
+            list($hn, $hv) = explode(':', $header, 2);
+            $headers[strtolower(trim($hn))] = trim($hv);
+        }
+
         $response = array(
-            'body' => $responseBody,
-            'statusCode' => $curlInfo['http_code']
+            'body' => $response,
+            'statusCode' => $curlInfo['http_code'],
+            'headers' => $headers
         );
 
         if (curl_errno($curl)) {

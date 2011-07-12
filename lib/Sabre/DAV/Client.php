@@ -219,22 +219,6 @@ class Sabre_DAV_Client {
     }
 
     /**
-     * Performs and HTTP REPORT query
-     *
-     * The entire body must be specified. The entire HTTP body will be 
-     * returned. 
-     * 
-     * @param string $body 
-     * @return void
-     */
-    public function report($url, $body, $headers = array()) {
-
-        $result = $this->request('REPORT', $url, $body, $headers);
-        return $result['body']; 
-
-    }
-
-    /**
      * Performs an actual HTTP request, and returns the result.
      *
      * If the specified url is relative, it will be expanded based on the base 
@@ -252,7 +236,7 @@ class Sabre_DAV_Client {
      * @param array $headers 
      * @return array 
      */
-    protected function request($method, $url = '', $body = null, $headers = array()) {
+    public function request($method, $url = '', $body = null, $headers = array()) {
 
         $url = $this->getAbsoluteUrl($url);
 

@@ -288,8 +288,10 @@ class Sabre_DAV_Client {
         
         $headers = array();
         foreach($headerBlob as $header) {
-            list($hn, $hv) = explode(':', $header, 2);
-            $headers[strtolower(trim($hn))] = trim($hv);
+            $parts = explode(':', $header, 2);
+            if (count($parts)==2) {
+                $headers[strtolower(trim($parts[0]))] = trim($parts[1]);
+            }
         }
 
         $response = array(

@@ -53,7 +53,7 @@ class Sabre_DAV_Client {
             }
         }
 
-        $this->propertyMap['{DAV:}resourceType'] = 'Sabre_DAV_Property_ResourceType';
+        $this->propertyMap['{DAV:}resourcetype'] = 'Sabre_DAV_Property_ResourceType';
 
     }
 

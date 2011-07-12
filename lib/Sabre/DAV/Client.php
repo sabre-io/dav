@@ -14,12 +14,12 @@
  */
 class Sabre_DAV_Client {
 
+    public $propertyMap = array();
+
     protected $baseUri;
     protected $userName;
     protected $password;
     protected $proxy;
-
-    protected $propertyMap = array();
 
     /**
      * Constructor
@@ -109,7 +109,13 @@ class Sabre_DAV_Client {
 
         $result = $this->parseMultiStatus($response['body']);
 
-        // Pulling out only the found properties
+        // If depth was 0, we only return the top item
+        if ($depth===0) {
+            reset($result);
+            $result = current($result);
+            return $result[200];
+        }
+
         $newResult = array();
         foreach($result as $href => $statusList) {
 
@@ -118,6 +124,73 @@ class Sabre_DAV_Client {
         }
 
         return $newResult;
+
+    }
+
+    /**
+     * Updates a list of properties on the server
+     *
+     * The list of properties must have clark-notation properties for the keys, 
+     * and the actual (string) value for the value. If the value is null, an 
+     * attempt is made to delete the property. 
+     *
+     * @todo Must be building the request using the DOM, and does not yet 
+     *       support complex properties. 
+     * @param string $url 
+     * @param array $properties 
+     * @return void
+     */
+    public function propPatch($url, array $properties) {
+
+        $body = '<?xml version="1.0"?>' . "\n";
+        $body.= '<d:propertyupdate xmlns:d="DAV:">' . "\n";
+
+        foreach($properties as $propName => $propValue) {
+
+            list(
+                $namespace,
+                $elementName
+            ) = Sabre_DAV_XMLUtil::parseClarkNotation($propName);
+
+            if ($propValue === null) {
+
+                $body.="<d:remove><d:prop>";
+
+                if ($namespace === 'DAV:') {
+                    $body.='    <d:' . $elementName . ' />' . "\n";
+                } else {
+                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\"/>\n";
+                }
+
+                $body.="</d:prop><d:remove>";
+
+            } else {
+
+                $body.="<d:set><d:prop>";
+                if ($namespace === 'DAV:') {
+                    $body.='    <d:' . $elementName . '>' . "\n";
+                } else {
+                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\">\n";
+                }
+                // Shitty.. i know
+                $body.=htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8'); 
+                if ($namespace === 'DAV:') {
+                    $body.='    </d:' . $elementName . '>' . "\n";
+                } else {
+                    $body.="    </x:" . $elementName . ">\n";
+                }
+                $body.="</d:prop><d:set>";
+
+            }
+
+        }
+
+        $body.= '</d:propertyupdate>';
+
+        $response = $this->request('PROPPATCH', $url, $body, array(
+            'Depth' => $depth,
+            'Content-Type' => 'application/xml'
+        ));
 
     }
 
@@ -156,9 +229,9 @@ class Sabre_DAV_Client {
             $curlSettings[CURLOPT_PROXY] = $this->proxy;
         }
 
-        if ($this->username) {
+        if ($this->userName) {
             $curlSettings[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC | CURLAUTH_DIGEST;
-            $curlSettings[CURLOPT_USERPWD] = $this->username . ':' . $this->password;
+            $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
         }
 
         $curl = curl_init($url);
@@ -201,12 +274,12 @@ class Sabre_DAV_Client {
         // If the url starts with a slash, we must calculate the url based off 
         // the root of the base url.
         if (strpos($url,'/') === 0) {
-            $parts = parse_url($this->baseUrl);
+            $parts = parse_url($this->baseUri);
             return $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port'])?':' . $parts['port']:'') . $url;
         }
 
         // Otherwise...
-        return $this->baseUrl . $url;
+        return $this->baseUri . $url;
 
     }
 

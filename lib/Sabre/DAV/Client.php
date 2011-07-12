@@ -341,10 +341,29 @@ class Sabre_DAV_Client {
     /**
      * Parses a WebDAV multistatus response body
      * 
-     * @param string $body 
+     * This method returns an array with the following structure
+     *
+     * array(
+     *   'url/to/resource' => array(
+     *     '200' => array(
+     *        '{DAV:}property1' => 'value1',
+     *        '{DAV:}property2' => 'value2',
+     *     ),
+     *     '404' => array(
+     *        '{DAV:}property1' => null,
+     *        '{DAV:}property2' => null,
+     *     ),
+     *   )
+     *   'url/to/resource2' => array(
+     *      .. etc ..
+     *   )
+     * )
+     *
+     *
+     * @param string $body xml body
      * @return array 
      */
-    protected function parseMultiStatus($body) {
+    public function parseMultiStatus($body) {
 
         $body = Sabre_DAV_XMLUtil::convertDAVNamespace($body);
 

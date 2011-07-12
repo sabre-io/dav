@@ -154,7 +154,7 @@ class Sabre_DAV_Client {
 
             if ($propValue === null) {
 
-                $body.="<d:remove><d:prop>";
+                $body.="<d:remove><d:prop>\n";
 
                 if ($namespace === 'DAV:') {
                     $body.='    <d:' . $elementName . ' />' . "\n";
@@ -162,24 +162,24 @@ class Sabre_DAV_Client {
                     $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\"/>\n";
                 }
 
-                $body.="</d:prop><d:remove>";
+                $body.="</d:prop></d:remove>\n";
 
             } else {
 
-                $body.="<d:set><d:prop>";
+                $body.="<d:set><d:prop>\n";
                 if ($namespace === 'DAV:') {
-                    $body.='    <d:' . $elementName . '>' . "\n";
+                    $body.='    <d:' . $elementName . '>';
                 } else {
-                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\">\n";
+                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\">";
                 }
                 // Shitty.. i know
                 $body.=htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8'); 
                 if ($namespace === 'DAV:') {
-                    $body.='    </d:' . $elementName . '>' . "\n";
+                    $body.='</d:' . $elementName . '>' . "\n";
                 } else {
-                    $body.="    </x:" . $elementName . ">\n";
+                    $body.="</x:" . $elementName . ">\n";
                 }
-                $body.="</d:prop><d:set>";
+                $body.="</d:prop></d:set>\n";
 
             }
 

@@ -515,7 +515,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         // The dtstart can be both a date, or datetime property
-        if ((string)$xdtstart[0]['value']==='DATE') {
+        if ((string)$xdtstart[0]['value']==='DATE' || strlen((string)$xdtstart[0])===8) {
             $isDateTime = false;
         } else {
             $isDateTime = true;

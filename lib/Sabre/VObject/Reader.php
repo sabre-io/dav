@@ -4,6 +4,10 @@
  * VCALENDAR/VCARD reader
  *
  * This class reads the vobject file, and returns a full element tree.
+ *
+ *
+ * TODO: this class currently completely works 'statically'. This is pointless, 
+ * and defeats OOP principals. Needs refaxtoring in a future version.
  * 
  * @package Sabre
  * @subpackage VObject
@@ -12,6 +16,23 @@
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_Reader {
+
+    /**
+     * This array contains a list of Property names that are automatically 
+     * mapped to specific class names.
+     *
+     * Adding to this list allows you to specify custom property classes, 
+     * adding extra functionality. 
+     * 
+     * @var array
+     */
+    static public $elementMap = array(
+        'DTSTART'   => 'Sabre_VObject_Element_DateTime',
+        'DTEND'     => 'Sabre_VObject_Element_DateTime',
+        'COMPLETED' => 'Sabre_VObject_Element_DateTime',
+        'DUE'       => 'Sabre_VObject_Element_DateTime',
+        'EXDATE'    => 'Sabre_VObject_Element_MultiDateTime',
+    );
 
     /**
      * Parses the file and returns the top component 
@@ -112,7 +133,16 @@ class Sabre_VObject_Reader {
             throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow icalendar format');
         }
 
-        $obj = new Sabre_VObject_Property(strtoupper($matches['name']), stripcslashes($matches['value']));
+        $propertyName = strtoupper($matches['name']);
+        $propertyValue = stripcslashes($matches['value']);
+
+        if (isset(self::$elementMap[$propertyName])) {
+            $className = self::$elementMap[$propertyName];
+        } else {
+            $className = 'Sabre_VObject_Property';
+        }
+
+        $obj = new $className($propertyName, $propertyValue);
 
         if ($matches['parameters']) {
 
@@ -154,7 +184,6 @@ class Sabre_VObject_Reader {
         }
 
         return $params;
-
 
     }
 

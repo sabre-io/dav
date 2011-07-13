@@ -329,7 +329,10 @@ function parseDocs($docString) {
         $str = ltrim($str,'* ');
         $str = trim($str);
         if ($str && $str[0]==='@') {
-            list($paramName, $paramValue) = explode(' ',substr($str,1),2);
+            $r = explode(' ',substr($str,1),2);
+            $paramName = $r[0];
+            $paramValue = (count($r)>1)?$r[1]:'';
+
             // 'param' paramName is special. Confusing, I know.
             if ($paramName==='param') {
                 if (!isset($params['param'])) $params['param'] = array();

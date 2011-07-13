@@ -35,12 +35,21 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
     /**
      * Constructor 
      * 
-     * @param Sabre_CalDAV_Backend_Abstract $caldavBackend 
+     * @param Sabre_CalDAV_Backend_Abstract $caldavBackend
+     * @param array $calendarInfo
      * @param array $objectData 
      */
-    public function __construct(Sabre_CalDAV_Backend_Abstract $caldavBackend,$calendarInfo,$objectData) {
+    public function __construct(Sabre_CalDAV_Backend_Abstract $caldavBackend,array $calendarInfo,array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
+
+        if (!isset($objectData['calendarid'])) {
+            throw new InvalidArgumentException('The objectData argument must contain a \'calendarid\' property');
+        }
+        if (!isset($objectData['uri'])) {
+            throw new InvalidArgumentException('The objectData argument must contain an \'uri\' property');
+        }
+
         $this->calendarInfo = $calendarInfo;
         $this->objectData = $objectData;
 
@@ -67,7 +76,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
         // Pre-populating the 'calendardata' is optional, if we don't have it
         // already we fetch it from the backend.
         if (!isset($this->objectData['calendardata'])) {
-            $this->objectData = $this->calendarBackend->getCalendarObject($this->objectData['calendarid'], $this->objectData['uri']);
+            $this->objectData = $this->caldavBackend->getCalendarObject($this->objectData['calendarid'], $this->objectData['uri']);
         }
         return $this->objectData['calendardata'];
 

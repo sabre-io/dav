@@ -13,19 +13,34 @@
  */
 class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
 
-    private $pdo;
+    /**
+     * Reference to PDO connection 
+     * 
+     * @var PDO 
+     */
+    protected $pdo;
+
+    /**
+     * PDO table name we'll be using  
+     * 
+     * @var string
+     */
+    protected $tableName;
+
 
     /**
      * Creates the backend object. 
      *
      * If the filename argument is passed in, it will parse out the specified file fist.
      * 
-     * @param string $filename 
+     * @param string $filename
+     * @param string $tableName The PDO table name to use 
      * @return void
      */
-    public function __construct(PDO $pdo) {
+    public function __construct(PDO $pdo, $tableName = 'users') {
 
         $this->pdo = $pdo;
+        $this->tableName = $tableName;
 
     }
 
@@ -38,7 +53,7 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
      */
     public function getDigestHash($realm,$username) {
 
-        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM users WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM `'.$this->tableName.'` WHERE username = ?');
         $stmt->execute(array($username));
         $result = $stmt->fetchAll();
 

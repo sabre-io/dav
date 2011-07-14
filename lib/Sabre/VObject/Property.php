@@ -169,11 +169,14 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public function offsetSet($name, $value) {
 
         if (is_int($name)) return parent::offsetSet($name, $value);
+
         if (is_scalar($value)) {
             if (!is_string($name)) 
                 throw new InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
 
+            $this->offsetUnset($name);
             $this->parameters[] = new Sabre_VObject_Parameter($name, $value);
+
         } elseif ($value instanceof Sabre_VObject_Parameter) {
             if (!is_null($name))
                 throw new InvalidArgumentException('Don\'t specify a parameter name if you\'re passing a Sabre_VObject_Parameter. Add using $array[]=$parameterObject.');

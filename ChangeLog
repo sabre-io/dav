@@ -1,5 +1,8 @@
-1.5.0-stable (????-??-??)
-	* Added: WebDAV client
+1.5.0-stable (2011-??-??)
+	* Added: An experimental WebDAV client
+	* BC Break: Adding parameters with the VObject libraries now overwrites
+	  the previous parameter, rather than just add it. This makes more sense
+	  for 99% of the cases.
 	* Fixed: Problem with overriding tablenames for the CalDAV backend.
 	* Added: Clark-notation parser to XML utility
 

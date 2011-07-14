@@ -63,6 +63,59 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
 
     }
 
+
+    /**
+     * Updates an addressbook's properties
+     *
+     * See Sabre_DAV_IProperties for a description of the mutations array, as 
+     * well as the return value. 
+     *
+     * @param mixed $addressBookId
+     * @param array $mutations
+     * @see Sabre_DAV_IProperties::updateProperties
+     * @return bool|array
+     */
+    public function updateAddressBook($addressBookId, array $mutations) {
+        
+        $updates = array();
+
+        foreach($mutations as $property=>$newValue) {
+
+            switch($property) {
+                case '{DAV:}displayname' :
+                    $updates['displayname'] = $newValue;
+                    break;
+                case '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' :
+                    $updates['description'] = $newValue;
+                    break;
+                default :
+                    // If any unsupported values were being updated, we must 
+                    // let the entire request fail.
+                    return false;
+            }
+
+        }
+
+        // No values are being updated?
+        if (!$updates) {
+            return false;
+        }
+
+        $query = 'UPDATE addressbooks SET ctag = ctag + 1 ';
+        foreach($updates as $key=>$value) {
+            $query.=', `' . $key . '` = :' . $key . ' ';
+        }
+        $query.=' WHERE id = :addressbookid';
+
+        $stmt = $this->pdo->prepare($query);
+        $updates['addressbookid'] = $addressBookId;
+
+        $stmt->execute($updates);
+
+        return true;
+
+    }
+
     /**
      * Returns all cards for a specific addressbook id. 
      * 

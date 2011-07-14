@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AddressBook class
+ * UserAddressBook class
  *
  * @package Sabre
  * @subpackage CardDAV
@@ -11,18 +11,18 @@
  */
 
 /**
- * The AddressBook class represents a CardDAV addressbook
+ * The AddressBook class represents a CardDAV addressbook, owned by a specific user
  *
  * The AddressBook can contain multiple vcards
  */
-class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV_ICollection, Sabre_DAV_IProperties {
+class Sabre_CardDAV_AddressBook implements Sabre_CardDAV_IAddressBook, Sabre_DAV_IProperties {
 
     /**
      * This is an array with addressbook information 
      * 
      * @var array 
      */
-    private $addressBookId;
+    private $addressBookInfo;
 
     /**
      * CardDAV backend 
@@ -38,11 +38,10 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
      * @param array $addressBookInfo 
      * @return void
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,$addressBookId) {
+    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,$addressBookInfo) {
 
         $this->carddavBackend = $carddavBackend;
-        $this->addressBookId = $addressBookId;
-
+        $this->addressBookInfo = $addressBookInfo;
 
     }
 
@@ -53,41 +52,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
      */
     public function getName() {
 
-        return $this->addressBookId;
-
-    }
-
-    /**
-     * Updates properties such as the display name and description 
-     * 
-     * @param array $mutations 
-     * @return array 
-     */
-    public function updateProperties($mutations) {
-
-        throw new Sabre_DAV_Exception_Forbidden('Updating this addressbook is not supported');
-
-    }
-
-    /**
-     * Returns the list of properties 
-     * 
-     * @param array $properties 
-     * @return array 
-     */
-    public function getProperties($requestedProperties) {
-
-        $response = array();
-
-        foreach($requestedProperties as $prop) switch($prop) {
-
-            case '{DAV:}resourcetype' : 
-                $response[$prop] =  new Sabre_DAV_Property_ResourceType(array('{'.Sabre_CardDAV_Plugin::NS_CARDDAV.'}addressbook','{DAV:}collection')); 
-                break;
-
-
-        }
-        return $response;
+        return $this->addressBookInfo['uri'];
 
     }
 
@@ -99,9 +64,9 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
      */
     public function getChild($name) {
 
-        $obj = $this->carddavBackend->getCard($this->addressBookId,$name);
+        $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'],$name);
         if (!$obj) throw new Sabre_DAV_Exception_FileNotFound('Card not found');
-        return new Sabre_CardDAV_Card($this->carddavBackend,array('id' => $this->addressBookId),$obj);
+        return new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
 
     }
 
@@ -112,10 +77,10 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
      */
     public function getChildren() {
 
-        $objs = $this->carddavBackend->getCards($this->addressBookId);
+        $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
         $children = array();
         foreach($objs as $obj) {
-            $children[] = new Sabre_CardDAV_Card($this->carddavBackend,array('id' => $this->addressBookId),$obj);
+            $children[] = new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
         }
         return $children;
 
@@ -147,7 +112,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
     public function createFile($name,$vcardData = null) {
 
         $vcardData = stream_get_contents($vcardData);
-        $this->carddavBackend->createCard($this->addressBookId,$name,$vcardData);
+
+        $this->carddavBackend->createCard($this->addressBookInfo['id'],$name,$vcardData);
 
     }
 
@@ -159,6 +125,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
     public function delete() {
 
         throw new Sabre_DAV_Exception_Forbidden('Not supported yet');
+        $this->caldavBackend->deleteCalendar($this->calendarInfo['id']);
 
     }
 
@@ -171,7 +138,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
      */
     public function setName($newName) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Renaming this addressbooks is not supported');
+        throw new Sabre_DAV_Exception_MethodNotAllowed('Renaming addressbooks is not yet supported');
 
     }
 
@@ -185,5 +152,75 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_DAV
         return null;
 
     }
+
+    /**
+     * Updates properties on this node,
+     *
+     * The properties array uses the propertyName in clark-notation as key,
+     * and the array value for the property value. In the case a property
+     * should be deleted, the property value will be null.
+     *
+     * This method must be atomic. If one property cannot be changed, the
+     * entire operation must fail.
+     *
+     * If the operation was successful, true can be returned.
+     * If the operation failed, false can be returned.
+     *
+     * Deletion of a non-existant property is always succesful.
+     *
+     * Lastly, it is optional to return detailed information about any
+     * failures. In this case an array should be returned with the following
+     * structure:
+     *
+     * array(
+     *   403 => array(
+     *      '{DAV:}displayname' => null,
+     *   ),
+     *   424 => array(
+     *      '{DAV:}owner' => null,
+     *   )
+     * )
+     *
+     * In this example it was forbidden to update {DAV:}displayname. 
+     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
+     * (424 Failed Dependency) because the request needs to be atomic.
+     *
+     * @param array $mutations 
+     * @return bool|array 
+     */
+    public function updateProperties($mutations) {
+
+        return $this->updateAddressBook($this->addressBookInfo['id'], $mutations); 
+
+    }
+
+    /**
+     * Returns a list of properties for this nodes.
+     *
+     * The properties list is a list of propertynames the client requested,
+     * encoded in clark-notation {xmlnamespace}tagname
+     *
+     * If the array is empty, it means 'all properties' were requested.
+     *
+     * @param array $properties 
+     * @return void
+     */
+    public function getProperties($properties) {
+
+        $response = array();
+        foreach($properties as $propertyName) {
+
+            if (isset($this->addressBookInfo[$propertyName])) {
+
+                $response[$propertyName] = $this->addressBookInfo[$propertyName];
+
+            }
+
+        }
+
+        return $response;
+
+    }
+
 
 }

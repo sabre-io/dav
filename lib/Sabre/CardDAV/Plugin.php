@@ -48,6 +48,8 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         /* Namespaces */
         $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
 
+        /* Mapping Interfaces to {DAV:}resourcetype values */
+        $server->resourceTypeMapping['Sabre_CardDAV_IAddressBook'] = '{' . self::NS_CARDDAV . '}addressbook';
         $this->server = $server;
 
     }

@@ -11,7 +11,11 @@
  */
 
 /**
- * This class serves as a base-class for addressbooks
+ * This class serves as a base-class for addressbook backends
+ *
+ * Note that there are references to 'addressBookId' scattered throughout the 
+ * class. The value of the addressBookId is completely up to you, it can be any 
+ * arbitrary value you can use as an unique identifier.
  */
 abstract class Sabre_CardDAV_Backend_Abstract {
 
@@ -22,6 +26,19 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @return array 
      */
     public abstract function getAddressBooksForUser($principalUri); 
+
+    /**
+     * Updates an addressbook's properties
+     *
+     * See Sabre_DAV_IProperties for a description of the mutations array, as 
+     * well as the return value. 
+     *
+     * @param mixed $addressBookId
+     * @param array $mutations
+     * @see Sabre_DAV_IProperties::updateProperties
+     * @return bool|array
+     */
+    public abstract function updateAddressBook($addressBookId, array $mutations); 
 
     /**
      * Returns all cards for a specific addressbook id. 
@@ -58,11 +75,7 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardData 
      * @return bool 
      */
-    public function createCard($addressBookId, $cardUri, $cardData) {
-
-        throw new Sabre_DAV_Exception_Forbidden('Creating new cards is not supported');
-
-    }
+    abstract public function createCard($addressBookId, $cardUri, $cardData); 
 
     /**
      * Updates a card
@@ -72,12 +85,7 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardData 
      * @return bool 
      */
-    public function updateCard($addressBookId, $cardUri, $cardData) {
-
-        throw new Sabre_DAV_Exception_Forbidden('Updating cards is not supported');
-
-    }
-
+    abstract public function updateCard($addressBookId, $cardUri, $cardData); 
 
     /**
      * Deletes a card
@@ -86,10 +94,6 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardUri 
      * @return bool 
      */
-    public function deleteCard($addressBookId, $cardUri) {
-
-        throw new Sabre_DAV_Exception_Forbidden('Deleting cards is not supported');
-
-    }
+    abstract public function deleteCard($addressBookId, $cardUri); 
 
 }

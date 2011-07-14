@@ -48,7 +48,7 @@ interface Sabre_DAV_IProperties extends Sabre_DAV_INode {
      * @param array $mutations 
      * @return bool|array 
      */
-    function updateProperties($properties);
+    function updateProperties($mutations);
 
     /**
      * Returns a list of properties for this nodes.

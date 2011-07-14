@@ -190,7 +190,6 @@ class Sabre_DAV_Client {
         $body.= '</d:propertyupdate>';
 
         $response = $this->request('PROPPATCH', $url, $body, array(
-            'Depth' => $depth,
             'Content-Type' => 'application/xml'
         ));
 

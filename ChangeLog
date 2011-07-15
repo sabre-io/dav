@@ -5,6 +5,7 @@
 	  for 99% of the cases.
 	* Fixed: Problem with overriding tablenames for the CalDAV backend.
 	* Added: Clark-notation parser to XML utility
+	* Added: unset() support to VObject components
 
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.

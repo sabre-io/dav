@@ -1,4 +1,5 @@
 1.5.0-stable (2011-??-??)
+	* Added: CardDAV support.
 	* Added: An experimental WebDAV client
 	* BC Break: Adding parameters with the VObject libraries now overwrites
 	  the previous parameter, rather than just add it. This makes more sense

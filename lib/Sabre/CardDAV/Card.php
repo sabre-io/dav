@@ -13,7 +13,7 @@
 /**
  * The Card object represents a single Card from an addressbook
  */ 
-class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_DAV_IProperties {
+class Sabre_CardDAV_Card extends Sabre_DAV_File {
 
     /**
      * CardDAV backend
@@ -123,31 +123,6 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_DAV_IProperties
     public function getETag() {
 
         return md5($this->cardData['carddata']);
-
-    }
-
-    /**
-     * Returns the list of properties for this object
-     * 
-     * @param array $properties 
-     * @return array 
-     */
-    public function getProperties($properties) {
-
-        $response = array();
-        return $response;
-
-    }
-
-    /**
-     * Updates properties
-     * 
-     * @param array $properties
-     * @return array 
-     */
-    public function updateProperties($properties) {
-
-        return false;
 
     }
 

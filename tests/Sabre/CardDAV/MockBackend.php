@@ -103,13 +103,13 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
 
     function updateCard($addressBookId, $cardUri, $cardData) {
 
-        throw new Exception('Unsupported');
+        $this->cards[$addressBookId][$cardUri] = $cardData;
 
     }
 
     function deleteCard($addressBookId, $cardUri) {
 
-        throw new Exception('Unsupported');
+        unset($this->cards[$addressBookId][$cardUri]);
 
     }
 

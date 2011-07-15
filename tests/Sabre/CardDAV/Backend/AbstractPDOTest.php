@@ -111,5 +111,23 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
 
     }
 
+    public function testGetCards() {
+
+        $result = $this->backend->getCards(1);
+
+        $expected = array(
+            array(
+                'id' => 1,
+                'uri' => 'card1',
+                'carddata' => 'card1',
+                'lastmodified' => 0,
+            )
+        );
+
+        $this->assertEquals($expected, $result);
+
+    }    
+
+
 }
 

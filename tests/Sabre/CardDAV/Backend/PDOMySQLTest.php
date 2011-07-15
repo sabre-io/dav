@@ -41,6 +41,12 @@ CREATE TABLE cards (
 );
 ");
 
+        $pdo->query("
+INSERT INTO cards
+    (addressbookid, carddata, uri, lastmodified)
+VALUES
+    (1, 'card1', 'card1', 0);
+");
         return $pdo;
 
     }

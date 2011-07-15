@@ -205,6 +205,12 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                     case '{DAV:}principal' :
                         $type[$k] = 'Principal';
                         break;
+                    case '{urn:ietf:params:xml:ns:carddav}addressbook' :
+                        $type[$k] = 'Addressbook';
+                        break;
+                    case '{urn:ietf:params:xml:ns:caldav}calendar' :
+                        $type[$k] = 'Calendar';
+                        break;
                 }
 
             }

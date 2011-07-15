@@ -250,6 +250,18 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testMagicUnset() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp->add(new Sabre_VObject_Component('VEVENT'));
+
+        unset($comp->vevent);
+
+        $this->assertEquals(array(), $comp->children);
+
+    }
+
+
     function testCount() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');

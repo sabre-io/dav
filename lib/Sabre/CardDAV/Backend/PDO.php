@@ -143,7 +143,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
         $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM cards WHERE addressbookid = ? AND uri = ? LIMIT 1');
         $stmt->execute(array($addressBookId, $cardUri));
 
-        $result = $stmt->fetchAll();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return (count($result)>0?$result[0]:false);
 

@@ -55,17 +55,7 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      * @param string $cardUri 
      * @return void
      */
-    public function getCard($addressBookId, $cardUri) {
-
-        foreach($this->getCards($addressBookId) as $card) {
-
-            if ($card['uri'] === $cardUri) return $card;
-
-        }
-
-        return false;
-
-    }
+    public abstract function getCard($addressBookId, $cardUri); 
 
     /**
      * Creates a new card

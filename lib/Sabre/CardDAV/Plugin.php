@@ -50,6 +50,12 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         /* Mapping Interfaces to {DAV:}resourcetype values */
         $server->resourceTypeMapping['Sabre_CardDAV_IAddressBook'] = '{' . self::NS_CARDDAV . '}addressbook';
+        
+        /* Adding properties that may never be changed */
+        $server->protectedProperties[] = '{' . NS_CARDDAV . '}supported-address-data';
+        $server->protectedProperties[] = '{' . NS_CARDDAV . '}max-resource-size';
+
+
         $this->server = $server;
 
     }

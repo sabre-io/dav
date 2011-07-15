@@ -111,6 +111,55 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
 
     }
 
+    public function testDeleteAddressBook() {
+
+        $this->backend->deleteAddressBook(1);
+
+        $this->assertEquals(array(), $this->backend->getAddressBooksForUser('principals/user1'));
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    public function testCreateAddressBookUnsupportedProp() {
+
+        $this->backend->createAddressBook('principals/user1','book2', array(
+            '{DAV:}foo' => 'bar',
+        )); 
+
+    }
+
+    public function testCreateAddressBookSuccess() {
+
+        $this->backend->createAddressBook('principals/user1','book2', array(
+            '{DAV:}displayname' => 'book2',
+            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 2',
+        )); 
+
+        $expected = array(
+            array(
+                'id' => 1,
+                'uri' => 'book1',
+                'principaluri' => 'principals/user1',
+                '{DAV:}displayname' => 'book1',
+                '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
+                '{http://calendarserver.org/ns/}getctag' => 1,
+            ),
+            array(
+                'id' => 2,
+                'uri' => 'book2',
+                'principaluri' => 'principals/user1',
+                '{DAV:}displayname' => 'book2',
+                '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 2',
+                '{http://calendarserver.org/ns/}getctag' => 1,
+            )
+        );
+        $result = $this->backend->getAddressBooksForUser('principals/user1');
+        $this->assertEquals($expected, $result);
+
+    }
+
     public function testGetCards() {
 
         $result = $this->backend->getCards(1);
@@ -128,6 +177,55 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
 
     }    
 
+    public function testGetCard() {
 
+        $result = $this->backend->getCard(1,'card1');
+
+        $expected = array(
+            'id' => 1,
+            'uri' => 'card1',
+            'carddata' => 'card1',
+            'lastmodified' => 0,
+        );
+
+        $this->assertEquals($expected, $result);
+
+    }
+
+    /**
+     * @depends testGetCard
+     */
+    public function testCreateCard() {
+
+        $this->backend->createCard(1, 'card2', 'data2');
+        $result = $this->backend->getCard(1,'card2');
+        $this->assertEquals(2, $result['id']);
+        $this->assertEquals('card2', $result['uri']);
+        $this->assertEquals('data2', $result['carddata']);
+
+    } 
+
+    /**
+     * @depends testGetCard
+     */
+    public function testUpdateCard() {
+
+        $this->backend->updateCard(1, 'card1', 'newdata');
+        $result = $this->backend->getCard(1,'card1');
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('newdata', $result['carddata']);
+
+    }
+
+    /**
+     * @depends testGetCard
+     */
+    public function testDeleteCard() {
+
+        $this->backend->deleteCard(1, 'card1');
+        $result = $this->backend->getCard(1,'card1');
+        $this->assertFalse($result);
+
+    } 
 }
 

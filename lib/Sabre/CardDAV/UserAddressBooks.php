@@ -20,7 +20,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Directory implements Sabr
      * 
      * @var array 
      */
-    protected $userUri;
+    protected $principalUri;
 
     /**
      * carddavBackend 
@@ -33,12 +33,12 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Directory implements Sabr
      * Constructor 
      * 
      * @param Sabre_CardDAV_Backend_Abstract $carddavBackend 
-     * @param string $userUri 
+     * @param string $principalUri 
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend, $userUri) {
+    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend, $principalUri) {
 
         $this->carddavBackend = $carddavBackend;
-        $this->userUri = $userUri;
+        $this->principalUri = $principalUri;
        
     }
 
@@ -49,7 +49,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Directory implements Sabr
      */
     public function getName() {
       
-        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->userUri);
+        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->principalUri);
         return $name; 
 
     }
@@ -142,7 +142,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Directory implements Sabr
      */
     public function getChildren() {
 
-        $addressbooks = $this->carddavBackend->getAddressbooksForUser($this->userUri);
+        $addressbooks = $this->carddavBackend->getAddressbooksForUser($this->principalUri);
         $objs = array();
         foreach($addressbooks as $addressbook) {
             $objs[] = new Sabre_CardDAV_AddressBook($this->carddavBackend, $addressbook);
@@ -152,19 +152,19 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Directory implements Sabr
     }
 
     /**
-     * Creates a new calendar
+     * Creates a new addressbook 
      * 
-     * @param string $name 
-     * @param string $properties 
+     * @param string $name
+     * @param array $resourceType 
+     * @param array $properties 
      * @return void
      */
     public function createExtendedCollection($name, array $resourceType, array $properties) {
 
-        throw new Sabre_DAV_Exception_Forbidden();
-        if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar',$resourceType) || count($resourceType)!==2) {
+        if (!in_array('{'.Sabre_CardDAV_Plugin.'}addressbook',$resourceType) || count($resourceType)!==2) {
             throw new Sabre_DAV_Exception_InvalidResourceType('Unknown resourceType for this collection');
         }
-        $this->caldavBackend->createCalendar($this->userUri, $name, $properties);
+        $this->carddavBackend->createAddressBook($this->principalUri, $name, $properties);
 
     }
 

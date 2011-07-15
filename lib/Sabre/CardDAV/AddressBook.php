@@ -38,7 +38,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_Car
      * @param array $addressBookInfo 
      * @return void
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,$addressBookInfo) {
+    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,array $addressBookInfo) {
 
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;
@@ -124,8 +124,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_Car
      */
     public function delete() {
 
-        throw new Sabre_DAV_Exception_Forbidden('Not supported yet');
-        $this->caldavBackend->deleteCalendar($this->calendarInfo['id']);
+        $this->carddavBackend->deleteAddressBook($this->addressBookInfo['id']);
 
     }
 
@@ -190,7 +189,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_Car
      */
     public function updateProperties($mutations) {
 
-        return $this->updateAddressBook($this->addressBookInfo['id'], $mutations); 
+        return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $mutations); 
 
     }
 

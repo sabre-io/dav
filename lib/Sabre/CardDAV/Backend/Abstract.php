@@ -41,6 +41,24 @@ abstract class Sabre_CardDAV_Backend_Abstract {
     public abstract function updateAddressBook($addressBookId, array $mutations); 
 
     /**
+     * Creates a new address book 
+     *
+     * @param string $principalUri 
+     * @param string $url Just the 'basename' of the url. 
+     * @param array $properties 
+     * @return void
+     */
+    abstract public function createAddressBook($principalUri, $url, array $properties); 
+
+    /**
+     * Deletes an entire addressbook and all its contents
+     *
+     * @param int $addressBookId 
+     * @return void
+     */
+    abstract public function deleteAddressBook($addressBookId); 
+
+    /**
      * Returns all cards for a specific addressbook id. 
      * 
      * @param mixed $addressbookId 

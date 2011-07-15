@@ -117,6 +117,60 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
     }
 
     /**
+     * Creates a new address book 
+     *
+     * @param string $principalUri 
+     * @param string $url Just the 'basename' of the url. 
+     * @param array $properties 
+     * @return void
+     */
+    public function createAddressBook($principalUri, $url, array $properties) {
+
+        $values = array(
+            'displayname' => null,
+            'description' => null,
+            'principaluri' => $principalUri,
+            'uri' => $url,
+        );
+
+        foreach($properties as $property=>$newValue) {
+
+            switch($property) {
+                case '{DAV:}displayname' :
+                    $values['displayname'] = $newValue;
+                    break;
+                case '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' :
+                    $values['description'] = $newValue;
+                    break;
+                default :
+                    throw new Sabre_DAV_Exception_BadRequest('Unknown property: ' . $property);
+            }
+
+        }
+
+        $query = 'INSERT INTO addressbooks (uri, displayname, description, principaluri, ctag) VALUES (:uri, :displayname, :description, :principaluri, 1)';
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($values);
+
+    }
+
+    /**
+     * Deletes an entire addressbook and all its contents
+     *
+     * @param int $addressBookId 
+     * @return void
+     */
+    public function deleteAddressBook($addressBookId) {
+
+        $stmt = $this->pdo->prepare('DELETE FROM cards WHERE addressbookid = ?');
+        $stmt->execute(array($addressBookId));
+
+        $stmt = $this->pdo->prepare('DELETE FROM addressbooks WHERE id = ?');
+        $stmt->execute(array($addressBookId));
+
+    }
+
+    /**
      * Returns all cards for a specific addressbook id. 
      * 
      * @param mixed $addressbookId 

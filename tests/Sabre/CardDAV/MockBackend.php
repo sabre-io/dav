@@ -29,7 +29,7 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
 
         $books = array();
         foreach($this->addressBooks as $book) {
-            if ($book['principalUri'] === $principalUri) {
+            if ($book['principaluri'] === $principalUri) {
                 $books[] = $book;
             }
         }
@@ -55,7 +55,11 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
 
     function createAddressBook($principalUri, $url, array $properties) {
 
-        throw new Exception('Unsupported');
+        $this->addressBooks[] = array_merge($properties, array(
+            'id' => $url,
+            'uri' => $url,
+            'principaluri' => $principalUri,
+        ));
 
     }
 

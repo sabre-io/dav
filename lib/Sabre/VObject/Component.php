@@ -204,6 +204,25 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
     }
 
+    /**
+     * Removes all properties and components within this component. 
+     * 
+     * @param string $name 
+     * @return void
+     */
+    public function __unset($name) {
+
+        $name = strtoupper($name);
+
+        foreach($this->children as $k=>$child) {
+
+            if ($child->name === $name) 
+                unset($this->children[$k]);
+
+        }
+
+    }
+
     /* }}} */
 
 

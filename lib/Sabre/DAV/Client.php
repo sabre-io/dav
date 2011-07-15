@@ -5,6 +5,8 @@
  *
  * This client wraps around Curl to provide a convenient API to a WebDAV 
  * server.
+ *
+ * NOTE: This class is experimental, it's api will likely change in the future.
  * 
  * @package Sabre
  * @subpackage DAVClient
@@ -188,7 +190,6 @@ class Sabre_DAV_Client {
         $body.= '</d:propertyupdate>';
 
         $response = $this->request('PROPPATCH', $url, $body, array(
-            'Depth' => $depth,
             'Content-Type' => 'application/xml'
         ));
 

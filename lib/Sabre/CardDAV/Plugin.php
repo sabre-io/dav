@@ -42,7 +42,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         /* Events */
-        $server->subscribeEvent('afterGetProperties', array($this, 'afterGetProperties'));
+        $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
         $server->subscribeEvent('report', array($this,'report'));
 
         /* Namespaces */
@@ -99,23 +99,23 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Adds all CardDAV-specific properties 
      * 
-     * @param string $path 
-     * @param array $properties 
+     * @param string $path
+     * @param Sabre_DAV_INode $node 
+     * @param array $requestedProperties
+     * @param array $returnedProperties 
      * @return void
      */
-    public function afterGetProperties($path, array &$properties) { 
+    public function beforeGetProperties($path, Sabre_DAV_INode $node, array &$requestedProperties, array &$returnedProperties) { 
 
-        // Find out if we are currently looking at a principal resource
-        $currentNode = $this->server->tree->getNodeForPath($path);
-        if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
+        if ($node instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
             $addHome = '{' . self::NS_CARDDAV . '}addressbook-home-set';
-            if (array_key_exists($addHome,$properties[404])) {
-                $principalId = $currentNode->getName(); 
+            if (in_array($addHome,$requestedProperties)) {
+                $principalId = $node->getName(); 
                 $addressbookHomePath = self::ADDRESSBOOK_ROOT . '/' . $principalId . '/';
-                unset($properties[404][$addHome]);
-                $properties[200][$addHome] = new Sabre_DAV_Property_Href($addressbookHomePath);
+                unset($requestedProperties[$addHome]);
+                $returnedProperties[200][$addHome] = new Sabre_DAV_Property_Href($addressbookHomePath);
             }
 
         }

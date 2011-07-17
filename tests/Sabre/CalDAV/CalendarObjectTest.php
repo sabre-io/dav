@@ -85,23 +85,6 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends testSetup
      */
-    function testGetProperties() {
-        
-        $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
-        $obj = $children[0];
-        
-        $result = $obj->getProperties(array('{urn:ietf:params:xml:ns:caldav}calendar-data'));
-
-        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-data', $result);
-        $this->assertInternalType('string', $result['{urn:ietf:params:xml:ns:caldav}calendar-data']);
-
-    }
-
-    /**
-     * @depends testSetup
-     */
     function testDelete() {
 
         $children = $this->calendar->getChildren();
@@ -112,20 +95,6 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children2 =  $this->calendar->getChildren();
         $this->assertEquals(count($children)-1, count($children2));
-
-    }
-
-    /**
-     * @depends testSetup
-     */
-    function testUpdateProperties() {
-
-        $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
-        $obj = $children[0];
-
-        $this->assertFalse($obj->updateProperties(array('bla' => 'bla')));
 
     }
 

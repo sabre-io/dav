@@ -9,7 +9,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
+class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAVACL_IACL {
 
     /**
      * Sabre_CalDAV_Backend_Abstract 
@@ -137,35 +137,6 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAV_IP
         } else {
             return '"' . md5($this->get()). '"';
         }
-
-    }
-
-    /**
-     * Returns the list of properties for this object
-     * 
-     * @param array $properties 
-     * @return array 
-     */
-    public function getProperties($properties) {
-
-        $response = array();
-        if (in_array('{urn:ietf:params:xml:ns:caldav}calendar-data',$properties)) 
-            $response['{urn:ietf:params:xml:ns:caldav}calendar-data'] = str_replace("\r","",$this->objectData['calendardata']);
-       
-
-        return $response;
-
-    }
-
-    /**
-     * Updates properties
-     * 
-     * @param array $properties
-     * @return array 
-     */
-    public function updateProperties($properties) {
-
-        return false;
 
     }
 

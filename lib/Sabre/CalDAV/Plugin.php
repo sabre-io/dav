@@ -158,6 +158,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             '{' . self::NS_CALDAV . '}max-attendees-per-instance',
             '{' . self::NS_CALDAV . '}calendar-home-set',
             '{' . self::NS_CALDAV . '}supported-collation-set',
+            '{' . self::NS_CALDAV . '}calendar-data',
 
             // scheduling extension
             '{' . self::NS_CALDAV . '}calendar-user-address-set',
@@ -323,7 +324,25 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         } // instanceof IPrincipal
-        
+
+
+        if ($node instanceof Sabre_CalDAV_CalendarObject) {
+            // The calendar-data property is not supposed to be a 'real' 
+            // property, but in large chunks of the spec it does act as such. 
+            // Therefore we simply expose it as a property.
+            $calDataProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-data';
+            if (in_array($calDataProp, $requestedProperties)) {
+                unset($requestedProperties[$calDataProp]);
+                $val = $node->get();
+                if (is_resource($val))
+                    $val = stream_get_contents($val);
+
+                // Taking out \r to not screw up the xml output
+                $returnedProperties[200][$calDataProp] = str_replace("\r","", $val);
+
+            }
+        }
+
     }
 
     /**

@@ -173,6 +173,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 $node = $this->server->tree->getNodeForPath($uri);
                 $objProps[200][$addressDataElem] = stream_get_contents($node->get());
+                unset($objProps[404][$addressDataElem]);
 
             }
             $propertyList[]=$objProps;

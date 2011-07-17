@@ -2,27 +2,7 @@
 
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
-class Sabre_CardDAV_PluginTest extends PHPUnit_Framework_TestCase {
-
-    private $plugin;
-    private $server;
-    private $backend;
-
-    function setUp() {
-
-        $this->backend = new Sabre_CardDAV_MockBackend();
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-
-        $tree = array(
-            new Sabre_CardDAV_AddressBookRoot($principalBackend, $this->backend),
-            new Sabre_DAVACL_PrincipalCollection($principalBackend)
-        );
-
-        $this->plugin = new Sabre_CardDAV_Plugin();
-        $this->server = new Sabre_DAV_Server($tree);
-        $this->server->addPlugin($this->plugin);
-
-    }
+class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
     function testConstruct() {
 
@@ -55,6 +35,12 @@ class Sabre_CardDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, count($result));
         $this->assertTrue(isset($result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set']));
         $this->assertEquals('addressbooks/user1/', $result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set']->getHref());
+
+    }
+
+    function testReportPassThrough() {
+
+        $this->assertNull($this->plugin->report('{DAV:}foo', new DomDocument()));
 
     }
 

@@ -17,9 +17,11 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support'); 
         $this->caldavBackend = Sabre_CalDAV_TestUtil::getBackend();
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-read',array('principals/user1'));
+        $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-write',array('principals/user1'));
 
         $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend,$this->caldavBackend);
-        $principals = new Sabre_DAVACL_PrincipalCollection($principalBackend);
+        $principals = new Sabre_CalDAV_Principal_Collection($principalBackend);
 
         $root = new Sabre_DAV_SimpleDirectory('root');
         $root->addChild($calendars);
@@ -378,6 +380,8 @@ END:VCALENDAR';
         $props = $this->server->getPropertiesForPath('/principals/user1',array(
             '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
             '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
+            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
+            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
         ));
 
         $this->assertArrayHasKey(0,$props);
@@ -393,6 +397,16 @@ END:VCALENDAR';
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
         $this->assertTrue($prop instanceof Sabre_DAV_Property_HrefList);
         $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1'),$prop->getHrefs());
+
+        $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
+        $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
+        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $prop);
+        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+
+        $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
+        $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
+        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $prop);
+        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
 
     }
 

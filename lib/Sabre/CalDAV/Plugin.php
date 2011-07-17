@@ -136,7 +136,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
-        $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
+        $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -231,7 +231,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
 
-
             foreach($dom->firstChild->childNodes as $child) {
 
                 if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
@@ -251,41 +250,39 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * afterGetProperties
+     * beforeGetProperties
      *
-     * This method handler is invoked after properties for a specific resource
-     * are received. This allows us to add any properties that might have been
-     * missing.
+     * This method handler is invoked before any after properties for a
+     * resource are fetched. This allows us to add in any CalDAV specific 
+     * properties. 
      * 
      * @param string $path
-     * @param array $properties 
+     * @param Sabre_DAV_INode $node
+     * @param array $requestedProperties
+     * @param array $returnedProperties
      * @return void
      */
-    public function afterGetProperties($path, &$properties) {
+    public function beforeGetProperties($path, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
 
-        // Find out if we are currently looking at a principal resource
-        $currentNode = $this->server->tree->getNodeForPath($path);
-
-        if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
+        if ($node instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
-            if (array_key_exists($calHome,$properties[404])) {
-                $principalId = $currentNode->getName(); 
+            if (in_array($calHome,$requestedProperties)) {
+                $principalId = $node->getName(); 
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
-                unset($properties[404][$calHome]);
-                $properties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
+                unset($requestedProperties[$calHome]);
+                $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
             }
 
-            
             // calendar-user-address-set property
             $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
-            if (array_key_exists($calProp,$properties[404])) {
+            if (in_array($calProp,$requestedProperties)) {
 
-                $addresses = $currentNode->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $currentNode->getPrincipalUrl();
-                $properties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
-                unset($properties[404][$calProp]);
+                $addresses = $node->getAlternateUriSet();
+                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl();
+                unset($requestedProperties[$calProp]);
+                $returnedProperties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
 
             }
 
@@ -293,8 +290,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // other principals this principal has access to.
             $propRead = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for';
             $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
-            if (array_key_exists($propRead,$properties[404]) || array_key_exists($propWrite,$properties[404])) {
-                $membership = $currentNode->getGroupMembership();
+            if (in_array($propRead,$requestedProperties) || in_array($propWrite,$requestedProperties)) {
+
+                $membership = $node->getGroupMembership();
                 $readList = array();
                 $writeList = array();
 
@@ -313,18 +311,18 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     }
 
                 }
-                if (array_key_exists($propRead,$properties[404])) {
-                    unset($properties[404][$propRead]);
-                    $properties[200][$propRead] = new Sabre_DAV_Property_HrefList($readList);
+                if (in_array($propRead,$requestedProperties)) {
+                    unset($requestedProperties[$propRead]);
+                    $returnedProperties[200][$propRead] = new Sabre_DAV_Property_HrefList($readList);
                 }
-                if (array_key_exists($propWrite,$properties[404])) {
-                    unset($properties[404][$propWrite]);
-                    $properties[200][$propWrite] = new Sabre_DAV_Property_HrefList($writeList);
+                if (in_array($propWrite,$requestedProperties)) {
+                    unset($requestedProperties[$propWrite]);
+                    $returnedProperties[200][$propWrite] = new Sabre_DAV_Property_HrefList($writeList);
                 }
 
             }
 
-        }
+        } // instanceof IPrincipal
         
     }
 

@@ -267,11 +267,12 @@ class Sabre_DAV_Client {
             $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
         }
 
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $curlSettings);
-
-        $response = curl_exec($curl);
-        $curlInfo = curl_getinfo($curl);
+        list(
+            $response,
+            $curlInfo,
+            $curlErrNo,
+            $curlError
+        ) = $this->curlRequest($url, $curlSettings);
 
         $headerBlob = substr($response, 0, $curlInfo['header_size']);
         $response = substr($response, $curlInfo['header_size']);
@@ -301,8 +302,8 @@ class Sabre_DAV_Client {
             'headers' => $headers
         );
 
-        if (curl_errno($curl)) {
-            throw new Sabre_DAV_Exception('[CURL] Error while making request: ' . curl_error($curl) . ' (error code: ' . curl_errno($curl) . ')');
+        if ($curlErrNo) {
+            throw new Sabre_DAV_Exception('[CURL] Error while making request: ' . $curlError . ' (error code: ' . $curlErrNo . ')');
         } 
 
         if ($response['statusCode']>=400) {
@@ -310,6 +311,30 @@ class Sabre_DAV_Client {
         }
 
         return $response;
+
+    }
+
+    /**
+     * Wrapper for all curl functions.
+     *
+     * The only reason this was split out in a separate method, is so it 
+     * becomes easier to unittest. 
+     *
+     * @param string $url
+     * @param array $settings 
+     * @return  
+     */
+    protected function curlRequest($url, $settings) {
+
+        $curl = curl_init($url);
+        curl_setopt_array($curl, $settings);
+
+        return array(
+            curl_exec($curl),
+            curl_getinfo($curl),
+            curl_errno($curl),
+            curl_error($curl)
+        );
 
     }
 
@@ -369,7 +394,7 @@ class Sabre_DAV_Client {
         $body = Sabre_DAV_XMLUtil::convertDAVNamespace($body);
 
         $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
-        if (!$responseXML===false) {
+        if ($responseXML===false) {
             throw new InvalidArgumentException('The passed data is not valid XML');
         }
          

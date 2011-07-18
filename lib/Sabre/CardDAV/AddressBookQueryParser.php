@@ -14,6 +14,39 @@
  */
 class Sabre_CardDAV_AddressBookQueryParser {
 
+    const TEST_ANYOF = 'anyof';
+    const TEST_ALLOF = 'allof';
+
+    /**
+     * List of requested properties the client wanted
+     * 
+     * @var array 
+     */
+    public $requestedProperties;
+
+    /**
+     * The number of results the client wants
+     *
+     * null means it wasn't specified, which in most cases means 'all results'.
+     * 
+     * @var int|null 
+     */
+    public $limit;
+
+    /**
+     * List of property filters.
+     *
+     * @var array 
+     */
+    public $filters;
+
+    /**
+     * Either TEST_ANYOF or TEST_ALLOF
+     * 
+     * @var string 
+     */
+    public $test;
+
     /**
      * DOM Document
      * 
@@ -39,7 +72,7 @@ class Sabre_CardDAV_AddressBookQueryParser {
         $this->dom = $dom;
 
         $this->xpath = new DOMXPath($dom);
-        $this->xpath->registerNameSpace('card',self::NS_CARDDAV);
+        $this->xpath->registerNameSpace('card',Sabre_CardDAV_Plugin::NS_CARDDAV);
 
     }
 
@@ -49,13 +82,12 @@ class Sabre_CardDAV_AddressBookQueryParser {
      * @param DOMNode $dom 
      * @return void
      */
-    public function parse(DOMNode $dom) {
+    public function parse() {
 
-        $root = $dom->firstChild;
         $filterNode = null;
         
-        $limit = $this->xpath->evaluate('number(/card:limit/card:nresults)');
-        if (!$limit) $limit = null;
+        $limit = $this->xpath->evaluate('number(/card:addressbook-query/card:limit/card:nresults)');
+        if (is_nan($limit)) $limit = null;
 
         $filter = $this->xpath->query('/card:addressbook-query/card:filter');
         if ($filter->length !== 1) {
@@ -64,8 +96,8 @@ class Sabre_CardDAV_AddressBookQueryParser {
 
         $filter = $filter->item(0);
         $test = $this->xpath->evaluate('string(@test)', $filter);
-        if (!$test) $test = 'anyof';
-        if ($test !== 'anyof' && $test !== 'allof') {
+        if (!$test) $test = self::TEST_ANYOF;
+        if ($test !== self::TEST_ANYOF && $test !== self::TEST_ALLOF) {
             throw new Sabre_DAV_Exception_BadRequest('The test attribute must either hold "anyof" or "allof"');
         }
 
@@ -79,7 +111,10 @@ class Sabre_CardDAV_AddressBookQueryParser {
 
         }
 
-        return $propFilters;
+        $this->filters = $propFilters;
+        $this->limit = $limit;
+        $this->requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($this->dom->firstChild));
+        $this->test = $test;
 
     }
 
@@ -96,7 +131,7 @@ class Sabre_CardDAV_AddressBookQueryParser {
         $propFilter['test'] = $propFilterNode->getAttribute('test');
         if (!$propFilter['test']) $propFilter['test'] = 'anyof';
 
-        $propFilter['is-not-defined'] = $this->xpath->evaluate('element-available(card:is-not-defined)', $propFilterNode);
+        $propFilter['is-not-defined'] = $this->xpath->query('card:is-not-defined', $propFilterNode)->length>0;
 
         $paramFilterNodes = $this->xpath->query('card:param-filter', $propFilterNode);
 
@@ -105,7 +140,7 @@ class Sabre_CardDAV_AddressBookQueryParser {
 
         for($ii=0;$ii<$paramFilterNodes->length;$ii++) {
 
-            $propFilter['param-filters'][] = $this->parseParamFilterNode($paramFiltersNodes->item($ii));
+            $propFilter['param-filters'][] = $this->parseParamFilterNode($paramFilterNodes->item($ii));
 
         }
         $propFilter['text-matches'] = array();
@@ -131,13 +166,15 @@ class Sabre_CardDAV_AddressBookQueryParser {
         
         $paramFilter = array();
         $paramFilter['name'] = $paramFilterNode->getAttribute('name');
-        $paramFilter['is-not-defined'] = $this->xpath->evaluate('element-available(card:is-not-defined)', $paramFilterNode);
+        $paramFilter['is-not-defined'] = $this->xpath->query('card:is-not-defined', $paramFilterNode)->length>0;
         $paramFilter['text-match'] = null;
 
-        $textMatch = $this->xpath->evaluate('text-match[1]');
-        if ($textMatch) {
-            $paramFilter['text-match'] = $this->parseTextMatchNode($textMatch);
-        } 
+        $textMatch = $this->xpath->query('card:text-match', $paramFilterNode);
+        if ($textMatch->length>0) {
+            $paramFilter['text-match'] = $this->parseTextMatchNode($textMatch->item(0));
+        }
+
+        return $paramFilter; 
 
     }
 

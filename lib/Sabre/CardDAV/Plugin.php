@@ -264,18 +264,171 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * 
      * @param string $vcardData 
      * @param array $filters 
-     * @param string $test 
+     * @param string $test anyof or allof (which means OR or AND) 
      * @return bool 
      */
     public function validateFilters($vcardData, array $filters, $test) {
 
         $vcard = Sabre_VObject_Reader::read($vcardData);
+        
+        $success = true;
 
         foreach($filters as $filter) {
+
+            $isDefined = isset($vcard->{$filter['name']});
+            if ($filters['is-not-defined']) {
+                if ($isDefined) {
+                    $success = false;
+                } else {
+                    $success = true;
+                }
+            } elseif ((!$filter['param-filters'] && !$filters['text-matches']) || !$isDefined) {
+
+                // We only need to check for existence
+                $success = $isDefined;
+                
+            } else {
+
+                // If we got all the way here, we'll need to loop through the 
+                // properties to see if we can get a match for the param or 
+                // text-match filters.
+
+                foreach($vcard->select($filters['name']) as $vProperty) {
+
+                    $results = array();
+                    if ($filter['param-filters']) {
+                        $results[] = $this->validateParamFilters($vProperty, $filter['param-filters'], $filter['test']);
+                    }
+                    if ($filter['text-matches']) {
+                        $results[] = $this->validateTextMatches($vProperty->value, $filter['text-matches'], $filter['test']);
+                    }
+
+                    if (count($results)===1) {
+                        $success = $results[0];
+                    } else {
+                        if ($filter['test'] === 'anyof') {
+                            $success = $results[0] || $results[1];
+                        } else {
+                            $success = $results[0] && $results[1];
+                        }
+                    }
+
+                    // We drop out of this loop, at the first succesful result.
+                    if ($success) 
+                        break;
+
+                }
+
+            } // else
+
+            // There are two conditions where we can already determine wether 
+            // or not this filter succeeds.
+            if ($test==='anyof' && $success) {
+                return true;
+            }
+            if ($test==='allof' && !$success) {
+                return false;
+            }
+
+        } // foreach
+
+        // If we got all the way here, it means we haven't been able to 
+        // determine early if the test failed or not.
+        //
+        // This implies for 'anyof' that the test failed, and for 'allof' that 
+        // we succeeded. Sounds weird, but makes sense.
+        return $test==='allof';
+
+    }
+
+    /**
+     * Validates if a param-filter can be applied to a specific property. 
+     * 
+     * @todo currently we're only validating the first parameter of the passed 
+     *       property. Any subsequence parameters with the same name are
+     *       ignored.
+     * @param Sabre_VObject_Property $vProperty 
+     * @param array $filters 
+     * @param string $test 
+     * @return bool 
+     */
+    protected function validateParamFilters(Sabre_VObject_Property $vProperty, array $filters, $test) {
+
+        $success = false;
+        foreach($filters as $filter) {
+
+            $isDefined = isset($vProperty[$filter['name']]);
+            if ($filter['is-not-defined']) {
+                if ($isDefined) {
+                    $success = false;
+                } else {
+                    $success = true;
+                }
+
+            // If there's no text-match, we can just check for existence 
+            } elseif (!$filter['text-match'] || !$isDefined) {
+
+                $success = $isDefined;
+                
+            } else {
+
+                // If we got all the way here, we'll need to validate the 
+                // text-match filter.
+                $success = Sabre_DAV_StringUtil::textMatch($vProperty[$filter['name']]->value, $filter['text-match']['value'], $filter['text-match']['collation'], $filter['text-match']['matchType']);
+
+            } // else
+
+            // There are two conditions where we can already determine wether 
+            // or not this filter succeeds.
+            if ($test==='anyof' && $success) {
+                return true;
+            }
+            if ($test==='allof' && !$success) {
+                return false;
+            }
+
+        } 
+
+        // If we got all the way here, it means we haven't been able to 
+        // determine early if the test failed or not.
+        //
+        // This implies for 'anyof' that the test failed, and for 'allof' that 
+        // we succeeded. Sounds weird, but makes sense.
+        return $test==='allof';
+
+    }
+
+    /**
+     * Validates if a text-filter can be applied to a specific property. 
+     * 
+     * @param string $haystack
+     * @param array $filters 
+     * @param string $test 
+     * @return bool 
+     */
+    protected function validateTextMatches($haystack, $filters, $test) {
+
+        foreach($filters as $filter) {
+
+            $success = Sabre_DAV_StringUtil::textMatch($haystack, $filters['value'], $filters['collation'], $filters['matchType']);
+            
+            if ($success && $test==='anyof')
+                return true;
+
+            if (!$success && $test=='allof')
+                return false;
 
 
         }
 
+        // If we got all the way here, it means we haven't been able to 
+        // determine early if the test failed or not.
+        //
+        // This implies for 'anyof' that the test failed, and for 'allof' that 
+        // we succeeded. Sounds weird, but makes sense.
+        return $test==='allof';
+
     }
+
 
 }

@@ -24,7 +24,7 @@ class Sabre_DAV_StringUtil {
      * @param string $matchType 
      * @return bool 
      */
-    public function textMatch($haystack, $needle, $collation, $matchType = 'contains') {
+    static public function textMatch($haystack, $needle, $collation, $matchType = 'contains') {
 
         switch($collation) {
 
@@ -32,7 +32,7 @@ class Sabre_DAV_StringUtil {
                 // default strtolower takes locale into consideration
                 // we don't want this.
                 $haystack = str_replace(range('a','z'), range('A','Z'), $haystack);
-                $haystack = str_replace(range('a','z'), range('A','Z'), $needle);
+                $needle = str_replace(range('a','z'), range('A','Z'), $needle);
                 break;
 
             case 'i;octet' :

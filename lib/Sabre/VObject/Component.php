@@ -61,6 +61,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
     }
 
+
     /**
      * Adds a new componenten or element
      *
@@ -109,6 +110,48 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
     }
 
+    /**
+     * Returns an array with elements that match the specified name.
+     *
+     * This function is also aware of MIME-Directory groups (as they appear in 
+     * vcards). This means that if a property is grouped as "HOME.EMAIL", it 
+     * will also be returned when searching for just "EMAIL". If you want to 
+     * search for a property in a specific group, you can select on the entire 
+     * string ("HOME.EMAIL"). If you want to search on a specific property that 
+     * has not been assigned a group, specify ".EMAIL".
+     *
+     * Keys are retained from the 'children' array, which may be confusing in 
+     * certain cases. 
+     *
+     * @param string $name 
+     * @return array 
+     */
+    public function select($name) {
+
+        $group = null;
+        $name = strtoupper($name);
+        if (strpos($name,'.')!==false) {
+            list($group,$name) = explode('.', $name, 2);
+        }
+
+        $result = array();
+        foreach($this->children as $key=>$child) {
+
+            if (
+                strtoupper($child->name) === $name &&
+                (is_null($group) || ( $child instanceof Sabre_VObject_Property && strtoupper($child->group) === $group))
+            ) {
+                
+                $result[$key] = $child;
+
+            }
+        }
+
+        reset($result);
+        return $result;
+
+    }
+
     /* Magic property accessors {{{ */
 
     /**
@@ -122,19 +165,12 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      */
     public function __get($name) {
 
-        $name = strtoupper($name);
-        $matches = array();
-
-        foreach($this->children as $child) {
-            if ($child->name === $name)
-                $matches[] = $child;
-        }
-
+        $matches = $this->select($name);
         if (count($matches)===0) {
             return null;
         } else {
-            $firstMatch = $matches[0];
-            $firstMatch->setIterator(new Sabre_VObject_ElementList($matches));
+            $firstMatch = current($matches);
+            $firstMatch->setIterator(new Sabre_VObject_ElementList(array_values($matches)));
             return $firstMatch;
         }
 
@@ -148,15 +184,8 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      */
     public function __isset($name) {
 
-        $name = strtoupper($name);
-
-        foreach($this->children as $child) {
-
-            if ($child->name === $name) 
-                return true;
-
-        }
-        return false;
+        $matches = $this->select($name);
+        return count($matches)>0;
 
     }
 
@@ -175,26 +204,18 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      */
     public function __set($name, $value) {
 
-        $name = strtoupper($name);
-        $arrayKey = null;
-        foreach($this->children as $key=>$child) {
-
-            if ($child->name == $name) {
-                $arrayKey = $key;
-                break;
-            }
-
-        }
+        $matches = $this->select($name);
+        $overWrite = count($matches)?key($matches):null;
 
         if ($value instanceof Sabre_VObject_Component || $value instanceof Sabre_VObject_Property) {
-            if (!is_null($arrayKey)) {
-                $this->children[$arrayKey] = $value;
+            if (!is_null($overWrite)) {
+                $this->children[$overWrite] = $value;
             } else {
                 $this->children[] = $value;
             }
         } elseif (is_scalar($value)) {
-            if (!is_null($arrayKey)) {
-                $this->children[$arrayKey] = new Sabre_VObject_Property($name,$value);
+            if (!is_null($overWrite)) {
+                $this->children[$overWrite] = new Sabre_VObject_Property($name,$value);
             } else {
                 $this->children[] = new Sabre_VObject_Property($name,$value);
             }
@@ -212,18 +233,15 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      */
     public function __unset($name) {
 
-        $name = strtoupper($name);
+        $matches = $this->select($name);
+        foreach($matches as $k=>$child) {
 
-        foreach($this->children as $k=>$child) {
-
-            if ($child->name === $name) 
-                unset($this->children[$k]);
+            unset($this->children[$k]);
 
         }
 
     }
 
     /* }}} */
-
 
 }

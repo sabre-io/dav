@@ -27,6 +27,15 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public $name;
 
     /**
+     * Group name
+     * 
+     * This may be something like 'HOME' for vcards.
+     *
+     * @var string 
+     */
+    public $group;
+
+    /**
      * Property parameters 
      * 
      * @var array 
@@ -52,7 +61,13 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      */
     public function __construct($name, $value = null, $iterator = null) {
 
-        $this->name = strtoupper($name);
+        $name = strtoupper($name);
+        $group = null;
+        if (strpos($name,'.')!==false) {
+            list($group, $name) = explode('.', $name);
+        }
+        $this->name = $name;
+        $this->group = $group;
         if (!is_null($iterator)) $this->iterator = $iterator;
         $this->setValue($value);
 
@@ -78,6 +93,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public function serialize() {
 
         $str = $this->name;
+        if ($this->group) $str = $this->group . '.' . $this->name;
+
         if (count($this->parameters)) {
             foreach($this->parameters as $param) {
                 

@@ -34,6 +34,9 @@ class Sabre_CalDAV_Property_SupportedCollationSet extends Sabre_DAV_Property {
         $node->appendChild(
             $doc->createElement($prefix . ':supported-collation','i;octet')
         );
+        $node->appendChild(
+            $doc->createElement($prefix . ':supported-collation','i;unicode-casemap')
+        );
 
 
     }

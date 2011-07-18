@@ -504,7 +504,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (isset($filter['text-match'])) {
                 $currentString = (string)$elem;
 
-                $isMatching = $this->substringMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
+                $isMatching = Sabre_DAV_StringUtil::textMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
                 if ($filter['text-match']['negate-condition'] && $isMatching) return false;
                 if (!$filter['text-match']['negate-condition'] && !$isMatching) return false;
                 
@@ -782,25 +782,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Everything else is TRUE
         return true;
-
-    }
-
-    public function substringMatch($haystack, $needle, $collation) {
-
-        switch($collation) {
-            case 'i;ascii-casemap' :
-                // default strtolower takes locale into consideration
-                // we don't want this.
-                $haystack = str_replace(range('a','z'), range('A','Z'), $haystack);
-                $needle = str_replace(range('a','z'), range('A','Z'), $needle);
-                return strpos($haystack, $needle)!==false;
-
-            case 'i;octet' :
-                return strpos($haystack, $needle)!==false;
-            
-            default:
-                throw new Sabre_DAV_Exception_BadRequest('Unknown collation: ' . $collation);
-        }                
 
     }
 

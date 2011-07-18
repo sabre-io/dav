@@ -1,6 +1,8 @@
 1.5.0-stable (2011-??-??)
 	* Added: CardDAV support.
 	* Added: An experimental WebDAV client.
+	* Added: MIME-Directory grouping support in the VObject library. This is
+	  very useful for people attempting to parse vcards.
 	* BC Break: Adding parameters with the VObject libraries now overwrites
 	  the previous parameter, rather than just add it. This makes more sense
 	  for 99% of the cases.
@@ -8,6 +10,8 @@
 	* Added: Clark-notation parser to XML utility.
 	* Added: unset() support to VObject components.
 	* Fixed: Refactored CalDAV property fetching to be faster and simpler.
+	* Added: Central string-matcher for CalDAV and CardDAV plugins.
+	* Added: i;unicode-casemap support
 
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.

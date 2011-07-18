@@ -4,41 +4,6 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 
 class Sabre_CalDAV_CalendarQueryFilterTest extends PHPUnit_Framework_TestCase {
 
-    function testSubStringMatchAscii() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-
-        $this->assertTrue($caldav->substringMatch('string','string','i;ascii-casemap'));
-        $this->assertTrue($caldav->substringMatch('string','rin', 'i;ascii-casemap'));
-        $this->assertTrue($caldav->substringMatch('STRING','string','i;ascii-casemap'));
-        $this->assertTrue($caldav->substringMatch('string','RIN', 'i;ascii-casemap'));
-        $this->assertFalse($caldav->substringMatch('string','ings', 'i;ascii-casemap'));
-
-    }
-
-    function testSubStringMatchOctet() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-
-        $this->assertTrue($caldav->substringMatch('string','string','i;octet'));
-        $this->assertTrue($caldav->substringMatch('string','rin', 'i;octet'));
-        $this->assertFalse($caldav->substringMatch('STRING','string','i;octet'));
-        $this->assertFalse($caldav->substringMatch('string','RIN', 'i;octet'));
-        $this->assertFalse($caldav->substringMatch('string','ings', 'i;octet'));
-
-    }
-
-    /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
-     */
-    function testSubStringMatchUnknownCollation() {
-
-        $caldav = new Sabre_CalDAV_Plugin();
-
-        $caldav->substringMatch('string','string','i;bla');
-
-    }
-
     function testCompFilter() {
 
         $calendarPlugin = new Sabre_CalDAV_Plugin(Sabre_CalDAV_Util::getBackend());

@@ -23,6 +23,7 @@ abstract class Sabre_CardDAV_AbstractPluginTest extends PHPUnit_Framework_TestCa
         $this->plugin->directories = array('directory');
         $this->server = new Sabre_DAV_Server($tree);
         $this->server->addPlugin($this->plugin);
+        $this->server->debugExceptions = true;
 
     }
 

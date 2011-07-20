@@ -40,16 +40,17 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
      */
     function testGetChildNotFound() {
 
-        $card = $this->ab->getChild('card2');
+        $card = $this->ab->getChild('card3');
 
     }
 
     function testGetChildren() {
 
         $cards = $this->ab->getChildren();
-        $this->assertEquals(1, count($cards));
+        $this->assertEquals(2, count($cards));
 
         $this->assertEquals('card1', $cards[0]->getName());
+        $this->assertEquals('card2', $cards[1]->getName());
 
     } 
 

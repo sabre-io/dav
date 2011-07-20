@@ -18,7 +18,8 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
 
         $this->cards = array(
             'foo' => array(
-                'card1' => 'bar',
+                'card1' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
+                'card2' => "BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD",
             ),
         );
 

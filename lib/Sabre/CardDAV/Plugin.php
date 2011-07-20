@@ -219,17 +219,17 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function addressbookQueryReport($dom) {
 
-        $query = new Sabre_CardDAV_AddressBookQueryReport($dom);
+        $query = new Sabre_CardDAV_AddressBookQueryParser($dom);
         $query->parse();
 
         $depth = $this->server->getHTTPDepth(0);
 
         if ($depth==0) {
             $candidateNodes = array(
-                $this->server->objectTree->getNodeForPath($this->getRequestUri())
+                $this->server->tree->getNodeForPath($this->server->getRequestUri())
             );
         } else {
-            $candidateNodes = $this->server->objectTree->getChildren($this->getRequestUri());
+            $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
         }
 
         $validNodes = array();

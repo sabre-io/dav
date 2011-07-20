@@ -12,6 +12,8 @@
 	* Fixed: Refactored CalDAV property fetching to be faster and simpler.
 	* Added: Central string-matcher for CalDAV and CardDAV plugins.
 	* Added: i;unicode-casemap support
+	* Fixed: VObject bug: wouldn't parse parameters if they weren't specified
+	  in uppercase.
 
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.

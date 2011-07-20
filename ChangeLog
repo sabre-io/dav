@@ -14,6 +14,7 @@
 	* Added: i;unicode-casemap support
 	* Fixed: VObject bug: wouldn't parse parameters if they weren't specified
 	  in uppercase.
+	* Fixed: VObject bug: Parameters now behave more like Properties. 
 
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.

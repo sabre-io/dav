@@ -171,7 +171,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
         } elseif (count($result)===1) {
             return $result[0];
         } else {
-            return new Sabre_VObject_ElementList($result);
+            $result[0]->setIterator(new Sabre_VObject_ElementList($result));
+            return $result[0];
         }
 
     }

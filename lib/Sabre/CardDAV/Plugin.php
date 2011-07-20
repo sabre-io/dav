@@ -27,6 +27,14 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     const NS_CARDDAV = 'urn:ietf:params:xml:ns:carddav';
 
     /**
+     * Add urls to this property to have them automatically exposed as 
+     * 'directories' to the user.
+     * 
+     * @var array
+     */
+    public $directories = array();
+
+    /**
      * Server class 
      *
      * @var Sabre_DAV_Server 
@@ -50,6 +58,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         /* Mapping Interfaces to {DAV:}resourcetype values */
         $server->resourceTypeMapping['Sabre_CardDAV_IAddressBook'] = '{' . self::NS_CARDDAV . '}addressbook';
+        $server->resourceTypeMapping['Sabre_CardDAV_IDirectory'] = '{' . self::NS_CARDDAV . '}directory';
         
         /* Adding properties that may never be changed */
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-address-data';
@@ -114,8 +123,14 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (in_array($addHome,$requestedProperties)) {
                 $principalId = $node->getName(); 
                 $addressbookHomePath = self::ADDRESSBOOK_ROOT . '/' . $principalId . '/';
-                unset($requestedProperties[$addHome]);
+                unset($requestedProperties[array_search($addHome, $requestedProperties)]);
                 $returnedProperties[200][$addHome] = new Sabre_DAV_Property_Href($addressbookHomePath);
+            }
+
+            $directories = '{' . self::NS_CARDDAV . '}directory-gateway';
+            if ($this->directories && in_array($directories, $requestedProperties)) {
+                unset($requestedProperties[array_search($directories, $requestedProperties)]);
+                $returnedProperties[200][$directories] = new Sabre_DAV_Property_HrefList($this->directories);
             }
 
         }

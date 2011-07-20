@@ -95,7 +95,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
-        if ($node instanceof Sabre_CardDAV_AddressBook || $node instanceof Sabre_CardDAV_Card) {
+        if ($node instanceof Sabre_CardDAV_AddressBook || $node instanceof Sabre_CardDAV_ICard) {
             return array(
                  '{' . self::NS_CARDDAV . '}addressbook-multiget',
             );
@@ -135,7 +135,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        if ($node instanceof Sabre_CardDAV_Card) {
+        if ($node instanceof Sabre_CardDAV_ICard) {
 
             // The address-data property is not supposed to be a 'real' 
             // property, but in large chunks of the spec it does act as such. 
@@ -235,7 +235,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $validNodes = array();
         foreach($candidateNodes as $node) {
 
-            if (!$node instanceof Sabre_CardDAV_Card)
+            if (!$node instanceof Sabre_CardDAV_ICard)
                 continue;
 
             $blob = $node->get();
@@ -291,47 +291,41 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($filters as $filter) {
 
             $isDefined = isset($vcard->{$filter['name']});
-            if ($filters['is-not-defined']) {
+            if ($filter['is-not-defined']) {
                 if ($isDefined) {
                     $success = false;
                 } else {
                     $success = true;
                 }
-            } elseif ((!$filter['param-filters'] && !$filters['text-matches']) || !$isDefined) {
+            } elseif ((!$filter['param-filters'] && !$filter['text-matches']) || !$isDefined) {
 
                 // We only need to check for existence
                 $success = $isDefined;
                 
             } else {
 
-                // If we got all the way here, we'll need to loop through the 
-                // properties to see if we can get a match for the param or 
-                // text-match filters.
+                $vProperties = $vcard->select($filter['name']); 
 
-                foreach($vcard->select($filters['name']) as $vProperty) {
+                $results = array();
+                if ($filter['param-filters']) {
+                    $results[] = $this->validateParamFilters($vProperties, $filter['param-filters'], $filter['test']);
+                }
+                if ($filter['text-matches']) {
+                    $texts = array();
+                    foreach($vProperties as $vProperty)
+                        $texts[] = $vProperty->value;
 
-                    $results = array();
-                    if ($filter['param-filters']) {
-                        $results[] = $this->validateParamFilters($vProperty, $filter['param-filters'], $filter['test']);
-                    }
-                    if ($filter['text-matches']) {
-                        $results[] = $this->validateTextMatches($vProperty->value, $filter['text-matches'], $filter['test']);
-                    }
+                    $results[] = $this->validateTextMatches($texts, $filter['text-matches'], $filter['test']);
+                }
 
-                    if (count($results)===1) {
-                        $success = $results[0];
+                if (count($results)===1) {
+                    $success = $results[0];
+                } else {
+                    if ($filter['test'] === 'anyof') {
+                        $success = $results[0] || $results[1];
                     } else {
-                        if ($filter['test'] === 'anyof') {
-                            $success = $results[0] || $results[1];
-                        } else {
-                            $success = $results[0] && $results[1];
-                        }
+                        $success = $results[0] && $results[1];
                     }
-
-                    // We drop out of this loop, at the first succesful result.
-                    if ($success) 
-                        break;
-
                 }
 
             } // else
@@ -367,12 +361,17 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $test 
      * @return bool 
      */
-    protected function validateParamFilters(Sabre_VObject_Property $vProperty, array $filters, $test) {
+    protected function validateParamFilters(array $vProperties, array $filters, $test) {
 
         $success = false;
         foreach($filters as $filter) {
 
-            $isDefined = isset($vProperty[$filter['name']]);
+            $isDefined = false;
+            foreach($vProperties as $vProperty) {
+                $isDefined = isset($vProperty[$filter['name']]);
+                if ($isDefined) break;
+            }
+
             if ($filter['is-not-defined']) {
                 if ($isDefined) {
                     $success = false;
@@ -387,9 +386,17 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 
             } else {
 
-                // If we got all the way here, we'll need to validate the 
-                // text-match filter.
-                $success = Sabre_DAV_StringUtil::textMatch($vProperty[$filter['name']]->value, $filter['text-match']['value'], $filter['text-match']['collation'], $filter['text-match']['matchType']);
+                $texts = array();
+                $success = false;
+                foreach($vProperties as $vProperty) {
+                    // If we got all the way here, we'll need to validate the 
+                    // text-match filter.
+                    $success = Sabre_DAV_StringUtil::textMatch($vProperty[$filter['name']]->value, $filter['text-match']['value'], $filter['text-match']['collation'], $filter['text-match']['matchType']);
+                    if ($success) break;
+                }
+                if ($filter['text-match']['negate-condition']) {
+                    $success = !$success;
+                }
 
             } // else
 
@@ -416,16 +423,25 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Validates if a text-filter can be applied to a specific property. 
      * 
-     * @param string $haystack
+     * @param array $texts
      * @param array $filters 
      * @param string $test 
      * @return bool 
      */
-    protected function validateTextMatches($haystack, $filters, $test) {
+    protected function validateTextMatches(array $texts, array $filters, $test) {
 
         foreach($filters as $filter) {
 
-            $success = Sabre_DAV_StringUtil::textMatch($haystack, $filters['value'], $filters['collation'], $filters['matchType']);
+            $success = false;
+            foreach($texts as $haystack) {
+                $success = Sabre_DAV_StringUtil::textMatch($haystack, $filter['value'], $filter['collation'], $filter['matchType']);
+
+                // Breaking on the first match
+                if ($success) break;
+            }
+            if ($filter['negate-condition']) {
+                $success = !$success;
+            }
             
             if ($success && $test==='anyof')
                 return true;

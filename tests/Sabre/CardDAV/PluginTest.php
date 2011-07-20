@@ -38,6 +38,16 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
     }
 
+    function testDirectoryGateway() {
+
+        $result = $this->server->getProperties('principals/user1', array('{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}directory-gateway'));
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(isset($result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}directory-gateway']));
+        $this->assertEquals(array('directory'), $result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}directory-gateway']->getHrefs());
+
+    }
+
     function testReportPassThrough() {
 
         $this->assertNull($this->plugin->report('{DAV:}foo', new DomDocument()));

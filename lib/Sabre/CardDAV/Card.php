@@ -13,7 +13,7 @@
 /**
  * The Card object represents a single Card from an addressbook
  */ 
-class Sabre_CardDAV_Card extends Sabre_DAV_File {
+class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard {
 
     /**
      * CardDAV backend

@@ -1,5 +1,8 @@
 <?php
 
+require_once 'Sabre/CardDAV/MockBackend.php';
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+
 abstract class Sabre_CardDAV_AbstractPluginTest extends PHPUnit_Framework_TestCase {
 
     protected $plugin;
@@ -17,6 +20,7 @@ abstract class Sabre_CardDAV_AbstractPluginTest extends PHPUnit_Framework_TestCa
         );
 
         $this->plugin = new Sabre_CardDAV_Plugin();
+        $this->plugin->directories = array('directory');
         $this->server = new Sabre_DAV_Server($tree);
         $this->server->addPlugin($this->plugin);
 

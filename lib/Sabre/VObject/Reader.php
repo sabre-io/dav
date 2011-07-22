@@ -176,8 +176,12 @@ class Sabre_VObject_Reader {
 
             $value = $match['paramValue'];
 
-            // Stripping quotes, if needed
-            if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
+            if (isset($value[0])) {
+                // Stripping quotes, if needed
+                if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
+            } else {
+                $value = '';
+            }
 
             $params[] = new Sabre_VObject_Parameter($match['paramName'], stripcslashes($value));
 

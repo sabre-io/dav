@@ -116,7 +116,6 @@ class Sabre_CalDAV_CalendarQueryFilterTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @depends testCompFilter
-     * @depends testSubStringMatchOctet
      */
     function testPropFilter() {
 

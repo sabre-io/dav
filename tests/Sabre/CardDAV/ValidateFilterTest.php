@@ -106,7 +106,7 @@ HELLO;
                 'param-filters' => array(),
                 'text-matches' => array(
                     array(
-                        'matchType' => 'contains',
+                        'match-type' => 'contains',
                         'value' => 'google',
                         'negate-condition' => false,
                         'collation' => 'i;octet',
@@ -130,7 +130,7 @@ HELLO;
         // Param filter with text
         $filter15 = $filter5;
         $filter15['param-filters'][0]['text-match'] = array(
-            'matchType' => 'contains',
+            'match-type' => 'contains',
             'value' => 'WORK',
             'collation' => 'i;octet',
             'negate-condition' => false,
@@ -143,7 +143,7 @@ HELLO;
         $filter17 = $filter5;
         $filter17['test'] = 'anyof';
         $filter17['text-matches'][] = array(
-            'matchType' => 'contains',
+            'match-type' => 'contains',
             'value' => '444',
             'collation' => 'i;octet',
             'negate-condition' => false,

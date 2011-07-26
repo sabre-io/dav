@@ -168,13 +168,13 @@ class Sabre_VObject_Reader {
 
         $paramValue = '(?P<paramValue>[^\"^;]*|"[^"]*")';
 
-        $regex = "/(?<=^|;)(?P<paramName>$token)=$paramValue(?=$|;)/i";
+        $regex = "/(?<=^|;)(?P<paramName>$token)(=$paramValue(?=$|;))?/i";
         preg_match_all($regex, $parameters, $matches,  PREG_SET_ORDER);
 
         $params = array();
         foreach($matches as $match) {
 
-            $value = $match['paramValue'];
+            $value = isset($match['paramValue'])?$match['paramValue']:null;
 
             if (isset($value[0])) {
                 // Stripping quotes, if needed

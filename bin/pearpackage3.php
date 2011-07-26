@@ -75,7 +75,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.3.0',
+            'min'  => '1.4.1',
         );
 
         break;
@@ -112,7 +112,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.0',
+            'min'  => '1.5.0',
         );
         break;
 
@@ -136,25 +136,69 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.3.0',
+            'min'  => '1.4.1',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.0',
+            'min'  => '1.5.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAVACL',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.0',
+            'min'  => '1.4.3',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_VObject',
             'channel' => 'pear.sabredav.org',
+            'min'  => '1.2.0',
+        );
+        break;
+
+    case 'Sabre_CardDAV' :
+        $summary = 'Sabre_CardDAV provides CardDAV extensions to SabreDAV';
+        $description = <<<TEXT
+Sabre_CardDAV provides CardDAV support to Sabre_DAV. 
+
+Feature list:
+* Multi-user addressbook server
+* ACL support
+* Support for OS/X, iOS, Evolution and probably more
+* Hook-ins for creating a global \'directory\'.
+TEXT;
+
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre',
+            'channel' => 'pear.sabredav.org',
             'min'  => '1.0.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_HTTP',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.4.1',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAV',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.5.0',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_DAVACL',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.4.3',
+        );
+        $dependencies[] = array(
+            'type' => 'package',
+            'name' => 'Sabre_VObject',
+            'channel' => 'pear.sabredav.org',
+            'min'  => '1.2.0',
         );
         break;
 

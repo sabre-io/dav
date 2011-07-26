@@ -109,6 +109,27 @@
         <exec command="bin/pearpackage3.php make Sabre_CalDAV" checkreturn="true" />
         <exec command="pear package" dir="build/Sabre_CalDAV" checkreturn="true" />
 
+        <!-- CardDAV -->
+        <echo msg="Building Sabre_CardDAV pear package" />
+        <mkdir dir="build/Sabre_CardDAV" />
+        <mkdir dir="build/Sabre_CardDAV/Sabre" />
+        <copy todir="build/Sabre_CardDAV" includeemptydirs="true" >
+            <fileset dir="lib">
+                <include name="Sabre/CardDAV/**" />
+            </fileset>
+        </copy>
+        <mkdir dir="build/Sabre_CardDAV" />
+        <copy todir="build/Sabre_CardDAV">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="ChangeLog" />
+                <include name="examples/addressbookserver.php" />
+                <include name="examples/sql/*.addressbooks.sql" />
+            </fileset>
+        </copy>
+        <exec command="bin/pearpackage3.php make Sabre_CardDAV" checkreturn="true" />
+        <exec command="pear package" dir="build/Sabre_CardDAV" checkreturn="true" />
+
         <!-- VObject -->
         <echo msg="Building Sabre_VObject pear package" />
         <mkdir dir="build/Sabre_VObject" />

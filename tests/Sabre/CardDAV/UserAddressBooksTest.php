@@ -118,6 +118,34 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
 
     }
 
+
+    function testACLMethods() {
+
+        $this->assertEquals('principals/user1', $this->s->getOwner());
+        $this->assertNull($this->s->getGroup());
+        $this->assertEquals(array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+        ), $this->s->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetACL() {
+
+       $this->s->setACL(array()); 
+
+    }
 }
 
 ?>

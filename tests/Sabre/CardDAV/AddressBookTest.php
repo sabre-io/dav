@@ -16,6 +16,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
                 'uri' => 'book1',
                 'id' => 'foo',
                 '{DAV:}displayname' => 'd-name',
+                'principaluri' => 'principals/user1',
             )
         );
 
@@ -114,4 +115,33 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
         ), $props);
 
     }
+
+    function testACLMethods() {
+
+        $this->assertEquals('principals/user1', $this->ab->getOwner());
+        $this->assertNull($this->ab->getGroup());
+        $this->assertEquals(array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+        ), $this->ab->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetACL() {
+
+       $this->ab->setACL(array()); 
+
+    }
+        
 }

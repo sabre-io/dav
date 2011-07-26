@@ -13,6 +13,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
             array(
                 'uri' => 'book1',
                 'id' => 'foo',
+                'principaluri' => 'principals/user1',
             ),
             array(
                 'uri' => 'card1',
@@ -74,6 +75,34 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     function testGetSize() {
 
         $this->assertEquals(4, $this->card->getSize());
+
+    }
+
+    function testACLMethods() {
+
+        $this->assertEquals('principals/user1', $this->card->getOwner());
+        $this->assertNull($this->card->getGroup());
+        $this->assertEquals(array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+        ), $this->card->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     */
+    function testSetACL() {
+
+       $this->card->setACL(array()); 
 
     }
 }

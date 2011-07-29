@@ -6,6 +6,8 @@
 	* BC Break: Adding parameters with the VObject libraries now overwrites
 	  the previous parameter, rather than just add it. This makes more sense
 	  for 99% of the cases.
+	* Deprecated: Sabre_DAV_Directory is now deprecated and will be removed in
+	  a future version. Use Sabre_DAV_Collection instead.
 	* Fixed: Problem with overriding tablenames for the CalDAV backend.
 	* Added: Clark-notation parser to XML utility.
 	* Added: unset() support to VObject components.

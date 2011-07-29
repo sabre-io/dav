@@ -15,7 +15,7 @@
  *
  * The AddressBook can contain multiple vcards
  */
-class Sabre_CardDAV_AddressBook extends Sabre_DAV_Directory implements Sabre_CardDAV_IAddressBook, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
+class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_CardDAV_IAddressBook, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
 
     /**
      * This is an array with addressbook information 

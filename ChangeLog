@@ -22,6 +22,8 @@
 	  in uppercase.
 	* Fixed: VObject bug: Parameters now behave more like Properties.
 	* Fixed: VObject bug: Parameters with no value are now correctly parsed.
+	* Changed: If calendars don't specify which components they allow, 'all'
+	  components are assumed (e.g.: VEVENT, VTODO, VJOURNAL).
 
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.

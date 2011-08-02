@@ -51,7 +51,6 @@
             <fileset dir="lib">
                 <include name="Sabre/DAV/**" />
                 <include name="Sabre.includes.php" />
-                <include name="Sabre.autoload.php" />
             </fileset>
         </copy>
         <copy todir="build/Sabre_DAV" includeemptydirs="true">

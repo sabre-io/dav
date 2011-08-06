@@ -150,7 +150,7 @@ class Sabre_DAV_Server {
      * use it as the directory tree. If a Sabre_DAV_INode is passed, it
      * will create a Sabre_DAV_ObjectTree and use the node as the root.
      *
-     * If nothing is passed, a Sabre_DAV_SimpleDirectory is created in 
+     * If nothing is passed, a Sabre_DAV_SimpleCollection is created in 
      * a Sabre_DAV_ObjectTree.
      *
      * If an array is passed, we automatically create a root node, and use
@@ -175,11 +175,11 @@ class Sabre_DAV_Server {
                 }
             }
 
-            $root = new Sabre_DAV_SimpleDirectory('root', $treeOrNode);
+            $root = new Sabre_DAV_SimpleCollection('root', $treeOrNode);
             $this->tree = new Sabre_DAV_ObjectTree($root);
 
         } elseif (is_null($treeOrNode)) {
-            $root = new Sabre_DAV_SimpleDirectory('root');
+            $root = new Sabre_DAV_SimpleCollection('root');
             $this->tree = new Sabre_DAV_ObjectTree($root);
         } else {
             throw new Sabre_DAV_Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre_DAV_Tree, Sabre_DAV_INode, an array or null');
@@ -1064,10 +1064,12 @@ class Sabre_DAV_Server {
 
         // If its not set, we'll grab the default
         $depth = $this->httpRequest->getHeader('Depth');
+
         if (is_null($depth)) return $default;
 
         if ($depth == 'infinity') return self::DEPTH_INFINITY;
 
+           
         // If its an unknown value. we'll grab the default
         if (!ctype_digit($depth)) return $default;
 
@@ -1392,18 +1394,6 @@ class Sabre_DAV_Server {
         $this->tree->markDirty($dir);
 
         $this->broadcastEvent('afterBind',array($uri));
-    }
-
-    /**
-     * This method is invoked by sub-systems creating a new directory.
-     *
-     * @param string $uri 
-     * @return void
-     */
-    public function createDirectory($uri) {
-
-        $this->createCollection($uri,array('{DAV:}collection'),array());
-
     }
 
     /**

@@ -33,6 +33,7 @@ class Sabre_CalDAV_Property_SupportedCollationSetTest extends PHPUnit_Framework_
 <d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
 '<cal:supported-collation>i;ascii-casemap</cal:supported-collation>' .
 '<cal:supported-collation>i;octet</cal:supported-collation>' .
+'<cal:supported-collation>i;unicode-casemap</cal:supported-collation>' .
 '</d:root>
 ', $xml);
 

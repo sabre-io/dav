@@ -14,7 +14,6 @@
        <directory suffix=".php">../lib/</directory>
        <exclude>
          <file>../lib/Sabre.includes.php</file>
-         <file>../lib/Sabre.autoload.php</file>
          <file>../lib/Sabre/VObject/includes.php</file>
        </exclude>
     </whitelist> 

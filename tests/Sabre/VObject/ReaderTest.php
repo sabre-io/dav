@@ -72,6 +72,17 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testReadMappedProperty() {
+
+        $data = "DTSTART:20110529";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertInstanceOf('Sabre_VObject_Element_DateTime', $result);
+        $this->assertEquals('DTSTART', $result->name);
+        $this->assertEquals('20110529', $result->value);
+
+    }
+
     /**
      * @expectedException Sabre_VObject_ParseException
      */
@@ -137,6 +148,20 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, count($result->parameters));
         $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
         $this->assertEquals('paramvalue', $result->parameters[0]->value);
+
+    }
+
+    function testReadPropertyNoValue() {
+
+        $data = "PROPNAME;PARAMNAME:propValue";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertInstanceOf('Sabre_VObject_Property', $result);
+        $this->assertEquals('PROPNAME', $result->name);
+        $this->assertEquals('propValue', $result->value);
+        $this->assertEquals(1, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals('', $result->parameters[0]->value);
 
     }
 

@@ -256,5 +256,27 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testParseClarkNotation() {
+
+        $this->assertEquals(array(
+            'DAV:',
+            'foo',
+        ), Sabre_DAV_XMLUtil::parseClarkNotation('{DAV:}foo'));
+
+        $this->assertEquals(array(
+            'http://example.org/ns/bla',
+            'bar-soap',
+        ), Sabre_DAV_XMLUtil::parseClarkNotation('{http://example.org/ns/bla}bar-soap'));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testParseClarkNotationFail() {
+
+        Sabre_DAV_XMLUtil::parseClarkNotation('}foo');
+
+    }
+
 }
 

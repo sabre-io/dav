@@ -27,6 +27,15 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public $name;
 
     /**
+     * Group name
+     * 
+     * This may be something like 'HOME' for vcards.
+     *
+     * @var string 
+     */
+    public $group;
+
+    /**
      * Property parameters 
      * 
      * @var array 
@@ -52,9 +61,27 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      */
     public function __construct($name, $value = null, $iterator = null) {
 
-        $this->name = strtoupper($name);
-        $this->value = $value;
+        $name = strtoupper($name);
+        $group = null;
+        if (strpos($name,'.')!==false) {
+            list($group, $name) = explode('.', $name);
+        }
+        $this->name = $name;
+        $this->group = $group;
         if (!is_null($iterator)) $this->iterator = $iterator;
+        $this->setValue($value);
+
+    }
+
+    /**
+     * Updates the internal value 
+     * 
+     * @param string $value 
+     * @return void
+     */
+    public function setValue($value) {
+
+        $this->value = $value;
 
     }
 
@@ -66,6 +93,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public function serialize() {
 
         $str = $this->name;
+        if ($this->group) $str = $this->group . '.' . $this->name;
+
         if (count($this->parameters)) {
             foreach($this->parameters as $param) {
                 
@@ -142,7 +171,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
         } elseif (count($result)===1) {
             return $result[0];
         } else {
-            return new Sabre_VObject_ElementList($result);
+            $result[0]->setIterator(new Sabre_VObject_ElementList($result));
+            return $result[0];
         }
 
     }
@@ -157,11 +187,14 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     public function offsetSet($name, $value) {
 
         if (is_int($name)) return parent::offsetSet($name, $value);
+
         if (is_scalar($value)) {
             if (!is_string($name)) 
                 throw new InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
 
+            $this->offsetUnset($name);
             $this->parameters[] = new Sabre_VObject_Parameter($name, $value);
+
         } elseif ($value instanceof Sabre_VObject_Parameter) {
             if (!is_null($name))
                 throw new InvalidArgumentException('Don\'t specify a parameter name if you\'re passing a Sabre_VObject_Parameter. Add using $array[]=$parameterObject.');

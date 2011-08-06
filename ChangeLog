@@ -1,6 +1,43 @@
-1.4.4-stable (2011-??-??)
+1.5.0-stable (2011-08-??)
+	* Added: CardDAV support.
+	* Added: An experimental WebDAV client.
+	* Added: MIME-Directory grouping support in the VObject library. This is
+	  very useful for people attempting to parse vcards.
+	* BC Break: Adding parameters with the VObject libraries now overwrites
+	  the previous parameter, rather than just add it. This makes more sense
+	  for 99% of the cases.
+	* BC Break: Sabre_DAV_Server::createDirectory was deprecated and now
+	  removed.
+	* BC Break: lib/Sabre.autoload.php is now removed in favor of
+	  lib/Sabre/autoload.php.
+	* Deprecated: Sabre_DAV_Directory is now deprecated and will be removed in
+	  a future version. Use Sabre_DAV_Collection instead.
+	* Deprecated: Sabre_DAV_SimpleDirectory is now deprecated and will be
+	  removed in a future version. Use Sabre_DAV_SimpleCollection instead.
+	* Fixed: Problem with overriding tablenames for the CalDAV backend.
+	* Added: Clark-notation parser to XML utility.
+	* Added: unset() support to VObject components.
+	* Fixed: Refactored CalDAV property fetching to be faster and simpler.
+	* Added: Central string-matcher for CalDAV and CardDAV plugins.
+	* Added: i;unicode-casemap support
+	* Fixed: VObject bug: wouldn't parse parameters if they weren't specified
+	  in uppercase.
+	* Fixed: VObject bug: Parameters now behave more like Properties.
+	* Fixed: VObject bug: Parameters with no value are now correctly parsed.
+	* Changed: If calendars don't specify which components they allow, 'all'
+	  components are assumed (e.g.: VEVENT, VTODO, VJOURNAL).
+
+1.4.4-stable (2011-07-07)
+	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.
+	* Added: The option to override the default tablename all PDO backends
+	  use. (Issue 60).
 	* Fixed: Issue 124: 'File' authentication backend now takes realm into
 	  consideration.
+	* Fixed: Sabre_DAV_Property_HrefList now properly deserializes. This
+	  allows users to update the {DAV:}group-member-set property.
+	* Added: Helper functions for DateTime-values in Sabre_VObject package.
+	* Added: VObject library can now automatically map iCalendar properties to
+	  custom classes.
 
 1.4.3-stable (2011-04-25)
 	* Fixed: Issue 123: Added workaround for Windows 7 UNLOCK bug.

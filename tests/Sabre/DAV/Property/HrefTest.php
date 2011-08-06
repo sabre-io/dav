@@ -19,8 +19,7 @@ class Sabre_DAV_Property_HrefTest extends PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new Sabre_DAV_Server();
         $server->setBaseUri('/bla/');
 
         $href->serialize($server, $root);
@@ -44,8 +43,7 @@ class Sabre_DAV_Property_HrefTest extends PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new Sabre_DAV_Server();
         $server->setBaseUri('/bla/');
 
         $href->serialize($server, $root);

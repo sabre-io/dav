@@ -4,6 +4,10 @@
  * VCALENDAR/VCARD reader
  *
  * This class reads the vobject file, and returns a full element tree.
+ *
+ *
+ * TODO: this class currently completely works 'statically'. This is pointless, 
+ * and defeats OOP principals. Needs refaxtoring in a future version.
  * 
  * @package Sabre
  * @subpackage VObject
@@ -12,6 +16,23 @@
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_Reader {
+
+    /**
+     * This array contains a list of Property names that are automatically 
+     * mapped to specific class names.
+     *
+     * Adding to this list allows you to specify custom property classes, 
+     * adding extra functionality. 
+     * 
+     * @var array
+     */
+    static public $elementMap = array(
+        'DTSTART'   => 'Sabre_VObject_Element_DateTime',
+        'DTEND'     => 'Sabre_VObject_Element_DateTime',
+        'COMPLETED' => 'Sabre_VObject_Element_DateTime',
+        'DUE'       => 'Sabre_VObject_Element_DateTime',
+        'EXDATE'    => 'Sabre_VObject_Element_MultiDateTime',
+    );
 
     /**
      * Parses the file and returns the top component 
@@ -102,17 +123,26 @@ class Sabre_VObject_Reader {
         //$result = preg_match('/(?P<name>[A-Z0-9-]+)(?:;(?P<parameters>^(?<!:):))(.*)$/',$line,$matches);
 
 
-        $token = '[A-Z0-9-]+';
+        $token = '[A-Z0-9-\.]+';
         $parameters = "(?:;(?P<parameters>([^:^\"]|\"([^\"]*)\")*))?";
         $regex = "/^(?P<name>$token)$parameters:(?P<value>.*)$/i";
 
         $result = preg_match($regex,$line,$matches);
 
         if (!$result) {
-            throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow icalendar format');
+            throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow the icalendar/vcard format');
         }
 
-        $obj = new Sabre_VObject_Property(strtoupper($matches['name']), stripcslashes($matches['value']));
+        $propertyName = strtoupper($matches['name']);
+        $propertyValue = stripcslashes($matches['value']);
+
+        if (isset(self::$elementMap[$propertyName])) {
+            $className = self::$elementMap[$propertyName];
+        } else {
+            $className = 'Sabre_VObject_Property';
+        }
+
+        $obj = new $className($propertyName, $propertyValue);
 
         if ($matches['parameters']) {
 
@@ -138,23 +168,26 @@ class Sabre_VObject_Reader {
 
         $paramValue = '(?P<paramValue>[^\"^;]*|"[^"]*")';
 
-        $regex = "/(?<=^|;)(?P<paramName>$token)=$paramValue(?=$|;)/";
+        $regex = "/(?<=^|;)(?P<paramName>$token)(=$paramValue(?=$|;))?/i";
         preg_match_all($regex, $parameters, $matches,  PREG_SET_ORDER);
 
         $params = array();
         foreach($matches as $match) {
 
-            $value = $match['paramValue'];
+            $value = isset($match['paramValue'])?$match['paramValue']:null;
 
-            // Stripping quotes, if needed
-            if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
+            if (isset($value[0])) {
+                // Stripping quotes, if needed
+                if ($value[0] === '"') $value = substr($value,1,strlen($value)-2);
+            } else {
+                $value = '';
+            }
 
             $params[] = new Sabre_VObject_Parameter($match['paramName'], stripcslashes($value));
 
         }
 
         return $params;
-
 
     }
 

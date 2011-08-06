@@ -42,6 +42,32 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testMagicGetGroups() {
+
+        $comp = new Sabre_VObject_Component('VCARD');
+        
+        $sub = new Sabre_VObject_Property('GROUP1.EMAIL','1@1.com');
+        $comp->children[] = $sub;
+
+        $sub = new Sabre_VObject_Property('GROUP2.EMAIL','2@2.com');
+        $comp->children[] = $sub;
+
+        $sub = new Sabre_VObject_Property('EMAIL','3@3.com');
+        $comp->children[] = $sub;
+
+        $emails = $comp->email;
+        $this->assertEquals(3, count($emails));
+
+        $email1 = $comp->{"group1.email"};
+        $this->assertEquals('EMAIL', $email1[0]->name);
+        $this->assertEquals('GROUP1', $email1[0]->group);
+
+        $email3 = $comp->{".email"};
+        $this->assertEquals('EMAIL', $email3[0]->name);
+        $this->assertEquals(null, $email3[0]->group);
+
+    }
+
     function testMagicIsset() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');
@@ -249,6 +275,18 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('VEVENT',$comp->VEVENT->name); 
 
     }
+
+    function testMagicUnset() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp->add(new Sabre_VObject_Component('VEVENT'));
+
+        unset($comp->vevent);
+
+        $this->assertEquals(array(), $comp->children);
+
+    }
+
 
     function testCount() {
 

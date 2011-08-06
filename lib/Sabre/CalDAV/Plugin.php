@@ -136,7 +136,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
-        $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
+        $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -158,6 +158,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             '{' . self::NS_CALDAV . '}max-attendees-per-instance',
             '{' . self::NS_CALDAV . '}calendar-home-set',
             '{' . self::NS_CALDAV . '}supported-collation-set',
+            '{' . self::NS_CALDAV . '}calendar-data',
 
             // scheduling extension
             '{' . self::NS_CALDAV . '}calendar-user-address-set',
@@ -231,7 +232,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
 
-
             foreach($dom->firstChild->childNodes as $child) {
 
                 if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
@@ -251,41 +251,39 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * afterGetProperties
+     * beforeGetProperties
      *
-     * This method handler is invoked after properties for a specific resource
-     * are received. This allows us to add any properties that might have been
-     * missing.
+     * This method handler is invoked before any after properties for a
+     * resource are fetched. This allows us to add in any CalDAV specific 
+     * properties. 
      * 
      * @param string $path
-     * @param array $properties 
+     * @param Sabre_DAV_INode $node
+     * @param array $requestedProperties
+     * @param array $returnedProperties
      * @return void
      */
-    public function afterGetProperties($path, &$properties) {
+    public function beforeGetProperties($path, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
 
-        // Find out if we are currently looking at a principal resource
-        $currentNode = $this->server->tree->getNodeForPath($path);
-
-        if ($currentNode instanceof Sabre_DAVACL_IPrincipal) {
+        if ($node instanceof Sabre_DAVACL_IPrincipal) {
 
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
-            if (array_key_exists($calHome,$properties[404])) {
-                $principalId = $currentNode->getName(); 
+            if (in_array($calHome,$requestedProperties)) {
+                $principalId = $node->getName(); 
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
-                unset($properties[404][$calHome]);
-                $properties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
+                unset($requestedProperties[$calHome]);
+                $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
             }
 
-            
             // calendar-user-address-set property
             $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
-            if (array_key_exists($calProp,$properties[404])) {
+            if (in_array($calProp,$requestedProperties)) {
 
-                $addresses = $currentNode->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $currentNode->getPrincipalUrl();
-                $properties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
-                unset($properties[404][$calProp]);
+                $addresses = $node->getAlternateUriSet();
+                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl();
+                unset($requestedProperties[$calProp]);
+                $returnedProperties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
 
             }
 
@@ -293,8 +291,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // other principals this principal has access to.
             $propRead = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for';
             $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
-            if (array_key_exists($propRead,$properties[404]) || array_key_exists($propWrite,$properties[404])) {
-                $membership = $currentNode->getGroupMembership();
+            if (in_array($propRead,$requestedProperties) || in_array($propWrite,$requestedProperties)) {
+
+                $membership = $node->getGroupMembership();
                 $readList = array();
                 $writeList = array();
 
@@ -313,19 +312,37 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     }
 
                 }
-                if (array_key_exists($propRead,$properties[404])) {
-                    unset($properties[404][$propRead]);
-                    $properties[200][$propRead] = new Sabre_DAV_Property_HrefList($readList);
+                if (in_array($propRead,$requestedProperties)) {
+                    unset($requestedProperties[$propRead]);
+                    $returnedProperties[200][$propRead] = new Sabre_DAV_Property_HrefList($readList);
                 }
-                if (array_key_exists($propWrite,$properties[404])) {
-                    unset($properties[404][$propWrite]);
-                    $properties[200][$propWrite] = new Sabre_DAV_Property_HrefList($writeList);
+                if (in_array($propWrite,$requestedProperties)) {
+                    unset($requestedProperties[$propWrite]);
+                    $returnedProperties[200][$propWrite] = new Sabre_DAV_Property_HrefList($writeList);
                 }
 
             }
 
+        } // instanceof IPrincipal
+
+
+        if ($node instanceof Sabre_CalDAV_CalendarObject) {
+            // The calendar-data property is not supposed to be a 'real' 
+            // property, but in large chunks of the spec it does act as such. 
+            // Therefore we simply expose it as a property.
+            $calDataProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-data';
+            if (in_array($calDataProp, $requestedProperties)) {
+                unset($requestedProperties[$calDataProp]);
+                $val = $node->get();
+                if (is_resource($val))
+                    $val = stream_get_contents($val);
+
+                // Taking out \r to not screw up the xml output
+                $returnedProperties[200][$calDataProp] = str_replace("\r","", $val);
+
+            }
         }
-        
+
     }
 
     /**
@@ -487,7 +504,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (isset($filter['text-match'])) {
                 $currentString = (string)$elem;
 
-                $isMatching = $this->substringMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
+                $isMatching = Sabre_DAV_StringUtil::textMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
                 if ($filter['text-match']['negate-condition'] && $isMatching) return false;
                 if (!$filter['text-match']['negate-condition'] && !$isMatching) return false;
                 
@@ -515,7 +532,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         // The dtstart can be both a date, or datetime property
-        if ((string)$xdtstart[0]['value']==='DATE') {
+        if ((string)$xdtstart[0]['value']==='DATE' || strlen((string)$xdtstart[0])===8) {
             $isDateTime = false;
         } else {
             $isDateTime = true;
@@ -765,25 +782,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Everything else is TRUE
         return true;
-
-    }
-
-    public function substringMatch($haystack, $needle, $collation) {
-
-        switch($collation) {
-            case 'i;ascii-casemap' :
-                // default strtolower takes locale into consideration
-                // we don't want this.
-                $haystack = str_replace(range('a','z'), range('A','Z'), $haystack);
-                $needle = str_replace(range('a','z'), range('A','Z'), $needle);
-                return strpos($haystack, $needle)!==false;
-
-            case 'i;octet' :
-                return strpos($haystack, $needle)!==false;
-            
-            default:
-                throw new Sabre_DAV_Exception_BadRequest('Unknown collation: ' . $collation);
-        }                
 
     }
 

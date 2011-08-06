@@ -50,6 +50,13 @@ $dt->format(DateTime::RFC1123) .
 '</d:getlastmodified>
 ', $xml);
 
+        $ok = false;
+        try {
+            Sabre_DAV_Property_GetLastModified::unserialize(Sabre_DAV_XMLUtil::loadDOMDocument($xml)->firstChild);
+        } catch (Sabre_DAV_Exception $e) {
+            $ok = true;
+        }
+        if (!$ok) $this->markTestFailed('Unserialize should not be supported');
 
     }
 

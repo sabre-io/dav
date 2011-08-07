@@ -22,7 +22,7 @@ class Sabre_CalDAV_ServerTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($caldavPlugin instanceof Sabre_CalDAV_Plugin);
 
         $node = $server->tree->getNodeForPath('');
-        $this->assertTrue($node instanceof Sabre_DAV_SimpleDirectory);
+        $this->assertTrue($node instanceof Sabre_DAV_SimpleCollection);
 
         $this->assertEquals('root', $node->getName());
 

@@ -6,8 +6,6 @@
 	* BC Break: Adding parameters with the VObject libraries now overwrites
 	  the previous parameter, rather than just add it. This makes more sense
 	  for 99% of the cases.
-	* BC Break: Sabre_DAV_Server::createDirectory was deprecated and now
-	  removed.
 	* BC Break: lib/Sabre.autoload.php is now removed in favor of
 	  lib/Sabre/autoload.php.
 	* Deprecated: Sabre_DAV_Directory is now deprecated and will be removed in

@@ -24,6 +24,8 @@
 	* Fixed: VObject bug: Parameters with no value are now correctly parsed.
 	* Changed: If calendars don't specify which components they allow, 'all'
 	  components are assumed (e.g.: VEVENT, VTODO, VJOURNAL).
+	* Changed: Browser plugin now uses POST variable 'sabreAction' instead of
+	  'action' to reduce the chance of collisions.  
 
 1.4.4-stable (2011-07-07)
 	* Fixed: Issue 131: Custom CalDAV backends could break in certain cases.

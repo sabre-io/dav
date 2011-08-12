@@ -62,7 +62,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
 
     function testGetETag() {
 
-        $this->assertEquals(md5('card'), $this->card->getETag());
+        $this->assertEquals('"' . md5('card') . '"' , $this->card->getETag());
 
     }
 

@@ -1,3 +1,7 @@
+1.5.1-stable (2011-??-??)
+	* Fixed: Issue 137. Hiding action interface in HTML browser for
+	  non-collections.
+
 1.5.0-stable (2011-08-12)
 	* Added: CardDAV support.
 	* Added: An experimental WebDAV client.

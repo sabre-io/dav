@@ -165,6 +165,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         '{DAV:}getlastmodified',
     ),1);
 
+    $parent = $this->server->tree->getNodeForPath($path);
+
 
     if ($path) {
 
@@ -188,6 +190,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
 
         $type = null;
+
 
         if (isset($file[200]['{DAV:}resourcetype'])) {
             $type = $file[200]['{DAV:}resourcetype']->getValue();
@@ -246,7 +249,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
   $html.= "<tr><td colspan=\"4\"><hr /></td></tr>";
 
-  if ($this->enablePost) {
+  if ($this->enablePost && $parent instanceof Sabre_DAV_ICollection) {
       $html.= '<tr><td><form method="post" action="">
             <h3>Create new folder</h3>
             <input type="hidden" name="sabreAction" value="mkcol" />

@@ -98,6 +98,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if ($node instanceof Sabre_CardDAV_AddressBook || $node instanceof Sabre_CardDAV_ICard) {
             return array(
                  '{' . self::NS_CARDDAV . '}addressbook-multiget',
+                 '{' . self::NS_CARDDAV . '}addressbook-query',
             );
         }
         return array();

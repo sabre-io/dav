@@ -1,6 +1,8 @@
 1.5.1-stable (2011-??-??)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for
 	  non-collections.
+	* Fixed: addressbook-query is now correctly returned from the
+	  {DAV:}supported-report-set property.
 
 1.5.0-stable (2011-08-12)
 	* Added: CardDAV support.

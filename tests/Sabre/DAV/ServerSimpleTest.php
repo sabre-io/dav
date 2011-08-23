@@ -213,6 +213,24 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testPutContentRange() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/testput.txt',
+            'REQUEST_METHOD' => 'PUT',
+            'HTTP_CONTENT_RANGE' => 'bytes/100-200',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('Testing new file');
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status);
+
+    }
+
+
     function testDelete() {
 
         $serverVars = array(

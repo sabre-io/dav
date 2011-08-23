@@ -69,7 +69,7 @@ $caldavBackend    = new Sabre_CalDAV_Backend_PDO($pdo);
  */
 $nodes = array(
     // /principals
-    new Sabre_DAVACL_PrincipalCollection($principalBackend),
+    new Sabre_CalDAV_Principal_Collection($principalBackend),
     // /calendars
     new Sabre_CalDAV_CalendarRootNode($principalBackend, $caldavBackend),
     // /addressbook

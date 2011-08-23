@@ -3,6 +3,7 @@
 	  non-collections.
 	* Fixed: addressbook-query is now correctly returned from the
 	  {DAV:}supported-report-set property.
+	* Fixed: Issue 142: Bugs in groupwareserver.php example.
 
 1.5.0-stable (2011-08-12)
 	* Added: CardDAV support.

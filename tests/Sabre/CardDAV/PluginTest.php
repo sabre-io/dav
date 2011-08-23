@@ -17,6 +17,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
         $this->assertEquals(array(
             '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-multiget',
+            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-query',
         ), $this->plugin->getSupportedReportSet('addressbooks/user1/book1'));
 
     }

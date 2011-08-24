@@ -1,4 +1,4 @@
-1.5.1-stable (2011-??-??)
+1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for
 	  non-collections.
 	* Fixed: addressbook-query is now correctly returned from the

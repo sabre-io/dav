@@ -68,9 +68,16 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     public function httpGetInterceptor($method, $uri) {
 
         if ($method!='GET') return true;
-        
-        $node = $this->server->tree->getNodeForPath($uri);
-        if ($node instanceof Sabre_DAV_IFile) return true;
+
+        try { 
+            $node = $this->server->tree->getNodeForPath($uri);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            // We're simply stopping when the file isn't found to not interfere 
+            // with other plugins.
+            return;
+        }
+        if ($node instanceof Sabre_DAV_IFile) 
+            return;
 
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');

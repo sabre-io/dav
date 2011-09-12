@@ -1,3 +1,7 @@
+1.5.2-stable (2011-??-??)
+	* Fixed: Issue 144: Browser plugin could interfere with
+	  TemporaryFileFilterPlugin if it was loaded first.
+
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for
 	  non-collections.

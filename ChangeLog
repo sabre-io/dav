@@ -1,6 +1,8 @@
 1.5.2-stable (2011-??-??)
 	* Fixed: {DAV:}supported-report-set is now correctly reporting the reports
 	  for IAddressBook.
+	* Added: Sabre_VObject_Property::add() to add duplicate parameters to
+	  properties.
 
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for

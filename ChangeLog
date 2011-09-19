@@ -3,6 +3,8 @@
 	  for IAddressBook.
 	* Added: Sabre_VObject_Property::add() to add duplicate parameters to
 	  properties.
+	* Added: Issue 151: Sabre_CalDAV_ICalendar and Sabre_CalDAV_ICalendarObject
+	  interfaces. 
 
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for

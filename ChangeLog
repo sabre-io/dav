@@ -1,10 +1,14 @@
+1.5.2-stable (2011-??-??)
+	* Fixed: {DAV:}supported-report-set is now correctly reporting the reports
+	  for IAddressBook.
+
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for
 	  non-collections.
 	* Fixed: addressbook-query is now correctly returned from the
 	  {DAV:}supported-report-set property.
 	* Fixed: Issue 142: Bugs in groupwareserver.php example.
-	* FIxed: Issue 139: Rejecting PUT requests with Content-Range.
+	* Fixed: Issue 139: Rejecting PUT requests with Content-Range.
 
 1.5.0-stable (2011-08-12)
 	* Added: CardDAV support.

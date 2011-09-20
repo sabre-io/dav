@@ -4,7 +4,9 @@
 	* Added: Sabre_VObject_Property::add() to add duplicate parameters to
 	  properties.
 	* Added: Issue 151: Sabre_CalDAV_ICalendar and Sabre_CalDAV_ICalendarObject
-	  interfaces. 
+	  interfaces.
+	* Fixed: Issue 140: Not returning 201 Created if an event cancelled the
+	  creation of a file.
 
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for

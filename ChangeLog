@@ -1,4 +1,13 @@
 1.5.2-stable (2011-??-??)
+	* Fixed: {DAV:}supported-report-set is now correctly reporting the reports
+	  for IAddressBook.
+	* Added: Sabre_VObject_Property::add() to add duplicate parameters to
+	  properties.
+	* Added: Issue 151: Sabre_CalDAV_ICalendar and Sabre_CalDAV_ICalendarObject
+	  interfaces.
+	* Fixed: Issue 140: Not returning 201 Created if an event cancelled the
+	  creation of a file.
+	* Fixed: Issue 150: Faster URLUtil::encodePath() implementation.
 	* Fixed: Issue 144: Browser plugin could interfere with
 	  TemporaryFileFilterPlugin if it was loaded first.
 
@@ -8,7 +17,7 @@
 	* Fixed: addressbook-query is now correctly returned from the
 	  {DAV:}supported-report-set property.
 	* Fixed: Issue 142: Bugs in groupwareserver.php example.
-	* FIxed: Issue 139: Rejecting PUT requests with Content-Range.
+	* Fixed: Issue 139: Rejecting PUT requests with Content-Range.
 
 1.5.0-stable (2011-08-12)
 	* Added: CardDAV support.

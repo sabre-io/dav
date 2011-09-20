@@ -52,7 +52,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    public function testAddParameterAsString() {
+    public function testSetParameterAsString() {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $property['paramname'] = 'paramvalue';
@@ -67,14 +67,14 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testAddParameterAsStringNoKey() {
+    public function testSetParameterAsStringNoKey() {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $property[] = 'paramvalue';
 
     }
 
-    public function testAddParameterObject() {
+    public function testSetParameterObject() {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $param = new Sabre_VObject_Parameter('paramname','paramvalue');
@@ -89,7 +89,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testAddParameterObjectWithKey() {
+    public function testSetParameterObjectWithKey() {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $param = new Sabre_VObject_Parameter('paramname','paramvalue');
@@ -102,7 +102,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testAddParameterObjectRandomObject() {
+    public function testSetParameterObjectRandomObject() {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $property[] = new StdClass(); 
@@ -185,4 +185,73 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1,count($it));
 
     }
+
+    function testAddScalar() {
+
+        $property = new Sabre_VObject_Property('EMAIL');
+
+        $property->add('myparam','value');
+
+        $this->assertEquals(1, count($property->parameters));
+
+        $this->assertTrue($property->parameters[0] instanceof Sabre_VObject_Parameter);
+        $this->assertEquals('MYPARAM',$property->parameters[0]->name); 
+        $this->assertEquals('value',$property->parameters[0]->value); 
+
+    }
+
+    function testAddParameter() {
+
+        $prop = new Sabre_VObject_Property('EMAIL');
+
+        $prop->add(new Sabre_VObject_Parameter('MYPARAM','value'));
+
+        $this->assertEquals(1, count($prop->parameters));
+        $this->assertEquals('MYPARAM',$prop['myparam']->name); 
+
+    }
+
+    function testAddParameterTwice() {
+
+        $prop = new Sabre_VObject_Property('EMAIL');
+
+        $prop->add(new Sabre_VObject_Parameter('MYPARAM', 'value1'));
+        $prop->add(new Sabre_VObject_Parameter('MYPARAM', 'value2'));
+
+        $this->assertEquals(2, count($prop->parameters));
+
+        $this->assertEquals('MYPARAM',$prop['MYPARAM']->name); 
+
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testAddArgFail() {
+
+        $prop = new Sabre_VObject_Property('EMAIL');
+        $prop->add(new Sabre_VObject_Parameter('MPARAM'),'hello');
+
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testAddArgFail2() {
+
+        $property = new Sabre_VObject_Property('EMAIL','value');
+        $property->add(array());
+
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testAddArgFail3() {
+
+        $property = new Sabre_VObject_Property('EMAIL','value');
+        $property->add('hello',array());
+
+    }
+
 }

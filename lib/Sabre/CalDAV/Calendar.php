@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Calendar implements Sabre_DAV_ICollection, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
+class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
 
     /**
      * This is an array with calendar information 

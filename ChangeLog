@@ -7,6 +7,7 @@
 	  interfaces.
 	* Fixed: Issue 140: Not returning 201 Created if an event cancelled the
 	  creation of a file.
+	* Fixed: Issue 150: Faster URLUtil::encodePath() implementation.
 
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for

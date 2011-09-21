@@ -36,20 +36,17 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      * If the creation was a success, an id must be returned that can be used to reference
      * this calendar in other methods, such as updateCalendar.
      *
-     * This function must return a server-wide unique id that can be used 
-     * later to reference the calendar.
-     *
      * @param string $principalUri
      * @param string $calendarUri
      * @param array $properties
-     * @return string|int 
+     * @return void 
      */
     abstract function createCalendar($principalUri,$calendarUri,array $properties); 
 
     /**
      * Updates properties on this node,
      *
-     * The properties array uses the propertyName in clark-notation as key,
+     * The mutations array uses the propertyName in clark-notation as key,
      * and the array value for the property value. In the case a property
      * should be deleted, the property value will be null.
      *
@@ -79,10 +76,10 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      * (424 Failed Dependency) because the request needs to be atomic.
      *
      * @param string $calendarId
-     * @param array $properties
+     * @param array $mutations
      * @return bool|array 
      */
-    public function updateCalendar($calendarId, array $properties) {
+    public function updateCalendar($calendarId, array $mutations) {
         
         return false; 
 

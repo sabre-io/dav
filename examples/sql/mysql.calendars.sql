@@ -1,6 +1,6 @@
 CREATE TABLE calendarobjects ( 
 	id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    calendardata TEXT, 
+    calendardata MEDIUMBLOB, 
     uri VARCHAR(100), 
     calendarid INTEGER UNSIGNED NOT NULL, 
     lastmodified INT(11) 

@@ -1,4 +1,6 @@
 1.5.2-stable (2011-09-21)
+	* Fixed: carddata and calendardata MySQL fields are now of type
+	  'mediumblob'. 'TEXT' was too small sometimes to hold all the data.
 	* Fixed: {DAV:}supported-report-set is now correctly reporting the reports
 	  for IAddressBook.
 	* Added: Sabre_VObject_Property::add() to add duplicate parameters to

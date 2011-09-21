@@ -1,3 +1,5 @@
+1.5.3-stable (2011-??-??)
+
 1.5.2-stable (2011-09-21)
 	* Fixed: carddata and calendardata MySQL fields are now of type
 	  'mediumblob'. 'TEXT' was too small sometimes to hold all the data.

@@ -10,6 +10,8 @@
 	* Fixed: Issue 150: Faster URLUtil::encodePath() implementation.
 	* Fixed: Issue 144: Browser plugin could interfere with
 	  TemporaryFileFilterPlugin if it was loaded first.
+	* Added: It's not possible to specify more 'alternate uris' in principal
+	  backends.
 
 1.5.1-stable (2011-08-24)
 	* Fixed: Issue 137. Hiding action interface in HTML browser for

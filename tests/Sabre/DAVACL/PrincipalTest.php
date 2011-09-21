@@ -93,9 +93,16 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
             '{DAV:}displayname' => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
             '{http://sabredav.org/ns}email-address' => 'admin@example.org',
+            '{DAV:}alternate-URI-set' => array(
+                'mailto:admin+1@example.org',
+                'mailto:admin+2@example.org',
+                'mailto:admin@example.org',
+            ),
         ));
 
         $expected = array(
+            'mailto:admin+1@example.org',
+            'mailto:admin+2@example.org',
             'mailto:admin@example.org',
         );
 

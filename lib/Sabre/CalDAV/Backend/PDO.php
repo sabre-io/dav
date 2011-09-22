@@ -172,7 +172,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
     }
 
     /**
-     * Updates a calendars properties 
+     * Updates properties for a calendar.
      *
      * The mutations array uses the propertyName in clark-notation as key,
      * and the array value for the property value. In the case a property
@@ -283,7 +283,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
     }
 
     /**
-     * Returns all calendar objects within a calendar object.
+     * Returns all calendar objects within a calendar. 
      *
      * Every item contains an array with the following keys:
      *   * id - unique identifier which will be used for subsequent updates

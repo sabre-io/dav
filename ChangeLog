@@ -1,4 +1,5 @@
 1.5.3-stable (2011-??-??)
+	* Fixed: Sabre_DAV_Collection was missing from the includes file.
 
 1.5.2-stable (2011-09-21)
 	* Fixed: carddata and calendardata MySQL fields are now of type

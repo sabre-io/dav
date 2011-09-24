@@ -15,7 +15,7 @@ class Sabre_HTTP_ResponseTest extends PHPUnit_Framework_TestCase {
     function testGetStatusMessage() {
 
         $msg = $this->response->getStatusMessage(200);
-        $this->assertEquals('HTTP/1.1 200 Ok',$msg);
+        $this->assertEquals('HTTP/1.1 200 OK',$msg);
 
     }
 

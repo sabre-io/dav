@@ -197,7 +197,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
@@ -264,7 +264,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }

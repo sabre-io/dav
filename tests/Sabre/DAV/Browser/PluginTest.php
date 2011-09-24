@@ -22,7 +22,7 @@ class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'text/html; charset=utf-8',
             ),

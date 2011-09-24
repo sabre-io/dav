@@ -95,7 +95,7 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 200 Ok', $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals('HTTP/1.1 200 OK', $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);

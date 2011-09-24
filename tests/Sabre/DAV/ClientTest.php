@@ -28,7 +28,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "Content-Type: text/plain",
             "",
             "Hello there!"
@@ -75,7 +75,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "Content-Type: text/plain",
             "",
             "Hello there!"
@@ -123,7 +123,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "Content-Type: text/plain",
             "",
             "Hello there!"
@@ -169,7 +169,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "Content-Type: text/plain",
             "",
             "Hello there!"
@@ -262,7 +262,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "DAV: feature1, feature2",
             "",
         );
@@ -292,7 +292,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "",
         );
 
@@ -324,7 +324,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "",
         );
 
@@ -349,7 +349,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "",
             "<?xml version=\"1.0\"?>",
             "<d:multistatus xmlns:d=\"DAV:\">",
@@ -359,7 +359,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             "      <d:prop>",
             "         <d:foo>hello</d:foo>",
             "      </d:prop>",
-            "      <d:status>HTTP/1.1 200 Ok</d:status>",
+            "      <d:status>HTTP/1.1 200 OK</d:status>",
             "    </d:propstat>",
             "    <d:propstat>",
             "      <d:prop>",
@@ -409,7 +409,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "",
             "<?xml version=\"1.0\"?>",
             "<d:multistatus xmlns:d=\"DAV:\" xmlns:x=\"urn:custom\">",
@@ -420,7 +420,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             "         <d:foo>hello</d:foo>",
             "         <x:bar>world</x:bar>",
             "      </d:prop>",
-            "      <d:status>HTTP/1.1 200 Ok</d:status>",
+            "      <d:status>HTTP/1.1 200 OK</d:status>",
             "    </d:propstat>",
             "  </d:response>",
             "</d:multistatus>",
@@ -467,7 +467,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         ));
 
         $responseBlob = array(
-            "HTTP/1.1 200 Ok",
+            "HTTP/1.1 200 OK",
             "",
         );
 

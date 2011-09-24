@@ -326,7 +326,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1,count($data),'We expected one \'s:status\' element. Response body: ' . $body);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0]);
+        $this->assertEquals('HTTP/1.1 200 OK',(string)$data[0]);
 
     }
 

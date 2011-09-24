@@ -50,7 +50,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1,count($data),'We expected 1 \'d:status\' element');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0],'The status for this property should have been 200');
+        $this->assertEquals('HTTP/1.1 200 OK',(string)$data[0],'The status for this property should have been 200');
 
     }
 
@@ -100,7 +100,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1,count($data),'We expected 1 \'d:status\' element');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0],'The status for this property should have been 200');
+        $this->assertEquals('HTTP/1.1 200 OK',(string)$data[0],'The status for this property should have been 200');
 
     }
 

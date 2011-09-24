@@ -39,7 +39,7 @@ class Sabre_DAV_Mount_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $xml = simplexml_load_string($this->response->body);
         $this->assertTrue($xml==true,'Response was not a valid xml document');

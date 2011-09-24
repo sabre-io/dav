@@ -493,7 +493,7 @@ END:VCALENDAR';
             '/d:multistatus/d:response/d:propstat/d:prop',
             '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
             '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 Ok',
+            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
         );
 
         foreach($check as $v1=>$v2) {
@@ -554,7 +554,7 @@ END:VCALENDAR';
             '/d:multistatus/d:response/d:propstat/d:prop',
             '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
             '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 Ok',
+            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
         );
 
         foreach($check as $v1=>$v2) {

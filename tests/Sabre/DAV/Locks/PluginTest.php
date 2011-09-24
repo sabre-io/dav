@@ -87,7 +87,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);
@@ -198,7 +198,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 
@@ -307,7 +307,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
@@ -458,7 +458,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
@@ -504,7 +504,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir',
@@ -545,7 +545,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -588,7 +588,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -673,7 +673,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -716,7 +716,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -802,7 +802,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -846,7 +846,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
@@ -862,7 +862,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
     }
 
@@ -902,7 +902,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
 
     }
 

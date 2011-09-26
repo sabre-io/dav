@@ -5,6 +5,8 @@
 	* Fixed: Issue 153: Support for files with mixed newline styles in
 	  Sabre_VObject.
 	* Added: Sabre_DAV_SimpleFile class for easy static file creation.
+	* Added: Issue 158: Support for the CARDDAV:supported-address-data
+	  property.
 
 1.5.2-stable (2011-09-21)
 	* Fixed: carddata and calendardata MySQL fields are now of type

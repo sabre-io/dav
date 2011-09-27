@@ -86,6 +86,7 @@ class Sabre_DAV_URLUtil {
 
             case 'ISO-8859-1' : 
                 $path = utf8_encode($path);
+
         }
 
         return $path;

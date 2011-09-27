@@ -93,6 +93,9 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
         if (is_resource($calendarData))
             $calendarData = stream_get_contents($calendarData);
 
+        // Converting to UTF-8, if needed
+        $calendarData = Sabre_DAV_StringUtil::ensureUTF8($calendarData);
+
         $supportedComponents = $this->calendarInfo['{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set'];
         if ($supportedComponents) {
             $supportedComponents = $supportedComponents->getValue();

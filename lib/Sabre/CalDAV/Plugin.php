@@ -137,6 +137,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
         $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
+        $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
+        $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -782,6 +784,56 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Everything else is TRUE
         return true;
+
+    }
+
+    /**
+     * This method is used to generate HTML output for the 
+     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users 
+     * can use to create new calendars.
+     * 
+     * @param Sabre_DAV_INode $node
+     * @param string $output 
+     * @return bool 
+     */
+    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
+
+        if (!$node instanceof Sabre_CalDAV_UserCalendars)
+            return;
+
+        $output.= '<tr><td><form method="post" action="">
+            <h3>Create new calendar</h3>
+            <input type="hidden" name="sabreAction" value="mkcalendar" />
+            <label>Name (uri):</label> <input type="text" name="name" /><br />
+            <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
+            <input type="submit" value="create" />
+            </form>
+            </td></tr>';
+
+        return false;
+
+    }
+
+    /**
+     * This method allows us to intercept the 'mkcalendar' sabreAction. This 
+     * action enables the user to create new calendars from the browser plugin.
+     * 
+     * @param Sabre_DAV_INode $node
+     * @param string $output 
+     * @return bool 
+     */
+    public function browserPostAction($uri, $action, array $postVars) {
+
+        if ($action!=='mkcalendar')
+            return;
+
+        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
+        $properties = array();
+        if (isset($postVars['{DAV:}displayname'])) {
+            $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
+        } 
+        $this->server->createCollection($uri . '/' . $postVars['name'],$resourceType,$properties);
+        return false;
 
     }
 

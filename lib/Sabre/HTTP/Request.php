@@ -21,9 +21,16 @@ class Sabre_HTTP_Request {
     /**
      * PHP's $_SERVER data
      * 
-     * @var string 
+     * @var array 
      */
     protected $_SERVER;
+
+    /**
+     * PHP's $_POST data
+     * 
+     * @var array 
+     */
+    protected $_POST;    
 
     /**
      * The request body, if any.
@@ -46,15 +53,18 @@ class Sabre_HTTP_Request {
     /**
      * Sets up the object
      *
-     * The serverData array can be used to override usage of PHP's 
-     * global _SERVER variable. 
+     * The serverData and postData array can be used to override usage of PHP's 
+     * global _SERVER and _POST variable respectively. 
      * 
      * @param array $serverData 
      */
-    public function __construct($serverData = null) {
+    public function __construct(array $serverData = null, array $postData = null) {
 
        if ($serverData) $this->_SERVER = $serverData;
        else $this->_SERVER =& $_SERVER;
+
+       if ($postData) $this->_POST = $postData;
+       else $this->_POST =& $_POST;
 
     }
 
@@ -222,6 +232,20 @@ class Sabre_HTTP_Request {
         if ($setAsDefaultInputStream) {
             self::$defaultInputStream = $this->body;
         }
+
+    }
+
+    /**
+     * Returns PHP's _POST variable.
+     *
+     * The reason this is in a method is so it can be subclassed and 
+     * overridden.
+     * 
+     * @return array 
+     */
+    public function getPostVars() {
+
+        return $this->_POST;
 
     }
 

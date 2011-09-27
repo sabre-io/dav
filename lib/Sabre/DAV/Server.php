@@ -453,7 +453,7 @@ class Sabre_DAV_Server {
 
             if ($this->broadcastEvent('unknownMethod',array($method, $uri))) {
                 // Unsupported method
-                throw new Sabre_DAV_Exception_NotImplemented();
+                throw new Sabre_DAV_Exception_NotImplemented('There was no handler found for this "' . $method . '" method');
             }
 
         }

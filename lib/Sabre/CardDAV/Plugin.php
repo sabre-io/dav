@@ -52,6 +52,8 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         /* Events */
         $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
         $server->subscribeEvent('report', array($this,'report'));
+        $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
+        $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
 
         /* Namespaces */
         $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
@@ -462,5 +464,54 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * This method is used to generate HTML output for the 
+     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users 
+     * can use to create new calendars.
+     * 
+     * @param Sabre_DAV_INode $node
+     * @param string $output 
+     * @return bool 
+     */
+    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
+
+        if (!$node instanceof Sabre_CardDAV_UserAddressBooks)
+            return;
+
+        $output.= '<tr><td><form method="post" action="">
+            <h3>Create new address book</h3>
+            <input type="hidden" name="sabreAction" value="mkaddressbook" />
+            <label>Name (uri):</label> <input type="text" name="name" /><br />
+            <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
+            <input type="submit" value="create" />
+            </form>
+            </td></tr>';
+
+        return false;
+
+    }
+
+    /**
+     * This method allows us to intercept the 'mkcalendar' sabreAction. This 
+     * action enables the user to create new calendars from the browser plugin.
+     * 
+     * @param Sabre_DAV_INode $node
+     * @param string $output 
+     * @return bool 
+     */
+    public function browserPostAction($uri, $action, array $postVars) {
+
+        if ($action!=='mkaddressbook')
+            return;
+
+        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:carddav}addressbook');
+        $properties = array();
+        if (isset($postVars['{DAV:}displayname'])) {
+            $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
+        } 
+        $this->server->createCollection($uri . '/' . $postVars['name'],$resourceType,$properties);
+        return false;
+
+    }
 
 }

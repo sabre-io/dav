@@ -4,6 +4,8 @@
 	  uppercase.
 	* Fixed: Issue 153: Support for files with mixed newline styles in
 	  Sabre_VObject.
+	* Fixed: Issue 159: Automatically converting any vcard and icalendardata
+	  to UTF-8.
 	* Added: Sabre_DAV_SimpleFile class for easy static file creation.
 	* Added: Issue 158: Support for the CARDDAV:supported-address-data
 	  property.

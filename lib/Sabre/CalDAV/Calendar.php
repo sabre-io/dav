@@ -178,6 +178,8 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
     public function createFile($name,$calendarData = null) {
 
         $calendarData = stream_get_contents($calendarData);
+        // Converting to UTF-8, if needed
+        $calendarData = Sabre_DAV_StringUtil::ensureUTF8($calendarData);
 
         $supportedComponents = $this->calendarInfo['{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set'];
         if ($supportedComponents) {

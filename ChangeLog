@@ -1,4 +1,4 @@
-1.5.3-stable (2011-??-??)
+1.5.3-stable (2011-09-28)
 	* Fixed: Sabre_DAV_Collection was missing from the includes file.
 	* Fixed: Issue 152. iOS 1.4.2 apparantly requires HTTP/1.1 200 OK to be in
 	  uppercase.

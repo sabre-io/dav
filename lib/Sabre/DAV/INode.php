@@ -19,7 +19,9 @@ interface Sabre_DAV_INode {
     function delete();
 
     /**
-     * Returns the name of the node 
+     * Returns the name of the node.
+     *
+     * This is used to generate the url. 
      * 
      * @return string 
      */

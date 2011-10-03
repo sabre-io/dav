@@ -1,6 +1,9 @@
 1.6.0-stable (????-??-??)
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
+	* Changed: beforeCreateFile event now passes data argument by reference.
+	* Added: Ability for plugins to tell the ACL plugin which principal
+	  plugins are searchable.
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

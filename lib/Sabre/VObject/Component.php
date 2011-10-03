@@ -152,6 +152,25 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
     }
 
+    /**
+     * This method only returns a list of sub-components. Properties are 
+     * ignored. 
+     *
+     * @return array 
+     */
+    public function getComponents() {
+
+        $result = array();
+        foreach($this->children as $child) {
+            if ($child instanceof Sabre_VObject_Component) {
+                $result[] = $child;
+            }
+        }
+
+        return $result;
+
+    }
+
     /* Magic property accessors {{{ */
 
     /**

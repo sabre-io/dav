@@ -11,6 +11,8 @@
 	* Added: [DAVACL] Public 'principalSearch' method on the DAVACL plugin,
 	  which allows for easy searching for principals, based on their
 	  properties.
+	* Added: Sabre_VObject_Component::getComponents() to return a list of only
+	  components and not properties.
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

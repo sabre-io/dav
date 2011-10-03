@@ -88,6 +88,19 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public $defaultUsernamePath = 'principals';
 
+
+    /**
+     * This list of properties are the properties a client can search on using 
+     * the {DAV:}principal-property-search report.
+     *
+     * The keys are the property names, values are descriptions.
+     * 
+     * @var array
+     */
+    public $principalSearchPropertySet = array(
+        '{DAV:}displayname' => 'display name'
+    );
+
     /**
      * Returns a list of features added by this plugin.
      *
@@ -1032,10 +1045,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function principalSearchPropertySetReport(DOMDocument $dom) {
 
-        $searchProperties = array(
-            '{DAV:}displayname' => 'display name'
-        );
-
         $httpDepth = $this->server->getHTTPDepth(0);
         if ($httpDepth!==0) {
             throw new Sabre_DAV_Exception_BadRequest('This report is only defined when Depth: 0');
@@ -1057,7 +1066,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $nsList = $this->server->xmlNamespaces; 
 
-        foreach($searchProperties as $propertyName=>$description) {
+        foreach($this->principalSearchPropertySet as $propertyName=>$description) {
 
             $psp = $dom->createElement('d:principal-search-property');
             $root->appendChild($psp);
@@ -1098,11 +1107,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function principalPropertySearchReport(DOMDocument $dom) {
 
-        $searchableProperties = array(
-            '{DAV:}displayname' => 'display name'
-
-        );
-
         list($searchProperties, $requestedProperties, $applyToPrincipalCollectionSet) = $this->parsePrincipalPropertySearchReportRequest($dom);
 
         $result = array();
@@ -1135,14 +1139,24 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 !$lookupResult[200]['{DAV:}resourcetype']->is('{DAV:}principal')) continue;
 
             foreach($searchProperties as $searchProperty=>$searchValue) {
-                if (!isset($searchableProperties[$searchProperty])) {
+                if (!isset($this->principalSearchPropertySet[$searchProperty])) {
                     // If a property is not 'searchable', the spec dictates 
                     // this is not a match. 
                     continue;
                 }
 
-                if (isset($lookupResult[200][$searchProperty]) &&
-                    mb_stripos($lookupResult[200][$searchProperty], $searchValue, 0, 'UTF-8')!==false) {
+                if (isset($lookupResult[200][$searchProperty])) {
+
+                    $thisValue = $lookupResult[200][$searchProperty];
+                    if ($thisValue instanceof Sabre_DAV_Property_IHref) {
+                        $thisValue = $thisValue->getHref();
+                    } elseif ($thisValue instanceof Sabre_DAV_Property_HrefList) {
+                        $thisValue = implode("\n", $thisValue->getHrefs())l
+                    } elseif ($thisValue instanceof Sabre_DAV_Property) {
+                        throw new Sabre_DAV_Exception_NotImplemented('Currently this type of property is not searchable');
+                    } 
+
+                    mb_stripos($thisValue, $searchValue, 0, 'UTF-8')!==false) {
                         $matches[] = $lookupResult['href'];
                 }
 

@@ -58,8 +58,6 @@ class Sabre_HTTP_Util {
         if ($realDate !== false && $realDate >= 0)
             return new DateTime('@' . $realDate, new DateTimeZone('UTC'));
 
-        return false;
-
     }
 
 }

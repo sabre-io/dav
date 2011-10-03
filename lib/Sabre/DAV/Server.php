@@ -1420,7 +1420,7 @@ class Sabre_DAV_Server {
         list($dir,$name) = Sabre_DAV_URLUtil::splitPath($uri);
 
         if (!$this->broadcastEvent('beforeBind',array($uri))) return false;
-        if (!$this->broadcastEvent('beforeCreateFile',array($uri,$data))) return false;
+        if (!$this->broadcastEvent('beforeCreateFile',array($uri,&$data))) return false;
 
         $parent = $this->tree->getNodeForPath($dir);
         $parent->createFile($name,$data);

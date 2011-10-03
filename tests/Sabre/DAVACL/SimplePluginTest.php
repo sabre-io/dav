@@ -108,10 +108,11 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
             ),
 
         );
-        
-        $plugin = new Sabre_DAVACL_Plugin();
-        $this->assertEquals($expected, $plugin->getFlatPrivilegeSet());
 
+        $plugin = new Sabre_DAVACL_Plugin();
+        $server = new Sabre_DAV_Server();
+        $server->addPlugin($plugin); 
+        $this->assertEquals($expected, $plugin->getFlatPrivilegeSet(''));
 
     }
 

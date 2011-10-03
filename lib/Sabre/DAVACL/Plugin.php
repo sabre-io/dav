@@ -276,10 +276,37 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * See RFC3744 for more details. Currently we default on a simple,
      * standard structure. 
+     *
+     * You can either get the list of privileges by a uri (path) or by 
+     * specifying a Node.
+     * 
+     * @param string|Sabre_DAV_INode $node
+     * @return array 
+     */
+    public function getSupportedPrivilegeSet($node) {
+
+        if (is_string($node)) {
+            $node = $this->server->tree->getNodeForPath($node);
+        }
+
+        if ($node instanceof Sabre_DAVACL_IACL) {
+            $result = $node->getSupportedPrivilegeSet();
+
+            if ($result)
+                return $result;
+        }
+
+        return self::getDefaultSupportedPrivilegeSet();
+
+    }
+
+    /**
+     * Returns a fairly standard set of privileges, which may be useful for 
+     * other systems to use as a basis.
      * 
      * @return array 
      */
-    public function getSupportedPrivilegeSet() {
+    static function getDefaultSupportedPrivilegeSet() {
 
         return array(
             'privilege'  => '{DAV:}all',
@@ -342,12 +369,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *   - aggregates
      *   - abstract
      *   - concrete
-     * 
+     *
+     * @param string|Sabre_DAV_INode $node  
      * @return array 
      */
-    final public function getFlatPrivilegeSet() {
+    final public function getFlatPrivilegeSet($node) {
 
-        $privs = $this->getSupportedPrivilegeSet();
+        $privs = $this->getSupportedPrivilegeSet($node);
 
         $flat = array();
         $this->getFPSTraverse($privs, null, $flat);
@@ -430,6 +458,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $acl = $this->getACL($node);
+
         if (is_null($acl)) return null;
 
         $principals = $this->getCurrentUserPrincipals();
@@ -438,27 +467,152 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         foreach($acl as $ace) {
 
-            if (in_array($ace['principal'], $principals)) {
-                $collected[] = $ace;
+            $principal = $ace['principal'];
+
+            switch($principal) {
+
+                case '{DAV:}owner' :
+                    $owner = $node->getOwner();
+                    if ($owner && in_array($owner, $principals)) {
+                        $collected[] = $ace;
+                    }
+                    break;
+
+
+                // 'all' matches for every user
+                case '{DAV:}all' :
+
+                // 'authenticated' matched for every user that's logged in. 
+                // Since it's not possible to use ACL while not being logged 
+                // in, this is also always true. 
+                case '{DAV:}authenticated' :
+                    $collected[] = $ace;
+                    break;
+
+                // 'unauthenticated' can never occur either, so we simply 
+                // ignore these.
+                case '{DAV:}unauthenticated' :
+                    break;    
+
+                default :
+                    if (in_array($ace['principal'], $principals)) {
+                        $collected[] = $ace;
+                    }
+                    break;
+
             }
+
+
 
         }
 
         // Now we deduct all aggregated privileges.
-        $flat = $this->getFlatPrivilegeSet();
+        $flat = $this->getFlatPrivilegeSet($node);
 
         $collected2 = array();
         foreach($collected as $privilege) {
 
             $collected2[] = $privilege['privilege'];
             foreach($flat[$privilege['privilege']]['aggregates'] as $subPriv) {
-                if (!in_array($subPriv, $collected2)) 
+                if (!in_array($subPriv, $collected2))
                     $collected2[] = $subPriv;
             }
 
         }
 
         return $collected2;
+
+    }
+
+    /**
+     * Principal property search
+     *
+     * This method can search for principals matching certain values in 
+     * properties.
+     *
+     * This method will return a list of properties for the matched properties.  
+     *
+     * @param array $searchProperties    The properties to search on. This is a 
+     *                                   key-value list. The keys are property 
+     *                                   names, and the values the strings to 
+     *                                   match them on.
+     * @param array $requestedProperties This is the list of properties to 
+     *                                   return for every match.
+     * @param string $collectionUri      The principal collection to search on. 
+     *                                   If this is ommitted, the standard 
+     *                                   principal collection-set will be used. 
+     * @param DOMDocument $dom 
+     * @retun array     This method returns an array structure similar to 
+     *                  Sabre_DAV_Server::getPropertiesForPath. Returned 
+     *                  properties are index by a HTTP status code.  
+     *                  
+     */
+    public function principalSearch(array $searchProperties, array $requestedProperties, $collectionUri = null) {
+
+        if ($collectionUri) {
+            $uris = array($collectionUri);
+        } else {
+            $uris = $this->principalCollectionSet;
+        }
+
+        $lookupResults = array();
+        foreach($uris as $uri) {
+
+            $p = array_keys($searchProperties);
+            $p[] = '{DAV:}resourcetype';
+            $r = $this->server->getPropertiesForPath($uri, $p, 1);
+
+            // The first item in the results is the parent, so we get rid of it.
+            array_shift($r);
+            $lookupResults = array_merge($lookupResults, $r);
+        } 
+
+        $matches = array();
+
+        foreach($lookupResults as $lookupResult) {
+
+            // We're only looking for principals 
+            if (!isset($lookupResult[200]['{DAV:}resourcetype']) || 
+                (!($lookupResult[200]['{DAV:}resourcetype'] instanceof Sabre_DAV_Property_ResourceType)) ||
+                !$lookupResult[200]['{DAV:}resourcetype']->is('{DAV:}principal')) continue;
+
+            foreach($searchProperties as $searchProperty=>$searchValue) {
+                if (!isset($this->principalSearchPropertySet[$searchProperty])) {
+                    // If a property is not 'searchable', the spec dictates 
+                    // this is not a match. 
+                    continue;
+                }
+
+                if (isset($lookupResult[200][$searchProperty])) {
+
+                    $thisValue = $lookupResult[200][$searchProperty];
+                    if ($thisValue instanceof Sabre_DAV_Property_IHref) {
+                        $thisValue = $thisValue->getHref();
+                    } elseif ($thisValue instanceof Sabre_DAV_Property_HrefList) {
+                        $thisValue = implode("\n", $thisValue->getHrefs());
+                    } elseif ($thisValue instanceof Sabre_DAV_Property) {
+                        throw new Sabre_DAV_Exception_NotImplemented('Currently this type of property is not searchable');
+                    } 
+
+                    if (mb_stripos($thisValue, $searchValue, 0, 'UTF-8')!==false) {
+                        $matches[] = $lookupResult['href'];
+                    }
+                }
+
+            }
+
+        }
+
+        $matchProperties = array();
+
+        foreach($matches as $match) {
+            
+           list($result) = $this->server->getPropertiesForPath($match, $requestedProperties, 0);
+           $matchProperties[] = $result;
+
+        }
+
+        return $matchProperties;
 
     }
 
@@ -705,7 +859,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if (false !== ($index = array_search('{DAV:}supported-privilege-set', $requestedProperties))) {
 
             unset($requestedProperties[$index]);
-            $returnedProperties[200]['{DAV:}supported-privilege-set'] = new Sabre_DAVACL_Property_SupportedPrivilegeSet($this->getSupportedPrivilegeSet());
+            $returnedProperties[200]['{DAV:}supported-privilege-set'] = new Sabre_DAVACL_Property_SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
 
         }
         if (false !== ($index = array_search('{DAV:}current-user-privilege-set', $requestedProperties))) {
@@ -852,7 +1006,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $oldAcl = $this->getACL($node);
 
-        $supportedPrivileges = $this->getFlatPrivilegeSet(); 
+        $supportedPrivileges = $this->getFlatPrivilegeSet($node); 
 
         /* Checking if protected principals from the existing principal set are 
            not overwritten. */
@@ -1109,71 +1263,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         list($searchProperties, $requestedProperties, $applyToPrincipalCollectionSet) = $this->parsePrincipalPropertySearchReportRequest($dom);
 
-        $result = array();
-
-        if ($applyToPrincipalCollectionSet) {
-            $uris = array();
-        } else {
-            $uris = array($this->server->getRequestUri());
+        $uri = null;
+        if (!$applyToPrincipalCollectionSet) {
+            $uri = $this->server->getRequestUri();
         }
+        $result = $this->principalSearch($searchProperties, $requestedProperties, $uri);
 
-        $lookupResults = array();
-        foreach($uris as $uri) {
-
-            $p = array_keys($searchProperties);
-            $p[] = '{DAV:}resourcetype';
-            $r = $this->server->getPropertiesForPath($uri, $p, 1);
-
-            // The first item in the results is the parent, so we get rid of it.
-            array_shift($r);
-            $lookupResults = array_merge($lookupResults, $r);
-        } 
-
-        $matches = array();
-
-        foreach($lookupResults as $lookupResult) {
-
-            // We're only looking for principals 
-            if (!isset($lookupResult[200]['{DAV:}resourcetype']) || 
-                (!($lookupResult[200]['{DAV:}resourcetype'] instanceof Sabre_DAV_Property_ResourceType)) ||
-                !$lookupResult[200]['{DAV:}resourcetype']->is('{DAV:}principal')) continue;
-
-            foreach($searchProperties as $searchProperty=>$searchValue) {
-                if (!isset($this->principalSearchPropertySet[$searchProperty])) {
-                    // If a property is not 'searchable', the spec dictates 
-                    // this is not a match. 
-                    continue;
-                }
-
-                if (isset($lookupResult[200][$searchProperty])) {
-
-                    $thisValue = $lookupResult[200][$searchProperty];
-                    if ($thisValue instanceof Sabre_DAV_Property_IHref) {
-                        $thisValue = $thisValue->getHref();
-                    } elseif ($thisValue instanceof Sabre_DAV_Property_HrefList) {
-                        $thisValue = implode("\n", $thisValue->getHrefs())l
-                    } elseif ($thisValue instanceof Sabre_DAV_Property) {
-                        throw new Sabre_DAV_Exception_NotImplemented('Currently this type of property is not searchable');
-                    } 
-
-                    mb_stripos($thisValue, $searchValue, 0, 'UTF-8')!==false) {
-                        $matches[] = $lookupResult['href'];
-                }
-
-            }
-
-        }
-
-        $matchProperties = array();
-
-        foreach($matches as $match) {
-            
-           list($result) = $this->server->getPropertiesForPath($match, $requestedProperties, 0);
-           $matchProperties[] = $result;
-
-        }
-
-        $xml = $this->server->generateMultiStatus($matchProperties);
+        $xml = $this->server->generateMultiStatus($result);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->sendStatus(207);
         $this->server->httpResponse->sendBody($xml);

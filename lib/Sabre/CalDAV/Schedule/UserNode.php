@@ -47,8 +47,8 @@ class Sabre_CalDAV_Schedule_UserNode extends Sabre_DAV_Directory {
     public function getChildren() {
 
         return array(
-            new Sabre_CalDAV_Schedule_Inbox(),
-            new Sabre_CalDAV_Schedule_Outbox(),
+            new Sabre_CalDAV_Schedule_Inbox($this->principalUri),
+            new Sabre_CalDAV_Schedule_Outbox($this->principalUri),
         );
 
     }

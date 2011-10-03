@@ -51,7 +51,8 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
             'Calendar user addresses';
 
         $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
-        $server->subscribeEvent('afterBind',array($this,'afterBind'));
+        $server->subscribeEvent('unknownMethod', array($this,'unknownMethod'));
+        // $server->subscribeEvent('afterBind',array($this,'afterBind'));
 
     }
 
@@ -109,162 +110,38 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * The 'afterBind' event is invoked after any new file or collection is 
-     * created.
+     * This is the handler for the 'unknownMethod' event.
      *
-     * We are intercepting it, because we need to look at newly created 
-     * calendar objects and do additional processing if they are also 
-     * scheduling object resources.
+     * We are intercepting this event to add support for the POST method on the 
+     * schedule-outbox.
      * 
+     * @param string $method 
      * @param string $uri 
      * @return void
      */
-    public function afterBind($uri) {
+    public function unknownMethod($method, $uri) {
 
-        $node = $this->server->tree->getNodeForPath($uri);
-        if (!$node instanceof Sabre_CalDAV_ICalendarObject)
+        if ($method!=='POST') return;
+        if ($this->server->httpRequest->getHeader('Content-Type') !== 'text/calendar')
             return;
 
-        // It was indeed a calendar object.
-        list($parentUri) = Sabre_DAV_URLUtil::splitPath($uri);
-        $parentCalendar = $this->server->tree->getNodeForPath($uri);
-
-        // We need to figure out the owner principal
-        $owner = $parentCalendar->getOwner();
-
-        // No owner ??
-        if (is_null($owner)) return;
-
-        $uas = '{' . Sabre_CalDAV_Plugin::NS . '}calendar-user-address-set';
-        // Figure out the users' addresses
-        $properties = $this->tree->getProperties($owner, array($uas));
-
-        $addresses = $properties[$uas]?$properties[$uas]:null;
-        if ($addresses instanceof Sabre_DAV_Property_HrefList) {
-            $addresses = $addresses->getHrefs();
-        }
-
-        // No addresses?
-        if (!$addresses) return;
-
-        $iCalendarData = $node->get();
-        if (is_resource($icalendarData))
-            $icalendarData = stream_get_contents($iCalendarData);
-
-        $vObject = Sabre_VObject_Reader::read($icalendarData);
-        if(!$this->isSchedulingObject($vObject, $addresses, $attendeeType)) {
+        try {
+            $node = $this->server->tree->getNodeForPath($uri);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
             return;
         }
-        $this->createSchedulingResource($vObject, $attendeeType);
 
+        if (!$node instanceof Sabre_CalDAV_Schedule_IOutbox)
+            return;
 
-    }
+        // Checking permission
+        $acl = $this->server->getPlugin('acl');
+        $privileges = array(
+            '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy',
+        );
+        $acl->checkPrivileges($uri,$privileges);
 
-    /**
-     * This method is responsible for cases where a new scheduling resource 
-     * was created. This is either through a PUT of a new object, or a 
-     * modification from an existing object so it becomes a scheduling 
-     * resource.
-     * 
-     * @param Sabre_VObject_Component $vObject
-     * @param int $attendeeType 1 or 2 if it's a organizer or attendee
-     * @return void
-     */
-    protected function createSchedulingResource(Sabre_VObject_Component $vObject, $attendeeType) {
-
-        switch($attendeeType) {
-
-            // Organizer
-            case 1 :
-                $attendees = array();
-
-                if (!isset($vObject->SEQUENCE)) {
-                    $vObject->SEQUENCE = 1;
-                }
-                if (!isset($vObject->DTSTAMP)) {
-                    $dtStamp = new Sabre_VObject_Element_DateTime('DTSTAMP');
-                    $dtStamp->setDateTime(new DateTime('NOW'), Sabre_VObject_Element_DateTime::UTC);
-                    $vObject->add($dtStamp);
-                } 
-
-                foreach($vObject->selectComponents() as $vComponent) {
-                    foreach($vComponent->attendee as $vAttendee) {
-
-                        // We are only supposed to handle attendees that have 
-                        // the schedule agent set to server (or not set at, 
-                        // which also means 'server'.
-                        if (isset($vAttendee['SCHEDULE-AGENT']) && strtoupper($vAttendee['SCHEDULE-AGENT']) !== 'SERVER') {
-                            continue;
-                        }
-
-                        $attendees[] = $vAttendee;
-
-                    } 
-
-                }
-                break;
-
-            // Attendee
-            case 2 :
-                throw new Sabre_DAV_Exception_NotImplemented('This part of the specification has not yet been implemented');
-                break;
-
-        }
-
-
-    }
-
-    /**
-     * Checks if a VObject is also a scheduling object resource.
-     *
-     * This method will also pass 1 or 2 to the attendeeType argument, 
-     * depending on if it matched a user with the organizer, or attendee 
-     * respectively.
-     *
-     * The compType argument is filled with the type of iCalendar component, 
-     * which may either be VEVENT, VTODO or VJOURNAL.
-     * 
-     * @param Sabre_VObject_Component $vObject
-     * @param array $userAddresses
-     * @param int $attendeeType
-     * @return bool 
-     */
-    protected function isSchedulingObject(Sabre_VObject_Component $vObject, array $userAddresses, &$attendeeType = null) {
-
-        $vComponent = null;
-        foreach($vObject->getComponents() as $vComponent) {
-
-            if ($vComponent->name = 'VTIMEZONE')
-                continue;
-
-            break;
-
-        }
-
-        // This should actually not happen for valid iCalendar objects.
-        if (is_null($vComponent))
-            return false; 
-
-        $organizer = (string)$vComponent->organizer;
-        if (!$organizer)
-            continue;
-
-        if (in_array((string)$organizer, $userAddresses)) {
-            $attendeeType = 1;
-            return true;
-        }
-
-        foreach($vComponent->attendee as $attendee) {
-
-            $attendee = (string)$attendee;
-
-            if (in_array((string)$organizer, $userAddresses)) {
-                $attendeeType = 2;
-                return true;
-            }
-
-        }
-
+        $this->server->httpResponse->sendBody('Bottoms up!');
         return false; 
 
     }

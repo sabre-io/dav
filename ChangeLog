@@ -6,7 +6,7 @@
 	* Changed: beforeCreateFile event now passes data argument by reference.
 	* Added: Ability for plugins to tell the ACL plugin which principal
 	  plugins are searchable.
-	* Added: [DAVACL] per-node overriding of supported privileges. This allows
+	* Added: [DAVACL] Per-node overriding of supported privileges. This allows
 	  for custom privileges where needed.
 	* Added: [DAVACL] Public 'principalSearch' method on the DAVACL plugin,
 	  which allows for easy searching for principals, based on their

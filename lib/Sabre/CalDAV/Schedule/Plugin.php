@@ -70,6 +70,8 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    // {{{ Event handlers
+
     /**
      * beforeGetProperties
      *
@@ -141,10 +143,58 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         );
         $acl->checkPrivileges($uri,$privileges);
 
-        $this->server->httpResponse->sendBody('Bottoms up!');
+        $response = $this->handleFreeBusyRequest($node, $this->server->httpRequest->getBody(true));
+
+        $this->server->httpResponse->setHeader('Content-Type','text/calendar');
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody($response);
+
         return false; 
 
     }
+
+    // }}}
+
+    /**
+     * This method is responsible for parsing a free-busy query request and 
+     * returning it's result. 
+     * 
+     * @param Sabre_DAV_INode $node 
+     * @param string $request
+     * @return string 
+     */
+    protected function handleFreeBusyRequest(Sabre_CalDAV_Schedule_IOutbox $outbox, $request) {
+
+        $vObject = Sabre_VObject_Reader::read($request);
+        
+        $method = (string)$vObject->method;
+        if ($method!=='REQUEST') {
+            throw new Sabre_DAV_Exception_BadRequest('The iTip object must have a METHOD:REQUEST property');
+        }
+
+        $vFreeBusy = $vObject->VFREEBUSY;
+        if (!$vFreeBusy) {
+            throw new Sabre_DAV_Exception_BadRequest('The iTip object must have a VFREEBUSY component');
+        }
+
+        $organizer = $vFreeBusy->organizer;
+
+        $organizer = (string)$organizer;
+
+        // Validating if the organizer matches the owner of the inbox.
+        $owner = $outbox->getOwner();
+
+        $uas = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-user-address-set';
+        $props = $this->server->getProperties($owner,array($uas));
+
+        if (empty($props[$uas]) || !in_array($organizer, $props[$uas]->getHrefs())) {
+            throw new Sabre_DAV_Exception_Forbidden('The organizer in the request did not match any of the addresses for the owner of this inbox');
+        }
+
+        return "Free beer";
+
+
+    } 
 
 }
 

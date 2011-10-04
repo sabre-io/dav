@@ -13,6 +13,8 @@
 	  properties.
 	* Added: Sabre_VObject_Component::getComponents() to return a list of only
 	  components and not properties.
+	* Changed: Major refactoring in the calendar-query REPORT code. Should
+	  make things more flexible and correct.
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

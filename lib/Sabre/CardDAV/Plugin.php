@@ -258,6 +258,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $result = array();
         foreach($validNodes as $validNode) {
+
             if ($depth==0) { 
                 $href = $this->server->getRequestUri();
             } else {

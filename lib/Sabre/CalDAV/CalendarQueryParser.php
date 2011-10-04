@@ -72,17 +72,12 @@ class Sabre_CalDAV_CalendarQueryParser {
             throw new Sabre_DAV_Exception_BadRequest('Only one filter element is allowed');
         }
 
-        $compFilters = $this->parseCompFilters($filter); 
-
-        $propFilterNodes = $this->xpath->query('cal:prop-filter', $filter);
-        for($ii=0; $ii < $propFilterNodes->length; $ii++) {
-
-            $propFilters[] = $this->parsePropFilterNode($propFilterNodes->item($ii));
-
-
+        $compFilters = $this->parseCompFilters($filter->item(0)); 
+        if (count($compFilters)!==1) {
+            throw new Sabre_DAV_Exception_BadRequest('There must be exactly 1 top-level comp-filter.');
         }
 
-        $this->filters = $compFilters;
+        $this->filters = $compFilters[0];
         $this->requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($this->dom->firstChild));
 
     }
@@ -128,7 +123,7 @@ class Sabre_CalDAV_CalendarQueryParser {
         $propFilterNodes = $this->xpath->query('cal:prop-filter', $parentNode);
         $result = array();
 
-        for ($ii=0; $ii < $propFilterNodes; $i++) {
+        for ($ii=0; $ii < $propFilterNodes->length; $ii++) {
 
             $propFilterNode = $propFilterNodes->item($ii);
             $propFilter = array();
@@ -137,6 +132,8 @@ class Sabre_CalDAV_CalendarQueryParser {
             $propFilter['param-filters'] = $this->parseParamFilters($propFilterNode);
             $propFilter['text-match'] = $this->parseTextMatch($propFilterNode);
             $propFilter['time-range'] = $this->parseTimeRange($propFilterNode);
+
+            $result[] = $propFilter;
 
         }
 

@@ -1,0 +1,333 @@
+<?php
+
+class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
+
+    function parse($xml) {
+
+        $xml =  
+'<?xml version="1.0"?>
+<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">
+' . implode("\n", $xml) . '
+</c:calendar-query>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+
+        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q->parse();
+        return $q->filters;
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testNoFilter() {
+
+        $xml = array();
+        $this->parse($xml);
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testTwoCompFilter() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VEVENT" />',
+            '  <c:comp-filter name="VEVENT" />',
+            '</c:filter>'
+        );
+        $this->parse($xml);
+
+    }
+
+    function testBasicFilter() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR" />',
+            '</c:filter>'
+        );
+        $result = $this->parse($xml);
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+
+    }
+
+    function testCompIsNotDefined() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR">',
+            '    <c:comp-filter name="VEVENT">',
+            '       <c:is-not-defined/>',
+            '    </c:comp-filter>',
+            '  </c:comp-filter>',
+            '</c:filter>'
+        );
+        $result = $this->parse($xml);
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => true, 
+                    'time-range' => false
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+
+    }
+
+    function testCompTimeRange() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR">',
+            '    <c:comp-filter name="VEVENT">',
+            '       <c:time-range start="20110101T000000Z" end="20111231T235959Z" />',
+            '    </c:comp-filter>',
+            '    <c:comp-filter name="VTODO">',
+            '       <c:time-range start="20110101T000000Z" />',
+            '    </c:comp-filter>',
+            '    <c:comp-filter name="VJOURNAL">',
+            '       <c:time-range end="20111231T235959Z" />',
+            '    </c:comp-filter>',
+            '  </c:comp-filter>',
+            '</c:filter>'
+        );
+        $result = $this->parse($xml);
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false, 
+                    'time-range' => array(
+                        'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('GMT')),
+                        'end' => new DateTime('2011-12-31 23:59:59', new DateTimeZone('GMT')),
+                    ), 
+                ),
+                array(
+                    'name' => 'VTODO',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false, 
+                    'time-range' => array(
+                        'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('GMT')),
+                        'end' => null,
+                    ), 
+                ),
+                array(
+                    'name' => 'VJOURNAL',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false, 
+                    'time-range' => array(
+                        'start' => null,
+                        'end' => new DateTime('2011-12-31 23:59:59', new DateTimeZone('GMT')),
+                    ), 
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testCompTimeRangeBadRange() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR">',
+            '    <c:comp-filter name="VEVENT">',
+            '       <c:time-range start="20110101T000000Z" end="20100101T000000Z" />',
+            '    </c:comp-filter>',
+            '  </c:comp-filter>',
+            '</c:filter>'
+        );
+        $this->parse($xml);
+
+    }
+
+    function testProp() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR">',
+            '    <c:comp-filter name="VEVENT">',
+            '       <c:prop-filter name="SUMMARY">',
+            '           <c:text-match>vacation</c:text-match>',
+            '       </c:prop-filter>',
+            '    </c:comp-filter>',
+            '  </c:comp-filter>',
+            '</c:filter>'
+        );
+        $result = $this->parse($xml);
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'is-not-defined' => false, 
+                    'comp-filters' => array(),
+                    'prop-filters' => array(
+                        array(
+                            'name' => 'SUMMARY',
+                            'is-not-defined' => false, 
+                            'param-filters' => array(),
+                            'text-match' => array(
+                                'negate-condition' => false,
+                                'collation' => 'i;ascii-casemap',
+                                'value' => 'vacation',
+                            ),
+                            'time-range' => null,
+                       ),
+                    ),
+                    'time-range' => null, 
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+
+    }
+
+    function testComplex() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR">',
+            '    <c:comp-filter name="VEVENT">',
+            '       <c:prop-filter name="SUMMARY">',
+            '           <c:text-match collation="i;unicode-casemap">vacation</c:text-match>',
+            '       </c:prop-filter>',
+            '       <c:prop-filter name="DTSTAMP">',
+            '           <c:time-range start="20110704T000000Z" />',
+            '       </c:prop-filter>',
+            '       <c:prop-filter name="ORGANIZER">',
+            '           <c:is-not-defined />',
+            '       </c:prop-filter>',
+            '       <c:prop-filter name="DTSTART">',
+            '           <c:param-filter name="VALUE">',
+            '               <c:text-match negate-condition="yes">DATE</c:text-match>',
+            '           </c:param-filter>',
+            '       </c:prop-filter>',
+            '    </c:comp-filter>',
+            '  </c:comp-filter>',
+            '</c:filter>'
+        );
+        $result = $this->parse($xml);
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'is-not-defined' => false, 
+                    'comp-filters' => array(),
+                    'prop-filters' => array(
+                        array(
+                            'name' => 'SUMMARY',
+                            'is-not-defined' => false, 
+                            'param-filters' => array(),
+                            'text-match' => array(
+                                'negate-condition' => false,
+                                'collation' => 'i;unicode-casemap',
+                                'value' => 'vacation',
+                            ),
+                            'time-range' => null,
+                        ),
+                        array(
+                            'name' => 'DTSTAMP',
+                            'is-not-defined' => false, 
+                            'param-filters' => array(),
+                            'text-match' => null,
+                            'time-range' => array(
+                                'start' => new DateTime('2011-07-04 00:00:00', new DateTimeZone('GMT')),
+                                'end' => null,
+                            ),
+                        ),
+                        array(
+                            'name' => 'ORGANIZER',
+                            'is-not-defined' => true, 
+                            'param-filters' => array(),
+                            'text-match' => null,
+                            'time-range' => null, 
+                        ),
+                        array(
+                            'name' => 'DTSTART',
+                            'is-not-defined' => false, 
+                            'param-filters' => array(
+                                array(
+                                    'name' => 'VALUE',
+                                    'is-not-defined' => false,
+                                    'text-match' => array(
+                                        'negate-condition' => true,
+                                        'value' => 'DATE',
+                                        'collation' => 'i;ascii-casemap',
+                                    ),
+                                ),
+                            ),
+                            'text-match' => null,
+                            'time-range' => null, 
+                        ),
+                    ),
+                    'time-range' => null, 
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+
+    }
+}

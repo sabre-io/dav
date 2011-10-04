@@ -67,6 +67,12 @@ DTSTART;VALUE=DATE:2011-07-04
 END:VEVENT
 END:VCALENDAR
 yow;
+        $blob4 = <<<yow
+BEGIN:VCARD
+VERSION:3.0
+FN:Evert
+END:VCARD
+yow;
 
         $filter1 = array(
             'name' => 'VEVENT',
@@ -212,6 +218,9 @@ yow;
 
             // Prop + text
             array($blob2, $filter19, 1),
+
+            // Incorrect object (vcard)
+            array($blob4, $filter1, -1),
         );
 
     } 

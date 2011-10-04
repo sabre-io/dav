@@ -291,4 +291,19 @@ END:VCALENDAR";
         $this->assertEquals('"' . md5('foo') . '"', $obj->getETag());
 
     }
+
+    function testGetSupportedPrivilegesSet() {
+
+        $objectInfo = array(
+            'calendardata' => 'foo',
+            'uri' => 'foo',
+            'calendarid' => 1
+        );
+
+        $backend = new Sabre_CalDAV_Backend_Mock(array());
+        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $this->assertNull($obj->getSupportedPrivilegeSet());
+
+    }
+
 }

@@ -597,4 +597,35 @@ END:VCALENDAR';
 
     }
 
+    function testHTMLActionsPanel() {
+
+        $output = '';
+        $r = $this->server->broadcastEvent('onHTMLActionsPanel', array($this->server->tree->getNodeForPath('calendars/user1'), &$output));
+        $this->assertFalse($r);
+        
+        $this->assertTrue(!!strpos($output,'Display name'));
+
+    }
+
+    function testBrowserPostAction() {
+
+        $r = $this->server->broadcastEvent('onBrowserPostAction', array('calendars/user1', 'mkcalendar', array(
+            'name' => 'NEWCALENDAR',
+            '{DAV:}displayname' => 'foo',
+        )));
+        $this->assertFalse($r);
+
+        $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
+        $this->assertEquals(2, count($calendars));
+
+        $newCalendar = null;
+        foreach($calendars as $calendar) {
+           if ($calendar['uri'] === 'NEWCALENDAR') {
+                $newCalendar = $calendar;
+                break;
+           }
+        }
+
+    }
+
 }

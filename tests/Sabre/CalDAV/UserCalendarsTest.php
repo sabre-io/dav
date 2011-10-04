@@ -170,5 +170,10 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetSupportedPrivilegesSet() {
+
+        $this->assertNull($this->usercalendars->getSupportedPrivilegeSet());
+
+    }
 
 }

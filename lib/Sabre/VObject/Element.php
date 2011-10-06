@@ -11,5 +11,6 @@
  */
 abstract class Sabre_VObject_Element extends Sabre_VObject_Node {
 
+    public $parent = null;
 
 }

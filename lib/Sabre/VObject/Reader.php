@@ -5,9 +5,8 @@
  *
  * This class reads the vobject file, and returns a full element tree.
  *
- *
  * TODO: this class currently completely works 'statically'. This is pointless, 
- * and defeats OOP principals. Needs refaxtoring in a future version.
+ * and defeats OOP principals. Needs refactoring in a future version.
  * 
  * @package Sabre
  * @subpackage VObject
@@ -27,11 +26,15 @@ class Sabre_VObject_Reader {
      * @var array
      */
     static public $elementMap = array(
-        'DTSTART'   => 'Sabre_VObject_Element_DateTime',
-        'DTEND'     => 'Sabre_VObject_Element_DateTime',
-        'COMPLETED' => 'Sabre_VObject_Element_DateTime',
-        'DUE'       => 'Sabre_VObject_Element_DateTime',
-        'EXDATE'    => 'Sabre_VObject_Element_MultiDateTime',
+        'COMPLETED'     => 'Sabre_VObject_Element_DateTime',
+        'CREATED'       => 'Sabre_VObject_Element_DateTime',
+        'DTEND'         => 'Sabre_VObject_Element_DateTime',
+        'DTSTAMP'       => 'Sabre_VObject_Element_DateTime',
+        'DTSTART'       => 'Sabre_VObject_Element_DateTime',
+        'DUE'           => 'Sabre_VObject_Element_DateTime',
+        'EXDATE'        => 'Sabre_VObject_Element_MultiDateTime',
+        'LAST-MODIFIED' => 'Sabre_VObject_Element_DateTime',
+        'TRIGGER'       => 'Sabre_VObject_Element_DateTime',
     );
 
     /**
@@ -95,7 +98,9 @@ class Sabre_VObject_Reader {
 
             while(stripos($nextLine,"END:")!==0) {
 
-                $obj->children[] = self::readLine($lines);
+                $child = self::readLine($lines);
+                $child->parent = $obj;
+                $obj->children[] = $child;
                 $nextLine = current($lines);
 
                 if ($nextLine===false) 
@@ -141,6 +146,9 @@ class Sabre_VObject_Reader {
         if ($matches['parameters']) {
 
             $obj->parameters = self::readParameters($matches['parameters']);
+            foreach($obj->parameters as $param) {
+                $param->parent = $obj;
+            }
         } 
 
         return $obj;

@@ -1,6 +1,8 @@
 1.6.0-stable (????-??-??)
 	* BC Break: Any node that implemented Sabre_DAVACL_IACL must now also
 	  implement the getSupportedPrivilegeSet method. See website for details.
+	* BC Break: Moved functions from Sabre_CalDAV_XMLUtil to
+	  Sabre_VObject_DateTimeParser.
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
 	* Changed: beforeCreateFile event now passes data argument by reference.

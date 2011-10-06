@@ -77,9 +77,18 @@ class Sabre_VObject_DateTimeParser {
     static public function parseDuration($duration, $asString = false) {
 
         if (!$asString) {
-            // DateInterval actually supports a superset of the iCalendar 
-            // duration property, so we can pass it as-is.
-            return new DateInterval($duration);
+            $invert = false;
+            if (substr($duration,0,1)==='-') {
+                $invert = true;
+                $duration = substr($duration,1);
+            }
+                // DateInterval actually supports a superset of the iCalendar 
+                // duration property, so we can pass it as-is.
+            $iv = new DateInterval($duration);
+            if ($invert) $iv->invert = true;
+
+            return $iv;
+
         }
 
         $result = preg_match('/^(?P<plusminus>\+|-)?P((?P<week>\d+)W)?((?P<day>\d+)D)?(T((?P<hour>\d+)H)?((?P<minute>\d+)M)?((?P<second>\d+)S)?)?$/', $duration, $matches);

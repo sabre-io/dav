@@ -105,4 +105,13 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
        $this->card->setACL(array()); 
 
     }
+
+    function testGetSupportedPrivilegeSet() {
+
+        $this->assertNull(
+            $this->card->getSupportedPrivilegeSet()
+        );
+
+    }
+
 }

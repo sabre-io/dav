@@ -683,6 +683,9 @@ END:VCALENDAR';
                 break;
            }
         }
+        if (!$newCalendar)
+            $this->fail('Could not find newly created calendar');
+
 
     }
 

@@ -1,18 +1,18 @@
 <?php
 
 /**
- * XML utilities for CalDAV 
+ * DateTimeParser
  *
- * This class contains a few static methods used for parsing certain CalDAV 
- * requests.
- *
+ * This class is responsible for parsing the several different date and time 
+ * formats iCalendar and vCards have.
+ * 
  * @package Sabre
- * @subpackage CalDAV
+ * @subpackage VObject
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_XMLUtil {
+class Sabre_VObject_DateTimeParser {
 
     /**
      * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
@@ -25,7 +25,7 @@ class Sabre_CalDAV_XMLUtil {
      * @param DateTimeZone $tz 
      * @return DateTime 
      */
-    static public function parseICalendarDateTime($dt,DateTimeZone $tz = null) {
+    static public function parseDateTime($dt,DateTimeZone $tz = null) {
 
         // Format is YYYYMMDD + "T" + hhmmss 
         $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])T([0-2][0-9])([0-5][0-9])([0-5][0-9])([Z]?)$/',$dt,$matches);
@@ -49,10 +49,9 @@ class Sabre_CalDAV_XMLUtil {
      * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
      *
      * @param string $date 
-     * @param DateTimeZone $tz 
      * @return DateTime 
      */
-    static public function parseICalendarDate($date) {
+    static public function parseDate($date) {
 
         // Format is YYYYMMDD
         $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])$/',$date,$matches);
@@ -67,18 +66,21 @@ class Sabre_CalDAV_XMLUtil {
     }
    
     /**
-     * Parses an iCalendar (RFC5545) formatted duration and returns a string suitable
-     * for strtotime or DateTime::modify.
+     * Parses an iCalendar (RFC5545) formatted duration value.
      *
-     * NOTE: When we require PHP 5.3 this can be replaced by the DateTimeInterval object, which
-     * supports ISO 8601 Intervals, which is a superset of ICalendar durations.
-     *
-     * For now though, we're just gonna live with this messy system
+     * This method will either return a DateTimeInterval object, or a string
+     * suitable for strtotime or DateTime::modify.
      *
      * @param string $duration
-     * @return string
+     * @return DateInterval|string 
      */
-    static public function parseICalendarDuration($duration) {
+    static public function parseDuration($duration, $asString = false) {
+
+        if (!$asString) {
+            // DateInterval actually supports a superset of the iCalendar 
+            // duration property, so we can pass it as-is.
+            return new DateInterval($duration);
+        }
 
         $result = preg_match('/^(?P<plusminus>\+|-)?P((?P<week>\d+)W)?((?P<day>\d+)D)?(T((?P<hour>\d+)H)?((?P<minute>\d+)M)?((?P<second>\d+)S)?)?$/', $duration, $matches);
         if (!$result) {
@@ -106,3 +108,5 @@ class Sabre_CalDAV_XMLUtil {
     }
 
 }
+
+?>

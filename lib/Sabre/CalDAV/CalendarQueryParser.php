@@ -211,12 +211,12 @@ class Sabre_CalDAV_CalendarQueryParser {
         $timeRangeNode = $timeRangeNodes->item(0);
 
         if ($start = $timeRangeNode->getAttribute('start')) {
-            $start = Sabre_CalDAV_XMLUtil::parseICalendarDateTime($start);
+            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
         } else {
             $start = null;
         }
         if ($end = $timeRangeNode->getAttribute('end')) {
-            $end = Sabre_CalDAV_XMLUtil::parseICalendarDateTime($end);
+            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
         } else {
             $end = null;
         }

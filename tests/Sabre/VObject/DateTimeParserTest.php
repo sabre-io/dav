@@ -2,15 +2,22 @@
 
 require_once 'Sabre/CalDAV/TestUtil.php';
 
-class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
+class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
     function testParseICalendarDuration() {
 
-        $this->assertEquals('+1 weeks', Sabre_CalDAV_XMLUtil::parseICalendarDuration('P1W'));
-        $this->assertEquals('+5 days',  Sabre_CalDAV_XMLUtil::parseICalendarDuration('P5D'));
-        $this->assertEquals('+5 days 3 hours 50 minutes 12 seconds', Sabre_CalDAV_XMLUtil::parseICalendarDuration('P5DT3H50M12S'));
-        $this->assertEquals('-1 weeks 50 minutes', Sabre_CalDAV_XMLUtil::parseICalendarDuration('-P1WT50M'));
-        $this->assertEquals('+50 days 3 hours 2 seconds', Sabre_CalDAV_XMLUtil::parseICalendarDuration('+P50DT3H2S'));
+        $this->assertEquals('+1 weeks', Sabre_VObject_DateTimeParser::parseDuration('P1W',true));
+        $this->assertEquals('+5 days',  Sabre_VObject_DateTimeParser::parseDuration('P5D',true));
+        $this->assertEquals('+5 days 3 hours 50 minutes 12 seconds', Sabre_VObject_DateTimeParser::parseDuration('P5DT3H50M12S',true));
+        $this->assertEquals('-1 weeks 50 minutes', Sabre_VObject_DateTimeParser::parseDuration('-P1WT50M',true));
+        $this->assertEquals('+50 days 3 hours 2 seconds', Sabre_VObject_DateTimeParser::parseDuration('+P50DT3H2S',true));
+
+    }
+
+    function testParseICalendarDurationDateInterval() {
+
+        $expected = new DateInterval('P7D');
+        $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parseDuration('P1W'));
 
     }
 
@@ -19,13 +26,13 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseICalendarDurationFail() {
 
-        Sabre_CalDAV_XMLUtil::parseICalendarDuration('P1X');
+        Sabre_VObject_DateTimeParser::parseDuration('P1X',true);
 
     }
 
     function testParseICalendarDateTime() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20100316T141405');
+        $dateTime = Sabre_VObject_DateTimeParser::parseDateTime('20100316T141405');
 
         $compare = new DateTime('2010-03-16 14:14:05',new DateTimeZone('UTC'));
 
@@ -39,7 +46,7 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseICalendarDateTimeBadFormat() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20100316T141405 ');
+        $dateTime = Sabre_VObject_DateTimeParser::parseDateTime('20100316T141405 ');
 
     }
 
@@ -48,7 +55,7 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseICalendarDateTimeUTC() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20100316T141405Z');
+        $dateTime = Sabre_VObject_DateTimeParser::parseDateTime('20100316T141405Z');
 
         $compare = new DateTime('2010-03-16 14:14:05',new DateTimeZone('UTC'));
         $this->assertEquals($compare, $dateTime);
@@ -60,7 +67,7 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseICalendarDateTimeUTC2() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20101211T160000Z');
+        $dateTime = Sabre_VObject_DateTimeParser::parseDateTime('20101211T160000Z');
 
         $compare = new DateTime('2010-12-11 16:00:00',new DateTimeZone('UTC'));
         $this->assertEquals($compare, $dateTime);
@@ -72,7 +79,7 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseICalendarDateTimeCustomTimeZone() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDateTime('20100316T141405', new DateTimeZone('Europe/Amsterdam'));
+        $dateTime = Sabre_VObject_DateTimeParser::parseDateTime('20100316T141405', new DateTimeZone('Europe/Amsterdam'));
 
         $compare = new DateTime('2010-03-16 13:14:05',new DateTimeZone('UTC'));
         $this->assertEquals($compare, $dateTime);
@@ -81,7 +88,7 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
 
     function testParseICalendarDate() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDate('20100316');
+        $dateTime = Sabre_VObject_DateTimeParser::parseDate('20100316');
 
         $compare = new DateTime('2010-03-16 00:00:00',new DateTimeZone('UTC'));
 
@@ -95,7 +102,7 @@ class Sabre_CalDAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseICalendarDateBadFormat() {
 
-        $dateTime = Sabre_CalDAV_XMLUtil::parseICalendarDate('20100316T141405');
+        $dateTime = Sabre_VObject_DateTimeParser::parseDate('20100316T141405');
 
     }
 }

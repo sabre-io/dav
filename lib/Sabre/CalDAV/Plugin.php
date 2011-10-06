@@ -114,13 +114,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
+
+        $reports = array();
         if ($node instanceof Sabre_CalDAV_ICalendar || $node instanceof Sabre_CalDAV_ICalendarObject) {
-            return array(
-                 '{' . self::NS_CALDAV . '}calendar-multiget',
-                 '{' . self::NS_CALDAV . '}calendar-query',
-            );
+            $reports[] = '{' . self::NS_CALDAV . '}calendar-multiget';
+            $reports[] = '{' . self::NS_CALDAV . '}calendar-query';
         }
-        return array();
+        if ($node instanceof Sabre_CalDAV_ICalendar) {
+            $reports[] = '{' . self::NS_CALDAV . '}free-busy-query';
+        }
+        return $reports; 
 
     }
 
@@ -204,6 +207,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 return false;
             case '{'.self::NS_CALDAV.'}calendar-query' :
                 $this->calendarQueryReport($dom);
+                return false;
+            case '{'.self::NS_CALDAV.'}free-busy-query' :
+                $this->freeBusyQueryReport($dom);
                 return false;
 
         }
@@ -388,8 +394,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $parser = new Sabre_CalDAV_CalendarQueryParser($dom);
         $parser->parse();
 
-
-
         $requestedCalendarData = true;
         $requestedProperties = $parser->requestedProperties;
 
@@ -436,6 +440,71 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
+    /**
+     * This method is responsible for parsing the request and generating the
+     * response for the CALDAV:free-busy-query REPORT.
+     *
+     * @param DOMNode $dom
+     * @return void
+     */
+    protected function freeBusyQueryReport(DOMNode $dom) {
+
+        $start = null;
+        $end = null;
+
+        foreach($dom->childNodes as $childNode) {
+
+            $clark = Sabre_DAV_XMLUtil::toClarkNotation($childNode);
+            if ($clark == '{' . self::NS_CALDAV . '}time-range') {
+                $start = $childNode->getAttribute('start');
+                $end = $childNode->getAttribute('end');
+                break;
+            }
+
+        }
+        if ($start) {
+            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
+        }
+        if ($end) {
+            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
+        }
+
+        if (!$start && !$end) {
+            throw new Sabre_DAV_Exception_BadRequest('The freebusy report must have a time-range filter');
+        }
+        $acl = $this->server->getPlugin('acl');
+
+        if (!$acl) {
+            throw new Sabre_DAV_Exception('The ACL plugin must be loaded for free-busy queries to work');
+        }
+        $uri = $this->server->getRequestUri();
+        $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
+
+        $calendar = $this->server->tree->getNodeForPath($uri);
+        if (!$calendar instanceof Sabre_CalDAV_ICalendar) {
+            throw new Sabre_DAV_Exception_NotImplemented('The free-busy-query REPORT is only implemented on calendars');
+        }
+
+        $objects = array_map(function($child) {
+            $obj = $child->get();
+            if (is_resource($obj)) {
+                $obj = stream_get_contents($obj);
+            }
+            return $obj;
+        }, $calendar->getChildren());
+
+        $generator = new Sabre_VObject_FreeBusyGenerator();
+        $generator->setObjects($objects);
+        $generator->setTimeRange($start, $end);
+        $result = $generator->getResult();
+        $result = $result->serialize();
+
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setHeader('Content-Type', 'text/calendar');
+        $this->server->httpResponse->setHeader('Content-Length', strlen($result));
+        $this->server->httpResponse->sendBody($result);
+
+    }
 
 
     /**

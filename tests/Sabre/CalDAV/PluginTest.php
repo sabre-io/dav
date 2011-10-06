@@ -448,6 +448,7 @@ END:VCALENDAR';
         $value = array(
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
+            '{urn:ietf:params:xml:ns:caldav}free-busy-query',
         );
         $this->assertEquals($value,$prop->getValue());
 

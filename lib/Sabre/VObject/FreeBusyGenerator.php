@@ -133,8 +133,6 @@ class Sabre_VObject_FreeBusyGenerator {
                         if ($this->start && $endTime < $this->start) {
                             break;
                         }
-                        $startTime->setTimeZone('UTC');
-                        $endTime->setTimeZone('UTC');
 
                         $busyTimes[] = array(
                             $startTime,
@@ -144,7 +142,39 @@ class Sabre_VObject_FreeBusyGenerator {
                         break;
 
                     case 'VFREEBUSY' :
+                        foreach($component->FREEBUSY as $freebusy) {
 
+                            $fbType = isset($freebusy['FBTYPE'])?strtoupper($freebusy['FBTYPE']):'BUSY';
+
+                            // Skipping intervals marked as 'free'
+                            if ($fbType==='FREE')
+                                continue;
+
+                            $values = explode(',', $freebusy);
+                            foreach($values as $value) {
+                                list($startTime, $endTime) = explode('/', $value);
+                                $startTime = Sabre_VObject_DateTimeParser::parseDateTime($startTime);
+                                
+                                if (substr($endTime,0,1)==='P' || substr($endTime,0,2)==='-P') {
+                                    $duration = Sabre_VObject_DateTimeParser::parseDuration($endTime);
+                                    $endTime = clone $startTime;
+                                    $endTime->add($duration);
+                                } else {
+                                    $endTime = Sabre_VObject_DateTimeParser::parseDateTime($endTime);
+                                }
+
+                                if($this->start && $this->start > $endTime) continue;
+                                if($this->end && $this->end < $startTime) continue;
+                                $busyTimes[] = array(
+                                    $startTime,
+                                    $endTime,
+                                    $fbType
+                                );
+
+                            }
+
+
+                        }
                         break;
 
 
@@ -156,7 +186,6 @@ class Sabre_VObject_FreeBusyGenerator {
 
         }
 
-        $calendar = new Sabre_VObject_Calendar();
         $calendar = new Sabre_VObject_Component('VCALENDAR');
         $calendar->version = '2.0';
         $calendar->prodid = '-//SabreDAV//Sabre VObject ' . Sabre_VObject_Version::VERSION . '//EN';
@@ -176,10 +205,13 @@ class Sabre_VObject_FreeBusyGenerator {
             $vfreebusy->add($dtend);
         }
         $dtstamp = new Sabre_VObject_Element_DateTime('DTSTAMP');
-        $dtstamp->setDateTime('now');
-        $vfreebusy->add($dtstamp, Sabre_VObject_Element_DateTime::UTC);
+        $dtstamp->setDateTime(new DateTime('now'), Sabre_VObject_Element_DateTime::UTC);
+        $vfreebusy->add($dtstamp);
 
         foreach($busyTimes as $busyTime) {
+
+            $busyTime[0]->setTimeZone(new DateTimeZone('UTC'));
+            $busyTime[1]->setTimeZone(new DateTimeZone('UTC'));
 
             $prop = new Sabre_VObject_Property(
                 'FREEBUSY',

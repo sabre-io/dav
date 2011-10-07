@@ -336,7 +336,13 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function valid() {
 
-        return is_null($this->count) || $this->counter < $this->count;
+        if (!is_null($this->count)) {
+            return $this->counter < $this->count;
+        }
+        if (!is_null($this->until)) {
+            return $this->currentDate <= $this->until;
+        }
+        return true;
 
     }
 
@@ -423,12 +429,26 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 break;
 
             case 'monthly' :
-                if (!$this->byMonthDay && !$this->byDay) {
-                    $this->currentDate->modify('+' . $this->interval . ' months');
-                    break;
-                }
 
                 $currentDayOfMonth = $this->currentDate->format('j');
+                if (!$this->byMonthDay && !$this->byDay) {
+
+                    // If the current day is higher than the 28th, rollover can 
+                    // occur to the next month. We Must skip these invalid 
+                    // entries.
+                    if ($currentDayOfMonth < 29) {
+                        $this->currentDate->modify('+' . $this->interval . ' months');
+                    } else {
+                        $increase = 0;
+                        do {
+                            $increase++;
+                            $tempDate = clone $this->currentDate;
+                            $tempDate->modify('+ ' . ($this->interval*$increase) . ' months');
+                        } while ($tempDate->format('j') != $currentDayOfMonth);
+                        $this->currentDate = $tempDate;
+                    }
+                    break;
+                }
 
                 while(true) {
 
@@ -447,8 +467,9 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                     // If we made it all the way here, it means there were no 
                     // valid occurences, and we need to advance to the next 
                     // month.
+                    $this->currentDate->modify('first day of this month');
                     $this->currentDate->modify('+ ' . $this->interval . ' months');
-                    
+
                     // This goes to 0 because we need to start counting at hte 
                     // beginning.
                     $currentDayOfMonth = 0; 
@@ -477,7 +498,6 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     protected function getMonthlyOccurences() {
 
         $startDate = clone $this->currentDate;
-        $startDate->modify('first day of this month');
 
         $current = 1;
 
@@ -485,7 +505,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         // Our strategy is to simply go through the byDays, advance the date to 
         // that point and add it to the results.
-        foreach($this->byDay as $day) {
+        if ($this->byDay) foreach($this->byDay as $day) {
 
             $dayName = $this->dayNames[$this->dayMap[substr($day,-2)]];
 
@@ -527,11 +547,17 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         $byMonthDayResults = array();
         foreach($this->byMonthDay as $monthDay) {
+
+            // Removing values that are out of range for this month
+            if ($monthDay > $startDate->format('t') || 
+                $monthDay < 0-$startDate->format('t')) {
+                    continue;
+            }
             if ($monthDay>0) {
                 $byMonthDayResults[] = $monthDay;
             } else {
                 // Negative values
-                $byMonthDayResults[] = $startDate->format('t') + 1 - $monthDay;
+                $byMonthDayResults[] = $startDate->format('t') + 1 + $monthDay;
             }
         } 
 

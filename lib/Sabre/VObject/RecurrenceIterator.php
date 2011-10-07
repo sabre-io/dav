@@ -194,6 +194,12 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public $weekStart = 'MO';
 
+    /**
+     * The current item in the list 
+     * 
+     * @var int 
+     */
+    public $counter = 0;
 
     /**
      * Simple mapping from iCalendar day names to day numbers
@@ -302,6 +308,51 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     } 
 
     /**
+     * Returns the current item in the list
+     * 
+     * @return DateTime 
+     */
+    public function current() {
+
+        return clone $this->currentDate;
+
+    }
+
+    /**
+     * Returns the current item number
+     * 
+     * @return int 
+     */
+    public function key() {
+
+        return $this->counter;
+
+    }
+
+    /**
+     * Wether or not there is a 'next item'
+     *
+     * @return bool 
+     */
+    public function valid() {
+
+        return is_null($this->count) || $this->counter < $this->count;
+
+    }
+
+    /**
+     * Resets the iterator 
+     * 
+     * @return void
+     */
+    public function rewind() {
+
+        $this->currentDate = clone $this->startDate;
+        $this->counter = 0;
+
+    }
+
+    /**
      * Goes on to the next iteration 
      * 
      * @return void 
@@ -359,6 +410,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                     // We need to roll over to the next week
                     if ($currentDay === $firstDay) {
                         $this->currentDate->modify('+' . $this->interval . ' weeks');
+                        $this->currentDate->modify('last ' . $dayMap2[$this->dayMap[$this->weekStart]]);
                     }
 
                     // We have a match
@@ -410,6 +462,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
 
         }
+        $this->counter++;
 
     }
 

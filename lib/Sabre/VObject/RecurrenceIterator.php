@@ -215,6 +215,22 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         'FR' => 5,
         'SA' => 6,
     );
+
+    /**
+     * Mappings between the day number and english day name.
+     *
+     * @var array
+     */
+    private $dayNames = array(
+        0 => 'Sunday',
+        1 => 'Monday',
+        2 => 'Tuesday',
+        3 => 'Wednesday',
+        4 => 'Thursday',
+        5 => 'Friday',
+        6 => 'Saturday',
+    ); 
+
     
     /**
      * Creates the iterator
@@ -365,15 +381,6 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
-        $dayMap2 = array(
-            0 => 'Sunday',
-            1 => 'Monday',
-            2 => 'Tuesday',
-            3 => 'Wednesday',
-            4 => 'Thursday',
-            5 => 'Friday',
-            6 => 'Saturday',
-        ); 
 
         switch($this->frequency) {
 
@@ -416,12 +423,12 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                     // We need to roll over to the next week
                     if ($currentDay === $firstDay) {
                         $this->currentDate->modify('+' . $this->interval . ' weeks');
-                        $this->currentDate->modify('last ' . $dayMap2[$this->dayMap[$this->weekStart]]);
+                        $this->currentDate->modify('last ' . $this->dayNames[$this->dayMap[$this->weekStart]]);
                     }
 
                     // We have a match
                     if (in_array($currentDay ,$recurrenceDays)) {
-                        $this->currentDate->modify($dayMap2[$currentDay]);
+                        $this->currentDate->modify($this->dayNames[$currentDay]);
                         break; 
                     }
 
@@ -514,15 +521,13 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             $dayHits = array();
 
             $checkDate = clone $startDate;
+            $checkDate->modify('first day of this month');
             $checkDate->modify($dayName);
             
-            $dayHits[] = clone $checkDate;
-
-            // 'n' is the month number
-            while($checkDate->format('n') === $startDate->format('n')) {
-                $checkDate->modify('next ' . $dayName);
+            do {
                 $dayHits[] = $checkDate->format('j');
-            }
+                $checkDate->modify('next ' . $dayName);
+            } while ($checkDate->format('n') === $startDate->format('n'));
 
             // So now we have 'all wednesdays' for month. It is however 
             // possible that the user only really wanted the 1st, 2nd or last 
@@ -533,6 +538,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 if ($offset>0) {
                     $byDayResults[] = $dayHits[$offset-1];
                 } else {
+
                     // if it was negative we count from the end of the array
                     $byDayResults[] = $dayHits[count($dayHits) + $offset];
                 }
@@ -546,7 +552,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         }
 
         $byMonthDayResults = array();
-        foreach($this->byMonthDay as $monthDay) {
+        if ($this->byMonthDay) foreach($this->byMonthDay as $monthDay) {
 
             // Removing values that are out of range for this month
             if ($monthDay > $startDate->format('t') || 
@@ -571,7 +577,6 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         } else {
             $result = $byDayResults;
         }
-
         $result = array_unique($result);
         sort($result, SORT_NUMERIC);
 

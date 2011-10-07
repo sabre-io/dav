@@ -280,5 +280,106 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testMonthlyByDay() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=MONTHLY;INTERVAL=2;COUNT=16;BYDAY=MO,-2TU,+1WE,3TH';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-03'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('monthly', $it->frequency);
+        $this->assertEquals(2, $it->interval);
+        $this->assertEquals(16, $it->count);
+        $this->assertEquals(array('MO','-2TU','+1WE','3TH'), $it->byDay);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-01-03', $tz),
+                new DateTime('2011-01-05', $tz),
+                new DateTime('2011-01-10', $tz),
+                new DateTime('2011-01-17', $tz),
+                new DateTime('2011-01-18', $tz),
+                new DateTime('2011-01-20', $tz),
+                new DateTime('2011-01-24', $tz),
+                new DateTime('2011-01-31', $tz),
+                new DateTime('2011-03-02', $tz),
+                new DateTime('2011-03-07', $tz),
+                new DateTime('2011-03-14', $tz),
+                new DateTime('2011-03-17', $tz),
+                new DateTime('2011-03-21', $tz),
+                new DateTime('2011-03-22', $tz),
+                new DateTime('2011-03-28', $tz),
+                new DateTime('2011-05-02', $tz),
+            ),
+            $result
+        );
+
+    }
+
+    function testMonthlyByDayByMonthDay() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=MONTHLY;COUNT=10;BYDAY=MO;BYMONTHDAY=1';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-08-01'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('monthly', $it->frequency);
+        $this->assertEquals(1, $it->interval);
+        $this->assertEquals(10, $it->count);
+        $this->assertEquals(array('MO'), $it->byDay);
+        $this->assertEquals(array(1), $it->byMonthDay);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-08-01', $tz),
+                new DateTime('2012-10-01', $tz),
+                new DateTime('2013-04-01', $tz),
+                new DateTime('2013-07-01', $tz),
+                new DateTime('2014-09-01', $tz),
+                new DateTime('2014-12-01', $tz),
+                new DateTime('2015-06-01', $tz),
+                new DateTime('2016-02-01', $tz),
+                new DateTime('2016-08-01', $tz),
+                new DateTime('2017-05-01', $tz),
+            ),
+            $result
+        );
+
+    }
+
 }
 

@@ -46,7 +46,7 @@ class Sabre_VObject_DateTimeParser {
     }
 
     /**
-     * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
+     * Parses an iCalendar (rfc5545) formatted date and returns a DateTime object
      *
      * @param string $date 
      * @return DateTime 
@@ -64,7 +64,7 @@ class Sabre_VObject_DateTimeParser {
         return $date;
 
     }
-   
+
     /**
      * Parses an iCalendar (RFC5545) formatted duration value.
      *
@@ -115,6 +115,24 @@ class Sabre_VObject_DateTimeParser {
         return $newDur;
 
     }
+
+    /**
+     * Parses either a Date or DateTime, or Duration value.  
+     * 
+     * @return DateTime|DateInterval
+     */
+    static public function parse($date) {
+
+        if ($date[0]==='P' || ($date[0]==='-' && $date[1]==='P')) {
+            return self::parseDuration($date);
+        } elseif (strlen($date)===8) {
+            return self::parseDate($date);
+        } else {
+            return self::parseDateTime($date);
+        }
+
+    } 
+   
 
 }
 

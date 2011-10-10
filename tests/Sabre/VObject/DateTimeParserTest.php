@@ -18,6 +18,11 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
         $expected = new DateInterval('P7D');
         $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parseDuration('P1W'));
+        $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parse('P1W'));
+
+        $expected = new DateInterval('P3M');
+        $expected->invert = true;
+        $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parseDuration('-P3M'));
 
     }
 
@@ -90,9 +95,12 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
         $dateTime = Sabre_VObject_DateTimeParser::parseDate('20100316');
 
-        $compare = new DateTime('2010-03-16 00:00:00',new DateTimeZone('UTC'));
+        $expected = new DateTime('2010-03-16 00:00:00',new DateTimeZone('UTC'));
 
-        $this->assertEquals($compare, $dateTime);
+        $this->assertEquals($expected, $dateTime);
+
+        $dateTime = Sabre_VObject_DateTimeParser::parse('20100316');
+        $this->assertEquals($expected, $dateTime);
 
     }
 

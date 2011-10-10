@@ -2,6 +2,41 @@
 
 class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testInvalidFreq() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=SMONTHLY;INTERVAL=3;UNTIL=20111025T000000Z';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+
+    }
+
+    function testValues() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=DAILY;BYHOUR=10;BYMINUTE=5;BYSECOND=16;BYWEEKNO=32;BYYEARDAY=100,200';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals(array(10), $it->byHour);
+        $this->assertEquals(array(5), $it->byMinute);
+        $this->assertEquals(array(16), $it->bySecond);
+        $this->assertEquals(array(32), $it->byWeekNo);
+        $this->assertEquals(array(100,200), $it->byYearDay);
+
+    }
+
+
     function testDaily() {
 
         $ev = new Sabre_VObject_Component('VEVENT');
@@ -381,5 +416,189 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testMonthlyByDayBySetPos() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=MONTHLY;COUNT=10;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,-1';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-03'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('monthly', $it->frequency);
+        $this->assertEquals(1, $it->interval);
+        $this->assertEquals(10, $it->count);
+        $this->assertEquals(array('MO','TU','WE','TH','FR'), $it->byDay);
+        $this->assertEquals(array(1,-1), $it->bySetPos);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-01-03', $tz),
+                new DateTime('2011-01-31', $tz),
+                new DateTime('2011-02-01', $tz),
+                new DateTime('2011-02-28', $tz),
+                new DateTime('2011-03-01', $tz),
+                new DateTime('2011-03-31', $tz),
+                new DateTime('2011-04-01', $tz),
+                new DateTime('2011-04-29', $tz),
+                new DateTime('2011-05-02', $tz),
+                new DateTime('2011-05-31', $tz),
+            ),
+            $result
+        );
+
+    }
+
+    function testYearly() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=YEARLY;COUNT=10;INTERVAL=3';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-01'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('yearly', $it->frequency);
+        $this->assertEquals(3, $it->interval);
+        $this->assertEquals(10, $it->count);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-01-01', $tz),
+                new DateTime('2014-01-01', $tz),
+                new DateTime('2017-01-01', $tz),
+                new DateTime('2020-01-01', $tz),
+                new DateTime('2023-01-01', $tz),
+                new DateTime('2026-01-01', $tz),
+                new DateTime('2029-01-01', $tz),
+                new DateTime('2032-01-01', $tz),
+                new DateTime('2035-01-01', $tz),
+                new DateTime('2038-01-01', $tz),
+            ),
+            $result
+        );
+
+    }
+
+    function testYearlyByMonth() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=YEARLY;COUNT=8;INTERVAL=4;BYMONTH=4,10';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-04-07'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('yearly', $it->frequency);
+        $this->assertEquals(4, $it->interval);
+        $this->assertEquals(8, $it->count);
+        $this->assertEquals(array(4,10), $it->byMonth);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-04-07', $tz),
+                new DateTime('2011-10-07', $tz),
+                new DateTime('2015-04-07', $tz),
+                new DateTime('2015-10-07', $tz),
+                new DateTime('2019-04-07', $tz),
+                new DateTime('2019-10-07', $tz),
+                new DateTime('2023-04-07', $tz),
+                new DateTime('2023-10-07', $tz),
+            ),
+            $result
+        );
+
+    }
+
+    function testYearlyByMonthByDay() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=YEARLY;COUNT=8;INTERVAL=5;BYMONTH=4,10;BYDAY=1MO,-1SU';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-04-04'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('yearly', $it->frequency);
+        $this->assertEquals(5, $it->interval);
+        $this->assertEquals(8, $it->count);
+        $this->assertEquals(array(4,10), $it->byMonth);
+        $this->assertEquals(array('1MO','-1SU'), $it->byDay);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-04-04', $tz),
+                new DateTime('2011-04-24', $tz),
+                new DateTime('2011-10-03', $tz),
+                new DateTime('2011-10-30', $tz),
+                new DateTime('2016-04-04', $tz),
+                new DateTime('2016-04-24', $tz),
+                new DateTime('2016-10-03', $tz),
+                new DateTime('2016-10-30', $tz),
+            ),
+            $result
+        );
+
+    }
 }
 

@@ -129,6 +129,29 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
+// Yearly recurrence rule, shows up
+$blob13 = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20100101T220000Z
+DTEND:20100101T230000Z
+RRULE:FREQ=YEARLY
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+// Yearly recurrence rule + duration, shows up
+$blob14 = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20100101T230000Z
+DURATION:PT1H
+RRULE:FREQ=YEARLY
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+
         return array(
             $blob1,
             $blob2,
@@ -142,6 +165,8 @@ ICS;
             $blob10,
             Sabre_VObject_Reader::read($blob11),
             $blob12,
+            $blob13,
+            $blob14,
         );
 
     }
@@ -169,6 +194,9 @@ ICS;
             '20110103T030000Z/20110103T040000Z',
             '20110103T040000Z/20110103T050000Z',
             '20110103T050000Z/20110103T060000Z',
+
+            '20110101T220000Z/20110101T230000Z',
+            '20110101T230000Z/20110102T000000Z',
         );
 
         foreach($result->VFREEBUSY->FREEBUSY as $fb) {

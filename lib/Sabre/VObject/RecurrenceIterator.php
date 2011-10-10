@@ -242,8 +242,17 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function __construct(Sabre_VObject_Component $comp) {
 
-        $this->startDate = $comp->DTSTART->getDateTime();
-        $this->currentDate = $this->startDate;
+        $this->startDate = clone $comp->DTSTART->getDateTime();
+        $this->endDate = null;
+        if (isset($comp->DTEND)) {
+            $this->endDate = clone $comp->DTEND->getDateTime();
+        } else {
+            $this->endDate = clone $this->startDate;
+            if (isset($comp->DURATION)) {
+                $this->endDate->add(Sabre_VObject_DateTimeParser::parse($comp->DURATION->value));
+            }
+        } 
+        $this->currentDate = clone $this->startDate;
 
         $rrule = (string)$comp->RRULE;
 
@@ -337,6 +346,32 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
+     * This method returns the startdate for the current iteration of the 
+     * event.
+     * 
+     * @return DateTime 
+     */
+    public function getDtStart() {
+
+        return clone $this->currentDate;
+
+    }
+
+    /**
+     * This method returns the enddate for the current iteration of the 
+     * event.
+     * 
+     * @return DateTime 
+     */
+    public function getDtEnd() {
+
+        $dtEnd = clone $this->currentDate;
+        $dtEnd->add( $this->startDate->diff($this->endDate ) );
+        return clone $dtEnd;
+
+    }
+
+    /**
      * Returns the current item number
      *
      * @return int
@@ -396,7 +431,6 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * @return void
      */
     public function next() {
-
 
         switch($this->frequency) {
 

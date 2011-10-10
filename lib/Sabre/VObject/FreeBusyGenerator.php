@@ -111,34 +111,70 @@ class Sabre_VObject_FreeBusyGenerator {
                                 $FBTYPE = 'BUSY-TENTATIVE';
                             }
                         }
-                        $startTime = $component->DTSTART->getDateTime();
-                        if ($this->end && $startTime > $this->end) {
-                            break;
-                        }
-                        $endTime = null;
-                        if (isset($component->DTEND)) {
-                            $endTime = $component->DTEND->getDateTime();
-                        } elseif (isset($component->DURATION)) {
-                            $duration = Sabre_VObject_DateTimeParser::parseDuration((string)$component->DURATION);
-                            $endTime = clone $startTime;
-                            $endTime->add($duration);
-                        } elseif ($component->DTSTART->getDateType() === Sabre_VObject_Element_DateTime::DATE) {
-                            $endTime = clone $startTime;
-                            $endTime->modify('+1 day');
+
+                        $times = array();
+
+                        if ($component->RRULE) {
+
+                            $iterator = new Sabre_VObject_RecurrenceIterator($component);
+                            if ($this->start) {
+                                $iterator->fastForward($this->start);
+                            }
+
+                            $maxRecurrences = 200;
+
+                            while($iterator->valid() && --$maxRecurrences) {
+
+                                $startTime = $iterator->getDTStart();
+                                $endTime = $iterator->getDTEnd();
+                                if ($this->end && $startTime > $this->end) {
+                                    break;
+                                } 
+                                $times[] = array(
+                                    $iterator->getDTStart(),
+                                    $iterator->getDTEnd(),
+                                );
+
+                                $iterator->next();
+
+                            }
+
                         } else {
-                            // The event had no duration (0 seconds)
-                            break;
+
+                            $startTime = $component->DTSTART->getDateTime();
+                            if ($this->end && $startTime > $this->end) {
+                                break;
+                            }
+                            $endTime = null;
+                            if (isset($component->DTEND)) {
+                                $endTime = $component->DTEND->getDateTime();
+                            } elseif (isset($component->DURATION)) {
+                                $duration = Sabre_VObject_DateTimeParser::parseDuration((string)$component->DURATION);
+                                $endTime = clone $startTime;
+                                $endTime->add($duration);
+                            } elseif ($component->DTSTART->getDateType() === Sabre_VObject_Element_DateTime::DATE) {
+                                $endTime = clone $startTime;
+                                $endTime->modify('+1 day');
+                            } else {
+                                // The event had no duration (0 seconds)
+                                break;
+                            }
+
+                            $times[] = array($startTime, $endTime);
+
                         }
 
-                        if ($this->start && $endTime < $this->start) {
-                            break;
-                        }
+                        foreach($times as $time) {
 
-                        $busyTimes[] = array(
-                            $startTime,
-                            $endTime,
-                            $FBTYPE,
-                        ); 
+                            if ($this->end && $time[0] > $this->end) break;
+                            if ($this->start && $time[1] < $this->start) break; 
+
+                            $busyTimes[] = array(
+                                $time[0],
+                                $time[1],
+                                $FBTYPE,
+                            );
+                        } 
                         break;
 
                     case 'VFREEBUSY' :

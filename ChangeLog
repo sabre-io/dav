@@ -5,6 +5,7 @@
 	  Sabre_VObject_DateTimeParser.
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
+	* Added: Support for FREEBUSY reports!
 	* Changed: beforeCreateFile event now passes data argument by reference.
 	* Added: Ability for plugins to tell the ACL plugin which principal
 	  plugins are searchable.

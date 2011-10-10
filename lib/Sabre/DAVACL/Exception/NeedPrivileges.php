@@ -40,6 +40,8 @@ class Sabre_DAVACL_Exception_NeedPrivileges extends Sabre_DAV_Exception_Forbidde
         $this->uri = $uri;
         $this->privileges = $privileges;
 
+        parent::__construct('User did not have the required privileges (' . implode(',', $privileges) . ') for path "' . $uri . '"');
+
     }
 
     /**

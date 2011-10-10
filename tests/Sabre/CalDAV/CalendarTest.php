@@ -196,6 +196,11 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-read',
                 'protected' => true,
+            ),
+            array(
+                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
+                'principal' => '{DAV:}authenticated',
+                'protected' => true,
             ), 
         );
         $this->assertEquals($expected, $this->calendar->getACL());
@@ -213,7 +218,12 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
     function testGetSupportedPrivilegesSet() {
 
-        $this->assertNull($this->calendar->getSupportedPrivilegeSet());
+        $result = $this->calendar->getSupportedPrivilegeSet();
+
+        $this->assertEquals(
+            '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
+            $result['aggregates'][0]['aggregates'][2]['privilege']
+        );        
 
     }
 

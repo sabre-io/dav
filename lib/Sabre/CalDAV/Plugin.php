@@ -452,7 +452,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $start = null;
         $end = null;
 
-        foreach($dom->childNodes as $childNode) {
+        foreach($dom->firstChild->childNodes as $childNode) {
 
             $clark = Sabre_DAV_XMLUtil::toClarkNotation($childNode);
             if ($clark == '{' . self::NS_CALDAV . '}time-range') {

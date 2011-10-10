@@ -3,13 +3,13 @@
 /**
  * SabreDAV CalDAV scheduling plugin
  *
- * This plugin is responsible for registering all the features required for the 
+ * This plugin is responsible for registering all the features required for the
  * CalDAV Scheduling extension.
- * 
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
@@ -20,18 +20,18 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     const SCHEDULE_ROOT = 'schedule';
 
     /**
-     * Reference to Server object 
-     * 
-     * @var Sabre_DAV_Server 
+     * Reference to Server object
+     *
+     * @var Sabre_DAV_Server
      */
     protected $server;
 
     /**
      * Initializes the plugin
      *
-     * Registers all required events and features. 
-     * 
-     * @param Sabre_DAV_Server $server 
+     * Registers all required events and features.
+     *
+     * @param Sabre_DAV_Server $server
      * @return void
      */
     public function initialize(Sabre_DAV_Server $server) {
@@ -59,14 +59,15 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Returns a list of features
      *
-     * This is used in the DAV: header, which appears in responses to both the 
-     * OPTIONS request and the PROPFIND request. 
-     * 
-     * @return array 
+     * This is used in the DAV: header, which appears in responses to both the
+     * OPTIONS request and the PROPFIND request.
+     *
+     * @return array
      */
     public function getFeatures() {
 
-        return array('calendar-auto-schedule');
+        return array();
+     //   return array('calendar-auto-schedule');
 
     }
 
@@ -76,9 +77,9 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
      * beforeGetProperties
      *
      * This method handler is invoked before any after properties for a
-     * resource are fetched. This allows us to add in any CalDAV specific 
-     * properties. 
-     * 
+     * resource are fetched. This allows us to add in any CalDAV specific
+     * properties.
+     *
      * @param string $path
      * @param Sabre_DAV_INode $node
      * @param array $requestedProperties
@@ -92,7 +93,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
             // schedule-inbox-URL property
             $inboxProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-inbox-URL';
             if (in_array($inboxProp,$requestedProperties)) {
-                $principalId = $node->getName(); 
+                $principalId = $node->getName();
                 $inboxPath = self::SCHEDULE_ROOT . '/' . $principalId . '/inbox';
                 unset($requestedProperties[$inboxProp]);
                 $returnedProperties[200][$inboxProp] = new Sabre_DAV_Property_Href($inboxPath);
@@ -100,8 +101,8 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
             // schedule-outbox-URL property
             $outboxProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-outbox-URL';
-            if (in_array($inboxProp,$requestedProperties)) {
-                $principalId = $node->getName(); 
+            if (in_array($outboxProp,$requestedProperties)) {
+                $principalId = $node->getName();
                 $outboxPath = self::SCHEDULE_ROOT . '/' . $principalId . '/outbox';
                 unset($requestedProperties[$outboxProp]);
                 $returnedProperties[200][$outboxProp] = new Sabre_DAV_Property_Href($outboxPath);
@@ -114,11 +115,11 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * This is the handler for the 'unknownMethod' event.
      *
-     * We are intercepting this event to add support for the POST method on the 
+     * We are intercepting this event to add support for the POST method on the
      * schedule-outbox.
-     * 
-     * @param string $method 
-     * @param string $uri 
+     *
+     * @param string $method
+     * @param string $uri
      * @return void
      */
     public function unknownMethod($method, $uri) {
@@ -149,24 +150,24 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->sendBody($response);
 
-        return false; 
+        return false;
 
     }
 
     // }}}
 
     /**
-     * This method is responsible for parsing a free-busy query request and 
-     * returning it's result. 
-     * 
-     * @param Sabre_DAV_INode $node 
+     * This method is responsible for parsing a free-busy query request and
+     * returning it's result.
+     *
+     * @param Sabre_DAV_INode $node
      * @param string $request
-     * @return string 
+     * @return string
      */
     protected function handleFreeBusyRequest(Sabre_CalDAV_Schedule_IOutbox $outbox, $request) {
 
         $vObject = Sabre_VObject_Reader::read($request);
-        
+      
         $method = (string)$vObject->method;
         if ($method!=='REQUEST') {
             throw new Sabre_DAV_Exception_BadRequest('The iTip object must have a METHOD:REQUEST property');
@@ -184,17 +185,34 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         // Validating if the organizer matches the owner of the inbox.
         $owner = $outbox->getOwner();
 
-        $uas = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-user-address-set';
+        $caldavNS = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}';
+
+        $uas = $caldavNS . 'calendar-user-address-set';
         $props = $this->server->getProperties($owner,array($uas));
 
         if (empty($props[$uas]) || !in_array($organizer, $props[$uas]->getHrefs())) {
             throw new Sabre_DAV_Exception_Forbidden('The organizer in the request did not match any of the addresses for the owner of this inbox');
         }
 
-        return "Free beer";
+        $attendees = array();
+        foreach($vFreeBusy->ATTENDEE as $attendee) {
+            $attendees[]= (string)$attendee;
+        }
 
+        foreach($attendees as $attendee) {
+            $aclPlugin = $this->server->getPlugin('acl');
+            $result = $aclPlugin->principalSearch(
+                array($uas => $attendee),
+                array('{DAV:}principal-URL',$caldavNS . 'calendar-home-set')
+            );
 
-    } 
+            print_r($result);
+
+        }
+       
+        echo "FREE BEER\n";       
+
+    }
 
 }
 

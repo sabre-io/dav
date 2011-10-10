@@ -331,6 +331,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function current() {
 
+        if (!$this->valid()) return null;
         return clone $this->currentDate;
 
     }
@@ -372,6 +373,20 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         $this->currentDate = clone $this->startDate;
         $this->counter = 0;
+
+    }
+
+    /**
+     * This method allows you to quickly go to the next occurence after the 
+     * specified date. 
+     * 
+     * @return void 
+     */
+    public function fastForward(DateTime $dt) {
+
+        while($this->valid() && $this->currentDate < $dt) {
+            $this->next();
+        }
 
     }
 

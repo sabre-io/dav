@@ -600,5 +600,38 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         );
 
     }
+
+    function testFastForward() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=YEARLY;COUNT=8;INTERVAL=5;BYMONTH=4,10;BYDAY=1MO,-1SU';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-04-04'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        // The idea is that we're fast-forwarding too far in the future, so 
+        // there will be no results left.
+        $it->fastForward(new DateTime('2020-05-05'));
+
+        $max = 20;
+        $result = array();
+        while($item = $it->current()) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+            $it->next();
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+        $this->assertEquals(array(), $result);
+
+    }
+
 }
 

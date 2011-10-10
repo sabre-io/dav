@@ -44,11 +44,18 @@
 class Sabre_VObject_RecurrenceIterator implements Iterator {
 
     /**
-     * The initial event
+     * The initial event date
      *
      * @var DateTime
      */
     public $startDate;
+
+    /**
+     * The end-date of the initial event
+     *
+     * @var DateTime
+     */
+    public $endDate;
 
     /**
      * The 'current' recurrence.
@@ -58,6 +65,13 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * @var DateTime
      */
     public $currentDate;
+
+    /**
+     * List of dates that are excluded from the rules.
+     * 
+     * @var array 
+     */
+    public $exceptionDates = array();
 
     /**
      * Frequency is one of: secondly, minutely, hourly, daily, weekly, monthly,
@@ -331,6 +345,21 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         }
 
+        // Parsing exception dates
+        if (isset($comp->EXDATE)) {
+            foreach($comp->EXDATE as $exDate) {
+
+                foreach(explode(',', (string)$exDate) as $exceptionDate) {
+
+                    $this->exceptionDates[] = 
+                        Sabre_VObject_DateTimeParser::parse($exceptionDate, $this->startDate->getTimeZone());
+
+                }
+
+            }
+
+        }
+
     }
 
     /**
@@ -432,25 +461,39 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
-        switch($this->frequency) {
+        while(true) { 
 
-            case 'daily' :
-                $this->currentDate->modify('+' . $this->interval . ' days');
-                break;
+            switch($this->frequency) {
 
-            case 'weekly' :
-                $this->nextWeekly();
-                break;
+                case 'daily' :
+                    $this->currentDate->modify('+' . $this->interval . ' days');
+                    break;
 
-            case 'monthly' :
-                $this->nextMonthly();
-                break;
+                case 'weekly' :
+                    $this->nextWeekly();
+                    break;
 
-            case 'yearly' :
-                $this->nextYearly();
-                break;
+                case 'monthly' :
+                    $this->nextMonthly();
+                    break;
+
+                case 'yearly' :
+                    $this->nextYearly();
+                    break;
+
+            }
+
+            // Checking exception dates
+            foreach($this->exceptionDates as $exceptionDate) {
+                if ($this->currentDate == $exceptionDate) {
+                    continue 2;
+                }
+            }
+
+            break;
 
         }
+
         $this->counter++;
 
     }

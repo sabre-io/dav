@@ -117,18 +117,20 @@ class Sabre_VObject_DateTimeParser {
     }
 
     /**
-     * Parses either a Date or DateTime, or Duration value.  
+     * Parses either a Date or DateTime, or Duration value.
      * 
+     * @param string $date
+     * @param DateTimeZone|string $referenceTZ
      * @return DateTime|DateInterval
      */
-    static public function parse($date) {
+    static public function parse($date, $referenceTZ = null) {
 
         if ($date[0]==='P' || ($date[0]==='-' && $date[1]==='P')) {
             return self::parseDuration($date);
         } elseif (strlen($date)===8) {
             return self::parseDate($date);
         } else {
-            return self::parseDateTime($date);
+            return self::parseDateTime($date, $referenceTZ);
         }
 
     } 

@@ -633,5 +633,58 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testComplexExclusions() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=YEARLY;COUNT=10';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+
+        $tz = new DateTimeZone('Canada/Eastern');
+        $dtStart->setDateTime(new DateTime('2011-01-01 13:50:20', $tz),Sabre_VObject_Element_DateTime::LOCALTZ);
+
+        $exDate1 = new Sabre_VObject_Element_MultiDateTime('EXDATE');
+        $exDate1->setDateTimes(array(new DateTime('2012-01-01 13:50:20', $tz), new DateTime('2014-01-01 13:50:20', $tz)), Sabre_VObject_Element_DateTime::LOCALTZ);
+        $exDate2 = new Sabre_VObject_Element_MultiDateTime('EXDATE');
+        $exDate2->setDateTimes(array(new DateTime('2016-01-01 13:50:20', $tz)), Sabre_VObject_Element_DateTime::LOCALTZ);
+
+        $ev->add($dtStart);
+        $ev->add($exDate1);
+        $ev->add($exDate2);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('yearly', $it->frequency);
+        $this->assertEquals(1, $it->interval);
+        $this->assertEquals(10, $it->count);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-01-01 13:50:20', $tz),
+                new DateTime('2013-01-01 13:50:20', $tz),
+                new DateTime('2015-01-01 13:50:20', $tz),
+                new DateTime('2017-01-01 13:50:20', $tz),
+                new DateTime('2018-01-01 13:50:20', $tz),
+                new DateTime('2019-01-01 13:50:20', $tz),
+                new DateTime('2020-01-01 13:50:20', $tz),
+                new DateTime('2021-01-01 13:50:20', $tz),
+                new DateTime('2022-01-01 13:50:20', $tz),
+                new DateTime('2023-01-01 13:50:20', $tz),
+            ),
+            $result
+        );
+
+    }
+
 }
 

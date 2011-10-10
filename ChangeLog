@@ -20,6 +20,8 @@
 	* Added: Sabre_VObject objects now have a reference to their parents.
 	* Added: Sabre_VObject_FreeBusyGenerator to generate free-busy reports
 	  based on lists of events.
+	* Added: Sabre_VObject_RecurrenceIterator to find all the dates and times
+	  for recurring events.
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

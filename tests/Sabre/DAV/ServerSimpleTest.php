@@ -680,6 +680,21 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testGetPropertiesForChildren() {
+
+        $result = $this->server->getPropertiesForChildren('',array(
+            '{DAV:}getcontentlength',
+        ));
+
+        $expected = array(
+            'test.txt' => array('{DAV:}getcontentlength' => 13),
+            'dir/' => array(),
+        );
+
+        $this->assertEquals($expected,$result);
+
+    }
+
 }
 
 ?>

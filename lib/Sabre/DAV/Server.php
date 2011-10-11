@@ -1220,6 +1220,33 @@ class Sabre_DAV_Server {
     }
 
     /**
+     * A kid-friendly way to fetch properties for a node's children.
+     *
+     * The returned array will be indexed by the path of the of child node. 
+     * Only properties that are actually found will be returned.
+     *
+     * The parent node will not be returned. 
+     * 
+     * @param string $path 
+     * @param array $propertyNames 
+     * @return array 
+     */
+    public function getPropertiesForChildren($path, $propertyNames) {
+
+        $result = array();
+        foreach($this->getPropertiesForPath($path,$propertyNames,1) as $row) {
+
+            // Skipping the parent path
+            if ($path===$row['href']) continue; 
+
+            $result[$row['href']] = $row[200];
+
+        }
+        return $result; 
+
+    }
+
+    /**
      * Returns a list of HTTP headers for a particular resource
      *
      * The generated http headers are based on properties provided by the 

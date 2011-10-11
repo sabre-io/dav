@@ -19,7 +19,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      *    calendar. This can be the same as the uri or a database key.
      *  * uri, which the basename of the uri with which the calendar is 
      *    accessed.
-     *  * principalUri. The owner of the calendar. Almost always the same as
+     *  * principaluri. The owner of the calendar. Almost always the same as
      *    principalUri passed to this method.
      *
      * Furthermore it can contain webdav properties in clark notation. A very

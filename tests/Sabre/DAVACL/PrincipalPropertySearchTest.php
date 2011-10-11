@@ -141,13 +141,13 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         
         $check = array(
             '/d:multistatus',
-            '/d:multistatus/d:response' => 1,
-            '/d:multistatus/d:response/d:href' => 1,
-            '/d:multistatus/d:response/d:propstat' => 2,
-            '/d:multistatus/d:response/d:propstat/d:prop' => 2,
-            '/d:multistatus/d:response/d:propstat/d:prop/d:displayname' => 1,
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength' => 1,
-            '/d:multistatus/d:response/d:propstat/d:status' => 2,
+            '/d:multistatus/d:response' => 2,
+            '/d:multistatus/d:response/d:href' => 2,
+            '/d:multistatus/d:response/d:propstat' => 4,
+            '/d:multistatus/d:response/d:propstat/d:prop' => 4,
+            '/d:multistatus/d:response/d:propstat/d:prop/d:displayname' => 2,
+            '/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength' => 2,
+            '/d:multistatus/d:response/d:propstat/d:status' => 4,
         );
 
         $xml = simplexml_load_string($server->httpResponse->body);

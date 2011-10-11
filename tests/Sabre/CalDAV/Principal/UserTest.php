@@ -81,7 +81,7 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
         $expected = array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principal/user',
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ),
             array(

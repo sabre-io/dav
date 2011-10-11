@@ -48,7 +48,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testInvalidArg1() {
 
         $obj = new Sabre_CalDAV_CalendarObject(
-            new Sabre_CalDAV_Backend_Mock(array()),
+            new Sabre_CalDAV_Backend_Mock(array(),array()),
             array(),
             array()
         );
@@ -61,7 +61,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testInvalidArg2() {
 
         $obj = new Sabre_CalDAV_CalendarObject(
-            new Sabre_CalDAV_Backend_Mock(array()),
+            new Sabre_CalDAV_Backend_Mock(array(),array()),
             array(),
             array('calendarid' => '1')
         );
@@ -247,7 +247,7 @@ END:VCALENDAR";
 
     function testGetRefetch() {
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(
+        $backend = new Sabre_CalDAV_Backend_Mock(array(), array(
             1 => array(
                 'foo' => array(
                     'calendardata' => 'foo',
@@ -270,7 +270,7 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array());
+        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
         $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
 
         $this->assertEquals('bar', $obj->getETag());
@@ -285,7 +285,7 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array());
+        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
         $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
 
         $this->assertEquals('"' . md5('foo') . '"', $obj->getETag());
@@ -300,7 +300,7 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array());
+        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
         $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
         $this->assertNull($obj->getSupportedPrivilegeSet());
 

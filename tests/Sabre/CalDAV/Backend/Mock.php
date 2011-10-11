@@ -3,9 +3,11 @@
 class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract { 
 
     private $calendarData;
+    private $calendars;
 
-    function __construct($calendarData) {
+    function __construct(array $calendars, array $calendarData) {
 
+        $this->calendars = $calendars;
         $this->calendarData = $calendarData;
 
     }
@@ -29,7 +31,14 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
      */
     function getCalendarsForUser($principalUri) {
 
-        return array();
+        $r = array();
+        foreach($this->calendars as $row) {
+            if ($row['principaluri'] == $principalUri) {
+                $r[] = $row;
+            }
+        }
+
+        return $r; 
 
     }
 
@@ -131,7 +140,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
      */
     public function getCalendarObjects($calendarId) {
 
-        return $this->calendarData[$calendarId];
+        return isset($this->calendarData[$calendarId])?$this->calendarData[$calendarId]:array();
 
     }
 

@@ -66,8 +66,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getFeatures() {
 
-        return array();
-     //   return array('calendar-auto-schedule');
+        return array('calendar-auto-schedule');
 
     }
 
@@ -125,7 +124,8 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     public function unknownMethod($method, $uri) {
 
         if ($method!=='POST') return;
-        if ($this->server->httpRequest->getHeader('Content-Type') !== 'text/calendar')
+        $contentType = $this->server->httpRequest->getHeader('Content-Type');
+        if (strpos($contentType, 'text/calendar')!==0)
             return;
 
         try {
@@ -213,7 +213,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
         $results = array();
         foreach($attendees as $k=>$attendee) {
-            $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange);
+            $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange, $vObject);
         }
 
         $dom = new DOMDocument('1.0','utf-8');
@@ -258,10 +258,13 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
      *   * 2.0;description
      *   * 3.7;description
      *
-     * @param string $email address 
+     * @param string $email address
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param Sabre_VObject_Component $request 
      * @return Sabre_VObject_Component 
      */
-    protected function getFreeBusyForEmail($email, $start, $end) {
+    protected function getFreeBusyForEmail($email, DateTime $start, DateTime $end, Sabre_VObject_Component $request) {
 
         $caldavNS = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}';
         $uas = $caldavNS . 'calendar-user-address-set';
@@ -323,6 +326,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         $result = $generator->getResult();
 
         $vcalendar->VFREEBUSY->ATTENDEE = $email;
+        $vcalendar->VFREEBUSY->UID = (string)$request->VFREEBUSY->UID;
 
         return array(
             'calendar-data' => $result,

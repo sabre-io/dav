@@ -99,23 +99,18 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
      */
     public function getACL() {
 
-        return array(
-            array(
-                'privilege' => '{DAV:}read',
-                'principal' => $this->principalProperties['uri'],
-                'protected' => true,
-            ),
-            array(
-                'privilege' => '{DAV:}read',
-                'principal' => $this->principalProperties['uri'] . '/calendar-proxy-read',
-                'protected' => true,
-            ),
-            array(
-                'privilege' => '{DAV:}read',
-                'principal' => $this->principalProperties['uri'] . '/calendar-proxy-write',
-                'protected' => true,
-            ),
+        $acl = parent::getACL();
+        $acl[] = array( 
+            'privilege' => '{DAV:}read',
+            'principal' => $this->principalProperties['uri'] . '/calendar-proxy-read',
+            'protected' => true,
         );
+        $acl[] = array(
+            'privilege' => '{DAV:}read',
+            'principal' => $this->principalProperties['uri'] . '/calendar-proxy-write',
+            'protected' => true,
+        );
+        return $acl;
 
     }
 

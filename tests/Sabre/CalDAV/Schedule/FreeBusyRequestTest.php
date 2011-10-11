@@ -20,6 +20,7 @@ class Sabre_CalDAV_Schedule_FreeBusyRequestTest extends PHPUnit_Framework_TestCa
             array(
                 'principaluri' => 'principals/user2',
                 'id'           => 1,
+                'uri'          => 'calendar1',
             ),
         );
         $calendarobjects = array(

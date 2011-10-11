@@ -26,6 +26,7 @@
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.
+	* Fixed: DATE-TIME encoding was wrong in VObject. (we used 'DATETIME').
 
 1.5.3-stable (2011-09-28)
 	* Fixed: Sabre_DAV_Collection was missing from the includes file.

@@ -15,7 +15,7 @@ class Sabre_VObject_Element_MultiDateTimeTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('19850704T013000,19860704T013000', $elem->value);
         $this->assertEquals('Europe/Amsterdam', (string)$elem['TZID']);
-        $this->assertEquals('DATETIME', (string)$elem['VALUE']);
+        $this->assertEquals('DATE-TIME', (string)$elem['VALUE']);
 
     }
 
@@ -32,7 +32,7 @@ class Sabre_VObject_Element_MultiDateTimeTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('19850704T013000,19860704T013000', $elem->value);
         $this->assertNull($elem['TZID']);
-        $this->assertEquals('DATETIME', (string)$elem['VALUE']);
+        $this->assertEquals('DATE-TIME', (string)$elem['VALUE']);
 
     }
 
@@ -49,7 +49,7 @@ class Sabre_VObject_Element_MultiDateTimeTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('19850704T013000Z,19860704T013000Z', $elem->value);
         $this->assertNull($elem['TZID']);
-        $this->assertEquals('DATETIME', (string)$elem['VALUE']);
+        $this->assertEquals('DATE-TIME', (string)$elem['VALUE']);
 
     }
 
@@ -66,7 +66,7 @@ class Sabre_VObject_Element_MultiDateTimeTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('19850704T013000,19860704T013000', $elem->value);
         $this->assertEquals('Europe/Amsterdam', (string)$elem['TZID']);
-        $this->assertEquals('DATETIME', (string)$elem['VALUE']);
+        $this->assertEquals('DATE-TIME', (string)$elem['VALUE']);
 
     }
 

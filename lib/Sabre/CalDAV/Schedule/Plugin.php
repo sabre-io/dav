@@ -47,7 +47,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$aclPlugin) {
             throw new Sabre_DAV_Exception('ACL plugin must be loaded for the Scheduling plugin to work. We\'re doooomed');
         }
-        $acl->principalSearchPropertySet[$ns . 'calendar-user-address-set'] =
+        $aclPlugin->principalSearchPropertySet[$ns . 'calendar-user-address-set'] =
             'Calendar user addresses';
 
         $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
@@ -167,7 +167,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     protected function handleFreeBusyRequest(Sabre_CalDAV_Schedule_IOutbox $outbox, $request) {
 
         $vObject = Sabre_VObject_Reader::read($request);
-      
+     
         $method = (string)$vObject->method;
         if ($method!=='REQUEST') {
             throw new Sabre_DAV_Exception_BadRequest('The iTip object must have a METHOD:REQUEST property');
@@ -194,24 +194,107 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_Forbidden('The organizer in the request did not match any of the addresses for the owner of this inbox');
         }
 
+        if (!isset($vFreeBusy->ATTENDEE)) {
+            throw new Sabre_DAV_Exception_BadRequest('You must at least specify 1 attendee');
+        }
+
         $attendees = array();
         foreach($vFreeBusy->ATTENDEE as $attendee) {
-            $attendees[]= (string)$attendee;
+            $attendees[]= (string)$attendee; 
         }
 
-        foreach($attendees as $attendee) {
-            $aclPlugin = $this->server->getPlugin('acl');
-            $result = $aclPlugin->principalSearch(
-                array($uas => $attendee),
-                array('{DAV:}principal-URL',$caldavNS . 'calendar-home-set')
+
+        if (!isset($vFreeBusy->DTSTART) || !isset($vFreeBusy->DTEND)) {
+            throw new Sabre_DAV_Exception_BadRequest('DTSTART and DTEND must both be specified');
+        }
+
+        $startRange = $vFreeBusy->DTSTART->getDateTime();
+        $endRange = $vFreeBusy->DTEND->getDateTime();
+
+        $results = array();
+        foreach($attendees as $k=>$attendee) {
+            $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange);
+        }
+        echo "FREE BEER\n";      
+
+    }
+
+    /**
+     * Returns free-busy information for a specific address. The returned 
+     * data is an array containing the following properties:
+     *
+     * calendar-data : A VFREEBUSY VObject
+     * request-status : an iTip status code.
+     * href: The principal's email address, as requested
+     *
+     * The following request status codes may be returned:
+     *   * 2.0;description
+     *   * 3.7;description
+     *
+     * @param string $email address 
+     * @return Sabre_VObject_Component 
+     */
+    protected function getFreeBusyForEmail($email, $start, $end) {
+
+        $caldavNS = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}';
+        $uas = $caldavNS . 'calendar-user-address-set';
+
+        $aclPlugin = $this->server->getPlugin('acl');
+        $result = $aclPlugin->principalSearch(
+            array($uas => $email),
+            array('{DAV:}principal-URL', $caldavNS . 'calendar-home-set')
+        );
+
+        if (!count($result)) {
+            return array(
+                'request-status' => '3.7;Could not find principal',
+                'href' => $email,
             );
+        }
 
-            print_r($result);
+        if (!isset($result[0][200][$caldavNS . 'calendar-home-set'])) {
+            return array(
+                'request-status' => '3.7;No calendar-home-set property found',
+                'href' => $email,
+            );
+        }
+        $homeSet = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
+        
+        $calendars = array();
+
+        // Grabbing the calendar list
+        $props = array(
+            '{DAV:}resourcetype',
+        );
+        $objects = array();
+        foreach($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
+            if (!$node['{DAV:}resourcetype']->is($caldavNS . 'calendar')) {
+                continue;
+            }
+            $calendar = $this->server->tree->getNodeForPath($uri);
+            $aclPlugin->checkPrivileges($uri,$caldavNS . 'read-free-busy');
+             
+            $calObjects = array_map(function($child) {
+                $obj = $child->get();
+                if (is_resource($obj)) {
+                    $obj = stream_get_contents($obj);
+                }
+                return $obj;
+            }, $calendar->getChildren());
+
+            $objects = array_merge($objects,$calObjects);
 
         }
-       
-        echo "FREE BEER\n";       
 
+        $generator = new Sabre_VObject_FreeBusyGenerator();
+        $generator->setObjects($objects);
+        $generator->setTimeRange($start, $end);
+        $result = $generator->getResult();
+        return array(
+            'calendar-data' => $result,
+            'status' => '2.0;Success',
+            'href' => $email,
+        );
     }
 
 }

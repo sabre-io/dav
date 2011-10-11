@@ -21,6 +21,7 @@ class Sabre_CalDAV_Schedule_FreeBusyRequestTest extends PHPUnit_Framework_TestCa
         $tree = array(
             new Sabre_CalDAV_Schedule_RootNode($principalBackend, $caldavBackend),
             new Sabre_DAVACL_PrincipalCollection($principalBackend),
+            new Sabre_CalDAV_CalendarRootNode($principalBackend, $caldavBackend),
         );
 
         $this->request = new Sabre_HTTP_Request(array(
@@ -34,7 +35,7 @@ class Sabre_CalDAV_Schedule_FreeBusyRequestTest extends PHPUnit_Framework_TestCa
         $this->server->addPlugin($this->aclPlugin);
 
         $this->plugin = new Sabre_CalDAV_Schedule_Plugin();
-        $this->server->addPlugin($this->plugin); 
+        $this->server->addPlugin($this->plugin);
 
         $authBackend = new Sabre_DAV_Auth_MockBackend();
         $authBackend->setCurrentUser('user1');

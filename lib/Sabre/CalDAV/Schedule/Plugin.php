@@ -146,7 +146,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
         $response = $this->handleFreeBusyRequest($node, $this->server->httpRequest->getBody(true));
 
-        $this->server->httpResponse->setHeader('Content-Type','text/calendar');
+        $this->server->httpResponse->setHeader('Content-Type','application/xml');
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->sendBody($response);
 
@@ -215,7 +215,34 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($attendees as $k=>$attendee) {
             $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange);
         }
-        echo "FREE BEER\n";      
+
+        $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
+        $scheduleResponse = $dom->createElementNS(Sabre_CalDAV_Plugin::NS_CALDAV, 'cal:schedule-response');
+        $dom->appendChild($scheduleResponse);
+
+        foreach($results as $result) {
+            $response = $dom->createElement('cal:response');
+
+            $recipient = $dom->createElement('cal:recipient');
+            $recipient->appendChild($dom->createTextNode($result['href']));
+            $response->appendChild($recipient);
+
+            $reqStatus = $dom->createElement('cal:request-status');
+            $reqStatus->appendChild($dom->createTextNode($result['request-status'])); 
+            $response->appendChild($reqStatus);
+
+            if (isset($result['calendar-data'])) {
+
+                $calendardata = $dom->createElement('cal:calendar-data');
+                $calendardata->appendChild($dom->createTextNode(str_replace("\r\n","\n",$result['calendar-data']->serialize())));
+                $response->appendChild($calendardata);
+
+            }
+            $scheduleResponse->appendChild($response);
+        }
+
+        return $dom->saveXML();
 
     }
 
@@ -268,7 +295,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         );
         $objects = array();
         foreach($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
-            if (!$node['{DAV:}resourcetype']->is($caldavNS . 'calendar')) {
+            if (!$node instanceof Sabre_CalDAV_ICalendar) {
                 continue;
             }
             $calendar = $this->server->tree->getNodeForPath($uri);
@@ -276,11 +303,8 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
              
             $calObjects = array_map(function($child) {
                 $obj = $child->get();
-                if (is_resource($obj)) {
-                    $obj = stream_get_contents($obj);
-                }
                 return $obj;
-            }, $calendar->getChildren());
+            }, $node->getChildren());
 
             $objects = array_merge($objects,$calObjects);
 
@@ -292,7 +316,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         $result = $generator->getResult();
         return array(
             'calendar-data' => $result,
-            'status' => '2.0;Success',
+            'request-status' => '2.0;Success',
             'href' => $email,
         );
     }

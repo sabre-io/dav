@@ -139,7 +139,6 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
 
         $uri = $this->principalProperties['uri'];
         list(, $name) = Sabre_DAV_URLUtil::splitPath($uri);
-
         return $name;
 
     }
@@ -239,7 +238,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
         return array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => $this->principalProperties['uri'],
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ),
         );

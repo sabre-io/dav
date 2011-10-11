@@ -40,6 +40,30 @@ class Sabre_VObject_FreeBusyGenerator {
     protected $end;
 
     /**
+     * VCALENDAR object
+     * 
+     * @var Sabre_VObject_Component 
+     */
+    protected $baseObject;
+
+    /**
+     * Sets the VCALENDAR object.
+     *
+     * If this is set, it will not be generated for you. You are responsible 
+     * for setting things like the METHOD, CALSCALE, VERSION, etc..
+     *
+     * The VFREEBUSY object will be automatically added though.
+     * 
+     * @param Sabre_VObject_Component $vcalendar 
+     * @return void
+     */
+    public function setBaseObject(Sabre_VObject_Component $vcalendar) {
+
+        $this->baseObject = $vcalendar;
+
+    }
+
+    /**
      * Sets the input objects
      *
      * Every object must either be a string or a Sabre_VObject_Component. 
@@ -222,10 +246,14 @@ class Sabre_VObject_FreeBusyGenerator {
 
         }
 
-        $calendar = new Sabre_VObject_Component('VCALENDAR');
-        $calendar->version = '2.0';
-        $calendar->prodid = '-//SabreDAV//Sabre VObject ' . Sabre_VObject_Version::VERSION . '//EN';
-        $calendar->calscale = 'GREGORIAN';
+        if ($this->baseObject) {
+            $calendar = $this->baseObject;
+        } else {
+            $calendar = new Sabre_VObject_Component('VCALENDAR');
+            $calendar->version = '2.0';
+            $calendar->prodid = '-//SabreDAV//Sabre VObject ' . Sabre_VObject_Version::VERSION . '//EN';
+            $calendar->calscale = 'GREGORIAN';
+        }
 
         $vfreebusy = new Sabre_VObject_Component('VFREEBUSY');
         $calendar->add($vfreebusy);

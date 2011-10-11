@@ -298,8 +298,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
             if (!$node instanceof Sabre_CalDAV_ICalendar) {
                 continue;
             }
-            $calendar = $this->server->tree->getNodeForPath($uri);
-            $aclPlugin->checkPrivileges($uri,$caldavNS . 'read-free-busy');
+            $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
              
             $calObjects = array_map(function($child) {
                 $obj = $child->get();
@@ -310,10 +309,21 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
+        $vcalendar = new Sabre_VObject_Component('VCALENDAR');
+        $vcalendar->VERSION = '2.0';
+        $vcalendar->METHOD = 'REPLY';
+        $vcalendar->CALSCALE = 'GREGORIAN';
+        $vcalendar->PRODID = '-//SabreDAV//SabreDAV ' . Sabre_DAV_Version::VERSION . '//EN';
+
         $generator = new Sabre_VObject_FreeBusyGenerator();
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
+        $generator->setBaseObject($vcalendar);
+
         $result = $generator->getResult();
+
+        $vcalendar->VFREEBUSY->ATTENDEE = $email;
+
         return array(
             'calendar-data' => $result,
             'request-status' => '2.0;Success',

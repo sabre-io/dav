@@ -19,6 +19,7 @@
  *   * UNTIL
  *   * INTERVAL
  *   * FREQ=DAILY
+ *     * BYDAY
  *   * FREQ=WEEKLY
  *     * BYDAY
  *     * WKST

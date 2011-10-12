@@ -19,6 +19,12 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-read',array('principals/user1'));
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-write',array('principals/user1'));
+        $principalBackend->addPrincipal(array(
+            'uri' => 'principals/admin/calendar-proxy-read',
+        ));
+        $principalBackend->addPrincipal(array(
+            'uri' => 'principals/admin/calendar-proxy-write',
+        ));
 
         $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend,$this->caldavBackend);
         $principals = new Sabre_CalDAV_Principal_Collection($principalBackend);

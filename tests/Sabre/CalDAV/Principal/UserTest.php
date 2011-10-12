@@ -5,8 +5,17 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
     function getInstance() {
 
         $backend = new Sabre_DAVACL_MockPrincipalBackend();
+        $backend->addPrincipal(array(
+            'uri' => 'principals/user/calendar-proxy-read',
+        ));
+        $backend->addPrincipal(array(
+            'uri' => 'principals/user/calendar-proxy-write',
+        ));
+        $backend->addPrincipal(array(
+            'uri' => 'principals/user/random',
+        ));
         return new Sabre_CalDAV_Principal_User($backend, array(
-            'uri' => 'principal/user',
+            'uri' => 'principals/user',
         ));
 
     }
@@ -57,6 +66,16 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException Sabre_DAV_Exception_FileNotFound
+     */
+    function testGetChildNotFound2() {
+
+        $u = $this->getInstance();
+        $child = $u->getChild('random');
+
+    }
+
     function testGetChildren() {
 
         $u = $this->getInstance();
@@ -86,12 +105,12 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
             ),
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principal/user/calendar-proxy-read',
+                'principal' => 'principals/user/calendar-proxy-read',
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principal/user/calendar-proxy-write',
+                'principal' => 'principals/user/calendar-proxy-write',
                 'protected' => true,
             ),
         );

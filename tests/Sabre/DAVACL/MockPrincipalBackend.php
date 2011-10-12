@@ -3,12 +3,11 @@
 class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBackend {
 
     public $groupMembers = array();
+    public $principals;
 
-    function getPrincipalsByPrefix($prefix) {
+    function __construct() {
 
-        if ($prefix=='principals') {
-
-            return array(
+        $this->principals = array(
                 array(
                     'uri' => 'principals/user1',
                     '{DAV:}displayname' => 'User 1',
@@ -25,9 +24,31 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
                 ),
             );
 
-         }
+
+    } 
+
+    function getPrincipalsByPrefix($prefix) {
+
+        $prefix = trim($prefix,'/') . '/';
+        $return = array();
+
+        foreach($this->principals as $principal) {
+
+            if (strpos($principal['uri'], $prefix)!==0) continue;
+
+            $return[] = $principal;
+
+        }
+
+        return $return;
 
     }
+
+    function addPrincipal(array $principal) {
+
+        $this->principals[] = $principal;
+
+    } 
 
     function getPrincipalByPath($path) {
 

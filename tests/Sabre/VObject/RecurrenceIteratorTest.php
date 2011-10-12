@@ -80,6 +80,55 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         );
 
     }
+    
+    function testDailyByDay() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->RRULE = 'FREQ=DAILY;INTERVAL=2;BYDAY=TU,WE,FR';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $it = new Sabre_VObject_RecurrenceIterator($ev);
+
+        $this->assertEquals('daily', $it->frequency);
+        $this->assertEquals(2, $it->interval);
+        $this->assertEquals(array('TU','WE','FR'), $it->byDay);
+
+        // Grabbing the next 12 items
+        $max = 12;
+        $result = array();
+        foreach($it as $item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-10-07', $tz),
+                new DateTime('2011-10-11', $tz),
+                new DateTime('2011-10-19', $tz),
+                new DateTime('2011-10-21', $tz),
+                new DateTime('2011-10-25', $tz),
+                new DateTime('2011-11-02', $tz),
+                new DateTime('2011-11-04', $tz),
+                new DateTime('2011-11-08', $tz),
+                new DateTime('2011-11-16', $tz),
+                new DateTime('2011-11-18', $tz),
+                new DateTime('2011-11-22', $tz),
+                new DateTime('2011-11-30', $tz),
+            ),
+            $result
+        );
+
+    }
 
     function testWeekly() {
 

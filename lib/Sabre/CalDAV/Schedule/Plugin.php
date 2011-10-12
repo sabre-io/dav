@@ -47,9 +47,6 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$aclPlugin) {
             throw new Sabre_DAV_Exception('ACL plugin must be loaded for the Scheduling plugin to work. We\'re doooomed');
         }
-        $aclPlugin->principalSearchPropertySet[$ns . 'calendar-user-address-set'] =
-            'Calendar user addresses';
-
         $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
         $server->subscribeEvent('unknownMethod', array($this,'unknownMethod'));
         // $server->subscribeEvent('afterBind',array($this,'afterBind'));
@@ -267,25 +264,29 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     protected function getFreeBusyForEmail($email, DateTime $start, DateTime $end, Sabre_VObject_Component $request) {
 
         $caldavNS = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}';
-        $uas = $caldavNS . 'calendar-user-address-set';
 
         $aclPlugin = $this->server->getPlugin('acl');
+        if (substr($email,0,7)==='mailto:') $email = substr($email,7);
+
         $result = $aclPlugin->principalSearch(
-            array($uas => $email),
-            array('{DAV:}principal-URL', $caldavNS . 'calendar-home-set')
+            array('{http://sabredav.org/ns}email-address' => $email),
+            array(
+                '{DAV:}principal-URL', $caldavNS . 'calendar-home-set',
+                '{http://sabredav.org/ns}email-address',
+            )
         );
 
         if (!count($result)) {
             return array(
                 'request-status' => '3.7;Could not find principal',
-                'href' => $email,
+                'href' => 'mailto:' . $email,
             );
         }
 
         if (!isset($result[0][200][$caldavNS . 'calendar-home-set'])) {
             return array(
                 'request-status' => '3.7;No calendar-home-set property found',
-                'href' => $email,
+                'href' => 'mailto:' . $email,
             );
         }
         $homeSet = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
@@ -331,7 +332,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         return array(
             'calendar-data' => $result,
             'request-status' => '2.0;Success',
-            'href' => $email,
+            'href' => 'mailto:' . $email,
         );
     }
 

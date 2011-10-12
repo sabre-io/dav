@@ -37,6 +37,28 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
 
     }
 
+    function searchPrincipals($prefixPath, array $searchProperties) {
+
+        $matches = array();
+        foreach($this->getPrincipalsByPrefix($prefixPath) as $principal) {
+
+            foreach($searchProperties as $key=>$value) {
+
+                if (!isset($principal[$key])) {
+                    continue 2;
+                }
+                if (mb_stripos($principal[$key],$value, 0, 'UTF-8')===false) {
+                    continue 2;
+                }
+
+            }
+            $matches[] = $principal['uri'];
+
+        }
+        return $matches;
+
+    }
+
     function getGroupMemberSet($path) {
 
         return isset($this->groupMembers[$path]) ? $this->groupMembers[$path] : array();

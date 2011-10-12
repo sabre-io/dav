@@ -4,6 +4,8 @@
 	  implement the getSupportedPrivilegeSet method. See website for details.
 	* BC Break: Moved functions from Sabre_CalDAV_XMLUtil to
 	  Sabre_VObject_DateTimeParser.
+	* BC Break: The Sabre_DAVACL_IPrincipalCollection now has a new method:
+	  'searchPrincipals'. 
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
 	* Added: Support for FREEBUSY reports!

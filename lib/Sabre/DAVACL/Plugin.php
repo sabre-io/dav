@@ -98,7 +98,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @var array
      */
     public $principalSearchPropertySet = array(
-        '{DAV:}displayname' => 'display name'
+        '{DAV:}displayname' => 'Display name',
+        '{http://sabredav.org/ns}email-address' => 'Email address',
     );
 
     /**
@@ -549,7 +550,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function principalSearch(array $searchProperties, array $requestedProperties, $collectionUri = null) {
 
-        if ($collectionUri) {
+        if (!is_null($collectionUri)) {
             $uris = array($collectionUri);
         } else {
             $uris = $this->principalCollectionSet;
@@ -558,61 +559,29 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $lookupResults = array();
         foreach($uris as $uri) {
 
-            $p = array_keys($searchProperties);
-            $p[] = '{DAV:}resourcetype';
-            $r = $this->server->getPropertiesForPath($uri, $p, 1);
+            $principalCollection = $this->server->tree->getNodeForPath($uri);
+            if (!$principalCollection instanceof Sabre_DAVACL_AbstractPrincipalCollection) {
+                // Not a principal collection, we're simply going to ignore 
+                // this.
+                continue;
+            }
 
-            // The first item in the results is the parent, so we get rid of it.
-            array_shift($r);
-            $lookupResults = array_merge($lookupResults, $r);
+            $results = $principalCollection->searchPrincipals($searchProperties);
+            foreach($results as $result) {
+                $lookupResults[] = rtrim($uri,'/') . '/' . $result;
+            }
+
         } 
 
         $matches = array();
 
         foreach($lookupResults as $lookupResult) {
 
-            // We're only looking for principals 
-            if (!isset($lookupResult[200]['{DAV:}resourcetype']) || 
-                (!($lookupResult[200]['{DAV:}resourcetype'] instanceof Sabre_DAV_Property_ResourceType)) ||
-                !$lookupResult[200]['{DAV:}resourcetype']->is('{DAV:}principal')) continue;
-
-            foreach($searchProperties as $searchProperty=>$searchValue) {
-                if (!isset($this->principalSearchPropertySet[$searchProperty])) {
-                    // If a property is not 'searchable', the spec dictates 
-                    // this is not a match. 
-                    continue;
-                }
-
-                if (isset($lookupResult[200][$searchProperty])) {
-
-                    $thisValue = $lookupResult[200][$searchProperty];
-                    if ($thisValue instanceof Sabre_DAV_Property_IHref) {
-                        $thisValue = $thisValue->getHref();
-                    } elseif ($thisValue instanceof Sabre_DAV_Property_HrefList) {
-                        $thisValue = implode("\n", $thisValue->getHrefs());
-                    } elseif ($thisValue instanceof Sabre_DAV_Property) {
-                        throw new Sabre_DAV_Exception_NotImplemented('Currently this type of property is not searchable');
-                    } 
-
-                    if (mb_stripos($thisValue, $searchValue, 0, 'UTF-8')!==false) {
-                        $matches[] = $lookupResult['href'];
-                    }
-                }
-
-            }
+            list($matches[]) = $this->server->getPropertiesForPath($lookupResult, $requestedProperties, 0);
 
         }
 
-        $matchProperties = array();
-
-        foreach($matches as $match) {
-            
-           list($result) = $this->server->getPropertiesForPath($match, $requestedProperties, 0);
-           $matchProperties[] = $result;
-
-        }
-
-        return $matchProperties;
+        return $matches;
 
     }
 
@@ -1303,8 +1272,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         // Parsing the search request
         foreach($dom->firstChild->childNodes as $searchNode) {
 
-            if (Sabre_DAV_XMLUtil::toClarkNotation($searchNode) == '{DAV:}apply-to-principal-collection-set')
+            if (Sabre_DAV_XMLUtil::toClarkNotation($searchNode) == '{DAV:}apply-to-principal-collection-set') {
                 $applyToPrincipalCollectionSet = true;
+            }
 
             if (Sabre_DAV_XMLUtil::toClarkNotation($searchNode)!=='{DAV:}property-search')
                 continue;

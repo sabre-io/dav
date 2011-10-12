@@ -25,7 +25,6 @@ class Sabre_CalDAV_Schedule_PluginTest extends PHPUnit_Framework_TestCase {
         $ns = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}';
         $this->assertEquals($ns . 'schedule-outbox', $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox']);
         $this->assertEquals($ns . 'schedule-inbox', $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IInbox']);
-        $this->assertEquals('Calendar user addresses', $acl->principalSearchPropertySet[$ns . 'calendar-user-address-set']);
 
         $this->assertEquals(array('calendar-auto-schedule'), $plugin->getFeatures());
 

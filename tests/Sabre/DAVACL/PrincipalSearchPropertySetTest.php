@@ -103,14 +103,16 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
         
         $check = array(
             '/d:principal-search-property-set',
-            '/d:principal-search-property-set/d:principal-search-property',
-            '/d:principal-search-property-set/d:principal-search-property/d:prop',
-            '/d:principal-search-property-set/d:principal-search-property/d:prop/d:displayname',
-            '/d:principal-search-property-set/d:principal-search-property/d:description',
+            '/d:principal-search-property-set/d:principal-search-property' => 2,
+            '/d:principal-search-property-set/d:principal-search-property/d:prop' => 2,
+            '/d:principal-search-property-set/d:principal-search-property/d:prop/d:displayname' => 1,
+            '/d:principal-search-property-set/d:principal-search-property/d:prop/s:email-address' => 1,
+            '/d:principal-search-property-set/d:principal-search-property/d:description' => 2,
         );
 
         $xml = simplexml_load_string($server->httpResponse->body);
         $xml->registerXPathNamespace('d','DAV:');
+        $xml->registerXPathNamespace('s','http://sabredav.org/ns');
         foreach($check as $v1=>$v2) {
 
             $xpath = is_int($v1)?$v2:$v1;
@@ -125,4 +127,5 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
         }
 
     }
+
 }

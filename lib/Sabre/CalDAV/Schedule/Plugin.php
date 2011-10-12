@@ -326,7 +326,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
         $result = $generator->getResult();
 
-        $vcalendar->VFREEBUSY->ATTENDEE = $email;
+        $vcalendar->VFREEBUSY->ATTENDEE = 'mailto:' . $email;
         $vcalendar->VFREEBUSY->UID = (string)$request->VFREEBUSY->UID;
 
         return array(

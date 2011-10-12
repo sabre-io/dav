@@ -19,6 +19,6 @@ class Sabre_HTTP_Version {
     /**
      * Stability : alpha, beta, stable
      */
-    const STABILITY = 'stable';
+    const STABILITY = 'alpha';
 
 }

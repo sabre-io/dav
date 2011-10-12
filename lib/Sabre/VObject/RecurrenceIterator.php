@@ -466,7 +466,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             switch($this->frequency) {
 
                 case 'daily' :
-                    $this->currentDate->modify('+' . $this->interval . ' days');
+                    $this->nextDaily();
                     break;
 
                 case 'weekly' :
@@ -495,6 +495,39 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         }
 
         $this->counter++;
+
+    }
+
+    /**
+     * Does the processing for advancing the iterator for daily frequency.
+     *
+     * @return void
+     */
+    protected function nextDaily() {
+
+        if (!$this->byDay) {
+            $this->currentDate->modify('+' . $this->interval . ' days');
+            return;
+        }
+
+        $recurrenceDays = array();
+        foreach($this->byDay as $byDay) {
+
+            // The day may be preceeded with a positive (+n) or
+            // negative (-n) integer. However, this does not make
+            // sense in 'weekly' so we ignore it here.
+            $recurrenceDays[] = $this->dayMap[substr($byDay,-2)];
+
+        }
+
+        do { 
+
+            $this->currentDate->modify('+' . $this->interval . ' days');
+
+            // Current day of the week
+            $currentDay = $this->currentDate->format('w');
+
+        } while (!in_array($currentDay, $recurrenceDays));
 
     }
 

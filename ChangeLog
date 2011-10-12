@@ -21,6 +21,9 @@
 	  components and not properties.
 	* Changed: Major refactoring in the calendar-query REPORT code. Should
 	  make things more flexible and correct.
+	* Changed: The calendar-proxy-[read|write] principals will now only appear
+	  in the tree, if they actually exist in the Principal backend. This should
+	  reduce some problems people have been having with this.
 	* Added: Sabre_VObject objects now have a reference to their parents.
 	* Added: Sabre_VObject_FreeBusyGenerator to generate free-busy reports
 	  based on lists of events.

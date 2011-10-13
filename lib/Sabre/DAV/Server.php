@@ -1234,10 +1234,10 @@ class Sabre_DAV_Server {
     public function getPropertiesForChildren($path, $propertyNames) {
 
         $result = array();
-        foreach($this->getPropertiesForPath($path,$propertyNames,1) as $row) {
+        foreach($this->getPropertiesForPath($path,$propertyNames,1) as $k=>$row) {
 
             // Skipping the parent path
-            if ($path===$row['href']) continue; 
+            if ($k === 0) continue; 
 
             $result[$row['href']] = $row[200];
 

@@ -443,13 +443,17 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
     /**
      * This method allows you to quickly go to the next occurence after the 
-     * specified date. 
+     * specified date.
+     *
+     * Note that this checks the current 'endDate', not the 'stardDate'. This 
+     * means that if you forward to January 1st, the iterator will stop at the 
+     * first event that ends *after* January 1st. 
      * 
      * @return void 
      */
     public function fastForward(DateTime $dt) {
 
-        while($this->valid() && $this->currentDate < $dt) {
+        while($this->valid() && $this->getDTEnd() < $dt) {
             $this->next();
         }
 

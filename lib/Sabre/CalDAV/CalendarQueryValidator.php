@@ -282,7 +282,22 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
         switch($component->name) {
 
-            case 'VEVENT' :
+        case 'VEVENT' :
+
+                if ($component->RRULE) {
+                    $it = new Sabre_VObject_RecurrenceIterator($component);
+                    $it->fastForward($start);
+
+                    // We fast-forwarded to a spot where the end-time of the 
+                    // recurrence instance exceeded the start of the requested 
+                    // time-range.
+                    //
+                    // If the starttime of the recurrence did not exceed the 
+                    // end of the time range as well, we have a match.
+                    return ($it->getDTStart() < $end && $it->getDTEnd() > $start);
+
+                } 
+
                 $effectiveStart = $component->DTSTART->getDateTime();
                 if (isset($component->DTEND)) {
                     $effectiveEnd = $component->DTEND->getDateTime();

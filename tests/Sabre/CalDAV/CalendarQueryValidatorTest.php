@@ -323,6 +323,26 @@ END:VEVENT
 END:VCALENDAR
 yow;
 
+        $blob31 = <<<yow
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20080101T120000Z
+DURATION:PT1H
+RRULE:FREQ=YEARLY
+END:VEVENT
+END:VCALENDAR
+yow;
+
+        $blob32 = <<<yow
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20080102T120000Z
+DURATION:PT1H
+RRULE:FREQ=YEARLY
+END:VEVENT
+END:VCALENDAR
+yow;
+
         $filter1 = array(
             'name' => 'VEVENT',
             'comp-filters' => array(),
@@ -582,6 +602,8 @@ yow;
             'time-range' => null,
         );
 
+        // Time-range with RRULE
+
 
         return array(
             // Component check
@@ -711,6 +733,11 @@ yow;
             array($blob29, $filter32, 0),
             array($blob30, $filter31, 0),
             array($blob30, $filter32, 0),
+
+
+            // Time-range with RRULE
+            array($blob31, $filter20, 1),
+            array($blob32, $filter20, 0),
 
         );
 

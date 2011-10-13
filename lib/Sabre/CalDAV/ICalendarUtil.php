@@ -75,6 +75,7 @@ class Sabre_CalDAV_ICalendarUtil {
      * @todo Currently quoted attributes are not parsed correctly.
      * @see http://tools.ietf.org/html/draft-royer-calsch-xcal-03
      * @param string $icalData 
+     * @deprected Please stop using this!
      * @return string. 
      */
     static function toXCAL($icalData) {

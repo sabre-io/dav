@@ -242,6 +242,12 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                         case '{urn:ietf:params:xml:ns:caldav}schedule-outbox' :
                             $type[$k] = 'Schedule Outbox';
                             break;
+                        case '{http://calendarserver.org/ns/}calendar-proxy-read' :
+                            $type[$k] = 'Proxy-Read';
+                            break;
+                        case '{http://calendarserver.org/ns/}calendar-proxy-write' :
+                            $type[$k] = 'Proxy-Write';
+                            break;
                     }
 
                 }
@@ -307,23 +313,28 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
 
-        if ($node instanceof Sabre_DAV_ICollection) {
-            $output.= '<tr><td><form method="post" action="">
-                <h3>Create new folder</h3>
-                <input type="hidden" name="sabreAction" value="mkcol" />
-                Name: <input type="text" name="name" /><br />
-                <input type="submit" value="create" />
-                </form>
-                <form method="post" action="" enctype="multipart/form-data">
-                <h3>Upload file</h3>
-                <input type="hidden" name="sabreAction" value="put" />
-                Name (optional): <input type="text" name="name" /><br />
-                File: <input type="file" name="file" /><br />
-                <input type="submit" value="upload" />
-                </form>
-                </td></tr>';
+        if (!$node instanceof Sabre_DAV_ICollection) 
+            return; 
 
-        }
+        // We also know fairly certain that if an object is a non-extended 
+        // SimpleCollection, we won't need to show the panel either.
+        if (get_class($node)==='Sabre_DAV_SimpleCollection') 
+            return;
+
+        $output.= '<tr><td><form method="post" action="">
+            <h3>Create new folder</h3>
+            <input type="hidden" name="sabreAction" value="mkcol" />
+            Name: <input type="text" name="name" /><br />
+            <input type="submit" value="create" />
+            </form>
+            <form method="post" action="" enctype="multipart/form-data">
+            <h3>Upload file</h3>
+            <input type="hidden" name="sabreAction" value="put" />
+            Name (optional): <input type="text" name="name" /><br />
+            File: <input type="file" name="file" /><br />
+            <input type="submit" value="upload" />
+            </form>
+            </td></tr>';
 
     }
 

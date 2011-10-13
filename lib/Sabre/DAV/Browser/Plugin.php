@@ -144,6 +144,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
         $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUri());
+        $this->server->httpResponse->sendStatus(302);
         return false;
 
     }

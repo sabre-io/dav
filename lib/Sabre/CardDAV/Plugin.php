@@ -62,7 +62,8 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         /* Adding properties that may never be changed */
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-address-data';
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}max-resource-size';
-
+        $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}addressbook-home-set';
+        $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-collation-set';
 
         $this->server = $server;
 

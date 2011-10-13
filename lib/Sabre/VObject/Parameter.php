@@ -50,6 +50,9 @@ class Sabre_VObject_Parameter extends Sabre_VObject_Node {
      */
     public function serialize() {
 
+        if (is_null($this->value)) {
+            return $this->name;
+        }
         $src = array(
             '\\',
             "\n",

@@ -152,7 +152,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
             $this->parameters[] = $item;
         } elseif(is_string($item)) {
 
-            if (!is_scalar($itemValue)) {
+            if (!is_scalar($itemValue) && !is_null($itemValue)) {
                 throw new InvalidArgumentException('The second argument must be scalar');
             }
             $this->parameters[] = new Sabre_VObject_Parameter($item,$itemValue);

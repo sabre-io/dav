@@ -114,10 +114,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
                 case '{DAV:}supportedlock' :
                     $val = false;
                     if ($this->locksBackend) $val = true;
-                    else {
-                        if (!$node) $node = $this->server->tree->getNodeForPath($path);
-                        if ($node instanceof Sabre_DAV_ILockable) $val = true;
-                    }
                     $newProperties[200][$propName] = new Sabre_DAV_Property_SupportedLock($val);
                     unset($newProperties[404][$propName]);
                     break;
@@ -195,10 +191,9 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getHTTPMethods($uri) {
 
-        if ($this->locksBackend ||
-            $this->server->tree->getNodeForPath($uri) instanceof Sabre_DAV_ILocks) {
+        if ($this->locksBackend) 
             return array('LOCK','UNLOCK');
-        }
+        
         return array();
 
     }
@@ -234,32 +229,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
         $lockList = array();
         $currentPath = '';
-        foreach(explode('/',$uri) as $uriPart) {
-
-            $uriLocks = array();
-            if ($currentPath) $currentPath.='/'; 
-            $currentPath.=$uriPart;
-
-            try {
-
-                $node = $this->server->tree->getNodeForPath($currentPath);
-                if ($node instanceof Sabre_DAV_ILockable) $uriLocks = $node->getLocks();
-
-            } catch (Sabre_DAV_Exception_FileNotFound $e){
-                // In case the node didn't exist, this could be a lock-null request
-            }
-
-            foreach($uriLocks as $uriLock) {
-
-                // Unless we're on the leaf of the uri-tree we should ignore locks with depth 0
-                if($uri==$currentPath || $uriLock->depth!=0) {
-                    $uriLock->uri = $currentPath;
-                    $lockList[] = $uriLock;
-                }
-
-            }
-
-        }
         if ($this->locksBackend) 
             $lockList = array_merge($lockList,$this->locksBackend->getLocks($uri, $returnChildLocks));
 
@@ -399,12 +368,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
         if (!$this->server->broadcastEvent('beforeLock',array($uri,$lockInfo))) return;
 
-        try {
-            $node = $this->server->tree->getNodeForPath($uri);
-            if ($node instanceof Sabre_DAV_ILockable) return $node->lock($lockInfo);
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
-            // In case the node didn't exist, this could be a lock-null request
-        }
         if ($this->locksBackend) return $this->locksBackend->lock($uri,$lockInfo);
         throw new Sabre_DAV_Exception_MethodNotAllowed('Locking support is not enabled for this resource. No Locking backend was found so if you didn\'t expect this error, please check your configuration.');
 
@@ -422,13 +385,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
     public function unlockNode($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         if (!$this->server->broadcastEvent('beforeUnlock',array($uri,$lockInfo))) return;
-        try {
-            $node = $this->server->tree->getNodeForPath($uri);
-            if ($node instanceof Sabre_DAV_ILockable) return $node->unlock($lockInfo);
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
-            // In case the node didn't exist, this could be a lock-null request
-        }
-
         if ($this->locksBackend) return $this->locksBackend->unlock($uri,$lockInfo);
 
     }

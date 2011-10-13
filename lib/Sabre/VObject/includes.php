@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VObjects includes file
+ * Sabre_VObject includes file
  *
  * Including this file will automatically include all files from the VObject
  * package.

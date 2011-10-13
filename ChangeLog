@@ -21,6 +21,9 @@
 	  properties.
 	* Added: Sabre_VObject_Component::getComponents() to return a list of only
 	  components and not properties.
+	* Added: An includes.php file in every sub-package (CalDAV, CardDAV, DAV,
+	  DAVACL, HTTP, VObject) as an alternative to the autoloader. This often
+	  works much faster.
 	* Changed: Major refactoring in the calendar-query REPORT code. Should
 	  make things more flexible and correct.
 	* Changed: The calendar-proxy-[read|write] principals will now only appear

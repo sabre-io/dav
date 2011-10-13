@@ -29,6 +29,7 @@
 	  based on lists of events.
 	* Added: Sabre_VObject_RecurrenceIterator to find all the dates and times
 	  for recurring events.
+	* Fixed: Issue 97: Correctly handling RRULE for the calendar-query REPORT.
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

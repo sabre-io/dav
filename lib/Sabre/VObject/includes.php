@@ -16,18 +16,18 @@
  */
 
 // Begin includes
-include __DIR__ . './DateTimeParser.php';
-include __DIR__ . './ElementList.php';
-include __DIR__ . './FreeBusyGenerator.php';
-include __DIR__ . './Node.php';
-include __DIR__ . './Parameter.php';
-include __DIR__ . './ParseException.php';
-include __DIR__ . './Reader.php';
-include __DIR__ . './RecurrenceIterator.php';
-include __DIR__ . './Version.php';
-include __DIR__ . './Element.php';
-include __DIR__ . './Property.php';
-include __DIR__ . './Component.php';
-include __DIR__ . './Element/DateTime.php';
-include __DIR__ . './Element/MultiDateTime.php';
+include __DIR__ . '/./DateTimeParser.php';
+include __DIR__ . '/./ElementList.php';
+include __DIR__ . '/./FreeBusyGenerator.php';
+include __DIR__ . '/./Node.php';
+include __DIR__ . '/./Parameter.php';
+include __DIR__ . '/./ParseException.php';
+include __DIR__ . '/./Reader.php';
+include __DIR__ . '/./RecurrenceIterator.php';
+include __DIR__ . '/./Version.php';
+include __DIR__ . '/./Element.php';
+include __DIR__ . '/./Property.php';
+include __DIR__ . '/./Component.php';
+include __DIR__ . '/./Element/DateTime.php';
+include __DIR__ . '/./Element/MultiDateTime.php';
 // End includes

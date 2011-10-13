@@ -214,6 +214,21 @@ ICS;
 
     }
 
+    function testGeneratorBaseObject() {
+
+        $obj = new Sabre_VObject_Component('VCALENDAR');
+        $obj->METHOD = 'PUBLISH';
+
+        $gen = new Sabre_VObject_FreeBusyGenerator();
+        $gen->setObjects(array());
+        $gen->setBaseObject($obj);
+
+        $result = $gen->getResult();
+
+        $this->assertEquals('PUBLISH', $result->METHOD->value);
+
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */

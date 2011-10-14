@@ -821,29 +821,6 @@ class Sabre_DAV_Server {
 
             $node->put($body);
 
-            /**
-             * We're sending a completely random ETag after a PUT.
-             *
-             * The reason for this is that some clients really want to have
-             * an ETag, otherwise they will error out.
-             *
-             * The reason we cannot ask the node what the current ETag is, is
-             * because the ETag the node will return represents the current
-             * state of the node.
-             *
-             * The problem here is that if the client uploads a new file, and
-             * some backend immediately makes changes to the contents the ETag
-             * needs to change between the PUT, and subsequent GET's.
-             *
-             * Often this is not an issue with File storage, but often custom
-             * backends for things like CalDAV and CardDAV splice up submitted
-             * data and store it in a database, resulting in a lossy save.
-             *
-             * So since the effect of sending back a random ETag would in
-             * theory be the same as not sending an ETag at all, no harm is
-             * done by doing this.
-             */
-            $this->httpResponse->setHeader('ETag','"' . md5(microtime(true)) . '"');
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(200);
 
@@ -855,10 +832,6 @@ class Sabre_DAV_Server {
                 return;
             }
 
-            /**
-             * See above not as per why we're sending back a random ETag
-             */
-            $this->httpResponse->setHeader('ETag','"' . md5(microtime(true)) . '"');
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(201);
 

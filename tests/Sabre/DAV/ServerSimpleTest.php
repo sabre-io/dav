@@ -207,7 +207,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             'Content-Length' => '0',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('Testing updated file',file_get_contents($this->tempDir . '/test.txt'));
 

@@ -12,9 +12,6 @@
 	  browser plugin.
 	* Added: Support for FREEBUSY reports!
 	* Changed: beforeCreateFile event now passes data argument by reference.
-	* Changed: Sending back HTTP 204 after a PUT request on an existing resource
-	  instead of HTTP 200. This should fix Evolution CardDAV client
-	  compatibility.
 	* Added: Ability for plugins to tell the ACL plugin which principal
 	  plugins are searchable.
 	* Added: [DAVACL] Per-node overriding of supported privileges. This allows

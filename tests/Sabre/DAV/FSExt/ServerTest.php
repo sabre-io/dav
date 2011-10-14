@@ -72,9 +72,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
-            'Content-Length' => '0',
-        ),$this->response->headers);
+        $this->assertEquals('0', $this->response->headers['Content-Length']);
 
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
         $this->assertEquals('', $this->response->body);
@@ -138,9 +136,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
-            'Content-Length' => '0',
-        ),$this->response->headers);
+        $this->assertEquals('0', $this->response->headers['Content-Length']);
 
         $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals('', $this->response->body);

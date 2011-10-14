@@ -138,7 +138,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
 
         $this->assertEquals('0', $this->response->headers['Content-Length']);
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('Testing updated file',file_get_contents($this->tempDir . '/test.txt'));
 

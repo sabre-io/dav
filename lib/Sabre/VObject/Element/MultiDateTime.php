@@ -121,7 +121,7 @@ class Sabre_VObject_Element_MultiDateTime extends Sabre_VObject_Property {
             list(
                 $type,
                 $dt
-            ) = Sabre_VObject_Element_DateTime::parseData($val, $this->offsetGet('TZID'));
+            ) = Sabre_VObject_Element_DateTime::parseData($val, $this);
             $dts[] = $dt;
             $this->dateType = $type;
         }
@@ -154,7 +154,7 @@ class Sabre_VObject_Element_MultiDateTime extends Sabre_VObject_Property {
             list(
                 $type,
                 $dt
-            ) = Sabre_VObject_Element_DateTime::parseData($val, $this->offsetGet('TZID'));
+            ) = Sabre_VObject_Element_DateTime::parseData($val, $this);
             $dts[] = $dt;
             $this->dateType = $type; 
         }

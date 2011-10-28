@@ -14,6 +14,11 @@
        <directory suffix=".php">../lib/</directory>
        <exclude>
          <file>../lib/Sabre.includes.php</file>
+         <file>../lib/Sabre/CalDAV/includes.php</file>
+         <file>../lib/Sabre/CardDAV/includes.php</file>
+         <file>../lib/Sabre/DAVACL/includes.php</file>
+         <file>../lib/Sabre/HTTP/includes.php</file>
+         <file>../lib/Sabre/DAV/includes.php</file>
          <file>../lib/Sabre/VObject/includes.php</file>
        </exclude>
     </whitelist> 

@@ -172,7 +172,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         $html = "<html>
 <head>
   <title>Index for " . $this->escapeHTML($path) . "/ - SabreDAV " . Sabre_DAV_Version::VERSION . "</title>
-  <style type=\"text/css\"> body { Font-family: arial}</style>
+  <style type=\"text/css\"> 
+  body { Font-family: arial}
+  h1 { font-size: 150% }
+  </style>
 </head>
 <body>
   <h1>Index for " . $this->escapeHTML($path) . "/</h1>

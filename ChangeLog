@@ -1,4 +1,4 @@
-1.5.4-stable (2011-??-??)
+1.5.4-stable (2011-10-28)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.
 	* Fixed: DATE-TIME encoding was wrong in VObject. (we used 'DATETIME').
 	* Changed: Sending back HTTP 204 after a PUT request on an existing resource

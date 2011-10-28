@@ -44,6 +44,8 @@
 	* Changed: Sending back HTTP 204 after a PUT request on an existing resource
 	  instead of HTTP 200. This should fix Evolution CardDAV client
 	  compatibility.
+	* Fixed: Issue 95: Parsing X-LIC-LOCATION if it's available.
+	* Added: All VObject elements now have a reference to their parent node.
 
 1.5.3-stable (2011-09-28)
 	* Fixed: Sabre_DAV_Collection was missing from the includes file.

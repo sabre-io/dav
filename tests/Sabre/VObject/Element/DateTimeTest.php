@@ -173,6 +173,32 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetDateTimeWeirdTZ() {
+
+        $elem = new Sabre_VObject_Element_DateTime('DTSTART','19850704T013000');
+        $elem['TZID'] = '/freeassociation.sourceforge.net/Tzfile/Europe/Amsterdam';
+
+
+        $event = new Sabre_VObject_Component('VEVENT');
+        $event->add($elem);
+
+        $timezone = new Sabre_VObject_Component('VTIMEZONE');
+        $timezone->TZID = '/freeassociation.sourceforge.net/Tzfile/Europe/Amsterdam';
+        $timezone->{'X-LIC-LOCATION'} = 'Europe/Amsterdam';
+
+        $calendar = new Sabre_VObject_Component('VCALENDAR');
+        $calendar->add($event);
+        $calendar->add($timezone);
+
+        $dt = $elem->getDateTime();
+
+        $this->assertInstanceOf('DateTime', $dt);
+        $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
+        $this->assertEquals('Europe/Amsterdam', $dt->getTimeZone()->getName());
+        $this->assertEquals(Sabre_VObject_Element_DateTime::LOCALTZ, $elem->getDateType());
+
+    }
+
 }
 
 ?>

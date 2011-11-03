@@ -34,6 +34,7 @@ class Sabre_VObject_Reader {
         'DUE'           => 'Sabre_VObject_Element_DateTime',
         'EXDATE'        => 'Sabre_VObject_Element_MultiDateTime',
         'LAST-MODIFIED' => 'Sabre_VObject_Element_DateTime',
+    	'RECURRENCE-ID' => 'Sabre_VObject_Element_DateTime',
         'TRIGGER'       => 'Sabre_VObject_Element_DateTime',
     );
 

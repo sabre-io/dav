@@ -176,7 +176,7 @@ class Sabre_VObject_FreeBusyGenerator {
                                 $duration = Sabre_VObject_DateTimeParser::parseDuration((string)$component->DURATION);
                                 $endTime = clone $startTime;
                                 $endTime->add($duration);
-                            } elseif ($component->DTSTART->getDateType() === Sabre_VObject_Element_DateTime::DATE) {
+                            } elseif ($component->DTSTART->getDateType() === Sabre_VObject_Property_DateTime::DATE) {
                                 $endTime = clone $startTime;
                                 $endTime->modify('+1 day');
                             } else {
@@ -259,17 +259,17 @@ class Sabre_VObject_FreeBusyGenerator {
         $calendar->add($vfreebusy);
 
         if ($this->start) {
-            $dtstart = new Sabre_VObject_Element_DateTime('DTSTART');
-            $dtstart->setDateTime($this->start,Sabre_VObject_Element_DateTime::UTC);
+            $dtstart = new Sabre_VObject_Property_DateTime('DTSTART');
+            $dtstart->setDateTime($this->start,Sabre_VObject_Property_DateTime::UTC);
             $vfreebusy->add($dtstart);
         }
         if ($this->end) {
-            $dtend = new Sabre_VObject_Element_DateTime('DTEND');
-            $dtend->setDateTime($this->start,Sabre_VObject_Element_DateTime::UTC);
+            $dtend = new Sabre_VObject_Property_DateTime('DTEND');
+            $dtend->setDateTime($this->start,Sabre_VObject_Property_DateTime::UTC);
             $vfreebusy->add($dtend);
         }
-        $dtstamp = new Sabre_VObject_Element_DateTime('DTSTAMP');
-        $dtstamp->setDateTime(new DateTime('now'), Sabre_VObject_Element_DateTime::UTC);
+        $dtstamp = new Sabre_VObject_Property_DateTime('DTSTAMP');
+        $dtstamp->setDateTime(new DateTime('now'), Sabre_VObject_Property_DateTime::UTC);
         $vfreebusy->add($dtstamp);
 
         foreach($busyTimes as $busyTime) {

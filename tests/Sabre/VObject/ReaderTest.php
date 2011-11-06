@@ -77,7 +77,7 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
         $data = "DTSTART:20110529";
         $result = Sabre_VObject_Reader::read($data);
 
-        $this->assertInstanceOf('Sabre_VObject_Element_DateTime', $result);
+        $this->assertInstanceOf('Sabre_VObject_Property_DateTime', $result);
         $this->assertEquals('DTSTART', $result->name);
         $this->assertEquals('20110529', $result->value);
 

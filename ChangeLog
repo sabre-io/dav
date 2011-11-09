@@ -39,6 +39,7 @@
 	* Fixed: Issue 97: Correctly handling RRULE for the calendar-query REPORT.
 	* Fixed: Issue 154: Encoding of VObject parameters with no value was
 	  incorrect.
+	* Added: Support for {DAV:}acl-restrictions property from RFC3744
 
 1.5.4-stable (2011-??-??)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

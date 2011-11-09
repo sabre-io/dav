@@ -205,6 +205,49 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testACLRestrictions() {
+
+        $plugin = new Sabre_DAVACL_Plugin();
+
+        $nodes = array(
+            new Sabre_DAVACL_MockACLNode('foo', array(
+                array(
+                    'principal' => 'principals/admin',
+                    'privilege' => '{DAV:}read',
+                )
+            )),
+            new Sabre_DAV_SimpleDirectory('principals', array(
+                $principal = new Sabre_DAVACL_MockPrincipal('admin','principals/admin'),
+            )),
+            
+        );
+
+        $server = new Sabre_DAV_Server($nodes);
+        $server->addPlugin($plugin);
+        $authPlugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $server->addPlugin($authPlugin);
+
+        // Force login
+        $authPlugin->beforeMethod('BLA','foo');
+
+        $requestedProperties = array(
+            '{DAV:}acl-restrictions',
+        );
+
+        $returnedProperties = array(
+            200 => array(),
+            404 => array(),
+        );
+
+
+        $this->assertNull($plugin->beforeGetProperties('foo', $nodes[0], $requestedProperties, $returnedProperties));
+
+        $this->assertEquals(1,count($returnedProperties[200]),'The {DAV:}acl-restrictions property did not return from the list. Full list: ' . print_r($returnedProperties,true));
+        $this->assertArrayHasKey('{DAV:}acl-restrictions',$returnedProperties[200]);
+        $this->assertInstanceOf('Sabre_DAVACL_Property_ACLRestrictions', $returnedProperties[200]['{DAV:}acl-restrictions']);
+
+    }
+
     function testAlternateUriSet() {
 
         $tree = array(

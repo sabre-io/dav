@@ -866,6 +866,14 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
+        /* The acl-restrictions property contains information on how privileges 
+         * must behave. 
+         */
+        if (false !== ($index = array_search('{DAV:}acl-restrictions', $requestedProperties))) {
+            unset($requestedProperties[$index]);
+            $returnedProperties[200]['{DAV:}acl-restrictions'] = new Sabre_DAVACL_Property_AclRestrictions();
+        }
+
     }
 
     /**

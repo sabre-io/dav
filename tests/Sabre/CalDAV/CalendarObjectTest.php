@@ -18,7 +18,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend;
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1,count($calendars));
+        $this->assertEquals(2,count($calendars));
         $this->calendar = new Sabre_CalDAV_Calendar($this->principalBackend,$this->backend, $calendars[0]);
 
     }

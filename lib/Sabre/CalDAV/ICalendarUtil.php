@@ -45,7 +45,7 @@ class Sabre_CalDAV_ICalendarUtil {
         }
         $component = $componentsFound[0];
 
-        if (is_null($allowedComponents)) return true;
+        if (!$allowedComponents) return true;
 
         // Check if the component is allowed
         $name = $component->getName();

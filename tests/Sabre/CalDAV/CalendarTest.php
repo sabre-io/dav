@@ -17,7 +17,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         
         $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1, count($this->calendars));
+        $this->assertEquals(2, count($this->calendars));
         $this->calendar = new Sabre_CalDAV_Calendar($this->principalBackend, $this->backend, $this->calendars[0]);
 
 
@@ -146,6 +146,19 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $file = $this->calendar->getChild('hello');
         $this->assertTrue($file instanceof Sabre_CalDAV_CalendarObject);
 
+    }
+
+    function testCreateFileNoSupportedComponents() {
+
+        $file = fopen('php://memory','r+');
+        fwrite($file,Sabre_CalDAV_TestUtil::getTestCalendarData());
+        rewind($file);
+
+        $calendar = new Sabre_CalDAV_Calendar($this->principalBackend, $this->backend, $this->calendars[1]);
+        $calendar->createFile('hello',$file);
+
+        $file = $calendar->getChild('hello');
+        $this->assertTrue($file instanceof Sabre_CalDAV_CalendarObject);
 
     }
 
@@ -154,7 +167,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $this->calendar->delete();
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(0, count($calendars));
+        $this->assertEquals(1, count($calendars));
     }
 
     function testGetOwner() {

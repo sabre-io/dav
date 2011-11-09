@@ -295,7 +295,7 @@ END:VCALENDAR';
         $this->assertEquals('HTTP/1.1 201 Created', $this->response->status,'Invalid response code received. Full response body: ' .$this->response->body);
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(2, count($calendars));
+        $this->assertEquals(3, count($calendars));
 
         $newCalendar = null;
         foreach($calendars as $calendar) {
@@ -344,7 +344,7 @@ END:VCALENDAR';
         $this->assertEquals('HTTP/1.1 201 Created', $this->response->status,'Invalid response code received. Full response body: ' .$this->response->body);
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(2, count($calendars));
+        $this->assertEquals(3, count($calendars));
 
         $newCalendar = null;
         foreach($calendars as $calendar) {
@@ -681,7 +681,7 @@ END:VCALENDAR';
         $this->assertFalse($r);
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(2, count($calendars));
+        $this->assertEquals(3, count($calendars));
 
         $newCalendar = null;
         foreach($calendars as $calendar) {

@@ -97,7 +97,10 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $calendars = array();
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
-            $components = explode(',',$row['components']);
+            $components = array();
+            if ($row['components']) {
+                $components = explode(',',$row['components']);
+            }
 
             $calendar = array(
                 'id' => $row['id'],

@@ -104,6 +104,15 @@ class Sabre_CalDAV_CalendarQueryParser {
             $compFilter['prop-filters'] = $this->parsePropFilters($compFilterNode);
             $compFilter['time-range'] = $this->parseTimeRange($compFilterNode);
 
+            if ($compFilter['time-range'] && !in_array($compFilter['name'],array(
+                'VEVENT',
+                'VTODO',
+                'VJOURNAL',
+                'VFREEBUSY',
+            ))) {
+                throw new Sabre_DAV_Exception_BadRequest('The time-range filter is not defined for the ' . $compFilter['name'] . ' component');
+            }; 
+
             $result[] = $compFilter;
 
         }

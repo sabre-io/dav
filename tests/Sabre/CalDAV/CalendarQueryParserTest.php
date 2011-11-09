@@ -103,6 +103,22 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testCompTimeRangeOnVCALENDAR() {
+
+        $xml = array(
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR">',
+            '     <c:time-range start="20110101T000000Z" end="20111231T235959Z" />',
+            '  </c:comp-filter>',
+            '</c:filter>'
+        );
+        $result = $this->parse($xml);
+
+    }
+
     function testCompTimeRange() {
 
         $xml = array(

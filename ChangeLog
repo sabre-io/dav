@@ -1,3 +1,6 @@
+1.5.5-stable (2011-??-??)
+	* Fixed: CalDAV time-range filter workaround for recurring events.
+
 1.5.4-stable (2011-10-28)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.
 	* Fixed: DATE-TIME encoding was wrong in VObject. (we used 'DATETIME').

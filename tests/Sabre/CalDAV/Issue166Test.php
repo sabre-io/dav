@@ -31,18 +31,27 @@ END:VEVENT
 END:VCALENDAR
 HI;
 
-        $plugin = new Sabre_CalDAV_Plugin();
+        $validator = new Sabre_CalDAV_CalendarQueryValidator();
 
         $filters = array(
-            '/c:iCalendar/c:vcalendar' => array(),
-            '/c:iCalendar/c:vcalendar/c:vevent' => array(
-                'time-range' => array(
-                    'start' => new DateTime('2011-12-01'),
-                    'end'   => new DateTime('2012-02-01'),
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => array( 
+                        'start' => new DateTime('2011-12-01'),
+                        'end'   => new DateTime('2012-02-01'),
+                    ),
                 ),
             ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
         );
-        $this->assertTrue($plugin->validateFilters($input,$filters));
+        $this->assertTrue($validator->validate($input,$filters));
 
     }
 

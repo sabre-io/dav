@@ -114,13 +114,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
-        if ($node instanceof Sabre_CalDAV_Calendar || $node instanceof Sabre_CalDAV_CalendarObject) {
-            return array(
-                 '{' . self::NS_CALDAV . '}calendar-multiget',
-                 '{' . self::NS_CALDAV . '}calendar-query',
-            );
+
+        $reports = array();
+        if ($node instanceof Sabre_CalDAV_ICalendar || $node instanceof Sabre_CalDAV_ICalendarObject) {
+            $reports[] = '{' . self::NS_CALDAV . '}calendar-multiget';
+            $reports[] = '{' . self::NS_CALDAV . '}calendar-query';
         }
-        return array();
+        if ($node instanceof Sabre_CalDAV_ICalendar) {
+            $reports[] = '{' . self::NS_CALDAV . '}free-busy-query';
+        }
+        return $reports; 
 
     }
 
@@ -137,13 +140,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
         $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
+        $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
+        $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
 
         $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre_CalDAV_Property_SupportedCalendarComponentSet';
 
-        $server->resourceTypeMapping['Sabre_CalDAV_Calendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
+        $server->resourceTypeMapping['Sabre_CalDAV_ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
 
@@ -202,6 +207,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 return false;
             case '{'.self::NS_CALDAV.'}calendar-query' :
                 $this->calendarQueryReport($dom);
+                return false;
+            case '{'.self::NS_CALDAV.'}free-busy-query' :
+                $this->freeBusyQueryReport($dom);
                 return false;
 
         }
@@ -326,7 +334,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         } // instanceof IPrincipal
 
 
-        if ($node instanceof Sabre_CalDAV_CalendarObject) {
+        if ($node instanceof Sabre_CalDAV_ICalendarObject) {
             // The calendar-data property is not supposed to be a 'real' 
             // property, but in large chunks of the spec it does act as such. 
             // Therefore we simply expose it as a property.
@@ -383,17 +391,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function calendarQueryReport($dom) {
 
-        $requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
-
-        $filterNode = $dom->getElementsByTagNameNS('urn:ietf:params:xml:ns:caldav','filter');
-        if ($filterNode->length!==1) {
-            throw new Sabre_DAV_Exception_BadRequest('The calendar-query report must have a filter element');
-        }
-        $filters = Sabre_CalDAV_XMLUtil::parseCalendarQueryFilters($filterNode->item(0));
+        $parser = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $parser->parse();
 
         $requestedCalendarData = true;
+        $requestedProperties = $parser->requestedProperties;
 
         if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar-data', $requestedProperties)) {
+
             // We always retrieve calendar-data, as we need it for filtering.
             $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
 
@@ -403,16 +408,23 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         // These are the list of nodes that potentially match the requirement
-        $candidateNodes = $this->server->getPropertiesForPath($this->server->getRequestUri(),$requestedProperties,$this->server->getHTTPDepth(0));
+        $candidateNodes = $this->server->getPropertiesForPath(
+            $this->server->getRequestUri(),
+            $requestedProperties,
+            $this->server->getHTTPDepth(0)
+        );
 
         $verifiedNodes = array();
+
+        $validator = new Sabre_CalDAV_CalendarQueryValidator();
 
         foreach($candidateNodes as $node) {
 
             // If the node didn't have a calendar-data property, it must not be a calendar object
-            if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) continue;
+            if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) 
+                continue;
 
-            if ($this->validateFilters($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'],$filters)) {
+            if ($validator->validate($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'],$parser->filters)) {
                 
                 if (!$requestedCalendarData) {
                     unset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
@@ -428,360 +440,120 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-
     /**
-     * Verify if a list of filters applies to the calendar data object 
+     * This method is responsible for parsing the request and generating the
+     * response for the CALDAV:free-busy-query REPORT.
      *
-     * The calendarData object must be a valid iCalendar blob. The list of 
-     * filters must be formatted as parsed by Sabre_CalDAV_Plugin::parseCalendarQueryFilters
-     *
-     * @param string $calendarData 
-     * @param array $filters 
-     * @return bool 
-     */
-    public function validateFilters($calendarData,$filters) {
-
-        // We are converting the calendar object to an XML structure
-        // This makes it far easier to parse
-        $xCalendarData = Sabre_CalDAV_ICalendarUtil::toXCal($calendarData);
-        $xml = simplexml_load_string($xCalendarData);
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:xcal');
-
-        foreach($filters as $xpath=>$filter) {
-
-            // if-not-defined comes first
-            if (isset($filter['is-not-defined'])) {
-                if (!$xml->xpath($xpath))
-                    continue;
-                else
-                    return false;
-                
-            }
-
-            $elem = $xml->xpath($xpath);
-            
-            if (!$elem) return false;
-            $elem = $elem[0];
-
-            if (isset($filter['time-range'])) {
-
-                switch($elem->getName()) {
-                    case 'vevent' :
-                        $result = $this->validateTimeRangeFilterForEvent($xml,$xpath,$filter);
-                        if ($result===false) return false;
-                        break;
-                    case 'vtodo' :
-                        $result = $this->validateTimeRangeFilterForTodo($xml,$xpath,$filter);
-                        if ($result===false) return false;
-                        break;
-                    case 'vjournal' :
-                    case 'vfreebusy' :
-                    case 'valarm' :
-                        // TODO: not implemented
-                        break;
-
-                    /*
-
-                    case 'vjournal' :
-                        $result = $this->validateTimeRangeFilterForJournal($xml,$xpath,$filter);
-                        if ($result===false) return false;
-                        break;
-                    case 'vfreebusy' :
-                        $result = $this->validateTimeRangeFilterForFreeBusy($xml,$xpath,$filter);
-                        if ($result===false) return false;
-                        break;
-                    case 'valarm' :
-                        $result = $this->validateTimeRangeFilterForAlarm($xml,$xpath,$filter);
-                        if ($result===false) return false;
-                        break;
-
-                        */
-
-                }
-
-            } 
-
-            if (isset($filter['text-match'])) {
-                $currentString = (string)$elem;
-
-                $isMatching = Sabre_DAV_StringUtil::textMatch($currentString, $filter['text-match']['value'], $filter['text-match']['collation']);
-                if ($filter['text-match']['negate-condition'] && $isMatching) return false;
-                if (!$filter['text-match']['negate-condition'] && !$isMatching) return false;
-                
-            }
-
-        }
-        return true;
-        
-    }
-
-    /**
-     * Checks whether a time-range filter matches an event.
-     * 
-     * @param SimpleXMLElement $xml Event as xml object 
-     * @param string $currentXPath XPath to check 
-     * @param array $currentFilter Filter information 
+     * @param DOMNode $dom
      * @return void
      */
-    private function validateTimeRangeFilterForEvent(SimpleXMLElement $xml,$currentXPath,array $currentFilter) {
+    protected function freeBusyQueryReport(DOMNode $dom) {
 
-        // Grabbing the DTSTART property
-        $xdtstart = $xml->xpath($currentXPath.'/c:dtstart');
-        if (!count($xdtstart)) {
-            throw new Sabre_DAV_Exception_BadRequest('DTSTART property missing from calendar object');
-        }
+        $start = null;
+        $end = null;
 
-        // The dtstart can be both a date, or datetime property
-        if ((string)$xdtstart[0]['value']==='DATE' || strlen((string)$xdtstart[0])===8) {
-            $isDateTime = false;
-        } else {
-            $isDateTime = true;
-        }
+        foreach($dom->firstChild->childNodes as $childNode) {
 
-        // Determining the timezone
-        if ($tzid = (string)$xdtstart[0]['tzid']) {
-            $tz = new DateTimeZone($tzid);
-        } else {
-            $tz = null;
-        }
-        if ($isDateTime) {
-            $dtstart = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdtstart[0],$tz);
-        } else {
-            $dtstart = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdtstart[0]);
-        }
-
-
-        // Grabbing the DTEND property
-        $xdtend = $xml->xpath($currentXPath.'/c:dtend');
-        $dtend = null;
-
-        if (count($xdtend)) {
-            // Determining the timezone
-            if ($tzid = (string)$xdtend[0]['tzid']) {
-                $tz = new DateTimeZone($tzid);
-            } else {
-                $tz = null;
+            $clark = Sabre_DAV_XMLUtil::toClarkNotation($childNode);
+            if ($clark == '{' . self::NS_CALDAV . '}time-range') {
+                $start = $childNode->getAttribute('start');
+                $end = $childNode->getAttribute('end');
+                break;
             }
 
-            // Since the VALUE prameter of both DTSTART and DTEND must be the same
-            // we can assume we don't need to check the VALUE paramter of DTEND.
-            if ($isDateTime) {
-                $dtend = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdtend[0],$tz);
-            } else {
-                $dtend = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdtend[0],$tz);
-            }
-
-        } 
-        
-        if (is_null($dtend)) {
-            // The DTEND property was not found. We will first see if the event has a duration
-            // property
-
-            $xduration = $xml->xpath($currentXPath.'/c:duration');
-            if (count($xduration)) {
-                $duration = Sabre_CalDAV_XMLUtil::parseICalendarDuration((string)$xduration[0]);
-
-                // Making sure that the duration is bigger than 0 seconds.
-                $tempDT = clone $dtstart;
-                $tempDT->modify($duration);
-                if ($tempDT > $dtstart) {
-
-                    // use DTEND = DTSTART + DURATION 
-                    $dtend = $tempDT;
-                } else {
-                    // use DTEND = DTSTART
-                    $dtend = $dtstart;
-                }
-
-            }
+        }
+        if ($start) {
+            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
+        }
+        if ($end) {
+            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
         }
 
-        if (is_null($dtend)) {
-            if ($isDateTime) {
-                // DTEND = DTSTART
-                $dtend = $dtstart;
-            } else {
-                // DTEND = DTSTART + 1 DAY
-                $dtend = clone $dtstart;
-                $dtend->modify('+1 day');
-            }
+        if (!$start && !$end) {
+            throw new Sabre_DAV_Exception_BadRequest('The freebusy report must have a time-range filter');
         }
-        // TODO: we need to properly parse RRULE's, but it's very difficult.
-        // For now, we're always returning events if they have an RRULE at all.
-        $rrule = $xml->xpath($currentXPath.'/c:rrule');
-        $hasRrule = (count($rrule))>0; 
-       
-        if (!is_null($currentFilter['time-range']['start']) && $currentFilter['time-range']['start'] >= $dtend)  return false;
-        if (!is_null($currentFilter['time-range']['end'])   && $currentFilter['time-range']['end']   <= $dtstart && !$hasRrule) return false;
-        return true;
-    
+        $acl = $this->server->getPlugin('acl');
+
+        if (!$acl) {
+            throw new Sabre_DAV_Exception('The ACL plugin must be loaded for free-busy queries to work');
+        }
+        $uri = $this->server->getRequestUri();
+        $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
+
+        $calendar = $this->server->tree->getNodeForPath($uri);
+        if (!$calendar instanceof Sabre_CalDAV_ICalendar) {
+            throw new Sabre_DAV_Exception_NotImplemented('The free-busy-query REPORT is only implemented on calendars');
+        }
+
+        $objects = array_map(function($child) {
+            $obj = $child->get();
+            if (is_resource($obj)) {
+                $obj = stream_get_contents($obj);
+            }
+            return $obj;
+        }, $calendar->getChildren());
+
+        $generator = new Sabre_VObject_FreeBusyGenerator();
+        $generator->setObjects($objects);
+        $generator->setTimeRange($start, $end);
+        $result = $generator->getResult();
+        $result = $result->serialize();
+
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setHeader('Content-Type', 'text/calendar');
+        $this->server->httpResponse->setHeader('Content-Length', strlen($result));
+        $this->server->httpResponse->sendBody($result);
+
     }
 
-    private function validateTimeRangeFilterForTodo(SimpleXMLElement $xml,$currentXPath,array $filter) {
 
-        // Gathering all relevant elements
+    /**
+     * This method is used to generate HTML output for the 
+     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users 
+     * can use to create new calendars.
+     * 
+     * @param Sabre_DAV_INode $node
+     * @param string $output 
+     * @return bool 
+     */
+    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
 
-        $dtStart = null;
-        $duration = null;
-        $due = null;
-        $completed = null;
-        $created = null;
+        if (!$node instanceof Sabre_CalDAV_UserCalendars)
+            return;
 
-        $xdt = $xml->xpath($currentXPath.'/c:dtstart');
-        if (count($xdt)) {
-            // The dtstart can be both a date, or datetime property
-            if ((string)$xdt[0]['value']==='DATE') {
-                $isDateTime = false;
-            } else {
-                $isDateTime = true;
-            }
+        $output.= '<tr><td><form method="post" action="">
+            <h3>Create new calendar</h3>
+            <input type="hidden" name="sabreAction" value="mkcalendar" />
+            <label>Name (uri):</label> <input type="text" name="name" /><br />
+            <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
+            <input type="submit" value="create" />
+            </form>
+            </td></tr>';
 
-            // Determining the timezone
-            if ($tzid = (string)$xdt[0]['tzid']) {
-                $tz = new DateTimeZone($tzid);
-            } else {
-                $tz = null;
-            }
-            if ($isDateTime) {
-                $dtStart = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0],$tz);
-            } else {
-                $dtStart = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdt[0]);
-            }
-        }
+        return false;
 
-        // Only need to grab duration if dtStart is set
-        if (!is_null($dtStart)) {
+    }
 
-            $xduration = $xml->xpath($currentXPath.'/c:duration');
-            if (count($xduration)) {
-                $duration = Sabre_CalDAV_XMLUtil::parseICalendarDuration((string)$xduration[0]);
-            }
+    /**
+     * This method allows us to intercept the 'mkcalendar' sabreAction. This 
+     * action enables the user to create new calendars from the browser plugin.
+     * 
+     * @param Sabre_DAV_INode $node
+     * @param string $output 
+     * @return bool 
+     */
+    public function browserPostAction($uri, $action, array $postVars) {
 
-        }
+        if ($action!=='mkcalendar')
+            return;
 
-        if (!is_null($dtStart) && !is_null($duration)) {
-
-            // Comparision from RFC 4791:
-            // (start <= DTSTART+DURATION) AND ((end > DTSTART) OR (end >= DTSTART+DURATION))
-
-            $end = clone $dtStart;
-            $end->modify($duration);
-
-            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $end) &&
-                (is_null($filter['time-range']['end']) || $filter['time-range']['end'] > $dtStart || $filter['time-range']['end'] >= $end) ) {
-                return true;
-            } else {
-                return false;
-            }
-
-        }
-
-        // Need to grab the DUE property
-        $xdt = $xml->xpath($currentXPath.'/c:due');
-        if (count($xdt)) {
-            // The due property can be both a date, or datetime property
-            if ((string)$xdt[0]['value']==='DATE') {
-                $isDateTime = false;
-            } else {
-                $isDateTime = true;
-            }
-            // Determining the timezone
-            if ($tzid = (string)$xdt[0]['tzid']) {
-                $tz = new DateTimeZone($tzid);
-            } else {
-                $tz = null;
-            }
-            if ($isDateTime) {
-                $due = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0],$tz);
-            } else {
-                $due = Sabre_CalDAV_XMLUtil::parseICalendarDate((string)$xdt[0]);
-            }
-        }
-
-        if (!is_null($dtStart) && !is_null($due)) {
-
-            // Comparision from RFC 4791:
-            // ((start < DUE) OR (start <= DTSTART)) AND ((end > DTSTART) OR (end >= DUE))
-            
-            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] < $due || $filter['time-range']['start'] < $dtstart) &&
-                (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $due) ) {
-                return true;
-            } else {
-                return false;
-            }
-
-        }
-
-        if (!is_null($dtStart)) {
-            
-            // Comparision from RFC 4791
-            // (start <= DTSTART)  AND (end > DTSTART)
-            if ( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $dtStart) &&
-                 (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] > $dtStart) ) {
-                 return true;
-            } else {
-                return false;
-            }
-
-        }
-
-        if (!is_null($due)) {
-            
-            // Comparison from RFC 4791
-            // (start < DUE) AND (end >= DUE)
-            if ( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] < $due) &&
-                 (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $due) ) {
-                 return true;
-            } else {
-                return false;
-            }
-
-        }
-        // Need to grab the COMPLETED property
-        $xdt = $xml->xpath($currentXPath.'/c:completed');
-        if (count($xdt)) {
-            $completed = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0]);
-        }
-        // Need to grab the CREATED property
-        $xdt = $xml->xpath($currentXPath.'/c:created');
-        if (count($xdt)) {
-            $created = Sabre_CalDAV_XMLUtil::parseICalendarDateTime((string)$xdt[0]);
-        }
-
-        if (!is_null($completed) && !is_null($created)) {
-            // Comparison from RFC 4791
-            // ((start <= CREATED) OR (start <= COMPLETED)) AND ((end >= CREATED) OR (end >= COMPLETED))
-            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $created || $filter['time-range']['start'] <= $completed) &&
-                (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $created   || $filter['time-range']['end'] >= $completed)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (!is_null($completed)) {
-            // Comparison from RFC 4791
-            // (start <= COMPLETED) AND (end  >= COMPLETED)
-            if( (is_null($filter['time-range']['start']) || $filter['time-range']['start'] <= $completed) &&
-                (is_null($filter['time-range']['end'])   || $filter['time-range']['end'] >= $completed)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (!is_null($created)) {
-            // Comparison from RFC 4791
-            // (end > CREATED)
-            if( (is_null($filter['time-range']['end']) || $filter['time-range']['end'] > $created) ) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        // Everything else is TRUE
-        return true;
+        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
+        $properties = array();
+        if (isset($postVars['{DAV:}displayname'])) {
+            $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
+        } 
+        $this->server->createCollection($uri . '/' . $postVars['name'],$resourceType,$properties);
+        return false;
 
     }
 

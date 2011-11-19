@@ -310,6 +310,22 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2,count($r));
     }
 
+    function testGetComponents() {
+
+        $comp = new Sabre_VObject_Component('VCALENDAR');
+
+        // Note that 'myProp' is ignored here.
+        $comp->children = array(
+            new Sabre_VObject_Property('FOO','BAR'),
+            new Sabre_VObject_Component('VTODO')
+        );
+
+        $r = $comp->getComponents();
+        $this->assertInternalType('array', $r);
+        $this->assertEquals(1, count($r));
+        $this->assertEquals('VTODO', $r[0]->name);
+    }
+
     function testSerialize() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');

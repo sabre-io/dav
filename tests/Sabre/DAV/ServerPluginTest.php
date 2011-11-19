@@ -48,7 +48,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
             'X-Sabre-Version' => Sabre_DAV_Version::VERSION,
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$this->response->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('OPTIONS',$this->testPlugin->beforeMethod);
 

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * HTTP utility methods 
- * 
+ * HTTP utility methods
+ *
  * @package Sabre
  * @subpackage HTTP
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
@@ -16,9 +16,9 @@ class Sabre_HTTP_Util {
      * Parses a RFC2616-compatible date string
      *
      * This method returns false if the date is invalid
-     * 
-     * @param string $dateHeader 
-     * @return bool|DateTime 
+     *
+     * @param string $dateHeader
+     * @return bool|DateTime
      */
     static function parseHTTPDate($dateHeader) {
 
@@ -42,7 +42,7 @@ class Sabre_HTTP_Util {
         $rfc1123_date = $wkday . ', ' . $date1 . ' ' . $time . ' GMT';
         //allowed date formats by RFC 2616
         $HTTP_date = "($rfc1123_date|$rfc850_date|$asctime_date)";
-        
+       
         //allow for space around the string and strip it
         $dateHeader = trim($dateHeader, ' ');
         if (!preg_match('/^' . $HTTP_date . '$/', $dateHeader))
@@ -57,8 +57,6 @@ class Sabre_HTTP_Util {
         //strtotime can return -1 or false in case of error
         if ($realDate !== false && $realDate >= 0)
             return new DateTime('@' . $realDate, new DateTimeZone('UTC'));
-
-        return false;
 
     }
 

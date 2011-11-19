@@ -30,11 +30,11 @@ if (!is_dir('build/' . $packageName)) {
 $dependencies = array(
     array(
         'type' => 'php',
-        'min'  => '5.2.1',
+        'min'  => '5.3.1',
     ),
     array(
         'type' => 'pearinstaller',
-        'min'  => '1.8',
+        'min'  => '1.9',
     ),
 );
 
@@ -75,7 +75,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.1',
+            'min'  => '1.6.0',
         );
 
         break;
@@ -112,7 +112,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.5.0',
+            'min'  => '1.6.0',
         );
         break;
 
@@ -136,25 +136,25 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.1',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.5.0',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAVACL',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.3',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_VObject',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0',
+            'min'  => '1.3.0',
         );
         break;
 
@@ -174,31 +174,31 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.0.0',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_HTTP',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.1',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAV',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.5.0',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_DAVACL',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.4.3',
+            'min'  => '1.6.0',
         );
         $dependencies[] = array(
             'type' => 'package',
             'name' => 'Sabre_VObject',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.2.0',
+            'min'  => '1.3.0',
         );
         break;
 

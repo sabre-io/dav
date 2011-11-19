@@ -146,6 +146,14 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
        $this->s->setACL(array()); 
 
     }
+
+    function testGetSupportedPrivilegeSet() {
+
+        $this->assertNull(
+            $this->s->getSupportedPrivilegeSet()
+        );
+
+    }
 }
 
 ?>

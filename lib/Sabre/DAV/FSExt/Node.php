@@ -11,72 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_DAV_ILockable, Sabre_DAV_IProperties {
-
-    /**
-     * Returns all the locks on this node
-     * 
-     * @return array 
-     */
-    function getLocks() {
-
-        $resourceData = $this->getResourceData();
-        $locks = $resourceData['locks'];
-        foreach($locks as $k=>$lock) {
-            if (time() > $lock->timeout + $lock->created) unset($locks[$k]); 
-        }
-        return $locks;
-
-    }
-
-    /**
-     * Locks this node 
-     * 
-     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
-     * @return void
-     */
-    function lock(Sabre_DAV_Locks_LockInfo $lockInfo) {
-
-        // We're making the lock timeout 30 minutes
-        $lockInfo->timeout = 1800;
-        $lockInfo->created = time();
-
-        $resourceData = $this->getResourceData();
-        if (!isset($resourceData['locks'])) $resourceData['locks'] = array();
-        $current = null;
-        foreach($resourceData['locks'] as $k=>$lock) {
-            if ($lock->token === $lockInfo->token) $current = $k;
-        }
-        if (!is_null($current)) $resourceData['locks'][$current] = $lockInfo;
-        else $resourceData['locks'][] = $lockInfo;
-
-        $this->putResourceData($resourceData);
-
-    }
-
-    /**
-     * Removes a lock from this node
-     * 
-     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
-     * @return bool 
-     */
-    function unlock(Sabre_DAV_Locks_LockInfo $lockInfo) {
-
-        //throw new Sabre_DAV_Exception('bla');
-        $resourceData = $this->getResourceData();
-        foreach($resourceData['locks'] as $k=>$lock) {
-
-            if ($lock->token === $lockInfo->token) {
-
-                unset($resourceData['locks'][$k]);
-                $this->putResourceData($resourceData);
-                return true;
-
-            }
-        }
-        return false;
-
-    }
+abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_DAV_IProperties {
 
     /**
      * Updates properties on this node,

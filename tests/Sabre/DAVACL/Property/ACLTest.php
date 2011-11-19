@@ -82,6 +82,76 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testSerializeSpecialPrincipals() {
+
+        $dom = new DOMDocument('1.0');
+        $root = $dom->createElementNS('DAV:','d:root');
+        
+        $dom->appendChild($root);
+
+        $privileges = array(
+            array(
+                'principal' => '{DAV:}authenticated',
+                'privilege' => '{DAV:}write',
+                'uri'       => 'articles',
+            ),
+            array(
+                'principal' => '{DAV:}unauthenticated',
+                'privilege' => '{DAV:}write',
+                'uri'       => 'articles',
+            ),
+            array(
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}write',
+                'uri'       => 'articles',
+            ),
+
+        );
+
+        $acl = new Sabre_DAVACL_Property_Acl($privileges);
+        $acl->serialize(new Sabre_DAV_Server(), $root);
+
+        $dom->formatOutput = true;
+
+        $xml = $dom->saveXML();
+        $expected = '<?xml version="1.0"?>
+<d:root xmlns:d="DAV:">
+  <d:ace>
+    <d:principal>
+      <d:authenticated/>
+    </d:principal>
+    <d:grant>
+      <d:privilege>
+        <d:write/>
+      </d:privilege>
+    </d:grant>
+  </d:ace>
+  <d:ace>
+    <d:principal>
+      <d:unauthenticated/>
+    </d:principal>
+    <d:grant>
+      <d:privilege>
+        <d:write/>
+      </d:privilege>
+    </d:grant>
+  </d:ace>
+  <d:ace>
+    <d:principal>
+      <d:all/>
+    </d:principal>
+    <d:grant>
+      <d:privilege>
+        <d:write/>
+      </d:privilege>
+    </d:grant>
+  </d:ace>
+</d:root>
+';
+        $this->assertEquals($expected, $xml);
+
+    }
+
     function testUnserialize() {
 
         $source = '<?xml version="1.0"?>
@@ -155,10 +225,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException Sabre_DAV_Exception_NotImplemented
-     */
-    function testUnserializeUnsupportedPrincipal() {
+    function testUnserializeOtherPrincipal() {
 
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
@@ -170,11 +237,50 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
     </d:grant>
     <d:principal><d:authenticated /></d:principal>  
   </d:ace>
+  <d:ace>
+    <d:grant>
+      <d:privilege>
+        <d:write/>
+      </d:privilege>
+    </d:grant>
+    <d:principal><d:unauthenticated /></d:principal>  
+  </d:ace>
+  <d:ace>
+    <d:grant>
+      <d:privilege>
+        <d:write/>
+      </d:privilege>
+    </d:grant>
+    <d:principal><d:all /></d:principal>  
+  </d:ace>
 </d:root>
 ';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+        $result = Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+
+        $this->assertInstanceOf('Sabre_DAVACL_Property_Acl', $result);
+
+        $expected = array(
+            array(
+                'principal' => '{DAV:}authenticated',
+                'protected' => false,
+                'privilege' => '{DAV:}write',
+            ),
+            array(
+                'principal' => '{DAV:}unauthenticated',
+                'protected' => false,
+                'privilege' => '{DAV:}write',
+            ),
+            array(
+                'principal' => '{DAV:}all',
+                'protected' => false,
+                'privilege' => '{DAV:}write',
+            ),
+        );
+
+        $this->assertEquals($expected, $result->getPrivileges());
+
 
     }
 

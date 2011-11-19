@@ -118,4 +118,38 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
 
     }
 
+    /**
+     * This method is used to search for principals matching a set of 
+     * properties.
+     *
+     * This search is specifically used by RFC3744's principal-property-search 
+     * REPORT. You should at least allow searching on 
+     * http://sabredav.org/ns}email-address.
+     *
+     * The actual search should be a unicode-non-case-sensitive search. The 
+     * keys in searchProperties are the WebDAV property names, while the values 
+     * are the property values to search on.
+     *
+     * If multiple properties are being searched on, the search should be 
+     * AND'ed. 
+     * 
+     * This method should simply return a list of 'child names', which may be 
+     * used to call $this->getChild in the future.
+     *
+     * @param array $searchProperties 
+     * @return array 
+     */
+    public function searchPrincipals(array $searchProperties) {
+
+        $result = $this->principalBackend->searchPrincipals($this->principalPrefix, $searchProperties);
+        $r = array();
+
+        foreach($result as $row) {
+            list(, $r[]) = Sabre_DAV_URLUtil::splitPath($row);
+        }
+
+        return $r;
+
+    } 
+
 }

@@ -42,4 +42,10 @@ class Sabre_DAVACL_MockACLNode extends Sabre_DAV_Node implements Sabre_DAVACL_IA
 
     }
 
+    function getSupportedPrivilegeSet() {
+
+        return null;
+
+    }
+
 }

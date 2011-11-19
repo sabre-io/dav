@@ -1,14 +1,16 @@
 <?php
 
 /**
- * The Lock manager allows you to handle all file-locks centrally.
+ * This Lock Backend stores all its data in the filesystem in seprate file per 
+ * node.
  *
  * This Lock Manager is now deprecated. It has a bug that allows parent 
  * collections to be deletes when children deeper in the tree are locked. 
  *
- * You are recommended to use either the PDO or the File backend instead.
+ * This also means that using this backend means you will not pass the Neon 
+ * Litmus test.  
  *
- * This Lock Manager stores all its data in the filesystem.
+ * You are recommended to use either the PDO or the File backend instead.
  * 
  * @package Sabre
  * @subpackage DAV

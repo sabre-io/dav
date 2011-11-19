@@ -107,6 +107,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
 
         $xml = '<?xml version="1.0"?>
 <d:principal-property-search xmlns:d="DAV:">
+  <d:apply-to-principal-collection-set />
   <d:property-search>
      <d:prop>
        <d:displayname />
@@ -122,7 +123,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         $serverVars = array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/principals',
+            'REQUEST_URI'    => '/',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -141,13 +142,70 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         
         $check = array(
             '/d:multistatus',
-            '/d:multistatus/d:response' => 1,
-            '/d:multistatus/d:response/d:href' => 1,
-            '/d:multistatus/d:response/d:propstat' => 2,
-            '/d:multistatus/d:response/d:propstat/d:prop' => 2,
-            '/d:multistatus/d:response/d:propstat/d:prop/d:displayname' => 1,
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength' => 1,
-            '/d:multistatus/d:response/d:propstat/d:status' => 2,
+            '/d:multistatus/d:response' => 2,
+            '/d:multistatus/d:response/d:href' => 2,
+            '/d:multistatus/d:response/d:propstat' => 4,
+            '/d:multistatus/d:response/d:propstat/d:prop' => 4,
+            '/d:multistatus/d:response/d:propstat/d:prop/d:displayname' => 2,
+            '/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength' => 2,
+            '/d:multistatus/d:response/d:propstat/d:status' => 4,
+        );
+
+        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml->registerXPathNamespace('d','DAV:');
+        foreach($check as $v1=>$v2) {
+
+            $xpath = is_int($v1)?$v2:$v1;
+
+            $result = $xml->xpath($xpath);
+
+            $count = 1;
+            if (!is_int($v1)) $count = $v2;
+
+            $this->assertEquals($count,count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->body);
+
+        }
+
+    }
+    function testWrongUri() {
+
+        $xml = '<?xml version="1.0"?>
+<d:principal-property-search xmlns:d="DAV:">
+  <d:property-search>
+     <d:prop>
+       <d:displayname />
+     </d:prop>
+     <d:match>user</d:match>
+  </d:property-search>
+  <d:prop>
+    <d:displayname />
+    <d:getcontentlength />
+  </d:prop>
+</d:principal-property-search>';
+
+        $serverVars = array(
+            'REQUEST_METHOD' => 'REPORT',
+            'HTTP_DEPTH'     => '0',
+            'REQUEST_URI'    => '/',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody($xml);
+
+        $server = $this->getServer();
+        $server->httpRequest = $request;
+
+        $server->exec();
+
+        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml; charset=utf-8',
+        ), $server->httpResponse->headers);
+
+        
+        $check = array(
+            '/d:multistatus',
+            '/d:multistatus/d:response' => 0,
         );
 
         $xml = simplexml_load_string($server->httpResponse->body);

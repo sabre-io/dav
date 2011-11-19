@@ -43,7 +43,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse($p->beforeMethod('GET','UUID-123467?export'));
 
-        $this->assertEquals('HTTP/1.1 200 Ok',$s->httpResponse->status);
+        $this->assertEquals('HTTP/1.1 200 OK',$s->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);

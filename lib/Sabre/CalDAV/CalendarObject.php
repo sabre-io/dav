@@ -9,7 +9,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAVACL_IACL {
+class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV_ICalendarObject, Sabre_DAVACL_IACL {
 
     /**
      * Sabre_CalDAV_Backend_Abstract 
@@ -93,11 +93,13 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAVACL
         if (is_resource($calendarData))
             $calendarData = stream_get_contents($calendarData);
 
-        $supportedComponents = $this->calendarInfo['{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set'];
-        if ($supportedComponents) {
-            $supportedComponents = $supportedComponents->getValue();
-        } else {
-            $supportedComponents = null;
+        // Converting to UTF-8, if needed
+        $calendarData = Sabre_DAV_StringUtil::ensureUTF8($calendarData);
+
+        $supportedComponents = null;
+        $sccs = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set';
+        if (isset($this->calendarInfo[$sccs]) && $this->calendarInfo[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet) {
+            $supportedComponents = $this->calendarInfo[$sccs]->getValue();
         }
         Sabre_CalDAV_ICalendarUtil::validateICalendarObject($calendarData, $supportedComponents);
 
@@ -252,6 +254,23 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_DAVACL
 
     }
 
+    /**
+     * Returns the list of supported privileges for this node.
+     *
+     * The returned data structure is a list of nested privileges.
+     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple 
+     * standard structure.
+     *
+     * If null is returned from this method, the default privilege set is used, 
+     * which is fine for most common usecases.
+     *
+     * @return array|null
+     */
+    public function getSupportedPrivilegeSet() {
+
+        return null;
+
+    }
 
 }
 

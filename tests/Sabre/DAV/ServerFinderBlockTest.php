@@ -21,9 +21,7 @@ class Sabre_DAV_ServerFinderBlockTest extends Sabre_DAV_AbstractServer{
 
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
-        $this->assertEquals(array(
-            'Content-Length' => '0',
-        ),$this->response->headers);
+        $this->assertEquals('0', $this->response->headers['Content-Length']);
 
         $this->assertEquals('Testing finder',file_get_contents(SABRE_TEMPDIR . '/testput.txt'));
 

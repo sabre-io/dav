@@ -42,12 +42,12 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals(array(
             '/addressbooks/user1/book1/card1' => array(
                 200 => array(
-                    '{DAV:}getetag' => md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD"),
+                    '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD") . '"',
                 ),
              ),
             '/addressbooks/user1/book1/card2' => array(
                 200 => array(
-                    '{DAV:}getetag' => md5("BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD"),
+                    '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD") . '"',
                 ),
             )
         ), $result);
@@ -92,7 +92,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals(array(
             '/addressbooks/user1/book1/card1' => array(
                 200 => array(
-                    '{DAV:}getetag' => md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD"),
+                    '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD") . '"',
                 ),
              ),
         ), $result);
@@ -176,7 +176,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals(array(
             '/addressbooks/user1/book1/card1' => array(
                 200 => array(
-                    '{DAV:}getetag' => md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD"),
+                    '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD"). '"',
                 ),
              ),
         ), $result);

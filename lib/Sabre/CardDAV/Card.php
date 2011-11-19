@@ -1,18 +1,14 @@
 <?php
 
 /**
- * Card class
+ * The Card object represents a single Card from an addressbook
  * 
  * @package Sabre
  * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
- *
- /
-/**
- * The Card object represents a single Card from an addressbook
- */ 
+ */
 class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, Sabre_DAVACL_IACL {
 
     /**
@@ -88,6 +84,9 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
         if (is_resource($cardData))
             $cardData = stream_get_contents($cardData);
 
+        // Converting to UTF-8, if needed
+        $cardData = Sabre_DAV_StringUtil::ensureUTF8($cardData);
+
         $this->carddavBackend->updateCard($this->addressBookInfo['id'],$this->cardData['uri'],$cardData);
         $this->cardData['carddata'] = $cardData;
 
@@ -122,7 +121,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      */
     public function getETag() {
 
-        return md5($this->cardData['carddata']);
+        return '"' . md5($this->cardData['carddata']) . '"';
 
     }
 
@@ -214,6 +213,24 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
     public function setACL(array $acl) {
 
         throw new Sabre_DAV_Exception_MethodNotAllowed('Changing ACL is not yet supported');
+
+    }
+
+    /**
+     * Returns the list of supported privileges for this node.
+     *
+     * The returned data structure is a list of nested privileges.
+     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple 
+     * standard structure.
+     *
+     * If null is returned from this method, the default privilege set is used, 
+     * which is fine for most common usecases.
+     *
+     * @return array|null
+     */
+    public function getSupportedPrivilegeSet() {
+
+        return null;
 
     }
 

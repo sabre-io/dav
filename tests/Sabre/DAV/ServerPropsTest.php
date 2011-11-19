@@ -18,14 +18,14 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
         mkdir(SABRE_TEMPDIR . '/col');
         file_put_contents(SABRE_TEMPDIR . 'col/test.txt', 'Test contents');
-        $this->server->addPlugin(new Sabre_DAV_Locks_Plugin());
+        $this->server->addPlugin(new Sabre_DAV_Locks_Plugin(new Sabre_DAV_Locks_Backend_File(SABRE_TEMPDIR . '/.locksdb')));
 
     }
 
     function tearDown() {
 
         parent::tearDown();
-        if (file_exists(SABRE_TEMPDIR.'../.sabredav')) unlink(SABRE_TEMPDIR.'../.sabredav');
+        if (file_exists(SABRE_TEMPDIR.'../.locksdb')) unlink(SABRE_TEMPDIR.'../.locksdb');
 
     }
 
@@ -326,7 +326,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1,count($data),'We expected one \'s:status\' element. Response body: ' . $body);
 
-        $this->assertEquals('HTTP/1.1 200 Ok',(string)$data[0]);
+        $this->assertEquals('HTTP/1.1 200 OK',(string)$data[0]);
 
     }
 

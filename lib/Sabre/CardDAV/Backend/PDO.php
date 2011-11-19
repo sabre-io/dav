@@ -2,16 +2,14 @@
 
 /**
  * PDO CardDAV backend
+ *
+ * This CardDAV backend uses PDO to store addressbooks
  * 
  * @package Sabre
  * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
- */
-
-/**
- * This CardDAV backend uses PDO to store addressbooks
  */
 class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
 
@@ -66,7 +64,9 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
                 'principaluri' => $row['principaluri'],
                 '{DAV:}displayname' => $row['displayname'],
                 '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' => $row['description'],
-                '{http://calendarserver.org/ns/}getctag' => $row['ctag'], 
+                '{http://calendarserver.org/ns/}getctag' => $row['ctag'],
+                '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}supported-address-data' => 
+                    new Sabre_CardDAV_Property_SupportedAddressData(),
             );
 
         }

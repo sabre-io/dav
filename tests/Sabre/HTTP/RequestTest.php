@@ -131,7 +131,15 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetPostVars() {
 
+        $post = array(
+            'bla' => 'foo',
+        );
+        $r = new Sabre_HTTP_Request(array(),$post);
+        $this->assertEquals($post, $r->getPostVars('bla'));
+
+    }
 
 
 }

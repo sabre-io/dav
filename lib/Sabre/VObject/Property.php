@@ -128,6 +128,47 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
 
     }
 
+    /**
+     * Adds a new componenten or element
+     *
+     * You can call this method with the following syntaxes:
+     *
+     * add(Sabre_VObject_Parameter $element)
+     * add(string $name, $value)
+     *
+     * The first version adds an Parameter 
+     * The second adds a property as a string. 
+     * 
+     * @param mixed $item 
+     * @param mixed $itemValue 
+     * @return void
+     */
+    public function add($item, $itemValue = null) {
+
+        if ($item instanceof Sabre_VObject_Parameter) {
+            if (!is_null($itemValue)) {
+                throw new InvalidArgumentException('The second argument must not be specified, when passing a VObject');
+            }
+            $item->parent = $this;
+            $this->parameters[] = $item;
+        } elseif(is_string($item)) {
+
+            if (!is_scalar($itemValue) && !is_null($itemValue)) {
+                throw new InvalidArgumentException('The second argument must be scalar');
+            }
+            $parameter = new Sabre_VObject_Parameter($item,$itemValue);
+            $parameter->parent = $this;
+            $this->parameters[] = $parameter;
+
+        } else {
+            
+            throw new InvalidArgumentException('The first argument must either be a Sabre_VObject_Element or a string');
+
+        }
+
+    }
+
+
     /* ArrayAccess interface {{{ */
 
     /**
@@ -193,12 +234,15 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
                 throw new InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
 
             $this->offsetUnset($name);
-            $this->parameters[] = new Sabre_VObject_Parameter($name, $value);
+            $parameter = new Sabre_VObject_Parameter($name, $value);
+            $parameter->parent = $this;
+            $this->parameters[] = $parameter;
 
         } elseif ($value instanceof Sabre_VObject_Parameter) {
             if (!is_null($name))
                 throw new InvalidArgumentException('Don\'t specify a parameter name if you\'re passing a Sabre_VObject_Parameter. Add using $array[]=$parameterObject.');
-            
+
+            $value->parent = $this; 
             $this->parameters[] = $value;
         } else {
             throw new InvalidArgumentException('You can only add parameters to the property object');
@@ -220,6 +264,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
         $result = array();
         foreach($this->parameters as $key=>$parameter) {
             if ($parameter->name == $name) {
+                $parameter->parent = null;
                 unset($this->parameters[$key]);
             }
 

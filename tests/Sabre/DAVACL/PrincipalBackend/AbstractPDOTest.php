@@ -97,4 +97,24 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
 
     }
 
+    function testSearchPrincipals() {
+
+        $pdo = $this->getPDO();
+
+        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+
+        $result = $backend->searchPrincipals('principals', array('{DAV:}blabla' => 'foo'));
+        $this->assertEquals(array(), $result);
+
+        $result = $backend->searchPrincipals('principals', array('{DAV:}displayname' => 'ou'));
+        $this->assertEquals(array('principals/group'), $result);
+
+        $result = $backend->searchPrincipals('principals', array('{DAV:}displayname' => 'UsEr', '{http://sabredav.org/ns}email-address' => 'USER@EXAMPLE'));
+        $this->assertEquals(array('principals/user'), $result);
+
+        $result = $backend->searchPrincipals('mom', array('{DAV:}displayname' => 'UsEr', '{http://sabredav.org/ns}email-address' => 'USER@EXAMPLE'));
+        $this->assertEquals(array(), $result);
+
+    }
+
 }

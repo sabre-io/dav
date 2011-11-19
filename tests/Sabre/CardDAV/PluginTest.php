@@ -17,6 +17,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
         $this->assertEquals(array(
             '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-multiget',
+            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-query',
         ), $this->plugin->getSupportedReportSet('addressbooks/user1/book1'));
 
     }
@@ -54,5 +55,37 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
     }
 
+    function testHTMLActionsPanel() {
+
+        $output = '';
+        $r = $this->server->broadcastEvent('onHTMLActionsPanel', array($this->server->tree->getNodeForPath('addressbooks/user1'), &$output));
+        $this->assertFalse($r);
+        
+        $this->assertTrue(!!strpos($output,'Display name'));
+
+    }
+
+    function testBrowserPostAction() {
+
+        $r = $this->server->broadcastEvent('onBrowserPostAction', array('addressbooks/user1', 'mkaddressbook', array(
+            'name' => 'NEWADDRESSBOOK',
+            '{DAV:}displayname' => 'foo',
+        )));
+        $this->assertFalse($r);
+
+        $addressbooks = $this->backend->getAddressBooksforUser('principals/user1');
+        $this->assertEquals(2, count($addressbooks));
+
+        $newAddressBook = null;
+        foreach($addressbooks as $addressbook) {
+           if ($addressbook['uri'] === 'NEWADDRESSBOOK') {
+                $newAddressBook = $addressbook;
+                break;
+           }
+        }
+        if (!$newAddressBook)
+            $this->fail('Could not find newly created addressbook');
+
+    }
 
 }

@@ -56,6 +56,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
         $this->server->subscribeEvent('beforeMethod',array($this,'httpGetInterceptor'));
+        $this->server->subscribeEvent('onHTMLActionsPanel', array($this, 'htmlActionsPanel'),200);
         if ($this->enablePost) $this->server->subscribeEvent('unknownMethod',array($this,'httpPOSTHandler'));
     }
 
@@ -68,9 +69,16 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     public function httpGetInterceptor($method, $uri) {
 
         if ($method!='GET') return true;
-        
-        $node = $this->server->tree->getNodeForPath($uri);
-        if ($node instanceof Sabre_DAV_IFile) return true;
+
+        try { 
+            $node = $this->server->tree->getNodeForPath($uri);
+        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            // We're simply stopping when the file isn't found to not interfere 
+            // with other plugins.
+            return;
+        }
+        if ($node instanceof Sabre_DAV_IFile) 
+            return;
 
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
@@ -84,44 +92,59 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Handles POST requests for tree operations
+     * Handles POST requests for tree operations.
      * 
-     * This method is not yet used.
-     * 
-     * @param string $method 
+     * @param string $method
+     * @param string $uri 
      * @return bool
      */
     public function httpPOSTHandler($method, $uri) {
 
-        if ($method!='POST') return true;
-        if (isset($_POST['action'])) switch($_POST['action']) {
+        if ($method!='POST') return;
+        $contentType = $this->server->httpRequest->getHeader('Content-Type');
 
-            case 'mkcol' :
-                if (isset($_POST['name']) && trim($_POST['name'])) {
-                    // Using basename() because we won't allow slashes
-                    list(, $folderName) = Sabre_DAV_URLUtil::splitPath(trim($_POST['name']));
-                    $this->server->createDirectory($uri . '/' . $folderName);
-                }
-                break;
-            case 'put' :
-                if ($_FILES) $file = current($_FILES);
-                else break;
-                $newName = trim($file['name']);
-                list(, $newName) = Sabre_DAV_URLUtil::splitPath(trim($file['name']));
-                if (isset($_POST['name']) && trim($_POST['name']))
-                    $newName = trim($_POST['name']);
+        if ($contentType !== 'application/x-www-form-urlencoded' && 
+            $contentType !== 'multipart/form-data') { 
+                return;
+        }
+        $postVars = $this->server->httpRequest->getPostVars();
 
-                // Making sure we only have a 'basename' component
-                list(, $newName) = Sabre_DAV_URLUtil::splitPath($newName);
-                    
-               
-                if (is_uploaded_file($file['tmp_name'])) {
-                    $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
-                    $parent->createFile($newName,fopen($file['tmp_name'],'r'));
-                }
+        if (!isset($postVars['sabreAction']))
+            return;
+
+        if ($this->server->broadcastEvent('onBrowserPostAction', array($uri, $postVars['sabreAction'], $postVars))) {
+
+            switch($postVars['sabreAction']) {
+
+                case 'mkcol' :
+                    if (isset($postVars['name']) && trim($postVars['name'])) {
+                        // Using basename() because we won't allow slashes
+                        list(, $folderName) = Sabre_DAV_URLUtil::splitPath(trim($postVars['name']));
+                        $this->server->createDirectory($uri . '/' . $folderName);
+                    }
+                    break;
+                case 'put' :
+                    if ($_FILES) $file = current($_FILES);
+                    else break;
+                    $newName = trim($file['name']);
+                    list(, $newName) = Sabre_DAV_URLUtil::splitPath(trim($file['name']));
+                    if (isset($postVars['name']) && trim($postVars['name']))
+                        $newName = trim($postVars['name']);
+
+                    // Making sure we only have a 'basename' component
+                    list(, $newName) = Sabre_DAV_URLUtil::splitPath($newName);
+                        
+                   
+                    if (is_uploaded_file($file['tmp_name'])) {
+                        $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
+                        $parent->createFile($newName,fopen($file['tmp_name'],'r'));
+                    }
+
+            }
 
         }
         $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUri());
+        $this->server->httpResponse->sendStatus(302);
         return false;
 
     }
@@ -149,7 +172,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         $html = "<html>
 <head>
   <title>Index for " . $this->escapeHTML($path) . "/ - SabreDAV " . Sabre_DAV_Version::VERSION . "</title>
-  <style type=\"text/css\"> body { Font-family: arial}</style>
+  <style type=\"text/css\"> 
+  body { Font-family: arial}
+  h1 { font-size: 150% }
+  </style>
 </head>
 <body>
   <h1>Index for " . $this->escapeHTML($path) . "/</h1>
@@ -157,118 +183,162 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     <tr><th>Name</th><th>Type</th><th>Size</th><th>Last modified</th></tr>
     <tr><td colspan=\"4\"><hr /></td></tr>";
     
-    $files = $this->server->getPropertiesForPath($path,array(
-        '{DAV:}displayname',
-        '{DAV:}resourcetype',
-        '{DAV:}getcontenttype',
-        '{DAV:}getcontentlength',
-        '{DAV:}getlastmodified',
-    ),1);
+        $files = $this->server->getPropertiesForPath($path,array(
+            '{DAV:}displayname',
+            '{DAV:}resourcetype',
+            '{DAV:}getcontenttype',
+            '{DAV:}getcontentlength',
+            '{DAV:}getlastmodified',
+        ),1);
+
+        $parent = $this->server->tree->getNodeForPath($path);
 
 
-    if ($path) {
+        if ($path) {
 
-        list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
-        $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+            list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
+            $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
 
-        $html.= "<tr>
-<td><a href=\"{$fullPath}\">..</a></td>
-<td>[parent]</td>
-<td></td>
-<td></td>
-</tr>";
+            $html.= "<tr>
+    <td><a href=\"{$fullPath}\">..</a></td>
+    <td>[parent]</td>
+    <td></td>
+    <td></td>
+    </tr>";
 
-    }
+        }
 
-    foreach($files as $k=>$file) {
+        foreach($files as $k=>$file) {
 
-        // This is the current directory, we can skip it
-        if (rtrim($file['href'],'/')==$path) continue;
+            // This is the current directory, we can skip it
+            if (rtrim($file['href'],'/')==$path) continue;
 
-        list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
+            list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
 
-        $type = null;
+            $type = null;
 
-        if (isset($file[200]['{DAV:}resourcetype'])) {
-            $type = $file[200]['{DAV:}resourcetype']->getValue();
 
-            // resourcetype can have multiple values
-            if (!is_array($type)) $type = array($type);
+            if (isset($file[200]['{DAV:}resourcetype'])) {
+                $type = $file[200]['{DAV:}resourcetype']->getValue();
 
-            foreach($type as $k=>$v) { 
+                // resourcetype can have multiple values
+                if (!is_array($type)) $type = array($type);
 
-                // Some name mapping is preferred 
-                switch($v) {
-                    case '{DAV:}collection' :
-                        $type[$k] = 'Collection';
-                        break;
-                    case '{DAV:}principal' :
-                        $type[$k] = 'Principal';
-                        break;
-                    case '{urn:ietf:params:xml:ns:carddav}addressbook' :
-                        $type[$k] = 'Addressbook';
-                        break;
-                    case '{urn:ietf:params:xml:ns:caldav}calendar' :
-                        $type[$k] = 'Calendar';
-                        break;
+                foreach($type as $k=>$v) { 
+
+                    // Some name mapping is preferred 
+                    switch($v) {
+                        case '{DAV:}collection' :
+                            $type[$k] = 'Collection';
+                            break;
+                        case '{DAV:}principal' :
+                            $type[$k] = 'Principal';
+                            break;
+                        case '{urn:ietf:params:xml:ns:carddav}addressbook' :
+                            $type[$k] = 'Addressbook';
+                            break;
+                        case '{urn:ietf:params:xml:ns:caldav}calendar' :
+                            $type[$k] = 'Calendar';
+                            break;
+                        case '{urn:ietf:params:xml:ns:caldav}schedule-inbox' :
+                            $type[$k] = 'Schedule Inbox';
+                            break;
+                        case '{urn:ietf:params:xml:ns:caldav}schedule-outbox' :
+                            $type[$k] = 'Schedule Outbox';
+                            break;
+                        case '{http://calendarserver.org/ns/}calendar-proxy-read' :
+                            $type[$k] = 'Proxy-Read';
+                            break;
+                        case '{http://calendarserver.org/ns/}calendar-proxy-write' :
+                            $type[$k] = 'Proxy-Write';
+                            break;
+                    }
+
                 }
-
+                $type = implode(', ', $type);
             }
-            $type = implode(', ', $type);
+
+            // If no resourcetype was found, we attempt to use
+            // the contenttype property
+            if (!$type && isset($file[200]['{DAV:}getcontenttype'])) {
+                $type = $file[200]['{DAV:}getcontenttype'];
+            }
+            if (!$type) $type = 'Unknown';
+
+            $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
+            $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(DateTime::ATOM):'';
+
+            $fullPath = Sabre_DAV_URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
+
+            $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
+
+            $name = $this->escapeHTML($name);
+            $displayName = $this->escapeHTML($displayName);
+            $type = $this->escapeHTML($type);
+
+            $html.= "<tr>
+    <td><a href=\"{$fullPath}\">{$displayName}</a></td>
+    <td>{$type}</td>
+    <td>{$size}</td>
+    <td>{$lastmodified}</td>
+    </tr>";
+
+        }
+            
+        $html.= "<tr><td colspan=\"4\"><hr /></td></tr>";
+
+        $output = '';
+
+        if ($this->enablePost) {
+            $this->server->broadcastEvent('onHTMLActionsPanel',array($parent, &$output));
         }
 
-        // If no resourcetype was found, we attempt to use
-        // the contenttype property
-        if (!$type && isset($file[200]['{DAV:}getcontenttype'])) {
-            $type = $file[200]['{DAV:}getcontenttype'];
-        }
-        if (!$type) $type = 'Unknown';
+        $html.=$output;
 
-        $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
-        $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(DateTime::ATOM):'';
+        $html.= "</table>
+        <address>Generated by SabreDAV " . Sabre_DAV_Version::VERSION ."-". Sabre_DAV_Version::STABILITY . " (c)2007-2011 <a href=\"http://code.google.com/p/sabredav/\">http://code.google.com/p/sabredav/</a></address>
+        </body>
+        </html>";
 
-        $fullPath = Sabre_DAV_URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
-
-        $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
-
-        $name = $this->escapeHTML($name);
-        $displayName = $this->escapeHTML($displayName);
-        $type = $this->escapeHTML($type);
-
-        $html.= "<tr>
-<td><a href=\"{$fullPath}\">{$displayName}</a></td>
-<td>{$type}</td>
-<td>{$size}</td>
-<td>{$lastmodified}</td>
-</tr>";
+        return $html; 
 
     }
 
-  $html.= "<tr><td colspan=\"4\"><hr /></td></tr>";
+    /**
+     * This method is used to generate the 'actions panel' output for 
+     * collections.
+     *
+     * This specifically generates the interfaces for creating new files, and 
+     * creating new directories.
+     * 
+     * @param Sabre_DAV_INode $node 
+     * @param mixed $output 
+     * @return void
+     */
+    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
 
-  if ($this->enablePost) {
-      $html.= '<tr><td><form method="post" action="">
+        if (!$node instanceof Sabre_DAV_ICollection) 
+            return; 
+
+        // We also know fairly certain that if an object is a non-extended 
+        // SimpleCollection, we won't need to show the panel either.
+        if (get_class($node)==='Sabre_DAV_SimpleCollection') 
+            return;
+
+        $output.= '<tr><td><form method="post" action="">
             <h3>Create new folder</h3>
-            <input type="hidden" name="action" value="mkcol" />
+            <input type="hidden" name="sabreAction" value="mkcol" />
             Name: <input type="text" name="name" /><br />
             <input type="submit" value="create" />
             </form>
             <form method="post" action="" enctype="multipart/form-data">
             <h3>Upload file</h3>
-            <input type="hidden" name="action" value="put" />
+            <input type="hidden" name="sabreAction" value="put" />
             Name (optional): <input type="text" name="name" /><br />
             File: <input type="file" name="file" /><br />
             <input type="submit" value="upload" />
             </form>
-       </td></tr>';
-  }
-
-  $html.= "</table>
-  <address>Generated by SabreDAV " . Sabre_DAV_Version::VERSION ."-". Sabre_DAV_Version::STABILITY . " (c)2007-2011 <a href=\"http://code.google.com/p/sabredav/\">http://code.google.com/p/sabredav/</a></address>
-</body>
-</html>";
-
-        return $html; 
+            </td></tr>';
 
     }
 

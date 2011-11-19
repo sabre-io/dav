@@ -10,7 +10,7 @@ CREATE TABLE addressbooks (
 CREATE TABLE cards ( 
 	id integer primary key asc, 
     addressbookid integer, 
-    carddata text, 
+    carddata blob, 
     uri text, 
     lastmodified integer
 );

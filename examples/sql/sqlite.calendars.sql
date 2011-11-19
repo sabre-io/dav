@@ -1,6 +1,6 @@
 CREATE TABLE calendarobjects ( 
 	id integer primary key asc, 
-    calendardata text, 
+    calendardata blob, 
     uri text, 
     calendarid integer, 
     lastmodified integer

@@ -10,7 +10,7 @@ CREATE TABLE addressbooks (
 CREATE TABLE cards ( 
 	id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	addressbookid INT(11) UNSIGNED NOT NULL, 
-	carddata TEXT, 
+	carddata MEDIUMBLOB, 
 	uri VARCHAR(100), 
 	lastmodified INT(11) UNSIGNED 
 );

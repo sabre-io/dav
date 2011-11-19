@@ -5,7 +5,7 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider dataset
      */ 
-    function testEverything($haystack, $needle, $collation, $matchType, $result) {
+    function testTextMatch($haystack, $needle, $collation, $matchType, $result) {
 
         $this->assertEquals($result, Sabre_DAV_StringUtil::textMatch($haystack, $needle, $collation, $matchType));
 
@@ -78,6 +78,42 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
     public function testBadMatchType() {
 
         Sabre_DAV_StringUtil::textMatch('foobar','foo','i;octet','booh');
+
+    }
+
+    public function testEnsureUTF8_ascii() {
+
+        $inputString = "harkema";
+        $outputString = "harkema";
+
+        $this->assertEquals(
+            $outputString,
+            Sabre_DAV_StringUtil::ensureUTF8($inputString)
+        );
+
+    }
+
+    public function testEnsureUTF8_latin1() {
+
+        $inputString = "m\xfcnster";
+        $outputString = "münster";
+
+        $this->assertEquals(
+            $outputString,
+            Sabre_DAV_StringUtil::ensureUTF8($inputString)
+        );
+
+    }
+
+    public function testEnsureUTF8_utf8() {
+
+        $inputString = "m\xc3\xbcnster";
+        $outputString = "münster";
+
+        $this->assertEquals(
+            $outputString,
+            Sabre_DAV_StringUtil::ensureUTF8($inputString)
+        );
 
     }
 

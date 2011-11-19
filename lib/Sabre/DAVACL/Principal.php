@@ -68,11 +68,18 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      */
     public function getAlternateUriSet() {
 
-        if (isset($this->principalProperties['{http://sabredav.org/ns}email-address'])) {
-            return array('mailto:' . $this->principalProperties['{http://sabredav.org/ns}email-address']);
-        } else {
-            return array();
+        $uris = array();
+        if (isset($this->principalProperties['{DAV:}alternate-URI-set'])) {
+
+            $uris = $this->principalProperties['{DAV:}alternate-URI-set'];
+
         }
+
+        if (isset($this->principalProperties['{http://sabredav.org/ns}email-address'])) {
+            $uris[] = 'mailto:' . $this->principalProperties['{http://sabredav.org/ns}email-address'];
+        }
+
+        return array_unique($uris); 
 
     }
 
@@ -132,7 +139,6 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
 
         $uri = $this->principalProperties['uri'];
         list(, $name) = Sabre_DAV_URLUtil::splitPath($uri);
-
         return $name;
 
     }
@@ -232,7 +238,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
         return array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => $this->principalProperties['uri'],
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ),
         );
@@ -250,6 +256,24 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
     public function setACL(array $acl) {
 
         throw new Sabre_DAV_Exception_MethodNotAllowed('Updating ACLs is not allowed here');
+
+    }
+
+    /**
+     * Returns the list of supported privileges for this node.
+     *
+     * The returned data structure is a list of nested privileges.
+     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple 
+     * standard structure.
+     *
+     * If null is returned from this method, the default privilege set is used, 
+     * which is fine for most common usecases.
+     *
+     * @return array|null
+     */
+    public function getSupportedPrivilegeSet() {
+
+        return null;
 
     }
 

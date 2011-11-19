@@ -120,6 +120,75 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     }
 
     /**
+     * This method is used to search for principals matching a set of 
+     * properties.
+     *
+     * This search is specifically used by RFC3744's principal-property-search 
+     * REPORT. You should at least allow searching on 
+     * http://sabredav.org/ns}email-address.
+     *
+     * The actual search should be a unicode-non-case-sensitive search. The 
+     * keys in searchProperties are the WebDAV property names, while the values 
+     * are the property values to search on.
+     *
+     * If multiple properties are being searched on, the search should be 
+     * AND'ed. 
+     * 
+     * This method should simply return an array with full principal uri's.
+     *
+     * If somebody attempted to search on a property the backend does not 
+     * support, you should simply return 0 results.
+     *
+     * You can also just return 0 results if you choose to not support 
+     * searching at all, but keep in mind that this may stop certain features 
+     * from working. 
+     *
+     * @param string $prefixPath 
+     * @param array $searchProperties 
+     * @return array 
+     */
+    public function searchPrincipals($prefixPath, array $searchProperties) {
+
+        $query = 'SELECT uri FROM `' . $this->tableName . '` WHERE 1=1 ';
+        $values = array(); 
+        foreach($searchProperties as $property => $value) {
+
+            switch($property) {
+
+                case '{DAV:}displayname' :
+                    $query.=' AND displayname LIKE ?';
+                    $values[] = '%' . $value . '%';
+                    break;
+                case '{http://sabredav.org/ns}email-address' :
+                    $query.=' AND email LIKE ?';
+                    $values[] = '%' . $value . '%';
+                    break;
+                default : 
+                    // Unsupported property
+                    return array();
+
+            }
+
+        }
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($values);
+
+        $principals = array();
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+            // Checking if the principal is in the prefix
+            list($rowPrefix) = Sabre_DAV_URLUtil::splitPath($row['uri']);
+            if ($rowPrefix !== $prefixPath) continue;
+
+            $principals[] = $row['uri']; 
+
+        }
+
+        return $principals;
+
+    }
+
+    /**
      * Returns the list of members for a group-principal 
      * 
      * @param string $principal 

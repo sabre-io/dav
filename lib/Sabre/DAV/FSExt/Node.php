@@ -88,7 +88,7 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     protected function getResourceData() {
 
         $path = $this->getResourceInfoPath();
-        if (!file_exists($path)) return array('locks'=>array(), 'properties' => array());
+        if (!file_exists($path)) return array('properties' => array());
 
         // opening up the file, and creating a shared lock
         $handle = fopen($path,'r');
@@ -106,11 +106,10 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
         // Unserializing and checking if the resource file contains data for this file
         $data = unserialize($data);
         if (!isset($data[$this->getName()])) {
-            return array('locks'=>array(), 'properties' => array());
+            return array('properties' => array());
         }
 
         $data = $data[$this->getName()];
-        if (!isset($data['locks'])) $data['locks'] = array();
         if (!isset($data['properties'])) $data['properties'] = array();
         return $data;
 

@@ -104,6 +104,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      *   * etag - An arbitrary string, surrounded by double-quotes. (e.g.: 
      *   '  "abcdef"')
      *   * calendarid - The calendarid as it was passed to this function.
+     *   * size - The size of the calendar objects, in bytes.
      *
      * Note that the etag is optional, but it's highly encouraged to return for 
      * speed reasons.
@@ -111,6 +112,10 @@ abstract class Sabre_CalDAV_Backend_Abstract {
      * The calendardata is also optional. If it's not returned 
      * 'getCalendarObject' will be called later, which *is* expected to return 
      * calendardata.
+     *
+     * If neither etag or size are specified, the calendardata will be 
+     * used/fetched to determine these numbers. If both are specified the 
+     * amount of times this is needed is reduced by a great degree.
      * 
      * @param string $calendarId 
      * @return array 

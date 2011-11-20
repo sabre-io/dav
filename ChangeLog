@@ -39,7 +39,9 @@
 	* Fixed: Issue 97: Correctly handling RRULE for the calendar-query REPORT.
 	* Fixed: Issue 154: Encoding of VObject parameters with no value was
 	  incorrect.
-	* Added: Support for {DAV:}acl-restrictions property from RFC3744
+	* Added: Support for {DAV:}acl-restrictions property from RFC3744.
+	* Added: The contentlength for calendar objects can now be supplied by a
+	  CalDAV backend, allowing for more optimizations.
 
 1.5.5-stable (2011-??-??)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

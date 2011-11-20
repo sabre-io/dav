@@ -165,7 +165,11 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
      */
     public function getSize() {
 
-        return strlen($this->objectData['calendardata']);
+        if (isset($this->objectData['size'])) {
+            return $this->objectData['size'];
+        } else {
+            return strlen($this->get());
+        }
 
     }
 

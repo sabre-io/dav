@@ -28,6 +28,8 @@ include __DIR__ . '/Version.php';
 include __DIR__ . '/Element.php';
 include __DIR__ . '/Property.php';
 include __DIR__ . '/Component.php';
+include __DIR__ . '/Property/DateTime.php';
+include __DIR__ . '/Property/MultiDateTime.php';
 include __DIR__ . '/Element/DateTime.php';
 include __DIR__ . '/Element/MultiDateTime.php';
 // End includes

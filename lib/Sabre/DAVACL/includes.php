@@ -30,6 +30,7 @@ include __DIR__ . '/Principal.php';
 include __DIR__ . '/PrincipalBackend/PDO.php';
 include __DIR__ . '/PrincipalCollection.php';
 include __DIR__ . '/Property/Acl.php';
+include __DIR__ . '/Property/AclRestrictions.php';
 include __DIR__ . '/Property/CurrentUserPrivilegeSet.php';
 include __DIR__ . '/Property/Principal.php';
 include __DIR__ . '/Property/SupportedPrivilegeSet.php';

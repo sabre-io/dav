@@ -44,10 +44,10 @@
 	  CalDAV backend, allowing for more optimizations.
 	* Fixed: Much faster implementation of Sabre_DAV_URLUtil::encodePath.
 	* Fixed: {DAV:}getcontentlength may now be not specified.
-	* Fixed: Using rawurldecode instead of urldecode to decode paths from
- 	  clients. This means that + will now be treated as a literal rather than a
-	  space, and this should improve compatibility with the Windows built-in
-	  client.
+	* Fixed: Issue 66: Using rawurldecode instead of urldecode to decode paths
+	  from clients. This means that + will now be treated as a literal rather
+	  than a space, and this should improve compatibility with the Windows
+	  built-in client.
 
 1.5.5-stable (2011-??-??)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

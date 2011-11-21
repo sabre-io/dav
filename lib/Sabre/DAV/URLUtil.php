@@ -30,13 +30,11 @@ class Sabre_DAV_URLUtil {
      */
     static function encodePath($path) {
 
-    	$valid_chars = '/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.~()';
-        $newStr = '';
-        for( $i=0; isset($path[$i]); ++$i ) {
-            if( strpos($valid_chars,($c=$path[$i]))===false ) $newStr .= '%'.sprintf('%02x',ord($c));
-            else $newStr .= $c;
-        }
-        return $newStr;
+        return preg_replace_callback('/([^A-Za-z0-9_\-\.~\(\)\/])/',function($match) {
+
+            return '%'.sprintf('%02x',ord($match[0]));
+
+        }, $path);
     	
     }
 
@@ -50,13 +48,11 @@ class Sabre_DAV_URLUtil {
      */
     static function encodePathSegment($pathSegment) {
 
-    	$valid_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.~()';
-        $newStr = '';
-        for( $i=0; isset($pathSegment[$i]); ++$i ) {
-            if( strpos($valid_chars,($c=$pathSegment[$i]))===false ) $newStr .= '%'.sprintf('%02x',ord($c));
-            else $newStr .= $c;
-        }
-        return $newStr;
+        return preg_replace_callback('/([^A-Za-z0-9_\-\.~\(\)])/',function($match) {
+
+            return '%'.sprintf('%02x',ord($match[0]));
+
+        }, $pathSegment);
     }
 
     /**

@@ -52,7 +52,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
 
         $str = 'Hello%20Test+Test2.txt';
         $newStr = Sabre_DAV_URLUtil::decodePath($str);
-        $this->assertEquals('Hello Test Test2.txt',$newStr);
+        $this->assertEquals('Hello Test+Test2.txt',$newStr);
 
     }
 

@@ -75,7 +75,7 @@ class Sabre_DAV_URLUtil {
      */
     static function decodePathSegment($path) {
 
-        $path = urldecode($path);
+        $path = rawurldecode($path);
         $encoding = mb_detect_encoding($path, array('UTF-8','ISO-8859-1'));
 
         switch($encoding) {

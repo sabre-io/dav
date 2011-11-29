@@ -48,6 +48,8 @@
 	  from clients. This means that + will now be treated as a literal rather
 	  than a space, and this should improve compatibility with the Windows
 	  built-in client.
+	* Added: Sabre_DAV_Exception_PaymentRequired exception, to emit HTTP 402
+	  status codes.
 
 1.5.5-stable (2011-??-??)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

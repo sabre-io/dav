@@ -58,6 +58,7 @@ include __DIR__ . '/Exception/LockTokenMatchesRequestUri.php';
 include __DIR__ . '/Exception/MethodNotAllowed.php';
 include __DIR__ . '/Exception/NotAuthenticated.php';
 include __DIR__ . '/Exception/NotImplemented.php';
+include __DIR__ . '/Exception/PaymentRequired.php';
 include __DIR__ . '/Exception/PreconditionFailed.php';
 include __DIR__ . '/Exception/ReportNotImplemented.php';
 include __DIR__ . '/Exception/RequestedRangeNotSatisfiable.php';

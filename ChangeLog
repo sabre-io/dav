@@ -50,6 +50,7 @@
 	  built-in client.
 	* Added: Sabre_DAV_Exception_PaymentRequired exception, to emit HTTP 402
 	  status codes.
+	* Added: Some mysql unique constraints to example files.
 
 1.5.5-stable (2011-??-??)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

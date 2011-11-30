@@ -346,4 +346,60 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
         );
 
     }
+
+    function testOther1() {
+
+        // This body was exactly sent to us from the sabredav mailing list. Checking if this parses correctly.
+
+        $body = <<<BLA
+<?xml version="1.0" encoding="utf-8" ?>
+<C:calendar-query xmlns:D="DAV:"
+xmlns:C="urn:ietf:params:xml:ns:caldav">
+ <D:prop>
+   <C:calendar-data/>
+   <D:getetag/>
+ </D:prop>
+ <C:filter>
+   <C:comp-filter name="VCALENDAR">
+     <C:comp-filter name="VEVENT">
+       <C:time-range start="20090101T000000Z" end="20121202T000000Z"/>
+     </C:comp-filter>
+   </C:comp-filter>
+ </C:filter>
+</C:calendar-query>
+BLA;
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
+
+        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q->parse();
+       
+        $this->assertEquals(array(
+            '{urn:ietf:params:xml:ns:caldav}calendar-data',
+            '{DAV:}getetag',
+        ), $q->requestedProperties);
+
+        $expectedFilters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'time-range' => array(
+                        'start' => new DateTime('2009-01-01 00:00:00', new DateTimeZone('UTC')),
+                        'end' => new DateTime('2012-12-02 00:00:00', new DateTimeZone('UTC')),
+                    ),
+                    'is-not-defined' => false,
+                ),
+            ),
+            'prop-filters' => array(),
+            'time-range' => null,
+            'is-not-defined' => false,
+        );
+        
+        $this->assertEquals($expectedFilters, $q->filters);
+
+    } 
+
 }

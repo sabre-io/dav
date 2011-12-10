@@ -52,6 +52,7 @@
 	  status codes.
 	* Added: Some mysql unique constraints to example files.
 	* Fixed: Correctly formatting HTTP dates.
+	* Fixed: Issue 94: Sending back Last-Modified header for 304 responses.
 
 1.5.5-stable (2011-??-??)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

@@ -60,4 +60,23 @@ class Sabre_HTTP_Util {
 
     }
 
+    /**
+     * Transforms a DateTime object to HTTP's most common date format.
+     *
+     * We're serializing it as the RFC 1123 date, which, for HTTP must be 
+     * specified as GMT. 
+     * 
+     * @param DateTime $dateTime 
+     * @return void
+     */
+    static function toHTTPDate(DateTime $dateTime) {
+
+        // We need to clone it, as we don't want to affect the existing 
+        // DateTime.
+        $dateTime = clone $dateTime;
+        $dateTime->setTimeZone(new DateTimeZone('GMT'));
+        return $dateTime->format('D, d M Y H:i:s \G\M\T');
+
+    }
+
 }

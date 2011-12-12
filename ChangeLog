@@ -401,6 +401,8 @@
 	* Added: support for calendar-timezone property.
 
 1.1.0-alpha (2010-03-01)
+	* Note: This version is forked from version 1.0.5, so release dates may be
+	  out of order.
 	* Added: CalDAV - RFC 4791
 	* Removed: Sabre_PHP_Exception. PHP has a built-in ErrorException for
 	  this.
@@ -426,6 +428,55 @@
 	* Fixed: Issue 19: HEAD requests on Collections
 	* Fixed: Issue 21: Typo in Sabre_DAV_Property_Response
 	* Fixed: Issue 18: Doesn't work with Evolution Contacts
+
+1.0.15-stable (2010-05-28)
+	* Added: Issue 31: Hiding exception information by default. Can be turned
+	  on with the Sabre_DAV_Server::$debugExceptions property.
+	* Added: Moved autoload from lib/ to lib/Sabre/autoload.php. This is also
+	  the case in the upcoming 1.2.0, so it will improve future compatibility.
+
+1.0.14-stable (2010-04-15)
+	* Fixed: double namespace declaration in multistatus responses.
+
+1.0.13-stable (2010-03-30)
+	* Fixed: Issue 40: Last references to basename/dirname
+
+1.0.12-stable (2010-03-30)
+	* Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
+	* Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded
+	  special characters.
+	* Fixed: Issue 33: Converting ISO-8859-1 characters to UTF-8.
+	* Fixed: Issue 39: Basename fails on non-utf-8 locales.
+	* Added: More unittests.
+	* Added: SabreDAV version to all error responses.
+	* Added: URLUtil class for decoding urls.
+	* Updated: Now using pear.sabredav.org pear channel.
+
+1.0.11-stable (2010-03-23)
+	* Non-public release. This release is identical to 1.0.10, but it is used
+	  to test releasing packages to pear.sabredav.org.
+
+1.0.10-stable (2010-03-22)
+	* Fixed: Issue 34: Invalid Lock-Token header response.
+	* Added: Issue 35: Addign SabreDAV version to HTTP OPTIONS responses.
+
+1.0.9-stable (2010-03-19)
+	* Fixed: Issue 27: Entities not being encoded in PROPFIND responses.
+	* Fixed: Issue 29: Added missing TIMEOUT_INFINITE constant.
+
+1.0.8-stable (2010-03-03)
+	* Fixed: Issue 21: typos causing errors
+	* Fixed: Issue 23: Comma's between methods in Allow header.
+	* Added: Sabre_DAV_ICollection interface, to aid in future compatibility.
+	* Added: Sabre_DAV_Exception_Forbidden exception. This will replace
+	  Sabre_DAV_Exception_PermissionDenied in the future, and can already be
+	  used to ensure future compatibility.
+
+1.0.7-stable (2010-02-24)
+	* Fixed: Issue 19 regression for MS Office
+
+1.0.6-stable (2010-02-23)
+	* Fixed: Issue 19: HEAD requests on Collections
 
 1.0.5-stable (2010-01-22)
 	* Fixed: Fatal error when a malformed url was used for unlocking, in

@@ -231,6 +231,9 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($server->checkPreconditions());
 
         $this->assertEquals('HTTP/1.1 304 Not Modified',$server->httpResponse->status);
+        $this->assertEquals(array(
+            'Last-Modified' => 'Sat, 06 Apr 1985 23:30:00 GMT',
+        ), $server->httpResponse->headers);
 
     }
 

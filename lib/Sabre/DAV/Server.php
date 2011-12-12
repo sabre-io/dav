@@ -1279,7 +1279,7 @@ class Sabre_DAV_Server {
 
             // GetLastModified gets special cased
             } elseif ($properties[$property] instanceof Sabre_DAV_Property_GetLastModified) {
-                $headers[$header] = $properties[$property]->getTime()->format(DateTime::RFC1123);
+                $headers[$header] = Sabre_HTTP_Util::toHTTPDate($properties[$property]->getTime());
             }
 
         }
@@ -1835,6 +1835,7 @@ class Sabre_DAV_Server {
                     $lastMod = new DateTime('@' . $lastMod);
                     if ($lastMod <= $date) {
                         $this->httpResponse->sendStatus(304);
+                        $this->httpResponse->setHeader('Last-Modified', Sabre_HTTP_Util::toHTTPDate($lastMod));
                         return false;
                     }
                 }

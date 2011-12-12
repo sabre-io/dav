@@ -26,7 +26,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"',
             ),
             $this->response->headers
@@ -56,7 +56,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 11,
             'Content-Range' => 'bytes 2-12/13',
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -86,7 +86,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 8,
             'Content-Range' => 'bytes 5-12/13',
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"',
             ),
             $this->response->headers
@@ -158,7 +158,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -191,7 +191,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -225,7 +225,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -258,7 +258,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers

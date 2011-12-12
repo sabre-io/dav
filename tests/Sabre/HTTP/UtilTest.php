@@ -50,4 +50,15 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testToHTTPDate() {
+
+        $dt = new DateTime('2011-12-10 12:00:00 +0200');
+
+        $this->assertEquals(
+            'Sat, 10 Dec 2011 10:00:00 GMT',
+            Sabre_HTTP_Util::toHTTPDate($dt)
+        );
+
+    }
+
 }

@@ -54,7 +54,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
             $this->response->headers
          );
@@ -112,7 +112,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
             $this->response->headers
          );
@@ -137,7 +137,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' .  filemtime($this->tempDir . '/test.txt'))),
             ),
             $this->response->headers
          );
@@ -366,7 +366,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => date(DateTime::RFC1123,filemtime($this->tempDir . '/test.txt')),
+            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
             $this->response->headers
          );

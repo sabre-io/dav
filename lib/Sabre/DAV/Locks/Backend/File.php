@@ -95,11 +95,11 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
 
         foreach($locks as $k=>$lock) {
             if (
-                ($lock->token == $lockInfo->token) || 
-                ($lock->timeout + $lock->created)
+                ($lock->token == $lockInfo->token) ||
+                (time() > $lock->timeout + $lock->created)
             ) {
                 unset($locks[$k]);
-            } 
+            }
         }
         $locks[] = $lockInfo;
         $this->putData($locks);

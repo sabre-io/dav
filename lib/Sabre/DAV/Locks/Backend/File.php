@@ -161,7 +161,6 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
      */
     protected function putData(array $newData) {
 
-        echo $this->lockFile;
         // opening up the file, and creating an exclusive lock
         $handle = fopen($this->locksFile,'a+');
         flock($handle,LOCK_EX);

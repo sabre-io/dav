@@ -1257,6 +1257,7 @@ class Sabre_DAV_Server {
      * The headers are intended to be used for HEAD and GET requests.
      *
      * @param string $path
+     * @return array
      */
     public function getHTTPHeaders($path) {
 

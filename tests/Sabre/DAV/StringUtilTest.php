@@ -4,7 +4,7 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider dataset
-     */ 
+     */
     function testTextMatch($haystack, $needle, $collation, $matchType, $result) {
 
         $this->assertEquals($result, Sabre_DAV_StringUtil::textMatch($haystack, $needle, $collation, $matchType));

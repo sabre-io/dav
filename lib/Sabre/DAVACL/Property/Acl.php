@@ -19,7 +19,7 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
     private $privileges;
 
     /**
-     * Wether or not the server base url is required to be prefixed when
+     * Whether or not the server base url is required to be prefixed when
      * serializing the property.
      *
      * @var boolean

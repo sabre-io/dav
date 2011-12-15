@@ -4,13 +4,13 @@ class Sabre_TestUtil {
 
     /**
      * This function deletes all the contents of the temporary directory.
-     * 
+     *
      * @return void
      */
     static function clearTempDir() {
 
         self::deleteTree(SABRE_TEMPDIR,false);
-    
+
     }
 
 
@@ -42,7 +42,7 @@ class Sabre_TestUtil {
         } catch (PDOException $e) {
             return null;
         }
-    
+
     }
 
 

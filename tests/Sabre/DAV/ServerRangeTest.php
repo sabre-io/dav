@@ -11,11 +11,11 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
     }
 
     function testRange() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_RANGE'     => 'bytes=2-5', 
+            'HTTP_RANGE'     => 'bytes=2-5',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -41,11 +41,11 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @depends testRange
      */
     function testStartRange() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_RANGE'     => 'bytes=2-', 
+            'HTTP_RANGE'     => 'bytes=2-',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -71,11 +71,11 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @depends testRange
      */
     function testEndRange() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_RANGE'     => 'bytes=-8', 
+            'HTTP_RANGE'     => 'bytes=-8',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -101,11 +101,11 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @depends testRange
      */
     function testTooHighRange() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_RANGE'     => 'bytes=100-200', 
+            'HTTP_RANGE'     => 'bytes=100-200',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -120,11 +120,11 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @depends testRange
      */
     function testCrazyRange() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_RANGE'     => 'bytes=8-4', 
+            'HTTP_RANGE'     => 'bytes=8-4',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -140,14 +140,14 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @covers Sabre_DAV_Server::httpGet
      */
     function testIfRangeEtag() {
-       
+
         $node = $this->server->tree->getNodeForPath('test.txt');
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
-            'HTTP_IF_RANGE'  => $node->getETag(), 
+            'HTTP_IF_RANGE'  => $node->getETag(),
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -174,14 +174,14 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @covers Sabre_DAV_Server::httpGet
      */
     function testIfRangeEtagIncorrect() {
-       
+
         $node = $this->server->tree->getNodeForPath('test.txt');
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
-            'HTTP_IF_RANGE'  => $node->getETag() . 'blabla', 
+            'HTTP_IF_RANGE'  => $node->getETag() . 'blabla',
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -207,7 +207,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @covers Sabre_DAV_Server::httpGet
      */
     function testIfRangeModificationDate() {
-       
+
         $node = $this->server->tree->getNodeForPath('test.txt');
 
         $serverVars = array(
@@ -241,7 +241,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
      * @covers Sabre_DAV_Server::httpGet
      */
     function testIfRangeModificationDateModified() {
-       
+
         $node = $this->server->tree->getNodeForPath('test.txt');
 
         $serverVars = array(
@@ -269,5 +269,3 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
 
     }
 }
-
-?>

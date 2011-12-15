@@ -8,11 +8,11 @@ CREATE TABLE addressbooks (
     UNIQUE(principaluri, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE cards ( 
+CREATE TABLE cards (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    addressbookid INT(11) UNSIGNED NOT NULL, 
-    carddata MEDIUMBLOB, 
-    uri VARCHAR(100), 
-    lastmodified INT(11) UNSIGNED 
+    addressbookid INT(11) UNSIGNED NOT NULL,
+    carddata MEDIUMBLOB,
+    uri VARCHAR(100),
+    lastmodified INT(11) UNSIGNED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

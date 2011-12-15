@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Base node-class 
+ * Base node-class
  *
- * The node class implements the method used by both the File and the Directory classes 
- * 
+ * The node class implements the method used by both the File and the Directory classes
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_DAV_IProperties {
@@ -16,15 +16,13 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     /**
      * Updates properties on this node,
      *
-     * @param array $mutations
+     * @param array $properties
      * @see Sabre_DAV_IProperties::updateProperties
-     * @return bool|array 
+     * @return bool|array
      */
     public function updateProperties($properties) {
 
         $resourceData = $this->getResourceData();
-        
-        $result = array();
 
         foreach($properties as $propertyName=>$propertyValue) {
 
@@ -36,11 +34,11 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
             } else {
                 $resourceData['properties'][$propertyName] = $propertyValue;
             }
-               
+
         }
 
         $this->putResourceData($resourceData);
-        return true; 
+        return true;
     }
 
     /**
@@ -49,8 +47,8 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
      * The properties list is a list of propertynames the client requested, encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
      * If the array is empty, all properties should be returned
      *
-     * @param array $properties 
-     * @return void
+     * @param array $properties
+     * @return array
      */
     function getProperties($properties) {
 
@@ -69,9 +67,9 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     }
 
     /**
-     * Returns the path to the resource file 
-     * 
-     * @return string 
+     * Returns the path to the resource file
+     *
+     * @return string
      */
     protected function getResourceInfoPath() {
 
@@ -81,9 +79,9 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     }
 
     /**
-     * Returns all the stored resource information 
-     * 
-     * @return array 
+     * Returns all the stored resource information
+     *
+     * @return array
      */
     protected function getResourceData() {
 
@@ -116,9 +114,9 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
     }
 
     /**
-     * Updates the resource information 
-     * 
-     * @param array $newData 
+     * Updates the resource information
+     *
+     * @param array $newData
      * @return void
      */
     protected function putResourceData(array $newData) {
@@ -172,6 +170,9 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
 
     }
 
+    /**
+     * @return bool
+     */
     public function deleteResourceData() {
 
         // When we're deleting this node, we also need to delete any resource information
@@ -198,6 +199,7 @@ abstract class Sabre_DAV_FSExt_Node extends Sabre_DAV_FS_Node implements Sabre_D
         fwrite($handle,serialize($data));
         fclose($handle);
 
+        return true;
     }
 
     public function delete() {

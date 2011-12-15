@@ -4,8 +4,6 @@ class Sabre_VObject_ElementListTest extends PHPUnit_Framework_TestCase {
 
     function testIterate() {
 
-        $elems = array();
-
         $sub = new Sabre_VObject_Component('VEVENT');
 
         $elems = array(

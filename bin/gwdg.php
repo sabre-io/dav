@@ -94,7 +94,7 @@ function getClassTree($classNames) {
 
         }
 
-    } 
+    }
     return $classTree;
 
 }
@@ -158,7 +158,7 @@ function createDoc($className, $extendedBy) {
             }
             echo "\n";
             echo "This interface is implemented by the following classes:\n";
-        } else { 
+        } else {
             echo "This class is extended by the following classes:\n";
         }
         foreach($extendedBy as $className) {
@@ -169,7 +169,7 @@ function createDoc($className, $extendedBy) {
         echo "\n";
 
     }
-    echo "\n"; 
+    echo "\n";
 
     echo "==Properties==\n";
 
@@ -227,7 +227,7 @@ function createMethodDoc($rMethod, $rClass) {
         } elseif (isset($docs['param'][$parameter->name])) {
             echo $docs['param'][$parameter->name] . " ";
         }
-            
+
         echo '$' . $parameter->name;
 
         if ($parameter->isOptional() && $parameter->isDefaultValueAvailable()) {
@@ -285,7 +285,7 @@ function createPropertyDoc($rProperty) {
     if ($rProperty->isPrivate()) $visibility = 'private';
 
     echo "{{{\n";
-    echo $visibility . " " . $rProperty->class . "::$" . $rProperty->getName(); 
+    echo $visibility . " " . $rProperty->class . "::$" . $rProperty->getName();
     echo "\n}}}\n";
     echo "\n";
 

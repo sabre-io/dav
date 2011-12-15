@@ -10,7 +10,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
     function setUp() {
 
         parent::setUp();
-       
+
         $testPlugin = new Sabre_DAV_TestPlugin();
         $this->server->addPlugin($testPlugin);
         $this->testPlugin = $testPlugin;
@@ -52,7 +52,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('OPTIONS',$this->testPlugin->beforeMethod);
 
-    
+
     }
 
     function testGetPlugin() {
@@ -88,7 +88,5 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 class Sabre_DAV_ServerPluginMock extends Sabre_DAV_ServerPlugin {
 
     function initialize(Sabre_DAV_Server $s) { }
-    
-}
 
-?>
+}

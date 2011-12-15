@@ -7,7 +7,7 @@ class Sabre_DAV_ExceptionTest extends PHPUnit_Framework_TestCase {
         $e = new Sabre_DAV_Exception();
         $this->assertEquals(500,$e->getHTTPCode());
 
-    } 
+    }
 
     function testExceptionStatuses() {
 

@@ -11,7 +11,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server = new Sabre_DAV_Server();
         $server->addPlugin($acl);
 
-        $acl->unknownMethod('ACL','test'); 
+        $acl->unknownMethod('ACL','test');
 
     }
 
@@ -21,14 +21,14 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server = new Sabre_DAV_Server();
         $server->addPlugin($acl);
 
-        $this->assertNull($acl->unknownMethod('FOO','test')); 
+        $this->assertNull($acl->unknownMethod('FOO','test'));
 
     }
 
     /**
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed 
+     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
      */
     function testNotSupportedByNode() {
 
@@ -44,7 +44,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -62,7 +62,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $this->assertNull($acl->httpACL('test')); 
+        $this->assertNull($acl->httpACL('test'));
 
     }
 
@@ -87,7 +87,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -115,7 +115,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -140,7 +140,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -165,7 +165,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -198,7 +198,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -231,7 +231,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -264,7 +264,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $acl->httpACL('test'); 
+        $acl->httpACL('test');
 
     }
 
@@ -307,7 +307,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest->setBody($body);
         $server->addPlugin($acl);
 
-        $this->assertFalse($acl->unknownMethod('ACL','test')); 
+        $this->assertFalse($acl->unknownMethod('ACL','test'));
 
         $this->assertEquals(array(
             array(

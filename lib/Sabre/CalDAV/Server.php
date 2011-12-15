@@ -7,14 +7,14 @@
  * with caldav and ACL support, and it creates the root 'principals' and
  * 'calendars' collections.
  *
- * Note that if you plan to do anything moderately complex, you are advised to 
- * not subclass this server, but use Sabre_DAV_Server directly instead. This 
+ * Note that if you plan to do anything moderately complex, you are advised to
+ * not subclass this server, but use Sabre_DAV_Server directly instead. This
  * class is nothing more than an 'easy setup'.
- * 
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Server extends Sabre_DAV_Server {
@@ -22,17 +22,17 @@ class Sabre_CalDAV_Server extends Sabre_DAV_Server {
     /**
      * The authentication realm
      *
-     * Note that if this changes, the hashes in the auth backend must also 
-     * be recalculated. 
-     * 
+     * Note that if this changes, the hashes in the auth backend must also
+     * be recalculated.
+     *
      * @var string
      */
     public $authRealm = 'SabreDAV';
 
     /**
      * Sets up the object. A PDO object must be passed to setup all the backends.
-     * 
-     * @param PDO $pdo 
+     *
+     * @param PDO $pdo
      */
     public function __construct(PDO $pdo) {
 

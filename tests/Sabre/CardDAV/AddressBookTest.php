@@ -32,7 +32,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
 
         $card = $this->ab->getChild('card1');
         $this->assertInstanceOf('Sabre_CardDAV_Card', $card);
-        $this->assertEquals('card1', $card->getName()); 
+        $this->assertEquals('card1', $card->getName());
 
     }
 
@@ -53,7 +53,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('card1', $cards[0]->getName());
         $this->assertEquals('card2', $cards[1]->getName());
 
-    } 
+    }
 
     /**
      * @expectedException Sabre_DAV_Exception_MethodNotAllowed
@@ -140,7 +140,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-       $this->ab->setACL(array()); 
+       $this->ab->setACL(array());
 
     }
 
@@ -152,5 +152,5 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
 
     }
 
-        
+
 }

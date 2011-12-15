@@ -1,22 +1,22 @@
 <?php
 
 /**
- * DateTime property 
+ * DateTime property
  *
- * This element is used for iCalendar properties such as the DTSTART property. 
- * It basically provides a few helper functions that make it easier to deal 
+ * This element is used for iCalendar properties such as the DTSTART property.
+ * It basically provides a few helper functions that make it easier to deal
  * with these. It supports both DATE-TIME and DATE values.
  *
- * In order to use this correctly, you must call setDateTime and getDateTime to 
+ * In order to use this correctly, you must call setDateTime and getDateTime to
  * retrieve and modify dates respectively.
  *
- * If you use the 'value' or properties directly, this object does not keep 
+ * If you use the 'value' or properties directly, this object does not keep
  * reference and results might appear incorrectly.
- * 
+ *
  * @package Sabre
  * @subpackage VObject
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
@@ -49,17 +49,17 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
     protected $dateTime;
 
     /**
-     * dateType 
-     * 
-     * @var int 
+     * dateType
+     *
+     * @var int
      */
     protected $dateType;
 
     /**
-     * Updates the Date and Time. 
-     * 
-     * @param DateTime $dt 
-     * @param int $dateType 
+     * Updates the Date and Time.
+     *
+     * @param DateTime $dt
+     * @param int $dateType
      * @return void
      */
     public function setDateTime(DateTime $dt, $dateType = self::LOCALTZ) {
@@ -70,7 +70,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
                 $this->setValue($dt->format('Ymd\\THis'));
                 $this->offsetUnset('VALUE');
                 $this->offsetUnset('TZID');
-                $this->offsetSet('VALUE','DATE-TIME'); 
+                $this->offsetSet('VALUE','DATE-TIME');
                 break;
             case self::UTC :
                 $dt->setTimeZone(new DateTimeZone('UTC'));
@@ -85,7 +85,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
                 $this->offsetUnset('TZID');
                 $this->offsetSet('VALUE','DATE-TIME');
                 $this->offsetSet('TZID', $dt->getTimeZone()->getName());
-                break; 
+                break;
             case self::DATE :
                 $this->setValue($dt->format('Ymd'));
                 $this->offsetUnset('VALUE');
@@ -106,7 +106,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
      *
      * If no value was set, this method returns null.
      *
-     * @return DateTime|null 
+     * @return DateTime|null
      */
     public function getDateTime() {
 
@@ -124,7 +124,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
     /**
      * Returns the type of Date format.
      *
-     * This method returns one of the format constants. If no date was set, 
+     * This method returns one of the format constants. If no date was set,
      * this method will return null.
      *
      * @return int|null
@@ -143,18 +143,18 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
     }
 
     /**
-     * Parses the internal data structure to figure out what the current date 
+     * Parses the internal data structure to figure out what the current date
      * and time is.
      *
      * The returned array contains two elements:
-     *   1. A 'DateType' constant (as defined on this class), or null. 
+     *   1. A 'DateType' constant (as defined on this class), or null.
      *   2. A DateTime object (or null)
      *
-     * @param string|null $propertyValue The string to parse (yymmdd or 
+     * @param string|null $propertyValue The string to parse (yymmdd or
      *                                   ymmddThhmmss, etc..)
-     * @param Sabre_VObject_Property|null $property The instance of the 
-     *                                              property we're parsing. 
-     * @return array 
+     * @param Sabre_VObject_Property|null $property The instance of the
+     *                                              property we're parsing.
+     * @return array
      */
     static public function parseData($propertyValue, Sabre_VObject_Property $property = null) {
 
@@ -178,13 +178,13 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
             );
         }
 
-        $dateStr = 
-            $matches['year'] .'-' . 
-            $matches['month'] . '-' . 
+        $dateStr =
+            $matches['year'] .'-' .
+            $matches['month'] . '-' .
             $matches['date'] . ' ' .
             $matches['hour'] . ':' .
             $matches['minute'] . ':' .
-            $matches['second']; 
+            $matches['second'];
 
         if (isset($matches['isutc'])) {
             $dt = new DateTime($dateStr,new DateTimeZone('UTC'));
@@ -208,7 +208,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
             $tz = new DateTimeZone($tzid->value);
         } catch (Exception $e) {
 
-            // The id was invalid, we're going to try to find the information 
+            // The id was invalid, we're going to try to find the information
             // through the VTIMEZONE object.
 
             // First we find the root object
@@ -228,7 +228,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
             }
 
             $tz = new DateTimeZone($tzid);
-            
+
         }
         $dt = new DateTime($dateStr, $tz);
         $dt->setTimeZone($tz);
@@ -241,5 +241,3 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
     }
 
 }
-
-?>

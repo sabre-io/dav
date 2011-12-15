@@ -9,7 +9,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
@@ -18,7 +18,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * This is the official CalDAV namespace
      */
     const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
-    
+
     /**
      * This is the namespace for the proprietary calendarserver extensions
      */
@@ -41,9 +41,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     const CALENDAR_ROOT = 'calendars';
 
     /**
-     * Reference to server object 
-     * 
-     * @var Sabre_DAV_Server 
+     * Reference to server object
+     *
+     * @var Sabre_DAV_Server
      */
     private $server;
 
@@ -51,11 +51,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * Use this method to tell the server this plugin defines additional
      * HTTP methods.
      *
-     * This method is passed a uri. It should only return HTTP methods that are 
+     * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
      *
      * @param string $uri
-     * @return array 
+     * @return array
      */
     public function getHTTPMethods($uri) {
 
@@ -77,9 +77,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Returns a list of features for the DAV: HTTP header. 
-     * 
-     * @return array 
+     * Returns a list of features for the DAV: HTTP header.
+     *
+     * @return array
      */
     public function getFeatures() {
 
@@ -89,11 +89,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * Returns a plugin name.
-     * 
+     *
      * Using this name other plugins will be able to access other plugins
-     * using Sabre_DAV_Server::getPlugin 
-     * 
-     * @return string 
+     * using Sabre_DAV_Server::getPlugin
+     *
+     * @return string
      */
     public function getPluginName() {
 
@@ -105,11 +105,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns a list of reports this plugin supports.
      *
      * This will be used in the {DAV:}supported-report-set property.
-     * Note that you still need to subscribe to the 'report' event to actually 
-     * implement them 
-     * 
+     * Note that you still need to subscribe to the 'report' event to actually
+     * implement them
+     *
      * @param string $uri
-     * @return array 
+     * @return array
      */
     public function getSupportedReportSet($uri) {
 
@@ -123,14 +123,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if ($node instanceof Sabre_CalDAV_ICalendar) {
             $reports[] = '{' . self::NS_CALDAV . '}free-busy-query';
         }
-        return $reports; 
+        return $reports;
 
     }
 
     /**
-     * Initializes the plugin 
-     * 
-     * @param Sabre_DAV_Server $server 
+     * Initializes the plugin
+     *
+     * @param Sabre_DAV_Server $server
      * @return void
      */
     public function initialize(Sabre_DAV_Server $server) {
@@ -178,9 +178,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * This function handles support for the MKCALENDAR method
-     * 
-     * @param string $method 
-     * @return bool 
+     *
+     * @param string $method
+     * @param string $uri
+     * @return bool
      */
     public function unknownMethod($method, $uri) {
 
@@ -193,15 +194,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This functions handles REPORT requests specific to CalDAV 
-     * 
-     * @param string $reportName 
-     * @param DOMNode $dom 
-     * @return bool 
+     * This functions handles REPORT requests specific to CalDAV
+     *
+     * @param string $reportName
+     * @param DOMNode $dom
+     * @return bool
      */
     public function report($reportName,$dom) {
 
-        switch($reportName) { 
+        switch($reportName) {
             case '{'.self::NS_CALDAV.'}calendar-multiget' :
                 $this->calendarMultiGetReport($dom);
                 return false;
@@ -220,9 +221,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * This function handles the MKCALENDAR HTTP method, which creates
      * a new calendar.
-     * 
+     *
      * @param string $uri
-     * @return void 
+     * @return void
      */
     public function httpMkCalendar($uri) {
 
@@ -246,7 +247,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 foreach(Sabre_DAV_XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
                     $properties[$k] = $prop;
                 }
-            
+
             }
         }
 
@@ -262,9 +263,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * beforeGetProperties
      *
      * This method handler is invoked before any after properties for a
-     * resource are fetched. This allows us to add in any CalDAV specific 
-     * properties. 
-     * 
+     * resource are fetched. This allows us to add in any CalDAV specific
+     * properties.
+     *
      * @param string $path
      * @param Sabre_DAV_INode $node
      * @param array $requestedProperties
@@ -278,7 +279,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
             if (in_array($calHome,$requestedProperties)) {
-                $principalId = $node->getName(); 
+                $principalId = $node->getName();
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
                 unset($requestedProperties[$calHome]);
                 $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
@@ -295,7 +296,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
-            // These two properties are shortcuts for ical to easily find 
+            // These two properties are shortcuts for ical to easily find
             // other principals this principal has access to.
             $propRead = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for';
             $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
@@ -309,8 +310,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                     $groupNode = $this->server->tree->getNodeForPath($group);
 
-                    // If the node is either ap proxy-read or proxy-write 
-                    // group, we grab the parent principal and add it to the 
+                    // If the node is either ap proxy-read or proxy-write
+                    // group, we grab the parent principal and add it to the
                     // list.
                     if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyRead) {
                         list($readList[]) = Sabre_DAV_URLUtil::splitPath($group);
@@ -335,8 +336,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
 
         if ($node instanceof Sabre_CalDAV_ICalendarObject) {
-            // The calendar-data property is not supposed to be a 'real' 
-            // property, but in large chunks of the spec it does act as such. 
+            // The calendar-data property is not supposed to be a 'real'
+            // property, but in large chunks of the spec it does act as such.
             // Therefore we simply expose it as a property.
             $calDataProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-data';
             if (in_array($calDataProp, $requestedProperties)) {
@@ -358,8 +359,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This report is used by the client to fetch the content of a series
      * of urls. Effectively avoiding a lot of redundant requests.
-     * 
-     * @param DOMNode $dom 
+     *
+     * @param DOMNode $dom
      * @return void
      */
     public function calendarMultiGetReport($dom) {
@@ -385,8 +386,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This report is used by clients to request calendar objects based on
      * complex conditions.
-     * 
-     * @param DOMNode $dom 
+     *
+     * @param DOMNode $dom
      * @return void
      */
     public function calendarQueryReport($dom) {
@@ -402,7 +403,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // We always retrieve calendar-data, as we need it for filtering.
             $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
 
-            // If calendar-data wasn't explicitly requested, we need to remove 
+            // If calendar-data wasn't explicitly requested, we need to remove
             // it after processing.
             $requestedCalendarData = false;
         }
@@ -421,16 +422,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($candidateNodes as $node) {
 
             // If the node didn't have a calendar-data property, it must not be a calendar object
-            if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) 
+            if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']))
                 continue;
 
             if ($validator->validate($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'],$parser->filters)) {
-                
+
                 if (!$requestedCalendarData) {
                     unset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                 }
                 $verifiedNodes[] = $node;
-            } 
+            }
 
         }
 
@@ -508,13 +509,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
 
     /**
-     * This method is used to generate HTML output for the 
-     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users 
+     * This method is used to generate HTML output for the
+     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users
      * can use to create new calendars.
-     * 
+     *
      * @param Sabre_DAV_INode $node
-     * @param string $output 
-     * @return bool 
+     * @param string $output
+     * @return bool
      */
     public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
 
@@ -535,12 +536,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method allows us to intercept the 'mkcalendar' sabreAction. This 
+     * This method allows us to intercept the 'mkcalendar' sabreAction. This
      * action enables the user to create new calendars from the browser plugin.
-     * 
-     * @param Sabre_DAV_INode $node
-     * @param string $output 
-     * @return bool 
+     *
+     * @param string $uri
+     * @param string $action
+     * @param array $postVars
+     * @return bool
      */
     public function browserPostAction($uri, $action, array $postVars) {
 
@@ -551,7 +553,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $properties = array();
         if (isset($postVars['{DAV:}displayname'])) {
             $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
-        } 
+        }
         $this->server->createCollection($uri . '/' . $postVars['name'],$resourceType,$properties);
         return false;
 

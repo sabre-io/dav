@@ -29,7 +29,7 @@ create table principals (
                             UNIQUE(principal_id, member_id)
                         );");
 
-        $pdo->query("INSERT INTO groupmembers (principal_id,member_id) VALUES (2,1)"); 
+        $pdo->query("INSERT INTO groupmembers (principal_id,member_id) VALUES (2,1)");
 
         return $pdo;
 

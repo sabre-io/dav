@@ -3,46 +3,47 @@
 /**
  * PDO principal backend
  *
- * This is a simple principal backend that maps exactly to the users table, as 
+ * This is a simple principal backend that maps exactly to the users table, as
  * used by Sabre_DAV_Auth_Backend_PDO.
  *
- * It assumes all principals are in a single collection. The default collection 
+ * It assumes all principals are in a single collection. The default collection
  * is 'principals/', but this can be overriden.
  *
  * @package Sabre
  * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBackend {
 
     /**
-     * pdo 
-     * 
-     * @var PDO 
+     * pdo
+     *
+     * @var PDO
      */
     protected $pdo;
 
     /**
-     * PDO table name for 'principals' 
-     * 
-     * @var string 
+     * PDO table name for 'principals'
+     *
+     * @var string
      */
     protected $tableName;
 
     /**
-     * PDO table name for 'group members' 
-     * 
-     * @var string 
+     * PDO table name for 'group members'
+     *
+     * @var string
      */
     protected $groupMembersTableName;
 
     /**
      * Sets up the backend.
-     * 
+     *
      * @param PDO $pdo
-     * @param string $tableName 
+     * @param string $tableName
+     * @param string $groupMembersTableName
      */
     public function __construct(PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
 
@@ -50,24 +51,24 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         $this->tableName = $tableName;
         $this->groupMembersTableName = $groupMembersTableName;
 
-    } 
+    }
 
 
     /**
      * Returns a list of principals based on a prefix.
      *
-     * This prefix will often contain something like 'principals'. You are only 
+     * This prefix will often contain something like 'principals'. You are only
      * expected to return principals that are in this base path.
      *
-     * You are expected to return at least a 'uri' for every user, you can 
+     * You are expected to return at least a 'uri' for every user, you can
      * return any additional properties if you wish so. Common properties are:
-     *   {DAV:}displayname 
-     *   {http://sabredav.org/ns}email-address - This is a custom SabreDAV 
+     *   {DAV:}displayname
+     *   {http://sabredav.org/ns}email-address - This is a custom SabreDAV
      *     field that's actualy injected in a number of other properties. If
      *     you have an email address, use this property.
-     * 
-     * @param string $prefixPath 
-     * @return array 
+     *
+     * @param string $prefixPath
+     * @return array
      */
     public function getPrincipalsByPrefix($prefixPath) {
         $result = $this->pdo->query('SELECT uri, email, displayname FROM `'. $this->tableName . '`');
@@ -94,18 +95,16 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
 
     /**
      * Returns a specific principal, specified by it's path.
-     * The returned structure should be the exact same as from 
-     * getPrincipalsByPrefix. 
-     * 
-     * @param string $path 
-     * @return array 
+     * The returned structure should be the exact same as from
+     * getPrincipalsByPrefix.
+     *
+     * @param string $path
+     * @return array
      */
     public function getPrincipalByPath($path) {
 
         $stmt = $this->pdo->prepare('SELECT id, uri, email, displayname FROM `'.$this->tableName.'` WHERE uri = ?');
         $stmt->execute(array($path));
-
-        $users = array();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return;
@@ -120,37 +119,37 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     }
 
     /**
-     * This method is used to search for principals matching a set of 
+     * This method is used to search for principals matching a set of
      * properties.
      *
-     * This search is specifically used by RFC3744's principal-property-search 
-     * REPORT. You should at least allow searching on 
+     * This search is specifically used by RFC3744's principal-property-search
+     * REPORT. You should at least allow searching on
      * http://sabredav.org/ns}email-address.
      *
-     * The actual search should be a unicode-non-case-sensitive search. The 
-     * keys in searchProperties are the WebDAV property names, while the values 
+     * The actual search should be a unicode-non-case-sensitive search. The
+     * keys in searchProperties are the WebDAV property names, while the values
      * are the property values to search on.
      *
-     * If multiple properties are being searched on, the search should be 
-     * AND'ed. 
-     * 
+     * If multiple properties are being searched on, the search should be
+     * AND'ed.
+     *
      * This method should simply return an array with full principal uri's.
      *
-     * If somebody attempted to search on a property the backend does not 
+     * If somebody attempted to search on a property the backend does not
      * support, you should simply return 0 results.
      *
-     * You can also just return 0 results if you choose to not support 
-     * searching at all, but keep in mind that this may stop certain features 
-     * from working. 
+     * You can also just return 0 results if you choose to not support
+     * searching at all, but keep in mind that this may stop certain features
+     * from working.
      *
-     * @param string $prefixPath 
-     * @param array $searchProperties 
-     * @return array 
+     * @param string $prefixPath
+     * @param array $searchProperties
+     * @return array
      */
     public function searchPrincipals($prefixPath, array $searchProperties) {
 
         $query = 'SELECT uri FROM `' . $this->tableName . '` WHERE 1=1 ';
-        $values = array(); 
+        $values = array();
         foreach($searchProperties as $property => $value) {
 
             switch($property) {
@@ -163,7 +162,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
                     $query.=' AND email LIKE ?';
                     $values[] = '%' . $value . '%';
                     break;
-                default : 
+                default :
                     // Unsupported property
                     return array();
 
@@ -180,7 +179,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
             list($rowPrefix) = Sabre_DAV_URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
-            $principals[] = $row['uri']; 
+            $principals[] = $row['uri'];
 
         }
 
@@ -189,10 +188,10 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     }
 
     /**
-     * Returns the list of members for a group-principal 
-     * 
-     * @param string $principal 
-     * @return array 
+     * Returns the list of members for a group-principal
+     *
+     * @param string $principal
+     * @return array
      */
     public function getGroupMemberSet($principal) {
 
@@ -207,14 +206,14 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
             $result[] = $row['uri'];
         }
         return $result;
-    
+
     }
 
     /**
-     * Returns the list of groups a principal is a member of 
-     * 
-     * @param string $principal 
-     * @return array 
+     * Returns the list of groups a principal is a member of
+     *
+     * @param string $principal
+     * @return array
      */
     public function getGroupMembership($principal) {
 
@@ -235,10 +234,10 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     /**
      * Updates the list of group members for a group principal.
      *
-     * The principals should be passed as a list of uri's. 
-     * 
-     * @param string $principal 
-     * @param array $members 
+     * The principals should be passed as a list of uri's.
+     *
+     * @param string $principal
+     * @param array $members
      * @return void
      */
     public function setGroupMemberSet($principal, array $members) {

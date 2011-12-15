@@ -1,7 +1,7 @@
 <?php
 
 abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_TestCase {
-    
+
     protected $pdo;
 
     function testConstruct() {
@@ -15,7 +15,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
      * @depends testConstruct
      */
     function testGetCalendarsForUserNoCalendars() {
-    
+
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $calendars = $backend->getCalendarsForUser('principals/user2');
         $this->assertEquals(array(),$calendars);
@@ -26,7 +26,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
      * @depends testConstruct
      */
     function testCreateCalendarAndFetch() {
-    
+
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT'))
@@ -42,7 +42,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
         $this->assertInternalType('array',$calendars);
         $this->assertEquals(1,count($calendars));
-       
+
         foreach($elementCheck as $name=>$value) {
 
             $this->assertArrayHasKey($name, $calendars[0]);
@@ -85,7 +85,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
         $this->assertInternalType('array',$calendars);
         $this->assertEquals(1,count($calendars));
-       
+
         foreach($elementCheck as $name=>$value) {
 
             $this->assertArrayHasKey($name, $calendars[0]);

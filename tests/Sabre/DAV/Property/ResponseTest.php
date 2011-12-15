@@ -17,7 +17,7 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('uri',$property->getHref());
         $this->assertEquals($innerProps,$property->getResponseProperties());
-               
+
 
     }
 
@@ -54,19 +54,19 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 <d:root xmlns:d="DAV:">' .
 '<d:response>' .
 '<d:href>/uri</d:href>' .
-'<d:propstat>' . 
+'<d:propstat>' .
 '<d:prop>' .
-'<d:displayname>my file</d:displayname>' . 
-'</d:prop>' . 
-'<d:status>HTTP/1.1 200 OK</d:status>' . 
-'</d:propstat>' . 
-'<d:propstat>' . 
-'<d:prop>' .
-'<d:owner/>' . 
+'<d:displayname>my file</d:displayname>' .
 '</d:prop>' .
-'<d:status>HTTP/1.1 404 Not Found</d:status>' . 
-'</d:propstat>' . 
-'</d:response>' . 
+'<d:status>HTTP/1.1 200 OK</d:status>' .
+'</d:propstat>' .
+'<d:propstat>' .
+'<d:prop>' .
+'<d:owner/>' .
+'</d:prop>' .
+'<d:status>HTTP/1.1 404 Not Found</d:status>' .
+'</d:propstat>' .
+'</d:response>' .
 '</d:root>
 ', $xml);
 
@@ -104,13 +104,13 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 <d:root xmlns:d="DAV:">' .
 '<d:response>' .
 '<d:href>/uri</d:href>' .
-'<d:propstat>' . 
+'<d:propstat>' .
 '<d:prop>' .
-'<propertyname xmlns="">value</propertyname>' . 
-'</d:prop>' . 
-'<d:status>HTTP/1.1 200 OK</d:status>' . 
-'</d:propstat>' . 
-'</d:response>' . 
+'<propertyname xmlns="">value</propertyname>' .
+'</d:prop>' .
+'<d:status>HTTP/1.1 200 OK</d:status>' .
+'</d:propstat>' .
+'</d:response>' .
 '</d:root>
 ', $xml);
 
@@ -148,13 +148,13 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 <d:root xmlns:d="DAV:">' .
 '<d:response>' .
 '<d:href>/uri</d:href>' .
-'<d:propstat>' . 
+'<d:propstat>' .
 '<d:prop>' .
-'<x2:propertyname xmlns:x2="http://sabredav.org/NS/example">value</x2:propertyname>' . 
-'</d:prop>' . 
-'<d:status>HTTP/1.1 200 OK</d:status>' . 
-'</d:propstat>' . 
-'</d:response>' . 
+'<x2:propertyname xmlns:x2="http://sabredav.org/NS/example">value</x2:propertyname>' .
+'</d:prop>' .
+'<d:status>HTTP/1.1 200 OK</d:status>' .
+'</d:propstat>' .
+'</d:response>' .
 '</d:root>
 ', $xml);
 
@@ -190,13 +190,13 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 <d:root xmlns:d="DAV:">' .
 '<d:response>' .
 '<d:href>/uri</d:href>' .
-'<d:propstat>' . 
+'<d:propstat>' .
 '<d:prop>' .
-'<d:link><d:href>http://sabredav.org/</d:href></d:link>' .  
-'</d:prop>' . 
-'<d:status>HTTP/1.1 200 OK</d:status>' . 
-'</d:propstat>' . 
-'</d:response>' . 
+'<d:link><d:href>http://sabredav.org/</d:href></d:link>' .
+'</d:prop>' .
+'<d:status>HTTP/1.1 200 OK</d:status>' .
+'</d:propstat>' .
+'</d:response>' .
 '</d:root>
 ', $xml);
 

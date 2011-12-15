@@ -143,5 +143,3 @@ class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
 
 }
-
-?>

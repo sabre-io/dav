@@ -8,33 +8,32 @@
  * @package Sabre
  * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_CardDAV_IAddressBook, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
 
     /**
-     * This is an array with addressbook information 
-     * 
-     * @var array 
+     * This is an array with addressbook information
+     *
+     * @var array
      */
     private $addressBookInfo;
 
     /**
-     * CardDAV backend 
-     * 
-     * @var Sabre_CardDAV_Backend_Abstract 
+     * CardDAV backend
+     *
+     * @var Sabre_CardDAV_Backend_Abstract
      */
     private $carddavBackend;
 
     /**
-     * Constructor 
-     * 
-     * @param Sabre_CardDAV_Backend_Abstract $carddavBackend 
-     * @param array $addressBookInfo 
-     * @return void
+     * Constructor
+     *
+     * @param Sabre_CardDAV_Backend_Abstract $carddavBackend
+     * @param array $addressBookInfo
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,array $addressBookInfo) {
+    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend, array $addressBookInfo) {
 
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;
@@ -42,9 +41,9 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     }
 
     /**
-     * Returns the name of the addressbook 
-     * 
-     * @return string 
+     * Returns the name of the addressbook
+     *
+     * @return string
      */
     public function getName() {
 
@@ -55,7 +54,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     /**
      * Returns a card
      *
-     * @param string $name 
+     * @param string $name
      * @return Sabre_DAV_Card
      */
     public function getChild($name) {
@@ -68,8 +67,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
 
     /**
      * Returns the full list of cards
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getChildren() {
 
@@ -85,9 +84,9 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     /**
      * Creates a new directory
      *
-     * We actually block this, as subdirectories are not allowed in addressbooks. 
-     * 
-     * @param string $name 
+     * We actually block this, as subdirectories are not allowed in addressbooks.
+     *
+     * @param string $name
      * @return void
      */
     public function createDirectory($name) {
@@ -100,9 +99,9 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Creates a new file
      *
      * The contents of the new file must be a valid VCARD
-     * 
-     * @param string $name 
-     * @param resource $vcardData 
+     *
+     * @param string $name
+     * @param resource $vcardData
      * @return void
      */
     public function createFile($name,$vcardData = null) {
@@ -116,8 +115,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     }
 
     /**
-     * Deletes the entire addressbook. 
-     * 
+     * Deletes the entire addressbook.
+     *
      * @return void
      */
     public function delete() {
@@ -128,8 +127,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
 
     /**
      * Renames the addressbook
-     * 
-     * @param string $newName 
+     *
+     * @param string $newName
      * @return void
      */
     public function setName($newName) {
@@ -140,7 +139,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
 
     /**
      * Returns the last modification date as a unix timestamp.
-     * 
+     *
      * @return void
      */
     public function getLastModified() {
@@ -162,7 +161,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * If the operation was successful, true can be returned.
      * If the operation failed, false can be returned.
      *
-     * Deletion of a non-existant property is always succesful.
+     * Deletion of a non-existent property is always successful.
      *
      * Lastly, it is optional to return detailed information about any
      * failures. In this case an array should be returned with the following
@@ -177,16 +176,16 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      *   )
      * )
      *
-     * In this example it was forbidden to update {DAV:}displayname. 
+     * In this example it was forbidden to update {DAV:}displayname.
      * (403 Forbidden), which in turn also caused {DAV:}owner to fail
      * (424 Failed Dependency) because the request needs to be atomic.
      *
-     * @param array $mutations 
-     * @return bool|array 
+     * @param array $mutations
+     * @return bool|array
      */
     public function updateProperties($mutations) {
 
-        return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $mutations); 
+        return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $mutations);
 
     }
 
@@ -198,8 +197,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      *
      * If the array is empty, it means 'all properties' were requested.
      *
-     * @param array $properties 
-     * @return void
+     * @param array $properties
+     * @return array
      */
     public function getProperties($properties) {
 
@@ -221,8 +220,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     /**
      * Returns the owner principal
      *
-     * This must be a url to a principal, or null if there's no owner 
-     * 
+     * This must be a url to a principal, or null if there's no owner
+     *
      * @return string|null
      */
     public function getOwner() {
@@ -235,8 +234,8 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Returns a group principal
      *
      * This must be a url to a principal, or null if there's no owner
-     * 
-     * @return string|null 
+     *
+     * @return string|null
      */
     public function getGroup() {
 
@@ -248,13 +247,13 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Returns a list of ACE's for this node.
      *
      * Each ACE has the following properties:
-     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are 
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
      *     currently the only supported privileges
      *   * 'principal', a url to the principal who owns the node
-     *   * 'protected' (optional), indicating that this ACE is not allowed to 
-     *      be updated. 
-     * 
-     * @return array 
+     *   * 'protected' (optional), indicating that this ACE is not allowed to
+     *      be updated.
+     *
+     * @return array
      */
     public function getACL() {
 
@@ -277,9 +276,9 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     /**
      * Updates the ACL
      *
-     * This method will receive a list of new ACE's. 
-     * 
-     * @param array $acl 
+     * This method will receive a list of new ACE's.
+     *
+     * @param array $acl
      * @return void
      */
     public function setACL(array $acl) {
@@ -292,10 +291,10 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple 
+     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
-     * If null is returned from this method, the default privilege set is used, 
+     * If null is returned from this method, the default privilege set is used,
      * which is fine for most common usecases.
      *
      * @return array|null

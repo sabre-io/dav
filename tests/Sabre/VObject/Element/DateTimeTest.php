@@ -200,5 +200,3 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

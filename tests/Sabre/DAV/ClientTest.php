@@ -41,11 +41,11 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        
+
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
@@ -88,11 +88,11 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        
+
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
@@ -136,11 +136,11 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        
+
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
@@ -182,7 +182,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             CURLE_COULDNT_CONNECT,
-            "Could not connect, or something" 
+            "Could not connect, or something"
         );
 
         $caught = false;
@@ -217,7 +217,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 400,
             ),
             0,
-            "" 
+            ""
         );
 
         $caught = false;
@@ -274,7 +274,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->options();
@@ -303,7 +303,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->options();
@@ -335,7 +335,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $client->propfind('', array('{DAV:}foo','{DAV:}bar'));
@@ -378,7 +378,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->propfind('', array('{DAV:}foo','{DAV:}bar'));
@@ -433,7 +433,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $result = $client->propfind('', array('{DAV:}foo','{urn:custom}bar'),1);
@@ -478,7 +478,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
                 'http_code' => 200,
             ),
             0,
-            "" 
+            ""
         );
 
         $client->proppatch('', array(

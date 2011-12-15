@@ -104,5 +104,3 @@ class Sabre_HTTP_BasicAuthTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

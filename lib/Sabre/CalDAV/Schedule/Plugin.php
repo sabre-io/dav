@@ -116,7 +116,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $method
      * @param string $uri
-     * @return void
+     * @return bool
      */
     public function unknownMethod($method, $uri) {
 
@@ -157,14 +157,14 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
      * This method is responsible for parsing a free-busy query request and
      * returning it's result.
      *
-     * @param Sabre_DAV_INode $node
+     * @param Sabre_CalDAV_Schedule_IOutbox $outbox
      * @param string $request
      * @return string
      */
     protected function handleFreeBusyRequest(Sabre_CalDAV_Schedule_IOutbox $outbox, $request) {
 
         $vObject = Sabre_VObject_Reader::read($request);
-     
+
         $method = (string)$vObject->method;
         if ($method!=='REQUEST') {
             throw new Sabre_DAV_Exception_BadRequest('The iTip object must have a METHOD:REQUEST property');
@@ -197,7 +197,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
         $attendees = array();
         foreach($vFreeBusy->ATTENDEE as $attendee) {
-            $attendees[]= (string)$attendee; 
+            $attendees[]= (string)$attendee;
         }
 
 
@@ -209,7 +209,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
         $endRange = $vFreeBusy->DTEND->getDateTime();
 
         $results = array();
-        foreach($attendees as $k=>$attendee) {
+        foreach($attendees as $attendee) {
             $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange, $vObject);
         }
 
@@ -226,7 +226,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
             $response->appendChild($recipient);
 
             $reqStatus = $dom->createElement('cal:request-status');
-            $reqStatus->appendChild($dom->createTextNode($result['request-status'])); 
+            $reqStatus->appendChild($dom->createTextNode($result['request-status']));
             $response->appendChild($reqStatus);
 
             if (isset($result['calendar-data'])) {
@@ -244,7 +244,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Returns free-busy information for a specific address. The returned 
+     * Returns free-busy information for a specific address. The returned
      * data is an array containing the following properties:
      *
      * calendar-data : A VFREEBUSY VObject
@@ -258,8 +258,8 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $email address
      * @param DateTime $start
      * @param DateTime $end
-     * @param Sabre_VObject_Component $request 
-     * @return Sabre_VObject_Component 
+     * @param Sabre_VObject_Component $request
+     * @return Sabre_VObject_Component
      */
     protected function getFreeBusyForEmail($email, DateTime $start, DateTime $end, Sabre_VObject_Component $request) {
 
@@ -290,20 +290,15 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
             );
         }
         $homeSet = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
-        
-        $calendars = array();
 
         // Grabbing the calendar list
-        $props = array(
-            '{DAV:}resourcetype',
-        );
         $objects = array();
         foreach($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
             if (!$node instanceof Sabre_CalDAV_ICalendar) {
                 continue;
             }
             $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
-             
+
             $calObjects = array_map(function($child) {
                 $obj = $child->get();
                 return $obj;
@@ -337,5 +332,3 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
 }
-
-?>

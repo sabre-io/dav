@@ -71,7 +71,7 @@ class Sabre_HTTP_Response {
             504 => 'Gateway Timeout',
             505 => 'HTTP Version not supported',
             506 => 'Variant Also Negotiates',
-            507 => 'Unsufficient Storage', // RFC 4918
+            507 => 'Insufficient Storage', // RFC 4918
             508 => 'Loop Detected', // RFC 5842
             509 => 'Bandwidth Limit Exceeded', // non-standard
             510 => 'Not extended',
@@ -85,7 +85,7 @@ class Sabre_HTTP_Response {
      * Sends an HTTP status header to the client
      *
      * @param int $code HTTP status code
-     * @return void
+     * @return bool
      */
     public function sendStatus($code) {
 
@@ -100,7 +100,8 @@ class Sabre_HTTP_Response {
      *
      * @param string $name
      * @param string $value
-     * @return void
+     * @param bool $replace
+     * @return bool
      */
     public function setHeader($name, $value, $replace = true) {
 

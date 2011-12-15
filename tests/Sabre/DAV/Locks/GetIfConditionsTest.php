@@ -17,7 +17,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
     }
 
     function testNoConditions() {
-        
+
         $serverVars = array(
         );
 
@@ -307,7 +307,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
 
         $serverVars = array(
             'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1> [etag1]) ' .
-                         '(Not <opaquelocktoken:token2>) ([etag2]) <http://www.example.org/node2> ' . 
+                         '(Not <opaquelocktoken:token2>) ([etag2]) <http://www.example.org/node2> ' .
                          '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) ([etag3])',
         );
 
@@ -365,5 +365,3 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
     }
 
 }
-
-?>

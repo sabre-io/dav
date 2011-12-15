@@ -24,9 +24,9 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'GET',
         ));
-        
+
         $this->auth->setHTTPRequest($request);
-        
+
         $result = $this->auth->init();
 
         $this->assertFalse($result,'No AWS Authorization header was supplied, so we should have gotten false');
@@ -45,7 +45,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
             'HTTP_CONTENT_MD5'    => 'garbage',
             'REQUEST_URI'         => '/',
         ));
-        
+
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
@@ -60,7 +60,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
-        $contentMD5 = base64_encode(md5($content,true)); 
+        $contentMD5 = base64_encode(md5($content,true));
 
 
         $request = new Sabre_HTTP_Request(array(
@@ -70,7 +70,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         ));
 
         $request->setBody($content);
-        
+
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
@@ -85,7 +85,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
-        $contentMD5 = base64_encode(md5($content,true)); 
+        $contentMD5 = base64_encode(md5($content,true));
 
         $date = new DateTime('@' . (time() + (60*20)));
         $date->setTimeZone(new DateTimeZone('GMT'));
@@ -99,7 +99,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         ));
 
         $request->setBody($content);
-        
+
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
@@ -114,7 +114,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
-        $contentMD5 = base64_encode(md5($content,true)); 
+        $contentMD5 = base64_encode(md5($content,true));
 
         $date = new DateTime('@' . (time() - (60*20)));
         $date->setTimeZone(new DateTimeZone('GMT'));
@@ -128,7 +128,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         ));
 
         $request->setBody($content);
-        
+
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
@@ -144,7 +144,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
 
-        $contentMD5 = base64_encode(md5($content,true)); 
+        $contentMD5 = base64_encode(md5($content,true));
 
         $date = new DateTime('now');
         $date->setTimeZone(new DateTimeZone('GMT'));
@@ -159,7 +159,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         ));
 
         $request->setBody($content);
-        
+
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
@@ -174,7 +174,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
         $content = 'thisisthebody';
-        $contentMD5 = base64_encode(md5($content,true)); 
+        $contentMD5 = base64_encode(md5($content,true));
 
         $date = new DateTime('now');
         $date->setTimeZone(new DateTimeZone('GMT'));
@@ -194,7 +194,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         ));
 
         $request->setBody($content);
-        
+
         $this->auth->setHTTPRequest($request);
         $this->auth->init();
         $result = $this->auth->validate($secretKey);
@@ -213,11 +213,11 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Generates an HMAC-SHA1 signature 
-     * 
-     * @param string $key 
-     * @param string $message 
-     * @return string 
+     * Generates an HMAC-SHA1 signature
+     *
+     * @param string $key
+     * @param string $message
+     * @return string
      */
     private function hmacsha1($key, $message) {
 
@@ -233,5 +233,3 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

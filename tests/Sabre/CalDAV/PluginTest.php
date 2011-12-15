@@ -14,7 +14,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function setup() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support'); 
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support');
         $this->caldavBackend = Sabre_CalDAV_TestUtil::getBackend();
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-read',array('principals/user1'));
@@ -56,7 +56,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
     function testUnknownMethodPassThrough() {
 
         $request = new Sabre_HTTP_Request(array(
-            'REQUEST_METHOD' => 'MKBREAKFAST', 
+            'REQUEST_METHOD' => 'MKBREAKFAST',
             'REQUEST_URI'    => '/',
         ));
 
@@ -128,7 +128,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
      </D:set>
    </C:mkcalendar>';
 
-        $request->setBody($body); 
+        $request->setBody($body);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -181,7 +181,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
      </D:set>
    </C:mkcalendar>';
 
-        $request->setBody($body); 
+        $request->setBody($body);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -234,14 +234,14 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
      </D:set>
    </C:mkcalendar>';
 
-        $request->setBody($body); 
+        $request->setBody($body);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals('HTTP/1.1 405 Method Not Allowed', $this->response->status);
 
     }
-    
+
     function testMkCalendarSucceed() {
 
         $request = new Sabre_HTTP_Request(array(
@@ -288,7 +288,7 @@ END:VCALENDAR';
      </D:set>
    </C:mkcalendar>';
 
-        $request->setBody($body); 
+        $request->setBody($body);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -337,7 +337,7 @@ END:VCALENDAR';
             'REQUEST_URI'    => '/calendars/user1/NEWCALENDAR',
         ));
 
-        $request->setBody(''); 
+        $request->setBody('');
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -394,7 +394,7 @@ END:VCALENDAR';
         $this->assertArrayHasKey(200,$props[0]);
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set',$props[0][200]);
 
-       
+
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
         $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
         $this->assertEquals('calendars/user1/',$prop->getHref());
@@ -425,9 +425,9 @@ END:VCALENDAR';
         $this->assertArrayHasKey(0,$props);
         $this->assertArrayHasKey(200,$props[0]);
         $this->assertArrayHasKey('{DAV:}supported-report-set',$props[0][200]);
-       
+
         $prop = $props[0][200]['{DAV:}supported-report-set'];
-        
+
         $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
         $value = array(
         );
@@ -447,9 +447,9 @@ END:VCALENDAR';
         $this->assertArrayHasKey(0,$props);
         $this->assertArrayHasKey(200,$props[0]);
         $this->assertArrayHasKey('{DAV:}supported-report-set',$props[0][200]);
-       
+
         $prop = $props[0][200]['{DAV:}supported-report-set'];
-        
+
         $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
         $value = array(
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
@@ -467,7 +467,7 @@ END:VCALENDAR';
 
         $body =
             '<?xml version="1.0"?>' .
-            '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' . 
+            '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data />' .
             '  <d:getetag />' .
@@ -524,7 +524,7 @@ END:VCALENDAR';
 
         $body =
             '<?xml version="1.0"?>' .
-            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' . 
+            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data />' .
             '  <d:getetag />' .
@@ -584,7 +584,7 @@ END:VCALENDAR';
 
         $body =
             '<?xml version="1.0"?>' .
-            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' . 
+            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <d:getetag />' .
             '</d:prop>' .
@@ -642,7 +642,7 @@ END:VCALENDAR';
 
         $body =
             '<?xml version="1.0"?>' .
-            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' . 
+            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data />' .
             '  <d:getetag />' .
@@ -667,7 +667,7 @@ END:VCALENDAR';
         $output = '';
         $r = $this->server->broadcastEvent('onHTMLActionsPanel', array($this->server->tree->getNodeForPath('calendars/user1'), &$output));
         $this->assertFalse($r);
-        
+
         $this->assertTrue(!!strpos($output,'Display name'));
 
     }

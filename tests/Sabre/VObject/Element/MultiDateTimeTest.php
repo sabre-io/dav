@@ -198,5 +198,3 @@ class Sabre_VObject_Element_MultiDateTimeTest extends PHPUnit_Framework_TestCase
     }
 
 }
-
-?>

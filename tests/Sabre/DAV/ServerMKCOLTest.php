@@ -330,9 +330,7 @@ class Sabre_DAV_ServerMKCOLTest extends Sabre_DAV_AbstractServer {
         ),$this->response->headers);
 
 
-    
+
     }
 
 }
-
-?>

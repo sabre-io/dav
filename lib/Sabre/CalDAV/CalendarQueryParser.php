@@ -3,50 +3,49 @@
 /**
  * Parses the calendar-query report request body.
  *
- * Whoever designed this format, and the CalDAV equavalent even more so, 
+ * Whoever designed this format, and the CalDAV equivalent even more so,
  * has no feel for design.
- * 
+ *
  * @package Sabre
- * @subpackage CalDAV 
+ * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_CalendarQueryParser {
 
     /**
      * List of requested properties the client wanted
-     * 
-     * @var array 
+     *
+     * @var array
      */
     public $requestedProperties;
 
     /**
      * List of property/component filters.
      *
-     * @var array 
+     * @var array
      */
     public $filters;
 
     /**
      * DOM Document
-     * 
-     * @var DOMDocument 
+     *
+     * @var DOMDocument
      */
     protected $dom;
 
     /**
-     * DOM XPath object 
-     * 
-     * @var DOMXPath 
+     * DOM XPath object
+     *
+     * @var DOMXPath
      */
     protected $xpath;
 
     /**
      * Creates the parser
-     * 
-     * @param DOMNode $dom 
-     * @return void
+     *
+     * @param DOMDocument $dom
      */
     public function __construct(DOMDocument $dom) {
 
@@ -58,9 +57,8 @@ class Sabre_CalDAV_CalendarQueryParser {
     }
 
     /**
-     * Parses the request. 
-     * 
-     * @param DOMNode $dom 
+     * Parses the request.
+     *
      * @return void
      */
     public function parse() {
@@ -72,7 +70,7 @@ class Sabre_CalDAV_CalendarQueryParser {
             throw new Sabre_DAV_Exception_BadRequest('Only one filter element is allowed');
         }
 
-        $compFilters = $this->parseCompFilters($filter->item(0)); 
+        $compFilters = $this->parseCompFilters($filter->item(0));
         if (count($compFilters)!==1) {
             throw new Sabre_DAV_Exception_BadRequest('There must be exactly 1 top-level comp-filter.');
         }
@@ -85,8 +83,8 @@ class Sabre_CalDAV_CalendarQueryParser {
     /**
      * Parses all the 'comp-filter' elements from a node
      *
-     * @param DOMElement $parentNode 
-     * @return array 
+     * @param DOMElement $parentNode
+     * @return array
      */
     protected function parseCompFilters(DOMElement $parentNode) {
 
@@ -111,7 +109,7 @@ class Sabre_CalDAV_CalendarQueryParser {
                 'VFREEBUSY',
             ))) {
                 throw new Sabre_DAV_Exception_BadRequest('The time-range filter is not defined for the ' . $compFilter['name'] . ' component');
-            }; 
+            };
 
             $result[] = $compFilter;
 
@@ -122,10 +120,10 @@ class Sabre_CalDAV_CalendarQueryParser {
     }
 
     /**
-     * Parses all the prop-filter elements from a node 
-     * 
+     * Parses all the prop-filter elements from a node
+     *
      * @param DOMElement $parentNode
-     * @return array 
+     * @return array
      */
     protected function parsePropFilters(DOMElement $parentNode) {
 
@@ -151,10 +149,10 @@ class Sabre_CalDAV_CalendarQueryParser {
     }
 
     /**
-     * Parses the param-filter element 
-     * 
-     * @param DOMElement $paramFilterNode 
-     * @return array 
+     * Parses the param-filter element
+     *
+     * @param DOMElement $parentNode
+     * @return array
      */
     public function parseParamFilters(DOMElement $parentNode) {
 
@@ -178,10 +176,10 @@ class Sabre_CalDAV_CalendarQueryParser {
     }
 
     /**
-     * Parses the text-match element 
-     * 
-     * @param DOMElement $parentNode 
-     * @return array|null 
+     * Parses the text-match element
+     *
+     * @param DOMElement $parentNode
+     * @return array|null
      */
     public function parseTextMatch(DOMElement $parentNode) {
 
@@ -205,10 +203,10 @@ class Sabre_CalDAV_CalendarQueryParser {
     }
 
     /**
-     * Parses the time-range element 
-     * 
-     * @param DOMElement $parentNode 
-     * @return array|null 
+     * Parses the time-range element
+     *
+     * @param DOMElement $parentNode
+     * @return array|null
      */
     public function parseTimeRange(DOMElement $parentNode) {
 

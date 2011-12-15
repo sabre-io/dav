@@ -6,8 +6,8 @@ class Sabre_CardDAV_AddressBookRootTest extends PHPUnit_Framework_TestCase {
 
         $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
         $cBackend = new Sabre_CardDAV_MockBackend();
-        $root = new Sabre_CardDAV_AddressBookRoot($pBackend, $cBackend); 
-        $this->assertEquals('addressbooks', $root->getName()); 
+        $root = new Sabre_CardDAV_AddressBookRoot($pBackend, $cBackend);
+        $this->assertEquals('addressbooks', $root->getName());
 
     }
 

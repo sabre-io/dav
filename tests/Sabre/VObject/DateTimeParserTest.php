@@ -45,7 +45,7 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /** 
+    /**
      * @depends testParseICalendarDateTime
      * @expectedException Sabre_DAV_Exception_BadRequest
      */
@@ -55,7 +55,7 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /** 
+    /**
      * @depends testParseICalendarDateTime
      */
     function testParseICalendarDateTimeUTC() {
@@ -67,7 +67,7 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /** 
+    /**
      * @depends testParseICalendarDateTime
      */
     function testParseICalendarDateTimeUTC2() {
@@ -79,7 +79,7 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /** 
+    /**
      * @depends testParseICalendarDateTime
      */
     function testParseICalendarDateTimeCustomTimeZone() {
@@ -104,7 +104,7 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    /** 
+    /**
      * @depends testParseICalendarDate
      * @expectedException Sabre_DAV_Exception_BadRequest
      */

@@ -102,7 +102,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-       $this->card->setACL(array()); 
+       $this->card->setACL(array());
 
     }
 

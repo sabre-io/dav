@@ -11,7 +11,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
     }
 
     function testGet() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
@@ -36,7 +36,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
     }
 
     function testHEAD() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'HEAD',
@@ -214,5 +214,3 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
     }
 
 }
-
-?>

@@ -1,5 +1,5 @@
 CREATE TABLE principals (
-	id INTEGER PRIMARY KEY ASC, 
+	id INTEGER PRIMARY KEY ASC,
 	uri TEXT,
 	email TEXT,
 	displayname TEXT,
@@ -12,7 +12,7 @@ CREATE TABLE groupmembers (
 	member_id INTEGER,
 	UNIQUE(principal_id, member_id)
 );
-	
+
 
 INSERT INTO principals (uri,email,displayname) VALUES ('principals/admin', 'admin@example.org','Adminstrator');
 INSERT INTO principals (uri,email,displayname) VALUES ('principals/admin/calendar-proxy-read', null, null);

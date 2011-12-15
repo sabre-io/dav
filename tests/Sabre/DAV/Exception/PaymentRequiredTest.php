@@ -10,5 +10,3 @@ class Sabre_DAV_Exception_PaymentRequiredTest extends PHPUnit_Framework_TestCase
     }
 
 }
-
-?>

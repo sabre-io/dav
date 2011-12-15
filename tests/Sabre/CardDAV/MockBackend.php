@@ -38,7 +38,7 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
         return $books;
 
     }
-    
+
     function updateAddressBook($addressBookId, array $mutations) {
 
         foreach($this->addressBooks as &$book) {

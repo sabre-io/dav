@@ -17,7 +17,7 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
                 '{DAV:}expand-property',
                 '{DAV:}principal-property-search',
                 '{DAV:}principal-search-property-set'
-            ), 
+            ),
             $aclPlugin->getSupportedReportSet(''));
 
         $this->assertEquals(array('ACL'), $aclPlugin->getMethods(''));
@@ -111,7 +111,7 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
 
         $plugin = new Sabre_DAVACL_Plugin();
         $server = new Sabre_DAV_Server();
-        $server->addPlugin($plugin); 
+        $server->addPlugin($plugin);
         $this->assertEquals($expected, $plugin->getFlatPrivilegeSet(''));
 
     }
@@ -119,9 +119,9 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
     function testCurrentUserPrincipalsNotLoggedIn() {
 
         $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server(); 
-        $server->addPlugin($acl);     
-           
+        $server = new Sabre_DAV_Server();
+        $server->addPlugin($acl);
+
         $this->assertEquals(array(),$acl->getCurrentUserPrincipals());
 
     }
@@ -137,15 +137,15 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
         );
 
         $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree); 
+        $server = new Sabre_DAV_Server($tree);
         $server->addPlugin($acl);
 
         $auth = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'SabreDAV');
         $server->addPlugin($auth);
 
         //forcing login
-        $auth->beforeMethod('GET','/'); 
-           
+        $auth->beforeMethod('GET','/');
+
         $this->assertEquals(array('principals/admin'),$acl->getCurrentUserPrincipals());
 
     }
@@ -164,14 +164,14 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
         );
 
         $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree); 
+        $server = new Sabre_DAV_Server($tree);
         $server->addPlugin($acl);
 
         $auth = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'SabreDAV');
         $server->addPlugin($auth);
 
         //forcing login
-        $auth->beforeMethod('GET','/'); 
+        $auth->beforeMethod('GET','/');
 
         $expected = array(
             'principals/admin',

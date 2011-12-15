@@ -21,6 +21,6 @@
          <file>../lib/Sabre/DAV/includes.php</file>
          <file>../lib/Sabre/VObject/includes.php</file>
        </exclude>
-    </whitelist> 
+    </whitelist>
   </filter>
 </phpunit>

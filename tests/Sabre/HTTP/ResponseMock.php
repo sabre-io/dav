@@ -25,5 +25,3 @@ class Sabre_HTTP_ResponseMock extends Sabre_HTTP_Response {
     }
 
 }
-
-?>

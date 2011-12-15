@@ -12,7 +12,7 @@ CREATE TABLE groupmembers (
     member_id INTEGER UNSIGNED NOT NULL,
     UNIQUE(principal_id, member_id)
 );
-    
+
 
 INSERT INTO principals (uri,email,displayname) VALUES
 ('principals/admin', 'admin@example.org','Adminstrator'),

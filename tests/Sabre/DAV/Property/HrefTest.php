@@ -83,6 +83,6 @@ class Sabre_DAV_Property_HrefTest extends PHPUnit_Framework_TestCase {
         $href = Sabre_DAV_Property_Href::unserialize($dom->firstChild);
         $this->assertNull($href);
 
-    } 
+    }
 
 }

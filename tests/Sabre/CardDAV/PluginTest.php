@@ -8,7 +8,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
         $this->assertEquals('card', $this->server->xmlNamespaces[Sabre_CardDAV_Plugin::NS_CARDDAV]);
         $this->assertEquals('{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook', $this->server->resourceTypeMapping['Sabre_CardDAV_IAddressBook']);
-        
+
         $this->assertTrue(in_array('addressbook', $this->plugin->getFeatures()));
 
     }
@@ -60,7 +60,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
         $output = '';
         $r = $this->server->broadcastEvent('onHTMLActionsPanel', array($this->server->tree->getNodeForPath('addressbooks/user1'), &$output));
         $this->assertFalse($r);
-        
+
         $this->assertTrue(!!strpos($output,'Display name'));
 
     }

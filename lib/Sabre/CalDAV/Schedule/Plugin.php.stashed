@@ -1,12 +1,12 @@
     /**
-     * The 'afterBind' event is invoked after any new file or collection is 
+     * The 'afterBind' event is invoked after any new file or collection is
      * created.
      *
-     * We are intercepting it, because we need to look at newly created 
-     * calendar objects and do additional processing if they are also 
+     * We are intercepting it, because we need to look at newly created
+     * calendar objects and do additional processing if they are also
      * scheduling object resources.
-     * 
-     * @param string $uri 
+     *
+     * @param string $uri
      * @return void
      */
     /*
@@ -52,11 +52,11 @@
     }*/
 
     /**
-     * This method is responsible for cases where a new scheduling resource 
-     * was created. This is either through a PUT of a new object, or a 
-     * modification from an existing object so it becomes a scheduling 
+     * This method is responsible for cases where a new scheduling resource
+     * was created. This is either through a PUT of a new object, or a
+     * modification from an existing object so it becomes a scheduling
      * resource.
-     * 
+     *
      * @param Sabre_CalDAV_ICalendarObject $objectNode
      * @param Sabre_VObject_Component $vObject
      * @param int $attendeeType 1 or 2 if it's a organizer or attendee
@@ -84,17 +84,17 @@
                     $dtStamp = new Sabre_VObject_Element_DateTime('DTSTAMP');
                     $dtStamp->setDateTime(new DateTime('NOW'), Sabre_VObject_Element_DateTime::UTC);
                     $vObject->add($dtStamp);
-                } 
+                }
 
-                $inboxes = new SplObjectStorage(); 
+                $inboxes = new SplObjectStorage();
                 $defaultCalendars = new SplObjectStorage();
 
                 foreach($vObject->selectComponents() as $vComponent) {
 
                     foreach($vComponent->attendee as $vAttendee) {
 
-                        // We are only supposed to handle attendees that have 
-                        // the schedule agent set to server (or not set at, 
+                        // We are only supposed to handle attendees that have
+                        // the schedule agent set to server (or not set at,
                         // which also means 'server'.
                         if (isset($vAttendee['SCHEDULE-AGENT']) && strtoupper($vAttendee['SCHEDULE-AGENT']) !== 'SERVER') {
                             continue;
@@ -113,14 +113,14 @@
                         if (!count($result)) {
                             // Attendee not found
                             $vAttendee['SCHEDULE-STATUS'] = '3.404'; // Our made-up number for 'not found'
-                            continue; 
+                            continue;
                         } else {
                             $vAttendee['SCHEDULE-STATUS'] = '2.0';
                         }
                         $inboxUrl = $result[0][200][$NS . 'schedule-inbox-URL'];
 
                         $inbox = $this->server->getNodeForPath($inboxUrl);
-                        if (!$inboxes->contains($inbox)) { 
+                        if (!$inboxes->contains($inbox)) {
                             $inboxes->attach($inbox);
                         }
                         if (isset($result[0][200][$NS . 'schedule-default-calendar'])) {
@@ -137,16 +137,16 @@
                             $defaultCalendars->attach($calendar);
                         }
 
-                    } 
+                    }
 
                 }
 
-                // Sending everybody the iTIP message 
+                // Sending everybody the iTIP message
                 $iCalendarData = $vObject->serialize();
                 foreach($inboxes as $inbox) {
                     $inbox->deliver($iCalendarData);
                 }
-                // Updating the organizers' event 
+                // Updating the organizers' event
                 $objectNode->put($iCalendarData);
 
                 // Creating attendee standard calendar objects
@@ -168,17 +168,17 @@
     /**
      * Checks if a VObject is also a scheduling object resource.
      *
-     * This method will also pass 1 or 2 to the attendeeType argument, 
-     * depending on if it matched a user with the organizer, or attendee 
+     * This method will also pass 1 or 2 to the attendeeType argument,
+     * depending on if it matched a user with the organizer, or attendee
      * respectively.
      *
-     * The compType argument is filled with the type of iCalendar component, 
+     * The compType argument is filled with the type of iCalendar component,
      * which may either be VEVENT, VTODO or VJOURNAL.
-     * 
+     *
      * @param Sabre_VObject_Component $vObject
      * @param array $userAddresses
      * @param int $attendeeType
-     * @return bool 
+     * @return bool
      */
     /*
     protected function isSchedulingObject(Sabre_VObject_Component $vObject, array $userAddresses, &$attendeeType = null) {
@@ -195,7 +195,7 @@
 
         // This should actually not happen for valid iCalendar objects.
         if (is_null($vComponent))
-            return false; 
+            return false;
 
         $organizer = (string)$vComponent->organizer;
         if (!$organizer)
@@ -217,10 +217,8 @@
 
         }
 
-        return false; 
+        return false;
 
     }*/
 
 }
-
-?>

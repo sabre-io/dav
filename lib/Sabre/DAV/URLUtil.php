@@ -11,11 +11,11 @@
  * Specifically, it was found that GVFS (gnome's webdav client) does not like encoding of ( and
  * ). Since these are reserved, but don't have a reserved meaning in url, these characters are
  * kept as-is.
- * 
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_URLUtil {
@@ -24,9 +24,9 @@ class Sabre_DAV_URLUtil {
      * Encodes the path of a url.
      *
      * slashes (/) are treated as path-separators.
-     * 
-     * @param string $path 
-     * @return string 
+     *
+     * @param string $path
+     * @return string
      */
     static function encodePath($path) {
 
@@ -35,16 +35,16 @@ class Sabre_DAV_URLUtil {
             return '%'.sprintf('%02x',ord($match[0]));
 
         }, $path);
-    	
+
     }
 
     /**
      * Encodes a 1 segment of a path
      *
      * Slashes are considered part of the name, and are encoded as %2f
-     * 
-     * @param string $pathSegment 
-     * @return string 
+     *
+     * @param string $pathSegment
+     * @return string
      */
     static function encodePathSegment($pathSegment) {
 
@@ -58,8 +58,8 @@ class Sabre_DAV_URLUtil {
     /**
      * Decodes a url-encoded path
      *
-     * @param string $path 
-     * @return string 
+     * @param string $path
+     * @return string
      */
     static function decodePath($path) {
 
@@ -70,8 +70,8 @@ class Sabre_DAV_URLUtil {
     /**
      * Decodes a url-encoded path segment
      *
-     * @param string $path 
-     * @return string 
+     * @param string $path
+     * @return string
      */
     static function decodePathSegment($path) {
 
@@ -80,7 +80,7 @@ class Sabre_DAV_URLUtil {
 
         switch($encoding) {
 
-            case 'ISO-8859-1' : 
+            case 'ISO-8859-1' :
                 $path = utf8_encode($path);
 
         }
@@ -90,7 +90,7 @@ class Sabre_DAV_URLUtil {
     }
 
     /**
-     * Returns the 'dirname' and 'basename' for a path. 
+     * Returns the 'dirname' and 'basename' for a path.
      *
      * The reason there is a custom function for this purpose, is because
      * basename() is locale aware (behaviour changes if C locale or a UTF-8 locale is used)
@@ -104,8 +104,8 @@ class Sabre_DAV_URLUtil {
      * If there is no dirname, it will return an empty string. Any / appearing at the end of the
      * string is stripped off.
      *
-     * @param string $path 
-     * @return array 
+     * @param string $path
+     * @return array
      */
     static function splitPath($path) {
 

@@ -1,23 +1,23 @@
 <?php
 
 /**
- * Directory class 
- * 
+ * Directory class
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICollection, Sabre_DAV_IQuota {
 
     /**
-     * Creates a new file in the directory 
-     * 
+     * Creates a new file in the directory
+     *
      * data is a readable stream resource
      *
-     * @param string $name Name of the file 
-     * @param resource $data Initial payload 
+     * @param string $name Name of the file
+     * @param resource $data Initial payload
      * @return void
      */
     public function createFile($name, $data = null) {
@@ -28,9 +28,9 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
-     * Creates a new subdirectory 
-     * 
-     * @param string $name 
+     * Creates a new subdirectory
+     *
+     * @param string $name
      * @return void
      */
     public function createDirectory($name) {
@@ -41,11 +41,11 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
-     * Returns a specific child node, referenced by its name 
-     * 
-     * @param string $name 
+     * Returns a specific child node, referenced by its name
+     *
+     * @param string $name
      * @throws Sabre_DAV_Exception_FileNotFound
-     * @return Sabre_DAV_INode 
+     * @return Sabre_DAV_INode
      */
     public function getChild($name) {
 
@@ -66,9 +66,9 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
-     * Returns an array with all the child nodes 
-     * 
-     * @return Sabre_DAV_INode[] 
+     * Returns an array with all the child nodes
+     *
+     * @return Sabre_DAV_INode[]
      */
     public function getChildren() {
 
@@ -79,10 +79,10 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
-     * Checks if a child exists. 
-     * 
-     * @param string $name 
-     * @return bool 
+     * Checks if a child exists.
+     *
+     * @param string $name
+     * @return bool
      */
     public function childExists($name) {
 
@@ -92,8 +92,8 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
-     * Deletes all files in this directory, and then itself 
-     * 
+     * Deletes all files in this directory, and then itself
+     *
      * @return void
      */
     public function delete() {
@@ -104,16 +104,16 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     }
 
     /**
-     * Returns available diskspace information 
-     * 
-     * @return array 
+     * Returns available diskspace information
+     *
+     * @return array
      */
     public function getQuotaInfo() {
 
         return array(
             disk_total_space($this->path)-disk_free_space($this->path),
             disk_free_space($this->path)
-            ); 
+            );
 
     }
 

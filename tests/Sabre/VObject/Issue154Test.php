@@ -25,5 +25,3 @@ class Sabre_VObject_Issue154Test extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

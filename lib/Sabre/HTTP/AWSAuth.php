@@ -30,7 +30,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
     /**
      * An error code, if any
      *
-     * This value will be filled with one of the ERR_* contants
+     * This value will be filled with one of the ERR_* constants
      *
      * @var int
      */
@@ -79,6 +79,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
     /**
      * Validates the signature based on the secretKey
      *
+     * @param string $secretKey
      * @return bool
      */
     public function validate($secretKey) {
@@ -181,7 +182,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
     /**
      * Returns a list of AMZ headers
      *
-     * @return void
+     * @return string
      */
     protected function getAmzHeaders() {
 

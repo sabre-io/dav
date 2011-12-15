@@ -48,5 +48,3 @@ class Sabre_DAV_ServerFinderBlockTest extends Sabre_DAV_AbstractServer{
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/testput.txt'));
     }
 }
-
-?>

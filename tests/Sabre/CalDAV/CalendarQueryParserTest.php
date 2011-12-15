@@ -4,7 +4,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
 
     function parse($xml) {
 
-        $xml =  
+        $xml =
 '<?xml version="1.0"?>
 <c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">
 ' . implode("\n", $xml) . '
@@ -87,7 +87,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                     'name' => 'VEVENT',
                     'comp-filters' => array(),
                     'prop-filters' => array(),
-                    'is-not-defined' => true, 
+                    'is-not-defined' => true,
                     'time-range' => false
                 ),
             ),
@@ -145,31 +145,31 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                     'name' => 'VEVENT',
                     'comp-filters' => array(),
                     'prop-filters' => array(),
-                    'is-not-defined' => false, 
+                    'is-not-defined' => false,
                     'time-range' => array(
                         'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('GMT')),
                         'end' => new DateTime('2011-12-31 23:59:59', new DateTimeZone('GMT')),
-                    ), 
+                    ),
                 ),
                 array(
                     'name' => 'VTODO',
                     'comp-filters' => array(),
                     'prop-filters' => array(),
-                    'is-not-defined' => false, 
+                    'is-not-defined' => false,
                     'time-range' => array(
                         'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('GMT')),
                         'end' => null,
-                    ), 
+                    ),
                 ),
                 array(
                     'name' => 'VJOURNAL',
                     'comp-filters' => array(),
                     'prop-filters' => array(),
-                    'is-not-defined' => false, 
+                    'is-not-defined' => false,
                     'time-range' => array(
                         'start' => null,
                         'end' => new DateTime('2011-12-31 23:59:59', new DateTimeZone('GMT')),
-                    ), 
+                    ),
                 ),
             ),
             'prop-filters' => array(),
@@ -222,12 +222,12 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
             'comp-filters' => array(
                 array(
                     'name' => 'VEVENT',
-                    'is-not-defined' => false, 
+                    'is-not-defined' => false,
                     'comp-filters' => array(),
                     'prop-filters' => array(
                         array(
                             'name' => 'SUMMARY',
-                            'is-not-defined' => false, 
+                            'is-not-defined' => false,
                             'param-filters' => array(),
                             'text-match' => array(
                                 'negate-condition' => false,
@@ -237,7 +237,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                             'time-range' => null,
                        ),
                     ),
-                    'time-range' => null, 
+                    'time-range' => null,
                 ),
             ),
             'prop-filters' => array(),
@@ -283,12 +283,12 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
             'comp-filters' => array(
                 array(
                     'name' => 'VEVENT',
-                    'is-not-defined' => false, 
+                    'is-not-defined' => false,
                     'comp-filters' => array(),
                     'prop-filters' => array(
                         array(
                             'name' => 'SUMMARY',
-                            'is-not-defined' => false, 
+                            'is-not-defined' => false,
                             'param-filters' => array(),
                             'text-match' => array(
                                 'negate-condition' => false,
@@ -299,7 +299,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                         ),
                         array(
                             'name' => 'DTSTAMP',
-                            'is-not-defined' => false, 
+                            'is-not-defined' => false,
                             'param-filters' => array(),
                             'text-match' => null,
                             'time-range' => array(
@@ -309,14 +309,14 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                         ),
                         array(
                             'name' => 'ORGANIZER',
-                            'is-not-defined' => true, 
+                            'is-not-defined' => true,
                             'param-filters' => array(),
                             'text-match' => null,
-                            'time-range' => null, 
+                            'time-range' => null,
                         ),
                         array(
                             'name' => 'DTSTART',
-                            'is-not-defined' => false, 
+                            'is-not-defined' => false,
                             'param-filters' => array(
                                 array(
                                     'name' => 'VALUE',
@@ -329,10 +329,10 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                                 ),
                             ),
                             'text-match' => null,
-                            'time-range' => null, 
+                            'time-range' => null,
                         ),
                     ),
-                    'time-range' => null, 
+                    'time-range' => null,
                 ),
             ),
             'prop-filters' => array(),
@@ -373,7 +373,7 @@ BLA;
 
         $q = new Sabre_CalDAV_CalendarQueryParser($dom);
         $q->parse();
-       
+
         $this->assertEquals(array(
             '{urn:ietf:params:xml:ns:caldav}calendar-data',
             '{DAV:}getetag',
@@ -397,9 +397,9 @@ BLA;
             'time-range' => null,
             'is-not-defined' => false,
         );
-        
+
         $this->assertEquals($expectedFilters, $q->filters);
 
-    } 
+    }
 
 }

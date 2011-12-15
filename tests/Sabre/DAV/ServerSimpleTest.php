@@ -10,7 +10,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
         $nodes = array(
             new Sabre_DAV_SimpleDirectory('hello')
-        ); 
+        );
 
         $server = new Sabre_DAV_Server($nodes);
         $this->assertEquals($nodes[0], $server->tree->getNodeForPath('hello'));
@@ -25,7 +25,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $nodes = array(
             new Sabre_DAV_SimpleDirectory('hello'),
             new STDClass(),
-        ); 
+        );
 
         $server = new Sabre_DAV_Server($nodes);
 
@@ -41,7 +41,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     }
 
     function testGet() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
@@ -65,7 +65,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     }
 
     function testGetDoesntExist() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt_randomblbla',
             'REQUEST_METHOD' => 'GET',
@@ -79,7 +79,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     }
 
     function testGetDoesntExist2() {
-       
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt/randomblbla',
             'REQUEST_METHOD' => 'GET',
@@ -96,10 +96,10 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
      * This test should have the exact same result as testGet.
      *
      * The idea is that double slashes // are converted to single ones /
-     * 
+     *
      */
     function testGetDoubleSlash() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '//test.txt',
             'REQUEST_METHOD' => 'GET',
@@ -124,7 +124,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
 
     function testHEAD() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'HEAD',
@@ -294,7 +294,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals('', $this->response->body);
 
-    
+
     }
     function testNonExistantMethod() {
 
@@ -378,14 +378,14 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     function testBaseUriAddSlash() {
 
-        $tests = array( 
+        $tests = array(
             '/'         => '/',
             '/foo'      => '/foo/',
             '/foo/'     => '/foo/',
             '/foo/bar'  => '/foo/bar/',
             '/foo/bar/' => '/foo/bar/',
         );
-        
+
         foreach($tests as $test=>$result) {
             $this->server->setBaseUri($test);
 
@@ -446,7 +446,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             $this->assertEquals("\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
 
         }
-       
+
         $this->server->setBaseUri('/');
 
         foreach($uris as $uri) {
@@ -479,7 +479,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         }
 
     }
-   
+
     /**
      * @covers Sabre_DAV_Server::guessBaseUri
      */
@@ -497,7 +497,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
-    
+
     /**
      * @depends testGuessBaseUri
      * @covers Sabre_DAV_Server::guessBaseUri
@@ -600,9 +600,9 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
         $this->assertEquals('/index.php/', $server->guessBaseUri());
 
     }
-   
+
     function testTriggerException() {
-        
+
         $this->server->subscribeEvent('beforeMethod',array($this,'exceptionTrigger'));
         $this->server->exec();
 
@@ -615,9 +615,9 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     }
 
     function exceptionTrigger() {
-        
+
         throw new Sabre_DAV_Exception('Hola');
-        
+
     }
 
     function testReportNotFound() {
@@ -666,13 +666,13 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     }
 
     function reportHandler($reportName) {
-        
+
         if ($reportName=='{http://www.rooftopsolutions.nl/NS}myreport') {
             $this->server->httpResponse->sendStatus(418);
             $this->server->httpResponse->setHeader('testheader','testvalue');
             return false;
         }
-        else return; 
+        else return;
 
     }
 
@@ -692,5 +692,3 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     }
 
 }
-
-?>

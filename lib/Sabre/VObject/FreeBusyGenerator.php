@@ -1,60 +1,60 @@
 <?php
 
 /**
- * This class helps with generating FREEBUSY reports based on existing sets of 
+ * This class helps with generating FREEBUSY reports based on existing sets of
  * objects.
  *
- * It only looks at VEVENT and VFREEBUSY objects from the sourcedata, and 
+ * It only looks at VEVENT and VFREEBUSY objects from the sourcedata, and
  * generates a single VFREEBUSY object.
  *
- * VFREEBUSY components are described in RFC5545, The rules for what should 
+ * VFREEBUSY components are described in RFC5545, The rules for what should
  * go in a single freebusy report is taken from RFC4791, section 7.10.
- * 
+ *
  * @package Sabre
  * @subpackage VObject
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_FreeBusyGenerator {
 
     /**
-     * Input objects 
-     * 
-     * @var array 
+     * Input objects
+     *
+     * @var array
      */
     protected $objects;
 
     /**
-     * Start of range 
-     * 
-     * @var DateTime|null 
+     * Start of range
+     *
+     * @var DateTime|null
      */
     protected $start;
 
     /**
-     * End of range 
-     * 
-     * @var DateTime|null 
+     * End of range
+     *
+     * @var DateTime|null
      */
     protected $end;
 
     /**
      * VCALENDAR object
-     * 
-     * @var Sabre_VObject_Component 
+     *
+     * @var Sabre_VObject_Component
      */
     protected $baseObject;
 
     /**
      * Sets the VCALENDAR object.
      *
-     * If this is set, it will not be generated for you. You are responsible 
+     * If this is set, it will not be generated for you. You are responsible
      * for setting things like the METHOD, CALSCALE, VERSION, etc..
      *
      * The VFREEBUSY object will be automatically added though.
-     * 
-     * @param Sabre_VObject_Component $vcalendar 
+     *
+     * @param Sabre_VObject_Component $vcalendar
      * @return void
      */
     public function setBaseObject(Sabre_VObject_Component $vcalendar) {
@@ -66,10 +66,10 @@ class Sabre_VObject_FreeBusyGenerator {
     /**
      * Sets the input objects
      *
-     * Every object must either be a string or a Sabre_VObject_Component. 
-     * 
-     * @param array $objects 
-     * @return void 
+     * Every object must either be a string or a Sabre_VObject_Component.
+     *
+     * @param array $objects
+     * @return void
      */
     public function setObjects(array $objects) {
 
@@ -91,24 +91,24 @@ class Sabre_VObject_FreeBusyGenerator {
     /**
      * Sets the time range
      *
-     * Any freebusy object falling outside of this time range will be ignored. 
-     * 
-     * @param DateTime $start 
-     * @param DateTime $end 
+     * Any freebusy object falling outside of this time range will be ignored.
+     *
+     * @param DateTime $start
+     * @param DateTime $end
      * @return void
      */
     public function setTimeRange(DateTime $start = null, DateTime $end = null) {
-        
+
         $this->start = $start;
         $this->end = $end;
 
-    } 
+    }
 
     /**
-     * Parses the input data and returns a correct VFREEBUSY object, wrapped in 
+     * Parses the input data and returns a correct VFREEBUSY object, wrapped in
      * a VCALENDAR.
-     * 
-     * @return Sabre_VObject_Component 
+     *
+     * @return Sabre_VObject_Component
      */
     public function getResult() {
 
@@ -150,10 +150,9 @@ class Sabre_VObject_FreeBusyGenerator {
                             while($iterator->valid() && --$maxRecurrences) {
 
                                 $startTime = $iterator->getDTStart();
-                                $endTime = $iterator->getDTEnd();
                                 if ($this->end && $startTime > $this->end) {
                                     break;
-                                } 
+                                }
                                 $times[] = array(
                                     $iterator->getDTStart(),
                                     $iterator->getDTEnd(),
@@ -191,14 +190,14 @@ class Sabre_VObject_FreeBusyGenerator {
                         foreach($times as $time) {
 
                             if ($this->end && $time[0] > $this->end) break;
-                            if ($this->start && $time[1] < $this->start) break; 
+                            if ($this->start && $time[1] < $this->start) break;
 
                             $busyTimes[] = array(
                                 $time[0],
                                 $time[1],
                                 $FBTYPE,
                             );
-                        } 
+                        }
                         break;
 
                     case 'VFREEBUSY' :
@@ -214,7 +213,7 @@ class Sabre_VObject_FreeBusyGenerator {
                             foreach($values as $value) {
                                 list($startTime, $endTime) = explode('/', $value);
                                 $startTime = Sabre_VObject_DateTimeParser::parseDateTime($startTime);
-                                
+
                                 if (substr($endTime,0,1)==='P' || substr($endTime,0,2)==='-P') {
                                     $duration = Sabre_VObject_DateTimeParser::parseDuration($endTime);
                                     $endTime = clone $startTime;
@@ -242,7 +241,7 @@ class Sabre_VObject_FreeBusyGenerator {
                 }
 
 
-            } 
+            }
 
         }
 

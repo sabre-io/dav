@@ -8,7 +8,7 @@ class Sabre_DAVACL_Exception_NeedPrivilegesTest extends PHPUnit_Framework_TestCa
         $privileges = array(
             '{DAV:}read',
             '{DAV:}write',
-        ); 
+        );
         $ex = new Sabre_DAVACL_Exception_NeedPrivileges($uri, $privileges);
 
         $server = new Sabre_DAV_Server();

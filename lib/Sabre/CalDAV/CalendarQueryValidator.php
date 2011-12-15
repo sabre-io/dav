@@ -3,29 +3,29 @@
 /**
  * CalendarQuery Validator
  *
- * This class is responsible for checking if an iCalendar object matches a set 
+ * This class is responsible for checking if an iCalendar object matches a set
  * of filters. The main function to do this is 'validate'.
  *
- * This is used to determine which icalendar objects should be returned for a 
- * calendar-query REPORT request. 
- * 
+ * This is used to determine which icalendar objects should be returned for a
+ * calendar-query REPORT request.
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_CalendarQueryValidator {
 
     /**
-     * Verify if a list of filters applies to the calendar data object 
+     * Verify if a list of filters applies to the calendar data object
      *
-     * The calendarData object must be a valid iCalendar blob. The list of 
+     * The calendarData object must be a valid iCalendar blob. The list of
      * filters must be formatted as parsed by Sabre_CalDAV_CalendarQueryParser
      *
-     * @param string $calendarData 
-     * @param array $filters 
-     * @return bool 
+     * @param string $calendarData
+     * @param array $filters
+     * @return bool
      */
     public function validate($calendarData,array $filters) {
 
@@ -37,7 +37,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
             return false;
         }
 
-        return 
+        return
             $this->validateCompFilters($vObject, $filters['comp-filters']) &&
             $this->validatePropFilters($vObject, $filters['prop-filters']);
 
@@ -47,13 +47,13 @@ class Sabre_CalDAV_CalendarQueryValidator {
     /**
      * This method checks the validity of comp-filters.
      *
-     * A list of comp-filters needs to be specified. Also the parent of the 
-     * component we're checking should be specified, not the component to check 
+     * A list of comp-filters needs to be specified. Also the parent of the
+     * component we're checking should be specified, not the component to check
      * itself.
-     * 
+     *
      * @param Sabre_VObject_Component $parent
-     * @param array $filters 
-     * @return bool 
+     * @param array $filters
+     * @return bool
      */
     protected function validateCompFilters(Sabre_VObject_Component $parent, array $filters) {
 
@@ -63,9 +63,9 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
             if ($filter['is-not-defined']) {
 
-                if ($isDefined) { 
+                if ($isDefined) {
                     return false;
-                } else { 
+                } else {
                     continue;
                 }
 
@@ -87,7 +87,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 continue;
             }
 
-            // If there are sub-filters, we need to find at least one component 
+            // If there are sub-filters, we need to find at least one component
             // for which the subfilters hold true.
             foreach($parent->$filter['name'] as $subComponent) {
 
@@ -100,29 +100,29 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
             }
 
-            // If we got here it means there were sub-comp-filters or 
-            // sub-prop-filters and there was no match. This means this filter 
+            // If we got here it means there were sub-comp-filters or
+            // sub-prop-filters and there was no match. This means this filter
             // needs to return false.
             return false;
 
         }
 
-        // If we got here it means we got through all comp-filters alive so the 
+        // If we got here it means we got through all comp-filters alive so the
         // filters were all true.
-        return true; 
+        return true;
 
     }
 
     /**
      * This method checks the validity of prop-filters.
      *
-     * A list of prop-filters needs to be specified. Also the parent of the 
-     * property we're checking should be specified, not the property to check 
+     * A list of prop-filters needs to be specified. Also the parent of the
+     * property we're checking should be specified, not the property to check
      * itself.
-     * 
+     *
      * @param Sabre_VObject_Component $parent
-     * @param array $filters 
-     * @return bool 
+     * @param array $filters
+     * @return bool
      */
     protected function validatePropFilters(Sabre_VObject_Component $parent, array $filters) {
 
@@ -132,9 +132,9 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
             if ($filter['is-not-defined']) {
 
-                if ($isDefined) { 
+                if ($isDefined) {
                     return false;
-                } else { 
+                } else {
                     continue;
                 }
 
@@ -156,43 +156,43 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 continue;
             }
 
-            // If there are sub-filters, we need to find at least one property 
+            // If there are sub-filters, we need to find at least one property
             // for which the subfilters hold true.
             foreach($parent->$filter['name'] as $subComponent) {
 
                 if(
                     $this->validateParamFilters($subComponent, $filter['param-filters']) &&
                     (!$filter['text-match'] || $this->validateTextMatch($subComponent, $filter['text-match']))
-                ) { 
+                ) {
                     // We had a match, so this prop-filter succeeds
                     continue 2;
                 }
 
             }
 
-            // If we got here it means there were sub-param-filters or 
-            // text-match filters and there was no match. This means the 
-            // filter needs to return false. 
+            // If we got here it means there were sub-param-filters or
+            // text-match filters and there was no match. This means the
+            // filter needs to return false.
             return false;
 
         }
 
-        // If we got here it means we got through all prop-filters alive so the 
+        // If we got here it means we got through all prop-filters alive so the
         // filters were all true.
-        return true; 
+        return true;
 
     }
 
     /**
      * This method checks the validity of param-filters.
      *
-     * A list of param-filters needs to be specified. Also the parent of the 
-     * parameter we're checking should be specified, not the parameter to check 
+     * A list of param-filters needs to be specified. Also the parent of the
+     * parameter we're checking should be specified, not the parameter to check
      * itself.
-     * 
+     *
      * @param Sabre_VObject_Property $parent
-     * @param array $filters 
-     * @return bool 
+     * @param array $filters
+     * @return bool
      */
     protected function validateParamFilters(Sabre_VObject_Property $parent, array $filters) {
 
@@ -202,9 +202,9 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
             if ($filter['is-not-defined']) {
 
-                if ($isDefined) { 
+                if ($isDefined) {
                     return false;
-                } else { 
+                } else {
                     continue;
                 }
 
@@ -217,7 +217,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 continue;
             }
 
-            // If there are sub-filters, we need to find at least one parameter 
+            // If there are sub-filters, we need to find at least one parameter
             // for which the subfilters hold true.
             foreach($parent[$filter['name']] as $subParam) {
 
@@ -228,27 +228,27 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
             }
 
-            // If we got here it means there was a text-match filter and there 
+            // If we got here it means there was a text-match filter and there
             // were no matches. This means the filter needs to return false.
             return false;
 
         }
 
-        // If we got here it means we got through all param-filters alive so the 
+        // If we got here it means we got through all param-filters alive so the
         // filters were all true.
-        return true; 
+        return true;
 
     }
 
     /**
      * This method checks the validity of a text-match.
      *
-     * A single text-match should be specified as well as the specific property 
+     * A single text-match should be specified as well as the specific property
      * or parameter we need to validate.
-     * 
-     * @param Sabre_VObject_Element $parent
-     * @param array $filters 
-     * @return bool 
+     *
+     * @param Sabre_VObject_Node $parent
+     * @param array $textMatch
+     * @return bool
      */
     protected function validateTextMatch(Sabre_VObject_Node $parent, array $textMatch) {
 
@@ -263,13 +263,13 @@ class Sabre_CalDAV_CalendarQueryValidator {
     /**
      * Validates if a component matches the given time range.
      *
-     * This is all based on the rules specified in rfc4791, which are quite 
+     * This is all based on the rules specified in rfc4791, which are quite
      * complex.
-     * 
-     * @param Sabre_VObject_Component $component 
-     * @param DateTime $start 
-     * @param DateTime $end 
-     * @return void
+     *
+     * @param Sabre_VObject_Node $component
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return bool
      */
     protected function validateTimeRange(Sabre_VObject_Node $component, $start, $end) {
 
@@ -288,15 +288,15 @@ class Sabre_CalDAV_CalendarQueryValidator {
                     $it = new Sabre_VObject_RecurrenceIterator($component);
                     $it->fastForward($start);
 
-                    // We fast-forwarded to a spot where the end-time of the 
-                    // recurrence instance exceeded the start of the requested 
+                    // We fast-forwarded to a spot where the end-time of the
+                    // recurrence instance exceeded the start of the requested
                     // time-range.
                     //
-                    // If the starttime of the recurrence did not exceed the 
+                    // If the starttime of the recurrence did not exceed the
                     // end of the time range as well, we have a match.
                     return ($it->getDTStart() < $end && $it->getDTEnd() > $start);
 
-                } 
+                }
 
                 $effectiveStart = $component->DTSTART->getDateTime();
                 if (isset($component->DTEND)) {
@@ -311,7 +311,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                     $effectiveEnd = clone $effectiveStart;
                 }
                 return (
-                    ($start < $effectiveEnd) && ($end > $effectiveStart) 
+                    ($start < $effectiveEnd) && ($end > $effectiveStart)
                 );
 
             case 'VTODO' :
@@ -372,7 +372,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 if(!isset($trigger['TYPE']) || strtoupper($trigger['TYPE']) === 'DURATION') {
                     $triggerDuration = Sabre_VObject_DateTimeParser::parseDuration($component->TRIGGER);
                     $related = (isset($trigger['RELATED']) && strtoupper($trigger['RELATED']) == 'END') ? 'END' : 'START';
-                    
+
                     $parentComponent = $component->parent;
                     if ($related === 'START') {
                         $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
@@ -412,9 +412,9 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
                     $period = new DatePeriod($effectiveTrigger, $duration, (int)$repeat);
 
-                    foreach($period as $occurence) {
+                    foreach($period as $occurrence) {
 
-                        if ($start <= $occurence && $end > $occurence) {
+                        if ($start <= $occurrence && $end > $occurrence) {
                             return true;
                         }
                     }
@@ -438,8 +438,6 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
         }
 
-    } 
+    }
 
 }
-
-?>

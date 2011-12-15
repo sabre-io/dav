@@ -24,7 +24,7 @@ class Sabre_HTTP_ResponseTest extends PHPUnit_Framework_TestCase {
         $this->response->setHeader('Content-Type','text/html');
         $this->assertEquals('text/html', $this->response->headers['Content-Type']);
 
-    
+
     }
 
     function testSendStatus() {
@@ -56,5 +56,3 @@ class Sabre_HTTP_ResponseTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

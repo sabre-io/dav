@@ -6,9 +6,9 @@
  * This plugin provides a html representation, so that a WebDAV server may be accessed
  * using a browser.
  *
- * The class intercepts GET requests to collection resources and generates a simple 
- * html index. 
- * 
+ * The class intercepts GET requests to collection resources and generates a simple
+ * html index.
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
@@ -18,16 +18,16 @@
 class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
-     * reference to server class 
-     * 
-     * @var Sabre_DAV_Server 
+     * reference to server class
+     *
+     * @var Sabre_DAV_Server
      */
     protected $server;
 
     /**
      * enableEditing
-     * 
-     * @var bool 
+     *
+     * @var bool
      */
     protected $enablePost = true;
 
@@ -36,20 +36,19 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * By default it will allow file creation and uploads.
      * Specify the first argument as false to disable this
-     * 
-     * @param bool $enablePost 
-     * @return void
+     *
+     * @param bool $enablePost
      */
     public function __construct($enablePost=true) {
 
-        $this->enablePost = $enablePost; 
+        $this->enablePost = $enablePost;
 
     }
 
     /**
-     * Initializes the plugin and subscribes to events 
-     * 
-     * @param Sabre_DAV_Server $server 
+     * Initializes the plugin and subscribes to events
+     *
+     * @param Sabre_DAV_Server $server
      * @return void
      */
     public function initialize(Sabre_DAV_Server $server) {
@@ -61,23 +60,24 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method intercepts GET requests to collections and returns the html 
-     * 
-     * @param string $method 
-     * @return bool 
+     * This method intercepts GET requests to collections and returns the html
+     *
+     * @param string $method
+     * @param string $uri
+     * @return bool
      */
     public function httpGetInterceptor($method, $uri) {
 
         if ($method!='GET') return true;
 
-        try { 
+        try {
             $node = $this->server->tree->getNodeForPath($uri);
         } catch (Sabre_DAV_Exception_FileNotFound $e) {
-            // We're simply stopping when the file isn't found to not interfere 
+            // We're simply stopping when the file isn't found to not interfere
             // with other plugins.
             return;
         }
-        if ($node instanceof Sabre_DAV_IFile) 
+        if ($node instanceof Sabre_DAV_IFile)
             return;
 
         $this->server->httpResponse->sendStatus(200);
@@ -88,14 +88,14 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         );
 
         return false;
-        
+
     }
 
     /**
      * Handles POST requests for tree operations.
-     * 
+     *
      * @param string $method
-     * @param string $uri 
+     * @param string $uri
      * @return bool
      */
     public function httpPOSTHandler($method, $uri) {
@@ -103,8 +103,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         if ($method!='POST') return;
         $contentType = $this->server->httpRequest->getHeader('Content-Type');
 
-        if ($contentType !== 'application/x-www-form-urlencoded' && 
-            $contentType !== 'multipart/form-data') { 
+        if ($contentType !== 'application/x-www-form-urlencoded' &&
+            $contentType !== 'multipart/form-data') {
                 return;
         }
         $postVars = $this->server->httpRequest->getPostVars();
@@ -126,15 +126,15 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 case 'put' :
                     if ($_FILES) $file = current($_FILES);
                     else break;
-                    $newName = trim($file['name']);
+
                     list(, $newName) = Sabre_DAV_URLUtil::splitPath(trim($file['name']));
                     if (isset($postVars['name']) && trim($postVars['name']))
                         $newName = trim($postVars['name']);
 
                     // Making sure we only have a 'basename' component
                     list(, $newName) = Sabre_DAV_URLUtil::splitPath($newName);
-                        
-                   
+
+
                     if (is_uploaded_file($file['tmp_name'])) {
                         $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
                         $parent->createFile($newName,fopen($file['tmp_name'],'r'));
@@ -150,10 +150,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Escapes a string for html. 
-     * 
-     * @param string $value 
-     * @return void
+     * Escapes a string for html.
+     *
+     * @param string $value
+     * @return string
      */
     public function escapeHTML($value) {
 
@@ -162,17 +162,17 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Generates the html directory index for a given url 
+     * Generates the html directory index for a given url
      *
-     * @param string $path 
-     * @return string 
+     * @param string $path
+     * @return string
      */
     public function generateDirectoryIndex($path) {
 
         $html = "<html>
 <head>
   <title>Index for " . $this->escapeHTML($path) . "/ - SabreDAV " . Sabre_DAV_Version::VERSION . "</title>
-  <style type=\"text/css\"> 
+  <style type=\"text/css\">
   body { Font-family: arial}
   h1 { font-size: 150% }
   </style>
@@ -182,7 +182,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
   <table>
     <tr><th>Name</th><th>Type</th><th>Size</th><th>Last modified</th></tr>
     <tr><td colspan=\"4\"><hr /></td></tr>";
-    
+
         $files = $this->server->getPropertiesForPath($path,array(
             '{DAV:}displayname',
             '{DAV:}resourcetype',
@@ -208,7 +208,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        foreach($files as $k=>$file) {
+        foreach($files as $file) {
 
             // This is the current directory, we can skip it
             if (rtrim($file['href'],'/')==$path) continue;
@@ -224,9 +224,9 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 // resourcetype can have multiple values
                 if (!is_array($type)) $type = array($type);
 
-                foreach($type as $k=>$v) { 
+                foreach($type as $k=>$v) {
 
-                    // Some name mapping is preferred 
+                    // Some name mapping is preferred
                     switch($v) {
                         case '{DAV:}collection' :
                             $type[$k] = 'Collection';
@@ -272,7 +272,6 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
             $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
 
-            $name = $this->escapeHTML($name);
             $displayName = $this->escapeHTML($displayName);
             $type = $this->escapeHTML($type);
 
@@ -284,7 +283,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     </tr>";
 
         }
-            
+
         $html.= "<tr><td colspan=\"4\"><hr /></td></tr>";
 
         $output = '';
@@ -300,29 +299,29 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         </body>
         </html>";
 
-        return $html; 
+        return $html;
 
     }
 
     /**
-     * This method is used to generate the 'actions panel' output for 
+     * This method is used to generate the 'actions panel' output for
      * collections.
      *
-     * This specifically generates the interfaces for creating new files, and 
+     * This specifically generates the interfaces for creating new files, and
      * creating new directories.
-     * 
-     * @param Sabre_DAV_INode $node 
-     * @param mixed $output 
+     *
+     * @param Sabre_DAV_INode $node
+     * @param mixed $output
      * @return void
      */
     public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
 
-        if (!$node instanceof Sabre_DAV_ICollection) 
-            return; 
+        if (!$node instanceof Sabre_DAV_ICollection)
+            return;
 
-        // We also know fairly certain that if an object is a non-extended 
+        // We also know fairly certain that if an object is a non-extended
         // SimpleCollection, we won't need to show the panel either.
-        if (get_class($node)==='Sabre_DAV_SimpleCollection') 
+        if (get_class($node)==='Sabre_DAV_SimpleCollection')
             return;
 
         $output.= '<tr><td><form method="post" action="">

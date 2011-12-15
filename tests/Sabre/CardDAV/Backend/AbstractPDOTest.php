@@ -11,7 +11,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         $backend = new Sabre_CardDAV_Backend_PDO($this->getPDO());
         $this->backend = $backend;
 
-    }    
+    }
 
     public function testGetAddressBooksForUser() {
 
@@ -58,7 +58,6 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         );
 
         $this->assertEquals($expected, $result);
-        
 
     }
 
@@ -83,7 +82,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         );
 
         $this->assertEquals($expected, $result);
-        
+
 
     }
 
@@ -111,7 +110,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         );
 
         $this->assertEquals($expected, $result);
-        
+
 
     }
 
@@ -130,7 +129,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
 
         $this->backend->createAddressBook('principals/user1','book2', array(
             '{DAV:}foo' => 'bar',
-        )); 
+        ));
 
     }
 
@@ -139,7 +138,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         $this->backend->createAddressBook('principals/user1','book2', array(
             '{DAV:}displayname' => 'book2',
             '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 2',
-        )); 
+        ));
 
         $expected = array(
             array(
@@ -181,7 +180,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
 
         $this->assertEquals($expected, $result);
 
-    }    
+    }
 
     public function testGetCard() {
 
@@ -209,7 +208,7 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         $this->assertEquals('card2', $result['uri']);
         $this->assertEquals('data2', $result['carddata']);
 
-    } 
+    }
 
     /**
      * @depends testGetCard
@@ -232,6 +231,6 @@ abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_T
         $result = $this->backend->getCard(1,'card1');
         $this->assertFalse($result);
 
-    } 
+    }
 }
 

@@ -21,7 +21,7 @@ class Sabre_DAVACL_PrincipalCollectionTest extends PHPUnit_Framework_TestCase {
 
         $backend = new Sabre_DAVACL_MockPrincipalBackend();
         $pc = new Sabre_DAVACL_PrincipalCollection($backend);
-        
+
         $children = $pc->getChildren();
         $this->assertTrue(is_array($children));
 
@@ -40,7 +40,7 @@ class Sabre_DAVACL_PrincipalCollectionTest extends PHPUnit_Framework_TestCase {
         $backend = new Sabre_DAVACL_MockPrincipalBackend();
         $pc = new Sabre_DAVACL_PrincipalCollection($backend);
         $pc->disableListing = true;
-        
+
         $children = $pc->getChildren();
 
     }

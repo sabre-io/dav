@@ -11,5 +11,3 @@ class Sabre_CalDAV_Schedule_InboxTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

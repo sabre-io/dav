@@ -22,7 +22,7 @@ abstract class Sabre_DAV_Auth_Backend_AbstractPDOTest extends PHPUnit_Framework_
 
         $this->assertNull($backend->getDigestHash('realm','blabla'));
 
-        $expected = 'hash'; 
+        $expected = 'hash';
 
         $this->assertEquals($expected, $backend->getDigestHash('realm','user'));
 

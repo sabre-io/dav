@@ -6,14 +6,14 @@
  * This plugin provides funcitonality to enforce ACL permissions.
  * ACL is defined in RFC3744.
  *
- * In addition it also provides support for the {DAV:}current-user-principal 
- * property, defined in RFC5397 and the {DAV:}expand-property report, as 
- * defined in RFC3253. 
- * 
+ * In addition it also provides support for the {DAV:}current-user-principal
+ * property, defined in RFC5397 and the {DAV:}expand-property report, as
+ * defined in RFC3253.
+ *
  * @package Sabre
  * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
@@ -40,16 +40,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     const R_RECURSIVEPARENTS = 3;
 
     /**
-     * Reference to server object. 
-     * 
-     * @var Sabre_DAV_Server 
+     * Reference to server object.
+     *
+     * @var Sabre_DAV_Server
      */
     protected $server;
 
     /**
      * List of urls containing principal collections.
-     * Modify this if your principals are located elsewhere. 
-     * 
+     * Modify this if your principals are located elsewhere.
+     *
      * @var array
      */
     public $principalCollectionSet = array(
@@ -57,14 +57,14 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     );
 
     /**
-     * By default ACL is only enforced for nodes that have ACL support (the 
-     * ones that implement Sabre_DAVACL_IACL). For any other node, access is 
+     * By default ACL is only enforced for nodes that have ACL support (the
+     * ones that implement Sabre_DAVACL_IACL). For any other node, access is
      * always granted.
      *
-     * To override this behaviour you can turn this setting off. This is useful 
+     * To override this behaviour you can turn this setting off. This is useful
      * if you plan to fully support ACL in the entire tree.
      *
-     * @var bool 
+     * @var bool
      */
     public $allowAccessToNodesWithoutACL = true;
 
@@ -72,29 +72,29 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * By default nodes that are inaccessible by the user, can still be seen
      * in directory listings (PROPFIND on parent with Depth: 1)
      *
-     * In certain cases it's desirable to hide inaccessible nodes. Setting this 
+     * In certain cases it's desirable to hide inaccessible nodes. Setting this
      * to true will cause these nodes to be hidden from directory listings.
-     * 
-     * @var bool 
+     *
+     * @var bool
      */
     public $hideNodesFromListings = false;
 
     /**
-     * This string is prepended to the username of the currently logged in 
-     * user. This allows the plugin to determine the principal path based on 
+     * This string is prepended to the username of the currently logged in
+     * user. This allows the plugin to determine the principal path based on
      * the username.
-     * 
+     *
      * @var string
      */
     public $defaultUsernamePath = 'principals';
 
 
     /**
-     * This list of properties are the properties a client can search on using 
+     * This list of properties are the properties a client can search on using
      * the {DAV:}principal-property-search report.
      *
      * The keys are the property names, values are descriptions.
-     * 
+     *
      * @var array
      */
     public $principalSearchPropertySet = array(
@@ -106,8 +106,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getFeatures() {
 
@@ -116,10 +116,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Returns a list of available methods for a given url 
-     * 
-     * @param string $uri 
-     * @return array 
+     * Returns a list of available methods for a given url
+     *
+     * @param string $uri
+     * @return array
      */
     public function getMethods($uri) {
 
@@ -129,11 +129,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * Returns a plugin name.
-     * 
+     *
      * Using this name other plugins will be able to access other plugins
-     * using Sabre_DAV_Server::getPlugin 
-     * 
-     * @return string 
+     * using Sabre_DAV_Server::getPlugin
+     *
+     * @return string
      */
     public function getPluginName() {
 
@@ -145,37 +145,38 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns a list of reports this plugin supports.
      *
      * This will be used in the {DAV:}supported-report-set property.
-     * Note that you still need to subscribe to the 'report' event to actually 
-     * implement them 
-     * 
+     * Note that you still need to subscribe to the 'report' event to actually
+     * implement them
+     *
      * @param string $uri
-     * @return array 
+     * @return array
      */
     public function getSupportedReportSet($uri) {
 
         return array(
             '{DAV:}expand-property',
             '{DAV:}principal-property-search',
-            '{DAV:}principal-search-property-set', 
+            '{DAV:}principal-search-property-set',
         );
 
     }
 
 
     /**
-     * Checks if the current user has the specified privilege(s). 
-     * 
+     * Checks if the current user has the specified privilege(s).
+     *
      * You can specify a single privilege, or a list of privileges.
      * This method will throw an exception if the privilege is not available
      * and return true otherwise.
      *
      * @param string $uri
      * @param array|string $privileges
-     * @param bool $throwExceptions if set to false, this method won't through exceptions. 
+     * @param int $recursion
+     * @param bool $throwExceptions if set to false, this method won't through exceptions.
      * @throws Sabre_DAVACL_Exception_NeedPrivileges
-     * @return bool 
+     * @return bool
      */
-    public function checkPrivileges($uri,$privileges,$recursion = self::R_PARENT, $throwExceptions = true) {
+    public function checkPrivileges($uri, $privileges, $recursion = self::R_PARENT, $throwExceptions = true) {
 
         if (!is_array($privileges)) $privileges = array($privileges);
 
@@ -185,7 +186,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             if ($this->allowAccessToNodesWithoutACL) {
                 return true;
             } else {
-                if ($throwExceptions) 
+                if ($throwExceptions)
                     throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$privileges);
                 else
                     return false;
@@ -203,7 +204,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if ($failed) {
-            if ($throwExceptions) 
+            if ($throwExceptions)
                 throw new Sabre_DAVACL_Exception_NeedPrivileges($uri,$failed);
             else
                 return false;
@@ -216,9 +217,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns the standard users' principal.
      *
      * This is one authorative principal url for the current user.
-     * This method will return null if the user wasn't logged in. 
-     * 
-     * @return string|null 
+     * This method will return null if the user wasn't logged in.
+     *
+     * @return string|null
      */
     public function getCurrentUserPrincipal() {
 
@@ -234,9 +235,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * Returns a list of principals that's associated to the current
-     * user, either directly or through group membership. 
-     * 
-     * @return array 
+     * user, either directly or through group membership.
+     *
+     * @return array
      */
     public function getCurrentUserPrincipals() {
 
@@ -250,7 +251,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         while(count($check)) {
 
             $principal = array_shift($check);
- 
+
             $node = $this->server->tree->getNodeForPath($principal);
             if ($node instanceof Sabre_DAVACL_IPrincipal) {
                 foreach($node->getGroupMembership() as $groupMember) {
@@ -276,13 +277,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns the supported privilege structure for this ACL plugin.
      *
      * See RFC3744 for more details. Currently we default on a simple,
-     * standard structure. 
+     * standard structure.
      *
-     * You can either get the list of privileges by a uri (path) or by 
+     * You can either get the list of privileges by a uri (path) or by
      * specifying a Node.
-     * 
+     *
      * @param string|Sabre_DAV_INode $node
-     * @return array 
+     * @return array
      */
     public function getSupportedPrivilegeSet($node) {
 
@@ -302,10 +303,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Returns a fairly standard set of privileges, which may be useful for 
+     * Returns a fairly standard set of privileges, which may be useful for
      * other systems to use as a basis.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     static function getDefaultSupportedPrivilegeSet() {
 
@@ -355,7 +356,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                         ),
                     ),
                 ), // {DAV:}write
-            ), 
+            ),
         ); // {DAV:}all
 
     }
@@ -371,8 +372,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *   - abstract
      *   - concrete
      *
-     * @param string|Sabre_DAV_INode $node  
-     * @return array 
+     * @param string|Sabre_DAV_INode $node
+     * @return array
      */
     final public function getFlatPrivilegeSet($node) {
 
@@ -388,9 +389,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Traverses the privilege set tree for reordering
      *
-     * This function is solely used by getFlatPrivilegeSet, and would have been 
+     * This function is solely used by getFlatPrivilegeSet, and would have been
      * a closure if it wasn't for the fact I need to support PHP 5.2.
-     * 
+     *
+     * @param array $priv
+     * @param $concrete
+     * @param array $flat
      * @return void
      */
     final private function getFPSTraverse($priv, $concrete, &$flat) {
@@ -410,7 +414,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if (isset($priv['aggregates'])) {
 
             foreach($priv['aggregates'] as $subPriv) {
-            
+
                 $this->getFPSTraverse($subPriv, $myPriv['concrete'], $flat);
 
             }
@@ -424,8 +428,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * Either a uri or a Sabre_DAV_INode may be passed.
      *
-     * null will be returned if the node doesn't support ACLs. 
-     * 
+     * null will be returned if the node doesn't support ACLs.
+     *
      * @param string|Sabre_DAV_INode $node
      * @return array
      */
@@ -437,7 +441,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if ($node instanceof Sabre_DAVACL_IACL) {
             return $node->getACL();
         }
-        return null; 
+        return null;
 
     }
 
@@ -447,10 +451,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * Either a uri or a Sabre_DAV_INode may be passed.
      *
-     * null will be returned if the node doesn't support ACLs. 
-     * 
-     * @param string|Sabre_DAV_INode $node 
-     * @return array 
+     * null will be returned if the node doesn't support ACLs.
+     *
+     * @param string|Sabre_DAV_INode $node
+     * @return array
      */
     public function getCurrentUserPrivilegeSet($node) {
 
@@ -483,17 +487,17 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 // 'all' matches for every user
                 case '{DAV:}all' :
 
-                // 'authenticated' matched for every user that's logged in. 
-                // Since it's not possible to use ACL while not being logged 
-                // in, this is also always true. 
+                // 'authenticated' matched for every user that's logged in.
+                // Since it's not possible to use ACL while not being logged
+                // in, this is also always true.
                 case '{DAV:}authenticated' :
                     $collected[] = $ace;
                     break;
 
-                // 'unauthenticated' can never occur either, so we simply 
+                // 'unauthenticated' can never occur either, so we simply
                 // ignore these.
                 case '{DAV:}unauthenticated' :
-                    break;    
+                    break;
 
                 default :
                     if (in_array($ace['principal'], $principals)) {
@@ -528,25 +532,24 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Principal property search
      *
-     * This method can search for principals matching certain values in 
+     * This method can search for principals matching certain values in
      * properties.
      *
-     * This method will return a list of properties for the matched properties.  
+     * This method will return a list of properties for the matched properties.
      *
-     * @param array $searchProperties    The properties to search on. This is a 
-     *                                   key-value list. The keys are property 
-     *                                   names, and the values the strings to 
+     * @param array $searchProperties    The properties to search on. This is a
+     *                                   key-value list. The keys are property
+     *                                   names, and the values the strings to
      *                                   match them on.
-     * @param array $requestedProperties This is the list of properties to 
+     * @param array $requestedProperties This is the list of properties to
      *                                   return for every match.
-     * @param string $collectionUri      The principal collection to search on. 
-     *                                   If this is ommitted, the standard 
-     *                                   principal collection-set will be used. 
-     * @param DOMDocument $dom 
-     * @retun array     This method returns an array structure similar to 
-     *                  Sabre_DAV_Server::getPropertiesForPath. Returned 
-     *                  properties are index by a HTTP status code.  
-     *                  
+     * @param string $collectionUri      The principal collection to search on.
+     *                                   If this is ommitted, the standard
+     *                                   principal collection-set will be used.
+     * @return array     This method returns an array structure similar to
+     *                  Sabre_DAV_Server::getPropertiesForPath. Returned
+     *                  properties are index by a HTTP status code.
+     *
      */
     public function principalSearch(array $searchProperties, array $requestedProperties, $collectionUri = null) {
 
@@ -561,7 +564,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             $principalCollection = $this->server->tree->getNodeForPath($uri);
             if (!$principalCollection instanceof Sabre_DAVACL_AbstractPrincipalCollection) {
-                // Not a principal collection, we're simply going to ignore 
+                // Not a principal collection, we're simply going to ignore
                 // this.
                 continue;
             }
@@ -571,7 +574,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 $lookupResults[] = rtrim($uri,'/') . '/' . $result;
             }
 
-        } 
+        }
 
         $matches = array();
 
@@ -589,8 +592,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Sets up the plugin
      *
      * This method is automatically called by the server class.
-     * 
-     * @param Sabre_DAV_Server $server 
+     *
+     * @param Sabre_DAV_Server $server
      * @return void
      */
     public function initialize(Sabre_DAV_Server $server) {
@@ -621,11 +624,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             '{DAV:}group'
         );
 
-        // Automatically mapping nodes implementing IPrincipal to the 
+        // Automatically mapping nodes implementing IPrincipal to the
         // {DAV:}principal resourcetype.
         $server->resourceTypeMapping['Sabre_DAVACL_IPrincipal'] = '{DAV:}principal';
 
-        // Mapping the group-member-set property to the HrefList property 
+        // Mapping the group-member-set property to the HrefList property
         // class.
         $server->propertyMap['{DAV:}group-member-set'] = 'Sabre_DAV_Property_HrefList';
 
@@ -635,10 +638,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /* {{{ Event handlers */
 
     /**
-     * Triggered before any method is handled 
-     * 
-     * @param string $method 
-     * @param string $uri 
+     * Triggered before any method is handled
+     *
+     * @param string $method
+     * @param string $uri
      * @return void
      */
     public function beforeMethod($method, $uri) {
@@ -659,14 +662,14 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             case 'PUT' :
             case 'LOCK' :
-            case 'UNLOCK' : 
-                // This method requires the write-content priv if the node 
-                // already exists, and bind on the parent if the node is being 
-                // created. 
-                // The bind privilege is handled in the beforeBind event. 
+            case 'UNLOCK' :
+                // This method requires the write-content priv if the node
+                // already exists, and bind on the parent if the node is being
+                // created.
+                // The bind privilege is handled in the beforeBind event.
                 $this->checkPrivileges($uri,'{DAV:}write-content');
                 break;
-            
+
 
             case 'PROPPATCH' :
                 $this->checkPrivileges($uri,'{DAV:}write-properties');
@@ -679,16 +682,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             case 'COPY' :
             case 'MOVE' :
                 // Copy requires read privileges on the entire source tree.
-                // If the target exists write-content normally needs to be 
-                // checked, however, we're deleting the node beforehand and 
-                // creating a new one after, so this is handled by the 
+                // If the target exists write-content normally needs to be
+                // checked, however, we're deleting the node beforehand and
+                // creating a new one after, so this is handled by the
                 // beforeUnbind event.
-                // 
-                // The creation of the new node is handled by the beforeBind 
+                //
+                // The creation of the new node is handled by the beforeBind
                 // event.
                 //
-                // If MOVE is used beforeUnbind will also be used to check if 
-                // the sourcenode can be deleted. 
+                // If MOVE is used beforeUnbind will also be used to check if
+                // the sourcenode can be deleted.
                 $this->checkPrivileges($uri,'{DAV:}read',self::R_RECURSIVE);
 
                 break;
@@ -699,11 +702,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * Triggered before a new node is created.
-     * 
+     *
      * This allows us to check permissions for any operation that creates a
      * new node, such as PUT, MKCOL, MKCALENDAR, LOCK, COPY and MOVE.
-     * 
-     * @param string $uri 
+     *
+     * @param string $uri
      * @return void
      */
     public function beforeBind($uri) {
@@ -714,12 +717,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Triggered before a node is deleted 
-     * 
-     * This allows us to check permissions for any operation that will delete 
-     * an existing node. 
-     * 
-     * @param string $uri 
+     * Triggered before a node is deleted
+     *
+     * This allows us to check permissions for any operation that will delete
+     * an existing node.
+     *
+     * @param string $uri
      * @return void
      */
     public function beforeUnbind($uri) {
@@ -730,26 +733,26 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Triggered before a node is unlocked. 
-     * 
-     * @param string $uri 
+     * Triggered before a node is unlocked.
+     *
+     * @param string $uri
      * @param Sabre_DAV_Locks_LockInfo $lock
-     * @TODO: not yet implemented 
+     * @TODO: not yet implemented
      * @return void
      */
     public function beforeUnlock($uri, Sabre_DAV_Locks_LockInfo $lock) {
-           
+
 
     }
 
     /**
-     * Triggered before properties are looked up in specific nodes. 
-     * 
-     * @param string $uri 
-     * @param Sabre_DAV_INode $node 
-     * @param array $requestedProperties 
+     * Triggered before properties are looked up in specific nodes.
+     *
+     * @param string $uri
+     * @param Sabre_DAV_INode $node
+     * @param array $requestedProperties
      * @param array $returnedProperties
-     * @TODO really should be broken into multiple methods, or even a class. 
+     * @TODO really should be broken into multiple methods, or even a class.
      * @return void
      */
     public function beforeGetProperties($uri, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
@@ -769,7 +772,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
             return;
 
-        } 
+        }
 
         /* Adding principal properties */
         if ($node instanceof Sabre_DAVACL_IPrincipal) {
@@ -866,8 +869,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        /* The acl-restrictions property contains information on how privileges 
-         * must behave. 
+        /* The acl-restrictions property contains information on how privileges
+         * must behave.
          */
         if (false !== ($index = array_search('{DAV:}acl-restrictions', $requestedProperties))) {
             unset($requestedProperties[$index]);
@@ -877,13 +880,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method intercepts PROPPATCH methods and make sure the 
-     * group-member-set is updated correctly. 
-     * 
-     * @param array $propertyDelta 
-     * @param array $result 
-     * @param Sabre_DAV_INode $node 
-     * @return void
+     * This method intercepts PROPPATCH methods and make sure the
+     * group-member-set is updated correctly.
+     *
+     * @param array $propertyDelta
+     * @param array $result
+     * @param Sabre_DAV_INode $node
+     * @return bool
      */
     public function updateProperties(&$propertyDelta, &$result, Sabre_DAV_INode $node) {
 
@@ -907,18 +910,18 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $node->setGroupMemberSet($memberSet);
-        
+
         $result[200]['{DAV:}group-member-set'] = null;
         unset($propertyDelta['{DAV:}group-member-set']);
 
     }
 
     /**
-     * This method handels HTTP REPORT requests 
-     * 
-     * @param string $reportName 
-     * @param DOMNode $dom 
-     * @return void
+     * This method handels HTTP REPORT requests
+     *
+     * @param string $reportName
+     * @param DOMNode $dom
+     * @return bool
      */
     public function report($reportName, $dom) {
 
@@ -929,7 +932,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 return false;
             case '{DAV:}principal-search-property-set' :
                 $this->principalSearchPropertySetReport($dom);
-                return false; 
+                return false;
             case '{DAV:}expand-property' :
                 $this->expandPropertyReport($dom);
                 return false;
@@ -939,12 +942,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This event is triggered for any HTTP method that is not known by the 
-     * webserver. 
+     * This event is triggered for any HTTP method that is not known by the
+     * webserver.
      *
-     * @param string $method 
-     * @param string $uri 
-     * @return void
+     * @param string $method
+     * @param string $uri
+     * @return bool
      */
     public function unknownMethod($method, $uri) {
 
@@ -961,12 +964,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $uri
      * @return void
      */
-    public function httpACL($uri) { 
+    public function httpACL($uri) {
 
         $body = $this->server->httpRequest->getBody(true);
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
 
-        $newAcl = 
+        $newAcl =
             Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild)
             ->getPrivileges();
 
@@ -983,13 +986,13 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $oldAcl = $this->getACL($node);
 
-        $supportedPrivileges = $this->getFlatPrivilegeSet($node); 
+        $supportedPrivileges = $this->getFlatPrivilegeSet($node);
 
-        /* Checking if protected principals from the existing principal set are 
+        /* Checking if protected principals from the existing principal set are
            not overwritten. */
-        foreach($oldAcl as $k=>$oldAce) {
+        foreach($oldAcl as $oldAce) {
 
-            if (!isset($oldAce['protected']) || !$oldAce['protected']) continue; 
+            if (!isset($oldAce['protected']) || !$oldAce['protected']) continue;
 
             $found = false;
             foreach($newAcl as $newAce) {
@@ -997,16 +1000,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                     $newAce['privilege'] === $oldAce['privilege'] &&
                     $newAce['principal'] === $oldAce['principal'] &&
                     $newAce['protected']
-                ) 
+                )
                 $found = true;
             }
 
-            if (!$found) 
+            if (!$found)
                 throw new Sabre_DAVACL_Exception_AceConflict('This resource contained a protected {DAV:}ace, but this privilege did not occur in the ACL request');
 
         }
 
-        foreach($newAcl as $k=>$newAce) {
+        foreach($newAcl as $newAce) {
 
             // Do we recognize the privilege
             if (!isset($supportedPrivileges[$newAce['privilege']])) {
@@ -1025,7 +1028,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
             if (!($principal instanceof Sabre_DAVACL_IPrincipal)) {
                 throw new Sabre_DAVACL_Exception_NotRecognizedPrincipal('The specified uri (' . $newAce['principal'] . ') is not a principal');
-            } 
+            }
 
         }
         $node->setACL($newAcl);
@@ -1037,7 +1040,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /* Reports {{{ */
 
     /**
-     * The expand-property report is defined in RFC3253 section 3-8. 
+     * The expand-property report is defined in RFC3253 section 3-8.
      *
      * This report is very similar to a standard PROPFIND. The difference is
      * that it has the additional ability to look at properties containing a
@@ -1047,7 +1050,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * Other rfc's, such as ACL rely on this report, so it made sense to put
      * it in this plugin.
      *
-     * @param DOMElement $dom 
+     * @param DOMElement $dom
      * @return void
      */
     protected function expandPropertyReport($dom) {
@@ -1084,9 +1087,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * This method is used by expandPropertyReport to parse
      * out the entire HTTP request.
-     * 
-     * @param DOMElement $node 
-     * @return array 
+     *
+     * @param DOMElement $node
+     * @return array
      */
     protected function parseExpandPropertyReportRequest($node) {
 
@@ -1094,9 +1097,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         do {
 
             if (Sabre_DAV_XMLUtil::toClarkNotation($node)!=='{DAV:}property') continue;
-                
+
             if ($node->firstChild) {
-                
+
                 $children = $this->parseExpandPropertyReportRequest($node->firstChild);
 
             } else {
@@ -1109,7 +1112,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             if (!$namespace) $namespace = 'DAV:';
 
             $propName = '{'.$namespace.'}' . $node->getAttribute('name');
-            $requestedProperties[$propName] = $children; 
+            $requestedProperties[$propName] = $children;
 
         } while ($node = $node->nextSibling);
 
@@ -1123,11 +1126,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param array $path
      * @param array $requestedProperties the list of required properties
-     * @param array $depth
+     * @param int $depth
+     * @return array
      */
-    protected function expandProperties($path,array $requestedProperties,$depth) { 
+    protected function expandProperties($path, array $requestedProperties, $depth) {
 
-        $foundProperties = $this->server->getPropertiesForPath($path,array_keys($requestedProperties),$depth);
+        $foundProperties = $this->server->getPropertiesForPath($path, array_keys($requestedProperties), $depth);
 
         $result = array();
 
@@ -1137,7 +1141,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                 // We're only traversing if sub-properties were requested
                 if(count($childRequestedProperties)===0) continue;
-                
+
                 // We only have to do the expansion if the property was found
                 // and it contains an href element.
                 if (!array_key_exists($propertyName,$node[200])) continue;
@@ -1150,7 +1154,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                 $childProps = array();
                 foreach($hrefs as $href) {
-                    $childProps = array_merge($childProps, $this->expandProperties($href,$childRequestedProperties,0));
+                    $childProps = array_merge($childProps, $this->expandProperties($href, $childRequestedProperties, 0));
                 }
                 $node[200][$propertyName] = new Sabre_DAV_Property_ResponseList($childProps);
 
@@ -1166,12 +1170,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * principalSearchPropertySetReport
      *
-     * This method responsible for handing the 
+     * This method responsible for handing the
      * {DAV:}principal-search-property-set report. This report returns a list
      * of properties the client may search on, using the
      * {DAV:}principal-property-search report.
-     * 
-     * @param DOMDocument $dom 
+     *
+     * @param DOMDocument $dom
      * @return void
      */
     protected function principalSearchPropertySetReport(DOMDocument $dom) {
@@ -1180,9 +1184,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if ($httpDepth!==0) {
             throw new Sabre_DAV_Exception_BadRequest('This report is only defined when Depth: 0');
         }
-        
-        if ($dom->firstChild->hasChildNodes()) 
-            throw new Sabre_DAV_Exception_BadRequest('The principal-search-property-set report element is not allowed to have child elements'); 
+
+        if ($dom->firstChild->hasChildNodes())
+            throw new Sabre_DAV_Exception_BadRequest('The principal-search-property-set report element is not allowed to have child elements');
 
         $dom = new DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
@@ -1195,7 +1199,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        $nsList = $this->server->xmlNamespaces; 
+        $nsList = $this->server->xmlNamespaces;
 
         foreach($this->principalSearchPropertySet as $propertyName=>$description) {
 
@@ -1204,7 +1208,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
             $prop = $dom->createElement('d:prop');
             $psp->appendChild($prop);
-  
+
             $propName = null;
             preg_match('/^{([^}]*)}(.*)$/',$propertyName,$propName);
 
@@ -1228,12 +1232,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * principalPropertySearchReport
      *
-     * This method is reponsible for handing the 
-     * {DAV:}principal-property-search report. This report can be used for 
+     * This method is responsible for handing the
+     * {DAV:}principal-property-search report. This report can be used for
      * clients to search for groups of principals, based on the value of one
      * or more properties.
-     * 
-     * @param DOMDocument $dom 
+     *
+     * @param DOMDocument $dom
      * @return void
      */
     protected function principalPropertySearchReport(DOMDocument $dom) {
@@ -1262,9 +1266,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * This method returns an array with two elements:
      *  1. an array with properties to search on, and their values
      *  2. a list of propertyvalues that should be returned for the request.
-     * 
-     * @param DOMDocument $dom 
-     * @return array 
+     *
+     * @param DOMDocument $dom
+     * @return array
      */
     protected function parsePrincipalPropertySearchReportRequest($dom) {
 
@@ -1296,7 +1300,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
                     case '{DAV:}prop' :
                         $property = Sabre_DAV_XMLUtil::parseProperties($searchNode);
-                        reset($property); 
+                        reset($property);
                         $propertyName = key($property);
                         break;
 

@@ -15,7 +15,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
         $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        
+
         $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(2, count($this->calendars));
         $this->calendar = new Sabre_CalDAV_Calendar($this->principalBackend, $this->backend, $this->calendars[0]);
@@ -68,7 +68,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         foreach($question as $q) $this->assertArrayHasKey($q,$result);
 
         $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
-        
+
         $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Sabre_CalDAV_Property_SupportedCollationSet);
 
         $this->assertTrue($result['{DAV:}owner'] instanceof Sabre_DAVACL_Property_Principal);
@@ -189,22 +189,22 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ), 
+            ),
             array(
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ), 
+            ),
             array(
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ), 
+            ),
             array(
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ), 
+            ),
             array(
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-read',
@@ -214,7 +214,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
                 'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
-            ), 
+            ),
         );
         $this->assertEquals($expected, $this->calendar->getACL());
 
@@ -236,7 +236,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
             $result['aggregates'][0]['aggregates'][2]['privilege']
-        );        
+        );
 
     }
 

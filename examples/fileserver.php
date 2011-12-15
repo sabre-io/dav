@@ -2,7 +2,7 @@
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
 // example:
-set_include_path('lib/' . PATH_SEPARATOR . get_include_path()); 
+set_include_path('lib/' . PATH_SEPARATOR . get_include_path());
 
 /*
 
@@ -35,7 +35,7 @@ $server = new Sabre_DAV_Server($root);
 if (isset($baseUri))
     $server->setBaseUri($baseUri);
 
-// Support for LOCK and UNLOCK 
+// Support for LOCK and UNLOCK
 $lockBackend = new Sabre_DAV_Locks_Backend_File($tmpDir . '/locksdb');
 $lockPlugin = new Sabre_DAV_Locks_Plugin($lockBackend);
 $server->addPlugin($lockPlugin);

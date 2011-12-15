@@ -2,7 +2,7 @@
 
 /**
  * This class contains the SabreDAV version constants.
- * 
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.

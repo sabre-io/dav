@@ -52,7 +52,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(3, $it->interval);
         $this->assertEquals(new DateTime('2011-10-25', new DateTimeZone('UTC')), $it->until);
 
-        // Max is to prevent overflow 
+        // Max is to prevent overflow
         $max = 12;
         $result = array();
         foreach($it as $item) {
@@ -80,7 +80,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         );
 
     }
-    
+
     function testDailyByDay() {
 
         $ev = new Sabre_VObject_Component('VEVENT');
@@ -145,7 +145,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $it->interval);
         $this->assertEquals(10, $it->count);
 
-        // Max is to prevent overflow 
+        // Max is to prevent overflow
         $max = 12;
         $result = array();
         foreach($it as $item) {
@@ -191,7 +191,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('weekly', $it->frequency);
         $this->assertEquals(2, $it->interval);
         $this->assertEquals(array('TU','WE','FR'), $it->byDay);
-        $this->assertEquals('SU', $it->weekStart); 
+        $this->assertEquals('SU', $it->weekStart);
 
         // Grabbing the next 12 items
         $max = 12;
@@ -240,7 +240,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('monthly', $it->frequency);
         $this->assertEquals(3, $it->interval);
-        $this->assertEquals(5, $it->count); 
+        $this->assertEquals(5, $it->count);
 
         $max = 14;
         $result = array();
@@ -282,7 +282,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('monthly', $it->frequency);
         $this->assertEquals(2, $it->interval);
-        $this->assertEquals(12, $it->count); 
+        $this->assertEquals(12, $it->count);
 
         $max = 14;
         $result = array();
@@ -661,7 +661,7 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
         $it = new Sabre_VObject_RecurrenceIterator($ev);
 
-        // The idea is that we're fast-forwarding too far in the future, so 
+        // The idea is that we're fast-forwarding too far in the future, so
         // there will be no results left.
         $it->fastForward(new DateTime('2020-05-05'));
 

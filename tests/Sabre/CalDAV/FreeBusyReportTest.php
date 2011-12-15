@@ -37,7 +37,7 @@ ics
                     'calendarid' => 1,
                     'uri' => 'event1.ics',
                     'calendardata' => $obj1,
-                 ), 
+                 ),
                 'obj2' => array(
                     'calendarid' => 1,
                     'uri' => 'event2.ics',
@@ -53,17 +53,17 @@ ics
         $calendar = new Sabre_CalDAV_Calendar($principalBackend,$caldavBackend, array(
             'id' => 1,
             'uri' => 'calendar',
-            'principaluri' => 'principals/user1', 
+            'principaluri' => 'principals/user1',
         ));
 
         $this->server = new Sabre_DAV_Server(array($calendar));
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_URI' => '/calendar',
-        )); 
+        ));
         $this->server->httpRequest = $request;
         $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
-        
+
         $this->plugin = new Sabre_CalDAV_Plugin();
         $this->server->addPlugin($this->plugin);
         $this->server->addPlugin(new Sabre_DAVACL_Plugin());
@@ -147,5 +147,3 @@ XML;
 
     }
 }
-
-?>

@@ -25,7 +25,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-    // transparent, hidden 
+    // transparent, hidden
 $blob3 = <<<ICS
 BEGIN:VCALENDAR
 BEGIN:VEVENT
@@ -116,7 +116,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-// Freebusy. Some parts show up 
+// Freebusy. Some parts show up
 $blob12 = <<<ICS
 BEGIN:VCALENDAR
 BEGIN:VFREEBUSY
@@ -201,7 +201,7 @@ ICS;
 
         foreach($result->VFREEBUSY->FREEBUSY as $fb) {
 
-            $this->assertContains((string)$fb, $expected);   
+            $this->assertContains((string)$fb, $expected);
 
             $k = array_search((string)$fb, $expected);
             unset($expected[$k]);
@@ -209,8 +209,8 @@ ICS;
         }
         if (count($expected)>0) {
             $this->fail('There were elements in the expected array that were not found in the output: ' . "\n"  . print_r($expected,true) . "\n" . $result->serialize());
-             
-        } 
+
+        }
 
     }
 
@@ -240,5 +240,3 @@ ICS;
     }
 
 }
-
-?>

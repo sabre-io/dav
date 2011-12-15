@@ -41,7 +41,7 @@ HI;
                     'comp-filters' => array(),
                     'prop-filters' => array(),
                     'is-not-defined' => false,
-                    'time-range' => array( 
+                    'time-range' => array(
                         'start' => new DateTime('2011-12-01'),
                         'end'   => new DateTime('2012-02-01'),
                     ),

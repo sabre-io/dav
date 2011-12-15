@@ -35,7 +35,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
             'principals1/',
             'principals2/',
         );
-        
+
 
         $this->assertEquals($expected, $returnedProperties[200]['{DAV:}principal-collection-set']->getHrefs());
 
@@ -50,7 +50,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         $plugin = new Sabre_DAVACL_Plugin();
         $fakeServer->addPlugin($plugin);
 
-        
+
         $requestedProperties = array(
             '{DAV:}current-user-principal',
         );
@@ -148,7 +148,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         );
 
 
-        // reloading because php dom sucks 
+        // reloading because php dom sucks
         $dom2 = new DOMDocument('1.0', 'utf-8');
         $dom2->loadXML($dom->saveXML());
 
@@ -176,7 +176,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
             new Sabre_DAV_SimpleDirectory('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('admin','principals/admin'),
             )),
-            
+
         );
 
         $server = new Sabre_DAV_Server($nodes);
@@ -219,7 +219,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
             new Sabre_DAV_SimpleDirectory('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('admin','principals/admin'),
             )),
-            
+
         );
 
         $server = new Sabre_DAV_Server($nodes);

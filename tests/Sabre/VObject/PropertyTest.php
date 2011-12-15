@@ -27,7 +27,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $property->parameters[] = new Sabre_VObject_Parameter('paramname','paramvalue');
-        
+
         $this->assertInstanceOf('Sabre_VObject_Parameter',$property['paramname']);
 
     }
@@ -36,7 +36,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
         $property->parameters[] = new Sabre_VObject_Parameter('paramname','paramvalue');
-        
+
         $this->assertInternalType('null',$property['foo']);
 
     }
@@ -46,7 +46,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
         $property = new Sabre_VObject_Property('propname','propvalue');
         $property->parameters[] = new Sabre_VObject_Parameter('paramname','paramvalue');
         $property->parameters[] = new Sabre_VObject_Parameter('paramname','paramvalue');
-        
+
         $this->assertInstanceOf('Sabre_VObject_Parameter',$property['paramname']);
         $this->assertEquals(2,count($property['paramname']));
 
@@ -105,7 +105,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
     public function testSetParameterObjectRandomObject() {
 
         $property = new Sabre_VObject_Property('propname','propvalue');
-        $property[] = new StdClass(); 
+        $property[] = new StdClass();
 
     }
 
@@ -195,8 +195,8 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, count($property->parameters));
 
         $this->assertTrue($property->parameters[0] instanceof Sabre_VObject_Parameter);
-        $this->assertEquals('MYPARAM',$property->parameters[0]->name); 
-        $this->assertEquals('value',$property->parameters[0]->value); 
+        $this->assertEquals('MYPARAM',$property->parameters[0]->name);
+        $this->assertEquals('value',$property->parameters[0]->value);
 
     }
 
@@ -207,7 +207,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
         $prop->add(new Sabre_VObject_Parameter('MYPARAM','value'));
 
         $this->assertEquals(1, count($prop->parameters));
-        $this->assertEquals('MYPARAM',$prop['myparam']->name); 
+        $this->assertEquals('MYPARAM',$prop['myparam']->name);
 
     }
 
@@ -220,7 +220,7 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(2, count($prop->parameters));
 
-        $this->assertEquals('MYPARAM',$prop['MYPARAM']->name); 
+        $this->assertEquals('MYPARAM',$prop['MYPARAM']->name);
 
     }
 

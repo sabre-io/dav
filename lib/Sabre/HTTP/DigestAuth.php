@@ -197,8 +197,8 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
         // most other servers
         $digest = $this->httpRequest->getHeader('Authorization');
 
-        // Apache could prefix environment variables with REDIRECT_ when urls 
-        // are passed through mod_rewrite 
+        // Apache could prefix environment variables with REDIRECT_ when urls
+        // are passed through mod_rewrite
         if (!$digest) {
             $digest = $this->httpRequest->getRawServerValue('REDIRECT_HTTP_AUTHORIZATION');
         }

@@ -44,7 +44,7 @@ switch($packageName) {
     case 'Sabre' :
         $summary = 'Sabretooth base package.';
         $description = <<<TEXT
-The base package provides some functionality used by all packages. 
+The base package provides some functionality used by all packages.
 
 Currently this is only an autoloader
 TEXT;
@@ -119,7 +119,7 @@ TEXT;
     case 'Sabre_CalDAV' :
         $summary = 'Sabre_CalDAV provides CalDAV extensions to SabreDAV';
         $description = <<<TEXT
-Sabre_CalDAV provides RFC4791 (CalDAV) support to Sabre_DAV. 
+Sabre_CalDAV provides RFC4791 (CalDAV) support to Sabre_DAV.
 
 Feature list:
 * Multi-user Calendar Server
@@ -161,7 +161,7 @@ TEXT;
     case 'Sabre_CardDAV' :
         $summary = 'Sabre_CardDAV provides CardDAV extensions to SabreDAV';
         $description = <<<TEXT
-Sabre_CardDAV provides CardDAV support to Sabre_DAV. 
+Sabre_CardDAV provides CardDAV support to Sabre_DAV.
 
 Feature list:
 * Multi-user addressbook server
@@ -207,7 +207,7 @@ TEXT;
         $description = <<<TEXT
 Sabre_VObject is an intuitive reader for iCalendar and vCard objects.
 
-It provides a natural array/object accessor interface to the parsed tree, much like 
+It provides a natural array/object accessor interface to the parsed tree, much like
 simplexml for XML files.
 TEXT;
         $dependencies[] = array(
@@ -248,7 +248,7 @@ function parsePath($fullPath, $role, $padding = 4) {
             if ($subPath==='.' || $subPath==='..') continue;
             $fileList .= parsePath($fullPath. '/' . $subPath,$role, $padding+2);
         }
-        $fileList .= str_repeat(' ', $padding) . "</dir><!-- {$file} -->\n"; 
+        $fileList .= str_repeat(' ', $padding) . "</dir><!-- {$file} -->\n";
     } elseif (is_file($fullPath)) {
         $fileList .= str_repeat(' ', $padding) . "<file name=\"{$file}\" role=\"{$role}\" />\n";
     }
@@ -277,8 +277,8 @@ foreach($dependencies as $dep) {
 
 $package = <<<XML
 <?xml version="1.0"?>
-<package version="2.0" 
-    xmlns="http://pear.php.net/dtd/package-2.0"> 
+<package version="2.0"
+    xmlns="http://pear.php.net/dtd/package-2.0">
 
     <name>{$packageName}</name>
     <channel>{$channel}</channel>
@@ -303,7 +303,7 @@ $package = <<<XML
     <notes>{$notes}</notes>
     <contents>
       <dir name="/">{$fileList}
-      </dir> 
+      </dir>
     </contents>
     <dependencies>
       <required>{$dependenciesXML}
@@ -312,7 +312,7 @@ $package = <<<XML
     <phprelease />
 </package>
 XML;
-  
+
 if (isset($argv) && in_array('make',$argv)) {
     file_put_contents($rootDir . '/package.xml',$package);
 } else {

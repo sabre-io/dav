@@ -30,8 +30,8 @@ class Sabre_DAV_Auth_Backend_ApacheTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest = $request;
 
         $this->assertTrue($backend->authenticate($server, 'Realm'));
-        
-        $userInfo = 'username'; 
+
+        $userInfo = 'username';
 
         $this->assertEquals($userInfo, $backend->getCurrentUser());
 

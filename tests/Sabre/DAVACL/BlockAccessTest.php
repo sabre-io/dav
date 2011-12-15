@@ -127,10 +127,10 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
     function testBeforeGetProperties() {
 
         $requestedProperties = array(
-            '{DAV:}displayname', 
+            '{DAV:}displayname',
             '{DAV:}getcontentlength',
             '{DAV:}bar',
-            '{DAV:}owner', 
+            '{DAV:}owner',
         );
         $returnedProperties = array();
 
@@ -162,10 +162,10 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
         $this->plugin->hideNodesFromListings = true;
 
         $requestedProperties = array(
-            '{DAV:}displayname', 
+            '{DAV:}displayname',
             '{DAV:}getcontentlength',
             '{DAV:}bar',
-            '{DAV:}owner', 
+            '{DAV:}owner',
         );
         $returnedProperties = array();
 

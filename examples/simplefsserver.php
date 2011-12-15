@@ -2,7 +2,7 @@
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
 // example:
-// set_include_path('lib/' . PATH_SEPARATOR . get_include_path()); 
+// set_include_path('lib/' . PATH_SEPARATOR . get_include_path());
 
 /*
 
@@ -121,5 +121,3 @@ $server = new Sabre_DAV_Server($rootNode);
 
 // And off we go!
 $server->exec();
-
-?>

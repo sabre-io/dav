@@ -7,7 +7,7 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
     protected $response;
     protected $request;
     protected $server;
-    protected $tempDir = SABRE_TEMPDIR; 
+    protected $tempDir = SABRE_TEMPDIR;
 
     function setUp() {
 
@@ -52,5 +52,3 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

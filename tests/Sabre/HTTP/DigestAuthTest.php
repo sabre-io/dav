@@ -219,5 +219,3 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

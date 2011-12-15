@@ -34,7 +34,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $this->assertInternalType('string',$children[0]->getName());
         $this->assertInternalType('string',$children[0]->get());
         $this->assertInternalType('string',$children[0]->getETag());
@@ -89,7 +89,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
         $obj->delete();
 
@@ -105,7 +105,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
@@ -120,7 +120,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
 
         $size = $obj->getSize();
@@ -132,7 +132,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
         $this->assertEquals('principals/user1', $obj->getOwner());
 
@@ -142,7 +142,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
         $this->assertNull($obj->getGroup());
 
@@ -180,7 +180,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
         $this->assertEquals($expected, $obj->getACL());
 
@@ -193,7 +193,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
         $obj->setACL(array());
 
@@ -203,7 +203,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        
+
         $obj = $children[0];
 
             $expected = "BEGIN:VCALENDAR

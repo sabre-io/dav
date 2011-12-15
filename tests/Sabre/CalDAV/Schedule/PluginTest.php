@@ -69,9 +69,7 @@ class Sabre_CalDAV_Schedule_PluginTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals($expected,$result);
 
-    } 
+    }
 
 
 }
-
-?>

@@ -21,7 +21,7 @@ class Sabre_DAV_Locks_MSWordTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest = $this->getLockRequest();
         $server->httpResponse = $response1;
         $server->exec();
-        
+
         $this->assertEquals('HTTP/1.1 201 Created', $server->httpResponse->status);
         $this->assertTrue(isset($server->httpResponse->headers['Lock-Token']));
         $lockToken = $server->httpResponse->headers['Lock-Token'];
@@ -33,7 +33,7 @@ class Sabre_DAV_Locks_MSWordTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest = $this->getLockRequest2();
         $server->httpResponse = $response2;
         $server->exec();
-        
+
         $this->assertEquals('HTTP/1.1 201 Created', $server->httpResponse->status);
         $this->assertTrue(isset($server->httpResponse->headers['Lock-Token']));
 

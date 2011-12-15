@@ -20,7 +20,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
         $this->server->exec();
 
     }
-    
+
     /**
      * @covers Sabre_DAV_Property_SupportedReportSet
      */
@@ -34,7 +34,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 </d:propfind>';
 
         $this->sendPROPFIND($xml);
-       
+
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We expected a multi-status response. Full response body: ' . $this->response->body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
@@ -59,7 +59,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
      * @depends testNoReports
      */
     function testCustomReport() {
-        
+
         // Intercepting the report property
         $this->server->subscribeEvent('afterGetProperties',array($this,'addProp'));
 
@@ -71,7 +71,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 </d:propfind>';
 
         $this->sendPROPFIND($xml);
-       
+
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We expected a multi-status response. Full response body: ' . $this->response->body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
@@ -107,9 +107,9 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
     /**
      * This method is used as a callback for afterGetProperties
      */
-    function addProp($path,&$properties) {
+    function addProp($path, &$properties) {
 
-        if (isset($properties[200]['{DAV:}supported-report-set'])) { 
+        if (isset($properties[200]['{DAV:}supported-report-set'])) {
             $properties[200]['{DAV:}supported-report-set']->addReport('{http://www.rooftopsolutions.nl/testnamespace}myreport');
             $properties[200]['{DAV:}supported-report-set']->addReport('{DAV:}anotherreport');
         }

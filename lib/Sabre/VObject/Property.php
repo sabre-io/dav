@@ -4,58 +4,58 @@
  * VObject Property
  *
  * A property in VObject is usually in the form PARAMNAME:paramValue.
- * An example is : SUMMARY:Weekly meeting 
+ * An example is : SUMMARY:Weekly meeting
  *
  * Properties can also have parameters:
  * SUMMARY;LANG=en:Weekly meeting.
  *
- * Parameters can be accessed using the ArrayAccess interface. 
+ * Parameters can be accessed using the ArrayAccess interface.
  *
  * @package Sabre
  * @subpackage VObject
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_Property extends Sabre_VObject_Element {
 
     /**
-     * Propertyname 
-     * 
-     * @var string 
+     * Propertyname
+     *
+     * @var string
      */
     public $name;
 
     /**
      * Group name
-     * 
+     *
      * This may be something like 'HOME' for vcards.
      *
-     * @var string 
+     * @var string
      */
     public $group;
 
     /**
-     * Property parameters 
-     * 
-     * @var array 
+     * Property parameters
+     *
+     * @var array
      */
     public $parameters = array();
 
     /**
-     * Property value 
-     * 
-     * @var string 
+     * Property value
+     *
+     * @var string
      */
     public $value;
 
     /**
      * Creates a new property object
-     * 
-     * By default this object will iterate over its own children, but this can 
+     *
+     * By default this object will iterate over its own children, but this can
      * be overridden with the iterator argument
-     * 
-     * @param string $name 
+     *
+     * @param string $name
      * @param string $value
      * @param Sabre_VObject_ElementList $iterator
      */
@@ -74,9 +74,9 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     }
 
     /**
-     * Updates the internal value 
-     * 
-     * @param string $value 
+     * Updates the internal value
+     *
+     * @param string $value
      * @return void
      */
     public function setValue($value) {
@@ -86,9 +86,9 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     }
 
     /**
-     * Turns the object back into a serialized blob. 
-     * 
-     * @return string 
+     * Turns the object back into a serialized blob.
+     *
+     * @return string
      */
     public function serialize() {
 
@@ -97,7 +97,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
 
         if (count($this->parameters)) {
             foreach($this->parameters as $param) {
-                
+
                 $str.=';' . $param->serialize();
 
             }
@@ -136,11 +136,11 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      * add(Sabre_VObject_Parameter $element)
      * add(string $name, $value)
      *
-     * The first version adds an Parameter 
-     * The second adds a property as a string. 
-     * 
-     * @param mixed $item 
-     * @param mixed $itemValue 
+     * The first version adds an Parameter
+     * The second adds a property as a string.
+     *
+     * @param mixed $item
+     * @param mixed $itemValue
      * @return void
      */
     public function add($item, $itemValue = null) {
@@ -161,7 +161,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
             $this->parameters[] = $parameter;
 
         } else {
-            
+
             throw new InvalidArgumentException('The first argument must either be a Sabre_VObject_Element or a string');
 
         }
@@ -173,9 +173,9 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
 
     /**
      * Checks if an array element exists
-     * 
-     * @param mixed $name 
-     * @return bool 
+     *
+     * @param mixed $name
+     * @return bool
      */
     public function offsetExists($name) {
 
@@ -191,16 +191,16 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     }
 
     /**
-     * Returns a parameter, or parameter list. 
-     * 
-     * @param string $name 
-     * @return Sabre_VObject_Element 
+     * Returns a parameter, or parameter list.
+     *
+     * @param string $name
+     * @return Sabre_VObject_Element
      */
     public function offsetGet($name) {
 
         if (is_int($name)) return parent::offsetGet($name);
         $name = strtoupper($name);
-        
+
         $result = array();
         foreach($this->parameters as $parameter) {
             if ($parameter->name == $name)
@@ -219,8 +219,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     }
 
     /**
-     * Creates a new parameter 
-     * 
+     * Creates a new parameter
+     *
      * @param string $name
      * @param mixed $value
      * @return void
@@ -230,7 +230,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
         if (is_int($name)) return parent::offsetSet($name, $value);
 
         if (is_scalar($value)) {
-            if (!is_string($name)) 
+            if (!is_string($name))
                 throw new InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
 
             $this->offsetUnset($name);
@@ -242,7 +242,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
             if (!is_null($name))
                 throw new InvalidArgumentException('Don\'t specify a parameter name if you\'re passing a Sabre_VObject_Parameter. Add using $array[]=$parameterObject.');
 
-            $value->parent = $this; 
+            $value->parent = $this;
             $this->parameters[] = $value;
         } else {
             throw new InvalidArgumentException('You can only add parameters to the property object');
@@ -251,17 +251,16 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     }
 
     /**
-     * Removes one or more parameters with the specified name 
-     * 
-     * @param string $name 
-     * @return void 
+     * Removes one or more parameters with the specified name
+     *
+     * @param string $name
+     * @return void
      */
     public function offsetUnset($name) {
 
-        if (is_int($name)) return parent::offsetUnset($name, $value);
+        if (is_int($name)) return parent::offsetUnset($name);
         $name = strtoupper($name);
-        
-        $result = array();
+
         foreach($this->parameters as $key=>$parameter) {
             if ($parameter->name == $name) {
                 $parameter->parent = null;
@@ -275,15 +274,14 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     /* }}} */
 
     /**
-     * Called when this object is being cast to a string 
-     * 
-     * @return string 
+     * Called when this object is being cast to a string
+     *
+     * @return string
      */
     public function __toString() {
 
         return $this->value;
 
     }
-
 
 }

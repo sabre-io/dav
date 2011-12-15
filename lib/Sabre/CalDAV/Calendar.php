@@ -38,9 +38,9 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
     /**
      * Constructor
      *
+     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
      * @param Sabre_CalDAV_Backend_Abstract $caldavBackend
      * @param array $calendarInfo
-     * @return void
      */
     public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_Abstract $caldavBackend, $calendarInfo) {
 
@@ -77,7 +77,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
     /**
      * Returns the list of properties
      *
-     * @param array $properties
+     * @param array $requestedProperties
      * @return array
      */
     public function getProperties($requestedProperties) {

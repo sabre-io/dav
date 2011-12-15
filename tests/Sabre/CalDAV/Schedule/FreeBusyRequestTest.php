@@ -35,7 +35,7 @@ END:VCALENDAR',
                 'calendarid' => 1,
             ))
 
-        ); 
+        );
 
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         $caldavBackend = new Sabre_CalDAV_Backend_Mock($calendars, $calendarobjects);
@@ -231,12 +231,10 @@ ICS;
             'FREEBUSY;FBTYPE=BUSY:20110101T130000Z/20110101T140000Z',
         );
 
-        foreach($strings as $string) 
+        foreach($strings as $string)
             $this->assertTrue(strpos($this->response->body, $string)!==false,'The response body did not contain: ' . $string);
-    
+
 
     }
 
 }
-
-?>

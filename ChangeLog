@@ -1,5 +1,7 @@
 1.5.5-stable (2011-??-??)
 	* Fixed: CalDAV time-range filter workaround for recurring events.
+	* Fixed: Bug in Sabre_DAV_Locks_Backend_File that didn't allow multiple
+	  files to be locked at the same time.
 
 1.5.4-stable (2011-10-28)
 	* Fixed: GuessContentType plugin now supports mixed case file extensions.

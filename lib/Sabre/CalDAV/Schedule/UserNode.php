@@ -4,11 +4,11 @@
  * CalDAV Scheduling User Node
  *
  * This node contains the inbox and outbox for a single user.
- * 
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Schedule_UserNode extends Sabre_DAV_Directory {
@@ -17,8 +17,8 @@ class Sabre_CalDAV_Schedule_UserNode extends Sabre_DAV_Directory {
 
     /**
      * Constructor
-     * 
-     * @param string $principalUri 
+     *
+     * @param string $principalUri
      */
     public function __construct($principalUri) {
 
@@ -29,9 +29,9 @@ class Sabre_CalDAV_Schedule_UserNode extends Sabre_DAV_Directory {
     /**
      * Returns the name of the node.
      *
-     * This is used to generate the uri. 
-     * 
-     * @return string 
+     * This is used to generate the uri.
+     *
+     * @return string
      */
     public function getName() {
 
@@ -40,9 +40,9 @@ class Sabre_CalDAV_Schedule_UserNode extends Sabre_DAV_Directory {
     }
 
     /**
-     * Returns an array with all the child nodes 
-     * 
-     * @return Sabre_DAV_INode[] 
+     * Returns an array with all the child nodes
+     *
+     * @return Sabre_DAV_INode[]
      */
     public function getChildren() {
 

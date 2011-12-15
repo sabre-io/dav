@@ -12,7 +12,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
         $dom = new DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
-        
+
         $dom->appendChild($root);
 
         $acl = new Sabre_DAVACL_Property_Acl(array());
@@ -30,7 +30,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
         $dom = new DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
-        
+
         $dom->appendChild($root);
 
         $privileges = array(
@@ -86,7 +86,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
         $dom = new DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
-        
+
         $dom->appendChild($root);
 
         $privileges = array(
@@ -235,7 +235,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
         <d:write/>
       </d:privilege>
     </d:grant>
-    <d:principal><d:authenticated /></d:principal>  
+    <d:principal><d:authenticated /></d:principal>
   </d:ace>
   <d:ace>
     <d:grant>
@@ -243,7 +243,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
         <d:write/>
       </d:privilege>
     </d:grant>
-    <d:principal><d:unauthenticated /></d:principal>  
+    <d:principal><d:unauthenticated /></d:principal>
   </d:ace>
   <d:ace>
     <d:grant>
@@ -251,7 +251,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
         <d:write/>
       </d:privilege>
     </d:grant>
-    <d:principal><d:all /></d:principal>  
+    <d:principal><d:all /></d:principal>
   </d:ace>
 </d:root>
 ';
@@ -297,7 +297,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
         <d:write/>
       </d:privilege>
     </d:deny>
-    <d:principal><d:href>/principals/evert</d:href></d:principal>  
+    <d:principal><d:href>/principals/evert</d:href></d:principal>
   </d:ace>
 </d:root>
 ';
@@ -317,7 +317,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
     <d:grant>
       <d:privilege />
     </d:grant>
-    <d:principal><d:href>/principals/evert</d:href></d:principal>  
+    <d:principal><d:href>/principals/evert</d:href></d:principal>
   </d:ace>
 </d:root>
 ';

@@ -21,7 +21,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
         $pbackend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $props = array(
-            'uri'=>'UUID-123467', 
+            'uri'=>'UUID-123467',
             'principaluri' => 'admin',
             'id' => 1,
         );

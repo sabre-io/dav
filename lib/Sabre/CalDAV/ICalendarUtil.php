@@ -3,13 +3,13 @@
 /**
  * This class contains several utilities related to the ICalendar (rfc2445) format
  *
- * This class is now deprecated, and won't be further maintained. Please use 
+ * This class is now deprecated, and won't be further maintained. Please use
  * the Sabre_VObject package for your ics parsing needs.
  *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  * @deprecated Use Sabre_VObject instead.
  */
@@ -21,9 +21,9 @@ class Sabre_CalDAV_ICalendarUtil {
      * This method makes sure this ICalendar object is properly formatted.
      * If we can't parse it, we'll throw exceptions.
      *
-     * @param string $icalData 
-     * @param array $allowedComponents 
-     * @return bool 
+     * @param string $icalData
+     * @param array $allowedComponents
+     * @return bool
      */
     static function validateICalendarObject($icalData, array $allowedComponents = null) {
 
@@ -31,7 +31,7 @@ class Sabre_CalDAV_ICalendarUtil {
         if (!$xcal) throw new Sabre_CalDAV_Exception_InvalidICalendarObject('Invalid calendarobject format');
 
         $xcal->registerXPathNameSpace('cal','urn:ietf:params:xml:ns:xcal');
-        
+
         // Check if there's only 1 component
         $components = array('vevent','vtodo','vjournal','vfreebusy');
         $componentsFound = array();
@@ -74,9 +74,9 @@ class Sabre_CalDAV_ICalendarUtil {
      *
      * @todo Currently quoted attributes are not parsed correctly.
      * @see http://tools.ietf.org/html/draft-royer-calsch-xcal-03
-     * @param string $icalData 
-     * @deprected Please stop using this!
-     * @return string. 
+     * @param string $icalData
+     * @deprecated Please stop using this!
+     * @return string.
      */
     static function toXCAL($icalData) {
 
@@ -137,7 +137,7 @@ class Sabre_CalDAV_ICalendarUtil {
                 // There can be multiple attributes
                 $attributes = explode(';',$attributes);
                 foreach($attributes as $att) {
-  
+
                     list($attName,$attValue) = explode('=',$att,2);
                     $attName = strtolower($attName);
                     if ($attName === 'language') $attName='xml:lang';
@@ -147,7 +147,7 @@ class Sabre_CalDAV_ICalendarUtil {
             }
 
             $xml.='>'. htmlspecialchars(trim($value)) . '</' . $propertyName . ">\n";
-          
+
         }
         $xml.="</iCalendar>";
         return $xml;

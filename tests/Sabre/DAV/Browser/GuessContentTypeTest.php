@@ -9,7 +9,7 @@ class Sabre_DAV_Browser_GuessContentTypeTest extends Sabre_DAV_AbstractServer {
         file_put_contents(SABRE_TEMPDIR . '/somefile.jpg','blabla');
         file_put_contents(SABRE_TEMPDIR . '/somefile.hoi','blabla');
 
-    } 
+    }
 
     function tearDown() {
 

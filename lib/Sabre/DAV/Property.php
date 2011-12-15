@@ -4,7 +4,7 @@
  * Abstract property class
  *
  * Extend this class to create custom complex properties
- * 
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
@@ -13,7 +13,7 @@
  */
 abstract class Sabre_DAV_Property {
 
-    abstract function serialize(Sabre_DAV_Server $server, DOMElement $prop); 
+    abstract function serialize(Sabre_DAV_Server $server, DOMElement $prop);
 
     static function unserialize(DOMElement $prop) {
 

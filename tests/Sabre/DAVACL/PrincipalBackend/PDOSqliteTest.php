@@ -27,7 +27,7 @@ class Sabre_DAVACL_PrincipalBackend_PDOSQLiteTest extends Sabre_DAVACL_Principal
                 UNIQUE(principal_id, member_id)
         );");
 
-        $pdo->query("INSERT INTO groupmembers (principal_id,member_id) VALUES (2,1)"); 
+        $pdo->query("INSERT INTO groupmembers (principal_id,member_id) VALUES (2,1)");
 
         return $pdo;
 

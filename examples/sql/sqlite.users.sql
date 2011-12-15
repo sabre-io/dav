@@ -1,5 +1,5 @@
 CREATE TABLE users (
-	id integer primary key asc, 
+	id integer primary key asc,
 	username TEXT,
 	digesta1 TEXT,
 	UNIQUE(username)

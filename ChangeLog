@@ -302,14 +302,14 @@
 	  private.
 
 1.2.0beta3 (2010-05-14)
-	* Fixed: Custom properties were not propertly sent back for allprops
+	* Fixed: Custom properties were not properly sent back for allprops
 	  requests.
 	* Fixed: Issue 49, incorrect parsing of PROPPATCH, affecting Office 2007.
 	* Changed: Removed CalDAV items from includes.php, and added a few missing
 	  ones.
 
 1.2.0beta2 (2010-05-04)
-	* Fixed: Issue 46: Fatal error for some non-existant nodes.
+	* Fixed: Issue 46: Fatal error for some non-existent nodes.
 	* Updated: some example sql to include email address.
 	* Added: 208 and 508 statuscodes from RFC5842.
 	* Added: Apache2 configuration examples
@@ -576,7 +576,7 @@
 	  authentication. (Issue 11)
 	* Changed: Made more methods in Sabre_DAV_Server public.
 	* Fixed: TemporaryFileFilter plugin now intercepts HTTP LOCK requests
-	  to non-existant files. (Issue 12)
+	  to non-existent files. (Issue 12)
 	* Added: Central list of defined xml namespace prefixes. This can reduce
 	  Bandwidth and legibility for xml bodies with user-defined namespaces.
 	* Added: now a PEAR-compatible package again, thanks to Michael Gauthier
@@ -697,7 +697,7 @@
 	* Added: Custom property support
 	* Added: Shared lock support
 	* Added: Depth support to locks
-	* Added: Locking on unmapped urls (non-existant nodes)
+	* Added: Locking on unmapped urls (non-existent nodes)
 	* Fixed: Advertising as WebDAV class 3 support
 
 0.3-alpha (2008-06-29)
@@ -705,7 +705,7 @@
 	* Added: temporary file filter: support for smultron files.
 	* Added: Phing build scripts
 	* Added: PEAR package
-	* Fixed: MOVE bug identied using finder.
+	* Fixed: MOVE bug identified using finder.
 	* Fixed: Using gzuncompress instead of gzdecode in the temporary file
 	  filter. This seems more common.
 

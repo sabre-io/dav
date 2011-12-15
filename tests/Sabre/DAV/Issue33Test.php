@@ -2,7 +2,7 @@
 
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_DAV_Issue33Test extends PHPUnit_FrameWork_TestCase {
+class Sabre_DAV_Issue33Test extends PHPUnit_Framework_TestCase {
 
     function setUp() {
 
@@ -24,7 +24,7 @@ class Sabre_DAV_Issue33Test extends PHPUnit_FrameWork_TestCase {
             'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
             'HTTP_OVERWRITE' => 'F',
         );
-    
+
         $request = new Sabre_HTTP_Request($serverVars);
 
         $server->httpRequest = $request;
@@ -48,7 +48,7 @@ class Sabre_DAV_Issue33Test extends PHPUnit_FrameWork_TestCase {
         $tree->move('foo',urldecode('%C3%A0fo%C3%B3'));
 
         $node = $tree->getNodeForPath(urldecode('%C3%A0fo%C3%B3'));
-        $this->assertEquals(urldecode('%C3%A0fo%C3%B3'),$node->getName()); 
+        $this->assertEquals(urldecode('%C3%A0fo%C3%B3'),$node->getName());
 
     }
 
@@ -66,7 +66,7 @@ class Sabre_DAV_Issue33Test extends PHPUnit_FrameWork_TestCase {
      * @depends testCopyMoveInfo
      */
     function testEverything() {
-   
+
         // Request object
         $serverVars = array(
             'REQUEST_METHOD' => 'MOVE',

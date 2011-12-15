@@ -33,11 +33,11 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSetTest extends PHPUnit_Framework_
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:supported-privilege-set xmlns:d="DAV:">' .
-'<d:supported-privilege>' . 
+'<d:supported-privilege>' .
 '<d:privilege>' .
 '<d:all/>' .
-'</d:privilege>' . 
-'</d:supported-privilege>' . 
+'</d:privilege>' .
+'</d:supported-privilege>' .
 '</d:supported-privilege-set>
 ', $xml);
 
@@ -75,23 +75,23 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSetTest extends PHPUnit_Framework_
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:supported-privilege-set xmlns:d="DAV:">' .
-'<d:supported-privilege>' . 
+'<d:supported-privilege>' .
 '<d:privilege>' .
 '<d:all/>' .
-'</d:privilege>' . 
+'</d:privilege>' .
 '<d:abstract/>' .
-'<d:supported-privilege>' . 
+'<d:supported-privilege>' .
 '<d:privilege>' .
 '<d:read/>' .
-'</d:privilege>' . 
-'</d:supported-privilege>' . 
-'<d:supported-privilege>' . 
+'</d:privilege>' .
+'</d:supported-privilege>' .
+'<d:supported-privilege>' .
 '<d:privilege>' .
 '<d:write/>' .
 '</d:privilege>' .
 '<d:description>booh</d:description>' .
-'</d:supported-privilege>' . 
-'</d:supported-privilege>' . 
+'</d:supported-privilege>' .
+'</d:supported-privilege>' .
 '</d:supported-privilege-set>
 ', $xml);
 

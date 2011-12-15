@@ -32,26 +32,26 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSetTest extends PHPUnit_Fr
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
-'<cal:comp name="VEVENT"/>' . 
-'<cal:comp name="VJOURNAL"/>' . 
+'<cal:comp name="VEVENT"/>' .
+'<cal:comp name="VJOURNAL"/>' .
 '</d:root>
 ', $xml);
 
     }
 
-    /** 
+    /**
      * @depends testSimple
      */
     function testUnserializer() {
 
         $xml = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
-'<cal:comp name="VEVENT"/>' . 
-'<cal:comp name="VJOURNAL"/>' . 
+'<cal:comp name="VEVENT"/>' .
+'<cal:comp name="VJOURNAL"/>' .
 '</d:root>';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        
+
         $property = Sabre_CalDAV_Property_SupportedCalendarComponentSet::unserialize($dom->firstChild);
 
         $this->assertTrue($property instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);

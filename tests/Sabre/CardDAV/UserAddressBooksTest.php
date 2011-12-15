@@ -143,7 +143,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-       $this->s->setACL(array()); 
+       $this->s->setACL(array());
 
     }
 
@@ -155,5 +155,3 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
 
     }
 }
-
-?>

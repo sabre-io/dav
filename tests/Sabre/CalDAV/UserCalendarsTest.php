@@ -17,13 +17,13 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = Sabre_CalDAV_TestUtil::getBackend();
         $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend('realm');
-        $this->usercalendars = new Sabre_CalDAV_UserCalendars($this->principalBackend, $this->backend, 'principals/user1'); 
+        $this->usercalendars = new Sabre_CalDAV_UserCalendars($this->principalBackend, $this->backend, 'principals/user1');
 
     }
 
     function testSimple() {
 
-        $this->assertEquals('user1',$this->usercalendars->getName()); 
+        $this->assertEquals('user1',$this->usercalendars->getName());
 
     }
 

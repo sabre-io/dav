@@ -42,7 +42,7 @@ class Sabre_HTTP_Util {
         $rfc1123_date = $wkday . ', ' . $date1 . ' ' . $time . ' GMT';
         //allowed date formats by RFC 2616
         $HTTP_date = "($rfc1123_date|$rfc850_date|$asctime_date)";
-       
+
         //allow for space around the string and strip it
         $dateHeader = trim($dateHeader, ' ');
         if (!preg_match('/^' . $HTTP_date . '$/', $dateHeader))
@@ -63,15 +63,15 @@ class Sabre_HTTP_Util {
     /**
      * Transforms a DateTime object to HTTP's most common date format.
      *
-     * We're serializing it as the RFC 1123 date, which, for HTTP must be 
-     * specified as GMT. 
-     * 
-     * @param DateTime $dateTime 
-     * @return void
+     * We're serializing it as the RFC 1123 date, which, for HTTP must be
+     * specified as GMT.
+     *
+     * @param DateTime $dateTime
+     * @return string
      */
     static function toHTTPDate(DateTime $dateTime) {
 
-        // We need to clone it, as we don't want to affect the existing 
+        // We need to clone it, as we don't want to affect the existing
         // DateTime.
         $dateTime = clone $dateTime;
         $dateTime->setTimeZone(new DateTimeZone('GMT'));

@@ -5,7 +5,7 @@ require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCase {
-    
+
     function getServer() {
 
         $backend = new Sabre_DAVACL_MockPrincipalBackend();
@@ -27,7 +27,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         return $fakeServer;
 
     }
-    
+
     function testDepth1() {
 
         $xml = '<?xml version="1.0"?>
@@ -65,7 +65,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
 
     }
 
-    
+
     function testUnknownSearchField() {
 
         $xml = '<?xml version="1.0"?>
@@ -139,7 +139,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-        
+
         $check = array(
             '/d:multistatus',
             '/d:multistatus/d:response' => 2,
@@ -202,7 +202,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-        
+
         $check = array(
             '/d:multistatus',
             '/d:multistatus/d:response' => 0,

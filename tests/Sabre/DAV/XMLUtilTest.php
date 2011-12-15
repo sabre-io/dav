@@ -98,7 +98,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         );
 
     }
-    
+
     /**
      * @depends testConvertDAVNamespace
      */
@@ -119,7 +119,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         Sabre_DAV_XMLUtil::loadDOMDocument('');
 
     }
-    
+
     /**
      * @depends testConvertDAVNamespace
      * @expectedException Sabre_DAV_Exception_BadRequest
@@ -176,7 +176,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
   </prop>
   <prop>
     <s:example />
-  </prop>  
+  </prop>
 </root>';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);

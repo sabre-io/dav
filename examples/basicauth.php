@@ -2,7 +2,7 @@
 
 // !!!! Make sure the Sabre directory is in the include_path !!!
 // example:
-// set_include_path('lib/' . PATH_SEPARATOR . get_include_path()); 
+// set_include_path('lib/' . PATH_SEPARATOR . get_include_path());
 
 // settings
 date_default_timezone_set('Canada/Eastern');
@@ -24,5 +24,3 @@ if (!$result || $result[0]!=$u || $result[1]!=$p) {
     die();
 
 }
-
-?>

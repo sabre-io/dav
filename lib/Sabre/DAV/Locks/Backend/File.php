@@ -3,7 +3,7 @@
 /**
  * The Lock manager allows you to handle all file-locks centrally.
  *
- * This Lock Manager stores all its data in a single file. 
+ * This Lock Manager stores all its data in a single file.
  *
  * Note that this is not nearly as robust as a database, you are encouraged
  * to use the PDO backend instead.
@@ -11,22 +11,22 @@
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
 
     /**
      * The storage file
-     * 
-     * @var string 
+     *
+     * @var string
      */
     private $locksFile;
 
     /**
      * Constructor
      *
-     * @param string $locksFile path to file 
+     * @param string $locksFile path to file
      */
     public function __construct($locksFile) {
 
@@ -35,22 +35,21 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
     }
 
     /**
-     * Returns a list of Sabre_DAV_Locks_LockInfo objects  
-     * 
+     * Returns a list of Sabre_DAV_Locks_LockInfo objects
+     *
      * This method should return all the locks for a particular uri, including
      * locks that might be set on a parent uri.
      *
      * If returnChildLocks is set to true, this method should also look for
      * any locks in the subtree of the uri for locks.
      *
-     * @param string $uri 
+     * @param string $uri
      * @param bool $returnChildLocks
-     * @return array 
+     * @return array
      */
     public function getLocks($uri, $returnChildLocks) {
 
         $newLocks = array();
-        $currentPath = '';
 
         $locks = $this->getData();
 
@@ -71,20 +70,20 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
 
         // Checking if we can remove any of these locks
         foreach($newLocks as $k=>$lock) {
-            if (time() > $lock->timeout + $lock->created) unset($newLocks[$k]); 
+            if (time() > $lock->timeout + $lock->created) unset($newLocks[$k]);
         }
         return $newLocks;
 
     }
 
     /**
-     * Locks a uri 
-     * 
-     * @param string $uri 
-     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
-     * @return bool 
+     * Locks a uri
+     *
+     * @param string $uri
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo
+     * @return bool
      */
-    public function lock($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
+    public function lock($uri, Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         // We're making the lock timeout 30 minutes
         $lockInfo->timeout = 1800;
@@ -95,7 +94,7 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
 
         foreach($locks as $k=>$lock) {
             if ($lock->token == $lockInfo->token) unset($locks[$k]);
-            if (time() > $lock->timeout + $lock->created) unset($newLocks[$k]); 
+            if (time() > $lock->timeout + $lock->created) unset($newLocks[$k]);
         }
         $locks[] = $lockInfo;
         $this->putData($locks);
@@ -104,13 +103,13 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
     }
 
     /**
-     * Removes a lock from a uri 
-     * 
-     * @param string $uri 
-     * @param Sabre_DAV_Locks_LockInfo $lockInfo 
-     * @return bool 
+     * Removes a lock from a uri
+     *
+     * @param string $uri
+     * @param Sabre_DAV_Locks_LockInfo $lockInfo
+     * @return bool
      */
-    public function unlock($uri,Sabre_DAV_Locks_LockInfo $lockInfo) {
+    public function unlock($uri, Sabre_DAV_Locks_LockInfo $lockInfo) {
 
         $locks = $this->getData();
         foreach($locks as $k=>$lock) {
@@ -130,7 +129,7 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
     /**
      * Loads the lockdata from the filesystem.
      *
-     * @return array 
+     * @return array
      */
     protected function getData() {
 
@@ -156,7 +155,7 @@ class Sabre_DAV_Locks_Backend_File extends Sabre_DAV_Locks_Backend_Abstract {
     /**
      * Saves the lockdata
      *
-     * @param array $newData 
+     * @param array $newData
      * @return void
      */
     protected function putData(array $newData) {

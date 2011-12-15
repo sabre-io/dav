@@ -60,8 +60,7 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
      * 'href' is only required for the HREF type.
      *
      * @param int $type
-     * @param string $href
-     * @return void
+     * @param string|null $href
      */
     public function __construct($type, $href = null) {
 

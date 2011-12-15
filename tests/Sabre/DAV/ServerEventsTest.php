@@ -13,20 +13,20 @@ class Sabre_DAV_ServerEventsTest extends Sabre_DAV_AbstractServer {
 
         $this->tempPath = '';
         $this->server->createFile($newPath,'body');
-        $this->assertEquals($newPath, $this->tempPath); 
+        $this->assertEquals($newPath, $this->tempPath);
 
     }
 
     function afterBindHandler($path) {
 
-       $this->tempPath = $path; 
+       $this->tempPath = $path;
 
     }
 
     function testBeforeBindCancel() {
 
         $this->server->subscribeEvent('beforeBind', array($this,'beforeBindCancelHandler'));
-        $this->assertFalse($this->server->createFile('bla','body')); 
+        $this->assertFalse($this->server->createFile('bla','body'));
 
         // Also testing put()
         $req = new Sabre_HTTP_Request(array(
@@ -49,5 +49,3 @@ class Sabre_DAV_ServerEventsTest extends Sabre_DAV_AbstractServer {
 
 
 }
-
-?>

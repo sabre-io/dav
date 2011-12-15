@@ -11,7 +11,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VCALENDAR');
 
         $out = Sabre_CalDAV_ICalendarUtil::toXCal(implode("\n",$in));
-        
+
         $compare = '<?xml version="1.0"?>
 <iCalendar xmlns="urn:ietf:params:xml:ns:xcal">
   <vcalendar>
@@ -33,7 +33,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VCALENDAR');
 
         $out = Sabre_CalDAV_ICalendarUtil::toXCal(implode("\r\n",$in));
-        
+
         $compare = '<?xml version="1.0"?>
 <iCalendar xmlns="urn:ietf:params:xml:ns:xcal">
   <vcalendar>
@@ -59,7 +59,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VCALENDAR');
 
         $out = Sabre_CalDAV_ICalendarUtil::toXCal(implode("\n",$in));
-        
+
         $compare = '<?xml version="1.0"?>
 <iCalendar xmlns="urn:ietf:params:xml:ns:xcal">
   <vcalendar>
@@ -88,7 +88,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VCALENDAR');
 
         $out = Sabre_CalDAV_ICalendarUtil::toXCal(implode("\n",$in));
-        
+
         $compare = '<?xml version="1.0"?>
 <iCalendar xmlns="urn:ietf:params:xml:ns:xcal">
   <vcalendar>
@@ -117,7 +117,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VCALENDAR');
 
         $out = Sabre_CalDAV_ICalendarUtil::toXCal(implode("\n",$in));
-        
+
         $compare = '<?xml version="1.0"?>
 <iCalendar xmlns="urn:ietf:params:xml:ns:xcal">
   <vcalendar>
@@ -147,7 +147,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VCALENDAR');
 
         $out = Sabre_CalDAV_ICalendarUtil::toXCal(implode("\n",$in));
-        
+
         $compare = '<?xml version="1.0"?>
 <iCalendar xmlns="urn:ietf:params:xml:ns:xcal">
   <vcalendar>
@@ -176,7 +176,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
             'END:VEVENT',
             'END:VCALENDAR');
 
-        $this->assertTrue(Sabre_CalDAV_ICalendarUtil::validateICalendarObject(implode("\n",$in),array('VEVENT'))); 
+        $this->assertTrue(Sabre_CalDAV_ICalendarUtil::validateICalendarObject(implode("\n",$in),array('VEVENT')));
 
     }
 
@@ -186,7 +186,7 @@ class Sabre_CalDAV_ICalendarUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testValidateICalendarObjectNoData() {
 
-       Sabre_CalDAV_ICalendarUtil::validateICalendarObject('',array('VEVENT')); 
+       Sabre_CalDAV_ICalendarUtil::validateICalendarObject('',array('VEVENT'));
 
     }
 

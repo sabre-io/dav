@@ -29,8 +29,8 @@ class Sabre_CardDAV_Property_SupportedAddressDataDataTest extends PHPUnit_Framew
         $this->assertEquals(
 '<?xml version="1.0"?>
 <card:root xmlns:card="' . Sabre_CardDAV_Plugin::NS_CARDDAV . '" xmlns:d="DAV:">' .
-'<card:address-data-type content-type="text/vcard" version="3.0"/>' . 
-'<card:address-data-type content-type="text/vcard" version="4.0"/>' . 
+'<card:address-data-type content-type="text/vcard" version="3.0"/>' .
+'<card:address-data-type content-type="text/vcard" version="4.0"/>' .
 '</card:root>
 ', $xml);
 

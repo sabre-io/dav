@@ -25,16 +25,16 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 }
 set_error_handler("exception_error_handler");
 
-// Autoloader 
+// Autoloader
 require_once 'lib/Sabre/autoload.php';
 
 // Backends
 $authBackend      = new Sabre_DAV_Auth_Backend_PDO($pdo);
 $principalBackend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
-$carddavBackend   = new Sabre_CardDAV_Backend_PDO($pdo); 
-//$caldavBackend    = new Sabre_CalDAV_Backend_PDO($pdo); 
+$carddavBackend   = new Sabre_CardDAV_Backend_PDO($pdo);
+//$caldavBackend    = new Sabre_CalDAV_Backend_PDO($pdo);
 
-// Setting up the directory tree // 
+// Setting up the directory tree //
 $nodes = array(
     new Sabre_DAVACL_PrincipalCollection($principalBackend),
 //    new Sabre_CalDAV_CalendarRootNode($authBackend, $caldavBackend),
@@ -45,7 +45,7 @@ $nodes = array(
 $server = new Sabre_DAV_Server($nodes);
 $server->setBaseUri($baseUri);
 
-// Plugins 
+// Plugins
 $server->addPlugin(new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV'));
 $server->addPlugin(new Sabre_DAV_Browser_Plugin());
 //$server->addPlugin(new Sabre_CalDAV_Plugin());

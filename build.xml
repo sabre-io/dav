@@ -8,8 +8,8 @@
     <property name="sabredav.apidocspath" value="docs/api" />
 
     <target name="build" depends="init, test, clean">
-        <mkdir dir="build" /> 
-        
+        <mkdir dir="build" />
+
         <echo msg="Building Sabre pear package" />
         <mkdir dir="build/Sabre" />
         <copy todir="build/Sabre">
@@ -188,7 +188,7 @@
             </fileset>
         </copy>
         <mkdir dir="build/SabreDAV/tests/temp" />
-        <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" /> 
+        <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
 
     </target>
 
@@ -196,7 +196,7 @@
         <echo msg="Removing build files (cleaning up distribution)" />
         <delete dir="docs/api" />
         <delete dir="build" />
-    </target>    
+    </target>
 
     <target name="release" depends="init,clean,test,build">
         <echo>Creating Mercurial release tag</echo>

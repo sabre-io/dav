@@ -31,7 +31,7 @@ class Sabre_CalDAV_Property_SupportedCalendarDataTest extends PHPUnit_Framework_
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
-'<cal:calendar-data content-type="text/calendar" version="2.0"/>' . 
+'<cal:calendar-data content-type="text/calendar" version="2.0"/>' .
 '</d:root>
 ', $xml);
 

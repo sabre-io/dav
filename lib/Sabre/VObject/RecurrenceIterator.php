@@ -69,8 +69,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
     /**
      * List of dates that are excluded from the rules.
-     * 
-     * @var array 
+     *
+     * @var array
      */
     public $exceptionDates = array();
 
@@ -138,8 +138,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      *
      * This is an array of weekdays
      *
-     * This may also be preceeded by a postive or negative integer. If present,
-     * this indicates the nth occurence of a specific day within the monthly or
+     * This may also be preceeded by a positive or negative integer. If present,
+     * this indicates the nth occurrence of a specific day within the monthly or
      * yearly rrule. For instance, -2TU indicates the second-last tuesday of
      * the month, or year.
      *
@@ -247,7 +247,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         6 => 'Saturday',
     );
 
-   
+
     /**
      * Creates the iterator
      *
@@ -266,7 +266,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             if (isset($comp->DURATION)) {
                 $this->endDate->add(Sabre_VObject_DateTimeParser::parse($comp->DURATION->value));
             }
-        } 
+        }
         $this->currentDate = clone $this->startDate;
 
         $rrule = (string)$comp->RRULE;
@@ -274,9 +274,9 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         $parts = explode(';', $rrule);
 
         foreach($parts as $part) {
-           
+
             list($key, $value) = explode('=', $part, 2);
-           
+
             switch(strtoupper($key)) {
 
                 case 'FREQ' :
@@ -313,7 +313,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 case 'BYHOUR' :
                     $this->byHour = explode(',', $value);
                     break;
-               
+
                 case 'BYDAY' :
                     $this->byDay = explode(',', strtoupper($value));
                     break;
@@ -352,7 +352,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
                 foreach(explode(',', (string)$exDate) as $exceptionDate) {
 
-                    $this->exceptionDates[] = 
+                    $this->exceptionDates[] =
                         Sabre_VObject_DateTimeParser::parse($exceptionDate, $this->startDate->getTimeZone());
 
                 }
@@ -376,10 +376,10 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
-     * This method returns the startdate for the current iteration of the 
+     * This method returns the startdate for the current iteration of the
      * event.
-     * 
-     * @return DateTime 
+     *
+     * @return DateTime
      */
     public function getDtStart() {
 
@@ -388,10 +388,10 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
-     * This method returns the enddate for the current iteration of the 
+     * This method returns the enddate for the current iteration of the
      * event.
-     * 
-     * @return DateTime 
+     *
+     * @return DateTime
      */
     public function getDtEnd() {
 
@@ -413,7 +413,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
-     * Wether or not there is a 'next item'
+     * Whether or not there is a 'next item'
      *
      * @return bool
      */
@@ -442,14 +442,15 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
-     * This method allows you to quickly go to the next occurence after the 
+     * This method allows you to quickly go to the next occurrence after the
      * specified date.
      *
-     * Note that this checks the current 'endDate', not the 'stardDate'. This 
-     * means that if you forward to January 1st, the iterator will stop at the 
-     * first event that ends *after* January 1st. 
-     * 
-     * @return void 
+     * Note that this checks the current 'endDate', not the 'stardDate'. This
+     * means that if you forward to January 1st, the iterator will stop at the
+     * first event that ends *after* January 1st.
+     *
+     * @param DateTime $dt
+     * @return void
      */
     public function fastForward(DateTime $dt) {
 
@@ -466,7 +467,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
-        while(true) { 
+        while(true) {
 
             switch($this->frequency) {
 
@@ -525,7 +526,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         }
 
-        do { 
+        do {
 
             $this->currentDate->modify('+' . $this->interval . ' days');
 
@@ -565,7 +566,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         $firstDay = $this->dayMap[$this->weekStart];
 
         // Increasing the 'current day' until we find our next
-        // occurence.
+        // occurrence.
         while(true) {
 
             $currentDay++;
@@ -619,20 +620,20 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         while(true) {
 
-            $occurences = $this->getMonthlyOccurences();
+            $occurrences = $this->getMonthlyOccurrences();
 
-            foreach($occurences as $k=>$occurence) {
+            foreach($occurrences as $occurrence) {
 
-                // The first occurence thats higher than the current
+                // The first occurrence thats higher than the current
                 // day of the month wins.
-                if ($occurence > $currentDayOfMonth) {
+                if ($occurrence > $currentDayOfMonth) {
                     break 2;
                 }
 
             }
-           
+
             // If we made it all the way here, it means there were no
-            // valid occurences, and we need to advance to the next
+            // valid occurrences, and we need to advance to the next
             // month.
             $this->currentDate->modify('first day of this month');
             $this->currentDate->modify('+ ' . $this->interval . ' months');
@@ -643,7 +644,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         }
 
-        $this->currentDate->setDate($this->currentDate->format('Y'), $this->currentDate->format('n'), $occurence);
+        $this->currentDate->setDate($this->currentDate->format('Y'), $this->currentDate->format('n'), $occurrence);
 
     }
 
@@ -669,13 +670,13 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             while(true) {
 
-                $occurences = $this->getMonthlyOccurences();
+                $occurrences = $this->getMonthlyOccurrences();
 
-                foreach($occurences as $k=>$occurence) {
+                foreach($occurrences as $occurrence) {
 
-                    // The first occurence thats higher than the current
+                    // The first occurrence that's higher than the current
                     // day of the month wins.
-                    if ($occurence > $currentDayOfMonth) {
+                    if ($occurrence > $currentDayOfMonth) {
                         break 2;
                     }
 
@@ -697,8 +698,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             }
 
-            // If we made it here, it means we got a valid occurence
-            $this->currentDate->setDate($currentYear, $currentMonth, $occurence);
+            // If we made it here, it means we got a valid occurrence
+            $this->currentDate->setDate($currentYear, $currentMonth, $occurrence);
             return;
 
         } else {
@@ -721,18 +722,16 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
-     * Returns all the occurences for a monthly frequency with a 'byDay' or
+     * Returns all the occurrences for a monthly frequency with a 'byDay' or
      * 'byMonthDay' expansion for the current month.
      *
      * The returned list is an array of integers with the day of month (1-31).
      *
      * @return array
      */
-    protected function getMonthlyOccurences() {
+    protected function getMonthlyOccurrences() {
 
         $startDate = clone $this->currentDate;
-
-        $current = 1;
 
         $byDayResults = array();
 
@@ -749,7 +748,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             $checkDate = clone $startDate;
             $checkDate->modify('first day of this month');
             $checkDate->modify($dayName);
-           
+
             do {
                 $dayHits[] = $checkDate->format('j');
                 $checkDate->modify('next ' . $dayName);
@@ -760,7 +759,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             // wednesday.
             if (strlen($day)>2) {
                 $offset = (int)substr($day,0,-2);
-               
+
                 if ($offset>0) {
                     $byDayResults[] = $dayHits[$offset-1];
                 } else {

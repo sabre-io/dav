@@ -29,7 +29,7 @@ class Sabre_CalDAV_Schedule_OutboxTest extends PHPUnit_Framework_TestCase {
         } catch (Sabre_DAV_Exception_MethodNotAllowed $e) {
             $ok = true;
         }
-        if (!$ok) {    
+        if (!$ok) {
             $this->fail('Exception was not emitted');
         }
 
@@ -50,11 +50,9 @@ class Sabre_CalDAV_Schedule_OutboxTest extends PHPUnit_Framework_TestCase {
 
         if (!$ok) {
             $this->fail('{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy was not found as a supported privilege');
-        } 
+        }
 
-    } 
+    }
 
 
 }
-
-?>

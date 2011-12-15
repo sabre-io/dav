@@ -21,9 +21,9 @@ class Sabre_CardDAV_Backend_PDOSqliteTest extends Sabre_CardDAV_Backend_Abstract
         $pdo->query("DROP TABLE IF EXISTS cards");
         $pdo->query("
 CREATE TABLE addressbooks (
-    id integer primary key asc, 
-    principaluri text, 
-    displayname text, 
+    id integer primary key asc,
+    principaluri text,
+    displayname text,
     uri text,
     description text,
 	ctag integer
@@ -40,11 +40,11 @@ VALUES
 
         $pdo->query("
 
-CREATE TABLE cards ( 
-	id integer primary key asc, 
-    addressbookid integer, 
-    carddata text, 
-    uri text, 
+CREATE TABLE cards (
+	id integer primary key asc,
+    addressbookid integer,
+    carddata text,
+    uri text,
     lastmodified integer
 );
 

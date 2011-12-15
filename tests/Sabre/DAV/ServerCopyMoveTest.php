@@ -29,7 +29,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
         foreach($cleanUp as $file) {
             $tmpFile = SABRE_TEMPDIR . '/' . $file;
             if (file_exists($tmpFile)) {
-               
+
                 if (is_dir($tmpFile)) {
                     rmdir($tmpFile);
                 } else {
@@ -43,7 +43,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
 
 
     function testCopyOverWrite() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'COPY',
@@ -66,7 +66,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
     function testCopyToSelf() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'COPY',
@@ -83,7 +83,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
     function testMoveToSelf() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'MOVE',
@@ -100,7 +100,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
     function testMoveOverWrite() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'MOVE',
@@ -189,7 +189,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
     function testCopyDirectory() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/col',
             'REQUEST_METHOD' => 'COPY',
@@ -212,7 +212,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
     function testSimpleCopyFile() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'COPY',
@@ -235,7 +235,7 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
     function testSimpleCopyCollection() {
-        
+
         $serverVars = array(
             'REQUEST_URI'    => '/col',
             'REQUEST_METHOD' => 'COPY',
@@ -260,5 +260,3 @@ class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

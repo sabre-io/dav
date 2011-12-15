@@ -25,7 +25,7 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
             );
 
 
-    } 
+    }
 
     function getPrincipalsByPrefix($prefix) {
 
@@ -48,7 +48,7 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
 
         $this->principals[] = $principal;
 
-    } 
+    }
 
     function getPrincipalByPath($path) {
 
@@ -91,8 +91,8 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
         $membership = array();
         foreach($this->groupMembers as $group=>$members) {
             if (in_array($path, $members)) $membership[] = $group;
-        } 
-        return $membership; 
+        }
+        return $membership;
 
     }
 

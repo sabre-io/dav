@@ -36,8 +36,8 @@ class Sabre_HTTP_BasicAuth extends Sabre_HTTP_AbstractAuth {
         // Most other webservers
         $auth = $this->httpRequest->getHeader('Authorization');
 
-        // Apache could prefix environment variables with REDIRECT_ when urls 
-        // are passed through mod_rewrite 
+        // Apache could prefix environment variables with REDIRECT_ when urls
+        // are passed through mod_rewrite
         if (!$auth) {
             $auth = $this->httpRequest->getRawServerValue('REDIRECT_HTTP_AUTHORIZATION');
         }

@@ -7,7 +7,7 @@ class Sabre_DAVACL_Property_CurrentUserPrivilegeSetTest extends PHPUnit_Framewor
         $privileges = array(
             '{DAV:}read',
             '{DAV:}write',
-        ); 
+        );
         $prop = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($privileges);
 
         $server = new Sabre_DAV_Server();

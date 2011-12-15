@@ -5,24 +5,24 @@
  *
  * This class reads the vobject file, and returns a full element tree.
  *
- * TODO: this class currently completely works 'statically'. This is pointless, 
+ * TODO: this class currently completely works 'statically'. This is pointless,
  * and defeats OOP principals. Needs refactoring in a future version.
- * 
+ *
  * @package Sabre
  * @subpackage VObject
  * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_Reader {
 
     /**
-     * This array contains a list of Property names that are automatically 
+     * This array contains a list of Property names that are automatically
      * mapped to specific class names.
      *
-     * Adding to this list allows you to specify custom property classes, 
-     * adding extra functionality. 
-     * 
+     * Adding to this list allows you to specify custom property classes,
+     * adding extra functionality.
+     *
      * @var array
      */
     static public $elementMap = array(
@@ -39,10 +39,10 @@ class Sabre_VObject_Reader {
     );
 
     /**
-     * Parses the file and returns the top component 
-     * 
-     * @param string $data 
-     * @return Sabre_VObject_Element 
+     * Parses the file and returns the top component
+     *
+     * @param string $data
+     * @return Sabre_VObject_Element
      */
     static function read($data) {
 
@@ -67,11 +67,11 @@ class Sabre_VObject_Reader {
         }
 
         unset($lines);
-        
+
         reset($lines2);
 
         return self::readLine($lines2);
-       
+
     }
 
     /**
@@ -79,9 +79,9 @@ class Sabre_VObject_Reader {
      *
      * This method receives the full array of lines. The array pointer is used
      * to traverse.
-     * 
-     * @param array $lines 
-     * @return Sabre_VObject_Element 
+     *
+     * @param array $lines
+     * @return Sabre_VObject_Element
      */
     static private function readLine(&$lines) {
 
@@ -103,12 +103,12 @@ class Sabre_VObject_Reader {
 
                 $nextLine = current($lines);
 
-                if ($nextLine===false) 
+                if ($nextLine===false)
                     throw new Sabre_VObject_ParseException('Invalid VObject. Document ended prematurely.');
 
             }
 
-            // Checking component name of the 'END:' line. 
+            // Checking component name of the 'END:' line.
             if (substr($nextLine,4)!==$obj->name) {
                 throw new Sabre_VObject_ParseException('Invalid VObject, expected: "END:' . $obj->name . '" got: "' . $nextLine . '"');
             }
@@ -149,7 +149,7 @@ class Sabre_VObject_Reader {
                 $obj->add($param);
             }
 
-        } 
+        }
 
         return $obj;
 
@@ -157,12 +157,12 @@ class Sabre_VObject_Reader {
     }
 
     /**
-     * Reads a parameter list from a property 
+     * Reads a parameter list from a property
      *
      * This method returns an array of Sabre_VObject_Parameter
      *
-     * @param string $parameters 
-     * @return array 
+     * @param string $parameters
+     * @return array
      */
     static private function readParameters($parameters) {
 

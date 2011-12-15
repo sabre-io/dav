@@ -68,6 +68,16 @@ class Sabre_DAV_Auth_Backend_AbstractBasicTest extends PHPUnit_Framework_TestCas
 
 class Sabre_DAV_Auth_Backend_AbstractBasicMock extends Sabre_DAV_Auth_Backend_AbstractBasic {
 
+    /**
+     * Validates a username and password
+     *
+     * This method should return true or false depending on if login
+     * succeeded.
+     *
+     * @param string $username
+     * @param string $password
+     * @return bool
+     */
     function validateUserPass($username, $password) {
 
         return ($username == 'username' && $password == 'password');

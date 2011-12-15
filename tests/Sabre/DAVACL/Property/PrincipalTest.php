@@ -50,7 +50,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'<d:unauthenticated/>' . 
+'<d:unauthenticated/>' .
 '</d:principal>
 ', $xml);
 
@@ -79,7 +79,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'<d:authenticated/>' . 
+'<d:authenticated/>' .
 '</d:principal>
 ', $xml);
 
@@ -108,7 +108,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'<d:href>/principals/admin</d:href>' . 
+'<d:href>/principals/admin</d:href>' .
 '</d:principal>
 ', $xml);
 
@@ -118,7 +118,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 
         $xml = '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'<d:href>/principals/admin</d:href>' . 
+'<d:href>/principals/admin</d:href>' .
 '</d:principal>';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
@@ -133,7 +133,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 
         $xml = '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'  <d:authenticated />' . 
+'  <d:authenticated />' .
 '</d:principal>';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
@@ -147,7 +147,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 
         $xml = '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'  <d:unauthenticated />' . 
+'  <d:unauthenticated />' .
 '</d:principal>';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
@@ -164,7 +164,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 
         $xml = '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">' .
-'  <d:foo />' . 
+'  <d:foo />' .
 '</d:principal>';
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);

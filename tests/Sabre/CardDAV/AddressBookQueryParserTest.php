@@ -180,12 +180,12 @@ class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCas
                         array(
                             'name' => 'BLA',
                             'is-not-defined' => false,
-                            'text-match' => null 
+                            'text-match' => null
                         ),
                         array(
                             'name' => 'BLA2',
                             'is-not-defined' => true,
-                            'text-match' => null 
+                            'text-match' => null
                         ),
                     ),
                     'text-matches' => array(),
@@ -235,7 +235,7 @@ class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCas
                                 'collation' => 'i;unicode-casemap',
                                 'match-type' => 'contains',
                                 'value'     => 'foo',
-                            ), 
+                            ),
                         ),
                     ),
                     'text-matches' => array(

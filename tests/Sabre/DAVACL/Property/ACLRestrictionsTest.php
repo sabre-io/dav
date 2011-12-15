@@ -12,7 +12,7 @@ class Sabre_DAVACL_Property_ACLRestrictionsTest extends PHPUnit_Framework_TestCa
 
         $dom = new DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
-        
+
         $dom->appendChild($root);
 
         $acl = new Sabre_DAVACL_Property_AclRestrictions();

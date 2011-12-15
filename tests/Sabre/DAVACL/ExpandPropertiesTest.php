@@ -66,7 +66,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-        
+
         $check = array(
             '/d:multistatus',
             '/d:multistatus/d:response' => 1,
@@ -128,7 +128,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-  
+
         $check = array(
             '/d:multistatus',
             '/d:multistatus/d:response' => 1,
@@ -192,7 +192,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-  
+
         $check = array(
             '/d:multistatus',
             '/d:multistatus/d:response' => 1,
@@ -259,7 +259,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-  
+
         $check = array(
             '/d:multistatus',
             '/d:multistatus/d:response' => 1,
@@ -318,7 +318,7 @@ class Sabre_DAVACL_MockPropertyNode implements Sabre_DAV_INode, Sabre_DAV_IPrope
         $returnedProperties = array();
         foreach($requestedProperties as $requestedProperty) {
             if (isset($this->properties[$requestedProperty])) {
-                $returnedProperties[$requestedProperty] = 
+                $returnedProperties[$requestedProperty] =
                     $this->properties[$requestedProperty];
             }
         }

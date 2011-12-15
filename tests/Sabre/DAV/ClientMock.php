@@ -10,13 +10,16 @@ class Sabre_DAV_ClientMock extends Sabre_DAV_Client {
     protected function curlRequest($url, $curlSettings) {
 
         $this->url = $url;
-        $this->curlSettings = $curlSettings; 
+        $this->curlSettings = $curlSettings;
         return $this->response;
 
     }
 
     /**
      * Just making this method public
+     *
+     * @param string $url
+     * @return string
      */
     public function getAbsoluteUrl($url) {
 

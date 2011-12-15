@@ -5,7 +5,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
     function testIterate() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');
-        
+
         $sub = new Sabre_VObject_Component('VEVENT');
         $comp->children[] = $sub;
 
@@ -27,7 +27,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
     function testMagicGet() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');
-        
+
         $sub = new Sabre_VObject_Component('VEVENT');
         $comp->children[] = $sub;
 
@@ -45,7 +45,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
     function testMagicGetGroups() {
 
         $comp = new Sabre_VObject_Component('VCARD');
-        
+
         $sub = new Sabre_VObject_Property('GROUP1.EMAIL','1@1.com');
         $comp->children[] = $sub;
 
@@ -71,7 +71,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
     function testMagicIsset() {
 
         $comp = new Sabre_VObject_Component('VCALENDAR');
-        
+
         $sub = new Sabre_VObject_Component('VEVENT');
         $comp->children[] = $sub;
 
@@ -89,10 +89,10 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $comp = new Sabre_VObject_Component('VCALENDAR');
         $comp->myProp = 'myValue';
 
-        $this->assertInstanceOf('Sabre_VObject_Property',$comp->MYPROP); 
-        $this->assertEquals('myValue',$comp->MYPROP->value); 
+        $this->assertInstanceOf('Sabre_VObject_Property',$comp->MYPROP);
+        $this->assertEquals('myValue',$comp->MYPROP->value);
 
-    
+
     }
 
     function testMagicSetScalarTwice() {
@@ -102,8 +102,8 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $comp->myProp = 'myValue';
 
         $this->assertEquals(1,count($comp->children));
-        $this->assertInstanceOf('Sabre_VObject_Property',$comp->MYPROP); 
-        $this->assertEquals('myValue',$comp->MYPROP->value); 
+        $this->assertInstanceOf('Sabre_VObject_Property',$comp->MYPROP);
+        $this->assertEquals('myValue',$comp->MYPROP->value);
 
     }
 
@@ -116,7 +116,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1, count($comp->children));
 
-        $this->assertEquals('VEVENT',$comp->VEVENT->name); 
+        $this->assertEquals('VEVENT',$comp->VEVENT->name);
 
     }
 
@@ -129,7 +129,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1, count($comp->children));
 
-        $this->assertEquals('VEVENT',$comp->VEVENT->name); 
+        $this->assertEquals('VEVENT',$comp->VEVENT->name);
 
     }
 
@@ -166,7 +166,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $event2->summary = 'Event 2';
 
         $comp->add($event2);
-        
+
         $this->assertTrue(isset($comp->vevent[0]));
         $this->assertTrue(isset($comp->vevent[1]));
 
@@ -200,8 +200,8 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, count($comp->children));
 
         $this->assertTrue($comp->children[0] instanceof Sabre_VObject_Property);
-        $this->assertEquals('MYPROP',$comp->children[0]->name); 
-        $this->assertEquals('value',$comp->children[0]->value); 
+        $this->assertEquals('MYPROP',$comp->children[0]->name);
+        $this->assertEquals('value',$comp->children[0]->value);
 
     }
 
@@ -213,7 +213,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1, count($comp->children));
 
-        $this->assertEquals('VEVENT',$comp->VEVENT->name); 
+        $this->assertEquals('VEVENT',$comp->VEVENT->name);
 
     }
 
@@ -226,7 +226,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(2, count($comp->children));
 
-        $this->assertEquals('VEVENT',$comp->VEVENT->name); 
+        $this->assertEquals('VEVENT',$comp->VEVENT->name);
 
     }
 
@@ -261,7 +261,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException InvalidArgumentException 
+     * @expectedException InvalidArgumentException
      */
     function testMagicSetInvalid() {
 
@@ -272,7 +272,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1, count($comp->children));
 
-        $this->assertEquals('VEVENT',$comp->VEVENT->name); 
+        $this->assertEquals('VEVENT',$comp->VEVENT->name);
 
     }
 

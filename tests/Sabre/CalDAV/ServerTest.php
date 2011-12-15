@@ -5,7 +5,7 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 class Sabre_CalDAV_ServerTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * The CalDAV server is a simple script that just composes a 
+     * The CalDAV server is a simple script that just composes a
      * Sabre_DAV_Server. All we really have to do is check if the setup
      * is done correctly.
      */

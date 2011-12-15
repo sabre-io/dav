@@ -46,14 +46,14 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     public function testPropFindEmptyBody() {
-       
+
         $this->sendRequest("");
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status);
 
         $this->assertEquals(array(
                 'Content-Type' => 'application/xml; charset=utf-8',
-                'DAV' => '1, 3, extended-mkcol, 2', 
+                'DAV' => '1, 3, extended-mkcol, 2',
             ),
             $this->response->headers
          );
@@ -80,7 +80,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 </d:propfind>';
 
         $this->sendRequest($xml);
-        
+
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
@@ -114,7 +114,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 </d:propfind>';
 
         $this->sendRequest($xml);
-        
+
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
@@ -185,9 +185,9 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $props = array(
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
         );
-        
+
         $result = $this->server->updateProperties('/test2.txt',$props);
-        
+
         $this->assertEquals(array(
             '200' => array('{http://sabredav.org/NS/test}someprop' => null),
             'href' => '/test2.txt',
@@ -205,9 +205,9 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
             '{DAV:}getcontentlength' => 50,
         );
-        
+
         $result = $this->server->updateProperties('/test2.txt',$props);
-        
+
         $this->assertEquals(array(
             '424' => array('{http://sabredav.org/NS/test}someprop' => null),
             '403' => array('{DAV:}getcontentlength' => null),
@@ -229,9 +229,9 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $props = array(
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
         );
-        
+
         $result = $this->server->updateProperties('/',$props);
-        
+
         $this->assertEquals(array(
             '403' => array('{http://sabredav.org/NS/test}someprop' => null),
             'href' => '/',
@@ -252,9 +252,9 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $props = array(
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
         );
-        
+
         $result = $this->server->updateProperties('/',$props);
-        
+
         $this->assertEquals(array(
             '402' => array('{http://sabredav.org/NS/test}someprop' => null),
             'href' => '/',
@@ -276,7 +276,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $props = array(
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
         );
-        
+
         $result = $this->server->updateProperties('/',$props);
 
     }
@@ -349,7 +349,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('bla','http://www.rooftopsolutions.nl/testnamespace');
- 
+
         $xpath='//bla:someprop';
         $result = $xml->xpath($xpath);
         $this->assertEquals(1,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
@@ -364,7 +364,7 @@ class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleDirectory implements Sab
     public $type;
 
     function __construct($type) {
-        
+
         $this->type =$type;
         parent::__construct('root');
 
@@ -391,5 +391,3 @@ class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleDirectory implements Sab
     }
 
 }
-
-?>

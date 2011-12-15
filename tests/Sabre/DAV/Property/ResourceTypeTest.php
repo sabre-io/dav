@@ -6,7 +6,7 @@ class Sabre_DAV_Property_ResourceTypeTest extends PHPUnit_Framework_TestCase {
 
         $resourceType = new Sabre_DAV_Property_ResourceType(array('{DAV:}collection'));
         $this->assertEquals(array('{DAV:}collection'),$resourceType->getValue());
-        
+
         $resourceType = new Sabre_DAV_Property_ResourceType(Sabre_DAV_Server::NODE_FILE);
         $this->assertEquals(array(),$resourceType->getValue());
 

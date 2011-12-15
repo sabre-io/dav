@@ -100,7 +100,7 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
-        
+
         $check = array(
             '/d:principal-search-property-set',
             '/d:principal-search-property-set/d:principal-search-property' => 2,

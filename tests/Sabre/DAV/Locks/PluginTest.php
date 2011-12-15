@@ -18,13 +18,13 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     function testGetFeatures() {
 
-        $this->assertEquals(array(2),$this->locksPlugin->getFeatures()); 
+        $this->assertEquals(array(2),$this->locksPlugin->getFeatures());
 
     }
-    
+
     function testGetHTTPMethods() {
 
-        $this->assertEquals(array('LOCK','UNLOCK'),$this->locksPlugin->getHTTPMethods('')); 
+        $this->assertEquals(array('LOCK','UNLOCK'),$this->locksPlugin->getHTTPMethods(''));
 
     }
 
@@ -32,7 +32,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $locksPlugin = new Sabre_DAV_Locks_Plugin();
         $this->server->addPlugin($locksPlugin);
-        $this->assertEquals(array(),$locksPlugin->getHTTPMethods('')); 
+        $this->assertEquals(array(),$locksPlugin->getHTTPMethods(''));
 
     }
 
@@ -73,12 +73,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -135,12 +135,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -169,12 +169,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -214,12 +214,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -293,12 +293,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -335,19 +335,19 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->invokeMethod('LOCK','test.txt');
         $lockToken = $this->server->httpResponse->headers['Lock-Token'];
 
         $serverVars = array(
-            'HTTP_LOCK_TOKEN' => $lockToken, 
+            'HTTP_LOCK_TOKEN' => $lockToken,
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -374,12 +374,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->invokeMethod('LOCK','test.txt');
@@ -389,7 +389,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $lockToken = trim($lockToken,'<>');
 
         $serverVars = array(
-            'HTTP_LOCK_TOKEN' => $lockToken, 
+            'HTTP_LOCK_TOKEN' => $lockToken,
         );
 
         $request = new Sabre_HTTP_Request($serverVars);
@@ -416,10 +416,10 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner>Evert</D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>Evert</D:owner>
 </D:lockinfo>');
 
         $this->server->invokeMethod('LOCK','test.txt');
@@ -444,12 +444,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -490,12 +490,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -531,12 +531,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -574,12 +574,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -616,12 +616,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -659,12 +659,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -702,12 +702,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -745,12 +745,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -788,12 +788,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -832,12 +832,12 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $request = new Sabre_HTTP_Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
-<D:lockinfo xmlns:D="DAV:"> 
-    <D:lockscope><D:exclusive/></D:lockscope> 
-    <D:locktype><D:write/></D:locktype> 
-    <D:owner> 
-        <D:href>http://example.org/~ejw/contact.html</D:href> 
-    </D:owner> 
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
 </D:lockinfo>');
 
         $this->server->httpRequest = $request;
@@ -953,6 +953,6 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->locksPlugin->getTimeoutHeader();
 
     }
-    
+
 
 }

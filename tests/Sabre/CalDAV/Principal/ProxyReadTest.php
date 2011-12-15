@@ -61,7 +61,7 @@ class Sabre_CalDAV_Principal_ProxyReadTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $i->getAlternateUriSet());
 
     }
-    
+
     function testGetPrincipalUri() {
 
         $i = $this->getInstance();

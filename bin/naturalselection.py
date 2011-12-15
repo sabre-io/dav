@@ -10,7 +10,7 @@
 
 import os
 from optparse import OptionParser
-import time 
+import time
 
 def getfreespace(path):
     stat = os.statvfs(path)
@@ -25,7 +25,7 @@ def run(cacheDir, treshold, sleep=5, simulate=False, min_erase = 0):
     if (bytes>0):
         print "Bytes to go before we hit treshhold:", bytes
     else:
-        print "Treshold exceeded with:", -bytes, "bytes" 
+        print "Treshold exceeded with:", -bytes, "bytes"
         dir = os.listdir(cacheDir)
         dir2 = []
         for file in dir:
@@ -37,7 +37,7 @@ def run(cacheDir, treshold, sleep=5, simulate=False, min_erase = 0):
             })
 
         dir2.sort(lambda x,y: int(x["atime"]-y["atime"]))
-        
+
         filesunlinked = 0
         gainedspace = 0
 
@@ -59,21 +59,21 @@ def run(cacheDir, treshold, sleep=5, simulate=False, min_erase = 0):
             left = int(left - file["size"])
             gainedspace = gainedspace + file["size"]
             filesunlinked = filesunlinked + 1
-            
+
             if(left<0):
                 break
 
         print "%d files deleted (%d bytes)" % (filesunlinked, gainedspace)
-        
-    
+
+
     time.sleep(sleep)
 
-    
+
 
 def main():
     parser = OptionParser(
         version="naturalselecton v0.3",
-        description="Cache directory manager. Deletes cache entries based on accesstime and free space tresholds.\n" + 
+        description="Cache directory manager. Deletes cache entries based on accesstime and free space tresholds.\n" +
             "This utility is distributed alongside SabreDAV.",
         usage="usage: %prog [options] cacheDirectory",
     )
@@ -108,7 +108,7 @@ def main():
         '-m', '--min-erase',
         help="Minimum number of bytes to erase when the treshold is reached. " +
             "Setting this option higher will reduce the amount of times the cache directory will need to be scanned. " +
-            "(the default is 1073741824, which is 1GB.)", 
+            "(the default is 1073741824, which is 1GB.)",
         type="int",
         dest="min_erase",
         default=1073741824
@@ -116,7 +116,7 @@ def main():
 
     options,args = parser.parse_args()
     if len(args)<1:
-        parser.error("This utility requires at least 1 argument")    
+        parser.error("This utility requires at least 1 argument")
     cacheDir = args[0]
 
     print "Natural Selection"

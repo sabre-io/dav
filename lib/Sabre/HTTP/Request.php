@@ -6,7 +6,7 @@
  * This object can be used to easily access information about an HTTP request.
  * It can additionally be used to create 'mock' requests.
  *
- * This class mostly operates indepentend, but because of the nature of a single
+ * This class mostly operates independent, but because of the nature of a single
  * request per run it can operate as a singleton. For more information check out
  * the behaviour around 'defaultInputStream'.
  *
@@ -57,6 +57,7 @@ class Sabre_HTTP_Request {
      * global _SERVER and _POST variable respectively.
      *
      * @param array $serverData
+     * @param array $postData
      */
     public function __construct(array $serverData = null, array $postData = null) {
 
@@ -156,7 +157,7 @@ class Sabre_HTTP_Request {
     /**
      * Will return protocol + the hostname + the uri
      *
-     * @return void
+     * @return string
      */
     public function getAbsoluteUri() {
 

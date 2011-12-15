@@ -16,5 +16,3 @@ class Sabre_CalDAV_Schedule_UserNodeTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

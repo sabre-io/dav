@@ -16,6 +16,7 @@
  * To run this script, just execute on the command line. The script assumes
  * it's in the standard bin/ directory.
  */
+date_default_timezone_set('UTC');
 
 $libDir = realpath(__DIR__ . '/../lib');
 $outputDir = __DIR__ . '/../docs/wikidocs';

@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+date_default_timezone_set('UTC');
 
 $make = false;
 $packageName = null;

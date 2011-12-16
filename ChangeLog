@@ -1,4 +1,4 @@
-1.6.0-alpha1 (????-??-??)
+1.6.0-alpha1 (201?-??-??)
 	* BC Break: Now requires PHP 5.3
 	* BC Break: Any node that implemented Sabre_DAVACL_IACL must now also
 	  implement the getSupportedPrivilegeSet method. See website for details.
@@ -54,7 +54,7 @@
 	* Fixed: Correctly formatting HTTP dates.
 	* Fixed: Issue 94: Sending back Last-Modified header for 304 responses.
 
-1.5.5-stable (2011-??-??)
+1.5.5-stable (2011-12-16)
 	* Fixed: CalDAV time-range filter workaround for recurring events.
 	* Fixed: Bug in Sabre_DAV_Locks_Backend_File that didn't allow multiple
 	  files to be locked at the same time.

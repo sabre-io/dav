@@ -522,7 +522,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$node instanceof Sabre_CalDAV_UserCalendars)
             return;
 
-        $output.= '<tr><td><form method="post" action="">
+        $output.= '<tr><td colspan="2"><form method="post" action="">
             <h3>Create new calendar</h3>
             <input type="hidden" name="sabreAction" value="mkcalendar" />
             <label>Name (uri):</label> <input type="text" name="name" /><br />

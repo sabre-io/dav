@@ -13,6 +13,7 @@
 	  version.
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
+	* Added: Browser plugin: icons for various nodes.
 	* Added: Support for FREEBUSY reports!
 	* Changed: beforeCreateFile event now passes data argument by reference.
 	* Added: Ability for plugins to tell the ACL plugin which principal

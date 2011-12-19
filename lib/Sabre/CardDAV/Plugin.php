@@ -473,7 +473,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$node instanceof Sabre_CardDAV_UserAddressBooks)
             return;
 
-        $output.= '<tr><td><form method="post" action="">
+        $output.= '<tr><td colspan="2"><form method="post" action="">
             <h3>Create new address book</h3>
             <input type="hidden" name="sabreAction" value="mkaddressbook" />
             <label>Name (uri):</label> <input type="text" name="name" /><br />

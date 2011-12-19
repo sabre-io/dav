@@ -18,6 +18,32 @@
 class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
+     * List of default icons for nodes.
+     * 
+     * This is an array with class / interface names as keys, and asset names 
+     * as values.
+     *
+     * The evaluation order is reversed. The last item in the list gets 
+     * precendence.
+     *
+     * @var array
+     */
+    public $iconMap = array(
+        'Sabre_DAV_IFile' => 'icons/file',
+        'Sabre_DAV_ICollection' => 'icons/collection',
+        'Sabre_DAVACL_IPrincipal' => 'icons/principal',
+        'Sabre_CalDAV_ICalendar' => 'icons/calendar',
+        'Sabre_CardDAV_IAddressBook' => 'icons/addressbook',
+    );
+
+    /**
+     * The file extension used for all icons 
+     * 
+     * @var string
+     */
+    public $iconExtension = '.png';
+
+    /**
      * reference to server class
      *
      * @var Sabre_DAV_Server
@@ -122,7 +148,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($method!='POST') return;
         $contentType = $this->server->httpRequest->getHeader('Content-Type');
-
+        list($contentType) = explode(';', $contentType);
         if ($contentType !== 'application/x-www-form-urlencoded' &&
             $contentType !== 'multipart/form-data') {
                 return;
@@ -207,8 +233,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 <body>
   <h1>Index for " . $this->escapeHTML($path) . "/</h1>
   <table>
-    <tr><th>Name</th><th>Type</th><th>Size</th><th>Last modified</th></tr>
-    <tr><td colspan=\"4\"><hr /></td></tr>";
+    <tr><th width=\"24\"></th><th>Name</th><th>Type</th><th>Size</th><th>Last modified</th></tr>
+    <tr><td colspan=\"5\"><hr /></td></tr>";
 
         $files = $this->server->getPropertiesForPath($path,array(
             '{DAV:}displayname',
@@ -226,7 +252,9 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
             $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
 
+            $icon = $this->enableAssets?'<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl('icons/parent' . $this->iconExtension) . '" width="24" alt="Parent" /></a>':''; 
             $html.= "<tr>
+    <td>$icon</td>
     <td><a href=\"{$fullPath}\">..</a></td>
     <td>[parent]</td>
     <td></td>
@@ -302,7 +330,25 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             $displayName = $this->escapeHTML($displayName);
             $type = $this->escapeHTML($type);
 
+            $node = $parent->getChild($name);
+
+            $icon = '';
+
+            if ($this->enableAssets) {
+                foreach(array_reverse($this->iconMap) as $class=>$iconName) {
+
+                    if ($node instanceof $class) {
+                        $icon = '<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl($iconName . $this->iconExtension) . '" alt="" width="24" /></a>';
+                        break;
+                    }
+
+
+                }
+
+            }
+
             $html.= "<tr>
+    <td>$icon</td>
     <td><a href=\"{$fullPath}\">{$displayName}</a></td>
     <td>{$type}</td>
     <td>{$size}</td>
@@ -311,7 +357,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        $html.= "<tr><td colspan=\"4\"><hr /></td></tr>";
+        $html.= "<tr><td colspan=\"5\"><hr /></td></tr>";
 
         $output = '';
 
@@ -351,7 +397,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         if (get_class($node)==='Sabre_DAV_SimpleCollection')
             return;
 
-        $output.= '<tr><td><form method="post" action="">
+        $output.= '<tr><td colspan="2"><form method="post" action="">
             <h3>Create new folder</h3>
             <input type="hidden" name="sabreAction" value="mkcol" />
             Name: <input type="text" name="name" /><br />
@@ -416,6 +462,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         case 'ico' :
             $mime = 'image/vnd.microsoft.icon';
+            break;
+
+        case 'png' :
+            $mime = 'image/png';
             break;
 
         default:

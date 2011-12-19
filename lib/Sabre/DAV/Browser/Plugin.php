@@ -25,11 +25,20 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     protected $server;
 
     /**
-     * enableEditing
+     * enablePost turns on the 'actions' panel, which allows people to create
+     * folders and upload files straight from a browser.
      *
      * @var bool
      */
     protected $enablePost = true;
+
+    /**
+     * By default the browser plugin will generate a favicon and other images.
+     * To turn this off, set this property to false.
+     *
+     * @var bool
+     */
+    protected $enableAssets = true;
 
     /**
      * Creates the object.
@@ -39,9 +48,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param bool $enablePost
      */
-    public function __construct($enablePost=true) {
+    public function __construct($enablePost=true, $enableAssets = true) {
 
         $this->enablePost = $enablePost;
+        $this->enableAssets = $enableAssets;
 
     }
 
@@ -68,11 +78,21 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function httpGetInterceptor($method, $uri) {
 
-        if ($method!='GET') return true;
+        if ($method !== 'GET') return true;
+
+        // We're not using straight-up $_GET, because we want everything to be
+        // unit testable.
+        $getVars = array();
+        parse_str($this->server->httpRequest->getQueryString(), $getVars);
+
+        if (isset($getVars['sabreAction']) && $getVars['sabreAction'] === 'asset' && isset($getVars['assetName'])) {
+            $this->serveAsset($getVars['assetName']);
+            return false;
+        }
 
         try {
             $node = $this->server->tree->getNodeForPath($uri);
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
             // We're simply stopping when the file isn't found to not interfere
             // with other plugins.
             return;
@@ -139,6 +159,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                         $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
                         $parent->createFile($newName,fopen($file['tmp_name'],'r'));
                     }
+                    break;
 
             }
 
@@ -176,7 +197,13 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
   body { Font-family: arial}
   h1 { font-size: 150% }
   </style>
-</head>
+        ";
+
+        if ($this->enableAssets) {
+            $html.='<link rel="shortcut icon" href="'.$this->getAssetUrl('favicon.ico').'" type="image/vnd.microsoft.icon" />';
+        }
+
+        $html .= "</head>
 <body>
   <h1>Index for " . $this->escapeHTML($path) . "/</h1>
   <table>
@@ -338,6 +365,69 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             <input type="submit" value="upload" />
             </form>
             </td></tr>';
+
+    }
+
+    /**
+     * This method takes a path/name of an asset and turns it into url
+     * suiteable for http access.
+     *
+     * @param string $assetName
+     * @return string
+     */
+    protected function getAssetUrl($assetName) {
+
+        return $this->server->getBaseUri() . '?sabreAction=asset&assetName=' . urlencode($assetName);
+
+    }
+
+    /**
+     * This method returns a local pathname to an asset.
+     *
+     * @param string $assetName
+     * @return string
+     */
+    protected function getLocalAssetPath($assetName) {
+
+        // Making sure people aren't trying to escape from the base path.
+        $assetSplit = explode('/', $assetName);
+        if (in_array('..',$assetSplit)) {
+            throw new Sabre_DAV_Exception('Incorrect asset path');
+        }
+        $path = __DIR__ . '/assets/' . $assetName;
+        return $path;
+
+    }
+
+    /**
+     * This method reads an asset from disk and generates a full http response.
+     *
+     * @param string $assetName
+     * @return void
+     */
+    protected function serveAsset($assetName) {
+
+        $assetPath = $this->getLocalAssetPath($assetName);
+        if (!file_exists($assetPath)) {
+            throw new Sabre_DAV_Exception_NotFound('Could not find an asset with this name');
+        }
+        // Rudimentary mime type detection
+        switch(strtolower(substr($assetPath,strpos($assetPath,'.')+1))) {
+
+        case 'ico' :
+            $mime = 'image/vnd.microsoft.icon';
+            break;
+
+        default:
+            $mime = 'application/octet-stream';
+            break;
+
+        }
+
+        $this->server->httpResponse->setHeader('Content-Type','image/vnd.microsoft.icon');
+        $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody(fopen($assetPath,'r'));
 
     }
 

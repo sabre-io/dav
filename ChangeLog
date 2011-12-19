@@ -8,6 +8,9 @@
 	  'searchPrincipals'.
 	* BC Break: Sabre_DAV_ILockable is removed and all related per-node
 	  locking functionality.
+	* BC Break: Sabre_DAV_Exception_FileNotFound is now deprecated in favor of
+	  Sabre_DAV_Exception_NotFound. The former will be removed in a later
+	  version.
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
 	* Added: Support for FREEBUSY reports!

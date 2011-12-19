@@ -21,7 +21,7 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
      * Generally its wise to override this, as this can usually be optimized
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_FileNotFound
+     * @throws Sabre_DAV_Exception_NotFound
      * @return Sabre_DAV_INode
      */
     public function getChild($name) {
@@ -31,7 +31,7 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
             if ($child->getName()==$name) return $child;
 
         }
-        throw new Sabre_DAV_Exception_FileNotFound('File not found: ' . $name);
+        throw new Sabre_DAV_Exception_NotFound('File not found: ' . $name);
 
     }
 
@@ -50,7 +50,7 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
             $this->getChild($name);
             return true;
 
-        } catch(Sabre_DAV_Exception_FileNotFound $e) {
+        } catch(Sabre_DAV_Exception_NotFound $e) {
 
             return false;
 

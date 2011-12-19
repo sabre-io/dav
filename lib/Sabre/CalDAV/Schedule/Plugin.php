@@ -127,7 +127,7 @@ class Sabre_CalDAV_Schedule_Plugin extends Sabre_DAV_ServerPlugin {
 
         try {
             $node = $this->server->tree->getNodeForPath($uri);
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
             return;
         }
 

@@ -61,7 +61,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             if ($pathPart=='.' || $pathPart=='') continue;
 
             if (!($currentNode instanceof Sabre_DAV_ICollection))
-                throw new Sabre_DAV_Exception_FileNotFound('Could not find node at path: ' . $path);
+                throw new Sabre_DAV_Exception_NotFound('Could not find node at path: ' . $path);
 
             $currentNode = $currentNode->getChild($pathPart);
 
@@ -91,7 +91,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             if (!$parentNode instanceof Sabre_DAV_ICollection) return false;
             return $parentNode->childExists($base);
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
 
             return false;
 

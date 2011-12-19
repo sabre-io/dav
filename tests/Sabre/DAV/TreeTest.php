@@ -82,7 +82,7 @@ class Sabre_DAV_TreeMock extends Sabre_DAV_Tree {
     function getNodeForPath($path) {
 
         if (isset($this->nodes[$path])) return $this->nodes[$path];
-        throw new Sabre_DAV_Exception_FileNotFound('item not found');
+        throw new Sabre_DAV_Exception_NotFound('item not found');
 
     }
 

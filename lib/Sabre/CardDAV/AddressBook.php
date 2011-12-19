@@ -60,7 +60,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     public function getChild($name) {
 
         $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'],$name);
-        if (!$obj) throw new Sabre_DAV_Exception_FileNotFound('Card not found');
+        if (!$obj) throw new Sabre_DAV_Exception_NotFound('Card not found');
         return new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
 
     }

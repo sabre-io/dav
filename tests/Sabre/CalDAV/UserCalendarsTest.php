@@ -28,7 +28,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_FileNotFound
+     * @expectedException Sabre_DAV_Exception_NotFound
      * @depends testSimple
      */
     function testGetChildNotFound() {

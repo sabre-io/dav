@@ -57,11 +57,11 @@ class MyDirectory extends Sabre_DAV_Directory {
 
         $path = $this->myPath . '/' . $name;
 
-        // We have to throw a FileNotFound exception if the file didn't exist
-        if (!file_exists($this->myPath)) throw new Sabre_DAV_Exception_FileNotFound('The file with name: ' . $name . ' could not be found');
+        // We have to throw a NotFound exception if the file didn't exist
+        if (!file_exists($this->myPath)) throw new Sabre_DAV_Exception_NotFound('The file with name: ' . $name . ' could not be found');
         // Some added security
 
-        if ($name[0]=='.')  throw new Sabre_DAV_Exception_FileNotFound('Access denied');
+        if ($name[0]=='.')  throw new Sabre_DAV_Exception_NotFound('Access denied');
 
         if (is_dir($path)) {
 

@@ -136,7 +136,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
                 return $child;
 
         }
-        throw new Sabre_DAV_Exception_FileNotFound('Calendar with name \'' . $name . '\' could not be found');
+        throw new Sabre_DAV_Exception_NotFound('Calendar with name \'' . $name . '\' could not be found');
 
     }
 

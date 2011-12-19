@@ -37,7 +37,7 @@ abstract class Sabre_DAV_Tree {
             $this->getNodeForPath($path);
             return true;
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
 
             return false;
 

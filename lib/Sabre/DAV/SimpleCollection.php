@@ -79,13 +79,13 @@ class Sabre_DAV_SimpleCollection extends Sabre_DAV_Collection {
      * Generally its wise to override this, as this can usually be optimized
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_FileNotFound
+     * @throws Sabre_DAV_Exception_NotFound
      * @return Sabre_DAV_INode
      */
     public function getChild($name) {
 
         if (isset($this->children[$name])) return $this->children[$name];
-        throw new Sabre_DAV_Exception_FileNotFound('File not found: ' . $name . ' in \'' . $this->getName() . '\'');
+        throw new Sabre_DAV_Exception_NotFound('File not found: ' . $name . ' in \'' . $this->getName() . '\'');
 
     }
 

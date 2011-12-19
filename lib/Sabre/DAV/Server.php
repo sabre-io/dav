@@ -1025,7 +1025,7 @@ class Sabre_DAV_Server {
         // The MKCOL is only allowed on an unmapped uri
         try {
             $this->tree->getNodeForPath($uri);
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
             $methods[] = 'MKCOL';
         }
 
@@ -1171,7 +1171,7 @@ class Sabre_DAV_Server {
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationDir);
             if (!($destinationParent instanceof Sabre_DAV_ICollection)) throw new Sabre_DAV_Exception_UnsupportedMediaType('The destination node is not a collection');
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
 
             // If the destination parent node is not found, we throw a 409
             throw new Sabre_DAV_Exception_Conflict('The destination node is not found');
@@ -1185,7 +1185,7 @@ class Sabre_DAV_Server {
             // we'll need to throw precondition failed in case overwrite is false
             if (!$overwrite) throw new Sabre_DAV_Exception_PreconditionFailed('The destination node already exists, and the overwrite header is set to false','Overwrite');
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
 
             // Destination didn't exist, we're all good
             $destinationNode = false;
@@ -1507,7 +1507,7 @@ class Sabre_DAV_Server {
 
             $parent = $this->tree->getNodeForPath($parentUri);
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
 
             throw new Sabre_DAV_Exception_Conflict('Parent node does not exist');
 
@@ -1527,7 +1527,7 @@ class Sabre_DAV_Server {
             // If we got here.. it means there's already a node on that url, and we need to throw a 405
             throw new Sabre_DAV_Exception_MethodNotAllowed('The resource you tried to create already exists');
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
             // This is correct
         }
 
@@ -1745,7 +1745,7 @@ class Sabre_DAV_Server {
             // request succeed if a resource exists at that url.
             try {
                 $node = $this->tree->getNodeForPath($uri);
-            } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            } catch (Sabre_DAV_Exception_NotFound $e) {
                 throw new Sabre_DAV_Exception_PreconditionFailed('An If-Match header was specified and the resource did not exist','If-Match');
             }
 
@@ -1781,7 +1781,7 @@ class Sabre_DAV_Server {
             if (!$node) {
                 try {
                     $node = $this->tree->getNodeForPath($uri);
-                } catch (Sabre_DAV_Exception_FileNotFound $e) {
+                } catch (Sabre_DAV_Exception_NotFound $e) {
                     $nodeExists = false;
                 }
             }

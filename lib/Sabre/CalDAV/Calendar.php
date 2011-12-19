@@ -115,7 +115,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
     public function getChild($name) {
 
         $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$name);
-        if (!$obj) throw new Sabre_DAV_Exception_FileNotFound('Calendar object not found');
+        if (!$obj) throw new Sabre_DAV_Exception_NotFound('Calendar object not found');
         return new Sabre_CalDAV_CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
 
     }

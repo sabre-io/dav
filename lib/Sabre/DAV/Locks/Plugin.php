@@ -294,7 +294,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             // We need to call the beforeWriteContent event for RFC3744
             $this->server->broadcastEvent('beforeWriteContent',array($uri));
 
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
 
             // It didn't, lets create it
             $this->server->createFile($uri,fopen('php://memory','r'));

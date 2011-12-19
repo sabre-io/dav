@@ -106,13 +106,13 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
      * Returns a child object, by its name.
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_FileNotFound
+     * @throws Sabre_DAV_Exception_NotFound
      * @return Sabre_DAV_IPrincipal
      */
     public function getChild($name) {
 
         $principalInfo = $this->principalBackend->getPrincipalByPath($this->principalPrefix . '/' . $name);
-        if (!$principalInfo) throw new Sabre_DAV_Exception_FileNotFound('Principal with name ' . $name . ' not found');
+        if (!$principalInfo) throw new Sabre_DAV_Exception_NotFound('Principal with name ' . $name . ' not found');
         return $this->getChildForPrincipal($principalInfo);
 
     }

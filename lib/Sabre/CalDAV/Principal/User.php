@@ -52,7 +52,7 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
 
         $principal = $this->principalBackend->getPrincipalByPath($this->getPrincipalURL() . '/' . $name);
         if (!$principal) {
-            throw new Sabre_DAV_Exception_FileNotFound('Node with name ' . $name . ' was not found');
+            throw new Sabre_DAV_Exception_NotFound('Node with name ' . $name . ' was not found');
         }
         if ($name === 'calendar-proxy-read')
             return new Sabre_CalDAV_Principal_ProxyRead($this->principalBackend, $this->principalProperties);
@@ -60,7 +60,7 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
         if ($name === 'calendar-proxy-write')
             return new Sabre_CalDAV_Principal_ProxyWrite($this->principalBackend, $this->principalProperties);
 
-        throw new Sabre_DAV_Exception_FileNotFound('Node with name ' . $name . ' was not found');
+        throw new Sabre_DAV_Exception_NotFound('Node with name ' . $name . ' was not found');
 
     }
 
@@ -94,7 +94,7 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
         try {
             $this->getChild($name);
             return true;
-        } catch (Sabre_DAV_Exception_FileNotFound $e) {
+        } catch (Sabre_DAV_Exception_NotFound $e) {
             return false;
         }
 

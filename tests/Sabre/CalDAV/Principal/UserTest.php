@@ -57,7 +57,7 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_FileNotFound
+     * @expectedException Sabre_DAV_Exception_NotFound
      */
     function testGetChildNotFound() {
 
@@ -67,7 +67,7 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_FileNotFound
+     * @expectedException Sabre_DAV_Exception_NotFound
      */
     function testGetChildNotFound2() {
 

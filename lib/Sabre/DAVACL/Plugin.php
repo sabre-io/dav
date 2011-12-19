@@ -1023,7 +1023,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             // Looking up the principal
             try {
                 $principal = $this->server->tree->getNodeForPath($newAce['principal']);
-            } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            } catch (Sabre_DAV_Exception_NotFound $e) {
                 throw new Sabre_DAVACL_Exception_NotRecognizedPrincipal('The specified principal (' . $newAce['principal'] . ') does not exist');
             }
             if (!($principal instanceof Sabre_DAVACL_IPrincipal)) {

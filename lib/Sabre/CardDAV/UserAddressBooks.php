@@ -129,7 +129,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
                 return $child;
 
         }
-        throw new Sabre_DAV_Exception_FileNotFound('Addressbook with name \'' . $name . '\' could not be found');
+        throw new Sabre_DAV_Exception_NotFound('Addressbook with name \'' . $name . '\' could not be found');
 
     }
 

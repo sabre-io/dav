@@ -40,7 +40,7 @@ class Sabre_DAV_Tree_Filesystem extends Sabre_DAV_Tree {
     public function getNodeForPath($path) {
 
         $realPath = $this->getRealPath($path);
-        if (!file_exists($realPath)) throw new Sabre_DAV_Exception_FileNotFound('File at location ' . $realPath . ' not found');
+        if (!file_exists($realPath)) throw new Sabre_DAV_Exception_NotFound('File at location ' . $realPath . ' not found');
         if (is_dir($realPath)) {
             return new Sabre_DAV_FS_Directory($path);
         } else {

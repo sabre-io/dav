@@ -72,7 +72,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_FileNotFound
+     * @expectedException Sabre_DAV_Exception_NotFound
      */
     function testGetChild404() {
 

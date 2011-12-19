@@ -68,7 +68,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if ($node instanceof Sabre_DAV_IExtendedCollection) {
             try {
                 $node->getChild($name);
-            } catch (Sabre_DAV_Exception_FileNotFound $e) {
+            } catch (Sabre_DAV_Exception_NotFound $e) {
                 return array('MKCALENDAR');
             }
         }

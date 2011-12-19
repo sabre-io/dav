@@ -402,4 +402,108 @@ BLA;
 
     }
 
+    function testExpand() {
+
+        $xml = array(
+            '<d:prop>',
+            '  <c:calendar-data>',
+            '     <c:expand start="20110101T000000Z" end="20120101T000000Z"/>',
+            '  </c:calendar-data>',
+            '</d:prop>',
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR" />',
+            '</c:filter>'
+        );
+
+        $xml =
+'<?xml version="1.0"?>
+<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">
+' . implode("\n", $xml) . '
+</c:calendar-query>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q->parse();
+
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $q->filters
+        );
+
+        $this->assertEquals(array(
+            '{urn:ietf:params:xml:ns:caldav}calendar-data',
+        ), $q->requestedProperties);
+
+        $this->assertEquals(
+            array(
+                'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC')),
+                'end' => new DateTime('2012-01-01 00:00:00', new DateTimeZone('UTC')),
+            ),
+            $q->expand
+        );
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testExpandNoStart() {
+
+        $xml = array(
+            '<d:prop>',
+            '  <c:calendar-data>',
+            '     <c:expand end="20120101T000000Z"/>',
+            '  </c:calendar-data>',
+            '</d:prop>',
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR" />',
+            '</c:filter>'
+        );
+
+        $xml =
+'<?xml version="1.0"?>
+<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">
+' . implode("\n", $xml) . '
+</c:calendar-query>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q->parse();
+
+
+        $expected = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => false
+        );
+
+        $this->assertEquals(
+            $expected,
+            $q->filters
+        );
+
+        $this->assertEquals(array(
+            '{urn:ietf:params:xml:ns:caldav}calendar-data',
+        ), $q->requestedProperties);
+
+        $this->assertEquals(
+            array(
+                'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC')),
+                'end' => new DateTime('2012-01-01 00:00:00', new DateTimeZone('UTC')),
+            ),
+            $q->expand
+        );
+
+    }
 }

@@ -19,11 +19,11 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * List of default icons for nodes.
-     * 
-     * This is an array with class / interface names as keys, and asset names 
+     *
+     * This is an array with class / interface names as keys, and asset names
      * as values.
      *
-     * The evaluation order is reversed. The last item in the list gets 
+     * The evaluation order is reversed. The last item in the list gets
      * precendence.
      *
      * @var array
@@ -34,11 +34,12 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         'Sabre_DAVACL_IPrincipal' => 'icons/principal',
         'Sabre_CalDAV_ICalendar' => 'icons/calendar',
         'Sabre_CardDAV_IAddressBook' => 'icons/addressbook',
+        'Sabre_CardDAV_ICard' => 'icons/card',
     );
 
     /**
-     * The file extension used for all icons 
-     * 
+     * The file extension used for all icons
+     *
      * @var string
      */
     public $iconExtension = '.png';
@@ -252,7 +253,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
             $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
 
-            $icon = $this->enableAssets?'<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl('icons/parent' . $this->iconExtension) . '" width="24" alt="Parent" /></a>':''; 
+            $icon = $this->enableAssets?'<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl('icons/parent' . $this->iconExtension) . '" width="24" alt="Parent" /></a>':'';
             $html.= "<tr>
     <td>$icon</td>
     <td><a href=\"{$fullPath}\">..</a></td>
@@ -330,11 +331,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             $displayName = $this->escapeHTML($displayName);
             $type = $this->escapeHTML($type);
 
-            $node = $parent->getChild($name);
-
             $icon = '';
 
             if ($this->enableAssets) {
+                $node = $parent->getChild($name);
                 foreach(array_reverse($this->iconMap) as $class=>$iconName) {
 
                     if ($node instanceof $class) {

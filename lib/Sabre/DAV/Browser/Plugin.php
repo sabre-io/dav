@@ -426,6 +426,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server->httpResponse->setHeader('Content-Type','image/vnd.microsoft.icon');
         $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
+        $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->sendBody(fopen($assetPath,'r'));
 

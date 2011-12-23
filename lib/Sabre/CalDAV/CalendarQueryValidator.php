@@ -283,58 +283,10 @@ class Sabre_CalDAV_CalendarQueryValidator {
         switch($component->name) {
 
             case 'VEVENT' :
+            case 'VTODO' :
+            case 'VJOURNAL' :
 
                 return $component->isInTimeRange($start, $end);
-
-            case 'VTODO' :
-
-                $dtstart = isset($component->DTSTART)?$component->DTSTART->getDateTime():null;
-                $duration = isset($component->DURATION)?Sabre_VObject_DateTimeParser::parseDuration($component->DURATION):null;
-                $due = isset($component->DUE)?$component->DUE->getDateTime():null;
-                $completed = isset($component->COMPLETED)?$component->COMPLETED->getDateTime():null;
-                $created = isset($component->CREATED)?$component->CREATED->getDateTime():null;
-
-                if ($dtstart) {
-                    if ($duration) {
-                        $effectiveEnd = clone $dtstart;
-                        $effectiveEnd->add($duration);
-                        return $start <= $effectiveEnd && $end > $dtstart;
-                    } elseif ($due) {
-                        return
-                            ($start < $due || $start <= $dtstart) &&
-                            ($end > $dtstart || $end >= $due);
-                    } else {
-                        return $start <= $dtstart && $end > $dtstart;
-                    }
-                }
-                if ($due) {
-                    return ($start < $due && $end >= $due);
-                }
-                if ($completed && $created) {
-                    return
-                        ($start <= $created || $start <= $completed) &&
-                        ($end >= $created || $end >= $completed);
-                }
-                if ($completed) {
-                    return ($start <= $completed && $end >= $completed);
-                }
-                if ($created) {
-                    return ($end > $created);
-                }
-                return true;
-
-            case 'VJOURNAL' :
-                $dtstart = isset($component->DTSTART)?$component->DTSTART->getDateTime():null;
-                if ($dtstart) {
-                    $effectiveEnd = clone $dtstart;
-                    if ($component->DTSTART->getDateType() == Sabre_VObject_Element_DateTime::DATE) {
-                        $effectiveEnd->modify('+1 day');
-                    }
-
-                    return ($start < $effectiveEnd && $end > $dtstart);
-
-                }
-                return false;
 
             case 'VFREEBUSY' :
                 throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');

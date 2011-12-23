@@ -39,6 +39,8 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
     static public $classMap = array(
         'VCALENDAR'     => 'Sabre_VObject_Component_VCalendar',
         'VEVENT'        => 'Sabre_VObject_Component_VEvent',
+        'VTODO'         => 'Sabre_VObject_Component_VTodo',
+        'VJOURNAL'      => 'Sabre_VObject_Component_VJournal',
     );
 
     /**

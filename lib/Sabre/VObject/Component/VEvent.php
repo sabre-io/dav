@@ -1,12 +1,25 @@
 <?php
 
+/**
+ * VEvent component
+ *
+ * This component contains some additional functionality specific for VEVENT's.
+ *
+ * @package Sabre
+ * @subpackage VObject
+ * @copyright Copyright (C) 2007-2011 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
 
     /**
-     * Returns true or false depending on if the event falls in the specified 
-     * time-range. This is used for filtering purposes. 
-     * 
-     * @return bool 
+     * Returns true or false depending on if the event falls in the specified
+     * time-range. This is used for filtering purposes.
+     *
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return bool
      */
     public function isInTimeRange(DateTime $start, DateTime $end) {
 

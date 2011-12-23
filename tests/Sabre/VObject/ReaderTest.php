@@ -83,6 +83,18 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testReadMappedPropertyGrouped() {
+
+        $data = "foo.DTSTART:20110529";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertInstanceOf('Sabre_VObject_Property_DateTime', $result);
+        $this->assertEquals('DTSTART', $result->name);
+        $this->assertEquals('20110529', $result->value);
+
+    }
+
+
     /**
      * @expectedException Sabre_VObject_ParseException
      */

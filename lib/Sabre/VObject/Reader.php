@@ -17,28 +17,6 @@
 class Sabre_VObject_Reader {
 
     /**
-     * This array contains a list of Property names that are automatically
-     * mapped to specific class names.
-     *
-     * Adding to this list allows you to specify custom property classes,
-     * adding extra functionality.
-     *
-     * @var array
-     */
-    static public $elementMap = array(
-        'COMPLETED'     => 'Sabre_VObject_Property_DateTime',
-        'CREATED'       => 'Sabre_VObject_Property_DateTime',
-        'DTEND'         => 'Sabre_VObject_Property_DateTime',
-        'DTSTAMP'       => 'Sabre_VObject_Property_DateTime',
-        'DTSTART'       => 'Sabre_VObject_Property_DateTime',
-        'DUE'           => 'Sabre_VObject_Property_DateTime',
-        'EXDATE'        => 'Sabre_VObject_Property_MultiDateTime',
-        'LAST-MODIFIED' => 'Sabre_VObject_Property_DateTime',
-    	'RECURRENCE-ID' => 'Sabre_VObject_Property_DateTime',
-        'TRIGGER'       => 'Sabre_VObject_Property_DateTime',
-    );
-
-    /**
      * Parses the file and returns the top component
      *
      * @param string $data
@@ -92,8 +70,8 @@ class Sabre_VObject_Reader {
         // Components
         if (stripos($line,"BEGIN:")===0) {
 
-            // This is a component
-            $obj = new Sabre_VObject_Component(strtoupper(substr($line,6)));
+            $componentName = strtoupper(substr($line,6));
+            $obj = Sabre_VObject_Component::createByName($componentName);
 
             $nextLine = current($lines);
 
@@ -135,13 +113,7 @@ class Sabre_VObject_Reader {
         $propertyName = strtoupper($matches['name']);
         $propertyValue = stripcslashes($matches['value']);
 
-        if (isset(self::$elementMap[$propertyName])) {
-            $className = self::$elementMap[$propertyName];
-        } else {
-            $className = 'Sabre_VObject_Property';
-        }
-
-        $obj = new $className($propertyName, $propertyValue);
+        $obj = Sabre_VObject_Property::createByName($propertyName, $propertyValue);
 
         if ($matches['parameters']) {
 

@@ -17,6 +17,9 @@ class Sabre_VObject_Component_VTodo extends Sabre_VObject_Component {
      * Returns true or false depending on if the event falls in the specified 
      * time-range. This is used for filtering purposes. 
      *
+     * The rules used to determine if an event falls within the specified 
+     * time-range is based on the CalDAV specification.
+     *
      * @param DateTime $start
      * @param DateTime $end 
      * @return bool 

@@ -61,4 +61,3 @@ class Sabre_VObject_Component_VTodoTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

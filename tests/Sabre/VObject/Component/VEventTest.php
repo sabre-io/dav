@@ -49,4 +49,3 @@ class Sabre_VObject_Component_VEventTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

@@ -35,4 +35,3 @@ class Sabre_VObject_Component_VJournalTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

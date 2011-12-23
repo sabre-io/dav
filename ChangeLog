@@ -16,6 +16,8 @@
 	* Added: Browser plugin: icons for various nodes.
 	* Added: Support for FREEBUSY reports!
 	* Changed: beforeCreateFile event now passes data argument by reference.
+	* Changed: The 'propertyMap' property from Sabre_VObject_Reader, must now
+	  be specified in Sabre_VObject_Property::$classMap.
 	* Added: Ability for plugins to tell the ACL plugin which principal
 	  plugins are searchable.
 	* Added: [DAVACL] Per-node overriding of supported privileges. This allows
@@ -57,6 +59,10 @@
 	* Added: Some mysql unique constraints to example files.
 	* Fixed: Correctly formatting HTTP dates.
 	* Fixed: Issue 94: Sending back Last-Modified header for 304 responses.
+	* Added: Sabre_VObject_Component_VEvent.
+	* Changed: Properties are now also automatically mapped to their
+	  appropriate classes, if they are created using the add() or __set()
+	  methods. 
 
 1.5.5-stable (2011-12-16)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

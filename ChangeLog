@@ -59,7 +59,8 @@
 	* Added: Some mysql unique constraints to example files.
 	* Fixed: Correctly formatting HTTP dates.
 	* Fixed: Issue 94: Sending back Last-Modified header for 304 responses.
-	* Added: Sabre_VObject_Component_VEvent.
+	* Added: Sabre_VObject_Component_VEvent, Sabre_VObject_Component_VJournal,
+	  Sabre_VObject_Component_VTodo.
 	* Changed: Properties are now also automatically mapped to their
 	  appropriate classes, if they are created using the add() or __set()
 	  methods. 

@@ -479,31 +479,59 @@ BLA;
         $q = new Sabre_CalDAV_CalendarQueryParser($dom);
         $q->parse();
 
+    }
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testExpandNoEnd() {
 
-        $expected = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(),
-            'prop-filters' => array(),
-            'is-not-defined' => false,
-            'time-range' => false
+        $xml = array(
+            '<d:prop>',
+            '  <c:calendar-data>',
+            '     <c:expand start="20120101T000000Z"/>',
+            '  </c:calendar-data>',
+            '</d:prop>',
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR" />',
+            '</c:filter>'
         );
 
-        $this->assertEquals(
-            $expected,
-            $q->filters
+        $xml =
+'<?xml version="1.0"?>
+<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">
+' . implode("\n", $xml) . '
+</c:calendar-query>';
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q->parse();
+
+    }
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     */
+    function testExpandBadTimes() {
+
+        $xml = array(
+            '<d:prop>',
+            '  <c:calendar-data>',
+            '     <c:expand start="20120101T000000Z" end="19980101T000000Z"/>',
+            '  </c:calendar-data>',
+            '</d:prop>',
+            '<c:filter>',
+            '  <c:comp-filter name="VCALENDAR" />',
+            '</c:filter>'
         );
 
-        $this->assertEquals(array(
-            '{urn:ietf:params:xml:ns:caldav}calendar-data',
-        ), $q->requestedProperties);
+        $xml =
+'<?xml version="1.0"?>
+<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">
+' . implode("\n", $xml) . '
+</c:calendar-query>';
 
-        $this->assertEquals(
-            array(
-                'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC')),
-                'end' => new DateTime('2012-01-01 00:00:00', new DateTimeZone('UTC')),
-            ),
-            $q->expand
-        );
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q->parse();
 
     }
 }

@@ -254,4 +254,16 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testClone() {
+
+        $property = new Sabre_VObject_Property('EMAIL','value');
+        $property['FOO'] = 'BAR';
+
+        $property2 = clone $property;
+        
+        $property['FOO'] = 'BAZ';
+        $this->assertEquals('BAR', (string)$property2['FOO']);
+
+    }
+
 }

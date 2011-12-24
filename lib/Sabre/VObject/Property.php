@@ -330,4 +330,19 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
 
     }
 
+    /**
+     * This method is automatically called when the object is cloned.
+     * Specifically, this will ensure all child elements are also cloned.
+     *
+     * @return void
+     */
+    public function __clone() {
+
+        foreach($this->parameters as $key=>$child) {
+            $this->parameters[$key] = clone $child;
+            $this->parameters[$key]->parent = $this;
+        }
+
+    }
+
 }

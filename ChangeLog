@@ -60,10 +60,12 @@
 	* Fixed: Correctly formatting HTTP dates.
 	* Fixed: Issue 94: Sending back Last-Modified header for 304 responses.
 	* Added: Sabre_VObject_Component_VEvent, Sabre_VObject_Component_VJournal,
-	  Sabre_VObject_Component_VTodo.
+	  Sabre_VObject_Component_VTodo and Sabre_VObject_Component_VCalendar.
 	* Changed: Properties are now also automatically mapped to their
 	  appropriate classes, if they are created using the add() or __set()
 	  methods. 
+	* Changed: Cloning VObject objects now clones the entire tree, rather than
+      just the default shallow copy.
 
 1.5.5-stable (2011-12-16)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

@@ -21,6 +21,9 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
      * the instances of the event in the specified timerange will be left 
      * alone.
      *
+     * In addition, this method will cause timezone information to be stripped, 
+     * and normalized to UTC.
+     *
      * This method will alter the VCalendar. This cannot be reversed.
      *
      * This functionality is specifically used by the CalDAV standard. It is 
@@ -35,17 +38,79 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
 
         $newEvents = array();
 
-        foreach($this->select('VEVENT') as $key=>$eventObject) {
+        foreach($this->select('VEVENT') as $key=>$vevent) {
 
-            // unsetting the initial event
-            unset($this->children[$key]); 
+            unset($this->children[$key]);
+
+            if (!$vevent->rrule) {
+                if ($vevent->isInTimeRange($start, $end)) {
+                    $newEvents[] = $vevent;
+                }
+                continue;
+            }
             
-            
+            $it = new Sabre_VObject_RecurrenceIterator($vevent);
+            $it->fastForward($start);
+
+            while($it->getDTStart() < $end) {
+
+                if ($it->getDTEnd() > $start) {
+
+                    $newVEvent = clone $vevent;
+                    $newVEvent->DTSTART->setDateTime($it->getDTStart(), $newVEvent->DTSTART->getDateType());
+
+                    // We only need to update DTEND if it was set in the 
+                    // original. Otherwise there was no DTEND at all, or a 
+                    // DURATION property. 
+                    if (isset($newVEvent->DTEND)) {
+                        $it->newVEvent->DTEND->setDateTime($it->getDTEnd(), $newVEvent->DTSTART->getDateType());
+                    }
+
+                    // We need to add the RECURRENCE-ID property, unless the 
+                    // event is the 'first' event in sequence.
+                    if ($it->getDTStart() != $vevent->DTSTART->getDateTime()) {
+                        $newVEvent->{'RECURRENCE-ID'} = (string)$vevent->DTSTART;
+                    }
+
+                    $newEvents[] = $newVEvent;
+
+                }
+
+            }
 
         }
+
+        foreach($newEvents as $newEvent) {
+
+            // Final cleanup
+            unset(
+                $newEvent->RRULE,
+                $newEvent->EXDATE,
+                $newEvent->EXRULE,
+                $newEvent->RDATE
+            );
+
+            // Setting all date and time properties to UTC
+            foreach($newEvent->children() as $child) {
+                if ($child instanceof Sabre_VObject_Property_DateTime &&
+                    $child->getDateType() == Sabre_VObject_Property_DateTime::LOCALTZ) {
+                        $child->setDateTime($child->getDateTime(),Sabre_VObject_Property_DateTime::UTC);
+                    }
+
+                if ($child instanceof Sabre_VObject_Property_MultiDateTime &&
+                    $child->getDateType() == Sabre_VObject_Property_DateTime::LOCALTZ) {
+                        $child->setDateTimes($child->getDateTimes(),Sabre_VObject_Property_DateTime::UTC);
+                    }
+            }
+
+            $this->add($newEvent);
+
+        }
+
+        // Removing all VTIMEZONE components
+        unset($this->VTIMEZONE);
 
     } 
 
 }
 
-?>

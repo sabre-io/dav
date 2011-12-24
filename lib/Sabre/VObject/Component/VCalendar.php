@@ -95,11 +95,6 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
                     $child->getDateType() == Sabre_VObject_Property_DateTime::LOCALTZ) {
                         $child->setDateTime($child->getDateTime(),Sabre_VObject_Property_DateTime::UTC);
                     }
-
-                if ($child instanceof Sabre_VObject_Property_MultiDateTime &&
-                    $child->getDateType() == Sabre_VObject_Property_DateTime::LOCALTZ) {
-                        $child->setDateTimes($child->getDateTimes(),Sabre_VObject_Property_DateTime::UTC);
-                    }
             }
 
             $this->add($newEvent);

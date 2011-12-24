@@ -63,18 +63,19 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
                     // original. Otherwise there was no DTEND at all, or a 
                     // DURATION property. 
                     if (isset($newVEvent->DTEND)) {
-                        $it->newVEvent->DTEND->setDateTime($it->getDTEnd(), $newVEvent->DTSTART->getDateType());
+                        $newVEvent->DTEND->setDateTime($it->getDTEnd(), $newVEvent->DTSTART->getDateType());
                     }
 
                     // We need to add the RECURRENCE-ID property, unless the 
                     // event is the 'first' event in sequence.
                     if ($it->getDTStart() != $vevent->DTSTART->getDateTime()) {
-                        $newVEvent->{'RECURRENCE-ID'} = (string)$vevent->DTSTART;
+                        $newVEvent->{'RECURRENCE-ID'} = (string)$newVEvent->DTSTART;
                     }
 
                     $newEvents[] = $newVEvent;
 
                 }
+                $it->next();
 
             }
 
@@ -83,12 +84,10 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
         foreach($newEvents as $newEvent) {
 
             // Final cleanup
-            unset(
-                $newEvent->RRULE,
-                $newEvent->EXDATE,
-                $newEvent->EXRULE,
-                $newEvent->RDATE
-            );
+            unset($newEvent->RRULE);
+            unset($newEvent->EXDATE);
+            unset($newEvent->EXRULE);
+            unset($newEvent->RDATE);
 
             // Setting all date and time properties to UTC
             foreach($newEvent->children() as $child) {

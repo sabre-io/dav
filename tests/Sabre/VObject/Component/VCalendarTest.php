@@ -1,0 +1,145 @@
+<?php
+
+class Sabre_VObject_Component_VCalendarTest extends PHPUnit_Framework_TestCase {
+
+    /**
+     * @dataProvider expandData
+     */
+    public function testExpand($input, $output) {
+
+        $vcal = Sabre_VObject_Reader::read($input);
+        $vcal->expand(
+            new DateTime('2011-12-01'),
+            new DateTime('2011-12-31')
+        );
+
+        // This will normalize the output
+        $output = Sabre_VObject_Reader::read($output)->serialize();
+
+        $this->assertEquals($output, $vcal->serialize());
+
+    }
+
+    public function expandData() {
+
+        $tests = array();
+
+        // No data
+        $input = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+END:VCALENDAR
+';
+
+        $output = $input;
+        $tests[] = array($input,$output);
+
+
+        // Simple events
+        $input = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:InExpand
+DTSTART;VALUE=DATE:20111202
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NotInExpand
+DTSTART;VALUE=DATE:20120101
+END:VEVENT
+END:VCALENDAR
+';
+
+        $output = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:InExpand
+DTSTART;VALUE=DATE:20111202
+END:VEVENT
+END:VCALENDAR
+';
+
+        $tests[] = array($input, $output);
+
+        // Removing timezone info 
+        $input = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Europe/Paris
+END:VTIMEZONE
+BEGIN:VEVENT
+SUMMARY:RemoveTZ info
+DTSTART;TZID=Europe/Paris:20111203T130102
+END:VEVENT
+END:VCALENDAR
+';
+
+        $output = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:RemoveTZ info
+DTSTART;VALUE=DATE-TIME:20111203T120102Z
+END:VEVENT
+END:VCALENDAR
+';
+
+        $tests[] = array($input, $output); 
+
+        // Recurrence rule
+        $input = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:Testing RRule
+DTSTART:20111125T120000Z
+DTEND:20111125T130000Z
+RRULE:FREQ=WEEKLY
+END:VEVENT
+END:VCALENDAR
+';
+
+        $output = 'BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:Testing RRule
+DTSTART;VALUE=DATE-TIME:20111202T120000Z
+DTEND;VALUE=DATE-TIME:20111202T130000Z
+RECURRENCE-ID:20111202T120000Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Testing RRule
+DTSTART;VALUE=DATE-TIME:20111209T120000Z
+DTEND;VALUE=DATE-TIME:20111209T130000Z
+RECURRENCE-ID:20111209T120000Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Testing RRule
+DTSTART;VALUE=DATE-TIME:20111216T120000Z
+DTEND;VALUE=DATE-TIME:20111216T130000Z
+RECURRENCE-ID:20111216T120000Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Testing RRule
+DTSTART;VALUE=DATE-TIME:20111223T120000Z
+DTEND;VALUE=DATE-TIME:20111223T130000Z
+RECURRENCE-ID:20111223T120000Z
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Testing RRule
+DTSTART;VALUE=DATE-TIME:20111230T120000Z
+DTEND;VALUE=DATE-TIME:20111230T130000Z
+RECURRENCE-ID:20111230T120000Z
+END:VEVENT
+END:VCALENDAR
+';
+
+        $tests[] = array($input, $output); 
+        return $tests; 
+
+    } 
+
+}

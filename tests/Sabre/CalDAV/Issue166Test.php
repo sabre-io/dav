@@ -51,6 +51,7 @@ HI;
             'is-not-defined' => false,
             'time-range' => null,
         );
+        $input = Sabre_VObject_Reader::read($input);
         $this->assertTrue($validator->validate($input,$filters));
 
     }

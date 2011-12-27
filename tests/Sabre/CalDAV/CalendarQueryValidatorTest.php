@@ -19,16 +19,18 @@ class Sabre_CalDAV_CalendarQueryValidatorTest extends PHPUnit_Framework_TestCase
             'time-range' => null,
         );
 
+        $vObject = Sabre_VObject_Reader::read($icalObject);
+
         switch($outcome) {
             case 0 :
-                $this->assertFalse($validator->validate($icalObject, $filters));
+                $this->assertFalse($validator->validate($vObject, $filters));
                 break;
             case 1 :
-                $this->assertTrue($validator->validate($icalObject, $filters));
+                $this->assertTrue($validator->validate($vObject, $filters));
                 break;
             case -1 :
                 try {
-                    $validator->validate($icalObject, $filters);
+                    $validator->validate($vObject, $filters);
                 } catch (Sabre_DAV_Exception $e) {
                     // Success
                 }

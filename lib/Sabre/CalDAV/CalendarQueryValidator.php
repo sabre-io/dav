@@ -20,16 +20,13 @@ class Sabre_CalDAV_CalendarQueryValidator {
     /**
      * Verify if a list of filters applies to the calendar data object
      *
-     * The calendarData object must be a valid iCalendar blob. The list of
-     * filters must be formatted as parsed by Sabre_CalDAV_CalendarQueryParser
+     * The list of filters must be formatted as parsed by Sabre_CalDAV_CalendarQueryParser
      *
-     * @param string $calendarData
+     * @param Sabre_VObject_Component $vObject
      * @param array $filters
      * @return bool
      */
-    public function validate($calendarData,array $filters) {
-
-        $vObject = Sabre_VObject_Reader::read($calendarData);
+    public function validate(Sabre_VObject_Component $vObject,array $filters) {
 
         // The top level object is always a component filter.
         // We'll parse it manually, as it's pretty simple.

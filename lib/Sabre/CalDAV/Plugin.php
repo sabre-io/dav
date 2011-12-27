@@ -425,11 +425,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']))
                 continue;
 
-            if ($validator->validate($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'],$parser->filters)) {
+            $vObject = Sabre_VObject_Reader::read($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+            if ($validator->validate($vObject,$parser->filters)) {
 
                 if (!$requestedCalendarData) {
                     unset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                 }
+                if ($parser->expand) {
+                    $vObject->expand($parser->expand['start'], $parser->expand['end']);
+                } 
                 $verifiedNodes[] = $node;
             }
 

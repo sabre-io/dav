@@ -526,7 +526,9 @@ END:VCALENDAR';
             '<?xml version="1.0"?>' .
             '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
-            '  <c:calendar-data />' .
+            '  <c:calendar-data>' .
+            '     <c:expand start="20000101T000000Z" end="20101231T235959Z" />' .
+            '  </c:calendar-data>' . 
             '  <d:getetag />' .
             '</d:prop>' .
             '<c:filter>' .

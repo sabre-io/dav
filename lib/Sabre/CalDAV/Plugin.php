@@ -366,11 +366,45 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function calendarMultiGetReport($dom) {
 
         $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
-
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
+
+        $xpath = new DOMXPath($dom);
+        $xpath->registerNameSpace('cal',Sabre_CalDAV_Plugin::NS_CALDAV);
+        $xpath->registerNameSpace('dav','urn:DAV');
+
+        $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
+        if ($expand->length>0) {
+            $expandElem = $expand->item(0);
+            $start = $expandElem->getAttribute('start');
+            $end = $expandElem->getAttribute('end');
+            if(!$start || !$end) {
+                throw new Sabre_DAV_Exception_BadRequest('The "start" and "end" attributes are required for the CALDAV:expand element');
+            } 
+            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
+            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
+            
+            if ($end <= $start) {
+                throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the expand element.');
+            }
+
+            $expand = true; 
+
+        } else {
+
+            $expand = false;
+
+        }
+
         foreach($hrefElems as $elem) {
             $uri = $this->server->calculateUri($elem->nodeValue);
             list($objProps) = $this->server->getPropertiesForPath($uri,$properties);
+
+            if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
+                $vObject = Sabre_VObject_Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
+                $vObject->expand($start, $end);
+                $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+            }
+
             $propertyList[]=$objProps;
 
         }

@@ -246,7 +246,13 @@ class Sabre_DAV_Client {
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_POSTFIELDS => $body,
             // Return headers as part of the response
-            CURLOPT_HEADER => true
+            CURLOPT_HEADER => true,
+            // do not read body with HEAD requests (this is neccessary because cURL does not ignore the body with HEAD
+            // requests when the Content-Length header is given - which in turn is perfectly valid according to HTTP
+            // specs...) cURL does unfortunately return an error in this case ("transfer closed transfer closed with
+            // ... bytes remaining to read") this can be circumvented by explicitly telling cURL to ignore the
+            // response body
+            CURLOPT_NOBODY => ($method == 'HEAD')
         );
 
         // Adding HTTP headers

@@ -68,6 +68,8 @@
       just the default shallow copy.
 	* Added: Support for recurrence expansion in the CALDAV:calendar-multiget
 	  and CALDAV:calendar-query REPORTS.
+	* Changed: CalDAV PDO backend now sorts calendars based on the internal
+	  'calendarorder' field.
 
 1.5.5-stable (2011-12-16)
 	* Fixed: CalDAV time-range filter workaround for recurring events.

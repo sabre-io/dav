@@ -115,8 +115,8 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
         $out = '';
         while(strlen($str)>0) {
             if (strlen($str)>75) {
-                $out.= substr($str,0,75) . "\r\n";
-                $str = ' ' . substr($str,75);
+                $out.= mb_strcut($str,0,75,'utf-8') . "\r\n";
+                $str = ' ' . mb_strcut($str,75,strlen($str),'utf-8');
             } else {
                 $out.=$str . "\r\n";
                 $str='';

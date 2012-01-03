@@ -168,6 +168,15 @@ class Sabre_VObject_PropertyTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testSerializeUTF8LineFold() {
+
+        $value = str_repeat('!',65) . "\xc3\xa4bla"; // inserted umlaut-a
+        $property = new Sabre_VObject_Property('propname', $value);
+        $expected = "PROPNAME:" . str_repeat('!',65) . "\xc3\xa4\r\n bla\r\n";
+        $this->assertEquals($expected, $property->serialize());
+
+    }
+
     public function testGetIterator() {
 
         $it = new Sabre_VObject_ElementList(array());

@@ -467,6 +467,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 }
                 if ($parser->expand) {
                     $vObject->expand($parser->expand['start'], $parser->expand['end']);
+                    $node[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                 } 
                 $verifiedNodes[] = $node;
             }

@@ -27,7 +27,25 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     function testGet() {
 
         $result = $this->card->get();
-        $this->assertEquals('card', stream_get_contents($result));
+        $this->assertEquals('card', $result);
+
+    }
+    function testGet2() {
+
+        $this->card = new Sabre_CardDAV_Card(
+            $this->backend,
+            array(
+                'uri' => 'book1',
+                'id' => 'foo',
+                'principaluri' => 'principals/user1',
+            ),
+            array(
+                'uri' => 'card1',
+                'addressbookid' => 'foo',
+            )
+        );
+        $result = $this->card->get();
+        $this->assertEquals("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD", $result);
 
     }
 
@@ -42,7 +60,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
         rewind($file);
         $this->card->put($file);
         $result = $this->card->get();
-        $this->assertEquals('newdata', stream_get_contents($result));
+        $this->assertEquals('newdata', $result);
 
     }
 
@@ -66,6 +84,26 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetETag2() {
+
+        $card = new Sabre_CardDAV_Card(
+            $this->backend,
+            array(
+                'uri' => 'book1',
+                'id' => 'foo',
+                'principaluri' => 'principals/user1',
+            ),
+            array(
+                'uri' => 'card1',
+                'addressbookid' => 'foo',
+                'carddata' => 'card',
+                'etag' => '"blabla"',
+            )
+        );
+        $this->assertEquals('"blabla"' , $card->getETag());
+
+    }
+
     function testGetLastModified() {
 
         $this->assertEquals(null, $this->card->getLastModified());
@@ -75,6 +113,27 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     function testGetSize() {
 
         $this->assertEquals(4, $this->card->getSize());
+        $this->assertEquals(4, $this->card->getSize());
+
+    }
+
+    function testGetSize2() {
+
+        $card = new Sabre_CardDAV_Card(
+            $this->backend,
+            array(
+                'uri' => 'book1',
+                'id' => 'foo',
+                'principaluri' => 'principals/user1',
+            ),
+            array(
+                'uri' => 'card1',
+                'addressbookid' => 'foo',
+                'etag' => '"blabla"',
+                'size' => 4,
+            )
+        );
+        $this->assertEquals(4, $card->getSize());
 
     }
 

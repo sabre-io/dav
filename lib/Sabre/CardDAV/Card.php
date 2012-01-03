@@ -65,11 +65,12 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      */
     public function get() {
 
-        $cardData = $this->cardData['carddata'];
-        $s = fopen('php://temp','r+');
-        fwrite($s, $cardData);
-        rewind($s);
-        return $s;
+        // Pre-populating 'carddata' is optional. If we don't yet have it
+        // already, we fetch it from the backend.
+        if (!isset($this->cardData['carddata'])) {
+            $this->cardData = $this->carddavBackend->getCard($this->addressBookInfo['id'], $this->cardData['uri']);
+        }
+        return $this->cardData['carddata'];
 
     }
 
@@ -121,7 +122,11 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      */
     public function getETag() {
 
-        return '"' . md5($this->cardData['carddata']) . '"';
+        if (isset($this->cardData['etag'])) {
+            return '"' . md5($this->cardData['etag']) . '"';
+        } else {
+            return '"' . md5($this->get()) . '"';
+        }
 
     }
 
@@ -143,7 +148,11 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      */
     public function getSize() {
 
-        return strlen($this->cardData['carddata']);
+        if (array_key_exists('size', $this->cardData)) {
+            return $this->cardData['size'];
+        } else {
+            return strlen($this->get());
+        }
 
     }
 

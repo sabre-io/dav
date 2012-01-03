@@ -74,18 +74,29 @@ abstract class Sabre_CardDAV_Backend_Abstract {
      *   * carddata - raw vcard data
      *   * uri - Some unique url
      *   * lastmodified - A unix timestamp
-
+     *
+     * It's recommended to also return the following properties:
+     *   * etag - A unique etag. This must change every time the card changes.
+     *   * size - The size of the card in bytes.
+     *
+     * If these last two properties are provided, less time will be spent
+     * calculating them. If they are specified, you can also ommit carddata.
+     * This may speed up certain requests, especially with large cards.
+     *
      * @param mixed $addressbookId
      * @return array
      */
     public abstract function getCards($addressbookId);
 
     /**
-     * Returns a specfic card
+     * Returns a specfic card.
+     *
+     * The same set of properties must be returned as with getCards. The only
+     * exception is that 'carddata' is absolutely required.
      *
      * @param mixed $addressBookId
      * @param string $cardUri
-     * @return void
+     * @return array
      */
     public abstract function getCard($addressBookId, $cardUri);
 

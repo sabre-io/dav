@@ -70,6 +70,9 @@
 	  and CALDAV:calendar-query REPORTS.
 	* Changed: CalDAV PDO backend now sorts calendars based on the internal
 	  'calendarorder' field.
+	* Added: Issue 181: Carddav backends may no optionally not supply the carddata in
+	  getCards, if etag and size are specified. This may speed up certain
+	  requests.
 
 1.5.6-stable (2012-??-??)
 	* Fixed: Issue 174: VObject could break UTF-8 characters.

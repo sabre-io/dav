@@ -404,13 +404,12 @@ class Sabre_DAV_Client {
             throw new InvalidArgumentException('The passed data is not valid XML');
         }
 
-        $responseXML->registerXPathNamespace('d','DAV:');
+        $responseXML->registerXPathNamespace('d', 'urn:DAV');
 
         $propResult = array();
 
         foreach($responseXML->xpath('d:response') as $response) {
-
-            $response->registerXPathNamespace('d','DAV:');
+            $response->registerXPathNamespace('d', 'urn:DAV');
             $href = $response->xpath('d:href');
             $href = (string)$href[0];
 
@@ -418,7 +417,7 @@ class Sabre_DAV_Client {
 
             foreach($response->xpath('d:propstat') as $propStat) {
 
-                $propStat->registerXPathNamespace('d','DAV:');
+                $propStat->registerXPathNamespace('d', 'urn:DAV');
                 $status = $propStat->xpath('d:status');
                 list($httpVersion, $statusCode, $message) = explode(' ', (string)$status[0],3);
 

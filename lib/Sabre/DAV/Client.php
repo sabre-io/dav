@@ -320,7 +320,14 @@ class Sabre_DAV_Client {
         }
 
         if ($response['statusCode']>=400) {
-            throw new Sabre_DAV_Exception('HTTP error response. (errorcode ' . $response['statusCode'] . ')');
+            switch ($response['statusCode']) {
+                case 404:
+                    throw new Sabre_DAV_Exception_NotFound('Resource ' . $url . ' not found.');
+                    break;
+
+                default:
+                    throw new Sabre_DAV_Exception('HTTP error response. (errorcode ' . $response['statusCode'] . ')');
+            }
         }
 
         return $response;

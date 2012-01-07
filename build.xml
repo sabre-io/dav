@@ -50,6 +50,7 @@
         <copy todir="build/Sabre_DAV" includeemptydirs="true" >
             <fileset dir="lib">
                 <include name="Sabre/DAV/**" />
+                <exclude name="Sabre/DAVACL/**" />
                 <include name="Sabre.includes.php" />
             </fileset>
         </copy>

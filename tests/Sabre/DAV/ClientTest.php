@@ -232,6 +232,41 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testRequestHTTP404() {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 404 Not Found",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 404,
+            ),
+            0,
+            ""
+        );
+
+        $caught = false;
+        try {
+            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        } catch (Sabre_DAV_Exception_NotFound $e) {
+            $caught = true;
+        }
+        if (!$caught) {
+            $this->fail('Exception was not thrown');
+        }
+
+    }
+
     function testGetAbsoluteUrl() {
 
         $client = new Sabre_DAV_ClientMock(array(
@@ -511,4 +546,76 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testHEADRequest() {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->request('HEAD', 'baz');
+
+        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'HEAD',
+            CURLOPT_NOBODY => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array(),
+            CURLOPT_POSTFIELDS => null,
+        ), $client->curlSettings);
+
+    }
+
+    function testPUTRequest() {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->request('PUT', 'bar','newcontent');
+
+        $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_PUT => true,
+            CURLOPT_POSTFIELDS => 'newcontent',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array(),
+        ), $client->curlSettings);
+
+    }
 }

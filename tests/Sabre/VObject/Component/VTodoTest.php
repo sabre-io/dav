@@ -15,7 +15,7 @@ class Sabre_VObject_Component_VTodoTest extends PHPUnit_Framework_TestCase {
 
         $tests = array();
 
-        $vtodo = Sabre_VObject_Component::createByName('VTODO');
+        $vtodo = Sabre_VObject_Component::create('VTODO');
         $vtodo->DTSTART = '20111223T120000Z';
         $tests[] = array($vtodo, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
@@ -30,28 +30,28 @@ class Sabre_VObject_Component_VTodoTest extends PHPUnit_Framework_TestCase {
         $tests[] = array($vtodo3, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo3, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
 
-        $vtodo4 = Sabre_VObject_Component::createByName('VTODO');
+        $vtodo4 = Sabre_VObject_Component::create('VTODO');
         $vtodo4->DUE = '20111225';
         $tests[] = array($vtodo4, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo4, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
 
-        $vtodo5 = Sabre_VObject_Component::createByName('VTODO');
+        $vtodo5 = Sabre_VObject_Component::create('VTODO');
         $vtodo5->COMPLETED = '20111225';
         $tests[] = array($vtodo5, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo5, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
 
-        $vtodo6 = Sabre_VObject_Component::createByName('VTODO');
+        $vtodo6 = Sabre_VObject_Component::create('VTODO');
         $vtodo6->CREATED = '20111225';
         $tests[] = array($vtodo6, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo6, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
 
-        $vtodo7 = Sabre_VObject_Component::createByName('VTODO');
+        $vtodo7 = Sabre_VObject_Component::create('VTODO');
         $vtodo7->CREATED = '20111225';
         $vtodo7->COMPLETED = '20111226';
         $tests[] = array($vtodo7, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo7, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
 
-        $vtodo7 = Sabre_VObject_Component::createByName('VTODO');
+        $vtodo7 = Sabre_VObject_Component::create('VTODO');
         $tests[] = array($vtodo7, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vtodo7, new DateTime('2011-01-01'), new DateTime('2011-11-01'), true);
 

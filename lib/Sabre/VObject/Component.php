@@ -32,7 +32,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
     /**
      * If coponents are added to this map, they will be automatically mapped
      * to their respective classes, if parsed by the reader or constructed with
-     * the 'createByName' method.
+     * the 'create' method.
      *
      * @var array
      */
@@ -51,7 +51,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      * @param string $value
      * @return void
      */
-    static public function createByName($name, $value = null) {
+    static public function create($name, $value = null) {
 
         $name = strtoupper($name);
 
@@ -123,7 +123,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
             if (!is_scalar($itemValue)) {
                 throw new InvalidArgumentException('The second argument must be scalar');
             }
-            $item = Sabre_VObject_Property::createByName($item,$itemValue);
+            $item = Sabre_VObject_Property::create($item,$itemValue);
             $item->parent = $this;
             $this->children[] = $item;
 
@@ -271,7 +271,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
                 $this->children[] = $value;
             }
         } elseif (is_scalar($value)) {
-            $property = Sabre_VObject_Property::createByName($name,$value);
+            $property = Sabre_VObject_Property::create($name,$value);
             $property->parent = $this;
             if (!is_null($overWrite)) {
                 $this->children[$overWrite] = $property;

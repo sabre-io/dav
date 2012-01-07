@@ -71,7 +71,7 @@ class Sabre_VObject_Reader {
         if (stripos($line,"BEGIN:")===0) {
 
             $componentName = strtoupper(substr($line,6));
-            $obj = Sabre_VObject_Component::createByName($componentName);
+            $obj = Sabre_VObject_Component::create($componentName);
 
             $nextLine = current($lines);
 
@@ -113,7 +113,7 @@ class Sabre_VObject_Reader {
         $propertyName = strtoupper($matches['name']);
         $propertyValue = stripcslashes($matches['value']);
 
-        $obj = Sabre_VObject_Property::createByName($propertyName, $propertyValue);
+        $obj = Sabre_VObject_Property::create($propertyName, $propertyValue);
 
         if ($matches['parameters']) {
 

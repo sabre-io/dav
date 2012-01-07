@@ -14,6 +14,41 @@
 class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
 
     /**
+     * Returns a list of all 'base components'. For instance, if an Event has 
+     * a recurrence rule, and one instance is overridden, the overridden event 
+     * will have the same UID, but will be excluded from this list.
+     *
+     * VTIMEZONE components will always be excluded. 
+     *
+     * @param string $componentName filter by component name 
+     * @return array 
+     */
+    public function getBaseComponents($componentName = null) {
+
+        $components = array();
+        foreach($this->children as $component) {
+
+            if (!$component instanceof Sabre_VObject_Component)
+                continue;
+
+            if (isset($component->{'RECURRENCE-ID'})) 
+                continue;
+
+            if ($componentName && $component->name !== strtoupper($componentName)) 
+                continue;
+
+            if ($component->name === 'VTIMEZONE')
+                continue;
+
+            $components[] = $component;
+
+        }
+
+        return $components;
+
+    }
+
+    /**
      * If this calendar object, has events with recurrence rules, this method 
      * can be used to expand the event into multiple sub-events.
      *
@@ -40,16 +75,26 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
 
         foreach($this->select('VEVENT') as $key=>$vevent) {
 
-            unset($this->children[$key]);
+            if (isset($vevent->{'RECURRENCE-ID'})) {
+                unset($this->children[$key]);
+                continue;
+            } 
+
 
             if (!$vevent->rrule) {
+                unset($this->children[$key]);
                 if ($vevent->isInTimeRange($start, $end)) {
                     $newEvents[] = $vevent;
                 }
                 continue;
             }
-            
-            $it = new Sabre_VObject_RecurrenceIterator($vevent);
+
+            $uid = (string)$vevent->uid;
+            if (!$uid) {
+                throw new LogicException('Event did not have a UID!');
+            }
+
+            $it = new Sabre_VObject_RecurrenceIterator($this, $vevent->uid);
             $it->fastForward($start);
 
             while($it->getDTStart() < $end) {
@@ -78,6 +123,7 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
                 $it->next();
 
             }
+            unset($this->children[$key]);
 
         }
 

@@ -52,7 +52,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
     /**
      * If properties are added to this map, they will be automatically mapped
      * to their respective classes, if parsed by the reader or constructed with
-     * the 'createByName' method.
+     * the 'create' method.
      *
      * @var array
      */
@@ -77,7 +77,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      * @param string $value
      * @return void
      */
-    static public function createByName($name, $value = null) {
+    static public function create($name, $value = null) {
 
         $name = strtoupper($name);
         $shortName = $name;

@@ -116,7 +116,7 @@ class Sabre_VObject_FreeBusyGenerator {
 
         foreach($this->objects as $object) {
 
-            foreach($object->getComponents() as $component) {
+            foreach($object->getBaseComponents() as $component) {
 
                 switch($component->name) {
 
@@ -140,7 +140,7 @@ class Sabre_VObject_FreeBusyGenerator {
 
                         if ($component->RRULE) {
 
-                            $iterator = new Sabre_VObject_RecurrenceIterator($component);
+                            $iterator = new Sabre_VObject_RecurrenceIterator($object, (string)$component->uid);
                             if ($this->start) {
                                 $iterator->fastForward($this->start);
                             }

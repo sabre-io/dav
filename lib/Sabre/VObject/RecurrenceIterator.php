@@ -70,9 +70,29 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * List of dates that are excluded from the rules.
      *
+     * This list contains both the items that are specified in the EXDATE 
+     * property, as well as the ones that have been overridden by other events 
+     * and RECURRENCE-ID.
+     *
      * @var array
      */
     public $exceptionDates = array();
+
+    /**
+     * Base event 
+     * 
+     * @var Sabre_VObject_Component_VEvent 
+     */
+    public $baseEvent;
+
+    /**
+     * list of events that are 'overridden'.
+     *
+     * This is an array of Sabre_VObject_Component_VEvent objects.
+     * 
+     * @var array
+     */
+    public $overriddenEvents = array();
 
     /**
      * Frequency is one of: secondly, minutely, hourly, daily, weekly, monthly,
@@ -251,25 +271,49 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * Creates the iterator
      *
-     * A VEVENT component typically needs to be passed.
+     * You should pass a VCALENDAR component, as well as the UID of the event 
+     * we're going to traverse.
      *
      * @param Sabre_VObject_Component $comp
      */
-    public function __construct(Sabre_VObject_Component $comp) {
+    public function __construct(Sabre_VObject_Component $vcal, $uid=null) {
 
-        $this->startDate = clone $comp->DTSTART->getDateTime();
+        if (is_null($uid)) {
+            if ($vcal->name === 'VCALENDAR') {
+                throw new InvalidArgumentException('If you pass a VCALENDAR object, you must pass a uid argument as well');
+            }
+            $components = array($vcal);
+            $uid = (string)$vcal->uid;
+        } else {
+            $components = $vcal->select('VEVENT');
+        }
+        foreach($components as $component) {
+            if ((string)$component->uid == $uid) {
+                if (isset($component->{'RECURRENCE-ID'})) {
+                    $this->overriddenEvents[(string)$component->DTSTART->getDateTime()] = $component;
+                    $this->exceptionDates[] = $component->{'RECURRENCE-ID'}->getDateTime();
+                } else {
+                    $this->baseEvent = $component;
+                }
+            }
+        }
+        if (!$this->baseEvent) { 
+            throw new Sabre_VObject_ParseException('Could not find a base event with uid: ' . $uid);
+        }
+
+        $this->startDate = clone $this->baseEvent->DTSTART->getDateTime();
         $this->endDate = null;
-        if (isset($comp->DTEND)) {
-            $this->endDate = clone $comp->DTEND->getDateTime();
+        if (isset($this->baseEvent->DTEND)) {
+            $this->endDate = clone $this->baseEvent->DTEND->getDateTime();
         } else {
             $this->endDate = clone $this->startDate;
-            if (isset($comp->DURATION)) {
-                $this->endDate->add(Sabre_VObject_DateTimeParser::parse($comp->DURATION->value));
+            if (isset($this->baseEvent->DURATION)) {
+                $this->endDate->add(Sabre_VObject_DateTimeParser::parse($this->baseEvent->DURATION->value));
             }
         }
         $this->currentDate = clone $this->startDate;
 
-        $rrule = (string)$comp->RRULE;
+        $rrule = (string)$this->baseEvent->RRULE;
 
         $parts = explode(';', $rrule);
 
@@ -347,8 +391,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         }
 
         // Parsing exception dates
-        if (isset($comp->EXDATE)) {
-            foreach($comp->EXDATE as $exDate) {
+        if (isset($this->baseEvent->EXDATE)) {
+            foreach($this->baseEvent->EXDATE as $exDate) {
 
                 foreach(explode(',', (string)$exDate) as $exceptionDate) {
 
@@ -396,7 +440,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     public function getDtEnd() {
 
         $dtEnd = clone $this->currentDate;
-        $dtEnd->add( $this->startDate->diff($this->endDate ) );
+        $dtEnd->add( $this->startDate->diff( $this->endDate ) );
         return clone $dtEnd;
 
     }

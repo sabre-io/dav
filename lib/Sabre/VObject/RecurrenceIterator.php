@@ -67,6 +67,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public $currentDate;
 
+
     /**
      * List of dates that are excluded from the rules.
      *
@@ -267,6 +268,21 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         6 => 'Saturday',
     );
 
+    /**
+     * The time of the day, of the base event. Formatted as array(hh, mm, ss)
+     * 
+     * @var array 
+     */
+    private $baseTime;
+
+    /**
+     * If the current iteration of the event is an overriden event, this 
+     * property will hold the VObject
+     * 
+     * @var Sabre_Component_VObject 
+     */
+    private $currentOverridenEvent;
+
 
     /**
      * Creates the iterator
@@ -290,7 +306,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         foreach($components as $component) {
             if ((string)$component->uid == $uid) {
                 if (isset($component->{'RECURRENCE-ID'})) {
-                    $this->overriddenEvents[(string)$component->DTSTART->getDateTime()] = $component;
+                    $this->overriddenEvents[$component->DTSTART->getDateTime()->getTimeStamp()] = $component;
                     $this->exceptionDates[] = $component->{'RECURRENCE-ID'}->getDateTime();
                 } else {
                     $this->baseEvent = $component;
@@ -298,10 +314,16 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             }
         }
         if (!$this->baseEvent) { 
-            throw new Sabre_VObject_ParseException('Could not find a base event with uid: ' . $uid);
+            throw new InvalidArgumentException('Could not find a base event with uid: ' . $uid);
         }
 
         $this->startDate = clone $this->baseEvent->DTSTART->getDateTime();
+        $this->baseTime = array(
+            $this->startDate->format('H'),
+            $this->startDate->format('i'),
+            $this->startDate->format('s'),
+        );
+
         $this->endDate = null;
         if (isset($this->baseEvent->DTEND)) {
             $this->endDate = clone $this->baseEvent->DTEND->getDateTime();
@@ -446,6 +468,39 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
+     * Returns a VEVENT object with the updated start and end date.
+     *
+     * Any recurrence information is removed, and this function may return an 
+     * 'overridden' event instead.
+     *
+     * This method always returns a cloned instance.
+     * 
+     * @return void
+     */
+    public function getEventObject() {
+
+        if ($this->currentOverriddenEvent) {
+            return clone $this->currentOverriddenEvent;
+        }
+        $event = clone $this->baseEvent;
+        unset($event->RRULE);
+        unset($event->EXDATE);
+        unset($event->RDATE);
+        unset($event->EXRULE);
+
+        $event->DTSTART->setDateTime($this->currentDate, $event->DTSTART->getDateType());
+        if (isset($event->DTEND)) {
+            $event->DTEND->setDateTime($this->getDtEnd(), $event->DTSTART->getDateType());
+        }
+        if ($this->counter > 0) {
+            $event->{'RECURRENCE-ID'} = (string)$event->DTSTART;
+        }
+
+        return $event;
+
+    }
+
+    /**
      * Returns the current item number
      *
      * @return int
@@ -511,7 +566,11 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
+        $currentStamp = $this->currentDate->getTimeStamp();
+
         while(true) {
+
+            $this->currentOverriddenEvent = null;
 
             switch($this->frequency) {
 
@@ -531,6 +590,19 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                     $this->nextYearly();
                     break;
 
+            }
+            // Correcting the base time, if it was changed
+            $this->currentDate->setTime($this->baseTime[0], $this->baseTime[1], $this->baseTime[2]);
+
+            $nextStamp = $this->currentDate->getTimeStamp();
+            // Checking overriden events
+            foreach($this->overriddenEvents as $index=>$event) {
+                if ($index > $currentStamp && $index < $nextStamp) {
+                    // Handle the overridden event first
+                    $this->currentDate = $event->DTSTART->getDateTime();
+                    $this->currentOverriddenEvent = $event;
+                    break;
+                }
             }
 
             // Checking exception dates

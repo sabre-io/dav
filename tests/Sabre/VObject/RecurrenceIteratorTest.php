@@ -43,6 +43,25 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
         $it = new Sabre_VObject_RecurrenceIterator($vcal,(string)$ev->uid);
 
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testVCalendarNoUID() {
+
+        $vcal = new Sabre_VObject_Component('VCALENDAR');
+        $it = new Sabre_VObject_RecurrenceIterator($vcal);
+
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testVCalendarInvalidUID() {
+
+        $vcal = new Sabre_VObject_Component('VCALENDAR');
+        $it = new Sabre_VObject_RecurrenceIterator($vcal,'foo');
 
     }
 
@@ -846,6 +865,80 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
             ),
             $result
         );
+
+    }
+
+    /**
+     * @depends testValues
+     */
+    function testOverridenEvent() {
+
+        $vcal = Sabre_VObject_Component::create('VCALENDAR');
+
+        $ev1 = Sabre_VObject_Component::create('VEVENT');
+        $ev1->UID = 'overridden';
+        $ev1->RRULE = 'FREQ=DAILY;COUNT=10';
+        $ev1->DTSTART = '20120107T120000Z';
+        $ev1->SUMMARY = 'baseEvent';
+
+        $vcal->add($ev1);
+
+        // ev2 overrides an event, and puts it on 2pm instead.
+        $ev2 = Sabre_VObject_Component::create('VEVENT');
+        $ev2->UID = 'overridden';
+        $ev2->{'RECURRENCE-ID'} = '20120110T120000Z';
+        $ev2->DTSTART = '20120110T140000Z';
+        $ev2->SUMMARY = 'Event 2';
+
+        $vcal->add($ev2);
+
+        // ev3 overrides an event, and puts it 2 days and 2 hours later 
+        $ev3 = Sabre_VObject_Component::create('VEVENT');
+        $ev3->UID = 'overridden';
+        $ev3->{'RECURRENCE-ID'} = '20120113T120000Z';
+        $ev3->DTSTART = '20120115T140000Z';
+        $ev3->SUMMARY = 'Event 3';
+
+        $vcal->add($ev3);
+
+        $it = new Sabre_VObject_RecurrenceIterator($vcal,'overridden');
+
+        $dates = array();
+        $summaries = array();
+        while($it->valid()) {
+
+            $dates[] = $it->getDTStart();
+            $summaries[] = (string)$it->getEventObject()->SUMMARY;
+            $it->next();
+
+        }
+
+        $tz = new DateTimeZone('GMT');
+        $this->assertEquals(array(
+            new DateTime('2012-01-07 12:00:00',$tz),
+            new DateTime('2012-01-08 12:00:00',$tz),
+            new DateTime('2012-01-09 12:00:00',$tz),
+            new DateTime('2012-01-10 14:00:00',$tz),
+            new DateTime('2012-01-11 12:00:00',$tz),
+            new DateTime('2012-01-12 12:00:00',$tz),
+            new DateTime('2012-01-14 12:00:00',$tz),
+            new DateTime('2012-01-15 12:00:00',$tz),
+            new DateTime('2012-01-15 14:00:00',$tz),
+            new DateTime('2012-01-16 12:00:00',$tz),
+        ), $dates);
+
+        $this->assertEquals(array(
+            'baseEvent',
+            'baseEvent',
+            'baseEvent',
+            'Event 2',
+            'baseEvent',
+            'baseEvent',
+            'baseEvent',
+            'baseEvent',
+            'Event 3',
+            'baseEvent',
+        ), $summaries);
 
     }
 

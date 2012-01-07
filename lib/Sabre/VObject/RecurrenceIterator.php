@@ -281,7 +281,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * 
      * @var Sabre_Component_VObject 
      */
-    private $currentOverridenEvent;
+    private $currentOverriddenEvent;
 
 
     /**

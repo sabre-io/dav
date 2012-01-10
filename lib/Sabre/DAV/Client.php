@@ -246,6 +246,9 @@ class Sabre_DAV_Client {
             // Return headers as part of the response
             CURLOPT_HEADER => true,
             CURLOPT_POSTFIELDS => $body,
+            // Automatically follow redirects
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
         );
 
         switch ($method) {

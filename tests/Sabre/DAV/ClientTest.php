@@ -49,6 +49,8 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
@@ -96,6 +98,8 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
@@ -144,6 +148,8 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
@@ -574,6 +580,8 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'HEAD',
             CURLOPT_NOBODY => true,
             CURLOPT_HEADER => true,
@@ -611,6 +619,8 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
         $this->assertEquals(array(
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
             CURLOPT_PUT => true,
             CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,

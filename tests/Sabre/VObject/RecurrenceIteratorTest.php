@@ -942,5 +942,56 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testValues
+     */
+    function testOverridenEvent2() {
+
+        $vcal = Sabre_VObject_Component::create('VCALENDAR');
+
+        $ev1 = Sabre_VObject_Component::create('VEVENT');
+        $ev1->UID = 'overridden';
+        $ev1->RRULE = 'FREQ=WEEKLY;COUNT=3';
+        $ev1->DTSTART = '20120112T120000Z';
+        $ev1->SUMMARY = 'baseEvent';
+
+        $vcal->add($ev1);
+
+        // ev2 overrides an event, and puts it 6 days earlier instead.
+        $ev2 = Sabre_VObject_Component::create('VEVENT');
+        $ev2->UID = 'overridden';
+        $ev2->{'RECURRENCE-ID'} = '20120119T120000Z';
+        $ev2->DTSTART = '20120113T120000Z';
+        $ev2->SUMMARY = 'Override!';
+
+        $vcal->add($ev2);
+
+        $it = new Sabre_VObject_RecurrenceIterator($vcal,'overridden');
+
+        $dates = array();
+        $summaries = array();
+        while($it->valid()) {
+
+            $dates[] = $it->getDTStart();
+            $summaries[] = (string)$it->getEventObject()->SUMMARY;
+            $it->next();
+
+        }
+
+        $tz = new DateTimeZone('GMT');
+        $this->assertEquals(array(
+            new DateTime('2012-01-12 12:00:00',$tz),
+            new DateTime('2012-01-13 12:00:00',$tz),
+            new DateTime('2012-01-26 12:00:00',$tz),
+
+        ), $dates);
+
+        $this->assertEquals(array(
+            'baseEvent',
+            'Override!',
+            'baseEvent',
+        ), $summaries);
+
+    }
 }
 

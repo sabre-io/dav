@@ -269,13 +269,6 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     );
 
     /**
-     * The time of the day, of the base event. Formatted as array(hh, mm, ss)
-     * 
-     * @var array 
-     */
-    private $baseTime;
-
-    /**
      * If the current iteration of the event is an overriden event, this 
      * property will hold the VObject
      * 
@@ -283,6 +276,14 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     private $currentOverriddenEvent;
 
+    /**
+     * This property may contain the date of the next not-overridden event. 
+     * This date is calculated sometimes a bit early, before overridden events 
+     * are evaluated.
+     * 
+     * @var DateTime 
+     */
+    private $nextEventDate;
 
     /**
      * Creates the iterator
@@ -318,11 +319,6 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         }
 
         $this->startDate = clone $this->baseEvent->DTSTART->getDateTime();
-        $this->baseTime = array(
-            $this->startDate->format('H'),
-            $this->startDate->format('i'),
-            $this->startDate->format('s'),
-        );
 
         $this->endDate = null;
         if (isset($this->baseEvent->DTEND)) {
@@ -572,43 +568,54 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             $this->currentOverriddenEvent = null;
 
-            switch($this->frequency) {
+            // If we have a next date 'stored', we use that 
+            if ($this->nextDate) {
+                $this->currentDate = $this->nextDate;
+                $this->nextDate = null;
+            } else {
 
-                case 'daily' :
-                    $this->nextDaily();
-                    break;
+                // Otherwise, we calculate it
+                switch($this->frequency) {
 
-                case 'weekly' :
-                    $this->nextWeekly();
-                    break;
+                    case 'daily' :
+                        $this->nextDaily();
+                        break;
 
-                case 'monthly' :
-                    $this->nextMonthly();
-                    break;
+                    case 'weekly' :
+                        $this->nextWeekly();
+                        break;
 
-                case 'yearly' :
-                    $this->nextYearly();
-                    break;
+                    case 'monthly' :
+                        $this->nextMonthly();
+                        break;
+
+                    case 'yearly' :
+                        $this->nextYearly();
+                        break;
+
+                }
+                $nextStamp = $this->currentDate->getTimeStamp();
+
+                // Checking exception dates
+                foreach($this->exceptionDates as $exceptionDate) {
+                    if ($this->currentDate == $exceptionDate) {
+                        continue 2;
+                    }
+                }
 
             }
-            // Correcting the base time, if it was changed
-            $this->currentDate->setTime($this->baseTime[0], $this->baseTime[1], $this->baseTime[2]);
 
-            $nextStamp = $this->currentDate->getTimeStamp();
             // Checking overriden events
             foreach($this->overriddenEvents as $index=>$event) {
                 if ($index > $currentStamp && $index < $nextStamp) {
-                    // Handle the overridden event first
+
+                    // We're moving the 'next date' aside, for later use.
+                    $this->nextDate = clone $this->currentDate;
+
                     $this->currentDate = $event->DTSTART->getDateTime();
                     $this->currentOverriddenEvent = $event;
-                    break;
-                }
-            }
 
-            // Checking exception dates
-            foreach($this->exceptionDates as $exceptionDate) {
-                if ($this->currentDate == $exceptionDate) {
-                    continue 2;
+                    break;
                 }
             }
 

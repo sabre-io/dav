@@ -283,7 +283,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * 
      * @var DateTime 
      */
-    private $nextEventDate;
+    private $nextDate;
 
     /**
      * Creates the iterator

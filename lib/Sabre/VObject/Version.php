@@ -14,7 +14,7 @@ class Sabre_VObject_Version {
     /**
      * Full version number
      */
-    const VERSION = '1.2.5';
+    const VERSION = '1.2.6';
 
     /**
      * Stability : alpha, beta, stable

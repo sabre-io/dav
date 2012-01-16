@@ -1,3 +1,6 @@
+1.5.7-stable (2012-??-??)
+	* Fixed: VObject properties are now always encoded before components.
+
 1.5.6-stable (2012-01-07)
 	* Fixed: Issue 174: VObject could break UTF-8 characters.
 	* Fixed: pear package installation issues.

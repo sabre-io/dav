@@ -80,7 +80,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
         if ($sA === $sB) return 0;
 
-        return ($sA < $sB) ? -1 : 1;
+        return ($sA > $sB) ? -1 : 1;
 
     }
 

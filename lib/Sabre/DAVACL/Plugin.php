@@ -88,7 +88,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public $defaultUsernamePath = 'principals';
 
-
     /**
      * This list of properties are the properties a client can search on using
      * the {DAV:}principal-property-search report.
@@ -101,6 +100,15 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         '{DAV:}displayname' => 'Display name',
         '{http://sabredav.org/ns}email-address' => 'Email address',
     );
+
+    /**
+     * Any principal uri's added here, will automatically be added to the list 
+     * of ACL's. They will effectively receive {DAV:}all privileges, as a 
+     * protected privilege.
+     * 
+     * @var array 
+     */
+    public $adminPrincipals = array();
 
     /**
      * Returns a list of features added by this plugin.
@@ -438,10 +446,18 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if (is_string($node)) {
             $node = $this->server->tree->getNodeForPath($node);
         }
-        if ($node instanceof Sabre_DAVACL_IACL) {
-            return $node->getACL();
+        if (!$node instanceof Sabre_DAVACL_IACL) {
+            return null;
         }
-        return null;
+        $acl = $node->getACL();
+        foreach($this->adminPrincipals as $adminPrincipal) {
+            $acl[] = array(
+                'principal' => $adminPrincipal,
+                'privilege' => '{DAV:}all',
+                'protected' => true,
+            );
+        }
+        return $acl;
 
     }
 

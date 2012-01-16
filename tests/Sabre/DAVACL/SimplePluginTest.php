@@ -248,9 +248,6 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
         $auth->beforeMethod('GET','/');
 
         $expected = array(
-            '{DAV:}read',
-            '{DAV:}read-acl',
-            '{DAV:}read-current-user-privilege-set',
             '{DAV:}write',
             '{DAV:}write-acl',
             '{DAV:}write-properties',
@@ -258,6 +255,9 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
             '{DAV:}bind',
             '{DAV:}unbind',
             '{DAV:}unlock',
+            '{DAV:}read',
+            '{DAV:}read-acl',
+            '{DAV:}read-current-user-privilege-set',
         );
 
         $this->assertEquals($expected,$aclPlugin->getCurrentUserPrivilegeSet('foo'));

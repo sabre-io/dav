@@ -531,17 +531,19 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $flat = $this->getFlatPrivilegeSet($node);
 
         $collected2 = array();
-        foreach($collected as $privilege) {
+        while(count($collected)) {
 
-            $collected2[] = $privilege['privilege'];
-            foreach($flat[$privilege['privilege']]['aggregates'] as $subPriv) {
-                if (!in_array($subPriv, $collected2))
-                    $collected2[] = $subPriv;
+            $current = array_pop($collected);
+            $collected2[] = $current['privilege'];
+
+            foreach($flat[$current['privilege']]['aggregates'] as $subPriv) {
+                $collected2[] = $subPriv;
+                $collected[] = $flat[$subPriv];
             }
 
         }
 
-        return $collected2;
+        return array_values(array_unique($collected2));
 
     }
 

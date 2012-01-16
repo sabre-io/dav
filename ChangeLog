@@ -15,6 +15,7 @@
 	  browser plugin.
 	* Added: Browser plugin: icons for various nodes.
 	* Added: Support for FREEBUSY reports!
+	* Added: Support for creating principals with admin-level privileges.
 	* Changed: beforeCreateFile event now passes data argument by reference.
 	* Changed: The 'propertyMap' property from Sabre_VObject_Reader, must now
 	  be specified in Sabre_VObject_Property::$classMap.

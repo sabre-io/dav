@@ -88,63 +88,52 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
         $str = "BEGIN:" . $this->name . "\r\n";
 
-        usort($this->children, array($this, 'childrenSort'));
+        /**
+         * Gives a component a 'score' for sorting purposes.
+         *
+         * This is solely used by the childrenSort method.
+         *
+         * A higher score means the item will be higher in the list
+         *
+         * @param Sabre_VObject_Node $a
+         * @return int
+         */ 
+        $sortScore = function($n) {
+
+            if ($n instanceof Sabre_VObject_Component) {
+                // We want to encode VTIMEZONE first, this is a personal 
+                // preference.
+                if ($n->name === 'VTIMEZONE') {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else {
+                // VCARD version 4.0 wants the VERSION property to appear first
+                if ($n->name === 'VERSION') {
+                    return 3;
+                } else {
+                    return 2;
+                }
+            }
+
+        };
+
+        usort($this->children, function($a, $b) use ($sortScore) {
+
+            $sA = $sortScore($a);
+            $sB = $sortScore($b);
+
+            if ($sA === $sB) return 0;
+
+            return ($sA > $sB) ? -1 : 1;
+
+        });
 
         foreach($this->children as $child) $str.=$child->serialize();
         $str.= "END:" . $this->name . "\r\n";
 
         return $str;
-
-    }
-
-    /**
-     * Sorts the children based on the rules of RFC5545 and RFC6350.
-     *
-     * This is solely used by 'serialize' and will be removed in 1.6.0.
-     *
-     * @param Sabre_VObject_Node $a
-     * @param Sabre_VObject_Node $b 
-     * @return int 
-     */
-    public function childrenSort($a, $b) {
-
-        $sA = $this->sortScore($a);
-        $sB = $this->sortScore($b);
-
-        if ($sA === $sB) return 0;
-
-        return ($sA < $sB) ? -1 : 1;
-
-    }
-
-    /**
-     * Gives a component a 'score' for sorting purposes.
-     *
-     * This is solely used by the childrenSort method.
-     *
-     * A higher score means the item will be higher in the list
-     *
-     * @param Sabre_VObject_Node $a
-     * @return int
-     */ 
-    private function sortScore(Sabre_VObject_Node $n) {
-
-        if ($n instanceof Sabre_VObject_Component) {
-            // We want to encode VTIMEZONE first, this is a personal 
-            // preference.
-            if ($n->name === 'VTIMEZONE') {
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
-            // VCARD version 4.0 wants the VERSION property to appear first
-            if ($n->name === 'VERSION') {
-                return 3;
-            } else {
-                return 2;
-            }
-        }
 
     }
 

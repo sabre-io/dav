@@ -14,8 +14,8 @@ class Sabre_VObject_Issue154Test extends PHPUnit_Framework_TestCase {
         $expected = array(
             "BEGIN:VCARD",
             "VERSION:3.0",
-            "UID:foo-bar",
             "PHOTO;BASE64:" . base64_encode('random_stuff'),
+            "UID:foo-bar",
             "END:VCARD",
             "",
         );

@@ -325,8 +325,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
             new Sabre_VObject_Component('VEVENT'),
             new Sabre_VObject_Component('VTODO')
         );
-        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n", $comp->serialize());
-
+        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $comp->serialize());
 
     }
 

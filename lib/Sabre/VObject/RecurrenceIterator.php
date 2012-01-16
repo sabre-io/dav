@@ -562,7 +562,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
-        $currentStamp = $this->currentDate->getTimeStamp();
+        $previousStamp = $this->currentDate->getTimeStamp();
 
         while(true) {
 
@@ -571,6 +571,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             // If we have a next date 'stored', we use that 
             if ($this->nextDate) {
                 $this->currentDate = $this->nextDate;
+                $currentStamp = $this->currentDate->getTimeStamp();
                 $this->nextDate = null;
             } else {
 
@@ -594,7 +595,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                         break;
 
                 }
-                $nextStamp = $this->currentDate->getTimeStamp();
+                $currentStamp = $this->currentDate->getTimeStamp();
 
                 // Checking exception dates
                 foreach($this->exceptionDates as $exceptionDate) {
@@ -607,7 +608,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             // Checking overriden events
             foreach($this->overriddenEvents as $index=>$event) {
-                if ($index > $currentStamp && $index < $nextStamp) {
+                if ($index > $previousStamp && $index < $currentStamp) {
 
                     // We're moving the 'next date' aside, for later use.
                     $this->nextDate = clone $this->currentDate;

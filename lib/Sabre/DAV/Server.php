@@ -816,7 +816,7 @@ class Sabre_DAV_Server {
 
             // If the node is a collection, we'll deny it
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
-            if (!$this->broadcastEvent('beforeWriteContent',array($uri))) return false;
+            if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
 
             $node->put($body);
 
@@ -1456,9 +1456,11 @@ class Sabre_DAV_Server {
         list($dir,$name) = Sabre_DAV_URLUtil::splitPath($uri);
 
         if (!$this->broadcastEvent('beforeBind',array($uri))) return false;
-        if (!$this->broadcastEvent('beforeCreateFile',array($uri,&$data))) return false;
 
         $parent = $this->tree->getNodeForPath($dir);
+
+        if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
+
         $parent->createFile($name,$data);
         $this->tree->markDirty($dir);
 

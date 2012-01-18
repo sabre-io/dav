@@ -189,11 +189,24 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function unknownMethod($method, $uri) {
 
-        if ($method!=='MKCALENDAR') return;
+        switch ($method) {
+            case 'MKCALENDAR' :
+                $this->httpMkCalendar($uri);
+                // false is returned to stop the propagation of the 
+                // unknownMethod event. 
+                return false;
+            case 'POST' :
+                // Checking if we're talking to an outbox
+                try {
+                    $node = $this->server->tree->getNodeForPath($uri);
+                } catch (Sabre_DAV_Exception_NotFound $e) {
+                    return;
+                }
 
-        $this->httpMkCalendar($uri);
-        // false is returned to stop the unknownMethod event
-        return false;
+                $this->outboxRequest($node);
+                return false;
+
+        }
 
     }
 
@@ -556,6 +569,18 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $this->server->httpResponse->setHeader('Content-Type', 'text/calendar');
         $this->server->httpResponse->setHeader('Content-Length', strlen($result));
         $this->server->httpResponse->sendBody($result);
+
+    }
+
+    /**
+     * This method handles POST requests to the schedule-outbox
+     *
+     * @param Sabre_CalDAV_Schedule_IOutbox $outboxNode 
+     * @return void
+     */
+    public function outboxRequest(Sabre_CalDAV_Schedule_IOutbox $outboxNode) {
+
+        throw new Sabre_DAV_Exception_NotImplemented('Work in progress');
 
     }
 

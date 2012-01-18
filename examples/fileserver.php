@@ -44,6 +44,9 @@ $server->addPlugin($lockPlugin);
 $browser = new Sabre_DAV_Browser_Plugin();
 $server->addPlugin($browser);
 
+// Automatically guess (some) contenttypes, based on extesion
+$server->addPlugin(new Sabre_DAV_Browser_GuessContentType());
+
 // Authentication backend
 $authBackend = new Sabre_DAV_Auth_Backend_File('.htdigest');
 $auth = new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV');

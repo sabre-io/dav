@@ -2,6 +2,9 @@
 	* Fixed: VObject properties are now always encoded before components.
 	* Fixed: Sabre_DAVACL had issues with multiple levels of privilege
 	  aggregration.
+	* Changed: Added 'GuessContentType' plugin to fileserver.php example.
+	* Fixed: The Browser plugin will now trigger the correct events when
+	  creating files.
 
 1.5.6-stable (2012-01-07)
 	* Fixed: Issue 174: VObject could break UTF-8 characters.

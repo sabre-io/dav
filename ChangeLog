@@ -11,6 +11,7 @@
 	* BC Break: Sabre_DAV_Exception_FileNotFound is now deprecated in favor of
 	  Sabre_DAV_Exception_NotFound. The former will be removed in a later
 	  version.
+	* BC Break: Removed Sabre_CalDAV_ICalendarUtil, use Sabre_VObject instead.
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
 	* Added: Browser plugin: icons for various nodes.

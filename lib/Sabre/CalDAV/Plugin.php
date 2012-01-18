@@ -604,12 +604,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $path
      * @param resource $data
-     * @param Sabre_DAV_ICollection $data
+     * @param Sabre_DAV_ICollection $parentNode
      * @return void
      */
-    public function beforeCreateFile($path, &$data, Sabre_DAV_ICollection $data) {
+    public function beforeCreateFile($path, &$data, Sabre_DAV_ICollection $parentNode) {
 
-        if (!$node instanceof Sabre_CalDAV_Calendar)
+        if (!$parentNode instanceof Sabre_CalDAV_Calendar)
             return;
 
         $this->validateICalendar($data);

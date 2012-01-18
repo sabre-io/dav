@@ -170,6 +170,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
         foreach($calendars as $calendar) {
             $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
         }
+        $objs[] = new Sabre_CalDAV_Schedule_Outbox($this->principalInfo['uri']);
         return $objs;
 
     }

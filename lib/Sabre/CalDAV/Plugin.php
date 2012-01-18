@@ -149,6 +149,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre_CalDAV_Property_SupportedCalendarComponentSet';
 
         $server->resourceTypeMapping['Sabre_CalDAV_ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
+        $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
 
@@ -166,7 +167,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             '{' . self::NS_CALDAV . '}calendar-data',
 
             // scheduling extension
+            '{' . self::NS_CALDAV . '}schedule-inbox-URL',
+            '{' . self::NS_CALDAV . '}schedule-outbox-URL',
             '{' . self::NS_CALDAV . '}calendar-user-address-set',
+            '{' . self::NS_CALDAV . '}calendar-user-type',
 
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
@@ -283,6 +287,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
                 unset($requestedProperties[$calHome]);
                 $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
+            }
+
+            // schedule-outbox-URL property
+            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-outbox-URL';
+            if (in_array($scheduleProp,$requestedProperties)) {
+                $principalId = $node->getName();
+                $outboxPath = self::CALENDAR_ROOT . '/' . $principalId . '/outbox';
+                unset($requestedProperties[$scheduleProp]);
+                $returnedProperties[200][$scheduleProp] = new Sabre_DAV_Property_Href($outboxPath);
             }
 
             // calendar-user-address-set property

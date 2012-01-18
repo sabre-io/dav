@@ -306,4 +306,31 @@ END:VCALENDAR";
 
     }
 
+    function testGetSize1() {
+
+        $objectInfo = array(
+            'calendardata' => 'foo',
+            'uri' => 'foo',
+            'calendarid' => 1
+        );
+
+        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
+        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $this->assertEquals(3, $obj->getSize());
+
+    }
+
+    function testGetSize2() {
+
+        $objectInfo = array(
+            'uri' => 'foo',
+            'calendarid' => 1,
+            'size' => 4,
+        );
+
+        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
+        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $this->assertEquals(4, $obj->getSize());
+
+    }
 }

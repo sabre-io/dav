@@ -181,10 +181,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                     // Making sure we only have a 'basename' component
                     list(, $newName) = Sabre_DAV_URLUtil::splitPath($newName);
 
-
                     if (is_uploaded_file($file['tmp_name'])) {
-                        $parent = $this->server->tree->getNodeForPath(trim($uri,'/'));
-                        $parent->createFile($newName,fopen($file['tmp_name'],'r'));
+                        $this->server->createFile($uri . '/' . $newName, fopen($file['tmp_name'],'r'));
                     }
                     break;
 

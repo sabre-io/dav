@@ -9,7 +9,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
@@ -142,6 +142,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
         $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
         $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
+        $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
+        $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -192,8 +194,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         switch ($method) {
             case 'MKCALENDAR' :
                 $this->httpMkCalendar($uri);
-                // false is returned to stop the propagation of the 
-                // unknownMethod event. 
+                // false is returned to stop the propagation of the
+                // unknownMethod event.
                 return false;
             case 'POST' :
                 // Checking if we're talking to an outbox
@@ -202,7 +204,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 } catch (Sabre_DAV_Exception_NotFound $e) {
                     return;
                 }
-
                 $this->outboxRequest($node);
                 return false;
 
@@ -405,15 +406,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $end = $expandElem->getAttribute('end');
             if(!$start || !$end) {
                 throw new Sabre_DAV_Exception_BadRequest('The "start" and "end" attributes are required for the CALDAV:expand element');
-            } 
+            }
             $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
             $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
-            
+
             if ($end <= $start) {
                 throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the expand element.');
             }
 
-            $expand = true; 
+            $expand = true;
 
         } else {
 
@@ -494,7 +495,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 if ($parser->expand) {
                     $vObject->expand($parser->expand['start'], $parser->expand['end']);
                     $node[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
-                } 
+                }
                 $verifiedNodes[] = $node;
             }
 
@@ -573,9 +574,73 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * This method is triggered before a file gets updated with new content.
+     *
+     * This plugin uses this method to ensure that CalDAV objects receive
+     * valid calendar data.
+     *
+     * @param string $path
+     * @param Sabre_DAV_IFile $node
+     * @param resource $data
+     * @return void
+     */
+    public function beforeWriteContent($path, Sabre_DAV_IFile $node, &$data) {
+
+        if (!$node instanceof Sabre_CalDAV_ICalendarObject)
+            return;
+
+        $this->validateICalendar($data);
+
+    }
+
+    /**
+     * This method is triggered before a new file is created.
+     *
+     * This plugin uses this method to ensure that newly created calendar
+     * objects contain valid calendar data.
+     *
+     * @param string $path
+     * @param resource $data
+     * @param Sabre_DAV_ICollection $data
+     * @return void
+     */
+    public function beforeCreateFile($path, &$data, Sabre_DAV_ICollection $data) {
+
+        if (!$node instanceof Sabre_CalDAV_Calendar)
+            return;
+
+        $this->validateICalendar($data);
+
+    }
+
+    /**
+     * Checks if the submitted iCalendar data is in fact, valid.
+     *
+     * An exception is thrown if it's not.
+     *
+     * @param resource|string $data
+     * @return void
+     */
+    protected function validateICalendar($data) {
+
+        if (is_resource($data)) {
+            $data = stream_get_contents($data);
+        }
+
+        try {
+            $vobj = Sabre_VObject_Reader::read($data);
+        } catch (Sabre_VObject_ParseException $e) {
+
+            throw new Sabre_DAV_Exception_UnsupportedMediaType('This resource only supports valid iCalendar 2.0 data. Parse error: ' . $e->getMessage());
+
+        }
+
+    }
+
+    /**
      * This method handles POST requests to the schedule-outbox
      *
-     * @param Sabre_CalDAV_Schedule_IOutbox $outboxNode 
+     * @param Sabre_CalDAV_Schedule_IOutbox $outboxNode
      * @return void
      */
     public function outboxRequest(Sabre_CalDAV_Schedule_IOutbox $outboxNode) {
@@ -583,7 +648,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         throw new Sabre_DAV_Exception_NotImplemented('Work in progress');
 
     }
-
 
     /**
      * This method is used to generate HTML output for the

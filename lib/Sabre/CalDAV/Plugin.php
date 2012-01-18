@@ -204,6 +204,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 } catch (Sabre_DAV_Exception_NotFound $e) {
                     return;
                 }
+                if (!$node instanceof Sabre_CalDAV_Schedule_IOutbox)
+                    return;
+
                 $this->outboxRequest($node);
                 return false;
 

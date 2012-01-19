@@ -205,30 +205,46 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
         }
 
         try {
+            // tzid an Olson identifier?
             $tz = new DateTimeZone($tzid->value);
         } catch (Exception $e) {
 
-            // The id was invalid, we're going to try to find the information
-            // through the VTIMEZONE object.
+            // Not an Olson id, we're going to try to find the information 
+            // through the time zone name map.
+            $newtzid = Sabre_VObject_Property_TimeZoneMap::lookup($tzid->value);
+            if (is_null($newtzid)) {
 
-            // First we find the root object
-            $root = $property;
-            while($root->parent) {
-                $root = $root->parent;
-            }
+                // Not a well known time zone name either, we're going to try 
+                // to find the information through the VTIMEZONE object.
 
-            if (isset($root->VTIMEZONE)) {
-                foreach($root->VTIMEZONE as $vtimezone) {
-                    if (((string)$vtimezone->TZID) == $tzid) {
-                        if (isset($vtimezone->{'X-LIC-LOCATION'})) {
-                            $tzid = (string)$vtimezone->{'X-LIC-LOCATION'};
+                // First we find the root object
+                $root = $property;
+                while($root->parent) {
+                    $root = $root->parent;
+                }
+
+                if (isset($root->VTIMEZONE)) {
+                    foreach($root->VTIMEZONE as $vtimezone) {
+                        if (((string)$vtimezone->TZID) == $tzid) {
+                            if (isset($vtimezone->{'X-LIC-LOCATION'})) {
+                                $newtzid = (string)$vtimezone->{'X-LIC-LOCATION'};
+                            } else {
+                                // No libical location specified. As a last resort we could 
+                                // try matching $vtimezone's DST rules against all known 
+                                // time zones returned by DateTimeZone::list*
+
+                                // TODO
+                            }
                         }
                     }
                 }
             }
 
-            $tz = new DateTimeZone($tzid);
-
+            try {
+                $tz = new DateTimeZone($newtzid);
+            } catch (Exception $e) {
+                $tz = null;
+            }
         }
         $dt = new DateTime($dateStr, $tz);
         $dt->setTimeZone($tz);

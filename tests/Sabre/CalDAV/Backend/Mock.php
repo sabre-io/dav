@@ -175,7 +175,11 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
      */
     function createCalendarObject($calendarId,$objectUri,$calendarData) {
 
-        throw new Exception('Not implemented');
+        $this->calendarData[$calendarId][$objectUri] = array(
+            'calendardata' => $calendarData,
+            'calendarid' => $calendarId,
+            'uri' => $objectUri,
+        );
 
     }
 
@@ -189,7 +193,11 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
      */
     function updateCalendarObject($calendarId,$objectUri,$calendarData) {
 
-        throw new Exception('Not implemented');
+        $this->calendarData[$calendarId][$objectUri] = array(
+            'calendardata' => $calendarData,
+            'calendarid' => $calendarId,
+            'uri' => $objectUri,
+        );
 
     }
 

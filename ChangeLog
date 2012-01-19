@@ -77,6 +77,9 @@
 	  requests.
 	* Added: More arguments to beforeWriteContent and beforeCreateFile (see
 	  WritingPlugins wiki document).
+	* Added: Hook for iCalendar validation. This allows us to validate
+	  iCalendar objects when they're uploaded. At the moment we're just
+	  validating syntax.
 
 1.5.7-stable (2012-??-??)
 	* Fixed: VObject properties are now always encoded before components.

@@ -199,4 +199,33 @@ class Sabre_VObject_Element_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetDateTimeBadTimeZone() {
+
+        $default = date_default_timezone_get();
+        date_default_timezone_set('Canada/Eastern');
+
+        $elem = new Sabre_VObject_Element_DateTime('DTSTART','19850704T013000');
+        $elem['TZID'] = 'Moon';
+
+
+        $event = new Sabre_VObject_Component('VEVENT');
+        $event->add($elem);
+
+        $timezone = new Sabre_VObject_Component('VTIMEZONE');
+        $timezone->TZID = 'Moon';
+        $timezone->{'X-LIC-LOCATION'} = 'Moon';
+
+        $calendar = new Sabre_VObject_Component('VCALENDAR');
+        $calendar->add($event);
+        $calendar->add($timezone);
+
+        $dt = $elem->getDateTime();
+
+        $this->assertInstanceOf('DateTime', $dt);
+        $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
+        $this->assertEquals('Canada/Eastern', $dt->getTimeZone()->getName());
+        $this->assertEquals(Sabre_VObject_Element_DateTime::LOCALTZ, $elem->getDateType());
+        date_default_timezone_set($default);
+
+    }
 }

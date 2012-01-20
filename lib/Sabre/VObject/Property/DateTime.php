@@ -243,7 +243,8 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
             try {
                 $tz = new DateTimeZone($newtzid);
             } catch (Exception $e) {
-                $tz = null;
+                // If all else fails, we use the default PHP timezone
+                $tz = new DateTimeZone(date_default_timezone_get()); 
             }
         }
         $dt = new DateTime($dateStr, $tz);

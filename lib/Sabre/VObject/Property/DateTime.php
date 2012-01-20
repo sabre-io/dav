@@ -211,7 +211,7 @@ class Sabre_VObject_Property_DateTime extends Sabre_VObject_Property {
 
             // Not an Olson id, we're going to try to find the information 
             // through the time zone name map.
-            $newtzid = Sabre_VObject_Property_TimeZoneMap::lookup($tzid->value);
+            $newtzid = Sabre_VObject_TimeZoneMap::lookup($tzid->value);
             if (is_null($newtzid)) {
 
                 // Not a well known time zone name either, we're going to try 

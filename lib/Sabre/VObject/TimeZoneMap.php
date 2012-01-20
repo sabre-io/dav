@@ -6,12 +6,12 @@
  * This file translates well-known time zone names into "Olson database" time zone names.
  *
  * @package Sabre
- * @subpackage CalDAV
+ * @subpackage VObject 
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Frank Edelhaeuser (fedel@users.sourceforge.net) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Property_TimeZoneMap {
+class Sabre_VObject_TimeZoneMap {
 
     protected static $map = array(
 

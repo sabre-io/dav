@@ -80,6 +80,10 @@
 	* Added: Hook for iCalendar validation. This allows us to validate
 	  iCalendar objects when they're uploaded. At the moment we're just
 	  validating syntax.
+	* Added: VObject now support Windows Timezone names correctly (thanks
+	  mrpace2).
+	* Added: If a timezonename could not be detected, we fall back on the
+	  default PHP timezone.
 
 1.5.7-stable (2012-??-??)
 	* Fixed: VObject properties are now always encoded before components.

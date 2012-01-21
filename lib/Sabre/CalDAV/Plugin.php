@@ -136,6 +136,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
+
+        // We are enforcing that the ACL plugin is loaded before this plugin is 
+        // loaded.
+        if (!$server->getPlugin('acl')) {
+            throw new Sabre_DAV_Exception('The Sabre_DAVACL_Plugin plugin must be loaded before the CalDAV plugin');
+        }
+
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
@@ -648,7 +655,95 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function outboxRequest(Sabre_CalDAV_Schedule_IOutbox $outboxNode) {
 
+        $originator = $this->server->httpRequest->getHeader('Originator');
+        $recipient = $this->server->httpRequest->getHeader('Recipient');
+
+        if (!$originator) {
+            throw new Sabre_DAV_Exception_BadRequest('The Originator: header must be specified when making POST requests');
+        } 
+
+        // We need to make sure that 'originator' matches one of the email 
+        // addresses of the selected principal.
+        $principal = $outboxNode->getOwner();
+        $props = $this->server->getProperties($principal,array(
+            '{' . self::NS_CALDAV . '}calendar-user-address-set',
+        ));
+
+        if (!isset($props['{' . self::NS_CALDAV . '}calendar-user-address-set'])) {
+            throw new Sabre_DAV_Exception('The owner of the outbox does not have a "calendar-user-address-set" property set');
+        }
+
+        $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
+        if (!in_array($originator, $addresses)) {
+            throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
+        }
+
+        try { 
+            $vObject = Sabre_VObject_Reader::read($this->server->httpRequest->getBody(true));
+        } catch (Sabre_VObject_ParseException $e) {
+            throw new Sabre_DAV_Exception_BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
+        }
+
+        // Checking for the object type
+        $componentType = null;
+        foreach($vObject->getComponents() as $component) {
+            if ($component->name !== 'VTIMEZONE') {
+                $componentType = $component->name;
+                break;
+            }
+        }
+        if (is_null($componentType)) {
+            throw new Sabre_DAV_Exception_BadRequest('We expected at least one VTODO, VJOURNAL, VFREEBUSY or VEVENT component');
+        }
+
+        // Validating the METHOD
+        $method = strtoupper((string)$vObject->METHOD);
+        if (!$method) {
+            throw new Sabre_DAV_Exception_BadRequest('A METHOD property must be specified in iTIP messages');
+        }
+
+        if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
+            $this->iTIPEmailMessage($originator, $recipient, $vObject);
+        } else {
+            throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
+        }
+
+
+        switch(strtoupper($method)) {
+            case 'REQUEST' :
+                if ($componentType === 'VEVENT') {
+                    $this->iTipRequestVEVENT($vObject);
+                    break;
+                } else {
+                    throw new Sabre_DAV_Exception_NotImplemented('The iTIP method "REQUEST" is currently only implemented for VEVENT');
+                }
+                break;
+            case 'PUBLISH' :
+            case 'REFRESH' :
+            case 'CANCEL' :
+            case 'ADD' :
+            case 'REPLY' :
+            case 'COUNTER' :
+            case 'DECLINECOUNTER' :
+                throw new Sabre_DAV_Exception_NotImplemented('The iTIP Method ' . strtoupper($method) . ' is currently not implemented');
+
+        } 
+
         throw new Sabre_DAV_Exception_NotImplemented('Work in progress');
+
+    }
+
+    /**
+     * Sends an iTIP message by emaiSends an iTIP message by email
+     * 
+     * @param string $originator 
+     * @param string $recipient 
+     * @param Sabre_VObject_Component $vObject 
+     * @return void
+     */
+    protected function itipEmailMessage($originator, $recipient, Sabre_VObject_Component $vObject) {
+
+         
 
     }
 

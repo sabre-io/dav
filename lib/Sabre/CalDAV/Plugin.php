@@ -624,7 +624,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param resource|string $data
      * @return void
      */
-    protected function validateICalendar($data) {
+    protected function validateICalendar(&$data) {
 
         if (is_resource($data)) {
             $data = stream_get_contents($data);

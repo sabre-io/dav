@@ -1,0 +1,20 @@
+{
+    "name": "evert/sabre-dav",
+    "type": "library",
+    "description": "WebDAV Framework for PHP",
+    "keywords": ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],
+    "homepage": "http://code.google.com/p/sabredav/",
+    "license": "New BSD License",
+    "authors": [
+        {
+            "name": "Evert Pot",
+            "email": "evertpot@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": { "Sabre": "lib/" }
+    }
+}

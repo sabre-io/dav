@@ -708,29 +708,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
         }
 
-
-        switch(strtoupper($method)) {
-            case 'REQUEST' :
-                if ($componentType === 'VEVENT') {
-                    $this->iTipRequestVEVENT($vObject);
-                    break;
-                } else {
-                    throw new Sabre_DAV_Exception_NotImplemented('The iTIP method "REQUEST" is currently only implemented for VEVENT');
-                }
-                break;
-            case 'PUBLISH' :
-            case 'REFRESH' :
-            case 'CANCEL' :
-            case 'ADD' :
-            case 'REPLY' :
-            case 'COUNTER' :
-            case 'DECLINECOUNTER' :
-                throw new Sabre_DAV_Exception_NotImplemented('The iTIP Method ' . strtoupper($method) . ' is currently not implemented');
-
-        } 
-
-        throw new Sabre_DAV_Exception_NotImplemented('Work in progress');
-
     }
 
     /**
@@ -743,7 +720,31 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function itipEmailMessage($originator, $recipient, Sabre_VObject_Component $vObject) {
 
-         
+        switch(strtoupper($vObject->method)) {
+            case 'REQUEST' :
+                $subject = 'Invitation for "' . $vObject->VEVENT->SUMMARY . '"';
+                break;
+            case 'CANCEL' :
+                $subject = 'Cancelled event: "' . $vObject->VEVENT->SUMMARY . '"';
+                break;
+        }
+
+        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
+            throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
+        }
+        if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) { 
+            throw new Sabre_DAV_Exception_BadRequest('Recipient must start with mailto: and must be valid email address');
+        }
+        $originator = substr($originator,7);
+        $recipient = substr($recipient, 7);
+
+        $headers = array(
+            //'From: ' . $originator,
+            'Reply-To: ' . $originator,
+            'Content-Type: text/calendar',
+        );
+
+        mail($recipient, $subject, $vObject->serialize(), implode("\r\n",$headers));
 
     }
 

@@ -84,6 +84,7 @@
 	  mrpace2).
 	* Added: If a timezonename could not be detected, we fall back on the
 	  default PHP timezone.
+	* Added: Now a Composer package (thanks willdurand).
 
 1.5.7-stable (2012-??-??)
 	* Fixed: VObject properties are now always encoded before components.

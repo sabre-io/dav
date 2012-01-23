@@ -631,14 +631,20 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param resource|string $data
      * @return void
      */
-    protected function validateICalendar($data) {
+    protected function validateICalendar(&$data) {
 
+        // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
 
+        // Converting the data to unicode, if needed.
+        $data = Sabre_DAV_StringUtil::ensureUTF8($data);
+
         try {
+
             $vobj = Sabre_VObject_Reader::read($data);
+
         } catch (Sabre_VObject_ParseException $e) {
 
             throw new Sabre_DAV_Exception_UnsupportedMediaType('This resource only supports valid iCalendar 2.0 data. Parse error: ' . $e->getMessage());

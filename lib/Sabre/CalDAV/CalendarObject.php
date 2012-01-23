@@ -90,12 +90,6 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
      */
     public function put($calendarData) {
 
-        if (is_resource($calendarData))
-            $calendarData = stream_get_contents($calendarData);
-
-        // Converting to UTF-8, if needed
-        $calendarData = Sabre_DAV_StringUtil::ensureUTF8($calendarData);
-
         $this->caldavBackend->updateCalendarObject($this->calendarInfo['id'],$this->objectData['uri'],$calendarData);
         $this->objectData['calendardata'] = $calendarData;
 

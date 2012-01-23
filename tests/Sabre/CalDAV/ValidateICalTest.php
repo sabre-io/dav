@@ -27,6 +27,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->server = new Sabre_DAV_Server($tree);
+        $this->server->debugExceptions = true;
 
         $plugin = new Sabre_CalDAV_Plugin();
         $this->server->addPlugin($plugin);
@@ -68,7 +69,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 201 Created', $response->status);
+        $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
         $expected = array(
             'uri'          => 'blabla.ics',

@@ -33,6 +33,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
 
         $s = new Sabre_DAV_Server($tree);
         $s->addPlugin($p);
+        $s->addPlugin(new Sabre_CalDAV_Plugin());
 
         $h = new Sabre_HTTP_Request(array(
             'QUERY_STRING' => 'export',
@@ -57,7 +58,6 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
 
-
     }
 
     function testBeforeMethodNoGET() {
@@ -79,6 +79,42 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
 
         $this->assertNull($p->beforeMethod('GET','UUID-123467'));
+
+    }
+
+    /**
+     * @expectedException Sabre_DAVACL_Exception_NeedPrivileges
+     */
+    function testACLIntegration() {
+
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
+        $cbackend = Sabre_CalDAV_TestUtil::getBackend();
+        $pbackend = new Sabre_DAVACL_MockPrincipalBackend();
+
+        $props = array(
+            'uri'=>'UUID-123467', 
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Sabre_CalDAV_Calendar($pbackend,$cbackend,$props),
+        );
+
+        $p = new Sabre_CalDAV_ICSExportPlugin();
+
+        $s = new Sabre_DAV_Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Sabre_CalDAV_Plugin());
+        $s->addPlugin(new Sabre_DAVACL_Plugin());
+
+        $h = new Sabre_HTTP_Request(array(
+            'QUERY_STRING' => 'export',
+        ));
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new Sabre_HTTP_ResponseMock();
+
+        $p->beforeMethod('GET','UUID-123467?export');
 
     }
 

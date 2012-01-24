@@ -45,14 +45,14 @@ if (isset($baseUri))
     $server->setBaseUri($baseUri);
 
 /* Server Plugins */
-$authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,$this->authRealm);
-$this->addPlugin($authPlugin);
+$authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV');
+$server->addPlugin($authPlugin);
 
 $aclPlugin = new Sabre_DAVACL_Plugin();
-$this->addPlugin($aclPlugin);
+$server->addPlugin($aclPlugin);
 
 $caldavPlugin = new Sabre_CalDAV_Plugin();
-$this->addPlugin($caldavPlugin);
+$server->addPlugin($caldavPlugin);
 
 // Support for html frontend
 $browser = new Sabre_DAV_Browser_Plugin();

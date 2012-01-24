@@ -164,12 +164,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $this->server = $server;
 
-        // We are enforcing that the ACL plugin is loaded before this plugin is 
-        // loaded.
-        if (!$server->getPlugin('acl')) {
-            throw new Sabre_DAV_Exception('The Sabre_DAVACL_Plugin plugin must be loaded before the CalDAV plugin');
-        }
-
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));

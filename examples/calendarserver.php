@@ -28,14 +28,31 @@ set_error_handler("exception_error_handler");
 // Files we need
 require_once 'lib/Sabre/autoload.php';
 
-// The 'caldav server' only needs the pdo object. Note that if you plan to
-// extend the server in any way, you'll probably don't want to use
-// Sabre_CalDAV_Server, but plain Sabre_DAV_Server instead.
-// You'll need to add your own nodes and plugins manually then.
-$server = new Sabre_CalDAV_Server($pdo);
+// Backends
+$authBackend = new Sabre_DAV_Auth_Backend_PDO($pdo);
+$calendarBackend = new Sabre_CalDAV_Backend_PDO($pdo);
+$principalBackend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+
+// Directory structure 
+$tree = array(
+    new Sabre_CalDAV_Principal_Collection($principalBackend),
+    new Sabre_CalDAV_CalendarRootNode($principalBackend, $calendarBackend),
+);
+
+$server = new Sabre_DAV_Server($tree);
 
 if (isset($baseUri))
     $server->setBaseUri($baseUri);
+
+/* Server Plugins */
+$authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,$this->authRealm);
+$this->addPlugin($authPlugin);
+
+$aclPlugin = new Sabre_DAVACL_Plugin();
+$this->addPlugin($aclPlugin);
+
+$caldavPlugin = new Sabre_CalDAV_Plugin();
+$this->addPlugin($caldavPlugin);
 
 // Support for html frontend
 $browser = new Sabre_DAV_Browser_Plugin();

@@ -993,5 +993,55 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         ), $summaries);
 
     }
+
+    /**
+     * @depends testValues
+     */
+    function testOverridenEventNoValuesExpected() {
+
+        $vcal = Sabre_VObject_Component::create('VCALENDAR');
+
+        $ev1 = Sabre_VObject_Component::create('VEVENT');
+        $ev1->UID = 'overridden';
+        $ev1->RRULE = 'FREQ=WEEKLY;COUNT=3';
+        $ev1->DTSTART = '20120124T120000Z';
+        $ev1->SUMMARY = 'baseEvent';
+
+        $vcal->add($ev1);
+
+        // ev2 overrides an event, and puts it 6 days earlier instead.
+        $ev2 = Sabre_VObject_Component::create('VEVENT');
+        $ev2->UID = 'overridden';
+        $ev2->{'RECURRENCE-ID'} = '20120131T120000Z';
+        $ev2->DTSTART = '20120125T120000Z';
+        $ev2->SUMMARY = 'Override!';
+
+        $vcal->add($ev2);
+
+        $it = new Sabre_VObject_RecurrenceIterator($vcal,'overridden');
+
+        $dates = array();
+        $summaries = array();
+
+        // The reported problem was specifically related to the VCALENDAR 
+        // expansion. In this parcitular case, we had to forward to the 28th of 
+        // january.
+        $it->fastForward(new DateTime('2012-01-28 23:00:00'));
+
+        // We stop the loop when it hits the 6th of februari. Normally this 
+        // iterator would hit 24, 25 (overriden from 31) and 7 feb but because 
+        // we 'filter' from the 28th till the 6th, we should get 0 results.
+        while($it->valid() && $it->getDTSTart() < new DateTime('2012-02-06 23:00:00')) {
+
+            $dates[] = $it->getDTStart();
+            $summaries[] = (string)$it->getEventObject()->SUMMARY;
+            $it->next();
+
+        }
+
+        $this->assertEquals(array(), $dates);
+        $this->assertEquals(array(), $summaries);
+
+    }
 }
 

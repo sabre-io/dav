@@ -48,6 +48,33 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     private $server;
 
     /**
+     * The email handler for invites and other scheduling messages.
+     * 
+     * @var Sabre_CalDAV_Schedule_IMip 
+     */
+    protected $imipHandler;
+
+    /**
+     * Sets the iMIP handler.
+     *
+     * iMIP = The email transport of iCalendar scheduling messages. Setting 
+     * this is optional, but if you want the server to allow invites to be sent 
+     * out, you must set a handler.
+     *
+     * Specifically iCal will plain assume that the server supports this. If 
+     * the server doesn't, iCal will display errors when inviting people to 
+     * events.
+     *
+     * @param Sabre_CalDAV_Schedule_IMip $imipHandler 
+     * @return void
+     */
+    public function setIMipHandler(Sabre_CalDAV_Schedule_IMip $imipHandler) {
+
+        $this->imipHandler = $imipHandler;
+
+    }
+
+    /**
      * Use this method to tell the server this plugin defines additional
      * HTTP methods.
      *
@@ -667,6 +694,25 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$originator) {
             throw new Sabre_DAV_Exception_BadRequest('The Originator: header must be specified when making POST requests');
         } 
+        if (!$recipients) {
+            throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
+        } 
+
+        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
+            throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
+        }
+        $originator = substr($originator,7);
+
+        $recipients = explode(',',$recipient);
+        foreach($recipients as $k=>$recipient) {
+
+            $recipient = trim($recipient);
+            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) { 
+                throw new Sabre_DAV_Exception_BadRequest('Recipients must start with mailto: and must be valid email address');
+            }
+            $recipient = substr($recipient, 7);
+            $recipients[$k] = $recipient;
+        }
 
         // We need to make sure that 'originator' matches one of the email 
         // addresses of the selected principal.
@@ -709,7 +755,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
-            $this->iTIPEmailMessage($originator, $recipient, $vObject);
+            $this->iMIPMessage($originator, $recipients, $vObject);
         } else {
             throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
         }
@@ -717,40 +763,19 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Sends an iTIP message by emaiSends an iTIP message by email
+     * Sends an iMIP message by email.
      * 
      * @param string $originator 
-     * @param string $recipient 
+     * @param array $recipients 
      * @param Sabre_VObject_Component $vObject 
      * @return void
      */
-    protected function itipEmailMessage($originator, $recipient, Sabre_VObject_Component $vObject) {
+    protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject) {
 
-        switch(strtoupper($vObject->method)) {
-            case 'REQUEST' :
-                $subject = 'Invitation for "' . $vObject->VEVENT->SUMMARY . '"';
-                break;
-            case 'CANCEL' :
-                $subject = 'Cancelled event: "' . $vObject->VEVENT->SUMMARY . '"';
-                break;
+        if (!$this->imipHandler) {
+            throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
         }
-
-        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
-            throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
-        }
-        if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) { 
-            throw new Sabre_DAV_Exception_BadRequest('Recipient must start with mailto: and must be valid email address');
-        }
-        $originator = substr($originator,7);
-        $recipient = substr($recipient, 7);
-
-        $headers = array(
-            //'From: ' . $originator,
-            'Reply-To: ' . $originator,
-            'Content-Type: text/calendar',
-        );
-
-        mail($recipient, $subject, $vObject->serialize(), implode("\r\n",$headers));
+        $this->imipHandler($originator, $recipients, $vObject); 
 
     }
 

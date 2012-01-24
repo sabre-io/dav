@@ -3,6 +3,8 @@
 /**
  * CalDAV server
  *
+ * Deprecated! Warning: This class is now officially deprecated
+ *
  * This script is a convenience script. It quickly sets up a WebDAV server
  * with caldav and ACL support, and it creates the root 'principals' and
  * 'calendars' collections.
@@ -13,6 +15,7 @@
  *
  * @package Sabre
  * @subpackage CalDAV
+ * @deprecated Don't use this class anymore, it will be removed in version 1.7.
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

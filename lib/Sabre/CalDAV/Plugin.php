@@ -683,7 +683,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function outboxRequest(Sabre_CalDAV_Schedule_IOutbox $outboxNode) {
 
         $originator = $this->server->httpRequest->getHeader('Originator');
-        $recipient = $this->server->httpRequest->getHeader('Recipient');
+        $recipients = $this->server->httpRequest->getHeader('Recipient');
 
         if (!$originator) {
             throw new Sabre_DAV_Exception_BadRequest('The Originator: header must be specified when making POST requests');
@@ -697,7 +697,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
         $originator = substr($originator,7);
 
-        $recipients = explode(',',$recipient);
+        $recipients = explode(',',$recipients);
         foreach($recipients as $k=>$recipient) {
 
             $recipient = trim($recipient);
@@ -720,7 +720,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
-        if (!in_array($originator, $addresses)) {
+        if (!in_array('mailto:' . $originator, $addresses)) {
             throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
         }
 

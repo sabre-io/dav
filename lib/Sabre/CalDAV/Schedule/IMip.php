@@ -53,7 +53,7 @@ class Sabre_CalDAV_Schedule_IMip {
         foreach($recipients as $recipient) {
 
             $to = $recipient;
-            $replyTo = $recipient;
+            $replyTo = $originator;
             $subject = 'SabreDAV iTIP message'; 
 
             switch(strtoupper($vObject->METHOD)) {
@@ -72,16 +72,30 @@ class Sabre_CalDAV_Schedule_IMip {
             $headers[] = 'Reply-To: ' . $replyTo;
             $headers[] = 'From: ' . $this->senderEmail;
             $headers[] = 'Content-Type: text/calendar; method=' . (string)$vObject->method . '; charset=utf-8';
+            $headers[] = 'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY;
 
             $vcalBody = $vObject->serialize();
 
-            mail($to, $subject, $vcalBody, implode("\r\n", $headers));
+            $this->mail($to, $subject, $vcalBody, $headers);
 
         }
 
     }
 
+    /**
+     * This function is reponsible for sending the actual email.
+     *
+     * @param string $to Recipient email address 
+     * @param string $subject Subject of the email
+     * @param string $body iCalendar body 
+     * @param array $headers List of headers 
+     * @return void
+     */
+    protected function mail($to, $subject, $body, array $headers) {
 
+        mail($to, $subject, $body, implode("\r\n", $headers));
+
+    }
 
 
 }

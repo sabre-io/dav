@@ -123,9 +123,9 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
     public function getETag() {
 
         if (isset($this->cardData['etag'])) {
-          return $this->cardData['etag'];
+            return $this->cardData['etag'];
         } else {
-          return '"' . md5($this->get()) . '"';
+            return '"' . md5($this->get()) . '"';
         }
 
     }

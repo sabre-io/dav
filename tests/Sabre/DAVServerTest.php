@@ -24,8 +24,11 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     protected $server;
     protected $tree = array();
+
     protected $caldavBackend;
     protected $principalBackend;
+
+    protected $caldavPlugin;
 
     function setUp() {
 
@@ -35,7 +38,9 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
         $this->server = new Sabre_DAV_Server($this->tree);
 
         if ($this->setupCalDAV) {
-            $this->server->addPlugin(new Sabre_CalDAV_Plugin());
+
+            $this->caldavPlugin = new Sabre_CalDAV_Plugin();
+            $this->server->addPlugin($this->caldavPlugin);
         }
 
     }

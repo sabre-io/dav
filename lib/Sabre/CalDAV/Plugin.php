@@ -48,6 +48,33 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     private $server;
 
     /**
+     * The email handler for invites and other scheduling messages.
+     * 
+     * @var Sabre_CalDAV_Schedule_IMip 
+     */
+    protected $imipHandler;
+
+    /**
+     * Sets the iMIP handler.
+     *
+     * iMIP = The email transport of iCalendar scheduling messages. Setting 
+     * this is optional, but if you want the server to allow invites to be sent 
+     * out, you must set a handler.
+     *
+     * Specifically iCal will plain assume that the server supports this. If 
+     * the server doesn't, iCal will display errors when inviting people to 
+     * events.
+     *
+     * @param Sabre_CalDAV_Schedule_IMip $imipHandler 
+     * @return void
+     */
+    public function setIMipHandler(Sabre_CalDAV_Schedule_IMip $imipHandler) {
+
+        $this->imipHandler = $imipHandler;
+
+    }
+
+    /**
      * Use this method to tell the server this plugin defines additional
      * HTTP methods.
      *
@@ -136,6 +163,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
+
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
         //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
         $server->subscribeEvent('report',array($this,'report'));
@@ -654,7 +682,96 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function outboxRequest(Sabre_CalDAV_Schedule_IOutbox $outboxNode) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('Work in progress');
+        $originator = $this->server->httpRequest->getHeader('Originator');
+        $recipients = $this->server->httpRequest->getHeader('Recipient');
+
+        if (!$originator) {
+            throw new Sabre_DAV_Exception_BadRequest('The Originator: header must be specified when making POST requests');
+        } 
+        if (!$recipients) {
+            throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
+        } 
+
+        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
+            throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
+        }
+        $originator = substr($originator,7);
+
+        $recipients = explode(',',$recipients);
+        foreach($recipients as $k=>$recipient) {
+
+            $recipient = trim($recipient);
+            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) { 
+                throw new Sabre_DAV_Exception_BadRequest('Recipients must start with mailto: and must be valid email address');
+            }
+            $recipient = substr($recipient, 7);
+            $recipients[$k] = $recipient;
+        }
+
+        // We need to make sure that 'originator' matches one of the email 
+        // addresses of the selected principal.
+        $principal = $outboxNode->getOwner();
+        $props = $this->server->getProperties($principal,array(
+            '{' . self::NS_CALDAV . '}calendar-user-address-set',
+        ));
+
+        $addresses = array();
+        if (isset($props['{' . self::NS_CALDAV . '}calendar-user-address-set'])) {
+            $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
+        }
+
+        if (!in_array('mailto:' . $originator, $addresses)) {
+            throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
+        }
+
+        try { 
+            $vObject = Sabre_VObject_Reader::read($this->server->httpRequest->getBody(true));
+        } catch (Sabre_VObject_ParseException $e) {
+            throw new Sabre_DAV_Exception_BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
+        }
+
+        // Checking for the object type
+        $componentType = null;
+        foreach($vObject->getComponents() as $component) {
+            if ($component->name !== 'VTIMEZONE') {
+                $componentType = $component->name;
+                break;
+            }
+        }
+        if (is_null($componentType)) {
+            throw new Sabre_DAV_Exception_BadRequest('We expected at least one VTODO, VJOURNAL, VFREEBUSY or VEVENT component');
+        }
+
+        // Validating the METHOD
+        $method = strtoupper((string)$vObject->METHOD);
+        if (!$method) {
+            throw new Sabre_DAV_Exception_BadRequest('A METHOD property must be specified in iTIP messages');
+        }
+
+        if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
+            $this->iMIPMessage($originator, $recipients, $vObject);
+            $this->server->httpResponse->sendStatus(200);
+            $this->server->httpResponse->sendBody('Messages sent');
+        } else {
+            throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
+        }
+
+    }
+
+    /**
+     * Sends an iMIP message by email.
+     * 
+     * @param string $originator 
+     * @param array $recipients 
+     * @param Sabre_VObject_Component $vObject 
+     * @return void
+     */
+    protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject) {
+
+        if (!$this->imipHandler) {
+            throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
+        }
+        $this->imipHandler->sendMessage($originator, $recipients, $vObject); 
 
     }
 

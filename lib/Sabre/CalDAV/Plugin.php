@@ -750,6 +750,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
             $this->iMIPMessage($originator, $recipients, $vObject);
+            $this->server->httpResponse->sendStatus(200);
+            $this->server->httpResponse->sendBody('Messages sent');
         } else {
             throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
         }

@@ -715,11 +715,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             '{' . self::NS_CALDAV . '}calendar-user-address-set',
         ));
 
-        if (!isset($props['{' . self::NS_CALDAV . '}calendar-user-address-set'])) {
-            throw new Sabre_DAV_Exception('The owner of the outbox does not have a "calendar-user-address-set" property set');
+        $addresses = array();
+        if (isset($props['{' . self::NS_CALDAV . '}calendar-user-address-set'])) {
+            $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
         }
 
-        $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
         if (!in_array('mailto:' . $originator, $addresses)) {
             throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
         }
@@ -769,7 +769,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$this->imipHandler) {
             throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
         }
-        $this->imipHandler($originator, $recipients, $vObject); 
+        $this->imipHandler->sendMessage($originator, $recipients, $vObject); 
 
     }
 

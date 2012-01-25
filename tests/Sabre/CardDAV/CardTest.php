@@ -27,7 +27,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     function testGet() {
 
         $result = $this->card->get();
-        $this->assertEquals('card', stream_get_contents($result));
+        $this->assertEquals('card', $result);
 
     }
 
@@ -42,7 +42,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
         rewind($file);
         $this->card->put($file);
         $result = $this->card->get();
-        $this->assertEquals('newdata', stream_get_contents($result));
+        $this->assertEquals('newdata', $result);
 
     }
 
@@ -63,6 +63,26 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     function testGetETag() {
 
         $this->assertEquals('"' . md5('card') . '"' , $this->card->getETag());
+
+    }
+
+    function testGetETag2() {
+
+        $card = new Sabre_CardDAV_Card(
+            $this->backend,
+            array(
+                'uri' => 'book1',
+                'id' => 'foo',
+                'principaluri' => 'principals/user1',
+            ),
+            array(
+                'uri' => 'card1',
+                'addressbookid' => 'foo',
+                'carddata' => 'card',
+                'etag' => '"blabla"',
+            )
+        );
+        $this->assertEquals('"blabla"' , $card->getETag());
 
     }
 

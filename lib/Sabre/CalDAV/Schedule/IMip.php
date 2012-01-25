@@ -58,13 +58,13 @@ class Sabre_CalDAV_Schedule_IMip {
 
             switch(strtoupper($vObject->METHOD)) {
                 case 'REPLY' :
-                    $subject = 'Response for : ' . $vObject->VEVENT->SUMMARY;
+                    $subject = 'Response for: ' . $vObject->VEVENT->SUMMARY;
                     break;
                 case 'REQUEST' :
-                    $subject = 'Invitation for : ' .$vObject->VEVENT->SUMMARY;
+                    $subject = 'Invitation for: ' .$vObject->VEVENT->SUMMARY;
                     break;
                 case 'CANCEL' :
-                    $subject = 'Cancelled event : ' . $vObject->VEVENT->SUMMARY;
+                    $subject = 'Cancelled event: ' . $vObject->VEVENT->SUMMARY;
                     break;
             }
 

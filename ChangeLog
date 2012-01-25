@@ -6,6 +6,9 @@
 	* Fixed: The Browser plugin will now trigger the correct events when
 	  creating files.
 	* Fixed: The ICSExportPlugin now considers ACL's.
+	* Added: Made it optional to supply carddata from an Addressbook backend
+	  when requesting getCards. This can make some operations much faster, and
+	  could result in much lower memory use.
 
 1.5.6-stable (2012-01-07)
 	* Fixed: Issue 174: VObject could break UTF-8 characters.

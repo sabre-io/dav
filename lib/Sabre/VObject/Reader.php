@@ -111,7 +111,13 @@ class Sabre_VObject_Reader {
         }
 
         $propertyName = strtoupper($matches['name']);
-        $propertyValue = stripcslashes($matches['value']);
+        $propertyValue = preg_replace_callback('#(\\\\(\\\\|N|n|;|,))#',function($matches) {
+            if ($matches[2]==='n' || $matches[2]==='N') {
+                return "\n";
+            } else {
+                return $matches[2];
+            }
+        }, $matches['value']);
 
         $obj = Sabre_VObject_Property::create($propertyName, $propertyValue);
 
@@ -157,7 +163,15 @@ class Sabre_VObject_Reader {
                 $value = '';
             }
 
-            $params[] = new Sabre_VObject_Parameter($match['paramName'], stripcslashes($value));
+            $value = preg_replace_callback('#(\\\\(\\\\|N|n|;|,))#',function($matches) {
+                if ($matches[2]==='n' || $matches[2]==='N') {
+                    return "\n";
+                } else {
+                    return $matches[2];
+                }
+            }, $value);
+
+            $params[] = new Sabre_VObject_Parameter($match['paramName'], $value);
 
         }
 

@@ -11,7 +11,7 @@
  * @author Frank Edelhaeuser (fedel@users.sourceforge.net) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_TimeZoneMap {
+class Sabre_VObject_WindowsTimezoneMap {
 
     protected static $map = array(
 

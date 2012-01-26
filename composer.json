@@ -8,7 +8,8 @@
     "authors": [
         {
             "name": "Evert Pot",
-            "email": "evertpot@gmail.com"
+            "email": "evert@rooftopsolutions.nl",
+            "homepage" : "http://www.rooftopsolutions.nl/"
         }
     ],
     "require": {

@@ -650,6 +650,7 @@ class Sabre_DAV_Server {
 
         if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
         $this->tree->delete($uri);
+        $this->broadcastEvent('afterUnbind',array($uri));
 
         $this->httpResponse->sendStatus(204);
         $this->httpResponse->setHeader('Content-Length','0');
@@ -728,7 +729,7 @@ class Sabre_DAV_Server {
      *
      * This HTTP method updates a file, or creates a new one.
      *
-     * If a new resource was created, a 201 Created status code should be returned. If an existing resource is updated, it's a 200 Ok
+     * If a new resource was created, a 201 Created status code should be returned. If an existing resource is updated, it's a 204 No Content
      *
      * @param string $uri
      * @return bool
@@ -819,6 +820,8 @@ class Sabre_DAV_Server {
             if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
 
             $node->put($body);
+
+            $this->broadcastEvent('afterWriteContent',array($uri, $node, &$body));
 
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(204);
@@ -926,12 +929,14 @@ class Sabre_DAV_Server {
 
             if (!$this->broadcastEvent('beforeUnbind',array($moveInfo['destination']))) return false;
             $this->tree->delete($moveInfo['destination']);
+            $this->broadcastEvent('afterUnbind',array($moveInfo['destination']));
 
         }
 
         if (!$this->broadcastEvent('beforeUnbind',array($uri))) return false;
         if (!$this->broadcastEvent('beforeBind',array($moveInfo['destination']))) return false;
         $this->tree->move($uri,$moveInfo['destination']);
+        $this->broadcastEvent('afterUnbind',array($uri));
         $this->broadcastEvent('afterBind',array($moveInfo['destination']));
 
         // If a resource was overwritten we should send a 204, otherwise a 201
@@ -1465,6 +1470,7 @@ class Sabre_DAV_Server {
         $this->tree->markDirty($dir);
 
         $this->broadcastEvent('afterBind',array($uri));
+        $this->broadcastEvent('afterCreateFile',array($uri, &$data, $parent));
 
         return true;
     }

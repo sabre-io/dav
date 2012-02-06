@@ -18,6 +18,7 @@
  * The following RRULE properties are supported
  *   * UNTIL
  *   * INTERVAL
+ *   * COUNT
  *   * FREQ=DAILY
  *     * BYDAY
  *   * FREQ=WEEKLY
@@ -702,7 +703,9 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             // We need to roll over to the next week
             if ($currentDay === $firstDay) {
                 $this->currentDate->modify('+' . $this->interval . ' weeks');
-                $this->currentDate->modify('last ' . $this->dayNames[$this->dayMap[$this->weekStart]]);
+
+                // We need to go to the first day of this week
+                $this->currentDate->modify($this->dayNames[$this->dayMap[$this->weekStart]] . ' this week');
             }
 
             // We have a match

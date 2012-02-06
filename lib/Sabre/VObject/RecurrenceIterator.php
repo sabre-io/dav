@@ -704,8 +704,11 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             if ($currentDay === $firstDay) {
                 $this->currentDate->modify('+' . $this->interval . ' weeks');
 
-                // We need to go to the first day of this week
-                $this->currentDate->modify($this->dayNames[$this->dayMap[$this->weekStart]] . ' this week');
+                // We need to go to the first day of this week, but only if we 
+                // are not already on this first day of this week.
+                if($this->currentDate->format('w') != $firstDay) { 
+                    $this->currentDate->modify('last ' . $this->dayNames[$this->dayMap[$this->weekStart]]);
+                }
             }
 
             // We have a match

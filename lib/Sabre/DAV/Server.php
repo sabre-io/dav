@@ -821,7 +821,7 @@ class Sabre_DAV_Server {
 
             $node->put($body);
 
-            $this->broadcastEvent('afterWriteContent',array($uri, $node, &$body));
+            $this->broadcastEvent('afterWriteContent',array($uri, $node));
 
             $this->httpResponse->setHeader('Content-Length','0');
             $this->httpResponse->sendStatus(204);
@@ -1470,7 +1470,7 @@ class Sabre_DAV_Server {
         $this->tree->markDirty($dir);
 
         $this->broadcastEvent('afterBind',array($uri));
-        $this->broadcastEvent('afterCreateFile',array($uri, &$data, $parent));
+        $this->broadcastEvent('afterCreateFile',array($uri, $parent));
 
         return true;
     }

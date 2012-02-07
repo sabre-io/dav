@@ -79,6 +79,7 @@ include 'Sabre/DAV/SimpleCollection.php';
 include 'Sabre/DAV/SimpleDirectory.php';
 include 'Sabre/DAV/XMLUtil.php';
 include 'Sabre/DAV/URLUtil.php';
+include 'Sabre/DAV/UUIDUtil.php';
 
 /* Filesystem implementation */
 include 'Sabre/DAV/FS/Node.php';

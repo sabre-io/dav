@@ -111,7 +111,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
     function testUpdatePropertiesMeCard() {
 
         $result = $this->server->updateProperties('addressbooks/user1', array(
-            '{http://calendarserver.org/ns/}me-card' => new Sabre_DAV_Property_Href('addressbooks/user1/book1/vcard2'),
+            '{http://calendarserver.org/ns/}me-card' => new Sabre_DAV_Property_Href('/addressbooks/user1/book1/vcard2',true),
         ));
 
         $this->assertEquals(

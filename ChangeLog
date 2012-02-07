@@ -15,6 +15,8 @@
 	* BC Break: Sabre_CalDAV_Server is now deprecated, check out the
 	  documentation on how to setup a caldav server with just
 	  Sabre_DAV_Server.
+	* BC Break: Default Principals PDO backend now needs a new field in the
+	  'principals' table. See the website for details.
 	* Added: Ability to create new calendars and addressbooks from within the
 	  browser plugin.
 	* Added: Browser plugin: icons for various nodes.
@@ -37,6 +39,8 @@
 	* Added: An includes.php file in every sub-package (CalDAV, CardDAV, DAV,
 	  DAVACL, HTTP, VObject) as an alternative to the autoloader. This often
 	  works much faster.
+	* Added: Support for the 'Me card', which allows Addressbook.app users
+	  specify which vcard is their own.
 	* Changed: Major refactoring in the calendar-query REPORT code. Should
 	  make things more flexible and correct.
 	* Changed: The calendar-proxy-[read|write] principals will now only appear

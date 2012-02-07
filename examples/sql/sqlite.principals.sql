@@ -1,16 +1,17 @@
 CREATE TABLE principals (
-	id INTEGER PRIMARY KEY ASC,
-	uri TEXT,
-	email TEXT,
-	displayname TEXT,
-	UNIQUE(uri)
+    id INTEGER PRIMARY KEY ASC,
+    uri TEXT,
+    email TEXT,
+    displayname TEXT,
+    vcardurl TEXT,
+    UNIQUE(uri)
 );
 
 CREATE TABLE groupmembers (
-	id INTEGER PRIMARY KEY ASC,
-	principal_id INTEGER,
-	member_id INTEGER,
-	UNIQUE(principal_id, member_id)
+    id INTEGER PRIMARY KEY ASC,
+    principal_id INTEGER,
+    member_id INTEGER,
+    UNIQUE(principal_id, member_id)
 );
 
 

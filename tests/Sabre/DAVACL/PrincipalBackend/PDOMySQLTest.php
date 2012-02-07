@@ -16,6 +16,7 @@ create table principals (
 	uri varchar(50),
     email varchar(80),
     displayname VARCHAR(80),
+    vcardurl VARCHAR(80),
 	unique(uri)
 );");
 

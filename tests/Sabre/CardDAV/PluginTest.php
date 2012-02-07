@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 
 class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
@@ -36,6 +37,25 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
         $this->assertEquals(1, count($result));
         $this->assertTrue(isset($result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set']));
         $this->assertEquals('addressbooks/user1/', $result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set']->getHref());
+
+    }
+
+    function testMeCardTest() {
+
+        $result = $this->server->getProperties(
+            'addressbooks/user1',
+            array(
+                '{http://calendarserver.org/ns/}me-card',
+            )
+        );
+
+        $this->assertEquals(
+            array(
+                '{http://calendarserver.org/ns/}me-card' =>  
+                    new Sabre_DAV_Property_Href('addressbooks/user1/book1/vcard1.vcf') 
+            ),
+            $result
+        );
 
     }
 
@@ -88,4 +108,39 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
     }
 
+    function testUpdatePropertiesMeCard() {
+
+        $result = $this->server->updateProperties('addressbooks/user1', array(
+            '{http://calendarserver.org/ns/}me-card' => new Sabre_DAV_Property_Href('addressbooks/user1/book1/vcard2'),
+        ));
+
+        $this->assertEquals(
+            array(
+                'href' => 'addressbooks/user1',
+                403 => array(
+                    '{http://calendarserver.org/ns/}me-card' => null,
+                ),
+            ),
+            $result
+        );
+
+    }
+
+    function testUpdatePropertiesMeCardBadValue() {
+
+        $result = $this->server->updateProperties('addressbooks/user1', array(
+            '{http://calendarserver.org/ns/}me-card' => new Sabre_DAV_Property_HrefList(array()),
+        ));
+
+        $this->assertEquals(
+            array(
+                'href' => 'addressbooks/user1',
+                400 => array(
+                    '{http://calendarserver.org/ns/}me-card' => null,
+                ),
+            ),
+            $result
+        );
+
+    }
 }

@@ -39,6 +39,39 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     protected $groupMembersTableName;
 
     /**
+     * A list of additional fields to support
+     *
+     * @var array
+     */
+    protected $fieldMap = array(
+
+        /**
+         * This property can be used to display the users' real name.
+         */
+        '{DAV:}displayname' => array(
+            'dbField' => 'displayname',
+        ),
+
+        /**
+         * This property is actually used by the CardDAV plugin, where it gets
+         * mapped to {http://calendarserver.orgi/ns/}me-card.
+         *
+         * The reason we don't straight-up use that property, is because
+         * me-card is defined as a property on the users' addressbook
+         * collection.
+         */
+        '{http://sabredav.org/ns}vcard-url' => array(
+            'dbField' => 'vcardurl',
+        ),
+        /**
+         * This is the users' primary email-address.
+         */
+        '{http://sabredav.org/ns}email-address' => array(
+            'dbField' => 'email',
+        ),
+    );
+
+    /**
      * Sets up the backend.
      *
      * @param PDO $pdo
@@ -71,7 +104,15 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
      * @return array
      */
     public function getPrincipalsByPrefix($prefixPath) {
-        $result = $this->pdo->query('SELECT uri, email, displayname FROM `'. $this->tableName . '`');
+
+        $fields = array(
+            'uri',
+        );
+
+        foreach($this->fieldMap as $key=>$value) {
+            $fields[] = $value['dbField'];
+        }
+        $result = $this->pdo->query('SELECT '.implode(',', $fields).'  FROM `'. $this->tableName . '`');
 
         $principals = array();
 
@@ -81,11 +122,15 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
             list($rowPrefix) = Sabre_DAV_URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
-            $principals[] = array(
+            $principal = array(
                 'uri' => $row['uri'],
-                '{DAV:}displayname' => $row['displayname']?$row['displayname']:basename($row['uri']),
-                '{http://sabredav.org/ns}email-address' => $row['email'],
             );
+            foreach($this->fieldMap as $key=>$value) {
+                if ($row[$value['dbField']]) {
+                    $principal[$key] = $row[$value['dbField']];
+                }
+            }
+            $principals[] = $principal;
 
         }
 
@@ -103,18 +148,30 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
      */
     public function getPrincipalByPath($path) {
 
-        $stmt = $this->pdo->prepare('SELECT id, uri, email, displayname FROM `'.$this->tableName.'` WHERE uri = ?');
+        $fields = array(
+            'id',
+            'uri',
+        );
+
+        foreach($this->fieldMap as $key=>$value) {
+            $fields[] = $value['dbField'];
+        }
+        $stmt = $this->pdo->prepare('SELECT '.implode(',', $fields).'  FROM `'. $this->tableName . '` WHERE uri = ?');
         $stmt->execute(array($path));
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return;
 
-        return array(
+        $principal = array(
             'id'  => $row['id'],
             'uri' => $row['uri'],
-            '{DAV:}displayname' => $row['displayname']?$row['displayname']:basename($row['uri']),
-            '{http://sabredav.org/ns}email-address' => $row['email'],
         );
+        foreach($this->fieldMap as $key=>$value) {
+            if ($row[$value['dbField']]) {
+                $principal[$key] = $row[$value['dbField']];
+            }
+        }
+        return $principal;
 
     }
 

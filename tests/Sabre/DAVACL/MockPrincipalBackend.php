@@ -12,6 +12,7 @@ class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBacken
                     'uri' => 'principals/user1',
                     '{DAV:}displayname' => 'User 1',
                     '{http://sabredav.org/ns}email-address' => 'user1.sabredav@sabredav.org',
+                    '{http://sabredav.org/ns}vcard-url' => 'addressbooks/user1/book1/vcard1.vcf',
                 ),
                 array(
                     'uri' => 'principals/admin',

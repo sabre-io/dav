@@ -73,7 +73,7 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
         $result = $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
-        $this->assertEquals(false,$result);
+        $this->assertEquals(true,$result);
 
     }
 
@@ -189,4 +189,13 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
         $principal->setACL(array());
 
     }
+
+    public function testGetSupportedPrivilegeSet() {
+
+        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertNull($principal->getSupportedPrivilegeSet());
+
+    }
+
 }

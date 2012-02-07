@@ -117,4 +117,56 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
 
     }
 
+    function testUpdatePrincipal() {
+
+        $pdo = $this->getPDO();
+        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+
+        $result = $backend->updatePrincipal('principals/user', array(
+            '{DAV:}displayname' => 'pietje',
+            '{http://sabredav.org/ns}vcard-url' => 'blabla',
+        ));
+
+        $this->assertTrue($result);
+
+        $this->assertEquals(array(
+            'id' => 1,
+            'uri' => 'principals/user',
+            '{DAV:}displayname' => 'pietje',
+            '{http://sabredav.org/ns}vcard-url' => 'blabla',
+            '{http://sabredav.org/ns}email-address' => 'user@example.org',
+        ), $backend->getPrincipalByPath('principals/user'));
+
+    }
+
+    function testUpdatePrincipalUnknownField() {
+
+        $pdo = $this->getPDO();
+        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+
+        $result = $backend->updatePrincipal('principals/user', array(
+            '{DAV:}displayname' => 'pietje',
+            '{http://sabredav.org/ns}vcard-url' => 'blabla',
+            '{DAV:}unknown' => 'foo',
+        ));
+
+        $this->assertEquals(array(
+            424 => array(
+                '{DAV:}displayname' => null,
+                '{http://sabredav.org/ns}vcard-url' => null,
+            ),
+            403 => array(
+                '{DAV:}unknown' => null,
+            ),
+        ), $result); 
+
+        $this->assertEquals(array(
+            'id' => '1',
+            'uri' => 'principals/user',
+            '{DAV:}displayname' => 'User',
+            '{http://sabredav.org/ns}email-address' => 'user@example.org',
+        ), $backend->getPrincipalByPath('principals/user'));
+
+    }
+
 }

@@ -182,16 +182,14 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
 
     /**
      * Updates this principals properties.
-     *
-     * Currently this is not supported
-     *
-     * @param array $properties
+     * 
+     * @param array $mutations
      * @see Sabre_DAV_IProperties::updateProperties
      * @return bool|array
      */
-    public function updateProperties($properties) {
+    public function updateProperties($mutations) {
 
-        return false;
+        return $this->principalBackend->updatePrincipal($this->principalProperties['uri'], $mutations);
 
     }
 

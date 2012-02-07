@@ -117,7 +117,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
         $this->assertEquals(
             array(
                 'href' => 'addressbooks/user1',
-                403 => array(
+                200 => array(
                     '{http://calendarserver.org/ns/}me-card' => null,
                 ),
             ),

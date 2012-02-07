@@ -41,6 +41,8 @@
 	  works much faster.
 	* Added: Support for the 'Me card', which allows Addressbook.app users
 	  specify which vcard is their own.
+	* Added: Support for updating principal properties in the DAVACL principal
+	  backends.
 	* Changed: Major refactoring in the calendar-query REPORT code. Should
 	  make things more flexible and correct.
 	* Changed: The calendar-proxy-[read|write] principals will now only appear

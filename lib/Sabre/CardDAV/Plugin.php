@@ -204,6 +204,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($value instanceof Sabre_DAV_Property_IHref) {
             $value = $value->getHref();
+            $value = $this->server->calculateUri($value);
         } elseif (!is_null($value)) {
             $result[400][$meCard] = null;
             return false;

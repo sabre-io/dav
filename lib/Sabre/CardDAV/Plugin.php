@@ -66,7 +66,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}addressbook-home-set';
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-collation-set';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre_CalDAV_Property_Href';
+        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre_DAV_Property_Href';
 
         $this->server = $server;
 

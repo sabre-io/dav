@@ -97,6 +97,7 @@
 	  default PHP timezone.
 	* Added: Now a Composer package (thanks willdurand).
 	* Fixed: Support for \N as a newline character in the VObject reader.
+	* Added: afterWriteContent, afterCreateFile and afterUnbind events.
 
 1.5.7-stable (2012-??-??)
 	* Fixed: VObject properties are now always encoded before components.

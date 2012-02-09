@@ -110,6 +110,7 @@
 	* Added: Made it optional to supply carddata from an Addressbook backend
 	  when requesting getCards. This can make some operations much faster, and
 	  could result in much lower memory use.
+	* Fixed: Issue 191: beforeUnlock was triggered twice.
 
 
 1.5.6-stable (2012-01-07)

@@ -231,6 +231,20 @@ class Sabre_VObject_ReaderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('paramvalue', $result->parameters[0]->value);
 
     }
+    function testReadPropertyParameterNewLines() {
+
+        $data = "PROPNAME;PARAMNAME=paramvalue1\\nvalue2\\\\nvalue3:propValue";
+        $result = Sabre_VObject_Reader::read($data);
+
+        $this->assertInstanceOf('Sabre_VObject_Property', $result);
+        $this->assertEquals('PROPNAME', $result->name);
+        $this->assertEquals('propValue', $result->value);
+
+        $this->assertEquals(1, count($result->parameters));
+        $this->assertEquals('PARAMNAME', $result->parameters[0]->name);
+        $this->assertEquals("paramvalue1\nvalue2\\nvalue3", $result->parameters[0]->value);
+
+    }
 
     function testReadPropertyParameterQuotedColon() {
 

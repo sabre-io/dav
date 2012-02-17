@@ -563,6 +563,11 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
+        if (!is_null($this->count) && $this->counter >= $this->count) {
+            $this->currentDate = null;
+        }
+
+
         $previousStamp = $this->currentDate->getTimeStamp();
 
         while(true) {
@@ -623,6 +628,12 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             break;
 
+        }
+
+        if (!is_null($this->until)) {
+            if($this->currentDate > $this->until) {
+                $this->currentDate = null;
+            }
         }
 
         $this->counter++;

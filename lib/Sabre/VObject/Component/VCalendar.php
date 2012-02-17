@@ -97,7 +97,7 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
             $it = new Sabre_VObject_RecurrenceIterator($this, $vevent->uid);
             $it->fastForward($start);
 
-            while($it->getDTStart() < $end) {
+            while($it->valid() && $it->getDTStart() < $end) {
 
                 if ($it->getDTEnd() > $start) {
 
@@ -113,8 +113,7 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
 
         foreach($newEvents as $newEvent) {
 
-            // Setting all date and time properties to UTC
-            foreach($newEvent->children() as $child) {
+            foreach($newEvent->children as $child) {
                 if ($child instanceof Sabre_VObject_Property_DateTime &&
                     $child->getDateType() == Sabre_VObject_Property_DateTime::LOCALTZ) {
                         $child->setDateTime($child->getDateTime(),Sabre_VObject_Property_DateTime::UTC);

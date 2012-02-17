@@ -140,7 +140,16 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
      */
     public function getCalendarObjects($calendarId) {
 
-        return isset($this->calendarData[$calendarId])?$this->calendarData[$calendarId]:array();
+        if (!isset($this->calendarData[$calendarId]))
+            return array();
+
+        $objects = $this->calendarData[$calendarId];
+        foreach($objects as $uri => &$object) {
+            $object['calendarid'] = $calendarId;
+            $object['uri'] = $uri;
+
+        }
+        return $objects;
 
     }
 
@@ -161,7 +170,10 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
         if (!isset($this->calendarData[$calendarId][$objectUri])) {
             throw new Sabre_DAV_Exception_NotFound('Object could not be found');
         }
-        return $this->calendarData[$calendarId][$objectUri];
+        $object = $this->calendarData[$calendarId][$objectUri];
+        $object['calendarid'] = $calendarid;
+        $object['uri'] = $objectUri;
+        return $object;
 
     }
 

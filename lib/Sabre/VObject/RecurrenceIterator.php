@@ -446,6 +446,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function getDtStart() {
 
+        if (!$this->valid()) return null;
         return clone $this->currentDate;
 
     }
@@ -458,6 +459,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function getDtEnd() {
 
+        if (!$this->valid()) return null;
         $dtEnd = clone $this->currentDate;
         $dtEnd->add( $this->startDate->diff( $this->endDate ) );
         return clone $dtEnd;
@@ -563,9 +565,10 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function next() {
 
+        /*
         if (!is_null($this->count) && $this->counter >= $this->count) {
             $this->currentDate = null;
-        }
+        }*/
 
 
         $previousStamp = $this->currentDate->getTimeStamp();
@@ -630,11 +633,12 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         }
 
+        /*
         if (!is_null($this->until)) {
             if($this->currentDate > $this->until) {
                 $this->currentDate = null;
             }
-        }
+        }*/
 
         $this->counter++;
 

@@ -171,7 +171,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
             throw new Sabre_DAV_Exception_NotFound('Object could not be found');
         }
         $object = $this->calendarData[$calendarId][$objectUri];
-        $object['calendarid'] = $calendarid;
+        $object['calendarid'] = $calendarId;
         $object['uri'] = $objectUri;
         return $object;
 

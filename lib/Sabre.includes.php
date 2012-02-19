@@ -21,7 +21,6 @@
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 
-/* Utilities */
 include 'Sabre/HTTP/includes.php';
 include 'Sabre/DAV/includes.php';
 

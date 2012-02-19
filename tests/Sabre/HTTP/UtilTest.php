@@ -14,11 +14,11 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
 
         foreach($times as $time) {
             $result = Sabre_HTTP_Util::parseHTTPDate($time);
-            $this->assertEquals($expected, $result->getTimeStamp());
+            $this->assertEquals($expected, $result->format('U'));
         }
 
         $result = Sabre_HTTP_Util::parseHTTPDate('Wed Oct  6 10:26:00 2010');
-        $this->assertEquals(1286360760, $result->getTimeStamp());
+        $this->assertEquals(1286360760, $result->format('U'));
 
     }
 

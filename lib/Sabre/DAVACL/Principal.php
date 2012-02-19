@@ -237,7 +237,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
         return array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => '{DAV:}authenticated',
+                'principal' => $this->getPrincipalUrl(),
                 'protected' => true,
             ),
         );

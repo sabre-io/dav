@@ -172,7 +172,7 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => '{DAV:}authenticated',
+                'principal' => 'principals/admin',
                 'protected' => true,
             )
         ),$principal->getACL());

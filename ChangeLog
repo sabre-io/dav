@@ -4,8 +4,8 @@
 	  implement the getSupportedPrivilegeSet method. See website for details.
 	* BC Break: Moved functions from Sabre_CalDAV_XMLUtil to
 	  Sabre_VObject_DateTimeParser.
-	* BC Break: The Sabre_DAVACL_IPrincipalCollection now has a new method:
-	  'searchPrincipals'.
+	* BC Break: The Sabre_DAVACL_IPrincipalCollection now has two new methods:
+	  'searchPrincipals' and 'updatePrincipal'.
 	* BC Break: Sabre_DAV_ILockable is removed and all related per-node
 	  locking functionality.
 	* BC Break: Sabre_DAV_Exception_FileNotFound is now deprecated in favor of

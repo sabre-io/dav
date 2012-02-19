@@ -53,7 +53,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function getAddressBooksForUser($principalUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, uri, displayname, principaluri, description, ctag FROM `'.$this->addressBooksTableName.'` WHERE principaluri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, displayname, principaluri, description, ctag FROM '.$this->addressBooksTableName.' WHERE principaluri = ?');
         $stmt->execute(array($principalUri));
 
         $addressBooks = array();
@@ -115,7 +115,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
             return false;
         }
 
-        $query = 'UPDATE `' . $this->addressBooksTableName . '` SET ctag = ctag + 1 ';
+        $query = 'UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 ';
         foreach($updates as $key=>$value) {
             $query.=', `' . $key . '` = :' . $key . ' ';
         }
@@ -162,7 +162,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
 
         }
 
-        $query = 'INSERT INTO `' . $this->addressBooksTableName . '` (uri, displayname, description, principaluri, ctag) VALUES (:uri, :displayname, :description, :principaluri, 1)';
+        $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, ctag) VALUES (:uri, :displayname, :description, :principaluri, 1)';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
 
@@ -176,10 +176,10 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function deleteAddressBook($addressBookId) {
 
-        $stmt = $this->pdo->prepare('DELETE FROM `' . $this->cardsTableName . '` WHERE addressbookid = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
         $stmt->execute(array($addressBookId));
 
-        $stmt = $this->pdo->prepare('DELETE FROM `' . $this->addressBooksTableName . '` WHERE id = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
         $stmt->execute(array($addressBookId));
 
     }
@@ -205,7 +205,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function getCards($addressbookId) {
 
-        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM `' . $this->cardsTableName . '` WHERE addressbookid = ?');
+        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
         $stmt->execute(array($addressbookId));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -225,7 +225,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function getCard($addressBookId, $cardUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM `' . $this->cardsTableName . '` WHERE addressbookid = ? AND uri = ? LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ? LIMIT 1');
         $stmt->execute(array($addressBookId, $cardUri));
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -244,11 +244,11 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function createCard($addressBookId, $cardUri, $cardData) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO `' . $this->cardsTableName . '` (carddata, uri, lastmodified, addressbookid) VALUES (?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->cardsTableName . ' (carddata, uri, lastmodified, addressbookid) VALUES (?, ?, ?, ?)');
 
         $result = $stmt->execute(array($cardData, $cardUri, time(), $addressBookId));
 
-        $stmt2 = $this->pdo->prepare('UPDATE `' . $this->addressBooksTableName . '` SET ctag = ctag + 1 WHERE id = ?');
+        $stmt2 = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 WHERE id = ?');
         $stmt2->execute(array($addressBookId));
 
         return $result;
@@ -265,10 +265,10 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function updateCard($addressBookId, $cardUri, $cardData) {
 
-        $stmt = $this->pdo->prepare('UPDATE `' . $this->cardsTableName . '` SET carddata = ?, lastmodified = ? WHERE uri = ? AND addressbookid =?');
+        $stmt = $this->pdo->prepare('UPDATE ' . $this->cardsTableName . ' SET carddata = ?, lastmodified = ? WHERE uri = ? AND addressbookid =?');
         $stmt->execute(array($cardData, time(), $cardUri, $addressBookId));
 
-        $stmt2 = $this->pdo->prepare('UPDATE `' . $this->addressBooksTableName . '` SET ctag = ctag + 1 WHERE id = ?');
+        $stmt2 = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 WHERE id = ?');
         $stmt2->execute(array($addressBookId));
 
         return $stmt->rowCount()===1;
@@ -284,10 +284,10 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
      */
     public function deleteCard($addressBookId, $cardUri) {
 
-        $stmt = $this->pdo->prepare('DELETE FROM `' . $this->cardsTableName . '` WHERE addressbookid = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ?');
         $stmt->execute(array($addressBookId, $cardUri));
 
-        $stmt2 = $this->pdo->prepare('UPDATE `' . $this->addressBooksTableName . '` SET ctag = ctag + 1 WHERE id = ?');
+        $stmt2 = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 WHERE id = ?');
         $stmt2->execute(array($addressBookId));
 
         return $stmt->rowCount()===1;

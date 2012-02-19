@@ -52,7 +52,7 @@ class Sabre_DAV_Auth_Backend_PDO extends Sabre_DAV_Auth_Backend_AbstractDigest {
      */
     public function getDigestHash($realm,$username) {
 
-        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM `'.$this->tableName.'` WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM '.$this->tableName.' WHERE username = ?');
         $stmt->execute(array($username));
         $result = $stmt->fetchAll();
 

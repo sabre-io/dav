@@ -98,6 +98,10 @@
 	* Added: Now a Composer package (thanks willdurand).
 	* Fixed: Support for \N as a newline character in the VObject reader.
 	* Added: afterWriteContent, afterCreateFile and afterUnbind events.
+	* Added: Postgresql example files. Not part of the unittests though, so
+	  use at your own risk.
+	* Fixed: Issue 182: Removed backticks from sql queries, so it will work
+	  with Postgres.
 
 1.5.7-stable (2012-02-19)
 	* Fixed: VObject properties are now always encoded before components.

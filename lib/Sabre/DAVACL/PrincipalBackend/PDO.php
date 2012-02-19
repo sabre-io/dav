@@ -112,7 +112,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         foreach($this->fieldMap as $key=>$value) {
             $fields[] = $value['dbField'];
         }
-        $result = $this->pdo->query('SELECT '.implode(',', $fields).'  FROM `'. $this->tableName . '`');
+        $result = $this->pdo->query('SELECT '.implode(',', $fields).'  FROM '. $this->tableName);
 
         $principals = array();
 
@@ -156,7 +156,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         foreach($this->fieldMap as $key=>$value) {
             $fields[] = $value['dbField'];
         }
-        $stmt = $this->pdo->prepare('SELECT '.implode(',', $fields).'  FROM `'. $this->tableName . '` WHERE uri = ?');
+        $stmt = $this->pdo->prepare('SELECT '.implode(',', $fields).'  FROM '. $this->tableName . ' WHERE uri = ?');
         $stmt->execute(array($path));
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -301,7 +301,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
      */
     public function searchPrincipals($prefixPath, array $searchProperties) {
 
-        $query = 'SELECT uri FROM `' . $this->tableName . '` WHERE 1=1 ';
+        $query = 'SELECT uri FROM ' . $this->tableName . ' WHERE 1=1 ';
         $values = array();
         foreach($searchProperties as $property => $value) {
 
@@ -351,7 +351,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) throw new Sabre_DAV_Exception('Principal not found');
 
-        $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM `'.$this->groupMembersTableName.'` AS groupmembers LEFT JOIN `'.$this->tableName.'` AS principals ON groupmembers.member_id = principals.id WHERE groupmembers.principal_id = ?');
+        $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM '.$this->groupMembersTableName.' AS groupmembers LEFT JOIN '.$this->tableName.' AS principals ON groupmembers.member_id = principals.id WHERE groupmembers.principal_id = ?');
         $stmt->execute(array($principal['id']));
 
         $result = array();
@@ -373,7 +373,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) throw new Sabre_DAV_Exception('Principal not found');
 
-        $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM `'.$this->groupMembersTableName.'` AS groupmembers LEFT JOIN `'.$this->tableName.'` AS principals ON groupmembers.principal_id = principals.id WHERE groupmembers.member_id = ?');
+        $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM '.$this->groupMembersTableName.' AS groupmembers LEFT JOIN '.$this->tableName.' AS principals ON groupmembers.principal_id = principals.id WHERE groupmembers.member_id = ?');
         $stmt->execute(array($principal['id']));
 
         $result = array();
@@ -396,7 +396,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     public function setGroupMemberSet($principal, array $members) {
 
         // Grabbing the list of principal id's.
-        $stmt = $this->pdo->prepare('SELECT id, uri FROM `'.$this->tableName.'` WHERE uri IN (? ' . str_repeat(', ? ', count($members)) . ');');
+        $stmt = $this->pdo->prepare('SELECT id, uri FROM '.$this->tableName.' WHERE uri IN (? ' . str_repeat(', ? ', count($members)) . ');');
         $stmt->execute(array_merge(array($principal), $members));
 
         $memberIds = array();
@@ -412,12 +412,12 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         if (!$principalId) throw new Sabre_DAV_Exception('Principal not found');
 
         // Wiping out old members
-        $stmt = $this->pdo->prepare('DELETE FROM `'.$this->groupMembersTableName.'` WHERE principal_id = ?;');
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->groupMembersTableName.' WHERE principal_id = ?;');
         $stmt->execute(array($principalId));
 
         foreach($memberIds as $memberId) {
 
-            $stmt = $this->pdo->prepare('INSERT INTO `'.$this->groupMembersTableName.'` (principal_id, member_id) VALUES (?, ?);');
+            $stmt = $this->pdo->prepare('INSERT INTO '.$this->groupMembersTableName.' (principal_id, member_id) VALUES (?, ?);');
             $stmt->execute(array($principalId, $memberId));
 
         }

@@ -1,4 +1,4 @@
-1.5.7-stable (2012-??-??)
+1.5.7-stable (2012-02-19)
 	* Fixed: VObject properties are now always encoded before components.
 	* Fixed: Sabre_DAVACL had issues with multiple levels of privilege
 	  aggregration.
@@ -9,7 +9,7 @@
 	* Added: Made it optional to supply carddata from an Addressbook backend
 	  when requesting getCards. This can make some operations much faster, and
 	  could result in much lower memory use.
-	* Fixed: Issue 187: Sabre_DAV_UUIDUtil was missing from includes file. 
+	* Fixed: Issue 187: Sabre_DAV_UUIDUtil was missing from includes file.
 	* Fixed: Issue 191: beforeUnlock was triggered twice.
 
 1.5.6-stable (2012-01-07)

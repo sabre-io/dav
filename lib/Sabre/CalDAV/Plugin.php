@@ -516,6 +516,29 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * Tries to find X-LIC-LOCATION in the VTIMEZONE object to be used instead as a TZID that DateTimeZone can interpret
+     *
+     * @param SimpleXMLElement $xml Event as xml object
+     * @param string $tzid Timezone ID that needs to be transformed to an interpretable ID
+     */
+    private function findTimeZoneID(SimpleXMLElement $xml,$tzid) {
+        // FIXME: This is a quick hack. Maybe this can be formulated in a more general way
+        $xvtimezone = $xml->xpath('/c:iCalendar/c:vcalendar/c:vtimezone');
+            
+        if (!count($xvtimezone)) {
+            throw new Sabre_DAV_Exception_BadRequest('No VTIMEZONE object found in calendar object');
+        }
+        foreach($xvtimezone as $vtimezone) {
+            if (((string)$vtimezone->{'tzid'}) == $tzid) {
+                if (isset($vtimezone->{'x-lic-location'})) {
+                    $tzid = (string)$vtimezone->{'x-lic-location'};
+                }
+            }
+        }
+	return $tzid;
+    }
+
+    /**
      * Checks whether a time-range filter matches an event.
      * 
      * @param SimpleXMLElement $xml Event as xml object 
@@ -540,7 +563,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Determining the timezone
         if ($tzid = (string)$xdtstart[0]['tzid']) {
-            $tz = new DateTimeZone($tzid);
+            try {
+                $tz = new DateTimeZone($tzid);
+            } catch (Exception $e) {
+                $tzid = $this->findTimeZoneID($xml, $tzid);
+                $tz = new DateTimeZone($tzid);
+            }
         } else {
             $tz = null;
         }
@@ -558,7 +586,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (count($xdtend)) {
             // Determining the timezone
             if ($tzid = (string)$xdtend[0]['tzid']) {
-                $tz = new DateTimeZone($tzid);
+                try {
+                    $tz = new DateTimeZone($tzid);
+                } catch (Exception $e) {
+                    $tzid = $this->findTimeZoneID($xml, $tzid);
+                    $tz = new DateTimeZone($tzid);
+                }
             } else {
                 $tz = null;
             }

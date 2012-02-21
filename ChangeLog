@@ -1,3 +1,7 @@
+1.5.8-stable (2012-??-??)
+	* Fixed: Issue 95: Another timezone parsing issue, this time in
+	  calendar-query.
+
 1.5.7-stable (2012-02-19)
 	* Fixed: VObject properties are now always encoded before components.
 	* Fixed: Sabre_DAVACL had issues with multiple levels of privilege

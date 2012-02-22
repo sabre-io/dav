@@ -19,6 +19,6 @@ class Sabre_DAVACL_Version {
     /**
      * Stability : alpha, beta, stable
      */
-    const STABILITY = 'alpha';
+    const STABILITY = 'stable';
 
 }

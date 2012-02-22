@@ -1,4 +1,4 @@
-1.5.8-stable (2012-??-??)
+1.5.8-stable (2012-02-22)
 	* Fixed: Issue 95: Another timezone parsing issue, this time in
 	  calendar-query.
 

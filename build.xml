@@ -179,6 +179,7 @@
         <copy todir="build/SabreDAV" includeemptydirs="true">
             <fileset dir=".">
                 <include name="lib/**/*.php" />
+                <include name="lib/Sabre/DAV/Browser/assets/**" />
                 <include name="ChangeLog" />
                 <include name="LICENSE" />
                 <include name="examples/**.php" />

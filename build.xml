@@ -202,7 +202,7 @@
 
     <target name="release" depends="init,clean,test,build">
         <echo>Creating Git release tag</echo>
-        <exec command="git tag version-${sabredav.version}" checkreturn="false" passthru="1" />
+        <exec command="git tag ${sabredav.version}" checkreturn="false" passthru="1" />
         <echo>Uploading to Google Code</echo>
         <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
         <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />

@@ -902,7 +902,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
+        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status, 'Incorrect status received. Full response body:' . $this->response->body);
 
     }
 

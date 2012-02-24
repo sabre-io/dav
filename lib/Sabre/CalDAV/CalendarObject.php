@@ -90,8 +90,11 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
      */
     public function put($calendarData) {
 
-        $this->caldavBackend->updateCalendarObject($this->calendarInfo['id'],$this->objectData['uri'],$calendarData);
+        $etag = $this->caldavBackend->updateCalendarObject($this->calendarInfo['id'],$this->objectData['uri'],$calendarData);
         $this->objectData['calendardata'] = $calendarData;
+        $this->objectData['etag'] = $etag;
+
+        return $etag;
 
     }
 

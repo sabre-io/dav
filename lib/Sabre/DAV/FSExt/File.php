@@ -22,6 +22,7 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
     public function put($data) {
 
         file_put_contents($this->path,$data);
+        return '"' . md5_file($this->path) . '"';
 
     }
 

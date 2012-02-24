@@ -88,8 +88,11 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
         // Converting to UTF-8, if needed
         $cardData = Sabre_DAV_StringUtil::ensureUTF8($cardData);
 
-        $this->carddavBackend->updateCard($this->addressBookInfo['id'],$this->cardData['uri'],$cardData);
+        $etag = $this->carddavBackend->updateCard($this->addressBookInfo['id'],$this->cardData['uri'],$cardData);
         $this->cardData['carddata'] = $cardData;
+        $this->cardData['etag'] = $etag;
+
+        return $etag;
 
     }
 

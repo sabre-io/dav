@@ -26,9 +26,6 @@ class Sabre_DAV_Server {
      */
     const NODE_DIRECTORY = 2;
 
-    const PROP_SET = 1;
-    const PROP_REMOVE = 2;
-
     /**
      * XML namespace for all SabreDAV related elements
      */

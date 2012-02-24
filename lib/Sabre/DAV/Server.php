@@ -816,22 +816,25 @@ class Sabre_DAV_Server {
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
             if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
 
-            $node->put($body);
+            $etag = $node->put($body);
 
             $this->broadcastEvent('afterWriteContent',array($uri, $node));
 
             $this->httpResponse->setHeader('Content-Length','0');
+            if ($etag) $this->httpResponse->setHeader('ETag',$etag);
             $this->httpResponse->sendStatus(204);
 
         } else {
 
+            $etag = null;
             // If we got here, the resource didn't exist yet.
-            if (!$this->createFile($this->getRequestUri(),$body)) {
+            if (!$this->createFile($this->getRequestUri(),$body,$etag)) {
                 // For one reason or another the file was not created.
                 return;
             }
 
             $this->httpResponse->setHeader('Content-Length','0');
+            if ($etag) $this->httpResponse->setHeader('ETag', $etag);
             $this->httpResponse->sendStatus(201);
 
         }
@@ -1453,7 +1456,7 @@ class Sabre_DAV_Server {
      * @param resource $data
      * @return bool
      */
-    public function createFile($uri,$data) {
+    public function createFile($uri,$data, &$etag = null) {
 
         list($dir,$name) = Sabre_DAV_URLUtil::splitPath($uri);
 
@@ -1463,7 +1466,7 @@ class Sabre_DAV_Server {
 
         if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
 
-        $parent->createFile($name,$data);
+        $etag = $parent->createFile($name,$data);
         $this->tree->markDirty($dir);
 
         $this->broadcastEvent('afterBind',array($uri));

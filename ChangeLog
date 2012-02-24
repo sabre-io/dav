@@ -1,3 +1,5 @@
+1.6.1-stable (2012-??-??)
+
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3
 	* BC Break: Any node that implemented Sabre_DAVACL_IACL must now also

@@ -19,9 +19,10 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
     function testPut() {
 
        $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
-       $file->put('New contents');
+       $result = $file->put('New contents');
 
        $this->assertEquals('New contents',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
+       $this->assertEquals('"' . md5('New contents') . '"', $result);
 
     }
 

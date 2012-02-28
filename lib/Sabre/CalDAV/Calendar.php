@@ -177,6 +177,9 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
      */
     public function createFile($name,$calendarData = null) {
 
+        if (is_resource($calendarData)) {
+            $calendarData = stream_get_contents($calendarData);
+        }
         return $this->caldavBackend->createCalendarObject($this->calendarInfo['id'],$name,$calendarData);
 
     }

@@ -16,7 +16,7 @@ abstract class Sabre_DAV_Tree {
      * If a Path doesn't exist, thrown a Exception_NotFound
      *
      * @param string $path
-     * @throws Exception_NotFound
+     * @throws Sabre_DAV_Exception_NotFound
      * @return Sabre_DAV_INode
      */
     abstract function getNodeForPath($path);

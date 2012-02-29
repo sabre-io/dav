@@ -74,6 +74,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * Specify the first argument as false to disable this
      *
      * @param bool $enablePost
+     * @param bool $enableAssets
      */
     public function __construct($enablePost=true, $enableAssets = true) {
 

@@ -7,6 +7,7 @@
 	  BYDAY or BYMONTHDAY match the first day of the month.
 	* Fixed: Events that are excluded using EXDATE are still counted in the
 	  COUNT= parameter in the RRULE property.
+	* Added: Support for time-range filters on VALARM components.
 
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3

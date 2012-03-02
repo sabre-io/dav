@@ -129,6 +129,7 @@ class Sabre_CalDAV_CalendarQueryParser {
                 'VTODO',
                 'VJOURNAL',
                 'VFREEBUSY',
+                'VALARM',
             ))) {
                 throw new Sabre_DAV_Exception_BadRequest('The time-range filter is not defined for the ' . $compFilter['name'] . ' component');
             };

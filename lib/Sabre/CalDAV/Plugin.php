@@ -49,23 +49,23 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * The email handler for invites and other scheduling messages.
-     * 
-     * @var Sabre_CalDAV_Schedule_IMip 
+     *
+     * @var Sabre_CalDAV_Schedule_IMip
      */
     protected $imipHandler;
 
     /**
      * Sets the iMIP handler.
      *
-     * iMIP = The email transport of iCalendar scheduling messages. Setting 
-     * this is optional, but if you want the server to allow invites to be sent 
+     * iMIP = The email transport of iCalendar scheduling messages. Setting
+     * this is optional, but if you want the server to allow invites to be sent
      * out, you must set a handler.
      *
-     * Specifically iCal will plain assume that the server supports this. If 
-     * the server doesn't, iCal will display errors when inviting people to 
+     * Specifically iCal will plain assume that the server supports this. If
+     * the server doesn't, iCal will display errors when inviting people to
      * events.
      *
-     * @param Sabre_CalDAV_Schedule_IMip $imipHandler 
+     * @param Sabre_CalDAV_Schedule_IMip $imipHandler
      * @return void
      */
     public function setIMipHandler(Sabre_CalDAV_Schedule_IMip $imipHandler) {
@@ -487,54 +487,92 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $parser = new Sabre_CalDAV_CalendarQueryParser($dom);
         $parser->parse();
 
-        $requestedCalendarData = true;
-        $requestedProperties = $parser->requestedProperties;
+        $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
+        $depth = $this->server->getHTTPDepth(0);
 
-        if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar-data', $requestedProperties)) {
+        // The default result is an empty array
+        $result = array();
 
-            // We always retrieve calendar-data, as we need it for filtering.
-            $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
+        // The calendarobject was requested directly. In this case we handle
+        // this locally.
+        if ($depth == 0 && $node instanceof Sabre_CalDAV_ICalendarObject) {
 
-            // If calendar-data wasn't explicitly requested, we need to remove
-            // it after processing.
-            $requestedCalendarData = false;
+            $requestedCalendarData = true;
+            $requestedProperties = $parser->requestedProperties;
+
+            if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar-data', $requestedProperties)) {
+
+                // We always retrieve calendar-data, as we need it for filtering.
+                $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';
+
+                // If calendar-data wasn't explicitly requested, we need to remove
+                // it after processing.
+                $requestedCalendarData = false;
+            }
+
+            $properties = $this->server->getPropertiesForPath(
+                $this->server->getRequestUri(),
+                $requestedProperties,
+                0
+            );
+
+            // This array should have only 1 element, the first calendar
+            // object.
+            $properties = current($properties);
+
+            // If there wasn't any calendar-data returned somehow, we ignore
+            // this.
+            if (isset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) {
+
+                $validator = new Sabre_CalDAV_CalendarQueryValidator();
+                $vObject = Sabre_VObject_Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                if ($validator->validate($vObject,$parser->filters)) {
+
+                    // If the client didn't require the calendar-data property,
+                    // we won't give it back.
+                    if (!$requestedCalendarData) {
+                        unset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                    } else {
+                        if ($parser->expand) {
+                            $vObject->expand($parser->expand['start'], $parser->expand['end']);
+                            $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+                        }
+                    }
+
+                    $result = array($properties);
+
+                }
+
+            }
+
         }
+        // If we're dealing with a calendar, the calendar itself is responsible
+        // for the calendar-query.
+        if ($node instanceof Sabre_CalDAV_ICalendar && $depth = 1) {
 
-        // These are the list of nodes that potentially match the requirement
-        $candidateNodes = $this->server->getPropertiesForPath(
-            $this->server->getRequestUri(),
-            $requestedProperties,
-            $this->server->getHTTPDepth(0)
-        );
+            $nodePaths = $node->calendarQuery($parser->filters);
 
-        $verifiedNodes = array();
+            foreach($nodePaths as $path) {
 
-        $validator = new Sabre_CalDAV_CalendarQueryValidator();
+                list($properties) =
+                    $this->server->getPropertiesForPath($this->server->getRequestUri() . '/' . $path, $parser->requestedProperties);
 
-        foreach($candidateNodes as $node) {
-
-            // If the node didn't have a calendar-data property, it must not be a calendar object
-            if (!isset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']))
-                continue;
-
-            $vObject = Sabre_VObject_Reader::read($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
-            if ($validator->validate($vObject,$parser->filters)) {
-
-                if (!$requestedCalendarData) {
-                    unset($node[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
-                }
                 if ($parser->expand) {
+                    // We need to do some post-processing
+                    $vObject = Sabre_VObject_Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                     $vObject->expand($parser->expand['start'], $parser->expand['end']);
-                    $node[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+                    $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                 }
-                $verifiedNodes[] = $node;
+
+                $result[] = $properties;
+
             }
 
         }
 
         $this->server->httpResponse->sendStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($verifiedNodes));
+        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($result));
 
     }
 
@@ -687,10 +725,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         if (!$originator) {
             throw new Sabre_DAV_Exception_BadRequest('The Originator: header must be specified when making POST requests');
-        } 
+        }
         if (!$recipients) {
             throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
-        } 
+        }
 
         if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
             throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
@@ -701,14 +739,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($recipients as $k=>$recipient) {
 
             $recipient = trim($recipient);
-            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) { 
+            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) {
                 throw new Sabre_DAV_Exception_BadRequest('Recipients must start with mailto: and must be valid email address');
             }
             $recipient = substr($recipient, 7);
             $recipients[$k] = $recipient;
         }
 
-        // We need to make sure that 'originator' matches one of the email 
+        // We need to make sure that 'originator' matches one of the email
         // addresses of the selected principal.
         $principal = $outboxNode->getOwner();
         $props = $this->server->getProperties($principal,array(
@@ -724,7 +762,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
         }
 
-        try { 
+        try {
             $vObject = Sabre_VObject_Reader::read($this->server->httpRequest->getBody(true));
         } catch (Sabre_VObject_ParseException $e) {
             throw new Sabre_DAV_Exception_BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
@@ -760,10 +798,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * Sends an iMIP message by email.
-     * 
-     * @param string $originator 
-     * @param array $recipients 
-     * @param Sabre_VObject_Component $vObject 
+     *
+     * @param string $originator
+     * @param array $recipients
+     * @param Sabre_VObject_Component $vObject
      * @return void
      */
     protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject) {
@@ -771,7 +809,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$this->imipHandler) {
             throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
         }
-        $this->imipHandler->sendMessage($originator, $recipients, $vObject); 
+        $this->imipHandler->sendMessage($originator, $recipients, $vObject);
 
     }
 

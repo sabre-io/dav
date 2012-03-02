@@ -85,6 +85,24 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends testSetup
      */
+    function testPutStream() {
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $newData = Sabre_CalDAV_TestUtil::getTestCalendarData();
+
+        $stream = fopen('php://temp','r+');
+        fwrite($stream, $newData);
+        rewind($stream);
+        $children[0]->put($stream);
+        $this->assertEquals($newData, $children[0]->get());
+
+    }
+
+
+    /**
+     * @depends testSetup
+     */
     function testDelete() {
 
         $children = $this->calendar->getChildren();

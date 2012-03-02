@@ -1,4 +1,4 @@
-1.6.1-stable (2012-??-??)
+1.6.1-stable (2012-03-??)
 	* Added: createFile and put() can now return an ETag.
 	* Added: Sending back an ETag on for operations on CardDAV backends. This
 	  should help with OS X 10.6 Addressbook compatibility.
@@ -8,6 +8,7 @@
 	* Fixed: Events that are excluded using EXDATE are still counted in the
 	  COUNT= parameter in the RRULE property.
 	* Added: Support for time-range filters on VALARM components.
+	* Fixed: Correctly filtering all-day events.
 
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3

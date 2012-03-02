@@ -35,6 +35,9 @@ class Sabre_VObject_Component_VEventTest extends PHPUnit_Framework_TestCase {
         $vevent4->DTSTART['VALUE'] = 'DATE';
         $tests[] = array($vevent4, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vevent4, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
+        // Event with no end date should be treated as lasting the entire day.
+        $tests[] = array($vevent4, new DateTime('2011-12-25 16:00:00'), new DateTime('2011-12-25 17:00:00'), true);
+
 
         $vevent5 = clone $vevent;
         $vevent5->DURATION = 'P1D';
@@ -42,6 +45,16 @@ class Sabre_VObject_Component_VEventTest extends PHPUnit_Framework_TestCase {
         $tests[] = array($vevent5, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vevent5, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
         $tests[] = array($vevent5, new DateTime('2013-12-01'), new DateTime('2013-12-31'), true);
+
+        $vevent6 = clone $vevent;
+        $vevent6->DTSTART = '20111225';
+        $vevent6->DTSTART['VALUE'] = 'DATE';
+        $vevent6->DTEND   = '20111225';
+        $vevent7->DTEND['VALUE'] = 'DATE';
+        $tests[] = array($vevent6, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
+        $tests[] = array($vevent6, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
+        // Event with no end date should be treated as lasting the entire day.
+        $tests[] = array($vevent6, new DateTime('2011-12-25 16:00:00'), new DateTime('2011-12-25 17:00:00'), true);
 
         return $tests;
 

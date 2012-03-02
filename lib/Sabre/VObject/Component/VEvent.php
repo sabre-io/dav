@@ -17,7 +17,7 @@ class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
      * Returns true or false depending on if the event falls in the specified
      * time-range. This is used for filtering purposes.
      *
-     * The rules used to determine if an event falls within the specified 
+     * The rules used to determine if an event falls within the specified
      * time-range is based on the CalDAV specification.
      *
      * @param DateTime $start
@@ -43,6 +43,13 @@ class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
         $effectiveStart = $this->DTSTART->getDateTime();
         if (isset($this->DTEND)) {
             $effectiveEnd = $this->DTEND->getDateTime();
+            // If this was an all-day event, we should just increase the
+            // end-date by 1. Otherwise the event will last until the second
+            // the date changed, by increasing this by 1 day the event lasts
+            // all of the last day as well.
+            if ($this->DTSTART->getDateType() == Sabre_VObject_Element_DateTime::DATE) {
+                $effectiveEnd->modify('+1 day');
+            }
         } elseif (isset($this->DURATION)) {
             $effectiveEnd = clone $effectiveStart;
             $effectiveEnd->add( Sabre_VObject_DateTimeParser::parseDuration($this->DURATION) );

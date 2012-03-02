@@ -72,9 +72,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * List of dates that are excluded from the rules.
      *
-     * This list contains both the items that are specified in the EXDATE
-     * property, as well as the ones that have been overridden by other events
-     * and RECURRENCE-ID.
+     * This list contains the items that have been overriden by the EXDATE
+     * property.
      *
      * @var array
      */
@@ -88,6 +87,14 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     public $baseEvent;
 
     /**
+     * List of dates that are overridden by other events.
+     * Similar to $overriddenEvents, but this just contains the original dates.
+     *
+     * @var array
+     */
+    public $overriddenDates = array();
+
+    /**
      * list of events that are 'overridden'.
      *
      * This is an array of Sabre_VObject_Component_VEvent objects.
@@ -95,6 +102,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * @var array
      */
     public $overriddenEvents = array();
+
 
     /**
      * Frequency is one of: secondly, minutely, hourly, daily, weekly, monthly,
@@ -309,7 +317,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             if ((string)$component->uid == $uid) {
                 if (isset($component->{'RECURRENCE-ID'})) {
                     $this->overriddenEvents[$component->DTSTART->getDateTime()->getTimeStamp()] = $component;
-                    $this->exceptionDates[] = $component->{'RECURRENCE-ID'}->getDateTime();
+                    $this->overriddenDates[] = $component->{'RECURRENCE-ID'}->getDateTime();
                 } else {
                     $this->baseEvent = $component;
                 }
@@ -609,6 +617,12 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 // Checking exception dates
                 foreach($this->exceptionDates as $exceptionDate) {
                     if ($this->currentDate == $exceptionDate) {
+                        $this->counter++;
+                        continue 2;
+                    }
+                }
+                foreach($this->overriddenDates as $overriddenDate) {
+                    if ($this->currentDate == $overriddenDate) {
                         continue 2;
                     }
                 }

@@ -859,9 +859,6 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
                 new DateTime('2018-01-01 13:50:20', $tz),
                 new DateTime('2019-01-01 13:50:20', $tz),
                 new DateTime('2020-01-01 13:50:20', $tz),
-                new DateTime('2021-01-01 13:50:20', $tz),
-                new DateTime('2022-01-01 13:50:20', $tz),
-                new DateTime('2023-01-01 13:50:20', $tz),
             ),
             $result
         );

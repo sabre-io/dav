@@ -45,10 +45,11 @@ class Sabre_VObject_RecurrenceIteratorInfiniteLoopProblemTest extends PHPUnit_Fr
 
         while($it->valid()) {
             $collect[] = $it->getDTSTART();
-            $it->next();
             if ($it->getDTSTART() > new DateTime('2013-02-05 22:59:59', new DateTimeZone('UTC'))) {
                 break;
             }
+            $it->next();
+
         }
 
         $this->assertEquals(

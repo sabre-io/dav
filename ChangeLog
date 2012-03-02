@@ -1,3 +1,9 @@
+1.7.0-alpha (201?-??-??)
+	* BC Break: The iCalendar interface now has a new method: calendarQuery.
+	* Changed: Responsibility for dealing with the calendar-query is now moved
+	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
+	  optimizations.
+
 1.6.1-stable (2012-03-??)
 	* Added: createFile and put() can now return an ETag.
 	* Added: Sending back an ETag on for operations on CardDAV backends. This

@@ -72,8 +72,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * List of dates that are excluded from the rules.
      *
-     * This list contains both the items that are specified in the EXDATE 
-     * property, as well as the ones that have been overridden by other events 
+     * This list contains both the items that are specified in the EXDATE
+     * property, as well as the ones that have been overridden by other events
      * and RECURRENCE-ID.
      *
      * @var array
@@ -81,9 +81,9 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     public $exceptionDates = array();
 
     /**
-     * Base event 
-     * 
-     * @var Sabre_VObject_Component_VEvent 
+     * Base event
+     *
+     * @var Sabre_VObject_Component_VEvent
      */
     public $baseEvent;
 
@@ -91,7 +91,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * list of events that are 'overridden'.
      *
      * This is an array of Sabre_VObject_Component_VEvent objects.
-     * 
+     *
      * @var array
      */
     public $overriddenEvents = array();
@@ -270,26 +270,26 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     );
 
     /**
-     * If the current iteration of the event is an overriden event, this 
+     * If the current iteration of the event is an overriden event, this
      * property will hold the VObject
-     * 
-     * @var Sabre_Component_VObject 
+     *
+     * @var Sabre_Component_VObject
      */
     private $currentOverriddenEvent;
 
     /**
-     * This property may contain the date of the next not-overridden event. 
-     * This date is calculated sometimes a bit early, before overridden events 
+     * This property may contain the date of the next not-overridden event.
+     * This date is calculated sometimes a bit early, before overridden events
      * are evaluated.
-     * 
-     * @var DateTime 
+     *
+     * @var DateTime
      */
     private $nextDate;
 
     /**
      * Creates the iterator
      *
-     * You should pass a VCALENDAR component, as well as the UID of the event 
+     * You should pass a VCALENDAR component, as well as the UID of the event
      * we're going to traverse.
      *
      * @param Sabre_VObject_Component $comp
@@ -315,7 +315,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 }
             }
         }
-        if (!$this->baseEvent) { 
+        if (!$this->baseEvent) {
             throw new InvalidArgumentException('Could not find a base event with uid: ' . $uid);
         }
 
@@ -469,11 +469,11 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * Returns a VEVENT object with the updated start and end date.
      *
-     * Any recurrence information is removed, and this function may return an 
+     * Any recurrence information is removed, and this function may return an
      * 'overridden' event instead.
      *
      * This method always returns a cloned instance.
-     * 
+     *
      * @return void
      */
     public function getEventObject() {
@@ -577,7 +577,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             $this->currentOverriddenEvent = null;
 
-            // If we have a next date 'stored', we use that 
+            // If we have a next date 'stored', we use that
             if ($this->nextDate) {
                 $this->currentDate = $this->nextDate;
                 $currentStamp = $this->currentDate->getTimeStamp();
@@ -719,9 +719,9 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             if ($currentDay === $firstDay) {
                 $this->currentDate->modify('+' . $this->interval . ' weeks');
 
-                // We need to go to the first day of this week, but only if we 
+                // We need to go to the first day of this week, but only if we
                 // are not already on this first day of this week.
-                if($this->currentDate->format('w') != $firstDay) { 
+                if($this->currentDate->format('w') != $firstDay) {
                     $this->currentDate->modify('last ' . $this->dayNames[$this->dayMap[$this->weekStart]]);
                 }
             }
@@ -809,6 +809,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         $currentYear = $this->currentDate->format('Y');
         $currentDayOfMonth = $this->currentDate->format('j');
 
+        $advancedToNewMonth = false;
+
         // If we got a byDay or getMonthDay filter, we must first expand
         // further.
         if ($this->byDay || $this->byMonthDay) {
@@ -821,7 +823,9 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
                     // The first occurrence that's higher than the current
                     // day of the month wins.
-                    if ($occurrence > $currentDayOfMonth) {
+                    // If we advanced to the next month or year, the first
+                    // occurence is always correct.
+                    if ($occurrence > $currentDayOfMonth || $advancedToNewMonth) {
                         break 2;
                     }
 
@@ -830,6 +834,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 // If we made it here, it means we need to advance to
                 // the next month or year.
                 $currentDayOfMonth = 1;
+                $advancedToNewMonth = true;
                 do {
 
                     $currentMonth++;

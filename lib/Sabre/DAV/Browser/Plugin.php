@@ -74,6 +74,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * Specify the first argument as false to disable this
      *
      * @param bool $enablePost
+     * @param bool $enableAssets
      */
     public function __construct($enablePost=true, $enableAssets = true) {
 
@@ -472,7 +473,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        $this->server->httpResponse->setHeader('Content-Type','image/vnd.microsoft.icon');
+        $this->server->httpResponse->setHeader('Content-Type', $mime);
         $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
         $this->server->httpResponse->sendStatus(200);

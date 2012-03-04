@@ -9,6 +9,8 @@
 	  COUNT= parameter in the RRULE property.
 	* Added: Support for time-range filters on VALARM components.
 	* Fixed: Correctly filtering all-day events.
+	* Fixed: Sending back correct mimetypes from the browser plugin (thanks
+	  Jürgen)
 
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3

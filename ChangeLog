@@ -10,7 +10,9 @@
 	* Added: Support for time-range filters on VALARM components.
 	* Fixed: Correctly filtering all-day events.
 	* Fixed: Sending back correct mimetypes from the browser plugin (thanks
-	  Jürgen)
+	  Jürgen).
+	* Fixed: Issue 195: Sabre_CardDAV pear package had an incorrect dependency.
+
 
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3

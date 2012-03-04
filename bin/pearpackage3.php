@@ -175,7 +175,7 @@ TEXT;
             'type' => 'package',
             'name' => 'Sabre',
             'channel' => 'pear.sabredav.org',
-            'min'  => '1.6.0',
+            'min'  => '1.0.0',
         );
         $dependencies[] = array(
             'type' => 'package',

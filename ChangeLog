@@ -12,6 +12,7 @@
 	* Fixed: Sending back correct mimetypes from the browser plugin (thanks
 	  Jürgen).
 	* Fixed: Issue 195: Sabre_CardDAV pear package had an incorrect dependency.
+	* Fixed: Calendardata would be destroyed when performing a MOVE request.
 
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3

@@ -1,3 +1,5 @@
+1.7.0-alpha (2012-??-??)
+
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.
 	* Added: Sending back an ETag on for operations on CardDAV backends. This

@@ -5,7 +5,8 @@ CREATE TABLE calendarobjects (
     calendarid integer,
     lastmodified integer,
     etag text,
-    size integer
+    size integer,
+    componenttype text
 );
 
 CREATE TABLE calendars (

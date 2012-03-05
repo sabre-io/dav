@@ -24,6 +24,7 @@ CREATE TABLE calendarobjects (
     uri VARCHAR(100),
     etag VARCHAR(32),
     size INTEGER NOT NULL,
+    componenttype VARCHAR(8),
     lastmodified INTEGER
 );
 

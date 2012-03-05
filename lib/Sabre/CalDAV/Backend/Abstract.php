@@ -263,7 +263,7 @@ abstract class Sabre_CalDAV_Backend_Abstract {
         // it was excluded, we actually need another call to get this as
         // well.
         if (!isset($object['calendardata'])) {
-            $object = $this->getCalendarObject($calendarId, $object['uri']);
+            $object = $this->getCalendarObject($object['calendarid'], $object['uri']);
         }
 
         $vObject = Sabre_VObject_Reader::read($object['calendardata']);

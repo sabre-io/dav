@@ -327,7 +327,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 'lastmodified' => $row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
                 'calendarid'   => $row['calendarid'],
-                'size'         => $row['size'],
+                'size'         => (int)$row['size'],
             );
         }
 
@@ -349,9 +349,11 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     public function getCalendarObject($calendarId,$objectUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, calendardata FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
         $stmt->execute(array($calendarId, $objectUri));
-        $row = $stmt->fetch();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if(!$row) return null;
 
         return array(
             'id'           => $row['id'],
@@ -359,7 +361,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             'lastmodified' => $row['lastmodified'],
             'etag'         => '"' . $row['etag'] . '"',
             'calendarid'   => $row['calendarid'],
-            'size'         => $row['size'],
+            'size'         => (int)$row['size'],
             'calendardata' => $row['calendardata'],
          );
 
@@ -439,6 +441,5 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $stmt->execute(array($calendarId));
 
     }
-
 
 }

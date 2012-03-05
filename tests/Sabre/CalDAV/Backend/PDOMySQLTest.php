@@ -14,27 +14,16 @@ class Sabre_CalDAV_Backend_PDOMySQLTest extends Sabre_CalDAV_Backend_AbstractPDO
 
         $pdo->query('DROP TABLE IF EXISTS calendarobjects, calendars');
 
-        $pdo->query('CREATE TABLE calendarobjects (
-            id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-            calendardata TEXT,
-            uri VARCHAR(100),
-            calendarid INTEGER UNSIGNED NOT NULL,
-            lastmodified DATETIME
-        );');
+        $queries = explode(
+            ';',
+            file_get_contents(__DIR__ . '/../../../../examples/sql/mysql.calendars.sql')
+        );
 
-        $pdo->query('CREATE TABLE calendars (
-            id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-            principaluri VARCHAR(100),
-            displayname VARCHAR(100),
-            uri VARCHAR(100),
-            ctag INTEGER UNSIGNED NOT NULL DEFAULT \'0\',
-            description TEXT,
-            calendarorder INTEGER UNSIGNED NOT NULL DEFAULT \'0\',
-            calendarcolor VARCHAR(10),
-            timezone TEXT,
-            components VARCHAR(20)
-        );');
-
+        foreach($queries as $query) {
+            $query = trim($query," \r\n\t");
+            if ($query)
+                $pdo->exec($query);
+        }
         $this->pdo = $pdo;
 
     }

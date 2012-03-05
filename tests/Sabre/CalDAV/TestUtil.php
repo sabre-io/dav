@@ -16,37 +16,27 @@ class Sabre_CalDAV_TestUtil {
 
         $pdo = new PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-        $pdo->query('
-CREATE TABLE calendarobjects (
-	id integer primary key asc,
-    calendardata text,
-    uri text,
-    calendarid integer,
-    lastmodified integer
-);
-');
 
-        $pdo->query('
-CREATE TABLE calendars (
-    id integer primary key asc,
-    principaluri text,
-    displayname text,
-    uri text,
-    ctag integer,
-    description text,
-	calendarorder integer,
-    calendarcolor text,
-    timezone text,
-    components text
-);');
+        // Yup this is definitely not 'fool proof', but good enough for now.
+        $queries = explode(';', file_get_contents(__DIR__ . '/../../../examples/sql/sqlite.calendars.sql'));
+        foreach($queries as $query) {
+            $pdo->exec($query);
+        }
 
         $pdo->query('INSERT INTO calendars (principaluri,displayname,uri,description,calendarorder,calendarcolor,components)
             VALUES ("principals/user1","user1 calendar","UUID-123467","Calendar description", "1", "#FF0000","VEVENT,VTODO");');
         $pdo->query('INSERT INTO calendars (principaluri,displayname,uri,description,calendarorder,calendarcolor,components)
             VALUES ("principals/user1","user1 calendar2","UUID-123468","Calendar description", "1", "#FF0000",NULL);');
 
-        $stmt = $pdo->prepare('INSERT INTO calendarobjects (calendardata, uri, calendarid, lastmodified) VALUES (?, "UUID-2345", 1, ?)');
-        $stmt->execute(array(self::getTestCalendarData(),time()));
+        $stmt = $pdo->prepare('INSERT INTO calendarobjects (calendardata, uri, calendarid, lastmodified, size, etag) VALUES (?, "UUID-2345", 1, ?, ?, ?)');
+        $calendarData = self::getTestCalendarData();
+
+        $stmt->execute(array(
+            $calendarData,
+            time(),
+            strlen($calendarData),
+            md5($calendarData)
+        ));
 
         return $pdo;
 

@@ -1452,8 +1452,9 @@ class Sabre_DAV_Server {
      *
      * This method will return true if the file was actually created
      *
-     * @param string $uri
+     * @param string   $uri
      * @param resource $data
+     * @param string   $etag
      * @return bool
      */
     public function createFile($uri,$data, &$etag = null) {

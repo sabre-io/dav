@@ -13,7 +13,6 @@
 	  Jürgen).
 	* Fixed: Issue 195: Sabre_CardDAV pear package had an incorrect dependency.
 
-
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3
 	* BC Break: Any node that implemented Sabre_DAVACL_IACL must now also

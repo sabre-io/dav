@@ -139,20 +139,36 @@ abstract class Sabre_CalDAV_Backend_Abstract {
     /**
      * Creates a new calendar object.
      *
+     * It is possible return an etag from this function, which will be used in
+     * the response to this PUT request. Note that the ETag must be surrounded
+     * by double-quotes.
+     *
+     * However, you should only really return this ETag if you don't mangle the
+     * calendar-data. If the result of a subsequent GET to this object is not
+     * the exact same as this request body, you should omit the ETag.
+     *
      * @param mixed $calendarId
      * @param string $objectUri
      * @param string $calendarData
-     * @return void
+     * @return string|null
      */
     abstract function createCalendarObject($calendarId,$objectUri,$calendarData);
 
     /**
      * Updates an existing calendarobject, based on it's uri.
      *
+     * It is possible return an etag from this function, which will be used in
+     * the response to this PUT request. Note that the ETag must be surrounded
+     * by double-quotes.
+     *
+     * However, you should only really return this ETag if you don't mangle the
+     * calendar-data. If the result of a subsequent GET to this object is not
+     * the exact same as this request body, you should omit the ETag.
+     *
      * @param mixed $calendarId
      * @param string $objectUri
      * @param string $calendarData
-     * @return void
+     * @return string|null
      */
     abstract function updateCalendarObject($calendarId,$objectUri,$calendarData);
 

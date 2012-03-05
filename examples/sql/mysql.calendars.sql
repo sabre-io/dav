@@ -4,6 +4,8 @@ CREATE TABLE calendarobjects (
     uri VARCHAR(100),
     calendarid INTEGER UNSIGNED NOT NULL,
     lastmodified INT(11),
+    etag VARCHAR(32),
+    size INT(11) UNSIGNED NOT NULL,
     UNIQUE(calendarid, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

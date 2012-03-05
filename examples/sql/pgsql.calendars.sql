@@ -22,6 +22,8 @@ CREATE TABLE calendarobjects (
     calendarid INTEGER NOT NULL,
     calendardata TEXT,
     uri VARCHAR(100),
+    etag VARCHAR(32),
+    size INTEGER NOT NULL,
     lastmodified INTEGER
 );
 

@@ -3,7 +3,9 @@ CREATE TABLE calendarobjects (
     calendardata blob,
     uri text,
     calendarid integer,
-    lastmodified integer
+    lastmodified integer,
+    etag text,
+    size integer
 );
 
 CREATE TABLE calendars (

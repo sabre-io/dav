@@ -9,7 +9,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
@@ -316,9 +316,22 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     public function getCalendarObjects($calendarId) {
 
-        $stmt = $this->pdo->prepare('SELECT * FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
         $stmt->execute(array($calendarId));
-        return $stmt->fetchAll();
+
+        $result = array();
+        foreach($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            $result[] = array(
+                'id'           => $row['id'],
+                'uri'          => $row['uri'],
+                'lastmodified' => $row['lastmodified'],
+                'etag'         => '"' . $row['etag'] . '"',
+                'calendarid'   => $row['calendarid'],
+                'size'         => $row['size'],
+            );
+        }
+
+        return $result;
 
     }
 
@@ -336,43 +349,78 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     public function getCalendarObject($calendarId,$objectUri) {
 
-        $stmt = $this->pdo->prepare('SELECT * FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
         $stmt->execute(array($calendarId, $objectUri));
-        return $stmt->fetch();
+        $row = $stmt->fetch();
+
+        return array(
+            'id'           => $row['id'],
+            'uri'          => $row['uri'],
+            'lastmodified' => $row['lastmodified'],
+            'etag'         => '"' . $row['etag'] . '"',
+            'calendarid'   => $row['calendarid'],
+            'size'         => $row['size'],
+            'calendardata' => $row['calendardata'],
+         );
 
     }
+
 
     /**
      * Creates a new calendar object.
      *
-     * @param string $calendarId
+     * It is possible return an etag from this function, which will be used in
+     * the response to this PUT request. Note that the ETag must be surrounded
+     * by double-quotes.
+     *
+     * However, you should only really return this ETag if you don't mangle the
+     * calendar-data. If the result of a subsequent GET to this object is not
+     * the exact same as this request body, you should omit the ETag.
+     *
+     * @param mixed $calendarId
      * @param string $objectUri
      * @param string $calendarData
-     * @return void
+     * @return string|null
      */
     public function createCalendarObject($calendarId,$objectUri,$calendarData) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified) VALUES (?,?,?,?)');
-        $stmt->execute(array($calendarId,$objectUri,$calendarData,time()));
+        $etag = md5($calendarData);
+
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size) VALUES (?,?,?,?,?,?)');
+        $stmt->execute(array($calendarId,$objectUri,$calendarData,time(), $etag, strlen($calendarData)));
         $stmt = $this->pdo->prepare('UPDATE '.$this->calendarTableName.' SET ctag = ctag + 1 WHERE id = ?');
         $stmt->execute(array($calendarId));
+
+        return '"' . $etag . '"';
 
     }
 
     /**
      * Updates an existing calendarobject, based on it's uri.
      *
-     * @param string $calendarId
+     * It is possible return an etag from this function, which will be used in
+     * the response to this PUT request. Note that the ETag must be surrounded
+     * by double-quotes.
+     *
+     * However, you should only really return this ETag if you don't mangle the
+     * calendar-data. If the result of a subsequent GET to this object is not
+     * the exact same as this request body, you should omit the ETag.
+     *
+     * @param mixed $calendarId
      * @param string $objectUri
      * @param string $calendarData
-     * @return void
+     * @return string|null
      */
     public function updateCalendarObject($calendarId,$objectUri,$calendarData) {
 
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ? WHERE calendarid = ? AND uri = ?');
-        $stmt->execute(array($calendarData,time(),$calendarId,$objectUri));
+        $etag = md5($calendarData);
+
+        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ? WHERE calendarid = ? AND uri = ?');
+        $stmt->execute(array($calendarData,time(),$calendarId,$objectUri, $etag, strlen($calendarData)));
         $stmt = $this->pdo->prepare('UPDATE '.$this->calendarTableName.' SET ctag = ctag + 1 WHERE id = ?');
         $stmt->execute(array($calendarId));
+
+        return '"' . $etag. '"';
 
     }
 

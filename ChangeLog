@@ -1,4 +1,4 @@
-1.6.1-stable (2012-03-??)
+1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.
 	* Added: Sending back an ETag on for operations on CardDAV backends. This
 	  should help with OS X 10.6 Addressbook compatibility.
@@ -118,6 +118,10 @@
 	  use at your own risk.
 	* Fixed: Issue 182: Removed backticks from sql queries, so it will work
 	  with Postgres.
+
+1.5.8-stable (2012-02-22)
+	* Fixed: Issue 95: Another timezone parsing issue, this time in
+	  calendar-query.
 
 1.5.7-stable (2012-02-19)
 	* Fixed: VObject properties are now always encoded before components.

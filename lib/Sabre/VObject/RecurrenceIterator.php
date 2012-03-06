@@ -344,7 +344,11 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
         $parts = explode(';', $rrule);
 
-        foreach($parts as $part) {
+        // If no rrule was specified, we create a default setting
+        if (!$rrule) {
+            $this->frequency = 'daily';
+            $this->count = 1;
+        } else foreach($parts as $part) {
 
             list($key, $value) = explode('=', $part, 2);
 

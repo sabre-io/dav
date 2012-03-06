@@ -74,7 +74,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
 
     function testGetContentType() {
 
-        $this->assertEquals('text/x-vcard', $this->card->getContentType());
+        $this->assertEquals('text/x-vcard; charset=utf-8', $this->card->getContentType());
 
     }
 

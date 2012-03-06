@@ -38,7 +38,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('string',$children[0]->getName());
         $this->assertInternalType('string',$children[0]->get());
         $this->assertInternalType('string',$children[0]->getETag());
-        $this->assertEquals('text/calendar', $children[0]->getContentType());
+        $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
 
     }
 

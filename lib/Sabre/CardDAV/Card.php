@@ -114,7 +114,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      */
     public function getContentType() {
 
-        return 'text/x-vcard';
+        return 'text/x-vcard; charset=utf-8';
 
     }
 

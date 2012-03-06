@@ -1,4 +1,5 @@
 1.7.0-alpha (2012-??-??)
+	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

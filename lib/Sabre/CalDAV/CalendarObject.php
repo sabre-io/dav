@@ -119,7 +119,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
      */
     public function getContentType() {
 
-        return 'text/calendar';
+        return 'text/calendar; charset=utf-8';
 
     }
 

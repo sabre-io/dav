@@ -3,6 +3,7 @@
 	* Changed: Responsibility for dealing with the calendar-query is now moved
 	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
 	  optimizations.
+	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

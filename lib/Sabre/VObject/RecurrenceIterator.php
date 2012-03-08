@@ -629,7 +629,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             }
 
-            // Checking overriden events
+            // Checking overridden events
             foreach($this->overriddenEvents as $index=>$event) {
                 if ($index > $previousStamp && $index < $currentStamp) {
 
@@ -838,7 +838,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                     // The first occurrence that's higher than the current
                     // day of the month wins.
                     // If we advanced to the next month or year, the first
-                    // occurence is always correct.
+                    // occurrence is always correct.
                     if ($occurrence > $currentDayOfMonth || $advancedToNewMonth) {
                         break 2;
                     }

@@ -31,7 +31,7 @@ class Sabre_DAV_SimpleCollection extends Sabre_DAV_Collection {
     /**
      * Creates this node
      *
-     * The name of the node must be passed, child nodes can also be bassed.
+     * The name of the node must be passed, child nodes can also be passed.
      * This nodes must be instances of Sabre_DAV_INode
      *
      * @param string $name

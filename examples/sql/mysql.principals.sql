@@ -16,7 +16,7 @@ CREATE TABLE groupmembers (
 
 
 INSERT INTO principals (uri,email,displayname) VALUES
-('principals/admin', 'admin@example.org','Adminstrator'),
+('principals/admin', 'admin@example.org','Administrator'),
 ('principals/admin/calendar-proxy-read', null, null),
 ('principals/admin/calendar-proxy-write', null, null);
 

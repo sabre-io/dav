@@ -3,7 +3,7 @@
 /**
  * SabreDAV ACL Plugin
  *
- * This plugin provides funcitonality to enforce ACL permissions.
+ * This plugin provides functionality to enforce ACL permissions.
  * ACL is defined in RFC3744.
  *
  * In addition it also provides support for the {DAV:}current-user-principal
@@ -102,11 +102,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     );
 
     /**
-     * Any principal uri's added here, will automatically be added to the list 
-     * of ACL's. They will effectively receive {DAV:}all privileges, as a 
+     * Any principal uri's added here, will automatically be added to the list
+     * of ACL's. They will effectively receive {DAV:}all privileges, as a
      * protected privilege.
-     * 
-     * @var array 
+     *
+     * @var array
      */
     public $adminPrincipals = array();
 
@@ -935,7 +935,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method handels HTTP REPORT requests
+     * This method handles HTTP REPORT requests
      *
      * @param string $reportName
      * @param DOMNode $dom

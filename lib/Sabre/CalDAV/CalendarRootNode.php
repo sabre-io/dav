@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Users collection
+ * Calendars collection
  *
- * This object is responsible for generating a collection of users.
+ * This object is responsible for generating a collection of calendars.
  *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_CalendarRootNode extends Sabre_DAVACL_AbstractPrincipalCollection {

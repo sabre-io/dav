@@ -99,7 +99,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public $principalSearchPropertySet = array(
         '{DAV:}displayname' => 'Display name',
         '{http://sabredav.org/ns}email-address' => 'Email address',
-        '{DAV:}principal-URL' => 'Principal URL',
     );
 
     /**
@@ -109,9 +108,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @var array
      */
-    public $adminPrincipals = array(
-        'principals/test'
-    );
+    public $adminPrincipals = array();
 
     /**
      * Returns a list of features added by this plugin.

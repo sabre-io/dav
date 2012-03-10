@@ -17,6 +17,14 @@
 class Sabre_CalDAV_Principal_Collection extends Sabre_DAVACL_AbstractPrincipalCollection {
 
     /**
+     * Allow all users to read principals from all other users. This behavior
+     * is required by iCal to find users within the delegation editor.
+     *
+     * @var bool
+     */
+    public $allowReadAccessToPrincipals = false;
+
+    /**
      * Returns a child object based on principal information
      *
      * @param array $principalInfo
@@ -24,7 +32,7 @@ class Sabre_CalDAV_Principal_Collection extends Sabre_DAVACL_AbstractPrincipalCo
      */
     public function getChildForPrincipal(array $principalInfo) {
 
-        return new Sabre_CalDAV_Principal_User($this->principalBackend, $principalInfo);
+        return new Sabre_CalDAV_Principal_User($this->principalBackend, $principalInfo, $this->allowReadAccessToPrincipals);
 
     }
 

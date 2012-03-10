@@ -99,6 +99,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     public $principalSearchPropertySet = array(
         '{DAV:}displayname' => 'Display name',
         '{http://sabredav.org/ns}email-address' => 'Email address',
+        '{DAV:}principal-URL' => 'Principal URL',
     );
 
     /**
@@ -108,18 +109,28 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @var array
      */
-    public $adminPrincipals = array();
+    public $adminPrincipals = array(
+        'principals/test'
+    );
 
     /**
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
      *
+     * The feature 'calendarserver-principal-property-search' is required to make the feature available in iCal 4, the command 
+     * sent by iCal is then just 'principal-property-search' and not 'calendarserver-principal-property-search'.
+     * 
      * @return array
      */
     public function getFeatures() {
 
-        return array('access-control');
+        return array(
+            'access-control',        
+            'principal-property-search',
+            'principal-search-property-set',
+            'calendarserver-principal-property-search',
+        );
 
     }
 

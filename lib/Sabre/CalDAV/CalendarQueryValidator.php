@@ -282,68 +282,12 @@ class Sabre_CalDAV_CalendarQueryValidator {
             case 'VEVENT' :
             case 'VTODO' :
             case 'VJOURNAL' :
+            case 'VALARM' :
 
                 return $component->isInTimeRange($start, $end);
 
             case 'VFREEBUSY' :
                 throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
-
-            case 'VALARM' :
-                $trigger = $component->TRIGGER;
-                if(!isset($trigger['TYPE']) || strtoupper($trigger['TYPE']) === 'DURATION') {
-                    $triggerDuration = Sabre_VObject_DateTimeParser::parseDuration($component->TRIGGER);
-                    $related = (isset($trigger['RELATED']) && strtoupper($trigger['RELATED']) == 'END') ? 'END' : 'START';
-
-                    $parentComponent = $component->parent;
-                    if ($related === 'START') {
-                        $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
-                        $effectiveTrigger->add($triggerDuration);
-                    } else {
-                        if ($parentComponent->name === 'VTODO') {
-                            $endProp = 'DUE';
-                        } elseif ($parentComponent->name === 'VEVENT') {
-                            $endProp = 'DTEND';
-                        } else {
-                            throw new Sabre_DAV_Exception('time-range filters on VALARM components are only supported when they are a child of VTODO or VEVENT');
-                        }
-
-                        if (isset($parentComponent->$endProp)) {
-                            $effectiveTrigger = clone $parentComponent->$endProp->getDateTime();
-                            $effectiveTrigger->add($triggerDuration);
-                        } elseif (isset($parentComponent->DURATION)) {
-                            $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
-                            $duration = Sabre_VObject_DateTimeParser::parseDuration($parentComponent->DURATION);
-                            $effectiveTrigger->add($duration);
-                            $effectiveTrigger->add($triggerDuration);
-                        } else {
-                            $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
-                            $effectiveTrigger->add($triggerDuration);
-                        }
-                    }
-                } else {
-                    $effectiveTrigger = $trigger->getDateTime();
-                }
-
-                if (isset($component->DURATION)) {
-                    $duration = Sabre_VObject_DateTimeParser::parseDuration($component->DURATION);
-                    $repeat = (string)$component->repeat;
-                    if (!$repeat) {
-                        $repeat = 1;
-                    }
-
-                    $period = new DatePeriod($effectiveTrigger, $duration, (int)$repeat);
-
-                    foreach($period as $occurrence) {
-
-                        if ($start <= $occurrence && $end > $occurrence) {
-                            return true;
-                        }
-                    }
-                    return false;
-                } else {
-                    return ($start <= $effectiveTrigger && $end > $effectiveTrigger);
-                }
-                break;
 
             case 'COMPLETED' :
             case 'CREATED' :

@@ -27,7 +27,7 @@ class Sabre_VObject_Component_VAlarm extends Sabre_VObject_Component {
     public function isInTimeRange(DateTime $start, DateTime $end) {
 
         $trigger = $this->TRIGGER;
-        if(!isset($trigger['TYPE']) || strtoupper($trigger['TYPE']) === 'DURATION') {
+        if(!isset($trigger['VALUE']) || strtoupper($trigger['VALUE']) === 'DURATION') {
             $triggerDuration = Sabre_VObject_DateTimeParser::parseDuration($this->TRIGGER);
             $related = (isset($trigger['RELATED']) && strtoupper($trigger['RELATED']) == 'END') ? 'END' : 'START';
 

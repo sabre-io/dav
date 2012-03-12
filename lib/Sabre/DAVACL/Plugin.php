@@ -928,7 +928,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
              * remove baseUri and trailing slash
              */
             foreach($memberSet as $key => $value) {
-                $memberSet[$key] = rtrim(substr($value, strlen($this->server->getBaseUri())), '/');
+                if (substr($value, 0, strlen($this->server->getBaseUri())) == $this->server->getBaseUri()) {
+                    $memberSet[$key] = substr($value, strlen($this->server->getBaseUri()));
+                }
+                $memberSet[$key] = rtrim($value, '/');
             }
         } else {
             throw new Sabre_DAV_Exception('The group-member-set property MUST be an instance of Sabre_DAV_Property_HrefList or null');

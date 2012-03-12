@@ -929,7 +929,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
              */
             foreach($memberSet as $key => $value) {
                 if (substr($value, 0, strlen($this->server->getBaseUri())) == $this->server->getBaseUri()) {
-                    $memberSet[$key] = substr($value, strlen($this->server->getBaseUri()));
+                    $value = substr($value, strlen($this->server->getBaseUri()));
                 }
                 $memberSet[$key] = rtrim($value, '/');
             }

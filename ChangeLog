@@ -1,6 +1,11 @@
 1.7.0-alpha (2012-??-??)
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
 
+1.6.2-stable (2012-??-??)
+	* Fixed: Sabre_VObject_Node::$parent should have been public.
+	* Fixed: Recurrence rules of events are now taken into consideration when
+	  doing time-range queries on alarms.
+
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.
 	* Added: Sending back an ETag on for operations on CardDAV backends. This
@@ -15,7 +20,7 @@
 	* Fixed: Sending back correct mimetypes from the browser plugin (thanks
 	  Jürgen).
 	* Fixed: Issue 195: Sabre_CardDAV pear package had an incorrect dependency.
-
+	* Fixed: Calendardata would be destroyed when performing a MOVE request.
 
 1.6.0-stable (2012-02-22)
 	* BC Break: Now requires PHP 5.3

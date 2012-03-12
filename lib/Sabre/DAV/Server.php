@@ -12,7 +12,7 @@
 class Sabre_DAV_Server {
 
     /**
-     * Inifinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree
+     * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree
      */
     const DEPTH_INFINITY = -1;
 

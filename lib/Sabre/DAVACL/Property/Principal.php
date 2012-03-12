@@ -15,7 +15,7 @@
 class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
 
     /**
-     * To specify a not-logged-in user, use the UNAUTHENTICTED principal
+     * To specify a not-logged-in user, use the UNAUTHENTICATED principal
      */
     const UNAUTHENTICATED = 1;
 

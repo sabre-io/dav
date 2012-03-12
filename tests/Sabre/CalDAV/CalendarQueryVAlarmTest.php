@@ -24,15 +24,19 @@ class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
             'name' => 'VCALENDAR',
             'is-not-defined' => false, 
             'time-range' => null,
+            'prop-filters' => array(),
             'comp-filters' => array(
                 array(
                     'name' => 'VEVENT',
                     'is-not-defined' => false,
                     'time-range' => null,
+                    'prop-filters' => array(),
                     'comp-filters' => array(
                         array(
                             'name' => 'VALARM',
                             'is-not-defined' => false,
+                            'prop-filters' => array(),
+                            'comp-filters' => array(),
                             'time-range' => array(
                                 'start' => new DateTime('2012-05-10'),
                                 'end' => new DateTime('2012-05-20'),
@@ -46,6 +50,21 @@ class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
         $validator = new Sabre_CalDAV_CalendarQueryValidator();
         $this->assertTrue($validator->validate($vcalendar, $filter));
 
+
+        // A limited recurrence rule, should return false
+        $vevent = Sabre_VObject_Component::create('VEVENT');
+        $vevent->RRULE = 'FREQ=MONTHLY;COUNT=1';
+        $vevent->DTSTART = '20120101T120000Z';
+        $vevent->UID = 'bla';
+
+        $valarm = Sabre_VObject_Component::create('VALARM');
+        $valarm->TRIGGER = '-P15D';
+        $vevent->add($valarm);
+
+        $vcalendar = Sabre_VObject_Component::create('VCALENDAR');
+        $vcalendar->add($vevent);
+
+        $this->assertFalse($validator->validate($vcalendar, $filter));
     }
 
 }

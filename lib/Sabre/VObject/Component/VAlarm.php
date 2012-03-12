@@ -14,17 +14,13 @@
 class Sabre_VObject_Component_VAlarm extends Sabre_VObject_Component {
 
     /**
-     * Returns true or false depending on if the event falls in the specified
-     * time-range. This is used for filtering purposes.
+     * Returns a DateTime object when this alarm is going to trigger.
      *
-     * The rules used to determine if an event falls within the specified
-     * time-range is based on the CalDAV specification.
+     * This ignores repeated alarm, only the first trigger is returned.
      *
-     * @param DateTime $start
-     * @param DateTime $end
-     * @return bool
+     * @return DateTime
      */
-    public function isInTimeRange(DateTime $start, DateTime $end) {
+    public function getEffectiveTriggerTime() {
 
         $trigger = $this->TRIGGER;
         if(!isset($trigger['VALUE']) || strtoupper($trigger['VALUE']) === 'DURATION') {
@@ -60,6 +56,24 @@ class Sabre_VObject_Component_VAlarm extends Sabre_VObject_Component {
         } else {
             $effectiveTrigger = $trigger->getDateTime();
         }
+        return $effectiveTrigger;
+
+    }
+
+    /**
+     * Returns true or false depending on if the event falls in the specified
+     * time-range. This is used for filtering purposes.
+     *
+     * The rules used to determine if an event falls within the specified
+     * time-range is based on the CalDAV specification.
+     *
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return bool
+     */
+    public function isInTimeRange(DateTime $start, DateTime $end) {
+
+        $effectiveTrigger = $this->getEffectiveTriggerTime();
 
         if (isset($this->DURATION)) {
             $duration = Sabre_VObject_DateTimeParser::parseDuration($this->DURATION);

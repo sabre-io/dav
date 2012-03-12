@@ -124,8 +124,6 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         return array(
             'access-control',        
-            'principal-property-search',
-            'principal-search-property-set',
             'calendarserver-principal-property-search',
         );
 

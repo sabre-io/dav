@@ -13,8 +13,6 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(
                 'access-control',
-                'principal-property-search',
-                'principal-search-property-set',
                 'calendarserver-principal-property-search'
             ),
             $aclPlugin->getFeatures()

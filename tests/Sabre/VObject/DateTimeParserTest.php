@@ -20,9 +20,9 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parseDuration('P1W'));
         $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parse('P1W'));
 
-        $expected = new DateInterval('P3M');
+        $expected = new DateInterval('PT3M');
         $expected->invert = true;
-        $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parseDuration('-P3M'));
+        $this->assertEquals($expected, Sabre_VObject_DateTimeParser::parseDuration('-PT3M'));
 
     }
 

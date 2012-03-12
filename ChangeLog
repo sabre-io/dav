@@ -5,6 +5,8 @@
 	* Fixed: Sabre_VObject_Node::$parent should have been public.
 	* Fixed: Recurrence rules of events are now taken into consideration when
 	  doing time-range queries on alarms.
+	* Fixed: Added a workaround for the fact that php's DateInterval cannot
+	  parse weeks and days at the same time.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

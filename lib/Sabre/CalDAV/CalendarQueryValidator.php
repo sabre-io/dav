@@ -285,65 +285,46 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
                 return $component->isInTimeRange($start, $end);
 
-            case 'VFREEBUSY' :
-                throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
-
             case 'VALARM' :
-                $trigger = $component->TRIGGER;
-                if(!isset($trigger['TYPE']) || strtoupper($trigger['TYPE']) === 'DURATION') {
-                    $triggerDuration = Sabre_VObject_DateTimeParser::parseDuration($component->TRIGGER);
-                    $related = (isset($trigger['RELATED']) && strtoupper($trigger['RELATED']) == 'END') ? 'END' : 'START';
 
-                    $parentComponent = $component->parent;
-                    if ($related === 'START') {
-                        $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
-                        $effectiveTrigger->add($triggerDuration);
-                    } else {
-                        if ($parentComponent->name === 'VTODO') {
-                            $endProp = 'DUE';
-                        } elseif ($parentComponent->name === 'VEVENT') {
-                            $endProp = 'DTEND';
-                        } else {
-                            throw new Sabre_DAV_Exception('time-range filters on VALARM components are only supported when they are a child of VTODO or VEVENT');
+                // If the valarm is wrapped in a recurring event, we need to
+                // expand the recursions, and validate each.
+                //
+                // Our datamodel doesn't easily allow us to do this straight
+                // in the VALARM component code, so this is a hack, and an
+                // expensive one too.
+                if ($component->parent->name === 'VEVENT' && $component->parent->RRULE) {
+                    // Fire up the iterator!
+                    $it = new Sabre_VObject_RecurrenceIterator($component->parent->parent, (string)$component->parent->UID);
+                    while($it->valid()) {
+                        $expandedEvent = $it->getEventObject();
+
+                        // We need to check from these expanded alarms, which
+                        // one is the first to trigger. Based on this, we can
+                        // determine if we can 'give up' expanding events.
+                        $firstAlarm = null;
+                        foreach($expandedEvent->VALARM as $expandedAlarm) {
+                            $effectiveTrigger = $expandedAlarm->getEffectiveTriggerTime();
+                            if (!$firstAlarm || $effectiveTrigger < $firstAlarm) {
+                                $firstAlarm = $effectiveTrigger;
+                            }
+                            if ($expandedAlarm->isInTimeRange($start, $end)) {
+                                return true;
+                            }
+
                         }
-
-                        if (isset($parentComponent->$endProp)) {
-                            $effectiveTrigger = clone $parentComponent->$endProp->getDateTime();
-                            $effectiveTrigger->add($triggerDuration);
-                        } elseif (isset($parentComponent->DURATION)) {
-                            $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
-                            $duration = Sabre_VObject_DateTimeParser::parseDuration($parentComponent->DURATION);
-                            $effectiveTrigger->add($duration);
-                            $effectiveTrigger->add($triggerDuration);
-                        } else {
-                            $effectiveTrigger = clone $parentComponent->DTSTART->getDateTime();
-                            $effectiveTrigger->add($triggerDuration);
+                        if ($firstAlarm > $end) {
+                            return false;
                         }
-                    }
-                } else {
-                    $effectiveTrigger = $trigger->getDateTime();
-                }
-
-                if (isset($component->DURATION)) {
-                    $duration = Sabre_VObject_DateTimeParser::parseDuration($component->DURATION);
-                    $repeat = (string)$component->repeat;
-                    if (!$repeat) {
-                        $repeat = 1;
-                    }
-
-                    $period = new DatePeriod($effectiveTrigger, $duration, (int)$repeat);
-
-                    foreach($period as $occurrence) {
-
-                        if ($start <= $occurrence && $end > $occurrence) {
-                            return true;
-                        }
+                        $it->next();
                     }
                     return false;
                 } else {
-                    return ($start <= $effectiveTrigger && $end > $effectiveTrigger);
+                    return $component->isInTimeRange($start, $end);
                 }
-                break;
+
+            case 'VFREEBUSY' :
+                throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
 
             case 'COMPLETED' :
             case 'CREATED' :
@@ -353,6 +334,8 @@ class Sabre_CalDAV_CalendarQueryValidator {
             case 'DUE' :
             case 'LAST-MODIFIED' :
                 return ($start <= $component->getDateTime() && $end >= $component->getDateTime());
+
+
 
             default :
                 throw new Sabre_DAV_Exception_BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');

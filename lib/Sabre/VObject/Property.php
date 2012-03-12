@@ -326,7 +326,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      */
     public function __toString() {
 
-        return $this->value;
+        return (string)$this->value;
 
     }
 

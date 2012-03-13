@@ -5,9 +5,18 @@ require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CalDAV_Backend_PDO
+     */
     protected $backend;
     protected $principalBackend;
+    /**
+     * @var Sabre_CalDAV_Calendar
+     */
     protected $calendar;
+    /**
+     * @var array
+     */
     protected $calendars;
 
     function setup() {

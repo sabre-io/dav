@@ -125,7 +125,7 @@ abstract class Sabre_VObject_Node implements IteratorAggregate, ArrayAccess, Cou
     public function offsetSet($offset,$value) {
 
         $iterator = $this->getIterator();
-        return $iterator->offsetSet($offset,$value);
+        $iterator->offsetSet($offset,$value);
 
     }
 
@@ -140,7 +140,7 @@ abstract class Sabre_VObject_Node implements IteratorAggregate, ArrayAccess, Cou
     public function offsetUnset($offset) {
 
         $iterator = $this->getIterator();
-        return $iterator->offsetUnset($offset);
+        $iterator->offsetUnset($offset);
 
     }
 

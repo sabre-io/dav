@@ -4,9 +4,14 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_HTTP_ResponseMock
+     */
     private $response;
-    private $request;
-    private $basicAuth;
+    /**
+     * @var Sabre_HTTP_AWSAuth
+     */
+    private $auth;
 
     const REALM = 'SabreDAV unittest';
 

@@ -2,6 +2,9 @@
 
 class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
     protected $plugin;
 

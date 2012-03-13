@@ -9,7 +9,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
@@ -110,7 +110,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
      * The contained calendar objects are for example Events or Todo's.
      *
      * @param string $name
-     * @return Sabre_DAV_ICalendarObject
+     * @return Sabre_CalDAV_ICalendarObject
      */
     public function getChild($name) {
 

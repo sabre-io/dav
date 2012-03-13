@@ -2,6 +2,10 @@
 
 abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @abstract
+     * @return Sabre_DAV_Locks_Backend_Abstract
+     */
     abstract function getBackend();
 
     function testSetup() {

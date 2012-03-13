@@ -4,6 +4,9 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_HTTP_ResponseTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_HTTP_ResponseMock
+     */
     private $response;
 
     function setUp() {

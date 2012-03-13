@@ -2,14 +2,20 @@
 
 abstract class Sabre_CardDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CardDAV_Backend_PDO
+     */
     protected $backend;
 
+    /**
+     * @abstract
+     * @return PDO
+     */
     abstract function getPDO();
 
     public function setUp() {
 
-        $backend = new Sabre_CardDAV_Backend_PDO($this->getPDO());
-        $this->backend = $backend;
+        $this->backend = new Sabre_CardDAV_Backend_PDO($this->getPDO());
 
     }
 

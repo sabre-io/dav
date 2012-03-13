@@ -6,7 +6,13 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_CalDAV_FreeBusyReportTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CalDAV_Plugin
+     */
     protected $plugin;
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
 
     function setUp() {

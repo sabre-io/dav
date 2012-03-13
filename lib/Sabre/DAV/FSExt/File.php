@@ -16,8 +16,8 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
      *
      * data is a readable stream resource.
      *
-     * @param resource $data
-     * @return void
+     * @param resource|string $data
+     * @return string
      */
     public function put($data) {
 
@@ -29,7 +29,7 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
     /**
      * Returns the data
      *
-     * @return string
+     * @return resource
      */
     public function get() {
 

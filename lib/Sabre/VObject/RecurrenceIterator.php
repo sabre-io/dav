@@ -300,7 +300,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * You should pass a VCALENDAR component, as well as the UID of the event
      * we're going to traverse.
      *
-     * @param Sabre_VObject_Component $comp
+     * @param Sabre_VObject_Component $vcal
+     * @param string|null $uid
      */
     public function __construct(Sabre_VObject_Component $vcal, $uid=null) {
 

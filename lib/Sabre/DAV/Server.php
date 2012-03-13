@@ -162,7 +162,7 @@ class Sabre_DAV_Server {
      * If an array is passed, we automatically create a root node, and use
      * the nodes in the array as top-level children.
      *
-     * @param Sabre_DAV_Tree|Sabre_DAV_INode|null $treeOrNode The tree object
+     * @param Sabre_DAV_Tree|Sabre_DAV_INode|array|null $treeOrNode The tree object
      */
     public function __construct($treeOrNode = null) {
 
@@ -927,7 +927,7 @@ class Sabre_DAV_Server {
      * This method moves one uri to a different uri. A lot of the actual request processing is done in getCopyMoveInfo
      *
      * @param string $uri
-     * @return void
+     * @return bool
      */
     protected function httpMove($uri) {
 

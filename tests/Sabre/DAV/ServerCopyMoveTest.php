@@ -5,7 +5,9 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 class Sabre_DAV_ServerCopyMoveTest extends PHPUnit_Framework_TestCase {
 
     private $response;
-    private $request;
+    /**
+     * @var Sabre_DAV_Server
+     */
     private $server;
 
     function setUp() {

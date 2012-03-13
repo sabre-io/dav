@@ -7,9 +7,18 @@ require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
+    /**
+     * @var Sabre_CalDAV_Plugin
+     */
     protected $plugin;
     protected $response;
+    /**
+     * @var Sabre_CalDAV_Backend_PDO
+     */
     protected $caldavBackend;
 
     function setup() {
@@ -520,7 +529,7 @@ END:VCALENDAR';
 
         }
 
-        // The response object should have a reference to the Asia/Seoul 
+        // The response object should have a reference to the Asia/Seoul
         // timezone.
         $this->assertTrue(strpos($this->response->body,'Asia/Seoul')!==false);
 
@@ -536,8 +545,8 @@ END:VCALENDAR';
             '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data>' .
-            '     <c:expand start="20110101T000000Z" end="20111231T235959Z" />' . 
-            '  </c:calendar-data>' . 
+            '     <c:expand start="20110101T000000Z" end="20111231T235959Z" />' .
+            '  </c:calendar-data>' .
             '  <d:getetag />' .
             '</d:prop>' .
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
@@ -598,7 +607,7 @@ END:VCALENDAR';
             '<d:prop>' .
             '  <c:calendar-data>' .
             '     <c:expand start="20000101T000000Z" end="20101231T235959Z" />' .
-            '  </c:calendar-data>' . 
+            '  </c:calendar-data>' .
             '  <d:getetag />' .
             '</d:prop>' .
             '<c:filter>' .
@@ -900,8 +909,8 @@ END:VCALENDAR';
             '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data>' .
-            '     <c:expand start="20110101T000000Z" />' . 
-            '  </c:calendar-data>' . 
+            '     <c:expand start="20110101T000000Z" />' .
+            '  </c:calendar-data>' .
             '  <d:getetag />' .
             '</d:prop>' .
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
@@ -931,8 +940,8 @@ END:VCALENDAR';
             '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data>' .
-            '     <c:expand end="20110101T000000Z" />' . 
-            '  </c:calendar-data>' . 
+            '     <c:expand end="20110101T000000Z" />' .
+            '  </c:calendar-data>' .
             '  <d:getetag />' .
             '</d:prop>' .
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
@@ -962,8 +971,8 @@ END:VCALENDAR';
             '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
             '<d:prop>' .
             '  <c:calendar-data>' .
-            '     <c:expand start="20200101T000000Z" end="20110101T000000Z" />' . 
-            '  </c:calendar-data>' . 
+            '     <c:expand start="20200101T000000Z" end="20110101T000000Z" />' .
+            '  </c:calendar-data>' .
             '  <d:getetag />' .
             '</d:prop>' .
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .

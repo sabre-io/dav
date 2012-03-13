@@ -4,6 +4,9 @@ require_once 'Sabre/TestUtil.php';
 
 class Sabre_CardDAV_Backend_PDOMySQLTest extends Sabre_CardDAV_Backend_AbstractPDOTest {
 
+    /**
+     * @return PDO
+     */
     public function getPDO() {
 
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or not properly configured');

@@ -5,6 +5,9 @@ require_once 'Sabre/DAV/TestPlugin.php';
 
 class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
+    /**
+     * @var Sabre_DAV_TestPlugin
+     */
     protected $testPlugin;
 
     function setUp() {

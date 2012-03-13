@@ -7,7 +7,13 @@ require_once 'Sabre/CalDAV/Backend/Mock.php';
 
 class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CalDAV_Backend_PDO
+     */
     protected $backend;
+    /**
+     * @var Sabre_CalDAV_Calendar
+     */
     protected $calendar;
     protected $principalBackend;
 

@@ -75,7 +75,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      *
      * @param string $name
      * @param string $value
-     * @return void
+     * @return Sabre_VObject_Property
      */
     static public function create($name, $value = null) {
 
@@ -273,7 +273,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      */
     public function offsetSet($name, $value) {
 
-        if (is_int($name)) return parent::offsetSet($name, $value);
+        if (is_int($name)) parent::offsetSet($name, $value);
 
         if (is_scalar($value)) {
             if (!is_string($name))
@@ -304,7 +304,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      */
     public function offsetUnset($name) {
 
-        if (is_int($name)) return parent::offsetUnset($name);
+        if (is_int($name)) parent::offsetUnset($name);
         $name = strtoupper($name);
 
         foreach($this->parameters as $key=>$parameter) {

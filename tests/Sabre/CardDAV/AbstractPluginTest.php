@@ -5,8 +5,17 @@ require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 abstract class Sabre_CardDAV_AbstractPluginTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CardDAV_Plugin
+     */
     protected $plugin;
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
+    /**
+     * @var Sabre_CardDAV_MockBackend
+     */
     protected $backend;
 
     function setUp() {

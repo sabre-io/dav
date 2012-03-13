@@ -4,6 +4,9 @@ require_once 'Sabre/CardDAV/MockBackend.php';
 
 class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CardDAV_AddressBook
+     */
     protected $ab;
     protected $backend;
 

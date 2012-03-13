@@ -4,6 +4,9 @@ require_once 'Sabre/DAV/AbstractServer.php';
 
 class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
+    /**
+     * @var Sabre_DAV_Locks_Plugin
+     */
     protected $locksPlugin;
 
     function setUp() {

@@ -50,7 +50,7 @@ class Sabre_VObject_Component_VEventTest extends PHPUnit_Framework_TestCase {
         $vevent6->DTSTART = '20111225';
         $vevent6->DTSTART['VALUE'] = 'DATE';
         $vevent6->DTEND   = '20111225';
-        $vevent7->DTEND['VALUE'] = 'DATE';
+        $vevent6->DTEND['VALUE'] = 'DATE';
         $tests[] = array($vevent6, new DateTime('2011-01-01'), new DateTime('2012-01-01'), true);
         $tests[] = array($vevent6, new DateTime('2011-01-01'), new DateTime('2011-11-01'), false);
         // Event with no end date should be treated as lasting the entire day.

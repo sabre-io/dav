@@ -4,8 +4,13 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_HTTP_BasicAuthTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_HTTP_ResponseMock
+     */
     private $response;
-    private $request;
+    /**
+     * @var Sabre_HTTP_BasicAuth
+     */
     private $basicAuth;
 
     function setUp() {

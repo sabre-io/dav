@@ -4,8 +4,14 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_HTTP_ResponseMock
+     */
     protected $response;
     protected $request;
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
     protected $tempDir = SABRE_TEMPDIR;
 

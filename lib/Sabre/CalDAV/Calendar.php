@@ -110,7 +110,7 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
      * The contained calendar objects are for example Events or Todo's.
      *
      * @param string $name
-     * @return Sabre_DAV_ICalendarObject
+     * @return Sabre_CalDAV_ICalendarObject
      */
     public function getChild($name) {
 

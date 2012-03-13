@@ -22,12 +22,18 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
 
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
     protected $tree = array();
 
     protected $caldavBackend;
     protected $principalBackend;
 
+    /**
+     * @var Sabre_CalDAV_Plugin
+     */
     protected $caldavPlugin;
 
     function setUp() {

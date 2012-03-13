@@ -152,8 +152,6 @@ HELLO;
         $filter18 = $filter17;
         $filter18['text-matches'][0]['negate-condition'] = true;
 
-        // TODO: Does this self assignment make sense?
-        $filter18 = $filter18;
         $filter18['test'] = 'allof';
 
         return array(

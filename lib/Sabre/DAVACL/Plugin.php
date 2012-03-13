@@ -233,6 +233,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $authPlugin = $this->server->getPlugin('auth');
         if (is_null($authPlugin)) return null;
+        /** @var $authPlugin Sabre_DAV_Auth_Plugin */
 
         $userName = $authPlugin->getCurrentUser();
         if (!$userName) return null;
@@ -771,7 +772,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @TODO really should be broken into multiple methods, or even a class.
-     * @return void
+     * @return bool
      */
     public function beforeGetProperties($uri, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
 

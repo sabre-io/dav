@@ -185,7 +185,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param array $mutations
      * @param array $result
      * @param Sabre_DAV_INode $node
-     * @return void
+     * @return bool
      */
     public function updateProperties(&$mutations, &$result, $node) {
 

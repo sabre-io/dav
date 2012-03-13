@@ -6,7 +6,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV_ICalendarObject, Sabre_DAVACL_IACL {
@@ -85,8 +85,8 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
     /**
      * Updates the ICalendar-formatted object
      *
-     * @param string $calendarData
-     * @return void
+     * @param string|resource $calendarData
+     * @return string
      */
     public function put($calendarData) {
 
@@ -143,7 +143,7 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
     /**
      * Returns the last modification date as a unix timestamp
      *
-     * @return time
+     * @return int
      */
     public function getLastModified() {
 

@@ -11,6 +11,9 @@ class Sabre_CardDAV_Backend_PDOSqliteTest extends Sabre_CardDAV_Backend_Abstract
 
     }
 
+    /**
+     * @return PDO
+     */
     function getPDO() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');

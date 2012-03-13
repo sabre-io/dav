@@ -1,16 +1,14 @@
 <?php
 
 /**
- * This unittests is created to find out why certain events show up twice.
+ * This unittests is created to find out why recurring events have wrong DTSTART value
  *
- * Hopefully, by the time I'm done with this, I've both found the problem, and
- * fixed it :)
  *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_ExpandEventsDoubleEventsTest extends Sabre_DAVServerTest {
+class Sabre_CalDAV_ExpandEventsDTSTARTandDTENDTest extends Sabre_DAVServerTest {
 
     protected $setupCalDAV = true;
 
@@ -87,12 +85,21 @@ END:VCALENDAR
 
         $vObject = Sabre_VObject_Reader::read($body);
 
-        // We only expect 3 events
-        $this->assertEquals(3, count($vObject->VEVENT),'We got 6 events instead of 3. Output: ' . $body);
+        // check if DTSTARTs and DTENDs are correct
+        foreach ($vObject->VEVENT as $vevent) {
+            /** @var $vevent Sabre_VObject_Component_VEvent */
+            foreach ($vevent->children as $child) {
+                /** @var $child Sabre_VObject_Property */
 
-        // TZID should be gone
-        $this->assertFalse(isset($vObject->VEVENT->DTSTART['TZID']));
-
+                if ($child->name == 'DTSTART') {
+                    // DTSTART has to be one of three valid values
+                    $this->assertContains($child->value, array('20120207T171500Z', '20120208T171500Z', '20120209T171500Z'), 'DTSTART is not a valid value: '.$child->value);
+                } elseif ($child->name == 'DTEND') {
+                    // DTEND has to be one of three valid values
+                    $this->assertContains($child->value, array('20120207T181500Z', '20120208T181500Z', '20120209T181500Z'), 'DTEND is not a valid value: '.$child->value);
+                }
+            }
+        }
     }
 
 }

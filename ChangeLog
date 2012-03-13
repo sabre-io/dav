@@ -6,6 +6,7 @@
 	  parse weeks and days at the same time.
 	* Added: Sabre_DAV_Server::$exposeVersion, allowing you to hide SabreDAV's
 	  version number from various outputs.
+	* Fixed: DTSTART values would be incorrect when expanding events.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

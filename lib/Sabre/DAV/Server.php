@@ -360,14 +360,6 @@ class Sabre_DAV_Server {
 
     }
 
-    /**
-     * Don't output any version information to users
-     */
-    public function dontExposeVersion()
-    {
-        self::$exposeVersion = false;
-    }
-
 
     /**
      * Subscribe to an event.

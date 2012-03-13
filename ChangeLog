@@ -1,5 +1,7 @@
 1.7.0-alpha (2012-??-??)
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
+	* Added: Sabre_DAV_Server::$exposeVersion, allowing you to hide SabreDAV's
+	  version number from various outputs.
 
 1.6.2-stable (2012-??-??)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

@@ -71,7 +71,9 @@ class Sabre_CalDAV_Schedule_IMip {
             $headers[] = 'Reply-To: ' . $replyTo;
             $headers[] = 'From: ' . $this->senderEmail;
             $headers[] = 'Content-Type: text/calendar; method=' . (string)$vObject->method . '; charset=utf-8';
-            $headers[] = 'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY;
+            if (Sabre_DAV_Server::$exposeVersion) {
+                $headers[] = 'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY;
+            }
 
             $vcalBody = $vObject->serialize();
 

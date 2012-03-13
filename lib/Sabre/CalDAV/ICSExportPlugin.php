@@ -10,7 +10,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_ICSExportPlugin extends Sabre_DAV_ServerPlugin {
@@ -84,7 +84,11 @@ class Sabre_CalDAV_ICSExportPlugin extends Sabre_DAV_ServerPlugin {
 
         $calendar = new Sabre_VObject_Component('vcalendar');
         $calendar->version = '2.0';
-        $calendar->prodid = '-//SabreDAV//SabreDAV ' . Sabre_DAV_Version::VERSION . '//EN';
+        if (Sabre_DAV_Server::$exposeVersion) {
+            $calendar->prodid = '-//SabreDAV//SabreDAV ' . Sabre_DAV_Version::VERSION . '//EN';
+        } else {
+            $calendar->prodid = '-//SabreDAV//SabreDAV//EN';
+        }
         $calendar->calscale = 'GREGORIAN';
 
         $collectedTimezones = array();

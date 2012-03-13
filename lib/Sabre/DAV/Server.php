@@ -139,6 +139,8 @@ class Sabre_DAV_Server {
         'Sabre_DAV_ICollection' => '{DAV:}collection',
     );
 
+    public static $exposeVersion = true;
+
 
     /**
      * Sets up the server
@@ -214,7 +216,9 @@ class Sabre_DAV_Server {
                 $error->appendChild($DOM->createElement('s:stacktrace',$e->getTraceAsString()));
 
             }
-            $error->appendChild($DOM->createElement('s:sabredav-version',Sabre_DAV_Version::VERSION));
+            if (self::$exposeVersion) {
+                $error->appendChild($DOM->createElement('s:sabredav-version',Sabre_DAV_Version::VERSION));
+            }
 
             if($e instanceof Sabre_DAV_Exception) {
 
@@ -357,7 +361,6 @@ class Sabre_DAV_Server {
     }
 
 
-
     /**
      * Subscribe to an event.
      *
@@ -476,7 +479,9 @@ class Sabre_DAV_Server {
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
         $this->httpResponse->setHeader('MS-Author-Via','DAV');
         $this->httpResponse->setHeader('Accept-Ranges','bytes');
-        $this->httpResponse->setHeader('X-Sabre-Version',Sabre_DAV_Version::VERSION);
+        if (self::$exposeVersion) {
+            $this->httpResponse->setHeader('X-Sabre-Version',Sabre_DAV_Version::VERSION);
+        }
         $this->httpResponse->setHeader('Content-Length',0);
         $this->httpResponse->sendStatus(200);
 

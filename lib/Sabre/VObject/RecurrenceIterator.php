@@ -500,7 +500,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         unset($event->RDATE);
         unset($event->EXRULE);
 
-        $event->DTSTART->setDateTime($this->currentDate, $event->DTSTART->getDateType());
+        $event->DTSTART->setDateTime($this->getDTStart(), $event->DTSTART->getDateType());
         if (isset($event->DTEND)) {
             $event->DTEND->setDateTime($this->getDtEnd(), $event->DTSTART->getDateType());
         }

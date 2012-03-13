@@ -1080,6 +1080,12 @@ class Sabre_DAV_Server {
 
             return '';
 
+        // A special case for iCal, requesting / path after some operations like creating a calendar
+        // throws an error if baseUri != /
+        } elseif ($uri === '/') {
+
+            return '';
+
         } else {
 
             throw new Sabre_DAV_Exception_Forbidden('Requested uri (' . $uri . ') is out of base uri (' . $this->getBaseUri() . ')');

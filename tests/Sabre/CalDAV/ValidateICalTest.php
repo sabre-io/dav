@@ -6,7 +6,13 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_DAV_Server
+     */
     protected $server;
+    /**
+     * @var Sabre_CalDAV_Backend_Mock
+     */
     protected $calBackend;
 
     function setUp() {

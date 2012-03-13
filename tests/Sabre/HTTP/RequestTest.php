@@ -5,6 +5,9 @@
  */
 class Sabre_HTTP_RequestTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_HTTP_Request
+     */
     private $request;
 
     function setUp() {

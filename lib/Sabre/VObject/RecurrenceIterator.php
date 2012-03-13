@@ -281,7 +281,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * If the current iteration of the event is an overriden event, this
      * property will hold the VObject
      *
-     * @var Sabre_Component_VObject
+     * @var Sabre_VObject_Component
      */
     private $currentOverriddenEvent;
 
@@ -487,7 +487,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      *
      * This method always returns a cloned instance.
      *
-     * @return void
+     * @return Sabre_VObject_Component_VEvent
      */
     public function getEventObject() {
 

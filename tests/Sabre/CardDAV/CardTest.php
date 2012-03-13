@@ -2,7 +2,13 @@
 
 class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CardDAV_Card
+     */
     protected $card;
+    /**
+     * @var Sabre_CardDAV_MockBackend
+     */
     protected $backend;
 
     function setUp() {

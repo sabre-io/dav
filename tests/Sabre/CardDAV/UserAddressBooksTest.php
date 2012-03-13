@@ -2,6 +2,9 @@
 
 class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @var Sabre_CardDAV_UserAddressBooks
+     */
     protected $s;
     protected $backend;
 

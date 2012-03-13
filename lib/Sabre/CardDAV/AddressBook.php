@@ -55,7 +55,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Returns a card
      *
      * @param string $name
-     * @return Sabre_DAV_Card
+     * @return Sabre_CardDAV_Card
      */
     public function getChild($name) {
 

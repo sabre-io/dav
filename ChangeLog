@@ -4,6 +4,8 @@
 	  doing time-range queries on alarms.
 	* Fixed: Added a workaround for the fact that php's DateInterval cannot
 	  parse weeks and days at the same time.
+	* Added: Sabre_DAV_Server::$exposeVersion, allowing you to hide SabreDAV's
+	  version number from various outputs.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

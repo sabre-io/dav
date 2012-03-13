@@ -139,8 +139,15 @@ class Sabre_DAV_Server {
         'Sabre_DAV_ICollection' => '{DAV:}collection',
     );
 
-    public static $exposeVersion = true;
-
+    /**
+     * If this setting is turned off, SabreDAV's version number will be hidden
+     * from various places.
+     *
+     * Some people feel this is a good security measure.
+     *
+     * @var bool
+     */
+    static public $exposeVersion = true;
 
     /**
      * Sets up the server

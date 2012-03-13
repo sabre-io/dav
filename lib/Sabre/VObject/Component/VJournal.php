@@ -33,7 +33,7 @@ class Sabre_VObject_Component_VJournal extends Sabre_VObject_Component {
                 $effectiveEnd->modify('+1 day');
             }
 
-            return ($start < $effectiveEnd && $end > $dtstart);
+            return ($start <= $effectiveEnd && $end > $dtstart);
 
         }
         return false;

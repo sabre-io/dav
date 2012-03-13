@@ -300,7 +300,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * You should pass a VCALENDAR component, as well as the UID of the event
      * we're going to traverse.
      *
-     * @param Sabre_VObject_Component $comp
+     * @param Sabre_VObject_Component $vcal
+     * @param string|null $uid
      */
     public function __construct(Sabre_VObject_Component $vcal, $uid=null) {
 
@@ -633,7 +634,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             }
 
-            // Checking overriden events
+            // Checking overridden events
             foreach($this->overriddenEvents as $index=>$event) {
                 if ($index > $previousStamp && $index < $currentStamp) {
 
@@ -842,7 +843,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                     // The first occurrence that's higher than the current
                     // day of the month wins.
                     // If we advanced to the next month or year, the first
-                    // occurence is always correct.
+                    // occurrence is always correct.
                     if ($occurrence > $currentDayOfMonth || $advancedToNewMonth) {
                         break 2;
                     }

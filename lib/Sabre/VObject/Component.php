@@ -10,7 +10,7 @@
  * @package Sabre
  * @subpackage VObject
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_VObject_Component extends Sabre_VObject_Element {
@@ -41,6 +41,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
         'VEVENT'        => 'Sabre_VObject_Component_VEvent',
         'VTODO'         => 'Sabre_VObject_Component_VTodo',
         'VJOURNAL'      => 'Sabre_VObject_Component_VJournal',
+        'VALARM'        => 'Sabre_VObject_Component_VAlarm',
     );
 
     /**
@@ -49,7 +50,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      *
      * @param string $name
      * @param string $value
-     * @return void
+     * @return Sabre_VObject_Component
      */
     static public function create($name, $value = null) {
 
@@ -95,13 +96,13 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          *
          * A higher score means the item will be higher in the list
          *
-         * @param Sabre_VObject_Node $a
+         * @param Sabre_VObject_Node $n
          * @return int
-         */ 
+         */
         $sortScore = function($n) {
 
             if ($n instanceof Sabre_VObject_Component) {
-                // We want to encode VTIMEZONE first, this is a personal 
+                // We want to encode VTIMEZONE first, this is a personal
                 // preference.
                 if ($n->name === 'VTIMEZONE') {
                     return 1;

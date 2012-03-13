@@ -3,7 +3,8 @@
 /**
  * Calendars collection
  *
- * This object is responsible for generating a collection of calendars.
+ * This object is responsible for generating a list of calendar-homes for each
+ * user.
  *
  * @package Sabre
  * @subpackage CalDAV

@@ -78,7 +78,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      * Updates the VCard-formatted object
      *
      * @param string $cardData
-     * @return string
+     * @return string|null
      */
     public function put($cardData) {
 

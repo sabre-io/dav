@@ -24,6 +24,21 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
     }
 
     /**
+     * Updates the data at a given offset
+     *
+     * param resource|string $data
+     * @return void
+     */
+    public function putRange($data, $offset) {
+        
+        $f = fopen($this->path, 'c');
+        fseek($f,$offset);
+        stream_copy_to_stream($data,$f);
+        fclose($f);
+
+    }
+
+    /**
      * Returns the data
      *
      * @return string

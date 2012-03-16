@@ -29,6 +29,22 @@ abstract class Sabre_DAV_File extends Sabre_DAV_Node implements Sabre_DAV_IFile 
     }
 
     /**
+     * Updates the data at a given offset
+     *
+     * The data argument is a readable stream resource.
+     * The offset argument is an integer describing the offset
+     *
+     * @param resource $data
+     * @param integer $offset
+     * @return void
+     */
+    public function putRange($data, $offset) {
+
+        throw new Sabre_DAV_Exception_Forbidden('Permission denied to change data');
+
+    }
+
+    /**
      * Returns the data
      *
      * This method may either return a string or a readable stream resource

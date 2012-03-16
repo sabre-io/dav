@@ -25,6 +25,26 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
         return '"' . md5_file($this->path) . '"';
 
     }
+    
+
+    /**
+     * Updates the data at a given offset
+     *
+     * The data argument is a readable stream resource.
+     * The offset argument is an integer describing the offset
+     *
+     * param resource|string $data
+     * @return void
+     */
+    public function putRange($data, $offset) {
+        
+        $f = fopen($this->path, 'c');
+        fseek($f,$offset);
+        stream_copy_to_stream($data,$f);
+        fclose($f);
+        return '"' . md5_file($this->path) . '"';
+
+    }
 
     /**
      * Returns the data

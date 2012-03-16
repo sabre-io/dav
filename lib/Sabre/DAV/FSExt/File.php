@@ -37,11 +37,11 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
      * @return void
      */
     public function putRange($data, $offset) {
-		
-		$f = fopen($this->path, 'c');
-		fseek($f,$offset);
-		fwrite($f,$data);
-		fclose($f);
+        
+        $f = fopen($this->path, 'c');
+        fseek($f,$offset);
+        stream_copy_to_stream($data,$f);
+        fclose($f);
         return '"' . md5_file($this->path) . '"';
 
     }

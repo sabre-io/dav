@@ -751,6 +751,7 @@ class Sabre_DAV_Server {
     protected function httpPut($uri) {
 
         $body = $this->httpRequest->getBody();
+        $len = $this->httpRequest->getHeader('Content-Length');
 
         // Intercepting Content-Range
         if ($this->httpRequest->getHeader('Content-Range') && self::ALLOW_PARTIAL_PUT != true) {
@@ -821,12 +822,12 @@ class Sabre_DAV_Server {
             $body = $newBody;
 
         }
-		
-		$contentRange = $this->getHTTPContentRange();
-		
-		if ($contentRange) {
-			
-			// Determining the exact byte offsets
+        
+        $contentRange = $this->getHTTPContentRange();
+        
+        if ($contentRange) {
+            
+            // Determining the exact byte offsets
             if (!is_null($contentRange[0])) {
 
                 $start = $contentRange[0];
@@ -835,7 +836,7 @@ class Sabre_DAV_Server {
                     throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $contentRange[0] . ') exceeded the size of the entity (' . $contentRange[2] . ')');
 
                 if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $contentRange[1] . ') is lower than the start offset (' . $contentRange[0] . ')');
-                if($end - $start + 1 != strlen($body)) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . strlen($body) . ') is not consistent with begin (' . $contentRange[0] . ') and end (' . $contentRange[1] . ') offsets');
+                if($end - $start + 1 != $len) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $contentRange[0] . ') and end (' . $contentRange[1] . ') offsets');
                 if($end >= $contentRange[2]) $end = $contentRange[2]-1;
 
             } else {
@@ -846,8 +847,8 @@ class Sabre_DAV_Server {
                 if ($start<0) $start = 0;
 
             }
-		}
-		
+        }
+        
         if ($this->tree->nodeExists($uri)) {
 
             $node = $this->tree->getNodeForPath($uri);
@@ -859,7 +860,7 @@ class Sabre_DAV_Server {
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
             if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
 
-            $etag = $contentRange ? $node->putRange($body, $begin) : $node->put($body);
+            $etag = $contentRange ? $node->putRange($body, $start) : $node->put($body);
 
             $this->broadcastEvent('afterWriteContent',array($uri, $node));
 
@@ -868,13 +869,13 @@ class Sabre_DAV_Server {
             $this->httpResponse->sendStatus(204);
 
         } else {
-			//If the file does not yet exist, we assume the initial offset is 0
-			//This constraint is not from any RFC. It just prevent to code from
-			//being completly cluttered by rare-use-cases
-			if ($contentRange && $begin != 0) {
-				throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $contentRange[0] . ') must be 0 for file creations');
-			}
-			
+            //If the file does not yet exist, we assume the initial offset is 0
+            //This constraint is not from any RFC. It just prevent to code from
+            //being completly cluttered by rare-use-cases
+            if ($contentRange && $begin != 0) {
+                throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $contentRange[0] . ') must be 0 for file creations');
+            }
+            
             $etag = null;
             // If we got here, the resource didn't exist yet.
             if (!$this->createFile($this->getRequestUri(),$body,$etag)) {
@@ -1218,22 +1219,22 @@ class Sabre_DAV_Server {
      *
      * @return array|null
      */
-	public function getHTTPContentRange() {
-		
-		$contentRange = $this->httpRequest->getHeader('Content-Range');
+    public function getHTTPContentRange() {
+        
+        $contentRange = $this->httpRequest->getHeader('Content-Range');
         if (is_null($contentRange)) return null;
-		
-		// This header is of the form "unit begin-end/filesize".
-		if (!preg_match('/^bytes=([0-9]*)-([0-9]*)\/([0-9]*)$/i',$contentRange,$matches)) return null;
-		
-		if ($matches[1]==='' && $matches[2]==='' || $matches[3]==='') return null;
+        
+        // This header is of the form "unit begin-end/filesize".
+        if (!preg_match('/^bytes ([0-9]*)-([0-9]*)\/([0-9]*)$/i',$contentRange,$matches)) return null;
+        
+        if ($matches[1]==='' && $matches[2]==='' || $matches[3]==='') return null;
 
         return array(
             $matches[1]!==''?$matches[1]:null,
             $matches[2]!==''?$matches[2]:null,
             $matches[3]
         );
-	}
+    }
 
     /**
      * Returns information about Copy and Move requests
@@ -1683,7 +1684,7 @@ class Sabre_DAV_Server {
         $this->broadcastEvent('afterBind',array($uri));
 
     }
-	
+    
     /**
      * This method updates a resource's properties
      *

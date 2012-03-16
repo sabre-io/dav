@@ -30,11 +30,11 @@ class Sabre_DAV_FS_File extends Sabre_DAV_FS_Node implements Sabre_DAV_IFile {
      * @return void
      */
     public function putRange($data, $offset) {
-		
-		$f = fopen($this->path, 'c');
-		fseek($f,$offset);
-		fwrite($f,$data);
-		fclose($f);
+        
+        $f = fopen($this->path, 'c');
+        fseek($f,$offset);
+        stream_copy_to_stream($data,$f);
+        fclose($f);
 
     }
 

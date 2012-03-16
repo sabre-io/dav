@@ -753,7 +753,7 @@ class Sabre_DAV_Server {
         $body = $this->httpRequest->getBody();
 
         // Intercepting Content-Range
-        if ($this->httpRequest->getHeader('Content-Range') && ALLOW_PARTIAL_PUT != true) {
+        if ($this->httpRequest->getHeader('Content-Range') && self::ALLOW_PARTIAL_PUT != true) {
             /**
             Content-Range is dangerous for PUT requests:  PUT per definition
             stores a full resource.  draft-ietf-httpbis-p2-semantics-15 says
@@ -827,21 +827,21 @@ class Sabre_DAV_Server {
 		if ($contentRange) {
 			
 			// Determining the exact byte offsets
-            if (!is_null($range[0])) {
+            if (!is_null($contentRange[0])) {
 
-                $start = $range[0];
-                $end = $range[1]?$range[1]:$range[2]-1;
-                if($start >= $range[2])
-                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $range[2] . ')');
+                $start = $contentRange[0];
+                $end = $contentRange[1]?$contentRange[1]:$contentRange[2]-1;
+                if($start >= $contentRange[2])
+                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $contentRange[0] . ') exceeded the size of the entity (' . $contentRange[2] . ')');
 
-                if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end - $start + 1 != strlen($body)) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . strlen($body) . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
-                if($end >= $range[2]) $end = $range[2]-1;
+                if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $contentRange[1] . ') is lower than the start offset (' . $contentRange[0] . ')');
+                if($end - $start + 1 != strlen($body)) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . strlen($body) . ') is not consistent with begin (' . $contentRange[0] . ') and end (' . $contentRange[1] . ') offsets');
+                if($end >= $contentRange[2]) $end = $contentRange[2]-1;
 
             } else {
 
-                $start = $range[2]-$range[1];
-                $end  = $range[2]-1;
+                $start = $contentRange[2]-$contentRange[1];
+                $end  = $contentRange[2]-1;
 
                 if ($start<0) $start = 0;
 
@@ -859,7 +859,7 @@ class Sabre_DAV_Server {
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
             if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
 
-            $etag = $range ? $node->putRange($body, $begin) : $node->put($body);
+            $etag = $contentRange ? $node->putRange($body, $begin) : $node->put($body);
 
             $this->broadcastEvent('afterWriteContent',array($uri, $node));
 
@@ -871,8 +871,8 @@ class Sabre_DAV_Server {
 			//If the file does not yet exist, we assume the initial offset is 0
 			//This constraint is not from any RFC. It just prevent to code from
 			//being completly cluttered by rare-use-cases
-			if ($range && $begin != 0) {
-				throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') must be 0 for file creations');
+			if ($contentRange && $begin != 0) {
+				throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $contentRange[0] . ') must be 0 for file creations');
 			}
 			
             $etag = null;

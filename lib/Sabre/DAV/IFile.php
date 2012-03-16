@@ -36,6 +36,30 @@ interface Sabre_DAV_IFile extends Sabre_DAV_INode {
      * @return string|null
      */
     function put($data);
+    
+    /**
+     * Updates the data at a given offset
+     *
+     * The data argument is a readable stream resource.
+     * The offset argument is an integer describing the offset
+     *
+     * After a succesful put operation, you may choose to return an ETag. The
+     * etag must always be surrounded by double-quotes. These quotes must
+     * appear in the actual string you're returning.
+     *
+     * Clients may use the ETag from a PUT request to later on make sure that
+     * when they update the file, the contents haven't changed in the mean
+     * time.
+     *
+     * If you don't plan to store the file byte-by-byte, and you return a
+     * different object on a subsequent GET you are strongly recommended to not
+     * return an ETag, and just return null.
+     *
+     * @param resource $data
+     * @param integer $offset
+     * @return string|null
+     */
+    function putRange($data, $offset);
 
     /**
      * Returns the data

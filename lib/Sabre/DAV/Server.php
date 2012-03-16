@@ -12,6 +12,11 @@
 class Sabre_DAV_Server {
 
     /**
+     * Experimental support for Content-Range header
+     */
+    const ALLOW_PARTIAL_PUT = false;
+    
+    /**
      * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree
      */
     const DEPTH_INFINITY = -1;
@@ -748,7 +753,7 @@ class Sabre_DAV_Server {
         $body = $this->httpRequest->getBody();
 
         // Intercepting Content-Range
-        if ($this->httpRequest->getHeader('Content-Range')) {
+        if ($this->httpRequest->getHeader('Content-Range') && ALLOW_PARTIAL_PUT != true) {
             /**
             Content-Range is dangerous for PUT requests:  PUT per definition
             stores a full resource.  draft-ietf-httpbis-p2-semantics-15 says
@@ -816,7 +821,33 @@ class Sabre_DAV_Server {
             $body = $newBody;
 
         }
+		
+		$contentRange = $this->getHTTPContentRange();
+		
+		if ($contentRange) {
+			
+			// Determining the exact byte offsets
+            if (!is_null($range[0])) {
 
+                $start = $range[0];
+                $end = $range[1]?$range[1]:$range[2]-1;
+                if($start >= $range[2])
+                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $range[2] . ')');
+
+                if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
+                if($end - $start + 1 != strlen($body)) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . strlen($body) . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
+                if($end >= $range[2]) $end = $range[2]-1;
+
+            } else {
+
+                $start = $range[2]-$range[1];
+                $end  = $range[2]-1;
+
+                if ($start<0) $start = 0;
+
+            }
+		}
+		
         if ($this->tree->nodeExists($uri)) {
 
             $node = $this->tree->getNodeForPath($uri);
@@ -828,7 +859,7 @@ class Sabre_DAV_Server {
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');
             if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
 
-            $etag = $node->put($body);
+            $etag = $range ? $node->putRange($body, $begin) : $node->put($body);
 
             $this->broadcastEvent('afterWriteContent',array($uri, $node));
 
@@ -837,7 +868,13 @@ class Sabre_DAV_Server {
             $this->httpResponse->sendStatus(204);
 
         } else {
-
+			//If the file does not yet exist, we assume the initial offset is 0
+			//This constraint is not from any RFC. It just prevent to code from
+			//being completly cluttered by rare-use-cases
+			if ($range && $begin != 0) {
+				throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') must be 0 for file creations');
+			}
+			
             $etag = null;
             // If we got here, the resource didn't exist yet.
             if (!$this->createFile($this->getRequestUri(),$body,$etag)) {
@@ -1158,6 +1195,45 @@ class Sabre_DAV_Server {
 
     }
 
+    /**
+     * Returns the HTTP content-range header
+     *
+     * This method returns null if there is no well-formed HTTP range request
+     * header or array($start, $end, $filesize).
+     *
+     * The first number is the offset of the first byte in the range.
+     * The second number is the offset of the last byte in the range.
+     * The third number is the complete file size
+     *
+     * If the second offset is null, it should be treated as the offset of the last byte of the entity
+     * If the first offset is null, it should be treated as 0
+     * 
+     * The maximum value for the second one is filesize-1
+     * 
+     * At the moment, we intentionally do not support multiple ranges in 
+     * a single request as it would most certainly lead to complex side 
+     * effects in PUT requests.
+     * 
+     * The only allowed unit is "bytes". cf RFC 2616 
+     *
+     * @return array|null
+     */
+	public function getHTTPContentRange() {
+		
+		$contentRange = $this->httpRequest->getHeader('Content-Range');
+        if (is_null($contentRange)) return null;
+		
+		// This header is of the form "unit begin-end/filesize".
+		if (!preg_match('/^bytes=([0-9]*)-([0-9]*)\/([0-9]*)$/i',$contentRange,$matches)) return null;
+		
+		if ($matches[1]==='' && $matches[2]==='' || $matches[3]==='') return null;
+
+        return array(
+            $matches[1]!==''?$matches[1]:null,
+            $matches[2]!==''?$matches[2]:null,
+            $matches[3]
+        );
+	}
 
     /**
      * Returns information about Copy and Move requests
@@ -1607,7 +1683,7 @@ class Sabre_DAV_Server {
         $this->broadcastEvent('afterBind',array($uri));
 
     }
-
+	
     /**
      * This method updates a resource's properties
      *

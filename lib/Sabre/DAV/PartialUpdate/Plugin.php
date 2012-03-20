@@ -211,7 +211,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         $range = $this->server->httpRequest->getHeader('X-Update-Range');
         if (is_null($range)) return null;
 
-        // Matching "Range: bytes=1234-5678: both numbers are optional
+        // Matching "Range: bytes 1234-5678: both numbers are optional
 
         if (!preg_match('/^bytes ([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
 

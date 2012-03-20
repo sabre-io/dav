@@ -105,6 +105,8 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
             $tree->getNodeForPath($uri) instanceof Sabre_DAV_PartialUpdate_IFile) {
             return array('PATCH');
          }
+         
+         return array();
 
     }
 
@@ -140,7 +142,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_BadRequest('No valid "X-Update-Range" found in the headers');
         }
         
-        $contentType = $this->httpRequest->getHeader('Content-Type');
+        $contentType = $this->server->httpRequest->getHeader('Content-Type');
         
         if ($contentType != 'application/x-sabredav-partialupdate') {
             throw new Sabre_DAV_Exception_UnsupportedMediaType('Unknown Content-Type header "' . $contentType . '"');
@@ -161,7 +163,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
             $node = $this->server->tree->getNodeForPath($uri);
             
             if (!($node instanceof Sabre_DAV_PartialUpdate_IFile)) {
-                Sabre_DAV_Exception_MethodNotAllowed('Can not PATCH the requested resource.');
+                throw new Sabre_DAV_Exception_MethodNotAllowed('Can not PATCH the requested resource.');
             }
 
             // Checking If-None-Match and related headers.
@@ -170,7 +172,8 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
             // If the node is a collection, we'll deny it
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PATCH is not allowed on non-files.');
             if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
-
+            
+            $body = $this->httpRequest->getBody();
             $etag = $node->putRange($body, $start);
 
             $this->server->broadcastEvent('afterWriteContent',array($uri, $node));
@@ -184,7 +187,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
             //If the file does not exist yet, it is not our job to create it
             //The PUT method is here for that very purpose
             
-            Sabre_DAV_Exception_NotFound('The target resource of PATCH method does not exist yet.');
+            throw new Sabre_DAV_Exception_NotFound('The target resource of PATCH method does not exist yet.');
             
         }
     }
@@ -205,12 +208,12 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getHTTPUpdateRange() {
 
-        $range = $this->httpRequest->getHeader('X-Update-Range');
+        $range = $this->server->httpRequest->getHeader('X-Update-Range');
         if (is_null($range)) return null;
 
         // Matching "Range: bytes=1234-5678: both numbers are optional
 
-        if (!preg_match('/^bytes=([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
+        if (!preg_match('/^bytes ([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
 
         if ($matches[1]==='' && $matches[2]==='') return null;
 

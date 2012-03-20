@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Sabre/CardDAV/MockBackend.php';
+require_once 'Sabre/CardDAV/Backend/Mock.php';
 
 class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
 
@@ -12,7 +12,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $this->backend = new Sabre_CardDAV_MockBackend();
+        $this->backend = new Sabre_CardDAV_Backend_Mock();
         $this->ab = new Sabre_CardDAV_AddressBook(
             $this->backend,
             array(

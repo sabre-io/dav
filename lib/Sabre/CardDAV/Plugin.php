@@ -48,6 +48,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         /* Events */
         $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
+        $server->subscribeEvent('afterGetProperties',  array($this, 'afterGetProperties'));
         $server->subscribeEvent('updateProperties', array($this, 'updateProperties'));
         $server->subscribeEvent('report', array($this,'report'));
         $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
@@ -530,6 +531,30 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         // This implies for 'anyof' that the test failed, and for 'allof' that
         // we succeeded. Sounds weird, but makes sense.
         return $test==='allof';
+
+    }
+
+    /**
+     * This event is triggered after webdav-properties have been retrieved.
+     *
+     * @return bool
+     */
+    public function afterGetProperties($uri, &$properties) {
+
+        // If the request was made using the SOGO connector, we must rewrite
+        // the content-type property. By default SabreDAV will send back
+        // text/x-vcard; charset=utf-8, but for SOGO we must strip that last
+        // part.
+        if (!isset($properties[200]['{DAV:}getcontenttype']))
+            return;
+
+        if (strpos($this->server->httpRequest->getHeader('User-Agent'),'Thunderbird')===false) {
+            return;
+        }
+
+        if (strpos($properties[200]['{DAV:}getcontenttype'],'text/x-vcard')===0) {
+            $properties[200]['{DAV:}getcontenttype'] = 'text/x-vcard';
+        }
 
     }
 

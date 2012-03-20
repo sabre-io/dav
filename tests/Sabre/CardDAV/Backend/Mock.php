@@ -1,27 +1,32 @@
 <?php
 
-class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
+class Sabre_CardDAV_Backend_Mock extends Sabre_CardDAV_Backend_Abstract {
 
     public $addressBooks;
     public $cards;
 
-    function __construct() {
+    function __construct($addressBooks = null, $cards = null) {
 
-        $this->addressBooks = array(
-            array(
-                'id' => 'foo',
-                'uri' => 'book1',
-                'principaluri' => 'principals/user1',
-                '{DAV:}displayname' => 'd-name',
-            ),
-        );
+        $this->addressBooks = $addressBooks;
+        $this->cards = $cards;
 
-        $this->cards = array(
-            'foo' => array(
-                'card1' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
-                'card2' => "BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD",
-            ),
-        );
+        if (is_null($this->addressBooks)) {
+            $this->addressBooks = array(
+                array(
+                    'id' => 'foo',
+                    'uri' => 'book1',
+                    'principaluri' => 'principals/user1',
+                    '{DAV:}displayname' => 'd-name',
+                ),
+            );
+
+            $this->cards = array(
+                'foo' => array(
+                    'card1' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
+                    'card2' => "BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD",
+                ),
+            );
+        }
 
     }
 
@@ -34,7 +39,6 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
                 $books[] = $book;
             }
         }
-
         return $books;
 
     }

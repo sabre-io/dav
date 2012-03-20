@@ -4,6 +4,8 @@
 	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
 	  optimizations.
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
+	* Fixed: Workaround for the SOGO connector, as it doesn't understand
+	  receiving "text/x-vcard; charset=utf-8" for a contenttype.
 
 1.6.2-stable (2012-??-??)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

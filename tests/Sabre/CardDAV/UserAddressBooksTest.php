@@ -10,7 +10,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $this->backend = new Sabre_CardDAV_MockBackend();
+        $this->backend = new Sabre_CardDAV_Backend_Mock();
         $this->s = new Sabre_CardDAV_UserAddressBooks(
             $this->backend,
             'principals/user1'

@@ -2,6 +2,7 @@
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/CalDAV/Backend/Mock.php';
+require_once 'Sabre/CardDAV/Backend/Mock.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 /**
@@ -18,9 +19,13 @@ require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     protected $setupCalDAV = false;
+    protected $setupCardDAV = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
+
+    protected $carddavAddressBooks = array();
+    protected $carddavCards = array();
 
     /**
      * @var Sabre_DAV_Server
@@ -29,12 +34,14 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
     protected $tree = array();
 
     protected $caldavBackend;
+    protected $carddavBackend;
     protected $principalBackend;
 
     /**
      * @var Sabre_CalDAV_Plugin
      */
     protected $caldavPlugin;
+    protected $carddavPlugin;
 
     function setUp() {
 
@@ -44,9 +51,12 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
         $this->server = new Sabre_DAV_Server($this->tree);
 
         if ($this->setupCalDAV) {
-
             $this->caldavPlugin = new Sabre_CalDAV_Plugin();
             $this->server->addPlugin($this->caldavPlugin);
+        }
+        if ($this->setupCardDAV) {
+            $this->carddavPlugin = new Sabre_CardDAV_Plugin();
+            $this->server->addPlugin($this->carddavPlugin);
         }
 
     }
@@ -81,6 +91,15 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
                 $this->principalBackend,
                 $this->caldavBackend
             );
+        }
+        if ($this->setupCardDAV) {
+            $this->tree[] = new Sabre_CardDAV_AddressBookRoot(
+                $this->principalBackend,
+                $this->carddavBackend
+            );
+        }
+
+        if ($this->setupCardDAV || $this->setupCalDAV) {
             $this->tree[] = new Sabre_DAVACL_PrincipalCollection(
                 $this->principalBackend
             );
@@ -92,6 +111,11 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
         if ($this->setupCalDAV) {
             $this->caldavBackend = new Sabre_CalDAV_Backend_Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+        }
+        if ($this->setupCardDAV) {
+            $this->carddavBackend = new Sabre_CardDAV_Backend_Mock($this->carddavAddressBooks, $this->carddavCards);
+        }
+        if ($this->setupCardDAV || $this->setupCalDAV) {
             $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
         }
 

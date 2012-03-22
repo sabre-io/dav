@@ -28,13 +28,6 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
     private $server;
 
     /**
-     * __construct
-     */
-    public function __construct() {
-
-    }
-
-    /**
      * Initializes the plugin
      *
      * This method is automatically called by the Server class after addPlugin.
@@ -59,7 +52,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getPluginName() {
 
-        return 'Patch';
+        return 'PartialUpdate';
 
     }
 
@@ -154,42 +147,33 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         $start = ($range[0])?$range[0]:0;
         $end   = ($range[1])?$range[1]:$len-1;
 
-        //check consistency
+        // Check consistency
         if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
         if($end - $start + 1 != $len) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
 
-        if ($this->server->tree->nodeExists($uri)) {
+		// Get the node. Will throw a 404 if not found
+		$node = $this->server->tree->getNodeForPath($uri);
+		
+		if (!($node instanceof Sabre_DAV_PartialUpdate_IFile)) {
+			throw new Sabre_DAV_Exception_MethodNotAllowed('Can not PATCH the requested resource.');
+		}
 
-            $node = $this->server->tree->getNodeForPath($uri);
-            
-            if (!($node instanceof Sabre_DAV_PartialUpdate_IFile)) {
-                throw new Sabre_DAV_Exception_MethodNotAllowed('Can not PATCH the requested resource.');
-            }
+		// Checking If-None-Match and related headers.
+		if (!$this->server->checkPreconditions()) return;
 
-            // Checking If-None-Match and related headers.
-            if (!$this->server->checkPreconditions()) return;
+		// If the node is a collection, we'll deny it
+		if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PATCH is not allowed on non-files.');
+		if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
+		
+		$body = $this->httpRequest->getBody();
+		$etag = $node->putRange($body, $start);
 
-            // If the node is a collection, we'll deny it
-            if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PATCH is not allowed on non-files.');
-            if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
-            
-            $body = $this->httpRequest->getBody();
-            $etag = $node->putRange($body, $start);
+		$this->server->broadcastEvent('afterWriteContent',array($uri, $node));
 
-            $this->server->broadcastEvent('afterWriteContent',array($uri, $node));
+		$this->server->httpResponse->setHeader('Content-Length','0');
+		if ($etag) $this->server->httpResponse->setHeader('ETag',$etag);
+		$this->server->httpResponse->sendStatus(204);
 
-            $this->server->httpResponse->setHeader('Content-Length','0');
-            if ($etag) $this->server->httpResponse->setHeader('ETag',$etag);
-            $this->server->httpResponse->sendStatus(204);
-
-        } else {
-            
-            //If the file does not exist yet, it is not our job to create it
-            //The PUT method is here for that very purpose
-            
-            throw new Sabre_DAV_Exception_NotFound('The target resource of PATCH method does not exist yet.');
-            
-        }
     }
     
    /**
@@ -211,9 +195,9 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         $range = $this->server->httpRequest->getHeader('X-Update-Range');
         if (is_null($range)) return null;
 
-        // Matching "Range: bytes 1234-5678: both numbers are optional
+        // Matching "Range: bytes=1234-5678: both numbers are optional
 
-        if (!preg_match('/^bytes ([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
+        if (!preg_match('/^bytes=([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
 
         if ($matches[1]==='' && $matches[2]==='') return null;
 

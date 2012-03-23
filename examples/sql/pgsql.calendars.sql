@@ -26,6 +26,8 @@ CREATE TABLE calendarobjects (
     size INTEGER NOT NULL,
     componenttype VARCHAR(8),
     lastmodified INTEGER
+    firstdate INTEGER,
+    lastdate INTEGER
 );
 
 ALTER TABLE ONLY calendarobjects

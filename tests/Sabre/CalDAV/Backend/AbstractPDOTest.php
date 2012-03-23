@@ -29,14 +29,15 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
-            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT'))
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT')),
+            '{DAV:}displayname' => 'Hello!',
         ));
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
         $elementCheck = array(
             'id'                => $returnedId,
             'uri'               => 'somerandomid',
-            '{DAV:}displayname' => '',
+            '{DAV:}displayname' => 'Hello!',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
         );
 
@@ -121,6 +122,24 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
     /**
      * @depends testCreateCalendarAndFetch
+     */
+    function testDeleteCalendar() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT')),
+            '{DAV:}displayname' => 'Hello!',
+        ));
+
+        $backend->deleteCalendar($returnedId);
+
+        $calendars = $backend->getCalendarsForUser('principals/user2');
+        $this->assertEquals(array(),$calendars);
+
+    }
+
+    /**
+     * @depends testCreateCalendarAndFetch
      * @expectedException Sabre_DAV_Exception
      */
     function testCreateCalendarIncorrectComponentSet() {;
@@ -150,4 +169,86 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
     }
 
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testGetCalendarObjects() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+
+        $data = $backend->getCalendarObjects($returnedId,'random-id');
+
+        $this->assertEquals(1, count($data));
+        $data = $data[0];
+
+        $this->assertEquals($returnedId, $data['calendarid']);
+        $this->assertEquals('random-id', $data['uri']);
+        $this->assertEquals(13,$data['size']);
+
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testUpdateCalendarObject() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+        $backend->updateCalendarObject($returnedId, 'random-id', 'calendar-data2');
+
+        $data = $backend->getCalendarObject($returnedId,'random-id');
+
+        $this->assertEquals('calendar-data2', $data['calendardata']);
+        $this->assertEquals($returnedId, $data['calendarid']);
+        $this->assertEquals('random-id', $data['uri']);
+
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testDeleteCalendarObject() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+        $backend->deleteCalendarObject($returnedId, 'random-id');
+
+        $data = $backend->getCalendarObject($returnedId,'random-id');
+        $this->assertNull($data);
+
+    }
+
+    function testCalendarQuery() {
+
+        $abstract = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => null,
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $this->assertEquals(array(
+            'event1.ics',
+        ), $abstract->calendarQuery(1, $filters));
+
+    }
 }

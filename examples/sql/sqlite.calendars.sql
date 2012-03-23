@@ -7,6 +7,8 @@ CREATE TABLE calendarobjects (
     etag text,
     size integer,
     componenttype text
+    firstdate integer,
+    lastdate integer
 );
 
 CREATE TABLE calendars (

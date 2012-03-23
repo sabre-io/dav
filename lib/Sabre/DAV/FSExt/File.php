@@ -46,6 +46,18 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_Par
     }
 
     /**
+     * Creates a Read only stream for this node. This is required for
+     * the patch "preview" function.
+     *
+     * @return stream|null
+     */
+    function getReadonlyStream() {
+
+        return fopen($this->path, 'r');
+
+    }
+
+    /**
      * Returns the data
      *
      * @return resource

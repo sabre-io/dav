@@ -37,5 +37,13 @@ interface Sabre_DAV_PartialUpdate_IFile extends Sabre_DAV_IFile {
      */
     function putRange($data, $offset);
 
+    /**
+     * Creates a Read only stream for this node. This is required for
+     * the patch "preview" function.
+     *
+     * @return stream|null
+     */
+    function getReadonlyStream();
+
 }
 

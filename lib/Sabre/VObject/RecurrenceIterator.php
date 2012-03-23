@@ -720,6 +720,12 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         // First day of the week:
         $firstDay = $this->dayMap[$this->weekStart];
 
+        $time = array(
+            $this->currentDate->format('H'),
+            $this->currentDate->format('i'),
+            $this->currentDate->format('s')
+        );
+
         // Increasing the 'current day' until we find our next
         // occurrence.
         while(true) {
@@ -738,12 +744,14 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 // are not already on this first day of this week.
                 if($this->currentDate->format('w') != $firstDay) {
                     $this->currentDate->modify('last ' . $this->dayNames[$this->dayMap[$this->weekStart]]);
+                    $this->currentDate->setTime($time[0],$time[1],$time[2]);
                 }
             }
 
             // We have a match
             if (in_array($currentDay ,$recurrenceDays)) {
                 $this->currentDate->modify($this->dayNames[$currentDay]);
+                $this->currentDate->setTime($time[0],$time[1],$time[2]);
                 break;
             }
 

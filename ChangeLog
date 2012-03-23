@@ -7,6 +7,8 @@
 	* Added: Sabre_DAV_Server::$exposeVersion, allowing you to hide SabreDAV's
 	  version number from various outputs.
 	* Fixed: DTSTART values would be incorrect when expanding events.
+	* Fixed: DTSTART and DTEND would be incorrect for expansion of WEEKLY
+	  BYDAY recurrences.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

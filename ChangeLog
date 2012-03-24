@@ -1,8 +1,13 @@
 1.7.0-alpha (2012-??-??)
+    * BC Break: The calendarobjects database table has a bunch of new fields,
+	  and a migration script is required to ensure everything will keep
+	  working. Read the wiki for more details. 
 	* BC Break: The iCalendar interface now has a new method: calendarQuery.
 	* Changed: Responsibility for dealing with the calendar-query is now moved
 	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
 	  optimizations.
+	* Changed: The CalDAV PDO backend is now a lot faster for common calendar
+	  queries. 
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
 	* Fixed: Workaround for the SOGO connector, as it doesn't understand
 	  receiving "text/x-vcard; charset=utf-8" for a contenttype.

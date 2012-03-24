@@ -25,16 +25,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
-     * The following constants are used to differentiate
-     * the various filters for the calendar-query report
-     */
-    const FILTER_COMPFILTER   = 1;
-    const FILTER_TIMERANGE    = 3;
-    const FILTER_PROPFILTER   = 4;
-    const FILTER_PARAMFILTER  = 5;
-    const FILTER_TEXTMATCH    = 6;
-
-    /**
      * The hardcoded root for calendar objects. It is unfortunate
      * that we're stuck with it, but it will have to do for now
      */

@@ -119,6 +119,49 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends testValues
      */
+    function testNoRRULE() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->UID = 'bla';
+        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $vcal = Sabre_VObject_Component::create('VCALENDAR');
+        $vcal->add($ev);
+
+        $it = new Sabre_VObject_RecurrenceIterator($vcal,$ev->uid);
+
+        $this->assertEquals('daily', $it->frequency);
+        $this->assertEquals(1, $it->interval);
+
+        // Max is to prevent overflow
+        $max = 12;
+        $result = array();
+        foreach($it as $item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2011-10-07', $tz),
+            ),
+            $result
+        );
+
+    }
+
+    /**
+     * @depends testValues
+     */
     function testDailyByDay() {
 
         $ev = new Sabre_VObject_Component('VEVENT');

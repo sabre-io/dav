@@ -394,4 +394,117 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         ), $abstract->calendarQuery(1, $filters));
 
     }
+
+    function testCalendarQueryTodo() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VTODO',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => null,
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $this->assertEquals(array(
+            "todo",
+        ), $backend->calendarQuery(1, $filters));
+
+    }
+    function testCalendarQueryTodoNotMatch() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VTODO',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(
+                        array(
+                            'name' => 'summary',
+                            'text-match' => null,
+                            'time-range' => null,
+                            'param-filters' => array(),
+                            'is-not-defined' => false,
+                        ),
+                    ),
+                    'is-not-defined' => false,
+                    'time-range' => null,
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $this->assertEquals(array(
+        ), $backend->calendarQuery(1, $filters));
+
+    }
+
+    function testCalendarQueryNoFilter() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $result = $backend->calendarQuery(1, $filters);
+        $this->assertTrue(in_array('todo', $result));
+        $this->assertTrue(in_array('event', $result));
+
+    }
+
+    function testCalendarQueryTimeRange() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => array(
+                        'start' => new DateTime('20120101'),
+                        'end'   => new DateTime('20120102'),
+                    ),
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $this->assertEquals(array(
+            "event",
+        ), $backend->calendarQuery(1, $filters));
+
+    }
 }

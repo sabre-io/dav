@@ -608,7 +608,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             }
             // There was a time-range filter
             if ($componentType == 'VEVENT' && isset($filters['comp-filters'][0]['time-range'])) {
-                $timeRange = $filters['comp-filters'][0]['timerange'];
+                $timeRange = $filters['comp-filters'][0]['time-range'];
             }
 
         }

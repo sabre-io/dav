@@ -572,6 +572,17 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     }
 
     /**
+     * Returns true if this recurring event never ends.
+     *
+     * @return bool
+     */
+    public function isInfinite() {
+
+        return !$this->count && !$this->until;
+
+    }
+
+    /**
      * Goes on to the next iteration
      *
      * @return void

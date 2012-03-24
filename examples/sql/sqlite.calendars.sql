@@ -6,9 +6,9 @@ CREATE TABLE calendarobjects (
     lastmodified integer,
     etag text,
     size integer,
-    componenttype text
-    firstdate integer,
-    lastdate integer
+    componenttype text,
+    firstoccurence integer,
+    lastoccurence integer
 );
 
 CREATE TABLE calendars (

@@ -15,6 +15,11 @@
 class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
     /**
+     * We need to specify a max date, because we need to stop *somewhere*
+     */
+    const MAX_DATE = '2040-01-01';
+
+    /**
      * pdo
      *
      * @var PDO
@@ -386,14 +391,24 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     public function createCalendarObject($calendarId,$objectUri,$calendarData) {
 
-        $etag = md5($calendarData);
+        $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size) VALUES (?,?,?,?,?,?)');
-        $stmt->execute(array($calendarId,$objectUri,$calendarData,time(), $etag, strlen($calendarData)));
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence) VALUES (?,?,?,?,?,?,?,?,?)');
+        $stmt->execute(array(
+            $calendarId,
+            $objectUri,
+            $calendarData,
+            time(),
+            $extraData['etag'],
+            $extraData['size'],
+            $extraData['componentType'],
+            $extraData['firstOccurence'],
+            $extraData['lastOccurence'],
+        ));
         $stmt = $this->pdo->prepare('UPDATE '.$this->calendarTableName.' SET ctag = ctag + 1 WHERE id = ?');
         $stmt->execute(array($calendarId));
 
-        return '"' . $etag . '"';
+        return '"' . $extraData['etag'] . '"';
 
     }
 
@@ -415,14 +430,89 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     public function updateCalendarObject($calendarId,$objectUri,$calendarData) {
 
-        $etag = md5($calendarData);
+        $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ? WHERE calendarid = ? AND uri = ?');
-        $stmt->execute(array($calendarData,time(), $etag, strlen($calendarData),$calendarId,$objectUri));
+        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE calendarid = ? AND uri = ?');
+        $stmt->execute(array($calendarData,time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'] ,$calendarId,$objectUri));
         $stmt = $this->pdo->prepare('UPDATE '.$this->calendarTableName.' SET ctag = ctag + 1 WHERE id = ?');
         $stmt->execute(array($calendarId));
 
-        return '"' . $etag. '"';
+        return '"' . $extraData['etag'] . '"';
+
+    }
+
+    /**
+     * Parses some information from calendar objects, used for optimized
+     * calendar-queries.
+     *
+     * Returns an array with the following keys:
+     *   * etag
+     *   * size
+     *   * componentType
+     *   * firstOccurence
+     *   * lastOccurence
+     *
+     * @param string $calendarData
+     * @return array
+     */
+    protected function getDenormalizedData($calendarData) {
+
+        $vObject = Sabre_VObject_Reader::read($calendarData);
+        $componentType = null;
+        $component = null;
+        $firstOccurence = null;
+        $lastOccurence = null;
+        foreach($vObject->getComponents() as $component) {
+            if ($component->name!=='VTIMEZONE') {
+                $componentType = $component->name;
+                break;
+            }
+        }
+        if (!$componentType) {
+            throw new Sabre_DAV_Exception_BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
+        }
+        if ($componentType === 'VEVENT') {
+            $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
+            // Finding the last occurence is a bit harder
+            if (!isset($component->RRULE)) {
+                if (isset($component->DTEND)) {
+                    $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
+                } elseif (isset($component->DURATION)) {
+                    $endDate = clone $component->DTSTART->getDateTime();
+                    $endDate->add(Sabre_VObject_DateTimeParser::parse($component->DURATION->value));
+                    $lastOccurence = $endDate->getTimeStamp();
+                } elseif ($component->DTSTART->getDateType()===Sabre_VObject_Property_DateTime::DATE) {
+                    $endDate = clone $component->DTSTART->getDateTime();
+                    $endDate->modify('+1 day');
+                    $lastOccurence = $endDate->getTimeStamp();
+                } else {
+                    $lastOccurence = $firstOccurence;
+                }
+            } else {
+                $it = new Sabre_VObject_RecurrenceIterator($vObject, (string)$component->UID);
+                $maxDate = new DateTime(self::MAX_DATE);
+                if ($it->isInfinite()) {
+                    $lastOccurence = $maxDate->getTimeStamp();
+                } else {
+                    $end = $it->getDtEnd();
+                    while($it->valid() && $end < $maxDate) {
+                        $end = $it->getDtEnd();
+                        $it->next();
+
+                    }
+                    $lastOccurence = $end->getTimeStamp();
+                }
+
+            }
+        }
+
+        return array(
+            'etag' => md5($calendarData),
+            'size' => strlen($calendarData),
+            'componentType' => $componentType,
+            'firstOccurence' => $firstOccurence,
+            'lastOccurence'  => $lastOccurence,
+        );
 
     }
 

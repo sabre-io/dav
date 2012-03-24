@@ -158,14 +158,154 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
-        $data = $backend->getCalendarObject($returnedId,'random-id');
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $this->assertEquals('calendar-data', $data['calendardata']);
-        $this->assertEquals($returnedId, $data['calendarid']);
-        $this->assertEquals('random-id', $data['uri']);
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => strtotime('20120101'),
+            'lastoccurence' => strtotime('20120101')+(3600*24),
+            'componenttype' => 'VEVENT',
+        ), $result->fetch(PDO::FETCH_ASSOC));
 
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectNoComponent() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectDuration() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nDURATION:P2D\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => strtotime('20120101'),
+            'lastoccurence' => strtotime('20120101')+(3600*48),
+            'componenttype' => 'VEVENT',
+        ), $result->fetch(PDO::FETCH_ASSOC));
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectNoDTEND() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime('2012-01-01 10:00:00'),
+            'componenttype' => 'VEVENT',
+        ), $result->fetch(PDO::FETCH_ASSOC));
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectInfiniteReccurence() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nRRULE:FREQ=DAILY\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime(Sabre_CalDAV_Backend_PDO::MAX_DATE),
+            'componenttype' => 'VEVENT',
+        ), $result->fetch(PDO::FETCH_ASSOC));
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectEndingReccurence() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nRRULE:FREQ=DAILY;COUNT=1000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime('2012-01-01 11:00:00') + (3600 * 24 * 999),
+            'componenttype' => 'VEVENT',
+        ), $result->fetch(PDO::FETCH_ASSOC));
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectTask() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nDUE;VALUE=DATE-TIME:20120101T100000Z\r\nEND:VTODO\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => null,
+            'lastoccurence' => null,
+            'componenttype' => 'VTODO',
+        ), $result->fetch(PDO::FETCH_ASSOC));
 
     }
 
@@ -177,7 +317,8 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $data = $backend->getCalendarObjects($returnedId,'random-id');
 
@@ -186,7 +327,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
         $this->assertEquals($returnedId, $data['calendarid']);
         $this->assertEquals('random-id', $data['uri']);
-        $this->assertEquals(13,$data['size']);
+        $this->assertEquals(strlen($object),$data['size']);
 
 
     }
@@ -199,12 +340,14 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
-        $backend->updateCalendarObject($returnedId, 'random-id', 'calendar-data2');
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $object2 = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20130101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+        $backend->updateCalendarObject($returnedId, 'random-id', $object2);
 
         $data = $backend->getCalendarObject($returnedId,'random-id');
 
-        $this->assertEquals('calendar-data2', $data['calendardata']);
+        $this->assertEquals($object2, $data['calendardata']);
         $this->assertEquals($returnedId, $data['calendarid']);
         $this->assertEquals('random-id', $data['uri']);
 
@@ -219,7 +362,8 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $backend->createCalendarObject($returnedId, 'random-id', 'calendar-data');
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
         $backend->deleteCalendarObject($returnedId, 'random-id');
 
         $data = $backend->getCalendarObject($returnedId,'random-id');
@@ -227,14 +371,14 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
 
     }
 
-    function testCalendarQuery() {
+    function testCalendarQueryNoResult() {
 
         $abstract = new Sabre_CalDAV_Backend_PDO($this->pdo);
         $filters = array(
             'name' => 'VCALENDAR',
             'comp-filters' => array(
                 array(
-                    'name' => 'VEVENT',
+                    'name' => 'VJOURNAL',
                     'comp-filters' => array(),
                     'prop-filters' => array(),
                     'is-not-defined' => false,
@@ -247,7 +391,6 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         );
 
         $this->assertEquals(array(
-            'event1.ics',
         ), $abstract->calendarQuery(1, $filters));
 
     }

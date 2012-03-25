@@ -185,6 +185,7 @@
                 <include name="examples/**.php" />
                 <include name="examples/**/*.sql" />
                 <include name="bin/naturalselection.py" />
+                <include name="bin/migrateto17.php" />
                 <include name="tests/**/*.xml" />
                 <include name="tests/**/*.php" />
             </fileset>

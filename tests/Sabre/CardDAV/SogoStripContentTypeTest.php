@@ -37,5 +37,3 @@ class Sabre_CardDAV_SogoStripContentType extends Sabre_DAVServerTest {
     }
 
 }
-
-?>

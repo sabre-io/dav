@@ -66,5 +66,3 @@ class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
     }
 
 }
-
-?>

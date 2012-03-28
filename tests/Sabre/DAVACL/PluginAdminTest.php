@@ -77,5 +77,3 @@ class Sabre_DAVACL_PluginAdminTest extends PHPUnit_Framework_TestCase {
 
     }
 }
-
-?>

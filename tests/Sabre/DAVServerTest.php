@@ -130,5 +130,3 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

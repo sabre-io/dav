@@ -113,5 +113,3 @@ class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

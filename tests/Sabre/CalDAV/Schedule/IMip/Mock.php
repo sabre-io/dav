@@ -48,5 +48,3 @@ class Sabre_CalDAV_Schedule_IMip_Mock extends Sabre_CalDAV_Schedule_IMip {
 
 
 }
-
-?>

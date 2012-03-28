@@ -119,5 +119,3 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
 
     }
 }
-
-?>

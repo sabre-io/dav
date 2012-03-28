@@ -318,6 +318,4 @@ class Sabre_CalDAV_OutboxPostTest extends Sabre_DAVServerTest {
 
 
     }
-} 
-
-?>
+}

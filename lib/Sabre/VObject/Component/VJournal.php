@@ -42,5 +42,3 @@ class Sabre_VObject_Component_VJournal extends Sabre_VObject_Component {
     }
 
 }
-
-?>

@@ -9,7 +9,9 @@ CREATE TABLE calendarobjects (
     componenttype VARCHAR(8),
     firstoccurence INT(11) UNSIGNED,
     lastoccurence INT(11) UNSIGNED,
-    UNIQUE(calendarid, uri)
+    UNIQUE(calendarid, uri),
+    INDEX(calendarid),
+    INDEX(uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE calendars (
@@ -23,5 +25,6 @@ CREATE TABLE calendars (
     calendarcolor VARCHAR(10),
     timezone TEXT,
     components VARCHAR(20),
-    UNIQUE(principaluri, uri)
+    UNIQUE(principaluri, uri),
+    INDEX(principaluri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

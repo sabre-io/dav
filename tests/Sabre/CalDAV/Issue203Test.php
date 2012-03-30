@@ -52,7 +52,7 @@ END:VCALENDAR
         ),
     );
 
-    function testIssue201() {
+    function testIssue203() {
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'REPORT',

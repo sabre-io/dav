@@ -31,6 +31,7 @@ include __DIR__ . '/Property.php';
 include __DIR__ . '/Component.php';
 include __DIR__ . '/Property/DateTime.php';
 include __DIR__ . '/Property/MultiDateTime.php';
+include __DIR__ . '/Component/VAlarm.php';
 include __DIR__ . '/Component/VCalendar.php';
 include __DIR__ . '/Component/VEvent.php';
 include __DIR__ . '/Component/VJournal.php';

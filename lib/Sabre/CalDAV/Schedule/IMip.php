@@ -100,5 +100,3 @@ class Sabre_CalDAV_Schedule_IMip {
 
 
 }
-
-?>

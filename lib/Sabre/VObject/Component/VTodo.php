@@ -64,5 +64,3 @@ class Sabre_VObject_Component_VTodo extends Sabre_VObject_Component {
     }
 
 }
-
-?>

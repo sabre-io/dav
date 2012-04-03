@@ -632,7 +632,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
 
             // Checking overriden events
             foreach($this->overriddenEvents as $index=>$event) {
-                if ($index > $previousStamp && $index < $currentStamp) {
+                if ($index > $previousStamp && $index <= $currentStamp) {
 
                     // We're moving the 'next date' aside, for later use.
                     $this->nextDate = clone $this->currentDate;

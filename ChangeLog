@@ -23,6 +23,8 @@
 	* Fixed: DTSTART values would be incorrect when expanding events.
 	* Fixed: DTSTART and DTEND would be incorrect for expansion of WEEKLY
 	  BYDAY recurrences.
+	* Fixed: Issue 203: A problem with overridden events hitting the exact
+	  date and time of a subsequent event in the recurrence set.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

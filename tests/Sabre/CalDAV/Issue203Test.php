@@ -103,10 +103,9 @@ END:VCALENDAR
                 'DTSTART'       => '20120328T135200Z',
                 'DTEND'         => '20120328T145200Z',
                 'SUMMARY'       => 'overwritten summary',
-                'RECURRENCE-ID' => '20120327T155200',
+                'RECURRENCE-ID' => '20120327T135200Z',
             )
         );
-
 
         // try to match agains $expectedEvents array
         foreach ($expectedEvents as $expectedEvent) {

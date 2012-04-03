@@ -140,6 +140,9 @@ class Sabre_CalDAV_ICalendarUtil {
                     list($attName,$attValue) = explode('=',$att,2);
                     $attName = strtolower($attName);
                     if ($attName === 'language') $attName='xml:lang';
+
+                    if ($attValue[0]==='"') $attValue = trim($attValue,'"');
+
                     $xml.=' ' . $attName . '="' . htmlspecialchars($attValue) . '"';
 
                 }

@@ -949,7 +949,11 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 $offset = (int)substr($day,0,-2);
 
                 if ($offset>0) {
-                    $byDayResults[] = $dayHits[$offset-1];
+                    // It is possible that the day does not exist, such as a
+                    // 5th or 6th wednesday of the month.
+                    if (isset($dayHits[$offset-1])) {
+                        $byDayResults[] = $dayHits[$offset-1];
+                    }
                 } else {
 
                     // if it was negative we count from the end of the array

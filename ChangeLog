@@ -25,6 +25,8 @@
 	  BYDAY recurrences.
 	* Fixed: Issue 203: A problem with overridden events hitting the exact
 	  date and time of a subsequent event in the recurrence set.
+	* Fixed: There was a problem with recurrence rules, for example the 5th
+	  tuesday of the month, if this day did not exist.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

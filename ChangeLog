@@ -1,4 +1,4 @@
-1.6.2-stable (2012-??-??)
+1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.
 	* Fixed: Recurrence rules of events are now taken into consideration when
 	  doing time-range queries on alarms.

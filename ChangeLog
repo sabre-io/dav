@@ -135,6 +135,10 @@
 	* Fixed: Issue 182: Removed backticks from sql queries, so it will work
 	  with Postgres.
 
+1.5.9-stable (2012-04-16)
+	* Fixed: Issue with parsing timezone identifiers that were surrounded by
+	  quotes. (Fixes emClient compatibility).
+
 1.5.8-stable (2012-02-22)
 	* Fixed: Issue 95: Another timezone parsing issue, this time in
 	  calendar-query.

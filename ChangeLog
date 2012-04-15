@@ -1,4 +1,4 @@
-1.5.9-stable (2012-??-??)
+1.5.9-stable (2012-04-16)
 	* Fixed: Issue with parsing timezone identifiers that were surrounded by
 	  quotes. (Fixes emClient compatibility).
 

@@ -83,7 +83,6 @@ include __DIR__ . '/Property/SupportedLock.php';
 include __DIR__ . '/Property/SupportedReportSet.php';
 include __DIR__ . '/Tree/Filesystem.php';
 include __DIR__ . '/Collection.php';
-include __DIR__ . '/Directory.php';
 include __DIR__ . '/Exception/ConflictingLock.php';
 include __DIR__ . '/Exception/FileNotFound.php';
 include __DIR__ . '/File.php';
@@ -92,6 +91,5 @@ include __DIR__ . '/FS/File.php';
 include __DIR__ . '/FSExt/Directory.php';
 include __DIR__ . '/FSExt/File.php';
 include __DIR__ . '/SimpleCollection.php';
-include __DIR__ . '/SimpleDirectory.php';
 include __DIR__ . '/SimpleFile.php';
 // End includes

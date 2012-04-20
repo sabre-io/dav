@@ -36,6 +36,4 @@ include __DIR__ . '/Component/VCalendar.php';
 include __DIR__ . '/Component/VEvent.php';
 include __DIR__ . '/Component/VJournal.php';
 include __DIR__ . '/Component/VTodo.php';
-include __DIR__ . '/Element/DateTime.php';
-include __DIR__ . '/Element/MultiDateTime.php';
 // End includes

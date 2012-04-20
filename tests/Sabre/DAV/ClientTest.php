@@ -168,6 +168,107 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testRequestAuthBasic() {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+            'userName' => 'user',
+            'password' => 'password',
+            'authType' => Sabre_DAV_Client::AUTH_BASIC,
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+
+        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'sillybody',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+            CURLOPT_USERPWD => 'user:password'
+        ), $client->curlSettings);
+
+        $this->assertEquals(array(
+            'statusCode' => 200,
+            'headers' => array(
+                'content-type' => 'text/plain',
+            ),
+            'body' => 'Hello there!'
+        ), $result);
+
+    }
+
+    function testRequestAuthDigest() {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+            'userName' => 'user',
+            'password' => 'password',
+            'authType' => Sabre_DAV_Client::AUTH_DIGEST,
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+
+        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'sillybody',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
+            CURLOPT_USERPWD => 'user:password'
+        ), $client->curlSettings);
+
+        $this->assertEquals(array(
+            'statusCode' => 200,
+            'headers' => array(
+                'content-type' => 'text/plain',
+            ),
+            'body' => 'Hello there!'
+        ), $result);
+
+    }
     function testRequestError() {
 
         $client = new Sabre_DAV_ClientMock(array(
@@ -621,7 +722,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
-            CURLOPT_PUT => true,
+            CURLOPT_CUSTOMREQUEST => "PUT",
             CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),

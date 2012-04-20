@@ -722,7 +722,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
-            CURLOPT_PUT => true,
+            CURLOPT_CUSTOMREQUEST => "PUT",
             CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),

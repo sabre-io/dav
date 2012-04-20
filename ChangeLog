@@ -1,7 +1,7 @@
 1.6.2-stable (2012-04-16)
-	* Fixed: It's now possible to specify in Sabre_DAV_Client which type of
+	* Added: It's now possible to specify in Sabre_DAV_Client which type of
 	  authentication is to be used.
-	* Fixed: Sabre_DAV_Client PUT requests are fixed.
+	* Fixed: Issue 206: Sabre_DAV_Client PUT requests are fixed.
 	* Fixed: Sabre_VObject_Node::$parent should have been public.
 	* Fixed: Recurrence rules of events are now taken into consideration when
 	  doing time-range queries on alarms.
@@ -17,6 +17,7 @@
 	* Fixed: There was a problem with recurrence rules, for example the 5th
 	  tuesday of the month, if this day did not exist.
 	* Added: New HTTP status codes from draft-nottingham-http-new-status-04.
+	* Fixed: Issue: 205: Parsing an iCalendar 0-second date interval.
 
 1.6.1-stable (2012-03-05)
 	* Added: createFile and put() can now return an ETag.

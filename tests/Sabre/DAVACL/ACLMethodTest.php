@@ -33,7 +33,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     function testNotSupportedByNode() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('test'),
+            new Sabre_DAV_SimpleCollection('test'),
         );
         $acl = new Sabre_DAVACL_Plugin();
         $server = new Sabre_DAV_Server($tree);
@@ -98,8 +98,8 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
 
         $tree = array(
             new Sabre_DAVACL_MockACLNode('test',array()),
-            new Sabre_DAV_SimpleDirectory('principals',array(
-                new Sabre_DAV_SimpleDirectory('notaprincipal'),
+            new Sabre_DAV_SimpleCollection('principals',array(
+                new Sabre_DAV_SimpleCollection('notaprincipal'),
             )),
         );
         $acl = new Sabre_DAVACL_Plugin();
@@ -284,7 +284,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
 
         $tree = array(
             $node = new Sabre_DAVACL_MockACLNode('test',$oldACL),
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 new Sabre_DAVACL_MockPrincipal('foo','principals/foo'),
                 new Sabre_DAVACL_MockPrincipal('baz','principals/baz'),
             )),

@@ -10,7 +10,7 @@ class Sabre_DAVACL_AllowAccessTest extends PHPUnit_Framework_TestCase {
     function setUp() {
 
         $nodes = array(
-            new Sabre_DAV_SimpleDirectory('testdir'),
+            new Sabre_DAV_SimpleCollection('testdir'),
         );
 
         $this->server = new Sabre_DAV_Server($nodes);

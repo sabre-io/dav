@@ -12,8 +12,8 @@ class Sabre_DAV_Issue33Test extends PHPUnit_Framework_TestCase {
 
     function testCopyMoveInfo() {
 
-        $foo = new Sabre_DAV_SimpleDirectory('foo');
-        $root = new Sabre_DAV_SimpleDirectory('webdav',array($foo));
+        $foo = new Sabre_DAV_SimpleCollection('foo');
+        $root = new Sabre_DAV_SimpleCollection('webdav',array($foo));
 
         $tree = new Sabre_DAV_ObjectTree($root);
         $server = new Sabre_DAV_Server($tree);

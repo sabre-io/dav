@@ -40,7 +40,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
+        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
         $server = new Sabre_DAV_Server($objectTree);
 
         $prin->serialize($server, $root);
@@ -69,7 +69,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
+        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
         $server = new Sabre_DAV_Server($objectTree);
 
         $prin->serialize($server, $root);
@@ -98,7 +98,7 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
+        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
         $server = new Sabre_DAV_Server($objectTree);
 
         $prin->serialize($server, $root);

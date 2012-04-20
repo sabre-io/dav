@@ -36,7 +36,7 @@ class Sabre_DAV_Property_GetLastModifiedTest extends PHPUnit_Framework_TestCase 
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
+        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
         $server = new Sabre_DAV_Server($objectTree);
 
         $lastMod->serialize($server, $root);

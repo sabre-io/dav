@@ -11,7 +11,7 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
     function setUp() {
 
         $nodes = array(
-            new Sabre_DAV_SimpleDirectory('testdir'),
+            new Sabre_DAV_SimpleCollection('testdir'),
         );
 
         $this->server = new Sabre_DAV_Server($nodes);
@@ -139,7 +139,7 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
 
         $arguments = array(
             'testdir',
-            new Sabre_DAV_SimpleDirectory('testdir'),
+            new Sabre_DAV_SimpleCollection('testdir'),
             &$requestedProperties,
             &$returnedProperties
         );
@@ -174,7 +174,7 @@ class Sabre_DAVACL_BlockAccessTest extends PHPUnit_Framework_TestCase {
 
         $arguments = array(
             'testdir',
-            new Sabre_DAV_SimpleDirectory('testdir'),
+            new Sabre_DAV_SimpleCollection('testdir'),
             &$requestedProperties,
             &$returnedProperties
         );

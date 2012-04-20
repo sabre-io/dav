@@ -25,7 +25,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         $server = new Sabre_DAV_Server();
         $server->addPlugin($plugin);
 
-        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleDirectory('root'), $requestedProperties, $returnedProperties));
+        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleCollection('root'), $requestedProperties, $returnedProperties));
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}principal-collection-set',$returnedProperties[200]);
@@ -60,7 +60,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
             404 => array(),
         );
 
-        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleDirectory('root'), $requestedProperties, $returnedProperties));
+        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleCollection('root'), $requestedProperties, $returnedProperties));
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}current-user-principal',$returnedProperties[200]);
@@ -81,7 +81,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         );
 
 
-        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleDirectory('root'), $requestedProperties, $returnedProperties));
+        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleCollection('root'), $requestedProperties, $returnedProperties));
 
 
         $this->assertEquals(1,count($returnedProperties[200]));
@@ -108,7 +108,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
         );
 
 
-        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleDirectory('root'), $requestedProperties, $returnedProperties));
+        $this->assertNull($plugin->beforeGetProperties('', new Sabre_DAV_SimpleCollection('root'), $requestedProperties, $returnedProperties));
 
         $this->assertEquals(1,count($returnedProperties[200]));
         $this->assertArrayHasKey('{DAV:}supported-privilege-set',$returnedProperties[200]);
@@ -173,7 +173,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
                     'privilege' => '{DAV:}read',
                 )
             )),
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('admin','principals/admin'),
             )),
 
@@ -216,7 +216,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
                     'privilege' => '{DAV:}read',
                 )
             )),
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('admin','principals/admin'),
             )),
 
@@ -251,7 +251,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
     function testAlternateUriSet() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
             )),
         );
@@ -282,7 +282,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
     function testPrincipalURL() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
             )),
         );
@@ -313,7 +313,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
     function testGroupMemberSet() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
             )),
         );
@@ -344,7 +344,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
     function testGroupMemberShip() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
             )),
         );
@@ -375,7 +375,7 @@ class Sabre_DAVACL_PluginPropertiesTest extends PHPUnit_Framework_TestCase {
     function testGetDisplayName() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('principals', array(
+            new Sabre_DAV_SimpleCollection('principals', array(
                 $principal = new Sabre_DAVACL_MockPrincipal('user','principals/user'),
             )),
         );

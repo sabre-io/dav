@@ -88,7 +88,7 @@ class Sabre_DAV_TreeMock extends Sabre_DAV_Tree {
 
 }
 
-class Sabre_DAV_TreeDirectoryTester extends Sabre_DAV_SimpleDirectory {
+class Sabre_DAV_TreeDirectoryTester extends Sabre_DAV_SimpleCollection {
 
     public $newDirectories = array();
     public $newFiles = array();

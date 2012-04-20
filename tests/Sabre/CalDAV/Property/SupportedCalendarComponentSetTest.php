@@ -22,7 +22,7 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSetTest extends PHPUnit_Fr
         $root->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('rootdir'));
+        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
         $server = new Sabre_DAV_Server($objectTree);
 
         $property->serialize($server, $root);

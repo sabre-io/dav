@@ -7,7 +7,7 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
     public function testUpdatePropertiesPassthrough() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('foo'),
+            new Sabre_DAV_SimpleCollection('foo'),
         );
         $server = new Sabre_DAV_Server($tree);
         $server->addPlugin(new Sabre_DAVACL_Plugin());
@@ -95,7 +95,7 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
     public function testSetBadNode() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('foo'),
+            new Sabre_DAV_SimpleCollection('foo'),
         );
         $server = new Sabre_DAV_Server($tree);
         $server->addPlugin(new Sabre_DAVACL_Plugin());

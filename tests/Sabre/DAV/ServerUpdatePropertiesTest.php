@@ -5,7 +5,7 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesFail() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('foo'),
+            new Sabre_DAV_SimpleCollection('foo'),
         );
         $server = new Sabre_DAV_Server($tree);
 
@@ -26,7 +26,7 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesProtected() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('foo'),
+            new Sabre_DAV_SimpleCollection('foo'),
         );
         $server = new Sabre_DAV_Server($tree);
 
@@ -51,7 +51,7 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesEventFail() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('foo'),
+            new Sabre_DAV_SimpleCollection('foo'),
         );
         $server = new Sabre_DAV_Server($tree);
         $server->subscribeEvent('updateProperties', array($this,'updatepropfail'));
@@ -88,7 +88,7 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesEventSuccess() {
 
         $tree = array(
-            new Sabre_DAV_SimpleDirectory('foo'),
+            new Sabre_DAV_SimpleCollection('foo'),
         );
         $server = new Sabre_DAV_Server($tree);
         $server->subscribeEvent('updateProperties', array($this,'updatepropsuccess'));

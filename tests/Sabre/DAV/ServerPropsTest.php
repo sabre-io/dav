@@ -359,7 +359,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
 }
 
-class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleDirectory implements Sabre_DAV_IProperties {
+class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleCollection implements Sabre_DAV_IProperties {
 
     public $type;
 

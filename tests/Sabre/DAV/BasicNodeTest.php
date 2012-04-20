@@ -128,7 +128,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
 
     public function testSimpleDirectoryConstruct() {
 
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir',array());
+        $dir = new Sabre_DAV_SimpleCollection('simpledir',array());
 
     }
 
@@ -138,7 +138,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     public function testSimpleDirectoryConstructChild() {
 
         $file = new Sabre_DAV_FileMock();
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir',array($file));
+        $dir = new Sabre_DAV_SimpleCollection('simpledir',array($file));
         $file2 = $dir->getChild('mockfile');
 
         $this->assertEquals($file,$file2);
@@ -151,7 +151,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
      */
     public function testSimpleDirectoryBadParam() {
 
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir',array('string shouldn\'t be here'));
+        $dir = new Sabre_DAV_SimpleCollection('simpledir',array('string shouldn\'t be here'));
 
     }
 
@@ -161,7 +161,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     public function testSimpleDirectoryAddChild() {
 
         $file = new Sabre_DAV_FileMock();
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir');
+        $dir = new Sabre_DAV_SimpleCollection('simpledir');
         $dir->addChild($file);
         $file2 = $dir->getChild('mockfile');
 
@@ -176,7 +176,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
     public function testSimpleDirectoryGetChildren() {
 
         $file = new Sabre_DAV_FileMock();
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir');
+        $dir = new Sabre_DAV_SimpleCollection('simpledir');
         $dir->addChild($file);
 
         $this->assertEquals(array($file),$dir->getChildren());
@@ -188,7 +188,7 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
      */
     public function testSimpleDirectoryGetName() {
 
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir');
+        $dir = new Sabre_DAV_SimpleCollection('simpledir');
         $this->assertEquals('simpledir',$dir->getName());
 
     }
@@ -199,13 +199,13 @@ class Sabre_DAV_BasicNodeTest extends PHPUnit_Framework_TestCase {
      */
     public function testSimpleDirectoryGetChild404() {
 
-        $dir = new Sabre_DAV_SimpleDirectory('simpledir');
+        $dir = new Sabre_DAV_SimpleCollection('simpledir');
         $dir->getChild('blabla');
 
     }
 }
 
-class Sabre_DAV_DirectoryMock extends Sabre_DAV_Directory {
+class Sabre_DAV_DirectoryMock extends Sabre_DAV_Collection {
 
     function getName() {
 

@@ -47,13 +47,13 @@ class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
             // end-date by 1. Otherwise the event will last until the second
             // the date changed, by increasing this by 1 day the event lasts
             // all of the last day as well.
-            if ($this->DTSTART->getDateType() == Sabre_VObject_Element_DateTime::DATE) {
+            if ($this->DTSTART->getDateType() == Sabre_VObject_Property_DateTime::DATE) {
                 $effectiveEnd->modify('+1 day');
             }
         } elseif (isset($this->DURATION)) {
             $effectiveEnd = clone $effectiveStart;
             $effectiveEnd->add( Sabre_VObject_DateTimeParser::parseDuration($this->DURATION) );
-        } elseif ($this->DTSTART->getDateType() == Sabre_VObject_Element_DateTime::DATE) {
+        } elseif ($this->DTSTART->getDateType() == Sabre_VObject_Property_DateTime::DATE) {
             $effectiveEnd = clone $effectiveStart;
             $effectiveEnd->modify('+1 day');
         } else {

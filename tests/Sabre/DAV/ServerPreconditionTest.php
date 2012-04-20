@@ -10,7 +10,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfMatchNoNode() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MATCH' => '*',
@@ -27,7 +27,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfMatchHasNode() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MATCH' => '*',
@@ -45,7 +45,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfMatchWrongEtag() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MATCH' => '1234',
@@ -62,7 +62,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfMatchCorrectEtag() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MATCH' => '"abc123"',
@@ -79,7 +79,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfMatchMultiple() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MATCH' => '"hellothere", "abc123"',
@@ -96,7 +96,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfNoneMatchNoNode() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '*',
@@ -114,7 +114,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfNoneMatchHasNode() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '*',
@@ -131,7 +131,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfNoneMatchWrongEtag() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '"1234"',
@@ -148,7 +148,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     function testIfNoneMatchWrongEtagMultiple() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '"1234", "5678"',
@@ -166,7 +166,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfNoneMatchCorrectEtag() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '"abc123"',
@@ -184,7 +184,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfNoneMatchCorrectEtagMultiple() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '"1234", "abc123"',
@@ -201,7 +201,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfNoneMatchCorrectEtagAsGet() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_NONE_MATCH' => '"abc123"',
@@ -220,7 +220,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfModifiedSinceUnModified() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
@@ -243,7 +243,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfModifiedSinceModified() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
@@ -260,7 +260,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfModifiedSinceInvalidDate() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
@@ -279,7 +279,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfModifiedSinceInvalidDate2() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
@@ -297,7 +297,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfUnmodifiedSinceUnModified() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
@@ -315,7 +315,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfUnmodifiedSinceModified() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
@@ -332,7 +332,7 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      */
     public function testIfUnmodifiedSinceInvalidDate() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',

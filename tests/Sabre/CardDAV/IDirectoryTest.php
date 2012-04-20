@@ -19,7 +19,7 @@ class Sabre_CardDAV_IDirectoryTest extends PHPUnit_Framework_TestCase {
 
 }
 
-class Sabre_CardDAV_DirectoryMock extends Sabre_DAV_SimpleDirectory implements Sabre_CardDAV_IDirectory {
+class Sabre_CardDAV_DirectoryMock extends Sabre_DAV_SimpleCollection implements Sabre_CardDAV_IDirectory {
 
 
 }

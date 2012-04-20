@@ -38,7 +38,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend,$this->caldavBackend);
         $principals = new Sabre_CalDAV_Principal_Collection($principalBackend);
 
-        $root = new Sabre_DAV_SimpleDirectory('root');
+        $root = new Sabre_DAV_SimpleCollection('root');
         $root->addChild($calendars);
         $root->addChild($principals);
 

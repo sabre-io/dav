@@ -29,7 +29,7 @@ class Sabre_VObject_Component_VJournal extends Sabre_VObject_Component {
         $dtstart = isset($this->DTSTART)?$this->DTSTART->getDateTime():null;
         if ($dtstart) {
             $effectiveEnd = clone $dtstart;
-            if ($this->DTSTART->getDateType() == Sabre_VObject_Element_DateTime::DATE) {
+            if ($this->DTSTART->getDateType() == Sabre_VObject_Property_DateTime::DATE) {
                 $effectiveEnd->modify('+1 day');
             }
 

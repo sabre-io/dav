@@ -9,7 +9,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     function testConstructArray() {
 
         $nodes = array(
-            new Sabre_DAV_SimpleDirectory('hello')
+            new Sabre_DAV_SimpleCollection('hello')
         );
 
         $server = new Sabre_DAV_Server($nodes);
@@ -23,7 +23,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
     function testConstructIncorrectObj() {
 
         $nodes = array(
-            new Sabre_DAV_SimpleDirectory('hello'),
+            new Sabre_DAV_SimpleCollection('hello'),
             new STDClass(),
         );
 

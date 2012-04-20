@@ -3,6 +3,12 @@
 	  and a migration script is required to ensure everything will keep
 	  working. Read the wiki for more details. 
 	* BC Break: The iCalendar interface now has a new method: calendarQuery.
+	* BC Break: In this version a number of classes have been deleted, that
+	  have been previously deprecated. Namely:
+		- Sabre_DAV_Directory (now: Sabre_DAV_Collection)
+		- Sabre_DAV_SimpleDirectory (now: Sabre_DAV_SimpleCollection)
+	    - Sabre_VObject_Element_DateTime (now: Sabre_VObject_Property_DateTime)
+		- Sabre_VObject_Element_MultiDateTime (now .._Property_MultiDateTime)
 	* Changed: Responsibility for dealing with the calendar-query is now moved
 	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
 	  optimizations.

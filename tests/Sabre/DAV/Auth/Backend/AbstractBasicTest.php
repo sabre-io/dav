@@ -10,7 +10,7 @@ class Sabre_DAV_Auth_Backend_AbstractBasicTest extends PHPUnit_Framework_TestCas
     public function testAuthenticateNoHeaders() {
 
         $response = new Sabre_HTTP_ResponseMock();
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla'));
+        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla'));
         $server = new Sabre_DAV_Server($tree);
         $server->httpResponse = $response;
 
@@ -25,7 +25,7 @@ class Sabre_DAV_Auth_Backend_AbstractBasicTest extends PHPUnit_Framework_TestCas
     public function testAuthenticateUnknownUser() {
 
         $response = new Sabre_HTTP_ResponseMock();
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla'));
+        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla'));
         $server = new Sabre_DAV_Server($tree);
         $server->httpResponse = $response;
 
@@ -43,7 +43,7 @@ class Sabre_DAV_Auth_Backend_AbstractBasicTest extends PHPUnit_Framework_TestCas
     public function testAuthenticate() {
 
         $response = new Sabre_HTTP_ResponseMock();
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla'));
+        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla'));
         $server = new Sabre_DAV_Server($tree);
         $server->httpResponse = $response;
 

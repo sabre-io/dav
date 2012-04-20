@@ -7,7 +7,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testInit() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
         $this->assertTrue($plugin instanceof Sabre_DAV_Auth_Plugin);
         $fakeServer->addPlugin($plugin);
@@ -20,7 +20,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
      */
     function testAuthenticate() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
@@ -35,7 +35,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
      */
     function testAuthenticateFail() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'failme');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
@@ -44,7 +44,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testReportPassThrough() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
 
@@ -68,7 +68,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
      */
     function testGetCurrentUserPrincipal() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleDirectory('bla')));
+        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
         $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));

@@ -7,8 +7,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=DAILY;BYHOUR=10;BYMINUTE=5;BYSECOND=16;BYWEEKNO=32;BYYEARDAY=100,200';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -33,8 +33,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->RRULE = 'FREQ=SMONTHLY;INTERVAL=3;UNTIL=20111025T000000Z';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -73,8 +73,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=DAILY;INTERVAL=3;UNTIL=20111025T000000Z';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -123,8 +123,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
 
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -167,8 +167,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=DAILY;INTERVAL=2;BYDAY=TU,WE,FR';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -223,8 +223,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=WEEKLY;INTERVAL=2;COUNT=10';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -277,8 +277,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,WE,FR;WKST=SU';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-10-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -334,8 +334,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=MONTHLY;INTERVAL=3;COUNT=5';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-12-05'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-12-05'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -383,8 +383,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=MONTHLY;INTERVAL=2;COUNT=12';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-12-31'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-12-31'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -439,8 +439,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=MONTHLY;INTERVAL=5;COUNT=9;BYMONTHDAY=1,31,-7';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-01-01'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-01'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -492,8 +492,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=MONTHLY;INTERVAL=2;COUNT=16;BYDAY=MO,-2TU,+1WE,3TH';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-01-03'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-03'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -552,8 +552,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=MONTHLY;COUNT=10;BYDAY=MO;BYMONTHDAY=1';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-08-01'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-08-01'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -607,8 +607,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=MONTHLY;COUNT=10;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,-1';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-01-03'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-03'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -662,8 +662,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=YEARLY;COUNT=10;INTERVAL=3';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-01-01'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-01-01'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -715,8 +715,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=YEARLY;COUNT=8;INTERVAL=4;BYMONTH=4,10';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-04-07'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-04-07'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -767,8 +767,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=YEARLY;COUNT=8;INTERVAL=5;BYMONTH=4,10;BYDAY=1MO,-1SU';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-04-04'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-04-04'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -820,8 +820,8 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=YEARLY;COUNT=8;INTERVAL=5;BYMONTH=4,10;BYDAY=1MO,-1SU';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2011-04-04'),Sabre_VObject_Element_DateTime::UTC);
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2011-04-04'),Sabre_VObject_Property_DateTime::UTC);
 
         $ev->add($dtStart);
 
@@ -859,15 +859,15 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
         $ev = new Sabre_VObject_Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=YEARLY;COUNT=10';
-        $dtStart = new Sabre_VObject_Element_DateTime('DTSTART');
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
 
         $tz = new DateTimeZone('Canada/Eastern');
-        $dtStart->setDateTime(new DateTime('2011-01-01 13:50:20', $tz),Sabre_VObject_Element_DateTime::LOCALTZ);
+        $dtStart->setDateTime(new DateTime('2011-01-01 13:50:20', $tz),Sabre_VObject_Property_DateTime::LOCALTZ);
 
-        $exDate1 = new Sabre_VObject_Element_MultiDateTime('EXDATE');
-        $exDate1->setDateTimes(array(new DateTime('2012-01-01 13:50:20', $tz), new DateTime('2014-01-01 13:50:20', $tz)), Sabre_VObject_Element_DateTime::LOCALTZ);
-        $exDate2 = new Sabre_VObject_Element_MultiDateTime('EXDATE');
-        $exDate2->setDateTimes(array(new DateTime('2016-01-01 13:50:20', $tz)), Sabre_VObject_Element_DateTime::LOCALTZ);
+        $exDate1 = new Sabre_VObject_Property_MultiDateTime('EXDATE');
+        $exDate1->setDateTimes(array(new DateTime('2012-01-01 13:50:20', $tz), new DateTime('2014-01-01 13:50:20', $tz)), Sabre_VObject_Property_DateTime::LOCALTZ);
+        $exDate2 = new Sabre_VObject_Property_MultiDateTime('EXDATE');
+        $exDate2->setDateTimes(array(new DateTime('2016-01-01 13:50:20', $tz)), Sabre_VObject_Property_DateTime::LOCALTZ);
 
         $ev->add($dtStart);
         $ev->add($exDate1);

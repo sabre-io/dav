@@ -1,4 +1,7 @@
 1.6.2-stable (2012-04-16)
+	* Fixed: It's now possible to specify in Sabre_DAV_Client which type of
+	  authentication is to be used.
+	* Fixed: Sabre_DAV_Client PUT requests are fixed.
 	* Fixed: Sabre_VObject_Node::$parent should have been public.
 	* Fixed: Recurrence rules of events are now taken into consideration when
 	  doing time-range queries on alarms.

@@ -2,7 +2,10 @@
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of
 	  authentication is to be used.
 	* Fixed: Issue 206: Sabre_DAV_Client PUT requests are fixed.
-	* Fixed: Issue: 205: Parsing an iCalendar 0-second date interval.
+	* Fixed: Issue 205: Parsing an iCalendar 0-second date interval.
+	* Fixed: Issue 112: Stronger validation of iCalendar objects. Now making
+	  sure every iCalendar object only contains 1 component, and disallowing
+	  vcards, forcing every component to have a UID.
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

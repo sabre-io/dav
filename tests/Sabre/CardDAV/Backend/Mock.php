@@ -28,6 +28,9 @@ class Sabre_CardDAV_Backend_Mock extends Sabre_CardDAV_Backend_Abstract {
             );
         }
 
+        $this->addressBooks = $addressbooks;
+        $this->cards = $cards;
+
     }
 
 

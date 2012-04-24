@@ -228,6 +228,20 @@ ICS;
         $this->assertEquals('PUBLISH', $result->METHOD->value);
 
     }
+    function testGeneratorNoVersion() {
+
+        $v = Sabre_DAV_Server::$exposeVersion;
+        Sabre_DAV_Server::$exposeVersion = false;
+
+        $gen = new Sabre_VObject_FreeBusyGenerator();
+        $gen->setObjects(array());
+
+        $result = $gen->getResult();
+        Sabre_DAV_Server::$exposeVersion = $v;
+
+        $this->assertFalse(strpos($result->PRODID->value, Sabre_VObject_Version::VERSION));
+
+    }
 
     /**
      * @expectedException InvalidArgumentException

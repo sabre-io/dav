@@ -65,7 +65,28 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testCreateFileParsableBody() {
+    function testCreateFileValid() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $expected = array(
+            'uri'          => 'blabla.ics',
+            'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+            'calendarid'   => 'calendar1',
+        );
+
+        $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));
+
+    }
+
+    function testCreateFileNoComponents() {
 
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'PUT',
@@ -75,15 +96,77 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
-        $expected = array(
-            'uri'          => 'blabla.ics',
-            'calendardata' => "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n",
-            'calendarid'   => 'calendar1',
-        );
+    }
 
-        $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));
+    function testCreateFileNoUID() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    function testCreateFileVCard() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCARD\r\nEND:VCARD\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    function testCreateFile2Components() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VJOURNAL\r\nUID:foo\r\nEND:VJOURNAL\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    function testCreateFile2UIDS() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:bar\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    function testCreateFileWrongComponent() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VFREEBUSY\r\nUID:foo\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
@@ -108,7 +191,8 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
-        $request->setBody("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
+        $body = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $request->setBody($body);
 
         $response = $this->request($request);
 
@@ -116,7 +200,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
         $expected = array(
             'uri'          => 'blabla.ics',
-            'calendardata' => "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n",
+            'calendardata' => $body,
             'calendarid'   => 'calendar1',
         );
 

@@ -8,7 +8,7 @@ class Sabre_CardDAV_MockBackend extends Sabre_CardDAV_Backend_Abstract {
     function __construct($addressbooks = null, $cards = null) {
 
         if (is_null($addressbooks)) {
-            $addressBooks = array(
+            $addressbooks = array(
                 array(
                     'id' => 'foo',
                     'uri' => 'book1',

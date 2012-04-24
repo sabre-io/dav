@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Sabre/CardDAV/MockBackend.php';
+require_once 'Sabre/CardDAV/Backend/Mock.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
@@ -19,7 +19,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $this->cardBackend = new Sabre_CardDAV_MockBackend($addressbooks,array());
+        $this->cardBackend = new Sabre_CardDAV_Backend_Mock($addressbooks,array());
         $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $tree = array(

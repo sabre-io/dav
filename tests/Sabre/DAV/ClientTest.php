@@ -374,6 +374,65 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @dataProvider supportedHTTPCodes
+     */
+    function testSpecificHTTPErrors($error) {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 $error blabla",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 42,
+                'http_code' => $error,
+            ),
+            0,
+            ""
+        );
+
+        $caught = false;
+        try {
+            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        } catch (Sabre_DAV_Exception $e) {
+            $caught = true;
+            $this->assertEquals($e->getHTTPCode(), $error);
+        }
+        if (!$caught) {
+            $this->fail('Exception was not thrown');
+        }
+
+
+    }
+
+    public function supportedHTTPCodes() {
+
+        return array(
+            array(400),
+            array(401),
+            array(402),
+            array(403),
+            array(404),
+            array(405),
+            array(409),
+            array(412),
+            array(416),
+            array(500),
+            array(501),
+            array(507),
+        );
+
+    }
+
     function testGetAbsoluteUrl() {
 
         $client = new Sabre_DAV_ClientMock(array(

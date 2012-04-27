@@ -17,6 +17,8 @@
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
 	* Fixed: Workaround for the SOGO connector, as it doesn't understand
 	  receiving "text/x-vcard; charset=utf-8" for a contenttype.
+	* Added: Sabre_DAV_Client now throws more specific exceptions in cases
+	  where we already has an exception class.
 
 1.6.3-stable (2012-??-??)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

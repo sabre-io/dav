@@ -363,10 +363,30 @@ class Sabre_DAV_Client {
 
         if ($response['statusCode']>=400) {
             switch ($response['statusCode']) {
+                case 400 :
+                    throw new Sabre_DAV_Exception_BadRequest('Bad request');
+                case 401 :
+                    throw new Sabre_DAV_Exception_NotAuthenticated('Not authenticated');
+                case 402 :
+                    throw new Sabre_DAV_Exception_PaymentRequired('Payment required');
+                case 403 :
+                    throw new Sabre_DAV_Exception_Forbidden('Forbidden');
                 case 404:
-                    throw new Sabre_DAV_Exception_NotFound('Resource ' . $url . ' not found.');
-                    break;
-
+                    throw new Sabre_DAV_Exception_NotFound('Resource not found.');
+                case 405 :
+                    throw new Sabre_DAV_Exception_MethodNotAllowed('Method not allowed');
+                case 409 :
+                    throw new Sabre_DAV_Exception_Conflict('Conflict');
+                case 412 :
+                    throw new Sabre_DAV_Exception_PreconditionFailed('Precondition failed');
+                case 416 :
+                    throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Requested Range Not Satisfiable');
+                case 500 :
+                    throw new Sabre_DAV_Exception('Internal server error');
+                case 501 :
+                    throw new Sabre_DAV_Exception_NotImplemented('Not Implemeneted');
+                case 507 :
+                    throw new Sabre_DAV_Exception_InsufficientStorage('Insufficient storage');
                 default:
                     throw new Sabre_DAV_Exception('HTTP error response. (errorcode ' . $response['statusCode'] . ')');
             }

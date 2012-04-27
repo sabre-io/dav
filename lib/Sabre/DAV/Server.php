@@ -17,6 +17,11 @@ class Sabre_DAV_Server {
     const DEPTH_INFINITY = -1;
 
     /**
+     * Fallback PROPFIND depth value used when the configured value is invalid or no configured value.
+     */
+    const DEFAULT_DEPTH = 1;
+
+    /**
      * Nodes that are files, should have this as the type property
      */
     const NODE_FILE = 1;
@@ -140,6 +145,11 @@ class Sabre_DAV_Server {
     );
 
     /**
+     * This property contains the maximum allowed propfind depth.
+     */
+    protected $maxPropfindDepth;
+
+    /**
      * If this setting is turned off, SabreDAV's version number will be hidden
      * from various places.
      *
@@ -192,6 +202,37 @@ class Sabre_DAV_Server {
         $this->httpResponse = new Sabre_HTTP_Response();
         $this->httpRequest = new Sabre_HTTP_Request();
 
+        // read the maximum allowed depth from an anvironment variable
+        $this->setMaxPropfindDepth(getenv('WEBDAV_PROPFIND_MAX_DEPTH'));
+    }
+
+    public function setMaxPropfindDepth($depth)
+    {
+        // cast the given depth to string, because we have to check for the characters it contains
+        $this->maxPropfindDepth = (string) $depth;
+
+        // if infinity depth is accepted
+        if (strtolower($this->maxPropfindDepth) === 'infinity')
+        {
+            $this->maxPropfindDepth = self::DEPTH_INFINITY;
+        }
+        // if the configured value contains only digits
+        else if (ctype_digit($this->maxPropfindDepth))
+        {
+            // convert back the depth value to integer
+            $this->maxPropfindDepth = intval($this->maxPropfindDepth);
+        }
+        else
+        {
+            // ignore the configured value and fallback to the default
+            $this->maxPropfindDepth = self::DEFAULT_DEPTH;
+        }
+
+    }
+
+    public function getMaxPropfindDepth()
+    {
+        return $this->maxPropfindDepth;
     }
 
     /**
@@ -687,9 +728,10 @@ class Sabre_DAV_Server {
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
         $requestedProperties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
 
-        $depth = $this->getHTTPDepth(1);
-        // The only two options for the depth of a propfind is 0 or 1
-        if ($depth!=0) $depth = 1;
+        $depth = $this->getHTTPDepth(self::DEFAULT_DEPTH);
+
+        // restrain the given depth into the maximum allowed depth if infinity is not allowed
+        $depth = ($this->maxPropfindDepth !== self::DEPTH_INFINITY and ($depth === self::DEPTH_INFINITY or $depth > $this->maxPropfindDepth)) ? $this->maxPropfindDepth : $depth;
 
         $newProperties = $this->getPropertiesForPath($uri,$requestedProperties,$depth);
 
@@ -1306,6 +1348,28 @@ class Sabre_DAV_Server {
     }
 
     /**
+     * Recursively walks the given path to the given depth, returning the list of found nodes.
+     * This function is mainly used by the function below, to support PROPFIND with a depth greater than 1 or 'infinity'.
+     */
+    protected function walkPath($depth, $path, &$nodes) {
+
+        // get the node object for the current root
+        $parentNode = $this->tree->getNodeForPath($path);
+
+        // add it to the list of nodes
+        $nodes[$path] = $parentNode;
+
+        // if the current node is a directory
+        if ($parentNode instanceof Sabre_DAV_ICollection and ($depth > 0 or $depth === self::DEPTH_INFINITY)) {
+            $depth = $depth > 0 ? ($depth - 1) : $depth;
+            foreach($this->tree->getChildren($path) as $childNode) {
+                $nodes[$path . '/' . $childNode->getName()] = $childNode;
+                $this->walkPath($depth, $path . '/' . $childNode->getName(), $nodes);
+            }
+        }
+    }
+
+    /**
      * Returns a list of properties for a given path
      *
      * The path that should be supplied should have the baseUrl stripped out
@@ -1321,18 +1385,10 @@ class Sabre_DAV_Server {
      */
     public function getPropertiesForPath($path, $propertyNames = array(), $depth = 0) {
 
-        if ($depth!=0) $depth = 1;
-
         $returnPropertyList = array();
+        $nodes = array();
 
-        $parentNode = $this->tree->getNodeForPath($path);
-        $nodes = array(
-            $path => $parentNode
-        );
-        if ($depth==1 && $parentNode instanceof Sabre_DAV_ICollection) {
-            foreach($this->tree->getChildren($path) as $childNode)
-                $nodes[$path . '/' . $childNode->getName()] = $childNode;
-        }
+        $this->walkPath($depth, $path, $nodes);
 
         // If the propertyNames array is empty, it means all properties are requested.
         // We shouldn't actually return everything we know though, and only return a

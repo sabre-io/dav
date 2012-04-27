@@ -45,6 +45,109 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    /**
+     * Provide values for the following test.
+     */
+    public function propfindMaxDepthProvider() {
+
+        return array(
+            // infinity request: we expect that the server returns resources deep to the less value between the request and the maximum allowed
+            array('infinity', 'infinity', 6),   // the complete tree is returned
+            array('infinity', 0, 0),
+            array('infinity', 1, 1),
+            array('infinity', -3, Sabre_DAV_Server::DEFAULT_DEPTH),   // server configured with an invalid value, falls back to the default
+            array('infinity', 2, 2),
+            // limited depth request (depth = 4): we expect that the server returns resources deep to the less value between the request and the maximum allowed
+            array(4, 'infinity', 4),
+            array(4, 0, 0),
+            array(4, 1, 1),
+            array(4, -3, Sabre_DAV_Server::DEFAULT_DEPTH),   // server configured with an invalid value, falls back to the default
+            array(4, 9, 4),
+            // negative depth request: request contains an invalid depth, so the server falls back to the default depth, regardless of its configuration
+            array(-2, 'infinity', Sabre_DAV_Server::DEFAULT_DEPTH),
+            array(-2, 3, Sabre_DAV_Server::DEFAULT_DEPTH),
+            // 0 depth request: we expect that the server returns only the root path (which has depth = 0), regardless of its configuration
+            array(0, 'infinity', 0),
+            array(0, 2, 0),
+            array(0, null, 0)   // server non configured, falls back to the default
+        );
+    }
+
+    /**
+     * Test a PROPFIND request with different depths.
+     *
+     * @param $requestDepth the depth requested by the client
+     * @param $maxDepth the maximum allowed depth as configured on the server
+     * @param $expectedDepth the expected depth of the response
+     *
+     * @covers Sabre_DAV_Server::httpPropfind
+     * @dataProvider propfindMaxDepthProvider
+     */
+    function testDeepPropfind($requestDepth, $maxDepth, $expectedDepth) {
+
+        // prepare the FS tree, adding nested resources; each directory contains only a subdirectory and a file
+        $depthTestRoot = '/depthTest';
+        $depthTestPath = SABRE_TEMPDIR . "{$depthTestRoot}";
+
+        mkdir($depthTestPath);
+        file_put_contents("{$depthTestPath}/depth1.txt", '');
+
+        mkdir("{$depthTestPath}/depth1");
+        file_put_contents("{$depthTestPath}/depth1/depth2.txt", '');
+
+        mkdir("{$depthTestPath}/depth1/depth2");
+        file_put_contents("{$depthTestPath}/depth1/depth2/depth3.txt", '');
+
+        mkdir("{$depthTestPath}/depth1/depth2/depth3");
+        file_put_contents("{$depthTestPath}/depth1/depth2/depth3/depth4.txt", '');
+
+        mkdir("{$depthTestPath}/depth1/depth2/depth3/depth4");
+        file_put_contents("{$depthTestPath}/depth1/depth2/depth3/depth4/depth5.txt", '');
+
+        mkdir("{$depthTestPath}/depth1/depth2/depth3/depth4/depth5");
+        file_put_contents("{$depthTestPath}/depth1/depth2/depth3/depth4/depth5/depth6.txt", '');
+
+        // execute the request
+        $serverVars = array(
+            'REQUEST_URI' => $depthTestRoot,
+            'PATH_INFO'   => $depthTestRoot,
+            'REQUEST_METHOD' => 'PROPFIND',
+            'HTTP_DEPTH' => (string) $requestDepth
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $this->server->setMaxPropfindDepth($maxDepth);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        // extract the resource path returned by the server
+        $resources = array_map(function($item) { return (string) $item; }, simplexml_load_string($this->response->body)->xpath('/d:multistatus/d:response/d:href'));
+
+        // calculate the max reached depth
+        $actualDepth = 0;
+        foreach ($resources as $res)
+        {
+            // remove the root path
+            $res = str_replace($depthTestRoot, null, $res);
+
+            // remove the trailing slash
+            $res = preg_replace('/\/$/', null, $res);
+
+            // remove the starting slash
+            $res = preg_replace('/^\//', null, $res);
+
+            // calculate the depth
+            $depth = empty($res) ? 0 : count(explode('/', $res));
+
+            if ($depth > $actualDepth)
+            {
+                $actualDepth = $depth;
+            }
+        }
+
+        $this->assertEquals($expectedDepth, $actualDepth);
+    }
+
     public function testPropFindEmptyBody() {
 
         $this->sendRequest("");

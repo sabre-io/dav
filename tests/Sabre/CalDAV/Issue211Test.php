@@ -52,6 +52,8 @@ END:VCALENDAR
 
     function testIssue211() {
 
+        $this->fail('Temporary disabling this test');
+
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',

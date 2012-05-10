@@ -9,7 +9,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFile {
+class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_PartialUpdate_IFile {
 
     /**
      * Updates the data
@@ -23,6 +23,37 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_IFi
 
         file_put_contents($this->path,$data);
         return '"' . md5_file($this->path) . '"';
+
+    }
+    
+    /**
+     * Updates the data at a given offset
+     *
+     * The data argument is a readable stream resource.
+     * The offset argument is an integer describing the offset
+     *
+     * param resource|string $data
+     * @return void
+     */
+    public function putRange($data, $offset) {
+        
+        $f = fopen($this->path, 'c');
+        fseek($f,$offset);
+        stream_copy_to_stream($data,$f);
+        fclose($f);
+        return '"' . md5_file($this->path) . '"';
+
+    }
+
+    /**
+     * Creates a Read only stream for this node. This is required for
+     * the patch "preview" function.
+     *
+     * @return stream|null
+     */
+    function getReadonlyStream() {
+
+        return fopen($this->path, 'r');
 
     }
 

@@ -85,7 +85,6 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     function setUpTree() {
 
-        $this->tree = array();
         if ($this->setupCalDAV) {
             $this->tree[] = new Sabre_CalDAV_CalendarRootNode(
                 $this->principalBackend,

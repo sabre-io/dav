@@ -4,9 +4,7 @@
  *
  * This plugin provides a way to modify only part of a target resource
  * It may bu used to update a file chunk, upload big a file into smaller
- * chunks or resume an upload
- * While the Patch method has been proposed as a draft to the IEEE, It's
- * behaviour is not clearly defined. This implementation is not interoperable.
+ * chunks or resume an upload.
  *
  * $patchPlugin = new Sabre_DAV_Patch_Plugin();
  * $server->addPlugin($patchPlugin);
@@ -17,56 +15,14 @@
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
-class patch_filter extends php_user_filter {
-
-    /**
-     * Filters a stream
-     *
-     * This methods allows live patching of a stream. It is used to make
-     * available a preview for the 'beforeWriteContent' pipeline.
-     *
-     * @return INT status
-     */
-    function filter($in, $out, &$consumed, $closing, $start, $len, $body) {
-
-        while ($bucket = stream_bucket_make_writeable($in)) {
-            for($i=0; $i < $bucket->datalen; $i++) {
-                $j = $consumed-$start+$i;
-
-                if($j >= 0 && $j < $len && !feof($body)) {
-
-                    $bucket->data[$i] = fgetc($body);
-
-                }
-            }
-            $consumed += $bucket->datalen;
-            stream_bucket_append($out, $bucket);
-
-        }
-
-        return PSFS_PASS_ON;
-    }
-
-}
-
 class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
-     * server
+     * Reference to server
      *
      * @var Sabre_DAV_Server
      */
-    private $server;
-
-    /**
-     * __construct
-     */
-    public function __construct() {
-
-        stream_filter_register('patch', 'patch_filter');
-
-    }
+    protected $server;
 
     /**
      * Initializes the plugin
@@ -93,7 +49,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getPluginName() {
 
-        return 'PartialUpdate';
+        return 'partialupdate';
 
     }
 
@@ -105,13 +61,14 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $method
      * @param string $uri
-     * @return bool
+     * @return bool|null
      */
     public function unknownMethod($method, $uri) {
 
         switch($method) {
             
-            case 'PATCH': $this->httpPatch($uri); return false;
+            case 'PATCH':
+                return $this->httpPatch($uri);
 
         }
 
@@ -147,9 +104,6 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Returns a list of features for the HTTP OPTIONS Dav: header.
      *
-     * In this case this is only the number 3. The 3 in the Dav: header
-     * indicates the server supports Patch. => extensions
-     *
      * @return array
      */
     public function getFeatures() {
@@ -170,13 +124,21 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function httpPatch($uri) {
 
+        // Get the node. Will throw a 404 if not found
+        $node = $this->server->tree->getNodeForPath($uri);
+        if (!($node instanceof Sabre_DAV_PartialUpdate_IFile)) {
+            throw new Sabre_DAV_Exception_MethodNotAllowed('The target resource does not support the PATCH method.');
+        }
+
         $range = $this->getHTTPUpdateRange();
 
         if (!$range) {
             throw new Sabre_DAV_Exception_BadRequest('No valid "X-Update-Range" found in the headers');
         }
         
-        $contentType = $this->server->httpRequest->getHeader('Content-Type');
+        $contentType = strtolower(
+            $this->server->httpRequest->getHeader('Content-Type')
+        );
         
         if ($contentType != 'application/x-sabredav-partialupdate') {
             throw new Sabre_DAV_Exception_UnsupportedMediaType('Unknown Content-Type header "' . $contentType . '"');
@@ -189,34 +151,27 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         $end   = ($range[1])?$range[1]:$len-1;
 
         // Check consistency
-        if($end < $start) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-        if($end - $start + 1 != $len) throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
-
-        // Get the node. Will throw a 404 if not found
-        $node = $this->server->tree->getNodeForPath($uri);
-        
-        if (!($node instanceof Sabre_DAV_PartialUpdate_IFile)) {
-            throw new Sabre_DAV_Exception_MethodNotAllowed('Can not PATCH the requested resource.');
-        }
+        if($end < $start)
+            throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
+        if($end - $start + 1 != $len)
+            throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
 
         // Checking If-None-Match and related headers.
         if (!$this->server->checkPreconditions()) return;
 
-        // If the node is a collection, we'll deny it
-        if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PATCH is not allowed on non-files.');
+        if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, null)))
+            return;
 
-        $filter = stream_filter_append($node->getReadonlyStream(), 'patch', STREAM_FILTER_READ, $start, $len, $body);
-        if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
-        stream_filter_remove($filter);
-
-        $body = $this->httpRequest->getBody();
-        $etag = $node->putRange($body, $start);
+        $body = $this->server->httpRequest->getBody();
+        $etag = $node->putRange($body, $start-1);
 
         $this->server->broadcastEvent('afterWriteContent',array($uri, $node));
 
         $this->server->httpResponse->setHeader('Content-Length','0');
         if ($etag) $this->server->httpResponse->setHeader('ETag',$etag);
         $this->server->httpResponse->sendStatus(204);
+
+        return false;
 
     }
     

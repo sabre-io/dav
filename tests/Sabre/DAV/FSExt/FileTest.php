@@ -26,6 +26,16 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testRange() {
+
+       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file->put('0000000');
+       $file->putRange('111',3);
+
+       $this->assertEquals('0011100',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
+
+    }
+
     function testGet() {
 
        $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');

@@ -25,35 +25,28 @@ class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_Par
         return '"' . md5_file($this->path) . '"';
 
     }
-    
+
     /**
      * Updates the data at a given offset
      *
      * The data argument is a readable stream resource.
-     * The offset argument is an integer describing the offset
+     * The offset argument is a 0-based offset where the data should be
+     * written.
      *
      * param resource|string $data
      * @return void
      */
     public function putRange($data, $offset) {
-        
+
         $f = fopen($this->path, 'c');
-        fseek($f,$offset);
-        stream_copy_to_stream($data,$f);
+        fseek($f,$offset-1);
+        if (is_string($data)) {
+            fwrite($f, $data);
+        } else {
+            stream_copy_to_stream($data,$f);
+        }
         fclose($f);
         return '"' . md5_file($this->path) . '"';
-
-    }
-
-    /**
-     * Creates a Read only stream for this node. This is required for
-     * the patch "preview" function.
-     *
-     * @return stream|null
-     */
-    function getReadonlyStream() {
-
-        return fopen($this->path, 'r');
 
     }
 

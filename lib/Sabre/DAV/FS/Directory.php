@@ -58,6 +58,9 @@ class Sabre_DAV_FS_Directory extends Sabre_DAV_FS_Node implements Sabre_DAV_ICol
     /**
      * Returns a specific child node, referenced by its name
      *
+     * This method must throw Sabre_DAV_Exception_NotFound if the node does not
+     * exist.
+     *
      * @param string $name
      * @throws Sabre_DAV_Exception_NotFound
      * @return Sabre_DAV_INode

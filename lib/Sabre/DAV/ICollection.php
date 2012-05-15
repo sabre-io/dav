@@ -50,6 +50,9 @@ interface Sabre_DAV_ICollection extends Sabre_DAV_INode {
     /**
      * Returns a specific child node, referenced by its name
      *
+     * This method must throw Sabre_DAV_Exception_NotFound if the node does not
+     * exist.
+     *
      * @param string $name
      * @return Sabre_DAV_INode
      */

@@ -64,6 +64,9 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     /**
      * Returns a specific child node, referenced by its name
      *
+     * This method must throw Sabre_DAV_Exception_NotFound if the node does not
+     * exist.
+     *
      * @param string $name
      * @throws Sabre_DAV_Exception_NotFound
      * @return Sabre_DAV_INode

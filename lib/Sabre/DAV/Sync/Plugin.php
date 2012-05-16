@@ -3,13 +3,13 @@
 /**
  * This plugin all WebDAV-sync capabilities to the Server.
  *
- * The sync capabilities only work with collections that implement 
- * Sabre_DAV_Sync_ISyncCollection. 
- * 
+ * The sync capabilities only work with collections that implement
+ * Sabre_DAV_Sync_ISyncCollection.
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
@@ -20,8 +20,8 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
      * Initializes the plugin.
      *
      * This is when the plugin registers it's hooks.
-     * 
-     * @param Sabre_DAV_Server $server 
+     *
+     * @param Sabre_DAV_Server $server
      * @return void
      */
     public function initialize(Sabre_DAV_Server $server) {
@@ -37,15 +37,15 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
                 return false;
             }
 
-        }); 
+        });
 
     }
 
     /**
      * This method handles the {DAV:}sync-collection HTTP REPORT.
      *
-     * @param string $uri 
-     * @param DOMDocument $dom 
+     * @param string $uri
+     * @param DOMDocument $dom
      * @return void
      */
     public function syncCollection($uri, DOMDocument $dom) {
@@ -89,9 +89,9 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
      *   1 - the value of the {DAV:}sync-level element
      *   2 - The value of the {DAV:}limit element
      *   3 - A list of requested properties
-     * 
-     * @param DOMDocument $dom 
-     * @param int $depth 
+     *
+     * @param DOMDocument $dom
+     * @param int $depth
      * @return void
      */
     protected function parseSyncCollectionRequest(DOMDocument $dom, $depth) {
@@ -107,8 +107,8 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
 
         $syncLevel = $xpath->query("//d:sync-level");
         if ($syncLevel->length === 0) {
-            // In case there was no sync-level, it could mean that we're dealing 
-            // with an old client. For these we must use the depth header 
+            // In case there was no sync-level, it could mean that we're dealing
+            // with an old client. For these we must use the depth header
             // instead.
             $syncLevel = $depth;
         } else {
@@ -117,7 +117,7 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
                 $syncLevel = Sabre_DAV_Server::DEPTH_INFINITE;
             }
 
-            // If the syncLevel was set, and depth is something other than 0.. 
+            // If the syncLevel was set, and depth is something other than 0..
             // we must fail.
 
             if ($depth != 0) {
@@ -148,7 +148,7 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $syncToken
      * @param array $modified
-     * @param array $deleted 
+     * @param array $deleted
      * @return void
      */
     protected function sendSyncCollectionResponse($syncToken, array $modified, array $deleted) {

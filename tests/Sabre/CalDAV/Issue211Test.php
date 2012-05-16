@@ -52,8 +52,6 @@ END:VCALENDAR
 
     function testIssue211() {
 
-        $this->fail('Temporary disabling this test');
-
         $request = new Sabre_HTTP_Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
@@ -81,19 +79,8 @@ END:VCALENDAR
         $response = $this->request($request);
 
         // if this assert is reached, the endless loop is gone
-        $this->assertTrue(true);
-
-        // Everts super awesome xml parser.
-        $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
-        );
-        $body = str_replace('&#13;','',$body);
-
-        $vObject = Sabre_VObject_Reader::read($body);
-
-        $this->assertEquals(1, count($vObject->VEVENT));
+        // There should be no matching events
+        $this->assertFalse(strpos('BEGIN:VEVENT', $response->body));
 
     }
 }

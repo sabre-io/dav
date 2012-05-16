@@ -39,7 +39,33 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
 
         });
 
+        $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
+
     }
+
+    /**
+     * Returns a list of reports this plugin supports.
+     *
+     * This will be used in the {DAV:}supported-report-set property.
+     * Note that you still need to subscribe to the 'report' event to actually
+     * implement them
+     *
+     * @param string $uri
+     * @return array
+     */
+    public function getSupportedReportSet($uri) {
+
+        $node = $this->tree->getNodeForPath($uri);
+        if ($node instanceof Sabre_DAV_Sync_ICollection && $node->getSyncToken()) {
+            return array(
+                '{DAV:}sync-collection',
+            );
+        }
+
+        return array();
+
+    }
+
 
     /**
      * This method handles the {DAV:}sync-collection HTTP REPORT.
@@ -65,18 +91,20 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$node instanceof Sabre_DAV_Sync_ISyncCollection) {
             throw new Sabre_DAV_Exception_ReportNotImplemented('The {DAV:}sync-collection REPORT is not implemented on this url.');
         }
+        $token = $node->getSyncToken();
+        if (!$token) {
+            throw new Sabre_DAV_Exception_ReportNotImplemented('No sync information is available at this node');
+        }
 
         $changeInfo = $node->getChanges($syncToken, $syncLevel, $limit);
-
-        // Getting all the requested properties
-
-        throw new Exception('Not Done!');
 
         // Encoding the response
         $this->sendSyncResponse(
             $changeInfo['syncToken'],
+            $uri,
             $changeInfo['modified'],
             $changeInfo['deleted'],
+            $properties
         );
 
     }
@@ -119,7 +147,6 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
 
             // If the syncLevel was set, and depth is something other than 0..
             // we must fail.
-
             if ($depth != 0) {
                 throw new Sabre_DAV_Exception_Forbidden('The sync-collection report is only implemented on depth: 0');
             }
@@ -147,11 +174,13 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
      * Sends the response to a sync-collection request.
      *
      * @param string $syncToken
+     * @param string $collectionUrl
      * @param array $modified
      * @param array $deleted
+     * @param array $properties
      * @return void
      */
-    protected function sendSyncCollectionResponse($syncToken, array $modified, array $deleted) {
+    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $modified, array $deleted, array $properties) {
 
         $dom = new DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -165,18 +194,68 @@ class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        foreach($fileProperties as $entry) {
+        foreach($modified as $item) {
+            $fullPath = $collectionUrl . $item;
 
-            $href = $entry['href'];
-            unset($entry['href']);
+            // We must still fetch the requested properties from the server
+            // class.
+            $propertyList = $this->server->getPropertiesForPath($fullPath, $properties);
 
-            $response = new Sabre_DAV_Property_Response($href,$entry);
-            $response->serialize($this,$multiStatus);
+            // The 'Property_Response' class is responsible for generating a
+            // single {DAV:}response xml element.
+            $response = new Sabre_DAV_Property_Response($href,$propertyList);
+            $response->serialize($this->server, $multiStatus);
 
         }
 
+        // Deleted items also show up as 'responses'. They have no properties,
+        // and a single {DAV:}status element set as 'HTTP/1.1 404 Not Found'.
+        foreach($deleted as $item) {
+
+            $fullPath = $collectionUrl . $item;
+            $response = new Sabre_DAV_Property_Response($href, array(), 404);
+            $response->serialize($this->server, $multiStatus);
+
+        }
+
+        $syncToken = $dom->createElement('d:synctoken', 'http://sabredav.org/ns/sync/' . $syncToken);
+        $mutliStatus->appendChild($syncToken);
+
         return $dom->saveXML();
 
+
+    }
+
+    /**
+     * This method is triggered whenever properties are requested for a node.
+     * We intercept this to see if we can must return a {DAV:}sync-token.
+     *
+     * @param string $path
+     * @param Sabre_DAV_INode $node
+     * @param array $requestedProperties
+     * @param array $returnedProperties
+     * @return void
+     */
+    public function beforeGetProperties($path, Sabre_DAV_INode $node, array &$requestedProperties, array &$returnedProperties) {
+
+        if (!in_array('{DAV:}sync-token', $requestedProperties)) {
+            return;
+        }
+
+        if (!$node instanceof Sabre_DAV_Sync_ISyncCollection) {
+            return;
+        }
+
+        $token = $node->getSyncToken();
+        if (!$token) {
+            return;
+        }
+
+        // Unsetting the property from requested properties.
+        $index = array_search('{DAV:}sync-token', $requestedProperties);
+        unset($requestedProperties[$index]);
+
+        $returnedProperties[200]['{DAV:}sync-token'] = 'http://sabredav.org/ns/sync/' . $token;
 
     }
 

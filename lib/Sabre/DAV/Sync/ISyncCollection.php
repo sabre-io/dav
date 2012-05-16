@@ -3,6 +3,10 @@
 /**
  * If a class extends ISyncCollection, it supports WebDAV-sync.
  *
+ * You are responsible for maintaining a changelist for this collection. This
+ * means that if any child nodes in this collection was created, modified or
+ * deleted in any way, you should maintain an updated changelist.
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
@@ -12,15 +16,15 @@
 interface Sabre_DAV_ISyncCollection extends Sabre_DAV_Collection {
 
     /**
-     * This method returns true or false, depending on if any sync information
-     * is available.
+     * This method returns the current sync-token for this collection.
+     * This can be any string.
      *
-     * If there's no sync information available, any sync-related reports will
-     * be returned as 'unsupported'.
+     * If null is returned from this function, the plugin assumes there's no
+     * sync information available.
      *
-     * @return bool
+     * @return string|null
      */
-    function hasSyncInfo();
+    function getSyncToken();
 
     /**
      * The getChanges method returns all the changes that have happened, since

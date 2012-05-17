@@ -34,6 +34,8 @@
 	  sure every iCalendar object only contains 1 component, and disallowing
 	  vcards, forcing every component to have a UID.
 	* Fixed: Basic validation for vcards in the CardDAV plugin.
+	* Fixed: Issue 213: Workaround for an Evolution bug, that prevented it
+	  from updating events.
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

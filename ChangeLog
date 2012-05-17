@@ -23,6 +23,7 @@
 	  method to update parts of a file.
 	* Fixed: Issue 211: A time-limit query on a non-relative alarm trigger in
 	  a recurring event could result in an endless loop.
+	* Fixed: Issue 215: PostgreSQL compatibility issue in PDO locks backend.
 
 1.6.3-stable (2012-??-??)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

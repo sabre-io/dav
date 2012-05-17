@@ -75,6 +75,36 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
 
     }
 
+    public function testSetGroupMembersContainingBaseUriAndTrailingSlash() {
+
+        $tree = array(
+            new Sabre_DAVACL_MockPrincipal('foo','foo'),
+        );
+        $server = new Sabre_DAV_Server($tree);
+        $server->setBaseUri('/the/baseUri/');
+        $server->addPlugin(new Sabre_DAVACL_Plugin());
+
+        $result = $server->updateProperties('foo', array(
+            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array(
+                '/the/baseUri/principal/user01/calendar-proxy-read/',
+                '/the/baseUri/principal/user02/calendar-proxy-write/'
+            )),
+        ));
+
+        $expected = array(
+            'href' => 'foo',
+            '200' => array(
+                '{DAV:}group-member-set' => null,
+            ),
+        );
+
+        $this->assertEquals($expected, $result);
+        $this->assertEquals(array(
+            'principal/user01/calendar-proxy-read',
+            'principal/user02/calendar-proxy-write'
+        ),$tree[0]->getGroupMemberSet());
+    }
+
     /**
      * @expectedException sabre_DAV_Exception
      */

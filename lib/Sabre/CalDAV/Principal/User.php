@@ -16,6 +16,19 @@
 class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabre_DAV_ICollection {
 
     /**
+     * This method is set by the Sabre_CalDAV_Principal_Collection. If it's
+     * set to true, all authenticated users will have read access to the user object.
+     *
+     * @var bool
+     */
+    protected $allowPrincipalRead = false;
+
+    public function __construct($type, $href = null, $allowPrincipalRead = false) {
+        $this->allowPrincipalRead = $allowPrincipalRead;
+        parent::__construct($type, $href);
+    }
+
+    /**
      * Creates a new file in the directory
      *
      * @param string $name Name of the file
@@ -125,6 +138,14 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
             'principal' => $this->principalProperties['uri'] . '/calendar-proxy-write',
             'protected' => true,
         );
+        if ($this->allowPrincipalRead) {
+            $acl[] = array(
+                'privilege' => '{DAV:}read',
+                'principal' => '{DAV:}authenticated',
+                'protected' => true,
+            );
+        }
+
         return $acl;
 
     }

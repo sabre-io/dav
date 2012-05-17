@@ -115,11 +115,17 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This list is used in the response of a HTTP OPTIONS request.
      *
+     * The feature 'calendarserver-principal-property-search' is required to make the feature available in iCal 4, the command 
+     * sent by iCal is then just 'principal-property-search' and not 'calendarserver-principal-property-search'.
+     * 
      * @return array
      */
     public function getFeatures() {
 
-        return array('access-control');
+        return array(
+            'access-control',        
+            'calendarserver-principal-property-search',
+        );
 
     }
 
@@ -916,6 +922,16 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             $memberSet = array();
         } elseif ($propertyDelta['{DAV:}group-member-set'] instanceof Sabre_DAV_Property_HrefList) {
             $memberSet = $propertyDelta['{DAV:}group-member-set']->getHrefs();
+
+            /*
+             * remove baseUri and trailing slash
+             */
+            foreach($memberSet as $key => $value) {
+                if (substr($value, 0, strlen($this->server->getBaseUri())) == $this->server->getBaseUri()) {
+                    $value = substr($value, strlen($this->server->getBaseUri()));
+                }
+                $memberSet[$key] = rtrim($value, '/');
+            }
         } else {
             throw new Sabre_DAV_Exception('The group-member-set property MUST be an instance of Sabre_DAV_Property_HrefList or null');
         }

@@ -14,6 +14,11 @@
  */
 class Sabre_DAV_Sync_Plugin extends Sabre_DAV_ServerPlugin {
 
+    /**
+     * Reference to server object
+     *
+     * @var Sabre_DAV_Server
+     */
     protected $server;
 
     /**

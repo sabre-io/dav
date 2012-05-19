@@ -458,7 +458,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception('The urls parameter should either be null, a string or an array');
         }
 
-        $conditions = $this->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         // We're going to loop through the urls and make sure all lock conditions are satisfied
         foreach($urls as $url) {
@@ -556,55 +556,6 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
         // We got here, this means every condition was satisfied
         return true;
-
-    }
-
-    /**
-     * This method is created to extract information from the WebDAV HTTP 'If:' header
-     *
-     * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
-     * The function will return an array, containing structs with the following keys
-     *
-     *   * uri   - the uri the condition applies to. If this is returned as an
-     *     empty string, this implies it's referring to the request url.
-     *   * tokens - The lock token. another 2 dimensional array containing 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
-     *   * etag - an etag, if supplied
-     *
-     * @return array
-     */
-    public function getIfConditions() {
-
-        $header = $this->server->httpRequest->getHeader('If');
-        if (!$header) return array();
-
-        $matches = array();
-
-        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im';
-        preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
-
-        $conditions = array();
-
-        foreach($matches as $match) {
-
-            $condition = array(
-                'uri'   => $match['uri'],
-                'tokens' => array(
-                    array($match['not']?0:1,$match['token'],isset($match['etag'])?$match['etag']:'')
-                ),
-            );
-
-            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array(
-                $match['not']?0:1,
-                $match['token'],
-                isset($match['etag'])?$match['etag']:''
-            );
-            else {
-                $conditions[] = $condition;
-            }
-
-        }
-
-        return $conditions;
 
     }
 

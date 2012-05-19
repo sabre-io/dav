@@ -5,20 +5,6 @@ require_once 'Sabre/DAV/AbstractServer.php';
 
 class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
 
-    /**
-     * @var Sabre_DAV_Locks_Plugin
-     */
-    protected $locksPlugin;
-
-    function setUp() {
-
-        parent::setUp();
-        $locksPlugin = new Sabre_DAV_Locks_Plugin();
-        $this->server->addPlugin($locksPlugin);
-        $this->locksPlugin = $locksPlugin;
-
-    }
-
     function testNoConditions() {
 
         $serverVars = array(
@@ -27,7 +13,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
         $this->assertEquals(array(),$conditions);
 
     }
@@ -41,7 +27,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -72,7 +58,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -102,7 +88,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -132,7 +118,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -167,7 +153,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -207,7 +193,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -252,7 +238,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -281,7 +267,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 
@@ -317,7 +303,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $request = new Sabre_HTTP_Request($serverVars);
         $this->server->httpRequest = ($request);
 
-        $conditions = $this->locksPlugin->getIfConditions();
+        $conditions = $this->server->getIfConditions();
 
         $compare = array(
 

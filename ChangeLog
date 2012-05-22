@@ -36,6 +36,8 @@
 	* Fixed: Basic validation for vcards in the CardDAV plugin.
 	* Fixed: Issue 213: Workaround for an Evolution bug, that prevented it
 	  from updating events.
+	* Fixed: Issue 211: A time-limit query on a non-relative alarm trigger in
+	  a recurring event could result in an endless loop.
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

@@ -1885,6 +1885,13 @@ class Sabre_DAV_Server {
             }
 
         }
+
+        // Now the hardest, the If: header. The If: header can contain multiple
+        // urls, etags and so-called 'state tokens'.
+        //
+        // Examples of state tokens include lock-tokens (as defined in rfc4918)
+    // and sync-tokens (as defined in rfc
+
         return true;
 
     }

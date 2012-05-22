@@ -16,6 +16,18 @@
  */
 class Sabre_DAV_Client {
 
+    /**
+     * The propertyMap is a key-value array.
+     *
+     * If you use the propertyMap, any {DAV:}multistatus responses with the
+     * proeprties listed in this array, will automatically be mapped to a
+     * respective class.
+     *
+     * The {DAV:}resourcetype property is automatically added. This maps to
+     * Sabre_DAV_Property_ResourceType
+     *
+     * @var array
+     */
     public $propertyMap = array();
 
     protected $baseUri;
@@ -314,10 +326,10 @@ class Sabre_DAV_Client {
             $curlType = 0;
             if ($this->authType & self::AUTH_BASIC) {
                 $curlType |= CURLAUTH_BASIC;
-            } 
+            }
             if ($this->authType & self::AUTH_DIGEST) {
                 $curlType |= CURLAUTH_DIGEST;
-            } 
+            }
             $curlSettings[CURLOPT_HTTPAUTH] = $curlType;
             $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
         }

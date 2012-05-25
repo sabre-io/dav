@@ -11,6 +11,9 @@
 	  from updating events.
 	* Fixed: Issue 211: A time-limit query on a non-relative alarm trigger in
 	  a recurring event could result in an endless loop.
+	* Fixed: All uri fields are now a maximum of 200 characters. The Bynari
+	  outlook plugin used much longer strings so this should improve
+	  compatibility.
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

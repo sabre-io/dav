@@ -2,7 +2,7 @@ CREATE TABLE addressbooks (
     id SERIAL NOT NULL,
     principaluri VARCHAR(255),
     displayname VARCHAR(255),
-    uri VARCHAR(100),
+    uri VARCHAR(200),
     description TEXT,
     ctag INTEGER NOT NULL DEFAULT 1
 );
@@ -17,7 +17,7 @@ CREATE TABLE cards (
     id SERIAL NOT NULL,
     addressbookid INTEGER NOT NULL,
     carddata TEXT,
-    uri VARCHAR(100),
+    uri VARCHAR(200),
     lastmodified INTEGER
 );
 

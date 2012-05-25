@@ -2,7 +2,7 @@ CREATE TABLE calendars (
     id SERIAL NOT NULL,
     principaluri VARCHAR(100),
     displayname VARCHAR(100),
-    uri VARCHAR(100),
+    uri VARCHAR(200),
     ctag INTEGER NOT NULL DEFAULT 0,
     description TEXT,
     calendarorder INTEGER NOT NULL DEFAULT 0,
@@ -21,7 +21,7 @@ CREATE TABLE calendarobjects (
     id SERIAL NOT NULL,
     calendarid INTEGER NOT NULL,
     calendardata TEXT,
-    uri VARCHAR(100),
+    uri VARCHAR(200),
     lastmodified INTEGER
 );
 

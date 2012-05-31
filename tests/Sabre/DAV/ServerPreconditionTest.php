@@ -78,11 +78,11 @@ class Sabre_DAV_ServerPreconditionsTest extends PHPUnit_Framework_TestCase {
      * Evolution sometimes uses \" instead of " for If-Match headers.
      *
      * @covers Sabre_DAV_Server::checkPreconditions
-     * @depends testIfMatchCorrectETag
+     * @depends testIfMatchCorrectEtag
      */
     function testIfMatchEvolutionEtag() {
 
-        $root = new Sabre_DAV_SimpleDirectory('root',array(new Sabre_DAV_ServerPreconditionsNode()));
+        $root = new Sabre_DAV_SimpleCollection('root',array(new Sabre_DAV_ServerPreconditionsNode()));
         $server = new Sabre_DAV_Server($root);
         $httpRequest = new Sabre_HTTP_Request(array(
             'HTTP_IF_MATCH' => '\\"abc123\\"',

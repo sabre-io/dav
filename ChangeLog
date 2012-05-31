@@ -9,6 +9,9 @@
 		- Sabre_DAV_SimpleDirectory (now: Sabre_DAV_SimpleCollection)
 	    - Sabre_VObject_Element_DateTime (now: Sabre_VObject_Property_DateTime)
 		- Sabre_VObject_Element_MultiDateTime (now .._Property_MultiDateTime)
+	* BC Break: Sabre_CalDAV_Schedule_IMip::sendMessage now has an extra
+	  argument. If you extended this class, you should fix this method. It's
+	  only used for informational purposes.
 	* Changed: Responsibility for dealing with the calendar-query is now moved
 	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
 	  optimizations.
@@ -21,7 +24,6 @@
 	  where we already has an exception class.
 	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the PATCH
 	  method to update parts of a file.
-	* Fixed: Issue 215: PostgreSQL compatibility issue in PDO locks backend.
 
 1.6.3-stable (2012-??-??)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

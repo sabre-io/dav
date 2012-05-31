@@ -52,6 +52,35 @@ class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCas
 
     }
 
+    function testNoFilter() {
+
+        // This is non-standard, but helps working around a KDE bug
+        $xml = array(
+            '<?xml version="1.0"?>',
+            '<c:addressbook-query xmlns:c="urn:ietf:params:xml:ns:carddav" xmlns:d="DAV:">',
+            '   <d:prop>',
+            '      <d:foo />',
+            '   </d:prop>',
+            '</c:addressbook-query>'
+        );
+
+        $q = $this->parse($xml);
+
+        $this->assertEquals(
+            array('{DAV:}foo'),
+            $q->requestedProperties
+        );
+
+        $this->assertEquals(
+            array(),
+            $q->filters
+        );
+
+        $this->assertNull($q->limit);
+        $this->assertEquals('anyof', $q->test);
+
+    }
+
     /**
      * @expectedException Sabre_DAV_Exception_BadRequest
      */

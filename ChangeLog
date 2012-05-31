@@ -14,6 +14,8 @@
 	* Fixed: All uri fields are now a maximum of 200 characters. The Bynari
 	  outlook plugin used much longer strings so this should improve
 	  compatibility.
+	* Fixed: Added a workaround for a bug in KDE 4.8.2 contact syncing. See
+	  https://bugs.kde.org/show_bug.cgi?id=300047
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

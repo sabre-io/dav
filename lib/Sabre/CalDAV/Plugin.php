@@ -813,7 +813,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
-            $this->iMIPMessage($originator, $recipients, $vObject);
+            $this->iMIPMessage($originator, $recipients, $vObject, $principal);
             $this->server->httpResponse->sendStatus(200);
             $this->server->httpResponse->sendBody('Messages sent');
         } else {
@@ -828,14 +828,15 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $originator
      * @param array $recipients
      * @param Sabre_VObject_Component $vObject
+     * @param string $principal Principal url
      * @return void
      */
-    protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject) {
+    protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
             throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
         }
-        $this->imipHandler->sendMessage($originator, $recipients, $vObject);
+        $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
 
     }
 

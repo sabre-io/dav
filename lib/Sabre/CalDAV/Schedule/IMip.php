@@ -42,12 +42,13 @@ class Sabre_CalDAV_Schedule_IMip {
     /**
      * Sends one or more iTip messages through email.
      *
-     * @param string $originator
-     * @param array $recipients
+     * @param string $originator Originator Email
+     * @param array $recipients Array of email addresses
      * @param Sabre_VObject_Component $vObject
+     * @param string $principal Principal Url of the originator
      * @return void
      */
-    public function sendMessage($originator, array $recipients, Sabre_VObject_Component $vObject) {
+    public function sendMessage($originator, array $recipients, Sabre_VObject_Component $vObject, $principal) {
 
         foreach($recipients as $recipient) {
 

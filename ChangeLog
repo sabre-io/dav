@@ -9,6 +9,9 @@
 		- Sabre_DAV_SimpleDirectory (now: Sabre_DAV_SimpleCollection)
 	    - Sabre_VObject_Element_DateTime (now: Sabre_VObject_Property_DateTime)
 		- Sabre_VObject_Element_MultiDateTime (now .._Property_MultiDateTime)
+	* BC Break: Sabre_CalDAV_Schedule_IMip::sendMessage now has an extra
+	  argument. If you extended this class, you should fix this method. It's
+	  only used for informational purposes.
 	* Changed: Responsibility for dealing with the calendar-query is now moved
 	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
 	  optimizations.
@@ -21,8 +24,6 @@
 	  where we already has an exception class.
 	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the PATCH
 	  method to update parts of a file.
-	* Fixed: Issue 211: A time-limit query on a non-relative alarm trigger in
-	  a recurring event could result in an endless loop.
 
 1.6.3-stable (2012-??-??)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of
@@ -33,6 +34,15 @@
 	  sure every iCalendar object only contains 1 component, and disallowing
 	  vcards, forcing every component to have a UID.
 	* Fixed: Basic validation for vcards in the CardDAV plugin.
+	* Fixed: Issue 213: Workaround for an Evolution bug, that prevented it
+	  from updating events.
+	* Fixed: Issue 211: A time-limit query on a non-relative alarm trigger in
+	  a recurring event could result in an endless loop.
+	* Fixed: All uri fields are now a maximum of 200 characters. The Bynari
+	  outlook plugin used much longer strings so this should improve
+	  compatibility.
+	* Fixed: Added a workaround for a bug in KDE 4.8.2 contact syncing. See
+	  https://bugs.kde.org/show_bug.cgi?id=300047
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

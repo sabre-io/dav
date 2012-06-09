@@ -43,6 +43,7 @@
 	  compatibility.
 	* Fixed: Added a workaround for a bug in KDE 4.8.2 contact syncing. See
 	  https://bugs.kde.org/show_bug.cgi?id=300047
+	* Fixed: Issue 217: Sabre_DAV_Tree_FileSystem was pretty broken.
 
 1.6.2-stable (2012-04-16)
 	* Fixed: Sabre_VObject_Node::$parent should have been public.

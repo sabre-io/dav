@@ -37,6 +37,8 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
         $fs = new Sabre_DAV_Tree_Filesystem(SABRE_TEMPDIR);
         $node = $fs->getNodeForPath('dir');
         $this->assertTrue($node instanceof Sabre_DAV_FS_Directory);
+        $this->assertEquals('dir', $node->getName());
+        $this->assertInternalType('array', $node->getChildren());
 
     }
 

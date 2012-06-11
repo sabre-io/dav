@@ -1,29 +1,30 @@
 1.7.0-alpha (2012-??-??)
-    * BC Break: The calendarobjects database table has a bunch of new fields,
-	  and a migration script is required to ensure everything will keep
-	  working. Read the wiki for more details. 
+    * BC Break: The calendarobjects database table has a bunch of new
+	  fields, and a migration script is required to ensure everything will
+	  keep working. Read the wiki for more details.
 	* BC Break: The iCalendar interface now has a new method: calendarQuery.
 	* BC Break: In this version a number of classes have been deleted, that
 	  have been previously deprecated. Namely:
 		- Sabre_DAV_Directory (now: Sabre_DAV_Collection)
 		- Sabre_DAV_SimpleDirectory (now: Sabre_DAV_SimpleCollection)
-	    - Sabre_VObject_Element_DateTime (now: Sabre_VObject_Property_DateTime)
-		- Sabre_VObject_Element_MultiDateTime (now .._Property_MultiDateTime)
+	    - Sabre_VObject_Element_DateTime (now: .._Property_DateTime)
+		- Sabre_VObject_Element_MultiDateTime (-> .._Property_MultiDateTime)
 	* BC Break: Sabre_CalDAV_Schedule_IMip::sendMessage now has an extra
 	  argument. If you extended this class, you should fix this method. It's
 	  only used for informational purposes.
-	* Changed: Responsibility for dealing with the calendar-query is now moved
-	  from the CalDAV plugin to the CalDAV backends. This allows for heavy
-	  optimizations.
-	* Changed: The CalDAV PDO backend is now a lot faster for common calendar
-	  queries. 
-	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8 encoded.
+	* Changed: Responsibility for dealing with the calendar-query is now
+	  moved from the CalDAV plugin to the CalDAV backends. This allows for
+	  heavy optimizations.
+	* Changed: The CalDAV PDO backend is now a lot faster for common
+	  calendar queries.
+	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8
+	  encoded.
 	* Fixed: Workaround for the SOGO connector, as it doesn't understand
 	  receiving "text/x-vcard; charset=utf-8" for a contenttype.
 	* Added: Sabre_DAV_Client now throws more specific exceptions in cases
 	  where we already has an exception class.
-	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the PATCH
-	  method to update parts of a file.
+	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the
+	  PATCH method to update parts of a file.
 
 1.6.3-stable (2012-??-??)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

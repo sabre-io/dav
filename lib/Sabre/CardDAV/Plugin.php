@@ -439,6 +439,8 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $vcard = Sabre_VObject_Reader::read($vcardData);
 
+        if (!$filters) return true;
+
         foreach($filters as $filter) {
 
             $isDefined = isset($vcard->{$filter['name']});

@@ -18,7 +18,7 @@ class Sabre_VObject_WindowsTimezoneMapTest extends PHPUnit_Framework_TestCase {
             function($value) {
                 return array($value);
             },
-            Sabre_VObject_WindowsTimeZoneMap::$map
+            Sabre_VObject_WindowsTimezoneMap::$map
         );
 
     }

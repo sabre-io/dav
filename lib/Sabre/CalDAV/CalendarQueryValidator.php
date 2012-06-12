@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\VObject;
+
 /**
  * CalendarQuery Validator
  *
@@ -15,18 +18,18 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarQueryValidator {
+class CalendarQueryValidator {
 
     /**
      * Verify if a list of filters applies to the calendar data object
      *
-     * The list of filters must be formatted as parsed by Sabre_CalDAV_CalendarQueryParser
+     * The list of filters must be formatted as parsed by \Sabre\CalDAV\CalendarQueryParser
      *
-     * @param Sabre_VObject_Component $vObject
+     * @param \Sabre\VObject\Component $vObject
      * @param array $filters
      * @return bool
      */
-    public function validate(Sabre_VObject_Component $vObject,array $filters) {
+    public function validate(VObject\Component $vObject,array $filters) {
 
         // The top level object is always a component filter.
         // We'll parse it manually, as it's pretty simple.
@@ -48,11 +51,11 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * component we're checking should be specified, not the component to check
      * itself.
      *
-     * @param Sabre_VObject_Component $parent
+     * @param \Sabre\VObject\Component $parent
      * @param array $filters
      * @return bool
      */
-    protected function validateCompFilters(Sabre_VObject_Component $parent, array $filters) {
+    protected function validateCompFilters(VObject\Component $parent, array $filters) {
 
         foreach($filters as $filter) {
 
@@ -117,11 +120,11 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * property we're checking should be specified, not the property to check
      * itself.
      *
-     * @param Sabre_VObject_Component $parent
+     * @param \Sabre\VObject\Component $parent
      * @param array $filters
      * @return bool
      */
-    protected function validatePropFilters(Sabre_VObject_Component $parent, array $filters) {
+    protected function validatePropFilters(VObject\Component $parent, array $filters) {
 
         foreach($filters as $filter) {
 
@@ -187,11 +190,11 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * parameter we're checking should be specified, not the parameter to check
      * itself.
      *
-     * @param Sabre_VObject_Property $parent
+     * @param \Sabre\VObject\Property $parent
      * @param array $filters
      * @return bool
      */
-    protected function validateParamFilters(Sabre_VObject_Property $parent, array $filters) {
+    protected function validateParamFilters(VObject_Property $parent, array $filters) {
 
         foreach($filters as $filter) {
 
@@ -243,15 +246,15 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * A single text-match should be specified as well as the specific property
      * or parameter we need to validate.
      *
-     * @param Sabre_VObject_Node $parent
+     * @param \Sabre\VObject\Node $parent
      * @param array $textMatch
      * @return bool
      */
-    protected function validateTextMatch(Sabre_VObject_Node $parent, array $textMatch) {
+    protected function validateTextMatch(VObject\Node $parent, array $textMatch) {
 
         $value = (string)$parent;
 
-        $isMatching = Sabre_DAV_StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
+        $isMatching = \Sabre\DAV\StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
 
         return ($textMatch['negate-condition'] xor $isMatching);
 
@@ -263,12 +266,12 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * This is all based on the rules specified in rfc4791, which are quite
      * complex.
      *
-     * @param Sabre_VObject_Node $component
+     * @param \Sabre\VObject\Node $component
      * @param DateTime $start
      * @param DateTime $end
      * @return bool
      */
-    protected function validateTimeRange(Sabre_VObject_Node $component, $start, $end) {
+    protected function validateTimeRange(\Sabre\VObject\Node $component, $start, $end) {
 
         if (is_null($start)) {
             $start = new DateTime('1900-01-01');
@@ -296,7 +299,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 if ($component->parent->name === 'VEVENT' && $component->parent->RRULE) {
 
                     // Fire up the iterator!
-                    $it = new Sabre_VObject_RecurrenceIterator($component->parent->parent, (string)$component->parent->UID);
+                    $it = new VObject\RecurrenceIterator($component->parent->parent, (string)$component->parent->UID);
                     while($it->valid()) {
                         $expandedEvent = $it->getEventObject();
 
@@ -346,7 +349,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 }
 
             case 'VFREEBUSY' :
-                throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
+                throw new \Sabre\DAV\Exception\NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
 
             case 'COMPLETED' :
             case 'CREATED' :
@@ -360,7 +363,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
 
             default :
-                throw new Sabre_DAV_Exception_BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');
+                throw new \Sabre\DAV\Exception\BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');
 
         }
 

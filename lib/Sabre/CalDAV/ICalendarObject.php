@@ -1,8 +1,11 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\DAV;
+
 /**
  * CalendarObject interface
-/**
+ *
  * Extend the ICalendarObject interface to allow your custom nodes to be picked up as
  * CalendarObjects.
  *
@@ -14,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CalDAV_ICalendarObject extends Sabre_DAV_IFile {
+interface ICalendarObject extends DAV\IFile {
 
 }
 

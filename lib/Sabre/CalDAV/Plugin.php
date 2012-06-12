@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\DAV;
+use Sabre\DAVACL;
+
 /**
  * CalDAV plugin
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
+class Plugin extends DAV\ServerPlugin {
 
     /**
      * This is the official CalDAV namespace
@@ -33,14 +37,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Reference to server object
      *
-     * @var Sabre_DAV_Server
+     * @var DAV\Server
      */
     private $server;
 
     /**
      * The email handler for invites and other scheduling messages.
      *
-     * @var Sabre_CalDAV_Schedule_IMip
+     * @var Schedule\IMip
      */
     protected $imipHandler;
 
@@ -55,10 +59,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * the server doesn't, iCal will display errors when inviting people to
      * events.
      *
-     * @param Sabre_CalDAV_Schedule_IMip $imipHandler
+     * @param Schedule\IMip $imipHandler
      * @return void
      */
-    public function setIMipHandler(Sabre_CalDAV_Schedule_IMip $imipHandler) {
+    public function setIMipHandler(Schedule\IMip $imipHandler) {
 
         $this->imipHandler = $imipHandler;
 
@@ -78,14 +82,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // The MKCALENDAR is only available on unmapped uri's, whose
         // parents extend IExtendedCollection
-        list($parent, $name) = Sabre_DAV_URLUtil::splitPath($uri);
+        list($parent, $name) = DAV\URLUtil::splitPath($uri);
 
         $node = $this->server->tree->getNodeForPath($parent);
 
-        if ($node instanceof Sabre_DAV_IExtendedCollection) {
+        if ($node instanceof DAV\IExtendedCollection) {
             try {
                 $node->getChild($name);
-            } catch (Sabre_DAV_Exception_NotFound $e) {
+            } catch (DAV\Exception\NotFound $e) {
                 return array('MKCALENDAR');
             }
         }
@@ -108,7 +112,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns a plugin name.
      *
      * Using this name other plugins will be able to access other plugins
-     * using Sabre_DAV_Server::getPlugin
+     * using DAV\Server::getPlugin
      *
      * @return string
      */
@@ -133,11 +137,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $node = $this->server->tree->getNodeForPath($uri);
 
         $reports = array();
-        if ($node instanceof Sabre_CalDAV_ICalendar || $node instanceof Sabre_CalDAV_ICalendarObject) {
+        if ($node instanceof ICalendar || $node instanceof ICalendarObject) {
             $reports[] = '{' . self::NS_CALDAV . '}calendar-multiget';
             $reports[] = '{' . self::NS_CALDAV . '}calendar-query';
         }
-        if ($node instanceof Sabre_CalDAV_ICalendar) {
+        if ($node instanceof ICalendar) {
             $reports[] = '{' . self::NS_CALDAV . '}free-busy-query';
         }
         return $reports;
@@ -147,10 +151,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Initializes the plugin
      *
-     * @param Sabre_DAV_Server $server
+     * @param DAV\Server $server
      * @return void
      */
-    public function initialize(Sabre_DAV_Server $server) {
+    public function initialize(DAV\Server $server) {
 
         $this->server = $server;
 
@@ -166,12 +170,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
 
-        $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre_CalDAV_Property_SupportedCalendarComponentSet';
+        $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = '\\Sabre\\CalDAV\\Property\\SupportedCalendarComponentSet';
 
-        $server->resourceTypeMapping['Sabre_CalDAV_ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
-        $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
-        $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
-        $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
 
         array_push($server->protectedProperties,
 
@@ -219,10 +223,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 // Checking if we're talking to an outbox
                 try {
                     $node = $this->server->tree->getNodeForPath($uri);
-                } catch (Sabre_DAV_Exception_NotFound $e) {
+                } catch (DAV\Exception\NotFound $e) {
                     return;
                 }
-                if (!$node instanceof Sabre_CalDAV_Schedule_IOutbox)
+                if (!$node instanceof Schedule\IOutbox)
                     return;
 
                 $this->outboxRequest($node);
@@ -278,12 +282,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($body) {
 
-            $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
+            $dom = DAV\XMLUtil::loadDOMDocument($body);
 
             foreach($dom->firstChild->childNodes as $child) {
 
-                if (Sabre_DAV_XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
-                foreach(Sabre_DAV_XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
+                if (DAV\XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
+                foreach(DAV\XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
                     $properties[$k] = $prop;
                 }
 
@@ -306,14 +310,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * properties.
      *
      * @param string $path
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @return void
      */
-    public function beforeGetProperties($path, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
+    public function beforeGetProperties($path, DAV\INode $node, &$requestedProperties, &$returnedProperties) {
 
-        if ($node instanceof Sabre_DAVACL_IPrincipal) {
+        if ($node instanceof DAVACL\IPrincipal) {
 
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
@@ -321,7 +325,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
                 unset($requestedProperties[$calHome]);
-                $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
+                $returnedProperties[200][$calHome] = new DAV\Property\Href($calendarHomePath);
             }
 
             // schedule-outbox-URL property
@@ -330,7 +334,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $outboxPath = self::CALENDAR_ROOT . '/' . $principalId . '/outbox';
                 unset($requestedProperties[$scheduleProp]);
-                $returnedProperties[200][$scheduleProp] = new Sabre_DAV_Property_Href($outboxPath);
+                $returnedProperties[200][$scheduleProp] = new DAV\Property\Href($outboxPath);
             }
 
             // calendar-user-address-set property
@@ -340,7 +344,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $addresses = $node->getAlternateUriSet();
                 $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl();
                 unset($requestedProperties[$calProp]);
-                $returnedProperties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
+                $returnedProperties[200][$calProp] = new DAV\Property\HrefList($addresses, false);
 
             }
 
@@ -361,21 +365,21 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     // If the node is either ap proxy-read or proxy-write
                     // group, we grab the parent principal and add it to the
                     // list.
-                    if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyRead) {
-                        list($readList[]) = Sabre_DAV_URLUtil::splitPath($group);
+                    if ($groupNode instanceof Principal\ProxyRead) {
+                        list($readList[]) = DAV\URLUtil::splitPath($group);
                     }
-                    if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyWrite) {
-                        list($writeList[]) = Sabre_DAV_URLUtil::splitPath($group);
+                    if ($groupNode instanceof Principal\ProxyWrite) {
+                        list($writeList[]) = DAV\URLUtil::splitPath($group);
                     }
 
                 }
                 if (in_array($propRead,$requestedProperties)) {
                     unset($requestedProperties[$propRead]);
-                    $returnedProperties[200][$propRead] = new Sabre_DAV_Property_HrefList($readList);
+                    $returnedProperties[200][$propRead] = new DAV\Property\HrefList($readList);
                 }
                 if (in_array($propWrite,$requestedProperties)) {
                     unset($requestedProperties[$propWrite]);
-                    $returnedProperties[200][$propWrite] = new Sabre_DAV_Property_HrefList($writeList);
+                    $returnedProperties[200][$propWrite] = new DAV\Property\HrefList($writeList);
                 }
 
             }
@@ -383,11 +387,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         } // instanceof IPrincipal
 
 
-        if ($node instanceof Sabre_CalDAV_ICalendarObject) {
+        if ($node instanceof ICalendarObject) {
             // The calendar-data property is not supposed to be a 'real'
             // property, but in large chunks of the spec it does act as such.
             // Therefore we simply expose it as a property.
-            $calDataProp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}calendar-data';
+            $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
             if (in_array($calDataProp, $requestedProperties)) {
                 unset($requestedProperties[$calDataProp]);
                 $val = $node->get();
@@ -413,11 +417,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function calendarMultiGetReport($dom) {
 
-        $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
+        $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
 
         $xpath = new DOMXPath($dom);
-        $xpath->registerNameSpace('cal',Sabre_CalDAV_Plugin::NS_CALDAV);
+        $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
         $xpath->registerNameSpace('dav','urn:DAV');
 
         $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
@@ -426,13 +430,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $start = $expandElem->getAttribute('start');
             $end = $expandElem->getAttribute('end');
             if(!$start || !$end) {
-                throw new Sabre_DAV_Exception_BadRequest('The "start" and "end" attributes are required for the CALDAV:expand element');
+                throw new DAV\Exception\BadRequest('The "start" and "end" attributes are required for the CALDAV:expand element');
             }
-            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
-            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
+            $start = VObject\DateTimeParser::parseDateTime($start);
+            $end = VObject\DateTimeParser::parseDateTime($end);
 
             if ($end <= $start) {
-                throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the expand element.');
+                throw new DAV\Exception\BadRequest('The end-date must be larger than the start-date in the expand element.');
             }
 
             $expand = true;
@@ -448,7 +452,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             list($objProps) = $this->server->getPropertiesForPath($uri,$properties);
 
             if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
-                $vObject = Sabre_VObject_Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
+                $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
                 $vObject->expand($start, $end);
                 $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
             }
@@ -474,7 +478,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function calendarQueryReport($dom) {
 
-        $parser = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $parser = new CalendarQueryParser($dom);
         $parser->parse();
 
         $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
@@ -485,7 +489,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         // The calendarobject was requested directly. In this case we handle
         // this locally.
-        if ($depth == 0 && $node instanceof Sabre_CalDAV_ICalendarObject) {
+        if ($depth == 0 && $node instanceof ICalendarObject) {
 
             $requestedCalendarData = true;
             $requestedProperties = $parser->requestedProperties;
@@ -514,8 +518,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // this.
             if (isset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) {
 
-                $validator = new Sabre_CalDAV_CalendarQueryValidator();
-                $vObject = Sabre_VObject_Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                $validator = new CalendarQueryValidator();
+                $vObject = VObject\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                 if ($validator->validate($vObject,$parser->filters)) {
 
                     // If the client didn't require the calendar-data property,
@@ -538,7 +542,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
         // If we're dealing with a calendar, the calendar itself is responsible
         // for the calendar-query.
-        if ($node instanceof Sabre_CalDAV_ICalendar && $depth = 1) {
+        if ($node instanceof ICalendar && $depth = 1) {
 
             $nodePaths = $node->calendarQuery($parser->filters);
 
@@ -549,7 +553,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 if ($parser->expand) {
                     // We need to do some post-processing
-                    $vObject = Sabre_VObject_Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                    $vObject = VObject\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                     $vObject->expand($parser->expand['start'], $parser->expand['end']);
                     $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                 }
@@ -580,7 +584,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         foreach($dom->firstChild->childNodes as $childNode) {
 
-            $clark = Sabre_DAV_XMLUtil::toClarkNotation($childNode);
+            $clark = DAV\XMLUtil::toClarkNotation($childNode);
             if ($clark == '{' . self::NS_CALDAV . '}time-range') {
                 $start = $childNode->getAttribute('start');
                 $end = $childNode->getAttribute('end');
@@ -589,26 +593,26 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
         if ($start) {
-            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
+            $start = VObject\DateTimeParser::parseDateTime($start);
         }
         if ($end) {
-            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
+            $end = VObject\DateTimeParser::parseDateTime($end);
         }
 
         if (!$start && !$end) {
-            throw new Sabre_DAV_Exception_BadRequest('The freebusy report must have a time-range filter');
+            throw new DAV\Exception\BadRequest('The freebusy report must have a time-range filter');
         }
         $acl = $this->server->getPlugin('acl');
 
         if (!$acl) {
-            throw new Sabre_DAV_Exception('The ACL plugin must be loaded for free-busy queries to work');
+            throw new DAV\Exception('The ACL plugin must be loaded for free-busy queries to work');
         }
         $uri = $this->server->getRequestUri();
         $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
 
         $calendar = $this->server->tree->getNodeForPath($uri);
-        if (!$calendar instanceof Sabre_CalDAV_ICalendar) {
-            throw new Sabre_DAV_Exception_NotImplemented('The free-busy-query REPORT is only implemented on calendars');
+        if (!$calendar instanceof ICalendar) {
+            throw new DAV\Exception\NotImplemented('The free-busy-query REPORT is only implemented on calendars');
         }
 
         $objects = array_map(function($child) {
@@ -619,7 +623,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             return $obj;
         }, $calendar->getChildren());
 
-        $generator = new Sabre_VObject_FreeBusyGenerator();
+        $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
         $result = $generator->getResult();
@@ -639,13 +643,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * valid calendar data.
      *
      * @param string $path
-     * @param Sabre_DAV_IFile $node
+     * @param DAV\IFile $node
      * @param resource $data
      * @return void
      */
-    public function beforeWriteContent($path, Sabre_DAV_IFile $node, &$data) {
+    public function beforeWriteContent($path, DAV\IFile $node, &$data) {
 
-        if (!$node instanceof Sabre_CalDAV_ICalendarObject)
+        if (!$node instanceof ICalendarObject)
             return;
 
         $this->validateICalendar($data);
@@ -660,12 +664,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $path
      * @param resource $data
-     * @param Sabre_DAV_ICollection $parentNode
+     * @param DAV\ICollection $parentNode
      * @return void
      */
-    public function beforeCreateFile($path, &$data, Sabre_DAV_ICollection $parentNode) {
+    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode) {
 
-        if (!$parentNode instanceof Sabre_CalDAV_Calendar)
+        if (!$parentNode instanceof Calendar)
             return;
 
         $this->validateICalendar($data);
@@ -688,20 +692,20 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         // Converting the data to unicode, if needed.
-        $data = Sabre_DAV_StringUtil::ensureUTF8($data);
+        $data = DAV\StringUtil::ensureUTF8($data);
 
         try {
 
-            $vobj = Sabre_VObject_Reader::read($data);
+            $vobj = VObject\Reader::read($data);
 
-        } catch (Sabre_VObject_ParseException $e) {
+        } catch (VObject\ParseException $e) {
 
-            throw new Sabre_DAV_Exception_UnsupportedMediaType('This resource only supports valid iCalendar 2.0 data. Parse error: ' . $e->getMessage());
+            throw new DAV\Exception\UnsupportedMediaType('This resource only supports valid iCalendar 2.0 data. Parse error: ' . $e->getMessage());
 
         }
 
         if ($vobj->name !== 'VCALENDAR') {
-            throw new Sabre_DAV_Exception_UnsupportedMediaType('This collection can only support iCalendar objects.');
+            throw new DAV\Exception\UnsupportedMediaType('This collection can only support iCalendar objects.');
         }
 
         $foundType = null;
@@ -716,48 +720,48 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     if (is_null($foundType)) {
                         $foundType = $component->name;
                         if (!isset($component->UID)) {
-                            throw new Sabre_DAV_Exception_BadRequest('Every ' . $component->name . ' component must have an UID');
+                            throw new DAV\Exception\BadRequest('Every ' . $component->name . ' component must have an UID');
                         }
                         $foundUID = (string)$component->UID;
                     } else {
                         if ($foundType !== $component->name) {
-                            throw new Sabre_DAV_Exception_BadRequest('A calendar object must only contain 1 component. We found a ' . $component->name . ' as well as a ' . $foundType);
+                            throw new DAV\Exception\BadRequest('A calendar object must only contain 1 component. We found a ' . $component->name . ' as well as a ' . $foundType);
                         }
                         if ($foundUID !== (string)$component->UID) {
-                            throw new Sabre_DAV_Exception_BadRequest('Every ' . $component->name . ' in this object must have identical UIDs');
+                            throw new DAV\Exception\BadRequest('Every ' . $component->name . ' in this object must have identical UIDs');
                         }
                     }
                     break;
                 default :
-                    throw new Sabre_DAV_Exception_BadRequest('You are not allowed to create components of type: ' . $component->name . ' here');
+                    throw new DAV\Exception\BadRequest('You are not allowed to create components of type: ' . $component->name . ' here');
 
             }
         }
         if (!$foundType)
-            throw new Sabre_DAV_Exception_BadRequest('iCalendar object must contain at least 1 of VEVENT, VTODO or VJOURNAL');
+            throw new DAV\Exception\BadRequest('iCalendar object must contain at least 1 of VEVENT, VTODO or VJOURNAL');
 
     }
 
     /**
      * This method handles POST requests to the schedule-outbox
      *
-     * @param Sabre_CalDAV_Schedule_IOutbox $outboxNode
+     * @param Schedule_IOutbox $outboxNode
      * @return void
      */
-    public function outboxRequest(Sabre_CalDAV_Schedule_IOutbox $outboxNode) {
+    public function outboxRequest(Schedule_IOutbox $outboxNode) {
 
         $originator = $this->server->httpRequest->getHeader('Originator');
         $recipients = $this->server->httpRequest->getHeader('Recipient');
 
         if (!$originator) {
-            throw new Sabre_DAV_Exception_BadRequest('The Originator: header must be specified when making POST requests');
+            throw new DAV\Exception\BadRequest('The Originator: header must be specified when making POST requests');
         }
         if (!$recipients) {
-            throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
+            throw new DAV\Exception\BadRequest('The Recipient: header must be specified when making POST requests');
         }
 
         if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
-            throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
+            throw new \DAV\Exception\BadRequest('Originator must start with mailto: and must be valid email address');
         }
         $originator = substr($originator,7);
 
@@ -766,7 +770,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             $recipient = trim($recipient);
             if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) {
-                throw new Sabre_DAV_Exception_BadRequest('Recipients must start with mailto: and must be valid email address');
+                throw new \DAV\Exception\BadRequest('Recipients must start with mailto: and must be valid email address');
             }
             $recipient = substr($recipient, 7);
             $recipients[$k] = $recipient;
@@ -785,13 +789,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (!in_array('mailto:' . $originator, $addresses)) {
-            throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
+            throw new DAV\Exception\Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
         }
 
         try {
-            $vObject = Sabre_VObject_Reader::read($this->server->httpRequest->getBody(true));
-        } catch (Sabre_VObject_ParseException $e) {
-            throw new Sabre_DAV_Exception_BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
+            $vObject = VObject\Reader::read($this->server->httpRequest->getBody(true));
+        } catch (VObject\ParseException $e) {
+            throw new DAV\Exception\BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
         }
 
         // Checking for the object type
@@ -803,13 +807,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             }
         }
         if (is_null($componentType)) {
-            throw new Sabre_DAV_Exception_BadRequest('We expected at least one VTODO, VJOURNAL, VFREEBUSY or VEVENT component');
+            throw new DAV\Exception\BadRequest('We expected at least one VTODO, VJOURNAL, VFREEBUSY or VEVENT component');
         }
 
         // Validating the METHOD
         $method = strtoupper((string)$vObject->METHOD);
         if (!$method) {
-            throw new Sabre_DAV_Exception_BadRequest('A METHOD property must be specified in iTIP messages');
+            throw new DAV\Exception\BadRequest('A METHOD property must be specified in iTIP messages');
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
@@ -817,7 +821,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $this->server->httpResponse->sendStatus(200);
             $this->server->httpResponse->sendBody('Messages sent');
         } else {
-            throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
+            throw new DAV\Exception\NotImplemented('This iTIP method is currently not implemented');
         }
 
     }
@@ -827,14 +831,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $originator
      * @param array $recipients
-     * @param Sabre_VObject_Component $vObject
+     * @param VObject_Component $vObject
      * @param string $principal Principal url
      * @return void
      */
-    protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject, $principal) {
+    protected function iMIPMessage($originator, array $recipients, VObject_Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
-            throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
+            throw new DAV\Exception\NotImplemented('No iMIP handler is setup on this server.');
         }
         $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
 
@@ -842,16 +846,16 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * This method is used to generate HTML output for the
-     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users
+     * DAV\Browser\Plugin. This allows us to generate an interface users
      * can use to create new calendars.
      *
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @param string $output
      * @return bool
      */
-    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
+    public function htmlActionsPanel(DAV\INode $node, &$output) {
 
-        if (!$node instanceof Sabre_CalDAV_UserCalendars)
+        if (!$node instanceof UserCalendars)
             return;
 
         $output.= '<tr><td colspan="2"><form method="post" action="">

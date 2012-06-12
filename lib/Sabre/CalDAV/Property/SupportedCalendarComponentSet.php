@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CalDAV\Property;
+use Sabre\DAV;
+
 /**
  * Supported component set property
  *
@@ -13,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Property {
+class SupportedCalendarComponentSet extends DAV\Property {
 
     /**
      * List of supported components, such as "VEVENT, VTODO"
@@ -47,11 +50,11 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Prop
     /**
      * Serializes the property in a DOMDocument
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
        $doc = $node->ownerDocument;
        foreach($this->components as $component) {
@@ -67,14 +70,14 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSet extends Sabre_DAV_Prop
     /**
      * Unserializes the DOMElement back into a Property class.
      *
-     * @param DOMElement $node
-     * @return Sabre_CalDAV_Property_SupportedCalendarComponentSet
+     * @param \DOMElement $node
+     * @return Property_SupportedCalendarComponentSet
      */
     static function unserialize(DOMElement $node) {
 
         $components = array();
         foreach($node->childNodes as $childNode) {
-            if (Sabre_DAV_XMLUtil::toClarkNotation($childNode)==='{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}comp') {
+            if (DAV\XMLUtil::toClarkNotation($childNode)==='{' . Plugin::NS_CALDAV . '}comp') {
                 $components[] = $childNode->getAttribute('name');
             }
         }

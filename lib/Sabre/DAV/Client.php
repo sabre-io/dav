@@ -314,10 +314,10 @@ class Sabre_DAV_Client {
             $curlType = 0;
             if ($this->authType & self::AUTH_BASIC) {
                 $curlType |= CURLAUTH_BASIC;
-            } 
+            }
             if ($this->authType & self::AUTH_DIGEST) {
                 $curlType |= CURLAUTH_DIGEST;
-            } 
+            }
             $curlSettings[CURLOPT_HTTPAUTH] = $curlType;
             $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
         }

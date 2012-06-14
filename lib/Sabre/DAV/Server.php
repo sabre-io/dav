@@ -207,6 +207,10 @@ class Sabre_DAV_Server {
 
         } catch (Exception $e) {
 
+            try {
+                $this->broadcastEvent('executeException', array($e, $this->getRequestUri()));
+            } catch (Exception $ignore) {
+            }
             $DOM = new DOMDocument('1.0','utf-8');
             $DOM->formatOutput = true;
 

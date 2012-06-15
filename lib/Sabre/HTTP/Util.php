@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\HTTP;
+
 /**
  * HTTP utility methods
  *
@@ -10,7 +12,7 @@
  * @author Paul Voegler
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_HTTP_Util {
+class Util {
 
     /**
      * Parses a RFC2616-compatible date string

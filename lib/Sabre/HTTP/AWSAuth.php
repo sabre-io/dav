@@ -168,8 +168,8 @@ class AWSAuth extends AbstractAuth {
             return false;
         }
 
-        $min = new DateTime('-15 minutes');
-        $max = new DateTime('+15 minutes');
+        $min = new \DateTime('-15 minutes');
+        $max = new \DateTime('+15 minutes');
 
         // We allow 15 minutes around the current date/time
         if ($date > $max || $date < $min) {

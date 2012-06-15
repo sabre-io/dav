@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\HTTP;
+
 /**
  * HTTP Digest Authentication handler
  *
@@ -25,7 +27,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
+class DigestAuth extends AbstractAuth {
 
     /**
      * These constants are used in setQOP();
@@ -68,8 +70,8 @@ class Sabre_HTTP_DigestAuth extends Sabre_HTTP_AbstractAuth {
      * Sets the quality of protection value.
      *
      * Possible values are:
-     *   Sabre_HTTP_DigestAuth::QOP_AUTH
-     *   Sabre_HTTP_DigestAuth::QOP_AUTHINT
+     *   Sabre\HTTP\DigestAuth::QOP_AUTH
+     *   Sabre\HTTP\DigestAuth::QOP_AUTHINT
      *
      * Multiple values can be specified using logical OR.
      *

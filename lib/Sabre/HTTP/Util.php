@@ -56,7 +56,7 @@ class Sabre_HTTP_Util {
         $realDate = strtotime($dateHeader);
         //strtotime can return -1 or false in case of error
         if ($realDate !== false && $realDate >= 0)
-            return new DateTime('@' . $realDate, new DateTimeZone('UTC'));
+            return new \DateTime('@' . $realDate, new \DateTimeZone('UTC'));
 
     }
 
@@ -69,12 +69,12 @@ class Sabre_HTTP_Util {
      * @param DateTime $dateTime
      * @return string
      */
-    static function toHTTPDate(DateTime $dateTime) {
+    static function toHTTPDate(\DateTime $dateTime) {
 
         // We need to clone it, as we don't want to affect the existing
         // DateTime.
         $dateTime = clone $dateTime;
-        $dateTime->setTimeZone(new DateTimeZone('GMT'));
+        $dateTime->setTimeZone(new \DateTimeZone('GMT'));
         return $dateTime->format('D, d M Y H:i:s \G\M\T');
 
     }

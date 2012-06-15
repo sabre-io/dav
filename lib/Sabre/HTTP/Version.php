@@ -1,7 +1,9 @@
 <?php
 
+namespace Sabre\HTTP;
+
 /**
- * This class contains the Sabre_HTTP version constants.
+ * This class contains the Sabre\HTTP version constants.
  *
  * @package Sabre
  * @subpackage HTTP
@@ -9,7 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_HTTP_Version {
+class Version {
 
     /**
      * Full version number

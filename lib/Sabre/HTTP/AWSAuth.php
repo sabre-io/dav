@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\HTTP;
+
 /**
  * HTTP AWS Authentication handler
  *
@@ -11,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
+class AWSAuth extends AbstractAuth {
 
     /**
      * The signature supplied by the HTTP client
@@ -158,7 +160,7 @@ class Sabre_HTTP_AWSAuth extends Sabre_HTTP_AbstractAuth {
      */
     protected function validateRFC2616Date($dateHeader) {
 
-        $date = Sabre_HTTP_Util::parseHTTPDate($dateHeader);
+        $date = Util::parseHTTPDate($dateHeader);
 
         // Unknown format
         if (!$date) {

@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_CalDAV_Property_SupportedCalendarComponentSetTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Property;
+
+class SupportedCalendarComponentSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $sccs = new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT'));
+        $sccs = new SupportedCalendarComponentSet(array('VEVENT'));
         $this->assertEquals(array('VEVENT'), $sccs->getValue());
 
     }
@@ -14,16 +16,15 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSetTest extends PHPUnit_Fr
      */
     function testSerialize() {
 
-        $property = new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VJOURNAL'));
+        $property = new SupportedCalendarComponentSet(array('VEVENT','VJOURNAL'));
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
-        $root->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
+        $root->setAttribute('xmlns:cal',\Sabre\CalDAV\Plugin::NS_CALDAV);
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new \Sabre\DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -31,7 +32,7 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSetTest extends PHPUnit_Fr
 
         $this->assertEquals(
 '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . \Sabre\CalDAV\Plugin::NS_CALDAV . '">' .
 '<cal:comp name="VEVENT"/>' .
 '<cal:comp name="VJOURNAL"/>' .
 '</d:root>
@@ -45,16 +46,16 @@ class Sabre_CalDAV_Property_SupportedCalendarComponentSetTest extends PHPUnit_Fr
     function testUnserializer() {
 
         $xml = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . \Sabre\CalDAV\Plugin::NS_CALDAV . '">' .
 '<cal:comp name="VEVENT"/>' .
 '<cal:comp name="VJOURNAL"/>' .
 '</d:root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = \Sabre\DAV\XMLUtil::loadDOMDocument($xml);
 
-        $property = Sabre_CalDAV_Property_SupportedCalendarComponentSet::unserialize($dom->firstChild);
+        $property = SupportedCalendarComponentSet::unserialize($dom->firstChild);
 
-        $this->assertTrue($property instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
+        $this->assertTrue($property instanceof SupportedCalendarComponentSet);
         $this->assertEquals(array(
             'VEVENT',
             'VJOURNAL',

@@ -1,10 +1,15 @@
 <?php
 
-class Sabre_CalDAV_Property_SupportedCollationSetTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Property;
+
+use Sabre\CalDAV;
+use Sabre\DAV;
+
+class SupportedCollationSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $scs = new Sabre_CalDAV_Property_SupportedCollationSet();
+        $scs = new SupportedCollationSet();
 
     }
 
@@ -13,16 +18,15 @@ class Sabre_CalDAV_Property_SupportedCollationSetTest extends PHPUnit_Framework_
      */
     function testSerialize() {
 
-        $property = new Sabre_CalDAV_Property_SupportedCollationSet();
+        $property = new SupportedCollationSet();
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
-        $root->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
+        $root->setAttribute('xmlns:cal',CalDAV\Plugin::NS_CALDAV);
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -30,7 +34,7 @@ class Sabre_CalDAV_Property_SupportedCollationSetTest extends PHPUnit_Framework_
 
         $this->assertEquals(
 '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '">' .
 '<cal:supported-collation>i;ascii-casemap</cal:supported-collation>' .
 '<cal:supported-collation>i;octet</cal:supported-collation>' .
 '<cal:supported-collation>i;unicode-casemap</cal:supported-collation>' .

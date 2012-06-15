@@ -1,6 +1,9 @@
 <?php
 
-class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
+namespace Sabre\CalDAV\Backend;
+use Sabre\DAV;
+
+class Mock extends AbstractBackend {
 
     private $calendarData;
     private $calendars;
@@ -168,7 +171,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract {
     function getCalendarObject($calendarId,$objectUri) {
 
         if (!isset($this->calendarData[$calendarId][$objectUri])) {
-            throw new Sabre_DAV_Exception_NotFound('Object could not be found');
+            throw new DAV\Exception\NotFound('Object could not be found');
         }
         $object = $this->calendarData[$calendarId][$objectUri];
         $object['calendarid'] = $calendarId;

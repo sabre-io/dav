@@ -1,17 +1,23 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
+use Sabre\HTTP;
+
 require_once 'Sabre/CalDAV/Backend/Mock.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_CalDAV_FreeBusyReportTest extends PHPUnit_Framework_TestCase {
+class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CalDAV_Plugin
+     * @var Sabre\CalDAV\Plugin
      */
     protected $plugin;
     /**
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
 
@@ -53,26 +59,26 @@ ics
         );
 
 
-        $caldavBackend = new Sabre_CalDAV_Backend_Mock(array(), $calendarData);
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $caldavBackend = new Backend\Mock(array(), $calendarData);
+        $principalBackend = new DAVACL\MockPrincipalBackend();
 
-        $calendar = new Sabre_CalDAV_Calendar($principalBackend,$caldavBackend, array(
+        $calendar = new Calendar($principalBackend,$caldavBackend, array(
             'id' => 1,
             'uri' => 'calendar',
             'principaluri' => 'principals/user1',
         ));
 
-        $this->server = new Sabre_DAV_Server(array($calendar));
+        $this->server = new DAV\Server(array($calendar));
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/calendar',
         ));
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->server->httpResponse = new HTTP\ResponseMock();
 
-        $this->plugin = new Sabre_CalDAV_Plugin();
+        $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
-        $this->server->addPlugin(new Sabre_DAVACL_Plugin());
+        $this->server->addPlugin(new DAVACL\Plugin());
 
     }
 
@@ -85,7 +91,7 @@ ics
 </c:free-busy-query>
 XML;
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($reportXML);
+        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
         $this->assertEquals('HTTP/1.1 200 OK', $this->server->httpResponse->status);
@@ -95,7 +101,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testFreeBusyReportNoTimeRange() {
 
@@ -105,17 +111,17 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($reportXML);
+        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotImplemented
+     * @expectedException Sabre\DAV\Exception\NotImplemented
      */
     function testFreeBusyReportWrongNode() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/',
         ));
         $this->server->httpRequest = $request;
@@ -127,18 +133,18 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($reportXML);
+        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     function testFreeBusyReportNoACLPlugin() {
 
-        $this->server = new Sabre_DAV_Server();
-        $this->plugin = new Sabre_CalDAV_Plugin();
+        $this->server = new DAV\Server();
+        $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 
         $reportXML = <<<XML
@@ -148,7 +154,7 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($reportXML);
+        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
     }

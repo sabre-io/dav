@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CalDAV_Issue172Test extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV;
+use Sabre\VObject;
+use Sabre\DAV;
+
+class Issue172Test extends \PHPUnit_Framework_TestCase {
 
     // DateTimeZone() native name: America/Los_Angeles (GMT-8 in January)
     function testBuiltInTimezoneName() {
@@ -13,7 +17,7 @@ DTEND;TZID=America/Los_Angeles:20120118T214500
 END:VEVENT
 END:VCALENDAR
 HI;
-        $validator = new Sabre_CalDAV_CalendarQueryValidator();
+        $validator = new CalendarQueryValidator();
         $filters = array(
             'name' => 'VCALENDAR',
             'comp-filters' => array(
@@ -23,14 +27,14 @@ HI;
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2012-01-18 21:00:00 GMT-08:00'),
-                        'end'   => new DateTime('2012-01-18 21:00:00 GMT-08:00'),
+                        'start' => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
+                        'end'   => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
                     ),
                 ),
             ),
             'prop-filters' => array(),
         );
-        $input = Sabre_VObject_Reader::read($input);
+        $input = VObject\Reader::read($input);
         $this->assertTrue($validator->validate($input,$filters));
     }
 
@@ -60,7 +64,7 @@ DTEND;TZID=Pacific Standard Time:20120113T110000
 END:VEVENT
 END:VCALENDAR
 HI;
-        $validator = new Sabre_CalDAV_CalendarQueryValidator();
+        $validator = new CalendarQueryValidator();
         $filters = array(
             'name' => 'VCALENDAR',
             'comp-filters' => array(
@@ -70,14 +74,14 @@ HI;
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2012-01-13 10:30:00 GMT-08:00'),
-                        'end'   => new DateTime('2012-01-13 10:30:00 GMT-08:00'),
+                        'start' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
+                        'end'   => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
                     ),
                 ),
             ),
             'prop-filters' => array(),
         );
-        $input = Sabre_VObject_Reader::read($input);
+        $input = VObject\Reader::read($input);
         $this->assertTrue($validator->validate($input,$filters));
     }
 
@@ -108,7 +112,7 @@ DTEND;TZID=My own timezone name:20120113T110000
 END:VEVENT
 END:VCALENDAR
 HI;
-        $validator = new Sabre_CalDAV_CalendarQueryValidator();
+        $validator = new CalendarQueryValidator();
         $filters = array(
             'name' => 'VCALENDAR',
             'comp-filters' => array(
@@ -118,14 +122,14 @@ HI;
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2012-01-13 10:30:00 GMT-08:00'),
-                        'end'   => new DateTime('2012-01-13 10:30:00 GMT-08:00'),
+                        'start' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
+                        'end'   => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
                     ),
                 ),
             ),
             'prop-filters' => array(),
         );
-        $input = Sabre_VObject_Reader::read($input);
+        $input = VObject\Reader::read($input);
         $this->assertTrue($validator->validate($input,$filters));
     }
 }

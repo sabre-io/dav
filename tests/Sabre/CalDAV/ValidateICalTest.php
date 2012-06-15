@@ -1,17 +1,23 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
+use Sabre\HTTP;
+
 require_once 'Sabre/CalDAV/Backend/Mock.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
+class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
     /**
-     * @var Sabre_CalDAV_Backend_Mock
+     * @var Sabre\CalDAV\Backend\Mock
      */
     protected $calBackend;
 
@@ -25,25 +31,25 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $this->calBackend = new Sabre_CalDAV_Backend_Mock($calendars,array());
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $this->calBackend = new Backend\Mock($calendars,array());
+        $principalBackend = new DAVACL\MockPrincipalBackend();
 
         $tree = array(
-            new Sabre_CalDAV_CalendarRootNode($principalBackend, $this->calBackend),
+            new CalendarRootNode($principalBackend, $this->calBackend),
         );
 
-        $this->server = new Sabre_DAV_Server($tree);
+        $this->server = new DAV\Server($tree);
         $this->server->debugExceptions = true;
 
-        $plugin = new Sabre_CalDAV_Plugin();
+        $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
         $this->server->httpResponse = $response;
 
     }
 
-    function request(Sabre_HTTP_Request $request) {
+    function request(HTTP\Request $request) {
 
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -54,7 +60,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -67,7 +73,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileValid() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -88,7 +94,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileNoComponents() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -102,7 +108,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileNoUID() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -116,7 +122,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileVCard() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -130,7 +136,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFile2Components() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -144,7 +150,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFile2UIDS() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -158,7 +164,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileWrongComponent() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -173,7 +179,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
     function testUpdateFile() {
 
         $this->calBackend->createCalendarObject('calendar1','blabla.ics','foo');
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));
@@ -187,7 +193,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
     function testUpdateFileParsableBody() {
 
         $this->calBackend->createCalendarObject('calendar1','blabla.ics','foo');
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
         ));

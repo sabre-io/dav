@@ -1,31 +1,36 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\DAVACL;
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
-class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
+class PluginTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
     /**
-     * @var Sabre_CalDAV_Plugin
+     * @var Sabre\CalDAV\Plugin
      */
     protected $plugin;
     protected $response;
     /**
-     * @var Sabre_CalDAV_Backend_PDO
+     * @var Sabre\CalDAV\Backend\PDO
      */
     protected $caldavBackend;
 
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support');
-        $this->caldavBackend = Sabre_CalDAV_TestUtil::getBackend();
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $this->caldavBackend = TestUtil::getBackend();
+        $principalBackend = new DAVACL\MockPrincipalBackend();
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-read',array('principals/user1'));
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-write',array('principals/user1'));
         $principalBackend->addPrincipal(array(
@@ -35,21 +40,21 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
             'uri' => 'principals/admin/calendar-proxy-write',
         ));
 
-        $calendars = new Sabre_CalDAV_CalendarRootNode($principalBackend,$this->caldavBackend);
-        $principals = new Sabre_CalDAV_Principal_Collection($principalBackend);
+        $calendars = new CalendarRootNode($principalBackend,$this->caldavBackend);
+        $principals = new Principal\Collection($principalBackend);
 
-        $root = new Sabre_DAV_SimpleCollection('root');
+        $root = new DAV\SimpleCollection('root');
         $root->addChild($calendars);
         $root->addChild($principals);
 
-        $objectTree = new Sabre_DAV_ObjectTree($root);
-        $this->server = new Sabre_DAV_Server($objectTree);
+        $objectTree = new DAV\ObjectTree($root);
+        $this->server = new DAV\Server($objectTree);
         $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');
-        $this->plugin = new Sabre_CalDAV_Plugin();
+        $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 
-        $this->response = new Sabre_HTTP_ResponseMock();
+        $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
     }
@@ -64,7 +69,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testUnknownMethodPassThrough() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'MKBREAKFAST',
             'REQUEST_URI'    => '/',
         ));
@@ -78,7 +83,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testReportPassThrough() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD'    => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI'       => '/',
@@ -94,7 +99,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testMkCalendarBadLocation() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'MKCALENDAR',
             'REQUEST_URI'    => '/blabla',
         ));
@@ -147,7 +152,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testMkCalendarNoParentNode() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'MKCALENDAR',
             'REQUEST_URI'    => '/doesntexist/calendar',
         ));
@@ -200,7 +205,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testMkCalendarExistingCalendar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'MKCALENDAR',
             'REQUEST_URI'    => '/calendars/user1/UUID-123467',
         ));
@@ -253,7 +258,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testMkCalendarSucceed() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'MKCALENDAR',
             'REQUEST_URI'    => '/calendars/user1/NEWCALENDAR',
         ));
@@ -334,14 +339,14 @@ END:VCALENDAR';
 
         }
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
+        $this->assertTrue($newCalendar[$sccs] instanceof Property\SupportedCalendarComponentSet);
         $this->assertEquals(array('VEVENT'),$newCalendar[$sccs]->getValue());
 
     }
 
     function testMkCalendarEmptyBodySucceed() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'MKCALENDAR',
             'REQUEST_URI'    => '/calendars/user1/NEWCALENDAR',
         ));
@@ -380,14 +385,14 @@ END:VCALENDAR';
 
         }
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $this->assertTrue($newCalendar[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet);
+        $this->assertTrue($newCalendar[$sccs] instanceof Property\SupportedCalendarComponentSet);
         $this->assertEquals(array('VEVENT','VTODO'),$newCalendar[$sccs]->getValue());
 
     }
 
     function testPrincipalProperties() {
 
-        $httpRequest = new Sabre_HTTP_Request(array(
+        $httpRequest = new HTTP\Request(array(
             'HTTP_HOST' => 'sabredav.org',
         ));
         $this->server->httpRequest = $httpRequest;
@@ -396,8 +401,8 @@ END:VCALENDAR';
             '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
             '{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',
             '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
+            '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
         ));
 
         $this->assertArrayHasKey(0,$props);
@@ -406,27 +411,27 @@ END:VCALENDAR';
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
+        $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/',$prop->getHref());
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL'];
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
+        $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/outbox',$prop->getHref());
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_HrefList);
+        $this->assertTrue($prop instanceof DAV\Property\HrefList);
         $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1'),$prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
-        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $prop);
+        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
         $this->assertEquals(array('principals/admin'), $prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
-        $this->assertInstanceOf('Sabre_DAV_Property_HrefList', $prop);
+        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
         $this->assertEquals(array('principals/admin'), $prop->getHrefs());
 
     }
@@ -443,7 +448,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
+        $this->assertInstanceOf('\\Sabre\\DAV\\Property\\SupportedReportSet', $prop);
         $value = array(
         );
         $this->assertEquals($value,$prop->getValue());
@@ -465,7 +470,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
+        $this->assertTrue($prop instanceof \Sabre\DAV\Property\SupportedReportSet);
         $value = array(
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
@@ -490,7 +495,7 @@ END:VCALENDAR';
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
             '</c:calendar-multiget>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1',
             'HTTP_DEPTH'     => '1',
@@ -502,7 +507,7 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
 
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
@@ -552,7 +557,7 @@ END:VCALENDAR';
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
             '</c:calendar-multiget>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1',
             'HTTP_DEPTH'     => '1',
@@ -564,7 +569,7 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
 
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
@@ -617,7 +622,7 @@ END:VCALENDAR';
             '</c:filter>' .
             '</c:calendar-query>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1/UUID-123467',
             'HTTP_DEPTH'     => '1',
@@ -629,7 +634,7 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
 
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
@@ -676,7 +681,7 @@ END:VCALENDAR';
             '</c:filter>' .
             '</c:calendar-query>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1//UUID-123467',
             'HTTP_DEPTH'     => '1',
@@ -688,7 +693,7 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
 
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
@@ -730,7 +735,7 @@ END:VCALENDAR';
             '</d:prop>' .
             '</c:calendar-query>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1//UUID-123467',
         ));
@@ -765,7 +770,7 @@ END:VCALENDAR';
             '</c:filter>' .
             '</c:calendar-query>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1/UUID-123467/UUID-2345',
             'HTTP_DEPTH'     => '0',
@@ -777,7 +782,7 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
 
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
@@ -825,7 +830,7 @@ END:VCALENDAR';
             '</c:filter>' .
             '</c:calendar-query>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1/UUID-123467/UUID-2345',
             'HTTP_DEPTH'     => '0',
@@ -837,7 +842,7 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
 
         $xml->registerXPathNamespace('d','urn:DAV');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
@@ -916,7 +921,7 @@ END:VCALENDAR';
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
             '</c:calendar-multiget>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1',
             'HTTP_DEPTH'     => '1',
@@ -947,7 +952,7 @@ END:VCALENDAR';
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
             '</c:calendar-multiget>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1',
             'HTTP_DEPTH'     => '1',
@@ -978,7 +983,7 @@ END:VCALENDAR';
             '<d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>' .
             '</c:calendar-multiget>';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/calendars/user1',
             'HTTP_DEPTH'     => '1',

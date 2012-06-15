@@ -1,19 +1,23 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\DAVACL;
+use Sabre\DAV;
+
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 /**
- * @covers Sabre_CalDAV_UserCalendars
+ * @covers Sabre\CalDAV\UserCalendars
  */
-class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
+class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CalDAV_UserCalendars
+     * @var Sabre\CalDAV\UserCalendars
      */
     protected $usercalendars;
     /**
-     * @var Sabre_CalDAV_Backend_PDO
+     * @var Sabre\CalDAV\Backend\PDO
      */
     protected $backend;
     protected $principalBackend;
@@ -21,9 +25,9 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $this->backend = Sabre_CalDAV_TestUtil::getBackend();
-        $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend('realm');
-        $this->usercalendars = new Sabre_CalDAV_UserCalendars($this->principalBackend, $this->backend, 'principals/user1');
+        $this->backend = TestUtil::getBackend();
+        $this->principalBackend = new DAVACL\MockPrincipalBackend('realm');
+        $this->usercalendars = new UserCalendars($this->principalBackend, $this->backend, 'principals/user1');
 
     }
 
@@ -34,7 +38,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotFound
+     * @expectedException Sabre\DAV\Exception\NotFound
      * @depends testSimple
      */
     function testGetChildNotFound() {
@@ -96,7 +100,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetACL() {
 
@@ -105,7 +109,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      * @depends testSimple
      */
     function testSetName() {
@@ -115,7 +119,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      * @depends testSimple
      */
     function testDelete() {
@@ -134,7 +138,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      * @depends testSimple
      */
     function testCreateFile() {
@@ -145,7 +149,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      * @depends testSimple
      */
     function testCreateDirectory() {
@@ -167,7 +171,7 @@ class Sabre_CalDAV_UserCalendarsTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_InvalidResourceType
+     * @expectedException Sabre\DAV\Exception\InvalidResourceType
      * @depends testSimple
      */
     function testCreateExtendedCollectionBadResourceType() {

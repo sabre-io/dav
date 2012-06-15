@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\HTTP;
+
+class UtilTest extends \PHPUnit_Framework_TestCase {
 
     function testParseHTTPDate() {
 
@@ -13,11 +15,11 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
         $expected = 1286965560;
 
         foreach($times as $time) {
-            $result = Sabre_HTTP_Util::parseHTTPDate($time);
+            $result = Util::parseHTTPDate($time);
             $this->assertEquals($expected, $result->format('U'));
         }
 
-        $result = Sabre_HTTP_Util::parseHTTPDate('Wed Oct  6 10:26:00 2010');
+        $result = Util::parseHTTPDate('Wed Oct  6 10:26:00 2010');
         $this->assertEquals(1286360760, $result->format('U'));
 
     }
@@ -34,7 +36,7 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
         );
 
         foreach($times as $time) {
-            $this->assertFalse(Sabre_HTTP_Util::parseHTTPDate($time), 'We used the string: ' . $time);
+            $this->assertFalse(Util::parseHTTPDate($time), 'We used the string: ' . $time);
         }
 
     }
@@ -52,11 +54,11 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
 
     function testToHTTPDate() {
 
-        $dt = new DateTime('2011-12-10 12:00:00 +0200');
+        $dt = new \DateTime('2011-12-10 12:00:00 +0200');
 
         $this->assertEquals(
             'Sat, 10 Dec 2011 10:00:00 GMT',
-            Sabre_HTTP_Util::toHTTPDate($dt)
+            Util::toHTTPDate($dt)
         );
 
     }

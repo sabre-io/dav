@@ -194,7 +194,7 @@ class CalendarQueryValidator {
      * @param array $filters
      * @return bool
      */
-    protected function validateParamFilters(VObject_Property $parent, array $filters) {
+    protected function validateParamFilters(VObject\Property $parent, array $filters) {
 
         foreach($filters as $filter) {
 
@@ -274,10 +274,10 @@ class CalendarQueryValidator {
     protected function validateTimeRange(\Sabre\VObject\Node $component, $start, $end) {
 
         if (is_null($start)) {
-            $start = new DateTime('1900-01-01');
+            $start = new \DateTime('1900-01-01');
         }
         if (is_null($end)) {
-            $end = new DateTime('3000-01-01');
+            $end = new \DateTime('3000-01-01');
         }
 
         switch($component->name) {

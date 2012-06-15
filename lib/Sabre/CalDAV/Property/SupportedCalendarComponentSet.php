@@ -1,7 +1,9 @@
 <?php
 
 namespace Sabre\CalDAV\Property;
+
 use Sabre\DAV;
+use Sabre\CalDAV;
 
 /**
  * Supported component set property
@@ -73,11 +75,11 @@ class SupportedCalendarComponentSet extends DAV\Property {
      * @param \DOMElement $node
      * @return Property_SupportedCalendarComponentSet
      */
-    static function unserialize(DOMElement $node) {
+    static function unserialize(\DOMElement $node) {
 
         $components = array();
         foreach($node->childNodes as $childNode) {
-            if (DAV\XMLUtil::toClarkNotation($childNode)==='{' . Plugin::NS_CALDAV . '}comp') {
+            if (DAV\XMLUtil::toClarkNotation($childNode)==='{' . CalDAV\Plugin::NS_CALDAV . '}comp') {
                 $components[] = $childNode->getAttribute('name');
             }
         }

@@ -1,8 +1,10 @@
 <?php
 
 namespace Sabre\CalDAV;
+
 use Sabre\DAV;
 use Sabre\DAVACL;
+use Sabre\VObject;
 
 /**
  * CalDAV plugin
@@ -420,7 +422,7 @@ class Plugin extends DAV\ServerPlugin {
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
 
-        $xpath = new DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
         $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
         $xpath->registerNameSpace('dav','urn:DAV');
 
@@ -577,7 +579,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DOMNode $dom
      * @return void
      */
-    protected function freeBusyQueryReport(DOMNode $dom) {
+    protected function freeBusyQueryReport(\DOMNode $dom) {
 
         $start = null;
         $end = null;
@@ -745,10 +747,10 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * This method handles POST requests to the schedule-outbox
      *
-     * @param Schedule_IOutbox $outboxNode
+     * @param Sabre\CalDAV\Schedule\IOutbox $outboxNode
      * @return void
      */
-    public function outboxRequest(Schedule_IOutbox $outboxNode) {
+    public function outboxRequest(Schedule\IOutbox $outboxNode) {
 
         $originator = $this->server->httpRequest->getHeader('Originator');
         $recipients = $this->server->httpRequest->getHeader('Recipient');
@@ -761,7 +763,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
-            throw new \DAV\Exception\BadRequest('Originator must start with mailto: and must be valid email address');
+            throw new DAV\Exception\BadRequest('Originator must start with mailto: and must be valid email address');
         }
         $originator = substr($originator,7);
 
@@ -770,7 +772,7 @@ class Plugin extends DAV\ServerPlugin {
 
             $recipient = trim($recipient);
             if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) {
-                throw new \DAV\Exception\BadRequest('Recipients must start with mailto: and must be valid email address');
+                throw new DAV\Exception\BadRequest('Recipients must start with mailto: and must be valid email address');
             }
             $recipient = substr($recipient, 7);
             $recipients[$k] = $recipient;
@@ -831,11 +833,11 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $originator
      * @param array $recipients
-     * @param VObject_Component $vObject
+     * @param Sabre\VObject\Component $vObject
      * @param string $principal Principal url
      * @return void
      */
-    protected function iMIPMessage($originator, array $recipients, VObject_Component $vObject, $principal) {
+    protected function iMIPMessage($originator, array $recipients, VObject\Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
             throw new DAV\Exception\NotImplemented('No iMIP handler is setup on this server.');

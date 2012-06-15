@@ -42,7 +42,7 @@ class Server extends DAV\Server {
      *
      * @param PDO $pdo
      */
-    public function __construct(PDO $pdo) {
+    public function __construct(\PDO $pdo) {
 
         /* Backends */
         $authBackend = new DAV\Auth\Backend\PDO($pdo);

@@ -1,6 +1,6 @@
 <?php
 
-namespace \Sabre\CalDAV;
+namespace Sabre\CalDAV;
 
 /**
  * Calendars collection
@@ -14,12 +14,12 @@ namespace \Sabre\CalDAV;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class CalDAV\CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection {
+class CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection {
 
     /**
      * CalDAV backend
      *
-     * @var \Sabre\CalDAV\Backend\Abstract
+     * @var Sabre\CalDAV\Backend\Abstract
      */
     protected $caldavBackend;
 
@@ -34,11 +34,11 @@ class CalDAV\CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection 
      * to override this.
      *
      *
-     * @param \Sabre\DAVACL\IPrincipalBackend $principalBackend
-     * @param \Sabre\CalDAV\Backend\Abstract $caldavBackend
+     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
+     * @param Sabre\CalDAV\Backend\Abstract $caldavBackend
      * @param string $principalPrefix
      */
-    public function __construct(\Sabre\DAVACL\IPrincipalBackend $principalBackend,Backend\Abstract $caldavBackend, $principalPrefix = 'principals') {
+    public function __construct(\Sabre\DAVACL\IPrincipalBackend $principalBackend,Backend\AbstractBackend $caldavBackend, $principalPrefix = 'principals') {
 
         parent::__construct($principalBackend, $principalPrefix);
         $this->caldavBackend = $caldavBackend;
@@ -49,7 +49,7 @@ class CalDAV\CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection 
      * Returns the nodename
      *
      * We're overriding this, because the default will be the 'principalPrefix',
-     * and we want it to be \Sabre\CalDAV\Plugin::CALENDAR_ROOT
+     * and we want it to be Sabre\CalDAV\Plugin::CALENDAR_ROOT
      *
      * @return string
      */
@@ -67,7 +67,7 @@ class CalDAV\CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection 
      * supplied by the authentication backend.
      *
      * @param array $principal
-     * @return \Sabre\DAV\INode
+     * @return Sabre\DAV\INode
      */
     public function getChildForPrincipal(array $principal) {
 

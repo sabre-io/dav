@@ -26,7 +26,7 @@ class SupportedCalendarData extends DAV\Property {
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
 

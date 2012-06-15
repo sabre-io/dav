@@ -64,11 +64,11 @@ class CalendarQueryParser {
      *
      * @param DOMDocument $dom
      */
-    public function __construct(DOMDocument $dom) {
+    public function __construct(\DOMDocument $dom) {
 
         $this->dom = $dom;
 
-        $this->xpath = new DOMXPath($dom);
+        $this->xpath = new \DOMXPath($dom);
         $this->xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
         $this->xpath->registerNameSpace('dav','urn:DAV');
 
@@ -110,7 +110,7 @@ class CalendarQueryParser {
      * @param DOMElement $parentNode
      * @return array
      */
-    protected function parseCompFilters(DOMElement $parentNode) {
+    protected function parseCompFilters(\DOMElement $parentNode) {
 
         $compFilterNodes = $this->xpath->query('cal:comp-filter', $parentNode);
         $result = array();
@@ -150,7 +150,7 @@ class CalendarQueryParser {
      * @param DOMElement $parentNode
      * @return array
      */
-    protected function parsePropFilters(DOMElement $parentNode) {
+    protected function parsePropFilters(\DOMElement $parentNode) {
 
         $propFilterNodes = $this->xpath->query('cal:prop-filter', $parentNode);
         $result = array();
@@ -179,7 +179,7 @@ class CalendarQueryParser {
      * @param DOMElement $parentNode
      * @return array
      */
-    protected function parseParamFilters(DOMElement $parentNode) {
+    protected function parseParamFilters(\DOMElement $parentNode) {
 
         $paramFilterNodes = $this->xpath->query('cal:param-filter', $parentNode);
         $result = array();
@@ -206,7 +206,7 @@ class CalendarQueryParser {
      * @param DOMElement $parentNode
      * @return array|null
      */
-    protected function parseTextMatch(DOMElement $parentNode) {
+    protected function parseTextMatch(\DOMElement $parentNode) {
 
         $textMatchNodes = $this->xpath->query('cal:text-match', $parentNode);
 
@@ -233,7 +233,7 @@ class CalendarQueryParser {
      * @param DOMElement $parentNode
      * @return array|null
      */
-    protected function parseTimeRange(DOMElement $parentNode) {
+    protected function parseTimeRange(\DOMElement $parentNode) {
 
         $timeRangeNodes = $this->xpath->query('cal:time-range', $parentNode);
         if ($timeRangeNodes->length === 0) {
@@ -270,7 +270,7 @@ class CalendarQueryParser {
      * @param DOMElement $parentNode 
      * @return void
      */
-    protected function parseExpand(DOMElement $parentNode) {
+    protected function parseExpand(\DOMElement $parentNode) {
 
         $start = $parentNode->getAttribute('start');
         if(!$start) {

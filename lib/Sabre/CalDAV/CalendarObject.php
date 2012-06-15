@@ -14,9 +14,9 @@ namespace Sabre\CalDAV;
 class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\DAVACL\IACL {
 
     /**
-     * \Sabre\CalDAV\Backend\Abstract
+     * Sabre\CalDAV\Backend\AbstractBackend
      *
-     * @var \Sabre\CalDAV\Backend\Abstract 
+     * @var Sabre\CalDAV\Backend\AbstractBackend
      */
     protected $caldavBackend;
 
@@ -37,19 +37,19 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     /**
      * Constructor
      *
-     * @param \Sabre\CalDAV\Backend\Abstract $caldavBackend
+     * @param Sabre\CalDAV\Backend\AbstractBackend $caldavBackend
      * @param array $calendarInfo
      * @param array $objectData
      */
-    public function __construct(Backend\Abstract $caldavBackend,array $calendarInfo,array $objectData) {
+    public function __construct(Backend\AbstractBackend $caldavBackend,array $calendarInfo,array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
 
         if (!isset($objectData['calendarid'])) {
-            throw new InvalidArgumentException('The objectData argument must contain a \'calendarid\' property');
+            throw new \InvalidArgumentException('The objectData argument must contain a \'calendarid\' property');
         }
         if (!isset($objectData['uri'])) {
-            throw new InvalidArgumentException('The objectData argument must contain an \'uri\' property');
+            throw new \InvalidArgumentException('The objectData argument must contain an \'uri\' property');
         }
 
         $this->calendarInfo = $calendarInfo;

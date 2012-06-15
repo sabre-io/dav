@@ -11,7 +11,7 @@ namespace Sabre\CalDAV\Backend;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Abstract {
+abstract class AbstractBackend {
 
     /**
      * Returns a list of calendars for a principal.

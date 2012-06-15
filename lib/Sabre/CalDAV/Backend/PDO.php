@@ -14,7 +14,7 @@ namespace Sabre\CalDAV\Backend;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PDO extends Abstract {
+class PDO extends AbstractBackend {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -24,7 +24,7 @@ class PDO extends Abstract {
     /**
      * pdo
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 
@@ -60,11 +60,11 @@ class PDO extends Abstract {
     /**
      * Creates the backend
      *
-     * @param PDO $pdo
+     * @param \PDO $pdo
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
      */
-    public function __construct(PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects') {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects') {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
@@ -104,7 +104,7 @@ class PDO extends Abstract {
         $stmt->execute(array($principalUri));
 
         $calendars = array();
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             $components = array();
             if ($row['components']) {
@@ -492,7 +492,7 @@ class PDO extends Abstract {
                 }
             } else {
                 $it = new \Sabre\VObject\RecurrenceIterator($vObject, (string)$component->UID);
-                $maxDate = new DateTime(self::MAX_DATE);
+                $maxDate = new \DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();
                 } else {

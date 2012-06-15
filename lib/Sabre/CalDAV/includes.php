@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sabre_CalDAV includes file
+ * Sabre\CalDAV includes file
  *
  * Including this file will automatically include all files from the
  * Sabre_CalDAV package.

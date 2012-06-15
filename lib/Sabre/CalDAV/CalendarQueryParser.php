@@ -1,6 +1,6 @@
 <?php
 
-namespace \Sabre\CalDAV;
+namespace Sabre\CalDAV;
 
 /**
  * Parses the calendar-query report request body.

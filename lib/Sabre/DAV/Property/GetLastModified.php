@@ -1,5 +1,10 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 /**
  * This property represents the {DAV:}getlastmodified property.
  *
@@ -15,7 +20,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
+class GetLastModified extends DAV\Property {
 
     /**
      * time
@@ -31,32 +36,32 @@ class Sabre_DAV_Property_GetLastModified extends Sabre_DAV_Property {
      */
     public function __construct($time) {
 
-        if ($time instanceof DateTime) {
+        if ($time instanceof \DateTime) {
             $this->time = $time;
         } elseif (is_int($time) || ctype_digit($time)) {
-            $this->time = new DateTime('@' . $time);
+            $this->time = new \DateTime('@' . $time);
         } else {
-            $this->time = new DateTime($time);
+            $this->time = new \DateTime($time);
         }
 
         // Setting timezone to UTC
-        $this->time->setTimezone(new DateTimeZone('UTC'));
+        $this->time->setTimezone(new \DateTimeZone('UTC'));
 
     }
 
     /**
      * serialize
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement       $prop
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, DOMElement $prop) {
+    public function serialize(DAV\Server $server, \DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
         $prop->setAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
         $prop->setAttribute('b:dt','dateTime.rfc1123');
-        $prop->nodeValue = Sabre_HTTP_Util::toHTTPDate($this->time);
+        $prop->nodeValue = HTTP\Util::toHTTPDate($this->time);
 
     }
 

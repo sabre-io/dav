@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+
 /**
  * ResponseList property
  *
@@ -13,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_ResponseList extends Sabre_DAV_Property {
+class ResponseList extends DAV\Property {
 
     /**
      * Response objects.
@@ -32,7 +36,7 @@ class Sabre_DAV_Property_ResponseList extends Sabre_DAV_Property {
 
         foreach($responses as $response) {
             if (!($response instanceof Sabre_DAV_Property_Response)) {
-                throw new InvalidArgumentException('You must pass an array of Sabre_DAV_Property_Response objects');
+                throw new \InvalidArgumentException('You must pass an array of Sabre\DAV\Property\Response objects');
             }
         }
         $this->responses = $responses;
@@ -42,11 +46,11 @@ class Sabre_DAV_Property_ResponseList extends Sabre_DAV_Property {
     /**
      * serialize
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $dom
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $dom) {
+    public function serialize(DAV\Server $server,\DOMElement $dom) {
 
         foreach($this->responses as $response) {
             $response->serialize($server, $dom);

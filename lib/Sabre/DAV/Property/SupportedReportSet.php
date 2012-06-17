@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+
 /**
  * supported-report-set property.
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_SupportedReportSet extends Sabre_DAV_Property {
+class SupportedReportSet extends DAV\Property {
 
     /**
      * List of reports
@@ -54,7 +58,7 @@ class Sabre_DAV_Property_SupportedReportSet extends Sabre_DAV_Property {
         foreach($report as $r) {
 
             if (!preg_match('/^{([^}]*)}(.*)$/',$r))
-                throw new Sabre_DAV_Exception('Reportname must be in clark-notation');
+                throw new DAV\Exception('Reportname must be in clark-notation');
 
             $this->reports[] = $r;
 
@@ -76,11 +80,11 @@ class Sabre_DAV_Property_SupportedReportSet extends Sabre_DAV_Property {
     /**
      * Serializes the node
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $prop
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, DOMElement $prop) {
+    public function serialize(DAV\Server $server, \DOMElement $prop) {
 
         foreach($this->reports as $reportName) {
 

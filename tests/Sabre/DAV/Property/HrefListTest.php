@@ -1,25 +1,28 @@
 <?php
 
-class Sabre_DAV_Property_HrefListTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV\Property;
+use Sabre\DAV;
+
+class HrefListTest extends \PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
-        $href = new Sabre_DAV_Property_HrefList(array('foo','bar'));
+        $href = new HrefList(array('foo','bar'));
         $this->assertEquals(array('foo','bar'),$href->getHrefs());
 
     }
 
     function testSerialize() {
 
-        $href = new Sabre_DAV_Property_HrefList(array('foo','bar'));
+        $href = new HrefList(array('foo','bar'));
         $this->assertEquals(array('foo','bar'),$href->getHrefs());
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:anything');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $server = new Sabre_DAV_Server();
+        $server = new DAV\Server();
         $server->setBaseUri('/bla/');
 
         $href->serialize($server, $root);
@@ -35,15 +38,15 @@ class Sabre_DAV_Property_HrefListTest extends PHPUnit_Framework_TestCase {
 
     function testSerializeNoPrefix() {
 
-        $href = new Sabre_DAV_Property_HrefList(array('foo','bar'), false);
+        $href = new HrefList(array('foo','bar'), false);
         $this->assertEquals(array('foo','bar'),$href->getHrefs());
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:anything');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $server = new Sabre_DAV_Server();
+        $server = new DAV\Server();
         $server->setBaseUri('/bla/');
 
         $href->serialize($server, $root);
@@ -63,10 +66,10 @@ class Sabre_DAV_Property_HrefListTest extends PHPUnit_Framework_TestCase {
 <d:anything xmlns:d="urn:DAV"><d:href>/bla/foo</d:href><d:href>/bla/bar</d:href></d:anything>
 ';
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $href = Sabre_DAV_Property_HrefList::unserialize($dom->firstChild);
+        $href = HrefList::unserialize($dom->firstChild);
         $this->assertEquals(array('/bla/foo','/bla/bar'),$href->getHrefs());
 
     }
@@ -77,10 +80,10 @@ class Sabre_DAV_Property_HrefListTest extends PHPUnit_Framework_TestCase {
 <d:anything xmlns:d="urn:DAV"><d:href2>/bla/foo</d:href2></d:anything>
 ';
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $href = Sabre_DAV_Property_HrefList::unserialize($dom->firstChild);
+        $href = HrefList::unserialize($dom->firstChild);
         $this->assertEquals(array(), $href->getHrefs());
 
     }

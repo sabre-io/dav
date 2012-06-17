@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+
 /**
  * Represents {DAV:}lockdiscovery property
  *
@@ -11,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
+class LockDiscovery extends DAV\Property {
 
     /**
      * locks
@@ -51,11 +55,11 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
     /**
      * serialize
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement       $prop
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, DOMElement $prop) {
+    public function serialize(DAV\Server $server, \DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
 
@@ -67,7 +71,7 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
             $lockScope = $doc->createElementNS('DAV:','d:lockscope');
             $activeLock->appendChild($lockScope);
 
-            $lockScope->appendChild($doc->createElementNS('DAV:','d:' . ($lock->scope==Sabre_DAV_Locks_LockInfo::EXCLUSIVE?'exclusive':'shared')));
+            $lockScope->appendChild($doc->createElementNS('DAV:','d:' . ($lock->scope==DAV\Locks\LockInfo::EXCLUSIVE?'exclusive':'shared')));
 
             $lockType = $doc->createElementNS('DAV:','d:locktype');
             $activeLock->appendChild($lockType);
@@ -83,7 +87,7 @@ class Sabre_DAV_Property_LockDiscovery extends Sabre_DAV_Property {
                 $lockRoot->appendChild($href);
             }
 
-            $activeLock->appendChild($doc->createElementNS('DAV:','d:depth',($lock->depth == Sabre_DAV_Server::DEPTH_INFINITY?'infinity':$lock->depth)));
+            $activeLock->appendChild($doc->createElementNS('DAV:','d:depth',($lock->depth == DAV\Server::DEPTH_INFINITY?'infinity':$lock->depth)));
             $activeLock->appendChild($doc->createElementNS('DAV:','d:timeout','Second-' . $lock->timeout));
 
             if ($this->revealLockToken) {

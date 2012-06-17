@@ -1,13 +1,18 @@
 <?php
 
+namespace Sabre\DAV\Browser;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_Browser_MapGetToPropFindTest extends Sabre_DAV_AbstractServer {
+class MapGetToPropFindTest extends DAV\AbstractServer {
 
     function setUp() {
 
         parent::setUp();
-        $this->server->addPlugin(new Sabre_DAV_Browser_MapGetToPropFind());
+        $this->server->addPlugin(new MapGetToPropFind());
 
     }
 
@@ -18,7 +23,7 @@ class Sabre_DAV_Browser_MapGetToPropFindTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();

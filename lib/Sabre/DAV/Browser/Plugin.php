@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Browser;
+
+use Sabre\DAV;
+
 /**
  * Browser Plugin
  *
@@ -15,7 +19,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
+class Plugin extends DAV\ServerPlugin {
 
     /**
      * List of default icons for nodes.
@@ -29,12 +33,12 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * @var array
      */
     public $iconMap = array(
-        'Sabre_DAV_IFile' => 'icons/file',
-        'Sabre_DAV_ICollection' => 'icons/collection',
-        'Sabre_DAVACL_IPrincipal' => 'icons/principal',
-        'Sabre_CalDAV_ICalendar' => 'icons/calendar',
-        'Sabre_CardDAV_IAddressBook' => 'icons/addressbook',
-        'Sabre_CardDAV_ICard' => 'icons/card',
+        'Sabre\\DAV\\IFile' => 'icons/file',
+        'Sabre\\DAV\\ICollection' => 'icons/collection',
+        'Sabre\\DAVACL\\IPrincipal' => 'icons/principal',
+        'Sabre\\CalDAV\\ICalendar' => 'icons/calendar',
+        'Sabre\\CardDAV\\IAddressBook' => 'icons/addressbook',
+        'Sabre\\CardDAV\\ICard' => 'icons/card',
     );
 
     /**
@@ -47,7 +51,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * reference to server class
      *
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
 
@@ -86,10 +90,10 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Initializes the plugin and subscribes to events
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @return void
      */
-    public function initialize(Sabre_DAV_Server $server) {
+    public function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $this->server->subscribeEvent('beforeMethod',array($this,'httpGetInterceptor'));
@@ -120,12 +124,12 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         try {
             $node = $this->server->tree->getNodeForPath($uri);
-        } catch (Sabre_DAV_Exception_NotFound $e) {
+        } catch (DAV\Exception\NotFound $e) {
             // We're simply stopping when the file isn't found to not interfere
             // with other plugins.
             return;
         }
-        if ($node instanceof Sabre_DAV_IFile)
+        if ($node instanceof DAV\IFile)
             return;
 
         $this->server->httpResponse->sendStatus(200);
@@ -167,7 +171,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                 case 'mkcol' :
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         // Using basename() because we won't allow slashes
-                        list(, $folderName) = Sabre_DAV_URLUtil::splitPath(trim($postVars['name']));
+                        list(, $folderName) = DAV\URLUtil::splitPath(trim($postVars['name']));
                         $this->server->createDirectory($uri . '/' . $folderName);
                     }
                     break;
@@ -175,12 +179,12 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
                     if ($_FILES) $file = current($_FILES);
                     else break;
 
-                    list(, $newName) = Sabre_DAV_URLUtil::splitPath(trim($file['name']));
+                    list(, $newName) = DAV\URLUtil::splitPath(trim($file['name']));
                     if (isset($postVars['name']) && trim($postVars['name']))
                         $newName = trim($postVars['name']);
 
                     // Making sure we only have a 'basename' component
-                    list(, $newName) = Sabre_DAV_URLUtil::splitPath($newName);
+                    list(, $newName) = DAV\URLUtil::splitPath($newName);
 
                     if (is_uploaded_file($file['tmp_name'])) {
                         $this->server->createFile($uri . '/' . $newName, fopen($file['tmp_name'],'r'));
@@ -217,8 +221,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
     public function generateDirectoryIndex($path) {
 
         $version = '';
-        if (Sabre_DAV_Server::$exposeVersion) {
-            $version = Sabre_DAV_Version::VERSION ."-". Sabre_DAV_Version::STABILITY;
+        if (DAV\Server::$exposeVersion) {
+            $version = DAV\Version::VERSION ."-". DAV\Version::STABILITY;
         }
 
         $html = "<html>
@@ -254,8 +258,8 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($path) {
 
-            list($parentUri) = Sabre_DAV_URLUtil::splitPath($path);
-            $fullPath = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+            list($parentUri) = DAV\URLUtil::splitPath($path);
+            $fullPath = DAV\URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
 
             $icon = $this->enableAssets?'<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl('icons/parent' . $this->iconExtension) . '" width="24" alt="Parent" /></a>':'';
             $html.= "<tr>
@@ -273,7 +277,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             // This is the current directory, we can skip it
             if (rtrim($file['href'],'/')==$path) continue;
 
-            list(, $name) = Sabre_DAV_URLUtil::splitPath($file['href']);
+            list(, $name) = DAV\URLUtil::splitPath($file['href']);
 
             $type = null;
 
@@ -326,9 +330,9 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
             if (!$type) $type = 'Unknown';
 
             $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
-            $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(DateTime::ATOM):'';
+            $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(\DateTime::ATOM):'';
 
-            $fullPath = Sabre_DAV_URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
+            $fullPath = DAV\URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
 
             $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
 
@@ -387,18 +391,18 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
      * This specifically generates the interfaces for creating new files, and
      * creating new directories.
      *
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @param mixed $output
      * @return void
      */
-    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
+    public function htmlActionsPanel(DAV\INode $node, &$output) {
 
-        if (!$node instanceof Sabre_DAV_ICollection)
+        if (!$node instanceof DAV\ICollection)
             return;
 
         // We also know fairly certain that if an object is a non-extended
         // SimpleCollection, we won't need to show the panel either.
-        if (get_class($node)==='Sabre_DAV_SimpleCollection')
+        if (get_class($node)==='Sabre\\DAV\\SimpleCollection')
             return;
 
         $output.= '<tr><td colspan="2"><form method="post" action="">
@@ -442,7 +446,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
         // Making sure people aren't trying to escape from the base path.
         $assetSplit = explode('/', $assetName);
         if (in_array('..',$assetSplit)) {
-            throw new Sabre_DAV_Exception('Incorrect asset path');
+            throw new DAV\Exception('Incorrect asset path');
         }
         $path = __DIR__ . '/assets/' . $assetName;
         return $path;
@@ -459,7 +463,7 @@ class Sabre_DAV_Browser_Plugin extends Sabre_DAV_ServerPlugin {
 
         $assetPath = $this->getLocalAssetPath($assetName);
         if (!file_exists($assetPath)) {
-            throw new Sabre_DAV_Exception_NotFound('Could not find an asset with this name');
+            throw new DAV\Exception\NotFound('Could not find an asset with this name');
         }
         // Rudimentary mime type detection
         switch(strtolower(substr($assetPath,strpos($assetPath,'.')+1))) {

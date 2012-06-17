@@ -1,7 +1,11 @@
 <?php
 
+namespace Sabre\DAV\Browser;
+
+use Sabre\DAV;
+
 require_once 'Sabre/DAV/AbstractServer.php';
-class Sabre_DAV_Browser_GuessContentTypeTest extends Sabre_DAV_AbstractServer {
+class GuessContentTypeTest extends DAV\AbstractServer {
 
     function setUp() {
 
@@ -34,7 +38,7 @@ class Sabre_DAV_Browser_GuessContentTypeTest extends Sabre_DAV_AbstractServer {
      */
     function testGetPropertiesPluginEnabled() {
 
-        $this->server->addPlugin(new Sabre_DAV_Browser_GuessContentType());
+        $this->server->addPlugin(new GuessContentType());
         $properties = array(
             '{DAV:}getcontenttype',
         );
@@ -51,7 +55,7 @@ class Sabre_DAV_Browser_GuessContentTypeTest extends Sabre_DAV_AbstractServer {
      */
     function testGetPropertiesUnknown() {
 
-        $this->server->addPlugin(new Sabre_DAV_Browser_GuessContentType());
+        $this->server->addPlugin(new GuessContentType());
         $properties = array(
             '{DAV:}getcontenttype',
         );

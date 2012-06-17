@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_VObject_ElementListTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class ElementListTest extends \PHPUnit_Framework_TestCase {
 
     function testIterate() {
 
-        $sub = new Sabre_VObject_Component('VEVENT');
+        $sub = new Component('VEVENT');
 
         $elems = array(
             $sub,
@@ -12,13 +14,13 @@ class Sabre_VObject_ElementListTest extends PHPUnit_Framework_TestCase {
             clone $sub
         );
 
-        $elemList = new Sabre_VObject_ElementList($elems);
+        $elemList = new ElementList($elems);
 
         $count = 0;
         foreach($elemList as $key=>$subcomponent) {
 
            $count++;
-           $this->assertInstanceOf('Sabre_VObject_Component',$subcomponent);
+           $this->assertInstanceOf('Sabre\\VObject\\Component',$subcomponent);
 
         }
         $this->assertEquals(3,$count);

@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * VObject Property
  *
@@ -17,7 +19,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Property extends Sabre_VObject_Element {
+class Property extends Element {
 
     /**
      * Propertyname
@@ -57,16 +59,16 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      * @var array
      */
     static public $classMap = array(
-        'COMPLETED'     => 'Sabre_VObject_Property_DateTime',
-        'CREATED'       => 'Sabre_VObject_Property_DateTime',
-        'DTEND'         => 'Sabre_VObject_Property_DateTime',
-        'DTSTAMP'       => 'Sabre_VObject_Property_DateTime',
-        'DTSTART'       => 'Sabre_VObject_Property_DateTime',
-        'DUE'           => 'Sabre_VObject_Property_DateTime',
-        'EXDATE'        => 'Sabre_VObject_Property_MultiDateTime',
-        'LAST-MODIFIED' => 'Sabre_VObject_Property_DateTime',
-        'RECURRENCE-ID' => 'Sabre_VObject_Property_DateTime',
-        'TRIGGER'       => 'Sabre_VObject_Property_DateTime',
+        'COMPLETED'     => 'Sabre\\VObject\\Property\\DateTime',
+        'CREATED'       => 'Sabre\\VObject\\Property\\DateTime',
+        'DTEND'         => 'Sabre\\VObject\\Property\\DateTime',
+        'DTSTAMP'       => 'Sabre\\VObject\\Property\\DateTime',
+        'DTSTART'       => 'Sabre\\VObject\\Property\\DateTime',
+        'DUE'           => 'Sabre\\VObject\\Property\\DateTime',
+        'EXDATE'        => 'Sabre\\VObject\\Property\\MultiDateTime',
+        'LAST-MODIFIED' => 'Sabre\\VObject\\Property\\DateTime',
+        'RECURRENCE-ID' => 'Sabre\\VObject\\Property\\DateTime',
+        'TRIGGER'       => 'Sabre\\VObject\\Property\\DateTime',
     );
 
     /**
@@ -75,7 +77,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      *
      * @param string $name
      * @param string $value
-     * @return Sabre_VObject_Property
+     * @return Property
      */
     static public function create($name, $value = null) {
 
@@ -102,7 +104,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      *
      * @param string $name
      * @param string $value
-     * @param Sabre_VObject_ElementList $iterator
+     * @param ElementList $iterator
      */
     public function __construct($name, $value = null, $iterator = null) {
 
@@ -180,7 +182,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      *
      * You can call this method with the following syntaxes:
      *
-     * add(Sabre_VObject_Parameter $element)
+     * add(Parameter $element)
      * add(string $name, $value)
      *
      * The first version adds an Parameter
@@ -192,24 +194,24 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      */
     public function add($item, $itemValue = null) {
 
-        if ($item instanceof Sabre_VObject_Parameter) {
+        if ($item instanceof Parameter) {
             if (!is_null($itemValue)) {
-                throw new InvalidArgumentException('The second argument must not be specified, when passing a VObject');
+                throw new \InvalidArgumentException('The second argument must not be specified, when passing a VObject');
             }
             $item->parent = $this;
             $this->parameters[] = $item;
         } elseif(is_string($item)) {
 
             if (!is_scalar($itemValue) && !is_null($itemValue)) {
-                throw new InvalidArgumentException('The second argument must be scalar');
+                throw new \InvalidArgumentException('The second argument must be scalar');
             }
-            $parameter = new Sabre_VObject_Parameter($item,$itemValue);
+            $parameter = new Parameter($item,$itemValue);
             $parameter->parent = $this;
             $this->parameters[] = $parameter;
 
         } else {
 
-            throw new InvalidArgumentException('The first argument must either be a Sabre_VObject_Element or a string');
+            throw new \InvalidArgumentException('The first argument must either be a Element or a string');
 
         }
 
@@ -240,7 +242,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
      * Returns a parameter, or parameter list.
      *
      * @param string $name
-     * @return Sabre_VObject_Element
+     * @return Element
      */
     public function offsetGet($name) {
 
@@ -258,7 +260,7 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
         } elseif (count($result)===1) {
             return $result[0];
         } else {
-            $result[0]->setIterator(new Sabre_VObject_ElementList($result));
+            $result[0]->setIterator(new ElementList($result));
             return $result[0];
         }
 
@@ -277,21 +279,21 @@ class Sabre_VObject_Property extends Sabre_VObject_Element {
 
         if (is_scalar($value)) {
             if (!is_string($name))
-                throw new InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
+                throw new \InvalidArgumentException('A parameter name must be specified. This means you cannot use the $array[]="string" to add parameters.');
 
             $this->offsetUnset($name);
-            $parameter = new Sabre_VObject_Parameter($name, $value);
+            $parameter = new Parameter($name, $value);
             $parameter->parent = $this;
             $this->parameters[] = $parameter;
 
-        } elseif ($value instanceof Sabre_VObject_Parameter) {
+        } elseif ($value instanceof Parameter) {
             if (!is_null($name))
-                throw new InvalidArgumentException('Don\'t specify a parameter name if you\'re passing a Sabre_VObject_Parameter. Add using $array[]=$parameterObject.');
+                throw new \InvalidArgumentException('Don\'t specify a parameter name if you\'re passing a \\Sabre\\VObject\\Parameter. Add using $array[]=$parameterObject.');
 
             $value->parent = $this;
             $this->parameters[] = $value;
         } else {
-            throw new InvalidArgumentException('You can only add parameters to the property object');
+            throw new \InvalidArgumentException('You can only add parameters to the property object');
         }
 
     }

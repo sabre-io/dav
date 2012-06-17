@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_VObject_Issue154Test extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class Issue154Test extends \PHPUnit_Framework_TestCase {
 
     function testStuff() {
 
-        $vcard = new Sabre_VObject_Component('VCARD');
+        $vcard = new Component('VCARD');
         $vcard->VERSION = '3.0';
         $vcard->UID = 'foo-bar';
         $vcard->PHOTO = base64_encode('random_stuff');

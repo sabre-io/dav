@@ -1,20 +1,24 @@
 <?php
 
-class Sabre_VObject_Component_VCalendarTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject\Component;
+
+use Sabre\VObject;
+
+class VCalendarTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider expandData
      */
     public function testExpand($input, $output) {
 
-        $vcal = Sabre_VObject_Reader::read($input);
+        $vcal = VObject\Reader::read($input);
         $vcal->expand(
-            new DateTime('2011-12-01'),
-            new DateTime('2011-12-31')
+            new \DateTime('2011-12-01'),
+            new \DateTime('2011-12-31')
         );
 
         // This will normalize the output
-        $output = Sabre_VObject_Reader::read($output)->serialize();
+        $output = VObject\Reader::read($output)->serialize();
 
         $this->assertEquals($output, $vcal->serialize());
 
@@ -229,10 +233,10 @@ DTSTART;VALUE=DATE:20111202
 END:VEVENT
 END:VCALENDAR
 ';
-        $vcal = Sabre_VObject_Reader::read($input);
+        $vcal = VObject\Reader::read($input);
         $vcal->expand(
-            new DateTime('2011-12-01'),
-            new DateTime('2011-12-31')
+            new \DateTime('2011-12-01'),
+            new \DateTime('2011-12-31')
         );
 
     }

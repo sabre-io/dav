@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * DateTimeParser
  *
@@ -12,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_DateTimeParser {
+class DateTimeParser {
 
     /**
      * Parses an iCalendar (rfc5545) formatted datetime and returns a DateTime object
@@ -25,22 +27,22 @@ class Sabre_VObject_DateTimeParser {
      * @param DateTimeZone $tz
      * @return DateTime
      */
-    static public function parseDateTime($dt,DateTimeZone $tz = null) {
+    static public function parseDateTime($dt,\DateTimeZone $tz = null) {
 
         // Format is YYYYMMDD + "T" + hhmmss
         $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])T([0-2][0-9])([0-5][0-9])([0-5][0-9])([Z]?)$/',$dt,$matches);
 
         if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar datetime value is incorrect: ' . $dt);
+            throw new \Sabre\DAV\Exception\BadRequest('The supplied iCalendar datetime value is incorrect: ' . $dt);
         }
 
         if ($matches[7]==='Z' || is_null($tz)) {
-            $tz = new DateTimeZone('UTC');
+            $tz = new \DateTimeZone('UTC');
         }
-        $date = new DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] .':' . $matches[6], $tz);
+        $date = new \DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] .':' . $matches[6], $tz);
 
         // Still resetting the timezone, to normalize everything to UTC
-        $date->setTimeZone(new DateTimeZone('UTC'));
+        $date->setTimeZone(new \DateTimeZone('UTC'));
         return $date;
 
     }
@@ -57,10 +59,10 @@ class Sabre_VObject_DateTimeParser {
         $result = preg_match('/^([1-3][0-9]{3})([0-1][0-9])([0-3][0-9])$/',$date,$matches);
 
         if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar date value is incorrect: ' . $date);
+            throw new \Sabre\DAV\Exception\BadRequest('The supplied iCalendar date value is incorrect: ' . $date);
         }
 
-        $date = new DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3], new DateTimeZone('UTC'));
+        $date = new \DateTime($matches[1] . '-' . $matches[2] . '-' . $matches[3], new \DateTimeZone('UTC'));
         return $date;
 
     }
@@ -79,7 +81,7 @@ class Sabre_VObject_DateTimeParser {
 
         $result = preg_match('/^(?P<plusminus>\+|-)?P((?P<week>\d+)W)?((?P<day>\d+)D)?(T((?P<hour>\d+)H)?((?P<minute>\d+)M)?((?P<second>\d+)S)?)?$/', $duration, $matches);
         if (!$result) {
-            throw new Sabre_DAV_Exception_BadRequest('The supplied iCalendar duration value is incorrect: ' . $duration);
+            throw new \Sabre\DAV\Exception\BadRequest('The supplied iCalendar duration value is incorrect: ' . $duration);
         }
 
         if (!$asString) {
@@ -128,7 +130,7 @@ class Sabre_VObject_DateTimeParser {
             if ($duration==='P') {
                 $duration = 'PT0S';
             }
-            $iv = new DateInterval($duration);
+            $iv = new \DateInterval($duration);
             if ($invert) $iv->invert = true;
 
             return $iv;

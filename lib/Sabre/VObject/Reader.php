@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * VCALENDAR/VCARD reader
  *
@@ -14,13 +16,13 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Reader {
+class Reader {
 
     /**
      * Parses the file and returns the top component
      *
      * @param string $data
-     * @return Sabre_VObject_Element
+     * @return Element
      */
     static function read($data) {
 
@@ -59,7 +61,7 @@ class Sabre_VObject_Reader {
      * to traverse.
      *
      * @param array $lines
-     * @return Sabre_VObject_Element
+     * @return Element
      */
     static private function readLine(&$lines) {
 
@@ -71,7 +73,7 @@ class Sabre_VObject_Reader {
         if (stripos($line,"BEGIN:")===0) {
 
             $componentName = strtoupper(substr($line,6));
-            $obj = Sabre_VObject_Component::create($componentName);
+            $obj = Component::create($componentName);
 
             $nextLine = current($lines);
 
@@ -82,13 +84,13 @@ class Sabre_VObject_Reader {
                 $nextLine = current($lines);
 
                 if ($nextLine===false)
-                    throw new Sabre_VObject_ParseException('Invalid VObject. Document ended prematurely.');
+                    throw new ParseException('Invalid VObject. Document ended prematurely.');
 
             }
 
             // Checking component name of the 'END:' line.
             if (substr($nextLine,4)!==$obj->name) {
-                throw new Sabre_VObject_ParseException('Invalid VObject, expected: "END:' . $obj->name . '" got: "' . $nextLine . '"');
+                throw new ParseException('Invalid VObject, expected: "END:' . $obj->name . '" got: "' . $nextLine . '"');
             }
             next($lines);
 
@@ -107,7 +109,7 @@ class Sabre_VObject_Reader {
         $result = preg_match($regex,$line,$matches);
 
         if (!$result) {
-            throw new Sabre_VObject_ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow the icalendar/vcard format');
+            throw new ParseException('Invalid VObject, line ' . ($lineNr+1) . ' did not follow the icalendar/vcard format');
         }
 
         $propertyName = strtoupper($matches['name']);
@@ -119,7 +121,7 @@ class Sabre_VObject_Reader {
             }
         }, $matches['value']);
 
-        $obj = Sabre_VObject_Property::create($propertyName, $propertyValue);
+        $obj = Property::create($propertyName, $propertyValue);
 
         if ($matches['parameters']) {
 
@@ -137,7 +139,7 @@ class Sabre_VObject_Reader {
     /**
      * Reads a parameter list from a property
      *
-     * This method returns an array of Sabre_VObject_Parameter
+     * This method returns an array of Parameter
      *
      * @param string $parameters
      * @return array
@@ -171,7 +173,7 @@ class Sabre_VObject_Reader {
                 }
             }, $value);
 
-            $params[] = new Sabre_VObject_Parameter($match['paramName'], $value);
+            $params[] = new Parameter($match['paramName'], $value);
 
         }
 

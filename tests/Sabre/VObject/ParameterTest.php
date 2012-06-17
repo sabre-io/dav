@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_VObject_ParameterTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class ParameterTest extends \PHPUnit_Framework_TestCase {
 
     function testSetup() {
 
-        $param = new Sabre_VObject_Parameter('name','value');
+        $param = new Parameter('name','value');
         $this->assertEquals('NAME',$param->name);
         $this->assertEquals('value',$param->value);
 
@@ -12,7 +14,7 @@ class Sabre_VObject_ParameterTest extends PHPUnit_Framework_TestCase {
 
     function testCastToString() {
 
-        $param = new Sabre_VObject_Parameter('name','value');
+        $param = new Parameter('name','value');
         $this->assertEquals('value',$param->__toString());
         $this->assertEquals('value',(string)$param);
 

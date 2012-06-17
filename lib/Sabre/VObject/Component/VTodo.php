@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\VObject\Component;
+
+use Sabre\VObject;
+
 /**
  * VTodo component
  *
@@ -11,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Component_VTodo extends Sabre_VObject_Component {
+class VTodo extends VObject\Component {
 
     /**
      * Returns true or false depending on if the event falls in the specified 
@@ -24,10 +28,10 @@ class Sabre_VObject_Component_VTodo extends Sabre_VObject_Component {
      * @param DateTime $end 
      * @return bool 
      */
-    public function isInTimeRange(DateTime $start, DateTime $end) {
+    public function isInTimeRange(\DateTime $start, \DateTime $end) {
 
         $dtstart = isset($this->DTSTART)?$this->DTSTART->getDateTime():null;
-        $duration = isset($this->DURATION)?Sabre_VObject_DateTimeParser::parseDuration($this->DURATION):null;
+        $duration = isset($this->DURATION)?VObject\DateTimeParser::parseDuration($this->DURATION):null;
         $due = isset($this->DUE)?$this->DUE->getDateTime():null;
         $completed = isset($this->COMPLETED)?$this->COMPLETED->getDateTime():null;
         $created = isset($this->CREATED)?$this->CREATED->getDateTime():null;

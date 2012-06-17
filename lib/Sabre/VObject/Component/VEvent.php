@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\VObject\Component;
+use Sabre\VObject;
+
 /**
  * VEvent component
  *
@@ -11,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
+class VEvent extends VObject\Component {
 
     /**
      * Returns true or false depending on if the event falls in the specified
@@ -20,14 +23,14 @@ class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
      * The rules used to determine if an event falls within the specified
      * time-range is based on the CalDAV specification.
      *
-     * @param DateTime $start
-     * @param DateTime $end
+     * @param \DateTime $start
+     * @param \DateTime $end
      * @return bool
      */
-    public function isInTimeRange(DateTime $start, DateTime $end) {
+    public function isInTimeRange(\DateTime $start, \DateTime $end) {
 
         if ($this->RRULE) {
-            $it = new Sabre_VObject_RecurrenceIterator($this);
+            $it = new VObject\RecurrenceIterator($this);
             $it->fastForward($start);
 
             // We fast-forwarded to a spot where the end-time of the
@@ -47,13 +50,13 @@ class Sabre_VObject_Component_VEvent extends Sabre_VObject_Component {
             // end-date by 1. Otherwise the event will last until the second
             // the date changed, by increasing this by 1 day the event lasts
             // all of the last day as well.
-            if ($this->DTSTART->getDateType() == Sabre_VObject_Property_DateTime::DATE) {
+            if ($this->DTSTART->getDateType() == VObject\Property\DateTime::DATE) {
                 $effectiveEnd->modify('+1 day');
             }
         } elseif (isset($this->DURATION)) {
             $effectiveEnd = clone $effectiveStart;
-            $effectiveEnd->add( Sabre_VObject_DateTimeParser::parseDuration($this->DURATION) );
-        } elseif ($this->DTSTART->getDateType() == Sabre_VObject_Property_DateTime::DATE) {
+            $effectiveEnd->add( VObject\DateTimeParser::parseDuration($this->DURATION) );
+        } elseif ($this->DTSTART->getDateType() == VObject\Property\DateTime::DATE) {
             $effectiveEnd = clone $effectiveStart;
             $effectiveEnd->modify('+1 day');
         } else {

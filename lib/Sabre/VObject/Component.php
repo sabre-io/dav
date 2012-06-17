@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * VObject Component
  *
@@ -13,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Component extends Sabre_VObject_Element {
+class Component extends Element {
 
     /**
      * Name, for example VEVENT
@@ -37,11 +39,11 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      * @var array
      */
     static public $classMap = array(
-        'VCALENDAR'     => 'Sabre_VObject_Component_VCalendar',
-        'VEVENT'        => 'Sabre_VObject_Component_VEvent',
-        'VTODO'         => 'Sabre_VObject_Component_VTodo',
-        'VJOURNAL'      => 'Sabre_VObject_Component_VJournal',
-        'VALARM'        => 'Sabre_VObject_Component_VAlarm',
+        'VCALENDAR'     => 'Sabre\\VObject\\Component\\VCalendar',
+        'VEVENT'        => 'Sabre\\VObject\\Component\\VEvent',
+        'VTODO'         => 'Sabre\\VObject\\Component\\VTodo',
+        'VJOURNAL'      => 'Sabre\\VObject\\Component\\VJournal',
+        'VALARM'        => 'Sabre\\VObject\\Component\\VAlarm',
     );
 
     /**
@@ -50,7 +52,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      *
      * @param string $name
      * @param string $value
-     * @return Sabre_VObject_Component
+     * @return Component
      */
     static public function create($name, $value = null) {
 
@@ -71,9 +73,9 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      * be overridden with the iterator argument
      *
      * @param string $name
-     * @param Sabre_VObject_ElementList $iterator
+     * @param ElementList $iterator
      */
-    public function __construct($name, Sabre_VObject_ElementList $iterator = null) {
+    public function __construct($name, ElementList $iterator = null) {
 
         $this->name = strtoupper($name);
         if (!is_null($iterator)) $this->iterator = $iterator;
@@ -96,12 +98,12 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          *
          * A higher score means the item will be higher in the list
          *
-         * @param Sabre_VObject_Node $n
+         * @param Node $n
          * @return int
          */
         $sortScore = function($n) {
 
-            if ($n instanceof Sabre_VObject_Component) {
+            if ($n instanceof Component) {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
                 if ($n->name === 'VTIMEZONE') {
@@ -143,7 +145,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      *
      * You can call this method with the following syntaxes:
      *
-     * add(Sabre_VObject_Element $element)
+     * add(Element $element)
      * add(string $name, $value)
      *
      * The first version adds an Element
@@ -155,24 +157,24 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      */
     public function add($item, $itemValue = null) {
 
-        if ($item instanceof Sabre_VObject_Element) {
+        if ($item instanceof Element) {
             if (!is_null($itemValue)) {
-                throw new InvalidArgumentException('The second argument must not be specified, when passing a VObject');
+                throw new \InvalidArgumentException('The second argument must not be specified, when passing a VObject');
             }
             $item->parent = $this;
             $this->children[] = $item;
         } elseif(is_string($item)) {
 
             if (!is_scalar($itemValue)) {
-                throw new InvalidArgumentException('The second argument must be scalar');
+                throw new \InvalidArgumentException('The second argument must be scalar');
             }
-            $item = Sabre_VObject_Property::create($item,$itemValue);
+            $item = Property::create($item,$itemValue);
             $item->parent = $this;
             $this->children[] = $item;
 
         } else {
 
-            throw new InvalidArgumentException('The first argument must either be a Sabre_VObject_Element or a string');
+            throw new \InvalidArgumentException('The first argument must either be a \\Sabre\\VObject\\Element or a string');
 
         }
 
@@ -181,11 +183,11 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
     /**
      * Returns an iterable list of children
      *
-     * @return Sabre_VObject_ElementList
+     * @return ElementList
      */
     public function children() {
 
-        return new Sabre_VObject_ElementList($this->children);
+        return new ElementList($this->children);
 
     }
 
@@ -218,7 +220,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
             if (
                 strtoupper($child->name) === $name &&
-                (is_null($group) || ( $child instanceof Sabre_VObject_Property && strtoupper($child->group) === $group))
+                (is_null($group) || ( $child instanceof Property && strtoupper($child->group) === $group))
             ) {
 
                 $result[$key] = $child;
@@ -241,7 +243,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
 
         $result = array();
         foreach($this->children as $child) {
-            if ($child instanceof Sabre_VObject_Component) {
+            if ($child instanceof Component) {
                 $result[] = $child;
             }
         }
@@ -259,7 +261,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
      * null is returned.
      *
      * @param string $name
-     * @return Sabre_VObject_Property
+     * @return Property
      */
     public function __get($name) {
 
@@ -268,8 +270,8 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
             return null;
         } else {
             $firstMatch = current($matches);
-            /** @var $firstMatch Sabre_VObject_Property */
-            $firstMatch->setIterator(new Sabre_VObject_ElementList(array_values($matches)));
+            /** @var $firstMatch Property */
+            $firstMatch->setIterator(new ElementList(array_values($matches)));
             return $firstMatch;
         }
 
@@ -291,7 +293,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
     /**
      * Using the setter method you can add properties or subcomponents
      *
-     * You can either pass a Sabre_VObject_Component, Sabre_VObject_Property
+     * You can either pass a Component, Property
      * object, or a string to automatically create a Property.
      *
      * If the item already exists, it will be removed. If you want to add
@@ -306,7 +308,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
         $matches = $this->select($name);
         $overWrite = count($matches)?key($matches):null;
 
-        if ($value instanceof Sabre_VObject_Component || $value instanceof Sabre_VObject_Property) {
+        if ($value instanceof Component || $value instanceof Property) {
             $value->parent = $this;
             if (!is_null($overWrite)) {
                 $this->children[$overWrite] = $value;
@@ -314,7 +316,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
                 $this->children[] = $value;
             }
         } elseif (is_scalar($value)) {
-            $property = Sabre_VObject_Property::create($name,$value);
+            $property = Property::create($name,$value);
             $property->parent = $this;
             if (!is_null($overWrite)) {
                 $this->children[$overWrite] = $property;
@@ -322,7 +324,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
                 $this->children[] = $property;
             }
         } else {
-            throw new InvalidArgumentException('You must pass a Sabre_VObject_Component, Sabre_VObject_Property or scalar type');
+            throw new \InvalidArgumentException('You must pass a \\Sabre\\VObject\\Component, \\Sabre\\VObject\\Property or scalar type');
         }
 
     }

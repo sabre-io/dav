@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * Base class for all nodes
  *
@@ -9,7 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_VObject_Node implements IteratorAggregate, ArrayAccess, Countable {
+abstract class Node implements \IteratorAggregate, \ArrayAccess, \Countable {
 
     /**
      * Turns the object back into a serialized blob.
@@ -21,14 +23,14 @@ abstract class Sabre_VObject_Node implements IteratorAggregate, ArrayAccess, Cou
     /**
      * Iterator override
      *
-     * @var Sabre_VObject_ElementList
+     * @var ElementList
      */
     protected $iterator = null;
 
     /**
      * A link to the parent node
      *
-     * @var Sabre_VObject_Node
+     * @var Node
      */
     public $parent = null;
 
@@ -37,14 +39,14 @@ abstract class Sabre_VObject_Node implements IteratorAggregate, ArrayAccess, Cou
     /**
      * Returns the iterator for this object
      *
-     * @return Sabre_VObject_ElementList
+     * @return ElementList
      */
     public function getIterator() {
 
         if (!is_null($this->iterator))
             return $this->iterator;
 
-        return new Sabre_VObject_ElementList(array($this));
+        return new ElementList(array($this));
 
     }
 
@@ -53,10 +55,10 @@ abstract class Sabre_VObject_Node implements IteratorAggregate, ArrayAccess, Cou
      *
      * Note that this is not actually part of the iterator interface
      *
-     * @param Sabre_VObject_ElementList $iterator
+     * @param ElementList $iterator
      * @return void
      */
-    public function setIterator(Sabre_VObject_ElementList $iterator) {
+    public function setIterator(ElementList $iterator) {
 
         $this->iterator = $iterator;
 

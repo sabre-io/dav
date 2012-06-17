@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_VObject_EmClientTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class EmClientTest extends \PHPUnit_Framework_TestCase {
 
     function testParseTz() {
 
@@ -43,9 +45,9 @@ CLASS:PUBLIC
 END:VEVENT
 END:VCALENDAR';
 
-        $vObject = Sabre_VObject_Reader::read($str);
+        $vObject = Reader::read($str);
         $dt = $vObject->VEVENT->DTSTART->getDateTime();
-        $this->assertEquals(new DateTime('2011-10-08 19:30:00', new DateTimeZone('America/Chicago')), $dt);
+        $this->assertEquals(new \DateTime('2011-10-08 19:30:00', new \DateTimeZone('America/Chicago')), $dt);
 
     }
 

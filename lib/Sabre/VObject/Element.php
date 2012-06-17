@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * Base class for all elements
  *
@@ -9,7 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_VObject_Element extends Sabre_VObject_Node {
+abstract class Element extends Node {
 
     public $parent = null;
 

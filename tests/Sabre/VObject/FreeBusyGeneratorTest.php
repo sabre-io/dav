@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_VObject_FreeBusyGeneratorTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class FreeBusyGeneratorTest extends \PHPUnit_Framework_TestCase {
 
     function getInput() {
 
@@ -163,7 +165,7 @@ ICS;
             $blob8,
             $blob9,
             $blob10,
-            Sabre_VObject_Reader::read($blob11),
+            Reader::read($blob11),
             $blob12,
             $blob13,
             $blob14,
@@ -173,11 +175,11 @@ ICS;
 
     function testGenerator() {
 
-        $gen = new Sabre_VObject_FreeBusyGenerator();
+        $gen = new FreeBusyGenerator();
         $gen->setObjects($this->getInput());
         $gen->setTimeRange(
-            new DateTime('20110101T110000Z'),
-            new DateTime('20110103T110000Z')
+            new \DateTime('20110101T110000Z'),
+            new \DateTime('20110103T110000Z')
         );
 
         $result = $gen->getResult();
@@ -216,10 +218,10 @@ ICS;
 
     function testGeneratorBaseObject() {
 
-        $obj = new Sabre_VObject_Component('VCALENDAR');
+        $obj = new Component('VCALENDAR');
         $obj->METHOD = 'PUBLISH';
 
-        $gen = new Sabre_VObject_FreeBusyGenerator();
+        $gen = new FreeBusyGenerator();
         $gen->setObjects(array());
         $gen->setBaseObject($obj);
 
@@ -230,16 +232,16 @@ ICS;
     }
     function testGeneratorNoVersion() {
 
-        $v = Sabre_DAV_Server::$exposeVersion;
-        Sabre_DAV_Server::$exposeVersion = false;
+        $v = \Sabre\DAV\Server::$exposeVersion;
+        \Sabre\DAV\Server::$exposeVersion = false;
 
-        $gen = new Sabre_VObject_FreeBusyGenerator();
+        $gen = new FreeBusyGenerator();
         $gen->setObjects(array());
 
         $result = $gen->getResult();
-        Sabre_DAV_Server::$exposeVersion = $v;
+        \Sabre\DAV\Server::$exposeVersion = $v;
 
-        $this->assertFalse(strpos($result->PRODID->value, Sabre_VObject_Version::VERSION));
+        $this->assertFalse(strpos($result->PRODID->value, Version::VERSION));
 
     }
 
@@ -248,8 +250,8 @@ ICS;
      */
     function testInvalidArg() {
 
-        $gen = new Sabre_VObject_FreeBusyGenerator();
-        $gen->setObjects(array(new StdClass()));
+        $gen = new FreeBusyGenerator();
+        $gen->setObjects(array(new \StdClass()));
 
     }
 

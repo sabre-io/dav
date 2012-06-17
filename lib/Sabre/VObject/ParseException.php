@@ -1,7 +1,9 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
- * Exception thrown by Sabre_VObject_Reader if an invalid object was attempted to be parsed.
+ * Exception thrown by Reader if an invalid object was attempted to be parsed.
  *
  * @package Sabre
  * @subpackage VObject
@@ -9,4 +11,4 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_ParseException extends Exception { }
+class ParseException extends \Exception { }

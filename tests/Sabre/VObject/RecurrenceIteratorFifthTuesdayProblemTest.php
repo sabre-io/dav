@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_VObject_RecurrenceIteratorFifthTuesdayProblemTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class RecurrenceIteratorFifthTuesdayProblemTest extends \PHPUnit_Framework_TestCase {
 
     function testGetDTEnd() {
 
@@ -26,8 +28,8 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $vObject = Sabre_VObject_Reader::read($ics);
-        $it = new Sabre_VObject_RecurrenceIterator($vObject, (string)$vObject->VEVENT->UID);
+        $vObject = Reader::read($ics);
+        $it = new RecurrenceIterator($vObject, (string)$vObject->VEVENT->UID);
 
         while($it->valid()) {
             $it->next();

@@ -1,22 +1,24 @@
 <?php
 
-class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class ComponentTest extends \PHPUnit_Framework_TestCase {
 
     function testIterate() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $sub = new Sabre_VObject_Component('VEVENT');
+        $sub = new Component('VEVENT');
         $comp->children[] = $sub;
 
-        $sub = new Sabre_VObject_Component('VTODO');
+        $sub = new Component('VTODO');
         $comp->children[] = $sub;
 
         $count = 0;
         foreach($comp->children() as $key=>$subcomponent) {
 
            $count++;
-           $this->assertInstanceOf('Sabre_VObject_Component',$subcomponent);
+           $this->assertInstanceOf('Sabre\\VObject\\Component',$subcomponent);
 
         }
         $this->assertEquals(2,$count);
@@ -26,16 +28,16 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicGet() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $sub = new Sabre_VObject_Component('VEVENT');
+        $sub = new Component('VEVENT');
         $comp->children[] = $sub;
 
-        $sub = new Sabre_VObject_Component('VTODO');
+        $sub = new Component('VTODO');
         $comp->children[] = $sub;
 
         $event = $comp->vevent;
-        $this->assertInstanceOf('Sabre_VObject_Component', $event);
+        $this->assertInstanceOf('Sabre\\VObject\\Component', $event);
         $this->assertEquals('VEVENT', $event->name);
 
         $this->assertInternalType('null', $comp->vjournal);
@@ -44,15 +46,15 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicGetGroups() {
 
-        $comp = new Sabre_VObject_Component('VCARD');
+        $comp = new Component('VCARD');
 
-        $sub = new Sabre_VObject_Property('GROUP1.EMAIL','1@1.com');
+        $sub = new Property('GROUP1.EMAIL','1@1.com');
         $comp->children[] = $sub;
 
-        $sub = new Sabre_VObject_Property('GROUP2.EMAIL','2@2.com');
+        $sub = new Property('GROUP2.EMAIL','2@2.com');
         $comp->children[] = $sub;
 
-        $sub = new Sabre_VObject_Property('EMAIL','3@3.com');
+        $sub = new Property('EMAIL','3@3.com');
         $comp->children[] = $sub;
 
         $emails = $comp->email;
@@ -70,12 +72,12 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicIsset() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $sub = new Sabre_VObject_Component('VEVENT');
+        $sub = new Component('VEVENT');
         $comp->children[] = $sub;
 
-        $sub = new Sabre_VObject_Component('VTODO');
+        $sub = new Component('VTODO');
         $comp->children[] = $sub;
 
         $this->assertTrue(isset($comp->vevent));
@@ -86,10 +88,10 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicSetScalar() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $comp->myProp = 'myValue';
 
-        $this->assertInstanceOf('Sabre_VObject_Property',$comp->MYPROP);
+        $this->assertInstanceOf('Sabre\\VObject\\Property',$comp->MYPROP);
         $this->assertEquals('myValue',$comp->MYPROP->value);
 
 
@@ -97,22 +99,22 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicSetScalarTwice() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $comp->myProp = 'myValue';
         $comp->myProp = 'myValue';
 
         $this->assertEquals(1,count($comp->children));
-        $this->assertInstanceOf('Sabre_VObject_Property',$comp->MYPROP);
+        $this->assertInstanceOf('Sabre\\VObject\\Property',$comp->MYPROP);
         $this->assertEquals('myValue',$comp->MYPROP->value);
 
     }
 
     function testMagicSetComponent() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
         // Note that 'myProp' is ignored here.
-        $comp->myProp = new Sabre_VObject_Component('VEVENT');
+        $comp->myProp = new Component('VEVENT');
 
         $this->assertEquals(1, count($comp->children));
 
@@ -122,10 +124,10 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicSetTwice() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $comp->VEVENT = new Sabre_VObject_Component('VEVENT');
-        $comp->VEVENT = new Sabre_VObject_Component('VEVENT');
+        $comp->VEVENT = new Component('VEVENT');
+        $comp->VEVENT = new Component('VEVENT');
 
         $this->assertEquals(1, count($comp->children));
 
@@ -135,9 +137,9 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testArrayAccessGet() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $event = new Sabre_VObject_Component('VEVENT');
+        $event = new Component('VEVENT');
         $event->summary = 'Event 1';
 
         $comp->add($event);
@@ -148,16 +150,16 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
         $comp->add($event2);
 
         $this->assertEquals(2,count($comp->children()));
-        $this->assertTrue($comp->vevent[1] instanceof Sabre_VObject_Component);
+        $this->assertTrue($comp->vevent[1] instanceof Component);
         $this->assertEquals('Event 2', (string)$comp->vevent[1]->summary);
 
     }
 
     function testArrayAccessExists() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $event = new Sabre_VObject_Component('VEVENT');
+        $event = new Component('VEVENT');
         $event->summary = 'Event 1';
 
         $comp->add($event);
@@ -177,7 +179,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
      */
     function testArrayAccessSet() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $comp['hey'] = 'hi there';
 
     }
@@ -186,20 +188,20 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
      */
     function testArrayAccessUnset() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         unset($comp[0]);
 
     }
 
     function testAddScalar() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
         $comp->add('myprop','value');
 
         $this->assertEquals(1, count($comp->children));
 
-        $this->assertTrue($comp->children[0] instanceof Sabre_VObject_Property);
+        $this->assertTrue($comp->children[0] instanceof Property);
         $this->assertEquals('MYPROP',$comp->children[0]->name);
         $this->assertEquals('value',$comp->children[0]->value);
 
@@ -207,9 +209,9 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testAddComponent() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $comp->add(new Sabre_VObject_Component('VEVENT'));
+        $comp->add(new Component('VEVENT'));
 
         $this->assertEquals(1, count($comp->children));
 
@@ -219,10 +221,10 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testAddComponentTwice() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
-        $comp->add(new Sabre_VObject_Component('VEVENT'));
-        $comp->add(new Sabre_VObject_Component('VEVENT'));
+        $comp->add(new Component('VEVENT'));
+        $comp->add(new Component('VEVENT'));
 
         $this->assertEquals(2, count($comp->children));
 
@@ -235,8 +237,8 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
      */
     function testAddArgFail() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
-        $comp->add(new Sabre_VObject_Component('VEVENT'),'hello');
+        $comp = new Component('VCALENDAR');
+        $comp->add(new Component('VEVENT'),'hello');
 
     }
 
@@ -245,7 +247,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
      */
     function testAddArgFail2() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $comp->add(array());
 
     }
@@ -255,7 +257,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
      */
     function testAddArgFail3() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $comp->add('hello',array());
 
     }
@@ -265,10 +267,10 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
      */
     function testMagicSetInvalid() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
         // Note that 'myProp' is ignored here.
-        $comp->myProp = new StdClass();
+        $comp->myProp = new \StdClass();
 
         $this->assertEquals(1, count($comp->children));
 
@@ -278,8 +280,8 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testMagicUnset() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
-        $comp->add(new Sabre_VObject_Component('VEVENT'));
+        $comp = new Component('VCALENDAR');
+        $comp->add(new Component('VEVENT'));
 
         unset($comp->vevent);
 
@@ -290,34 +292,34 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testCount() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $this->assertEquals(1,$comp->count());
 
     }
 
     function testChildren() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
         // Note that 'myProp' is ignored here.
         $comp->children = array(
-            new Sabre_VObject_Component('VEVENT'),
-            new Sabre_VObject_Component('VTODO')
+            new Component('VEVENT'),
+            new Component('VTODO')
         );
 
         $r = $comp->children();
-        $this->assertTrue($r instanceof Sabre_VObject_ElementList);
+        $this->assertTrue($r instanceof ElementList);
         $this->assertEquals(2,count($r));
     }
 
     function testGetComponents() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
 
         // Note that 'myProp' is ignored here.
         $comp->children = array(
-            new Sabre_VObject_Property('FOO','BAR'),
-            new Sabre_VObject_Component('VTODO')
+            new Property('FOO','BAR'),
+            new Component('VTODO')
         );
 
         $r = $comp->getComponents();
@@ -328,17 +330,17 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $this->assertEquals("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n", $comp->serialize());
 
     }
 
     function testSerializeChildren() {
 
-        $comp = new Sabre_VObject_Component('VCALENDAR');
+        $comp = new Component('VCALENDAR');
         $comp->children = array(
-            new Sabre_VObject_Component('VEVENT'),
-            new Sabre_VObject_Component('VTODO')
+            new Component('VEVENT'),
+            new Component('VTODO')
         );
         $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $comp->serialize());
 
@@ -346,11 +348,11 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testSerializeOrder() {
         
-        $comp = new Sabre_VObject_Component('VCALENDAR');
-        $comp->add(new Sabre_VObject_Component('VEVENT'));
+        $comp = new Component('VCALENDAR');
+        $comp->add(new Component('VEVENT'));
         $comp->add('PROP1','BLABLA');
         $comp->add('VERSION','2.0');
-        $comp->add(new Sabre_VObject_Component('VTIMEZONE'));
+        $comp->add(new Component('VTIMEZONE'));
 
         $str = $comp->serialize();
 

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\VObject\Component;
+
+use Sabre\VObject;
+
 /**
  * The VCalendar component
  *
@@ -11,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
+class VCalendar extends VObject\Component {
 
     /**
      * Returns a list of all 'base components'. For instance, if an Event has 
@@ -28,7 +32,7 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
         $components = array();
         foreach($this->children as $component) {
 
-            if (!$component instanceof Sabre_VObject_Component)
+            if (!$component instanceof VObject\Component)
                 continue;
 
             if (isset($component->{'RECURRENCE-ID'})) 
@@ -69,7 +73,7 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
      * @param DateTime $end 
      * @return void
      */
-    public function expand(DateTime $start, DateTime $end) {
+    public function expand(\DateTime $start, \DateTime $end) {
 
         $newEvents = array();
 
@@ -91,10 +95,10 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
 
             $uid = (string)$vevent->uid;
             if (!$uid) {
-                throw new LogicException('Event did not have a UID!');
+                throw new \LogicException('Event did not have a UID!');
             }
 
-            $it = new Sabre_VObject_RecurrenceIterator($this, $vevent->uid);
+            $it = new VObject\RecurrenceIterator($this, $vevent->uid);
             $it->fastForward($start);
 
             while($it->valid() && $it->getDTStart() < $end) {
@@ -114,9 +118,9 @@ class Sabre_VObject_Component_VCalendar extends Sabre_VObject_Component {
         foreach($newEvents as $newEvent) {
 
             foreach($newEvent->children as $child) {
-                if ($child instanceof Sabre_VObject_Property_DateTime &&
-                    $child->getDateType() == Sabre_VObject_Property_DateTime::LOCALTZ) {
-                        $child->setDateTime($child->getDateTime(),Sabre_VObject_Property_DateTime::UTC);
+                if ($child instanceof VObject\Property\DateTime &&
+                    $child->getDateType() == VObject\Property\DateTime::LOCALTZ) {
+                        $child->setDateTime($child->getDateTime(),VObject\Property\DateTime::UTC);
                     }
             }
 

@@ -1,14 +1,17 @@
 <?php
 
-class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject\Property;
+use Sabre\VObject\Component;
+
+class DateTimeTest extends \PHPUnit_Framework_TestCase {
 
     function testSetDateTime() {
 
-        $tz = new DateTimeZone('Europe/Amsterdam');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('Europe/Amsterdam');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
+        $elem = new DateTime('DTSTART');
         $elem->setDateTime($dt);
 
         $this->assertEquals('19850704T013000', $elem->value);
@@ -19,12 +22,12 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     function testSetDateTimeLOCAL() {
 
-        $tz = new DateTimeZone('Europe/Amsterdam');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('Europe/Amsterdam');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
-        $elem->setDateTime($dt, Sabre_VObject_Property_DateTime::LOCAL);
+        $elem = new DateTime('DTSTART');
+        $elem->setDateTime($dt, DateTime::LOCAL);
 
         $this->assertEquals('19850704T013000', $elem->value);
         $this->assertNull($elem['TZID']);
@@ -34,12 +37,12 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     function testSetDateTimeUTC() {
 
-        $tz = new DateTimeZone('GMT');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('GMT');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
-        $elem->setDateTime($dt, Sabre_VObject_Property_DateTime::UTC);
+        $elem = new DateTime('DTSTART');
+        $elem->setDateTime($dt, DateTime::UTC);
 
         $this->assertEquals('19850704T013000Z', $elem->value);
         $this->assertNull($elem['TZID']);
@@ -49,12 +52,12 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     function testSetDateTimeLOCALTZ() {
 
-        $tz = new DateTimeZone('Europe/Amsterdam');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('Europe/Amsterdam');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
-        $elem->setDateTime($dt, Sabre_VObject_Property_DateTime::LOCALTZ);
+        $elem = new DateTime('DTSTART');
+        $elem->setDateTime($dt, DateTime::LOCALTZ);
 
         $this->assertEquals('19850704T013000', $elem->value);
         $this->assertEquals('Europe/Amsterdam', (string)$elem['TZID']);
@@ -64,12 +67,12 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     function testSetDateTimeDATE() {
 
-        $tz = new DateTimeZone('Europe/Amsterdam');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('Europe/Amsterdam');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
-        $elem->setDateTime($dt, Sabre_VObject_Property_DateTime::DATE);
+        $elem = new DateTime('DTSTART');
+        $elem->setDateTime($dt, DateTime::DATE);
 
         $this->assertEquals('19850704', $elem->value);
         $this->assertNull($elem['TZID']);
@@ -82,22 +85,22 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
      */
     function testSetDateTimeInvalid() {
 
-        $tz = new DateTimeZone('Europe/Amsterdam');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('Europe/Amsterdam');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
+        $elem = new DateTime('DTSTART');
         $elem->setDateTime($dt, 7);
 
     }
 
     function testGetDateTimeCached() {
 
-        $tz = new DateTimeZone('Europe/Amsterdam');
-        $dt = new DateTime('1985-07-04 01:30:00', $tz);
+        $tz = new \DateTimeZone('Europe/Amsterdam');
+        $dt = new \DateTime('1985-07-04 01:30:00', $tz);
         $dt->setTimeZone($tz);
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
+        $elem = new DateTime('DTSTART');
         $elem->setDateTime($dt);
 
         $this->assertEquals($elem->getDateTime(), $dt);
@@ -106,7 +109,7 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     function testGetDateTimeDateNULL() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART');
+        $elem = new DateTime('DTSTART');
         $dt = $elem->getDateTime();
 
         $this->assertNull($dt);
@@ -116,42 +119,42 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
 
     function testGetDateTimeDateDATE() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','19850704');
+        $elem = new DateTime('DTSTART','19850704');
         $dt = $elem->getDateTime();
 
         $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 00:00:00', $dt->format('Y-m-d H:i:s'));
-        $this->assertEquals(Sabre_VObject_Property_DateTime::DATE, $elem->getDateType());
+        $this->assertEquals(DateTime::DATE, $elem->getDateType());
 
     }
 
 
     function testGetDateTimeDateLOCAL() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','19850704T013000');
+        $elem = new DateTime('DTSTART','19850704T013000');
         $dt = $elem->getDateTime();
 
         $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
-        $this->assertEquals(Sabre_VObject_Property_DateTime::LOCAL, $elem->getDateType());
+        $this->assertEquals(DateTime::LOCAL, $elem->getDateType());
 
     }
 
     function testGetDateTimeDateUTC() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','19850704T013000Z');
+        $elem = new DateTime('DTSTART','19850704T013000Z');
         $dt = $elem->getDateTime();
 
         $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals('UTC', $dt->getTimeZone()->getName());
-        $this->assertEquals(Sabre_VObject_Property_DateTime::UTC, $elem->getDateType());
+        $this->assertEquals(DateTime::UTC, $elem->getDateType());
 
     }
 
     function testGetDateTimeDateLOCALTZ() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','19850704T013000');
+        $elem = new DateTime('DTSTART','19850704T013000');
         $elem['TZID'] = 'Europe/Amsterdam';
 
         $dt = $elem->getDateTime();
@@ -159,7 +162,7 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals('Europe/Amsterdam', $dt->getTimeZone()->getName());
-        $this->assertEquals(Sabre_VObject_Property_DateTime::LOCALTZ, $elem->getDateType());
+        $this->assertEquals(DateTime::LOCALTZ, $elem->getDateType());
 
     }
 
@@ -168,25 +171,25 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
      */
     function testGetDateTimeDateInvalid() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','bla');
+        $elem = new DateTime('DTSTART','bla');
         $dt = $elem->getDateTime();
 
     }
 
     function testGetDateTimeWeirdTZ() {
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','19850704T013000');
+        $elem = new DateTime('DTSTART','19850704T013000');
         $elem['TZID'] = '/freeassociation.sourceforge.net/Tzfile/Europe/Amsterdam';
 
 
-        $event = new Sabre_VObject_Component('VEVENT');
+        $event = new Component('VEVENT');
         $event->add($elem);
 
-        $timezone = new Sabre_VObject_Component('VTIMEZONE');
+        $timezone = new Component('VTIMEZONE');
         $timezone->TZID = '/freeassociation.sourceforge.net/Tzfile/Europe/Amsterdam';
         $timezone->{'X-LIC-LOCATION'} = 'Europe/Amsterdam';
 
-        $calendar = new Sabre_VObject_Component('VCALENDAR');
+        $calendar = new Component('VCALENDAR');
         $calendar->add($event);
         $calendar->add($timezone);
 
@@ -195,7 +198,7 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals('Europe/Amsterdam', $dt->getTimeZone()->getName());
-        $this->assertEquals(Sabre_VObject_Property_DateTime::LOCALTZ, $elem->getDateType());
+        $this->assertEquals(DateTime::LOCALTZ, $elem->getDateType());
 
     }
 
@@ -204,18 +207,18 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
         $default = date_default_timezone_get();
         date_default_timezone_set('Canada/Eastern');
 
-        $elem = new Sabre_VObject_Property_DateTime('DTSTART','19850704T013000');
+        $elem = new DateTime('DTSTART','19850704T013000');
         $elem['TZID'] = 'Moon';
 
 
-        $event = new Sabre_VObject_Component('VEVENT');
+        $event = new Component('VEVENT');
         $event->add($elem);
 
-        $timezone = new Sabre_VObject_Component('VTIMEZONE');
+        $timezone = new Component('VTIMEZONE');
         $timezone->TZID = 'Moon';
         $timezone->{'X-LIC-LOCATION'} = 'Moon';
 
-        $calendar = new Sabre_VObject_Component('VCALENDAR');
+        $calendar = new Component('VCALENDAR');
         $calendar->add($event);
         $calendar->add($timezone);
 
@@ -224,7 +227,7 @@ class Sabre_VObject_Property_DateTimeTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('DateTime', $dt);
         $this->assertEquals('1985-07-04 01:30:00', $dt->format('Y-m-d H:i:s'));
         $this->assertEquals('Canada/Eastern', $dt->getTimeZone()->getName());
-        $this->assertEquals(Sabre_VObject_Property_DateTime::LOCALTZ, $elem->getDateType());
+        $this->assertEquals(DateTime::LOCALTZ, $elem->getDateType());
         date_default_timezone_set($default);
 
     }

@@ -1,6 +1,11 @@
 <?php
 
-class Sabre_VObject_RecurrenceIteratorInfiniteLoopProblemTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+use DateTime;
+use DateTimeZone;
+
+class RecurrenceIteratorInfiniteLoopProblemTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * This bug came from a Fruux customer. This would result in a never-ending
@@ -8,7 +13,7 @@ class Sabre_VObject_RecurrenceIteratorInfiniteLoopProblemTest extends PHPUnit_Fr
      */
     function testFastForwardTooFar() {
 
-        $ev = Sabre_VObject_Component::create('VEVENT');
+        $ev = Component::create('VEVENT');
         $ev->DTSTART = '20090420T180000Z';
         $ev->RRULE = 'FREQ=WEEKLY;BYDAY=MO;UNTIL=20090704T205959Z;INTERVAL=1';
 
@@ -21,7 +26,7 @@ class Sabre_VObject_RecurrenceIteratorInfiniteLoopProblemTest extends PHPUnit_Fr
      */
     function testYearlyByMonthLoop() {
 
-        $ev = Sabre_VObject_Component::create('VEVENT');
+        $ev = Component::create('VEVENT');
         $ev->UID = 'uuid';
         $ev->DTSTART = '20120101T154500';
         $ev->DTSTART['TZID'] = 'Europe/Berlin';
@@ -35,10 +40,10 @@ class Sabre_VObject_RecurrenceIteratorInfiniteLoopProblemTest extends PHPUnit_Fr
         // The BYDAY part expands this to every day of the month, but the
         // BYSETPOS limits this to only the 1st day of the month. Very crazy
         // way to specify this, and could have certainly been a lot easier.
-        $cal = Sabre_VObject_Component::create('VCALENDAR');
+        $cal = Component::create('VCALENDAR');
         $cal->add($ev);
 
-        $it = new Sabre_VObject_RecurrenceIterator($cal,'uuid');
+        $it = new RecurrenceIterator($cal,'uuid');
         $it->fastForward(new DateTime('2012-01-29 23:00:00', new DateTimeZone('UTC')));
 
         $collect = array();

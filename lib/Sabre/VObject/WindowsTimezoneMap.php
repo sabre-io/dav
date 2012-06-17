@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * Time zone name translation
  *
@@ -11,7 +13,7 @@
  * @author Frank Edelhaeuser (fedel@users.sourceforge.net) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_WindowsTimezoneMap {
+class WindowsTimezoneMap {
 
     protected static $map = array(
 

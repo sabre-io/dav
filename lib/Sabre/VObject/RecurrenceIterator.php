@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\VObject;
+
 /**
  * This class is used to determine new for a recurring event, when the next
  * events occur.
@@ -43,7 +45,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_RecurrenceIterator implements Iterator {
+class RecurrenceIterator implements \Iterator {
 
     /**
      * The initial event date
@@ -82,7 +84,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * Base event
      *
-     * @var Sabre_VObject_Component_VEvent
+     * @var Component\VEvent
      */
     public $baseEvent;
 
@@ -97,7 +99,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
     /**
      * list of events that are 'overridden'.
      *
-     * This is an array of Sabre_VObject_Component_VEvent objects.
+     * This is an array of Component\VEvent objects.
      *
      * @var array
      */
@@ -281,7 +283,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * If the current iteration of the event is an overriden event, this
      * property will hold the VObject
      *
-     * @var Sabre_VObject_Component
+     * @var Component
      */
     private $currentOverriddenEvent;
 
@@ -300,14 +302,14 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * You should pass a VCALENDAR component, as well as the UID of the event
      * we're going to traverse.
      *
-     * @param Sabre_VObject_Component $vcal
+     * @param Component $vcal
      * @param string|null $uid
      */
-    public function __construct(Sabre_VObject_Component $vcal, $uid=null) {
+    public function __construct(Component $vcal, $uid=null) {
 
         if (is_null($uid)) {
             if ($vcal->name === 'VCALENDAR') {
-                throw new InvalidArgumentException('If you pass a VCALENDAR object, you must pass a uid argument as well');
+                throw new \InvalidArgumentException('If you pass a VCALENDAR object, you must pass a uid argument as well');
             }
             $components = array($vcal);
             $uid = (string)$vcal->uid;
@@ -325,7 +327,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             }
         }
         if (!$this->baseEvent) {
-            throw new InvalidArgumentException('Could not find a base event with uid: ' . $uid);
+            throw new \InvalidArgumentException('Could not find a base event with uid: ' . $uid);
         }
 
         $this->startDate = clone $this->baseEvent->DTSTART->getDateTime();
@@ -336,7 +338,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
         } else {
             $this->endDate = clone $this->startDate;
             if (isset($this->baseEvent->DURATION)) {
-                $this->endDate->add(Sabre_VObject_DateTimeParser::parse($this->baseEvent->DURATION->value));
+                $this->endDate->add(DateTimeParser::parse($this->baseEvent->DURATION->value));
             }
         }
         $this->currentDate = clone $this->startDate;
@@ -360,14 +362,14 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                         strtolower($value),
                         array('secondly','minutely','hourly','daily','weekly','monthly','yearly')
                     )) {
-                        throw new InvalidArgumentException('Unknown value for FREQ=' . strtoupper($value));
+                        throw new \InvalidArgumentException('Unknown value for FREQ=' . strtoupper($value));
 
                     }
                     $this->frequency = strtolower($value);
                     break;
 
                 case 'UNTIL' :
-                    $this->until = Sabre_VObject_DateTimeParser::parse($value);
+                    $this->until = DateTimeParser::parse($value);
                     break;
 
                 case 'COUNT' :
@@ -429,7 +431,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
                 foreach(explode(',', (string)$exDate) as $exceptionDate) {
 
                     $this->exceptionDates[] =
-                        Sabre_VObject_DateTimeParser::parse($exceptionDate, $this->startDate->getTimeZone());
+                        DateTimeParser::parse($exceptionDate, $this->startDate->getTimeZone());
 
                 }
 
@@ -487,7 +489,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      *
      * This method always returns a cloned instance.
      *
-     * @return Sabre_VObject_Component_VEvent
+     * @return Component\VEvent
      */
     public function getEventObject() {
 
@@ -563,7 +565,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      * @param DateTime $dt
      * @return void
      */
-    public function fastForward(DateTime $dt) {
+    public function fastForward(\DateTime $dt) {
 
         while($this->valid() && $this->getDTEnd() < $dt) {
             $this->next();

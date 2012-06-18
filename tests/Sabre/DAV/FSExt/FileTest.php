@@ -1,8 +1,12 @@
 <?php
 
+namespace Sabre\DAV\FSExt;
+
+use Sabre\DAV;
+
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
+class FileTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
@@ -12,13 +16,13 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
 
     function tearDown() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
 
     }
 
     function testPut() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $result = $file->put('New contents');
 
        $this->assertEquals('New contents',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
@@ -28,7 +32,7 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
 
     function testRange() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $file->put('0000000');
        $file->putRange('111',3);
 
@@ -38,14 +42,14 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
 
     function testGet() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $this->assertEquals('Contents',stream_get_contents($file->get()));
 
     }
 
     function testDelete() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $file->delete();
 
        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/file.txt'));
@@ -54,21 +58,21 @@ class Sabre_DAV_FSExt_FileTest extends PHPUnit_Framework_TestCase {
 
     function testGetETag() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $this->assertEquals('"' . md5('Contents') . '"',$file->getETag());
 
     }
 
     function testGetContentType() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $this->assertNull($file->getContentType());
 
     }
 
     function testGetSize() {
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $this->assertEquals(8,$file->getSize());
 
     }

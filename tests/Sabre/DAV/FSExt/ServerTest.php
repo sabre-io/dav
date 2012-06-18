@@ -1,12 +1,17 @@
 <?php
 
+namespace Sabre\DAV\FSExt;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
+class ServerTest extends DAV\AbstractServer{
 
     protected function getRootNode() {
 
-        return new Sabre_DAV_FSExt_Directory($this->tempDir);
+        return new Directory($this->tempDir);
 
     }
 
@@ -17,14 +22,14 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag' => '"'  .md5_file($this->tempDir . '/test.txt') . '"',
             ),
             $this->response->headers
@@ -42,14 +47,14 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'HEAD',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag' => '"' . md5_file($this->tempDir . '/test.txt') . '"',
             ),
             $this->response->headers
@@ -67,7 +72,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -91,7 +96,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'HTTP_IF_NONE_MATCH' => '*',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -112,7 +117,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'MKCOL',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody("");
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -134,7 +139,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing updated file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -154,7 +159,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'DELETE',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -178,7 +183,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
         mkdir($this->tempDir.'/testcol');
         file_put_contents($this->tempDir.'/testcol/test.txt','Hi! I\'m a file with a short lifespan');
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -198,7 +203,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'OPTIONS',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -208,7 +213,7 @@ class Sabre_DAV_FSExt_ServerTest extends Sabre_DAV_AbstractServer{
             'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT',
             'Accept-Ranges'  => 'bytes',
             'Content-Length' => '0',
-            'X-Sabre-Version'=> Sabre_DAV_Version::VERSION,
+            'X-Sabre-Version'=> DAV\Version::VERSION,
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);

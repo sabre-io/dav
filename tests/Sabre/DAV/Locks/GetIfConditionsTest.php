@@ -1,19 +1,24 @@
 <?php
 
+namespace Sabre\DAV\Locks;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
+class GetIfConditionsTest extends DAV\AbstractServer {
 
     /**
-     * @var Sabre_DAV_Locks_Plugin
+     * @var Sabre\DAV\Locks\Plugin
      */
     protected $locksPlugin;
 
     function setUp() {
 
         parent::setUp();
-        $locksPlugin = new Sabre_DAV_Locks_Plugin();
+        $locksPlugin = new Plugin();
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;
 
@@ -24,7 +29,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
         $serverVars = array(
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -38,7 +43,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(<opaquelocktoken:token1>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -69,7 +74,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(Not <opaquelocktoken:token1>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -99,7 +104,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '<http://www.example.com/> (<opaquelocktoken:token1>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -129,7 +134,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(<opaquelocktoken:token1>) (Not <opaquelocktoken:token2>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -164,7 +169,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) <http://www.example.org/node2> (Not <opaquelocktoken:token2>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -204,7 +209,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) (<opaquelocktoken:token2>) <http://www.example.org/node2> (Not <opaquelocktoken:token3>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -249,7 +254,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '([etag1])',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -278,7 +283,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '<http://www.example.org/> ([etag1]) ([etag2])',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();
@@ -314,7 +319,7 @@ class Sabre_DAV_Locks_GetIfConditionsTest extends Sabre_DAV_AbstractServer {
                          '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) ([etag3])',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->locksPlugin->getIfConditions();

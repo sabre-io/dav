@@ -1,19 +1,24 @@
 <?php
 
+namespace Sabre\DAV\Locks;
+
+use Sabre\HTTP;
+use Sabre\DAV;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
+class PluginTest extends DAV\AbstractServer {
 
     /**
-     * @var Sabre_DAV_Locks_Plugin
+     * @var Sabre\DAV\Locks\Plugin
      */
     protected $locksPlugin;
 
     function setUp() {
 
         parent::setUp();
-        $locksBackend = new Sabre_DAV_Locks_Backend_File(SABRE_TEMPDIR . '/locksdb');
-        $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
+        $locksBackend = new Backend\File(SABRE_TEMPDIR . '/locksdb');
+        $locksPlugin = new Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;
 
@@ -33,7 +38,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     function testGetHTTPMethodsNoBackend() {
 
-        $locksPlugin = new Sabre_DAV_Locks_Plugin();
+        $locksPlugin = new Plugin();
         $this->server->addPlugin($locksPlugin);
         $this->assertEquals(array(),$locksPlugin->getHTTPMethods(''));
 
@@ -52,7 +57,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -74,7 +79,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -136,7 +141,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -149,7 +154,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->response = new Sabre_HTTP_ResponseMock();
+        $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
         $this->server->exec();
@@ -170,7 +175,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -185,7 +190,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $lockToken = $this->response->headers['Lock-Token'];
 
-        $this->response = new Sabre_HTTP_ResponseMock();
+        $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
         $serverVars = array(
@@ -193,7 +198,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
             'HTTP_IF' => '(' . $lockToken . ')',
         );
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('');
         $this->server->httpRequest = $request;
 
@@ -215,7 +220,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -245,7 +250,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'UNLOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -270,7 +275,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_LOCK_TOKEN' => '<opaquelocktoken:blablabla>',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -294,7 +299,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -317,7 +322,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -334,7 +339,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
      */
     function testUnlock() {
 
-        $request = new Sabre_HTTP_Request(array());
+        $request = new HTTP\Request(array());
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -353,9 +358,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_LOCK_TOKEN' => $lockToken,
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
-        $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->server->httpResponse = new HTTP\ResponseMock();
         $this->server->invokeMethod('UNLOCK', 'test.txt');
 
         $this->assertEquals('HTTP/1.1 204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
@@ -373,7 +378,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
      */
     function testUnlockWindowsBug() {
 
-        $request = new Sabre_HTTP_Request(array());
+        $request = new HTTP\Request(array());
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -395,9 +400,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_LOCK_TOKEN' => $lockToken,
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
-        $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->server->httpResponse = new HTTP\ResponseMock();
         $this->server->invokeMethod('UNLOCK', 'test.txt');
 
         $this->assertEquals('HTTP/1.1 204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
@@ -415,7 +420,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
      */
     function testLockRetainOwner() {
 
-        $request = new Sabre_HTTP_Request(array());
+        $request = new HTTP\Request(array());
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -445,7 +450,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -469,7 +474,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(<opaquelocktoken:token1>)',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -491,7 +496,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -514,7 +519,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'DELETE',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -532,7 +537,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -556,7 +561,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(' . $this->response->headers['Lock-Token'] . ')',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -575,7 +580,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -599,7 +604,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -617,7 +622,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -641,7 +646,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -660,7 +665,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -684,7 +689,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -703,7 +708,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -728,7 +733,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(' . $this->response->headers['Lock-Token'] . ')',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -746,7 +751,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -770,7 +775,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -789,7 +794,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_DEPTH' => 'infinite',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -814,7 +819,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '</dir> (' . $this->response->headers['Lock-Token'] . ')',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -833,7 +838,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -857,7 +862,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '('.$this->response->headers['Lock-Token'].')',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -877,7 +882,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(["etag1"])',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -891,7 +896,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
     function testPutWithCorrectETag() {
 
         // We need an etag-enabled file node.
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_FSExt_Directory(SABRE_TEMPDIR));
+        $tree = new DAV\ObjectTree(new DAV\FSExt\Directory(SABRE_TEMPDIR));
         $this->server->tree = $tree;
 
         $etag = md5(file_get_contents(SABRE_TEMPDIR . '/test.txt'));
@@ -901,7 +906,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF' => '(["'.$etag.'"])',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -911,7 +916,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     function testGetTimeoutHeader() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'HTTP_TIMEOUT' => 'second-100',
         ));
 
@@ -923,7 +928,7 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     function testGetTimeoutHeaderNotSet() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
         ));
 
         $this->server->httpRequest = $request;
@@ -934,21 +939,21 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     function testGetTimeoutHeaderInfinite() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'HTTP_TIMEOUT' => 'infinite',
         ));
 
         $this->server->httpRequest = $request;
-        $this->assertEquals(Sabre_DAV_Locks_LockInfo::TIMEOUT_INFINITE, $this->locksPlugin->getTimeoutHeader());
+        $this->assertEquals(LockInfo::TIMEOUT_INFINITE, $this->locksPlugin->getTimeoutHeader());
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testGetTimeoutHeaderInvalid() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'HTTP_TIMEOUT' => 'yourmom',
         ));
 

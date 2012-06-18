@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * ObjectTree class
  *
@@ -11,12 +13,12 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
+class ObjectTree extends Tree {
 
     /**
      * The root node
      *
-     * @var Sabre_DAV_ICollection
+     * @var ICollection
      */
     protected $rootNode;
 
@@ -32,9 +34,9 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      *
      * This method expects the rootObject to be passed as a parameter
      *
-     * @param Sabre_DAV_ICollection $rootNode
+     * @param ICollection $rootNode
      */
-    public function __construct(Sabre_DAV_ICollection $rootNode) {
+    public function __construct(ICollection $rootNode) {
 
         $this->rootNode = $rootNode;
 
@@ -44,7 +46,7 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
      * Returns the INode object for the requested path
      *
      * @param string $path
-     * @return Sabre_DAV_INode
+     * @return INode
      */
     public function getNodeForPath($path) {
 
@@ -60,8 +62,8 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             // If this part of the path is just a dot, it actually means we can skip it
             if ($pathPart=='.' || $pathPart=='') continue;
 
-            if (!($currentNode instanceof Sabre_DAV_ICollection))
-                throw new Sabre_DAV_Exception_NotFound('Could not find node at path: ' . $path);
+            if (!($currentNode instanceof ICollection))
+                throw new Exception\NotFound('Could not find node at path: ' . $path);
 
             $currentNode = $currentNode->getChild($pathPart);
 
@@ -85,13 +87,13 @@ class Sabre_DAV_ObjectTree extends Sabre_DAV_Tree {
             // The root always exists
             if ($path==='') return true;
 
-            list($parent, $base) = Sabre_DAV_URLUtil::splitPath($path);
+            list($parent, $base) = URLUtil::splitPath($path);
 
             $parentNode = $this->getNodeForPath($parent);
-            if (!$parentNode instanceof Sabre_DAV_ICollection) return false;
+            if (!$parentNode instanceof ICollection) return false;
             return $parentNode->childExists($base);
 
-        } catch (Sabre_DAV_Exception_NotFound $e) {
+        } catch (Exception\NotFound $e) {
 
             return false;
 

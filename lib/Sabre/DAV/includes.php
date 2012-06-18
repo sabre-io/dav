@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Sabre_DAV includes file
+ * Sabre\DAV includes file
  *
- * Including this file will automatically include all files from the Sabre_DAV
+ * Including this file will automatically include all files from the Sabre\DAV
  * package.
  *
  * This often allows faster loadtimes, as autoload-speed is often quite slow.

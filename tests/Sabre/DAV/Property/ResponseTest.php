@@ -133,7 +133,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 
         $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 
@@ -210,13 +210,13 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 
         $innerProps = array(
             200 => array(
-                '{DAV:}link' => new STDClass()
+                '{DAV:}link' => new \STDClass()
             ),
         );
 
         $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 

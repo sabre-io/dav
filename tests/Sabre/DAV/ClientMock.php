@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_DAV_ClientMock extends Sabre_DAV_Client {
+namespace Sabre\DAV;
+
+class ClientMock extends Client {
 
     public $response;
 

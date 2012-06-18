@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV\Exception;
+
 /**
  * MethodNotAllowed
  *
@@ -11,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Exception_MethodNotAllowed extends Sabre_DAV_Exception {
+class MethodNotAllowed extends \Sabre\DAV\Exception {
 
     /**
      * Returns the HTTP statuscode for this exception
@@ -29,10 +31,10 @@ class Sabre_DAV_Exception_MethodNotAllowed extends Sabre_DAV_Exception {
      *
      * The headers must be returned as an array.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @return array
      */
-    public function getHTTPHeaders(Sabre_DAV_Server $server) {
+    public function getHTTPHeaders(\Sabre\DAV\Server $server) {
 
         $methods = $server->getAllowedMethods($server->getRequestUri());
 

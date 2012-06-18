@@ -1,50 +1,52 @@
 <?php
 
-class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV; 
+
+class XMLUtilTest extends \PHPUnit_Framework_TestCase {
 
     function testToClarkNotation() {
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML('<?xml version="1.0"?><test1 xmlns="http://www.example.org/">Testdoc</test1>');
 
         $this->assertEquals(
             '{http://www.example.org/}test1',
-            Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)
+            XMLUtil::toClarkNotation($dom->firstChild)
         );
 
     }
 
     function testToClarkNotation2() {
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML('<?xml version="1.0"?><s:test1 xmlns:s="http://www.example.org/">Testdoc</s:test1>');
 
         $this->assertEquals(
             '{http://www.example.org/}test1',
-            Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)
+            XMLUtil::toClarkNotation($dom->firstChild)
         );
 
     }
 
     function testToClarkNotationDAVNamespace() {
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML('<?xml version="1.0"?><s:test1 xmlns:s="urn:DAV">Testdoc</s:test1>');
 
         $this->assertEquals(
             '{DAV:}test1',
-            Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)
+            XMLUtil::toClarkNotation($dom->firstChild)
         );
 
     }
 
     function testToClarkNotationNoElem() {
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML('<?xml version="1.0"?><s:test1 xmlns:s="urn:DAV">Testdoc</s:test1>');
 
         $this->assertNull(
-            Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild->firstChild)
+            XMLUtil::toClarkNotation($dom->firstChild->firstChild)
         );
 
     }
@@ -54,7 +56,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $xml='<?xml version="1.0"?><document xmlns="DAV:">blablabla</document>';
         $this->assertEquals(
             '<?xml version="1.0"?><document xmlns="urn:DAV">blablabla</document>',
-            Sabre_DAV_XMLUtil::convertDAVNamespace($xml)
+            XMLUtil::convertDAVNamespace($xml)
         );
 
     }
@@ -64,7 +66,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $xml='<?xml version="1.0"?><s:document xmlns:s="DAV:">blablabla</s:document>';
         $this->assertEquals(
             '<?xml version="1.0"?><s:document xmlns:s="urn:DAV">blablabla</s:document>',
-            Sabre_DAV_XMLUtil::convertDAVNamespace($xml)
+            XMLUtil::convertDAVNamespace($xml)
         );
 
     }
@@ -74,7 +76,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $xml='<?xml version="1.0"?><s:document xmlns="http://bla" xmlns:s="DAV:" xmlns:z="http://othernamespace">blablabla</s:document>';
         $this->assertEquals(
             '<?xml version="1.0"?><s:document xmlns="http://bla" xmlns:s="urn:DAV" xmlns:z="http://othernamespace">blablabla</s:document>',
-            Sabre_DAV_XMLUtil::convertDAVNamespace($xml)
+            XMLUtil::convertDAVNamespace($xml)
         );
 
     }
@@ -84,7 +86,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $xml='<?xml version="1.0"?><document xmlns=\'DAV:\'>blablabla</document>';
         $this->assertEquals(
             '<?xml version="1.0"?><document xmlns=\'urn:DAV\'>blablabla</document>',
-            Sabre_DAV_XMLUtil::convertDAVNamespace($xml)
+            XMLUtil::convertDAVNamespace($xml)
         );
 
     }
@@ -94,7 +96,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $xml='<?xml version="1.0"?><document xmlns=\'DAV:" xmlns="Another attribute\'>blablabla</document>';
         $this->assertEquals(
             $xml,
-            Sabre_DAV_XMLUtil::convertDAVNamespace($xml)
+            XMLUtil::convertDAVNamespace($xml)
         );
 
     }
@@ -105,29 +107,29 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
     function testLoadDOMDocument() {
 
         $xml='<?xml version="1.0"?><document></document>';
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $this->assertTrue($dom instanceof DOMDocument);
+        $dom = XMLUtil::loadDOMDocument($xml);
+        $this->assertTrue($dom instanceof \DOMDocument);
 
     }
 
     /**
      * @depends testLoadDOMDocument
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testLoadDOMDocumentEmpty() {
 
-        Sabre_DAV_XMLUtil::loadDOMDocument('');
+        XMLUtil::loadDOMDocument('');
 
     }
 
     /**
      * @depends testConvertDAVNamespace
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testLoadDOMDocumentInvalid() {
 
         $xml='<?xml version="1.0"?><document></docu';
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = XMLUtil::loadDOMDocument($xml);
 
     }
 
@@ -138,7 +140,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
 
         $xml='<?xml version="1.0" encoding="UTF-16"?><root xmlns="DAV:">blabla</root>';
         $xml = iconv('UTF-8','UTF-16LE',$xml);
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = XMLUtil::loadDOMDocument($xml);
         $this->assertEquals('blabla',$dom->firstChild->nodeValue);
 
     }
@@ -153,8 +155,8 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
   </prop>
 </root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+        $dom = XMLUtil::loadDOMDocument($xml);
+        $properties = XMLUtil::parseProperties($dom->firstChild);
 
         $this->assertEquals(array(
             '{DAV:}displayname' => 'Calendars',
@@ -179,8 +181,8 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
   </prop>
 </root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+        $dom = XMLUtil::loadDOMDocument($xml);
+        $properties = XMLUtil::parseProperties($dom->firstChild);
 
         $this->assertEquals(array(
             '{DAV:}displayname' => 'Calendars',
@@ -205,8 +207,8 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
   </prop>
 </root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+        $dom = XMLUtil::loadDOMDocument($xml);
+        $properties = XMLUtil::parseProperties($dom->firstChild);
 
         $this->assertEquals(array(
             '{DAV:}displayname' => 'Calendars',
@@ -227,8 +229,8 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
   </prop>
 </root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild);
+        $dom = XMLUtil::loadDOMDocument($xml);
+        $properties = XMLUtil::parseProperties($dom->firstChild);
 
         $this->assertEquals(array(), $properties);
 
@@ -246,12 +248,12 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
   </prop>
 </root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $properties = Sabre_DAV_XMLUtil::parseProperties($dom->firstChild,array('{DAV:}someprop'=>'Sabre_DAV_Property_Href'));
+        $dom = XMLUtil::loadDOMDocument($xml);
+        $properties = XMLUtil::parseProperties($dom->firstChild,array('{DAV:}someprop'=>'Sabre\\DAV\\Property\\Href'));
 
         $this->assertEquals(array(
             '{DAV:}displayname' => 'Calendars',
-            '{DAV:}someprop'    => new Sabre_DAV_Property_Href('http://sabredav.org/',false),
+            '{DAV:}someprop'    => new Property\Href('http://sabredav.org/',false),
         ), $properties);
 
     }
@@ -261,12 +263,12 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(
             'DAV:',
             'foo',
-        ), Sabre_DAV_XMLUtil::parseClarkNotation('{DAV:}foo'));
+        ), XMLUtil::parseClarkNotation('{DAV:}foo'));
 
         $this->assertEquals(array(
             'http://example.org/ns/bla',
             'bar-soap',
-        ), Sabre_DAV_XMLUtil::parseClarkNotation('{http://example.org/ns/bla}bar-soap'));
+        ), XMLUtil::parseClarkNotation('{http://example.org/ns/bla}bar-soap'));
     }
 
     /**
@@ -274,7 +276,7 @@ class Sabre_DAV_XMLUtilTest extends PHPUnit_Framework_TestCase {
      */
     function testParseClarkNotationFail() {
 
-        Sabre_DAV_XMLUtil::parseClarkNotation('}foo');
+        XMLUtil::parseClarkNotation('}foo');
 
     }
 

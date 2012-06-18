@@ -1,24 +1,28 @@
 <?php
 
+namespace Sabre\DAV;
+
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
+abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_HTTP_ResponseMock
+     * @var Sabre\HTTP\ResponseMock
      */
     protected $response;
     protected $request;
     /**
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
     protected $tempDir = SABRE_TEMPDIR;
 
     function setUp() {
 
-        $this->response = new Sabre_HTTP_ResponseMock();
-        $this->server = new Sabre_DAV_Server($this->getRootNode());
+        $this->response = new HTTP\ResponseMock();
+        $this->server = new Server($this->getRootNode());
         $this->server->httpResponse = $this->response;
         $this->server->debugExceptions = true;
         file_put_contents(SABRE_TEMPDIR . '/test.txt', 'Test contents');
@@ -36,7 +40,7 @@ abstract class Sabre_DAV_AbstractServer extends PHPUnit_Framework_TestCase {
 
     protected function getRootNode() {
 
-        return new Sabre_DAV_FS_Directory(SABRE_TEMPDIR);
+        return new FS\Directory(SABRE_TEMPDIR);
 
     }
 

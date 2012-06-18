@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * IProperties interface
  *
@@ -11,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAV_IProperties extends Sabre_DAV_INode {
+interface IProperties extends INode {
 
     /**
      * Updates properties on this node,

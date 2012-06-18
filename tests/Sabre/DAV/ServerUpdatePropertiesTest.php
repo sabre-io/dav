@@ -1,13 +1,16 @@
 <?php
 
-class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV;
+use Sabre\HTTP;
+
+class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdatePropertiesFail() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('foo'),
+            new SimpleCollection('foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($tree);
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}foo' => 'bar'
@@ -26,9 +29,9 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesProtected() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('foo'),
+            new SimpleCollection('foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($tree);
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}getetag' => 'bla',
@@ -51,9 +54,9 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesEventFail() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('foo'),
+            new SimpleCollection('foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($tree);
         $server->subscribeEvent('updateProperties', array($this,'updatepropfail'));
 
         $result = $server->updateProperties('foo', array(
@@ -88,9 +91,9 @@ class Sabre_DAV_ServerUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
     function testUpdatePropertiesEventSuccess() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('foo'),
+            new SimpleCollection('foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($tree);
         $server->subscribeEvent('updateProperties', array($this,'updatepropsuccess'));
 
         $result = $server->updateProperties('foo', array(

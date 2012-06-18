@@ -1,40 +1,42 @@
 <?php
 
+namespace Sabre\DAV;
+
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_DAV_ObjectTreeTest extends PHPUnit_Framework_TestCase {
+class ObjectTreeTest extends \PHPUnit_Framework_TestCase {
 
     protected $tree;
 
     function setup() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
         mkdir(SABRE_TEMPDIR . '/root');
         mkdir(SABRE_TEMPDIR . '/root/subdir');
         file_put_contents(SABRE_TEMPDIR . '/root/file.txt','contents');
         file_put_contents(SABRE_TEMPDIR . '/root/subdir/subfile.txt','subcontents');
-        $rootNode = new Sabre_DAV_FSExt_Directory(SABRE_TEMPDIR . '/root');
-        $this->tree = new Sabre_DAV_ObjectTree($rootNode);
+        $rootNode = new FSExt\Directory(SABRE_TEMPDIR . '/root');
+        $this->tree = new ObjectTree($rootNode);
 
     }
 
     function teardown() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
 
     }
 
     function testGetRootNode() {
 
         $root = $this->tree->getNodeForPath('');
-        $this->assertInstanceOf('Sabre_DAV_FSExt_Directory',$root);
+        $this->assertInstanceOf('Sabre\\DAV\\FSExt\\Directory',$root);
 
     }
 
     function testGetSubDir() {
 
         $root = $this->tree->getNodeForPath('subdir');
-        $this->assertInstanceOf('Sabre_DAV_FSExt_Directory',$root);
+        $this->assertInstanceOf('Sabre\\DAV\\FSExt\\Directory',$root);
 
     }
 

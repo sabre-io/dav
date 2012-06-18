@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Exception;
+
+use Sabre\DAV;
+
 /**
  * RequestedRangeNotSatisfiable
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Exception_RequestedRangeNotSatisfiable extends Sabre_DAV_Exception {
+class RequestedRangeNotSatisfiable extends DAV\Exception {
 
     /**
      * returns the http statuscode for this exception

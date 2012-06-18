@@ -1,8 +1,11 @@
 <?php
 
+namespace Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_ServerEventsTest extends Sabre_DAV_AbstractServer {
+class ServerEventsTest extends AbstractServer {
 
     private $tempPath;
 
@@ -29,9 +32,9 @@ class Sabre_DAV_ServerEventsTest extends Sabre_DAV_AbstractServer {
         $this->assertFalse($this->server->createFile('bla','body'));
 
         // Also testing put()
-        $req = new Sabre_HTTP_Request(array(
+        $req = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI' => '/foobar',
+            'REQUEST_URI' => '/barbar',
         ));
 
         $this->server->httpRequest = $req;

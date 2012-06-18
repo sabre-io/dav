@@ -1,13 +1,15 @@
 <?php
 
-class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV;
+
+class StringUtilTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider dataset
      */
     function testTextMatch($haystack, $needle, $collation, $matchType, $result) {
 
-        $this->assertEquals($result, Sabre_DAV_StringUtil::textMatch($haystack, $needle, $collation, $matchType));
+        $this->assertEquals($result, StringUtil::textMatch($haystack, $needle, $collation, $matchType));
 
     }
 
@@ -63,21 +65,21 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     public function testBadCollation() {
 
-        Sabre_DAV_StringUtil::textMatch('foobar','foo','blabla','contains');
+        StringUtil::textMatch('foobar','foo','blabla','contains');
 
     }
 
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     public function testBadMatchType() {
 
-        Sabre_DAV_StringUtil::textMatch('foobar','foo','i;octet','booh');
+        StringUtil::textMatch('foobar','foo','i;octet','booh');
 
     }
 
@@ -88,7 +90,7 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             $outputString,
-            Sabre_DAV_StringUtil::ensureUTF8($inputString)
+            StringUtil::ensureUTF8($inputString)
         );
 
     }
@@ -100,7 +102,7 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             $outputString,
-            Sabre_DAV_StringUtil::ensureUTF8($inputString)
+            StringUtil::ensureUTF8($inputString)
         );
 
     }
@@ -112,7 +114,7 @@ class Sabre_DAV_StringUtilTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             $outputString,
-            Sabre_DAV_StringUtil::ensureUTF8($inputString)
+            StringUtil::ensureUTF8($inputString)
         );
 
     }

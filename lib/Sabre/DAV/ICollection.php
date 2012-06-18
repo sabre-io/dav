@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * The ICollection Interface
  *
@@ -11,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAV_ICollection extends Sabre_DAV_INode {
+interface ICollection extends INode {
 
     /**
      * Creates a new file in the directory
@@ -50,18 +52,18 @@ interface Sabre_DAV_ICollection extends Sabre_DAV_INode {
     /**
      * Returns a specific child node, referenced by its name
      *
-     * This method must throw Sabre_DAV_Exception_NotFound if the node does not
+     * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
      * @param string $name
-     * @return Sabre_DAV_INode
+     * @return Sabre\DAV\INode
      */
     function getChild($name);
 
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre_DAV_INode[]
+     * @return Sabre\DAV\INode[]
      */
     function getChildren();
 

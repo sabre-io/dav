@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_DAV_TestPlugin extends Sabre_DAV_ServerPlugin {
+namespace Sabre\DAV;
+
+class TestPlugin extends ServerPlugin {
 
     public $beforeMethod;
 
@@ -16,7 +18,7 @@ class Sabre_DAV_TestPlugin extends Sabre_DAV_ServerPlugin {
 
     }
 
-    function initialize(Sabre_DAV_Server $server) {
+    function initialize(Server $server) {
 
         $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
 

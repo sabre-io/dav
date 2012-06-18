@@ -1,12 +1,14 @@
 <?php
 
+namespace Sabre\DAV;
+
 require_once 'Sabre/DAV/ClientMock.php';
 
-class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
+class ClientTest extends \PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => '/',
         ));
 
@@ -17,13 +19,13 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
      */
     function testConstructNoBaseUri() {
 
-        $client = new Sabre_DAV_ClientMock(array());
+        $client = new ClientMock(array());
 
     }
 
     function testRequest() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -71,7 +73,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestProxy() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
             'proxy' => 'http://localhost:8000/',
         ));
@@ -120,7 +122,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestAuth() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
             'userName' => 'user',
             'password' => 'password',
@@ -170,11 +172,11 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestAuthBasic() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
             'userName' => 'user',
             'password' => 'password',
-            'authType' => Sabre_DAV_Client::AUTH_BASIC,
+            'authType' => Client::AUTH_BASIC,
         ));
 
         $responseBlob = array(
@@ -221,11 +223,11 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestAuthDigest() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
             'userName' => 'user',
             'password' => 'password',
-            'authType' => Sabre_DAV_Client::AUTH_DIGEST,
+            'authType' => Client::AUTH_DIGEST,
         ));
 
         $responseBlob = array(
@@ -271,7 +273,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
     }
     function testRequestError() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -295,7 +297,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $caught = false;
         try {
             $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Sabre_DAV_Exception $e) {
+        } catch (Exception $e) {
             $caught = true;
         }
         if (!$caught) {
@@ -306,7 +308,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestHTTPError() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -330,7 +332,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $caught = false;
         try {
             $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Sabre_DAV_Exception $e) {
+        } catch (Exception $e) {
             $caught = true;
         }
         if (!$caught) {
@@ -341,7 +343,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestHTTP404() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -365,7 +367,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $caught = false;
         try {
             $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Sabre_DAV_Exception_NotFound $e) {
+        } catch (Exception\NotFound $e) {
             $caught = true;
         }
         if (!$caught) {
@@ -379,7 +381,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
      */
     function testSpecificHTTPErrors($error) {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -403,7 +405,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
         $caught = false;
         try {
             $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Sabre_DAV_Exception $e) {
+        } catch (Exception $e) {
             $caught = true;
             $this->assertEquals($e->getHTTPCode(), $error);
         }
@@ -435,7 +437,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testGetAbsoluteUrl() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/',
         ));
 
@@ -458,7 +460,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testOptions() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -488,7 +490,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testOptionsNoDav() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -520,7 +522,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
      */
     function testPropFindNoXML() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -545,7 +547,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testPropFind() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -605,7 +607,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testPropFindDepth1CustomProp() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -663,7 +665,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testPropPatch() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -714,7 +716,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testHEADRequest() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 
@@ -753,7 +755,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testPUTRequest() {
 
-        $client = new Sabre_DAV_ClientMock(array(
+        $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 

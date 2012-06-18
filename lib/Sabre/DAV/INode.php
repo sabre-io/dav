@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * The INode interface is the base interface, and the parent class of both ICollection and IFile
  *
@@ -9,7 +11,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAV_INode {
+interface INode {
 
     /**
      * Deleted the current node

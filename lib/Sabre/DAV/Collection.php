@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * Collection class
  *
@@ -12,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_ICollection {
+abstract class Collection extends Node implements ICollection {
 
     /**
      * Returns a child object, by its name.
@@ -21,12 +23,12 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
      * nodes, and compares the name.
      * Generally its wise to override this, as this can usually be optimized
      *
-     * This method must throw Sabre_DAV_Exception_NotFound if the node does not
+     * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_NotFound
-     * @return Sabre_DAV_INode
+     * @throws Sabre\DAV\Exception\NotFound
+     * @return Sabre\DAV\INode
      */
     public function getChild($name) {
 
@@ -35,7 +37,7 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
             if ($child->getName()==$name) return $child;
 
         }
-        throw new Sabre_DAV_Exception_NotFound('File not found: ' . $name);
+        throw new Exception\NotFound('File not found: ' . $name);
 
     }
 
@@ -54,7 +56,7 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
             $this->getChild($name);
             return true;
 
-        } catch(Sabre_DAV_Exception_NotFound $e) {
+        } catch(Exception\NotFound $e) {
 
             return false;
 
@@ -88,7 +90,7 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
      */
     public function createFile($name, $data = null) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to create file (filename ' . $name . ')');
+        throw new Exception\Forbidden('Permission denied to create file (filename ' . $name . ')');
 
     }
 
@@ -96,12 +98,12 @@ abstract class Sabre_DAV_Collection extends Sabre_DAV_Node implements Sabre_DAV_
      * Creates a new subdirectory
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_Forbidden
+     * @throws Exception\Forbidden
      * @return void
      */
     public function createDirectory($name) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to create directory');
+        throw new Exception\Forbidden('Permission denied to create directory');
 
     }
 

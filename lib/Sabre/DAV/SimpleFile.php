@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * SimpleFile
  *
@@ -13,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_SimpleFile extends Sabre_DAV_File {
+class SimpleFile extends File {
 
     /**
      * File contents

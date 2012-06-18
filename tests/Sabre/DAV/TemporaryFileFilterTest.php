@@ -1,11 +1,15 @@
 <?php
 
-class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
+namespace Sabre\DAV;
+
+use Sabre\HTTP;
+
+class TemporaryFileFilterTest extends AbstractServer {
 
     function setUp() {
 
         parent::setUp();
-        $plugin = new Sabre_DAV_TemporaryFileFilterPlugin(SABRE_TEMPDIR . '/tff');
+        $plugin = new TemporaryFileFilterPlugin(SABRE_TEMPDIR . '/tff');
         $this->server->addPlugin($plugin);
 
     }
@@ -17,7 +21,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -38,7 +42,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -62,7 +66,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'HTTP_IF_NONE_MATCH' => '*',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -94,7 +98,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -110,7 +114,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -128,8 +132,8 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
     function testLockNonExistant() {
 
         mkdir(SABRE_TEMPDIR . '/locksdir');
-        $locksBackend = new Sabre_DAV_Locks_Backend_FS(SABRE_TEMPDIR . '/locksdir');
-        $locksPlugin = new Sabre_DAV_Locks_Plugin($locksBackend);
+        $locksBackend = new Locks\Backend\FS(SABRE_TEMPDIR . '/locksdir');
+        $locksPlugin = new Locks\Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
 
         // mimicking an OS/X resource fork
@@ -138,7 +142,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
 
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
@@ -169,7 +173,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -185,7 +189,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'DELETE',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -206,7 +210,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -222,7 +226,7 @@ class Sabre_DAV_TemporaryFileFilterTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'PROPFIND',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();

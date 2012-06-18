@@ -1,13 +1,18 @@
 <?php
 
+namespace Sabre\DAV\Mount;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_Mount_PluginTest extends Sabre_DAV_AbstractServer {
+class PluginTest extends DAV\AbstractServer {
 
     function setUp() {
 
         parent::setUp();
-        $this->server->addPlugin(new Sabre_DAV_Mount_Plugin());
+        $this->server->addPlugin(new Plugin());
 
     }
 
@@ -18,7 +23,7 @@ class Sabre_DAV_Mount_PluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -35,7 +40,7 @@ class Sabre_DAV_Mount_PluginTest extends Sabre_DAV_AbstractServer {
             'HTTP_HOST'      => 'example.org',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 

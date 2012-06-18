@@ -1,15 +1,20 @@
 <?php
 
+namespace Sabre\DAV\Auth;
+
+use Sabre\HTTP;
+use Sabre\DAV;
+
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
+class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function testInit() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
-        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
-        $this->assertTrue($plugin instanceof Sabre_DAV_Auth_Plugin);
+        $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
+        $plugin = new Plugin(new MockBackend(),'realm');
+        $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
 
@@ -20,8 +25,8 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
      */
     function testAuthenticate() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
-        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
+        $plugin = new Plugin(new MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
@@ -31,12 +36,12 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @depends testInit
-     * @expectedException Sabre_DAV_Exception_NotAuthenticated
+     * @expectedException Sabre\DAV\Exception\NotAuthenticated
      */
     function testAuthenticateFail() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
-        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'failme');
+        $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
+        $plugin = new Plugin(new MockBackend(),'failme');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
@@ -44,11 +49,11 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
 
     function testReportPassThrough() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
-        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
+        $plugin = new Plugin(new MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/',
@@ -56,7 +61,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
 
         $fakeServer->httpRequest = $request;
-        $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
+        $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->exec();
 
         $this->assertEquals('HTTP/1.1 501 Not Implemented', $fakeServer->httpResponse->status);
@@ -68,8 +73,8 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
      */
     function testGetCurrentUserPrincipal() {
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla')));
-        $plugin = new Sabre_DAV_Auth_Plugin(new Sabre_DAV_Auth_MockBackend(),'realm');
+        $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
+        $plugin = new Plugin(new MockBackend(),'realm');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
         $this->assertEquals('admin', $plugin->getCurrentUser());

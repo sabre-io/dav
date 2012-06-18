@@ -27,7 +27,7 @@ class ResponseList extends DAV\Property {
     private $responses;
 
     /**
-     * The only valid argument is a list of Sabre_DAV_Property_Response
+     * The only valid argument is a list of Sabre\DAV\Property\Response
      * objects.
      *
      * @param array $responses;
@@ -35,7 +35,7 @@ class ResponseList extends DAV\Property {
     public function __construct($responses) {
 
         foreach($responses as $response) {
-            if (!($response instanceof Sabre_DAV_Property_Response)) {
+            if (!($response instanceof Response)) {
                 throw new \InvalidArgumentException('You must pass an array of Sabre\DAV\Property\Response objects');
             }
         }

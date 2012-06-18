@@ -3,6 +3,7 @@
 namespace Sabre\DAV\Property;
 
 use Sabre\DAV;
+use Sabre\HTTP;
 
 class GetLastModifiedTest extends \PHPUnit_Framework_TestCase {
 
@@ -10,7 +11,7 @@ class GetLastModifiedTest extends \PHPUnit_Framework_TestCase {
 
         $dt = new \DateTime('2010-03-14 16:35', new \DateTimeZone('UTC'));
         $lastMod = new GetLastModified($dt);
-        $this->assertEquals($dt->format(DateTime::ATOM), $lastMod->getTime()->format(DateTime::ATOM));
+        $this->assertEquals($dt->format(\DateTime::ATOM), $lastMod->getTime()->format(\DateTime::ATOM));
 
     }
 
@@ -18,7 +19,7 @@ class GetLastModifiedTest extends \PHPUnit_Framework_TestCase {
 
         $dt = new \DateTime('2010-03-14 16:35', new \DateTimeZone('UTC'));
         $lastMod = new GetLastModified('2010-03-14 16:35');
-        $this->assertEquals($dt->format(DateTime::ATOM), $lastMod->getTime()->format(DateTime::ATOM));
+        $this->assertEquals($dt->format(\DateTime::ATOM), $lastMod->getTime()->format(\DateTime::ATOM));
 
     }
 
@@ -26,7 +27,7 @@ class GetLastModifiedTest extends \PHPUnit_Framework_TestCase {
 
         $dt = new \DateTime('2010-03-14 16:35', new \DateTimeZone('UTC'));
         $lastMod = new GetLastModified((int)$dt->format('U'));
-        $this->assertEquals($dt->format(DateTime::ATOM), $lastMod->getTime()->format(DateTime::ATOM));
+        $this->assertEquals($dt->format(\DateTime::ATOM), $lastMod->getTime()->format(\DateTime::ATOM));
 
     }
 

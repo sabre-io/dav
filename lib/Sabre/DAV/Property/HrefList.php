@@ -89,7 +89,7 @@ class HrefList extends DAV\Property {
 
         $hrefs = array();
         foreach($dom->childNodes as $child) {
-            if (DAV_XMLUtil::toClarkNotation($child)==='{DAV:}href') {
+            if (DAV\XMLUtil::toClarkNotation($child)==='{DAV:}href') {
                 $hrefs[] = $child->textContent;
             }
         }

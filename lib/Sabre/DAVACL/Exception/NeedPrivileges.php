@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAVACL\Exception;
+
+use Sabre\DAV;
+
 /**
  * NeedPrivileges
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Exception_NeedPrivileges extends Sabre_DAV_Exception_Forbidden {
+class NeedPrivileges extends DAV\Exception\Forbidden {
 
     /**
      * The relevant uri
@@ -52,7 +56,7 @@ class Sabre_DAVACL_Exception_NeedPrivileges extends Sabre_DAV_Exception_Forbidde
      * @param DOMElement $errorNode
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
+    public function serialize(DAV\Server $server,\DOMElement $errorNode) {
 
         $doc = $errorNode->ownerDocument;
 

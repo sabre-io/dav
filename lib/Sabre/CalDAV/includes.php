@@ -4,7 +4,7 @@
  * Sabre\CalDAV includes file
  *
  * Including this file will automatically include all files from the
- * Sabre_CalDAV package.
+ * Sabre\CalDAV package.
  *
  * This often allows faster loadtimes, as autoload-speed is often quite slow.
  *

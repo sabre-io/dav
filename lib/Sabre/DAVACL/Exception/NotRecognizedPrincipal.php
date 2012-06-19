@@ -1,7 +1,12 @@
 <?php
 
+namespace Sabre\DAVACL\Exception;
+
+use Sabre\DAV;
+
 /**
- * Sabre_DAVACL_Exception_NotRecognizedPrincipal
+ * If a client tried to set a privilege assigned to a non-existant principal,
+ * this exception will be thrown.
  *
  * @package Sabre
  * @subpackage DAVACL
@@ -9,18 +14,18 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Exception_NotRecognizedPrincipal extends Sabre_DAV_Exception_PreconditionFailed {
+class NotRecognizedPrincipal extends DAV\Exception\PreconditionFailed {
 
     /**
      * Adds in extra information in the xml response.
      *
      * This method adds the {DAV:}recognized-principal element as defined in rfc3744
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $errorNode
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
+    public function serialize(DAV\Server $server,\DOMElement $errorNode) {
 
         $doc = $errorNode->ownerDocument;
 

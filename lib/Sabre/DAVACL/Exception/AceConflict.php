@@ -1,7 +1,12 @@
 <?php
 
+namespace Sabre\DAVACL\Exception;
+
+use Sabre\DAV;
+
 /**
- * Sabre_DAVACL_Exception_AceConflict
+ * This exception is thrown when a client attempts to set conflicting
+ * permissions.
  *
  * @package Sabre
  * @subpackage DAVACL
@@ -9,18 +14,18 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Exception_AceConflict extends Sabre_DAV_Exception_Conflict {
+class AceConflict extends DAV\Exception\Conflict {
 
     /**
      * Adds in extra information in the xml response.
      *
      * This method adds the {DAV:}no-ace-conflict element as defined in rfc3744
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $errorNode
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
+    public function serialize(DAV\Server $server,\DOMElement $errorNode) {
 
         $doc = $errorNode->ownerDocument;
 

@@ -52,7 +52,7 @@ class NeedPrivileges extends DAV\Exception\Forbidden {
      *
      * This method adds the {DAV:}need-privileges element as defined in rfc3744
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $errorNode
      * @return void
      */

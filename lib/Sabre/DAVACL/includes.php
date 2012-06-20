@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Sabre_DAVACL includes file
+ * Sabre\DAVACL includes file
  *
  * Including this file will automatically include all files from the
- * Sabre_DAVACL package.
+ * Sabre\DAVACL package.
  *
  * This often allows faster loadtimes, as autoload-speed is often quite slow.
  *

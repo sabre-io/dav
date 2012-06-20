@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+
 /**
  * IPrincipal interface
  *
@@ -11,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAVACL_IPrincipal extends Sabre_DAV_INode {
+interface IPrincipal extends DAV\INode {
 
     /**
      * Returns a list of alternative urls for a principal

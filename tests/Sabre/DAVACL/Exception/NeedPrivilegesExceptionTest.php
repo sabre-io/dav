@@ -15,7 +15,7 @@ class NeedPrivilegesTest extends \PHPUnit_Framework_TestCase {
         );
         $ex = new NeedPrivileges($uri, $privileges);
 
-        $server = new Server();
+        $server = new DAV\Server();
         $dom = new \DOMDocument('1.0','utf-8');
         $root = $dom->createElementNS('DAV:','d:root');
         $dom->appendChild($root);

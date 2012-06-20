@@ -1,30 +1,35 @@
 <?php
 
-class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $principal = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::UNAUTHENTICATED);
-        $this->assertEquals(Sabre_DAVACL_Property_Principal::UNAUTHENTICATED, $principal->getType());
+        $principal = new Principal(Principal::UNAUTHENTICATED);
+        $this->assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
         $this->assertNull($principal->getHref());
 
-        $principal = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::AUTHENTICATED);
-        $this->assertEquals(Sabre_DAVACL_Property_Principal::AUTHENTICATED, $principal->getType());
+        $principal = new Principal(Principal::AUTHENTICATED);
+        $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
         $this->assertNull($principal->getHref());
 
-        $principal = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::HREF,'admin');
-        $this->assertEquals(Sabre_DAVACL_Property_Principal::HREF, $principal->getType());
+        $principal = new Principal(Principal::HREF,'admin');
+        $this->assertEquals(Principal::HREF, $principal->getType());
         $this->assertEquals('admin',$principal->getHref());
 
     }
 
     /**
      * @depends testSimple
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     function testNoHref() {
 
-        $principal = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::HREF);
+        $principal = new Principal(Principal::HREF);
 
     }
 
@@ -33,15 +38,15 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
      */
     function testSerializeUnAuthenticated() {
 
-        $prin = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::UNAUTHENTICATED);
+        $prin = new Principal(Principal::UNAUTHENTICATED);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:principal');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $objectTree = new DAV\ObjectTree(new DAV\SimpleCollection('rootdir'));
+        $server = new DAV\Server($objectTree);
 
         $prin->serialize($server, $root);
 
@@ -62,15 +67,15 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
      */
     function testSerializeAuthenticated() {
 
-        $prin = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::AUTHENTICATED);
+        $prin = new Principal(Principal::AUTHENTICATED);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:principal');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $objectTree = new DAV\ObjectTree(new DAV\SimpleCollection('rootdir'));
+        $server = new DAV\Server($objectTree);
 
         $prin->serialize($server, $root);
 
@@ -91,15 +96,15 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
      */
     function testSerializeHref() {
 
-        $prin = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::HREF,'principals/admin');
+        $prin = new Principal(Principal::HREF,'principals/admin');
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:principal');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $objectTree = new DAV\ObjectTree(new DAV\SimpleCollection('rootdir'));
+        $server = new DAV\Server($objectTree);
 
         $prin->serialize($server, $root);
 
@@ -121,10 +126,10 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 '<d:href>/principals/admin</d:href>' .
 '</d:principal>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $principal = Sabre_DAVACL_Property_Principal::unserialize($dom->firstChild);
-        $this->assertEquals(Sabre_DAVACL_Property_Principal::HREF, $principal->getType());
+        $principal = Principal::unserialize($dom->firstChild);
+        $this->assertEquals(Principal::HREF, $principal->getType());
         $this->assertEquals('/principals/admin', $principal->getHref());
 
     }
@@ -136,10 +141,10 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 '  <d:authenticated />' .
 '</d:principal>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $principal = Sabre_DAVACL_Property_Principal::unserialize($dom->firstChild);
-        $this->assertEquals(Sabre_DAVACL_Property_Principal::AUTHENTICATED, $principal->getType());
+        $principal = Principal::unserialize($dom->firstChild);
+        $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
 
     }
 
@@ -150,15 +155,15 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 '  <d:unauthenticated />' .
 '</d:principal>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $principal = Sabre_DAVACL_Property_Principal::unserialize($dom->firstChild);
-        $this->assertEquals(Sabre_DAVACL_Property_Principal::UNAUTHENTICATED, $principal->getType());
+        $principal = Principal::unserialize($dom->firstChild);
+        $this->assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testUnserializeUnknown() {
 
@@ -167,9 +172,9 @@ class Sabre_DAVACL_Property_PrincipalTest extends PHPUnit_Framework_TestCase {
 '  <d:foo />' .
 '</d:principal>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        Sabre_DAVACL_Property_Principal::unserialize($dom->firstChild);
+        Principal::unserialize($dom->firstChild);
 
     }
 

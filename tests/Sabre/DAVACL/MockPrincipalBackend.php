@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_DAVACL_MockPrincipalBackend implements Sabre_DAVACL_IPrincipalBackend {
+namespace Sabre\DAVACL;
+
+class MockPrincipalBackend implements IPrincipalBackend {
 
     public $groupMembers = array();
     public $principals;

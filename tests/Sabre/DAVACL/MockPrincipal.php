@@ -1,6 +1,11 @@
 <?php
 
-class Sabre_DAVACL_MockPrincipal extends Sabre_DAV_Node implements Sabre_DAVACL_IPrincipal {
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class MockPrincipal extends DAV\Node implements IPrincipal {
 
     public $name;
     public $principalUrl;

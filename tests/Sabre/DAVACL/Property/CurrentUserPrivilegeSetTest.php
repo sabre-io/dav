@@ -1,6 +1,12 @@
 <?php
 
-class Sabre_DAVACL_Property_CurrentUserPrivilegeSetTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
+class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
@@ -8,10 +14,10 @@ class Sabre_DAVACL_Property_CurrentUserPrivilegeSetTest extends PHPUnit_Framewor
             '{DAV:}read',
             '{DAV:}write',
         );
-        $prop = new Sabre_DAVACL_Property_CurrentUserPrivilegeSet($privileges);
+        $prop = new CurrentUserPrivilegeSet($privileges);
 
-        $server = new Sabre_DAV_Server();
-        $dom = new DOMDocument('1.0','utf-8');
+        $server = new DAV\Server();
+        $dom = new \DOMDocument('1.0','utf-8');
         $root = $dom->createElementNS('DAV:','d:root');
         $dom->appendChild($root);
 
@@ -25,10 +31,10 @@ class Sabre_DAVACL_Property_CurrentUserPrivilegeSetTest extends PHPUnit_Framewor
         );
 
         // Reloading because PHP DOM sucks
-        $dom2 = new DOMDocument('1.0', 'utf-8');
+        $dom2 = new \DOMDocument('1.0', 'utf-8');
         $dom2->loadXML($dom->saveXML());
 
-        $dxpath = new DOMXPath($dom2);
+        $dxpath = new \DOMXPath($dom2);
         $dxpath->registerNamespace('d','DAV:');
         foreach($xpaths as $xpath=>$count) {
 

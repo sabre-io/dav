@@ -1,5 +1,11 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAVACL;
+use Sabre\DAV;
+
+
 /**
  * The Card object represents a single Card from an addressbook
  *
@@ -9,12 +15,12 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, Sabre_DAVACL_IACL {
+class Card extends DAV\File implements ICard, DAVACL\IACL {
 
     /**
      * CardDAV backend
      *
-     * @var Sabre_CardDAV_Backend_Abstract
+     * @var Sabre\CardDAV\Backend\Abstract
      */
     private $carddavBackend;
 
@@ -35,11 +41,11 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
     /**
      * Constructor
      *
-     * @param Sabre_CardDAV_Backend_Abstract $carddavBackend
+     * @param Sabre\CardDAV\Backend\Abstract $carddavBackend
      * @param array $addressBookInfo
      * @param array $cardData
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend,array $addressBookInfo,array $cardData) {
+    public function __construct(Backend\AbstractBackend $carddavBackend,array $addressBookInfo,array $cardData) {
 
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;
@@ -86,7 +92,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
             $cardData = stream_get_contents($cardData);
 
         // Converting to UTF-8, if needed
-        $cardData = Sabre_DAV_StringUtil::ensureUTF8($cardData);
+        $cardData = DAV\StringUtil::ensureUTF8($cardData);
 
         $etag = $this->carddavBackend->updateCard($this->addressBookInfo['id'],$this->cardData['uri'],$cardData);
         $this->cardData['carddata'] = $cardData;
@@ -224,7 +230,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Changing ACL is not yet supported');
+        throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
     }
 
@@ -232,7 +238,7 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

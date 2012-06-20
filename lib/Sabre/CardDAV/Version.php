@@ -1,9 +1,11 @@
 <?php
 
+namespace Sabre\CardDAV;
+
 /**
  * Version Class
  *
- * This class contains the Sabre_CardDAV version information
+ * This class contains the Sabre\CardDAV version information
  *
  * @package Sabre
  * @subpackage CardDAV 
@@ -11,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_Version {
+class Version {
 
     /**
      * Full version number

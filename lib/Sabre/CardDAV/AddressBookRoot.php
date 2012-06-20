@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAVACL;
+
 /**
  * AddressBook rootnode
  *
@@ -11,19 +15,19 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_AddressBookRoot extends Sabre_DAVACL_AbstractPrincipalCollection {
+class AddressBookRoot extends DAVACL\AbstractPrincipalCollection {
 
     /**
      * Principal Backend
      *
-     * @var Sabre_DAVACL_IPrincipalBackend
+     * @var Sabre\DAVACL\IPrincipalBackend
      */
     protected $principalBackend;
 
     /**
      * CardDAV backend
      *
-     * @var Sabre_CardDAV_Backend_Abstract
+     * @var Sabre\CardDAV\Backend\AbstractBackend
      */
     protected $carddavBackend;
 
@@ -37,11 +41,11 @@ class Sabre_CardDAV_AddressBookRoot extends Sabre_DAVACL_AbstractPrincipalCollec
      * actually located in a different path, use the $principalPrefix argument
      * to override this.
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
-     * @param Sabre_CardDAV_Backend_Abstract $carddavBackend
+     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
+     * @param Sabre\CardDAV\Backend\AbstractBackend $carddavBackend
      * @param string $principalPrefix
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend,Sabre_CardDAV_Backend_Abstract $carddavBackend, $principalPrefix = 'principals') {
+    public function __construct(DAVACL\IPrincipalBackend $principalBackend,Backend\AbstractBackend $carddavBackend, $principalPrefix = 'principals') {
 
         $this->carddavBackend = $carddavBackend;
         parent::__construct($principalBackend, $principalPrefix);
@@ -55,7 +59,7 @@ class Sabre_CardDAV_AddressBookRoot extends Sabre_DAVACL_AbstractPrincipalCollec
      */
     public function getName() {
 
-        return Sabre_CardDAV_Plugin::ADDRESSBOOK_ROOT;
+        return Plugin::ADDRESSBOOK_ROOT;
 
     }
 
@@ -67,11 +71,11 @@ class Sabre_CardDAV_AddressBookRoot extends Sabre_DAVACL_AbstractPrincipalCollec
      * supplied by the authentication backend.
      *
      * @param array $principal
-     * @return Sabre_DAV_INode
+     * @return Sabre\DAV\INode
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new Sabre_CardDAV_UserAddressBooks($this->carddavBackend, $principal['uri']);
+        return new UserAddressBooks($this->carddavBackend, $principal['uri']);
 
     }
 

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+
 /**
  * Card interface
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CardDAV_ICard extends Sabre_DAV_IFile {
+interface ICard extends DAV\IFile {
 
 }
 

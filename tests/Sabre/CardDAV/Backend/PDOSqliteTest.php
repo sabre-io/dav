@@ -1,8 +1,10 @@
 <?php
 
+namespace Sabre\CardDAV\Backend;
+
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_CardDAV_Backend_PDOSqliteTest extends Sabre_CardDAV_Backend_AbstractPDOTest {
+class PDOSqliteTest extends AbstractPDOTest {
 
     function tearDown() {
 
@@ -17,8 +19,8 @@ class Sabre_CardDAV_Backend_PDOSqliteTest extends Sabre_CardDAV_Backend_Abstract
     function getPDO() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
 
         $pdo->query("DROP TABLE IF EXISTS addressbooks");
         $pdo->query("DROP TABLE IF EXISTS cards");

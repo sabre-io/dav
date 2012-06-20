@@ -1,8 +1,10 @@
 <?php
 
+namespace Sabre\CardDAV;
+
 require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 
-class Sabre_CardDAV_ValidateFilterTest extends Sabre_CardDAV_AbstractPluginTest {
+class ValidateFilterTest extends AbstractPluginTest {
 
     /**
      * @dataProvider data

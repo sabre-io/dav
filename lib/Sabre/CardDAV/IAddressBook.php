@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+
 /**
  * AddressBook interface
  *
@@ -11,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CardDAV_IAddressBook extends Sabre_DAV_ICollection {
+interface IAddressBook extends DAV\ICollection {
 
 
 

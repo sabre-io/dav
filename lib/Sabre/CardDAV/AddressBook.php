@@ -1,5 +1,10 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
+
 /**
  * The AddressBook class represents a CardDAV addressbook, owned by a specific user
  *
@@ -11,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_CardDAV_IAddressBook, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
+class AddressBook extends DAV\Collection implements IAddressBook, DAV\IProperties, DAVACL\IACL {
 
     /**
      * This is an array with addressbook information
@@ -23,17 +28,17 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
     /**
      * CardDAV backend
      *
-     * @var Sabre_CardDAV_Backend_Abstract
+     * @var Sabre\CardDAV\Backend\AbstractBackend
      */
     private $carddavBackend;
 
     /**
      * Constructor
      *
-     * @param Sabre_CardDAV_Backend_Abstract $carddavBackend
+     * @param Sabre\CardDAV\Backend\AbstractBackend $carddavBackend
      * @param array $addressBookInfo
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend, array $addressBookInfo) {
+    public function __construct(Backend\AbstractBackend $carddavBackend, array $addressBookInfo) {
 
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;
@@ -55,13 +60,13 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Returns a card
      *
      * @param string $name
-     * @return Sabre_CardDAV_ICard
+     * @return \ICard
      */
     public function getChild($name) {
 
         $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'],$name);
-        if (!$obj) throw new Sabre_DAV_Exception_NotFound('Card not found');
-        return new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
+        if (!$obj) throw new DAV\Exception\NotFound('Card not found');
+        return new Card($this->carddavBackend,$this->addressBookInfo,$obj);
 
     }
 
@@ -75,7 +80,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
         $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
         $children = array();
         foreach($objs as $obj) {
-            $children[] = new Sabre_CardDAV_Card($this->carddavBackend,$this->addressBookInfo,$obj);
+            $children[] = new Card($this->carddavBackend,$this->addressBookInfo,$obj);
         }
         return $children;
 
@@ -91,7 +96,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      */
     public function createDirectory($name) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Creating collections in addressbooks is not allowed');
+        throw new DAV\Exception\MethodNotAllowed('Creating collections in addressbooks is not allowed');
 
     }
 
@@ -112,7 +117,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
             $vcardData = stream_get_contents($vcardData);
         }
         // Converting to UTF-8, if needed
-        $vcardData = Sabre_DAV_StringUtil::ensureUTF8($vcardData);
+        $vcardData = DAV\StringUtil::ensureUTF8($vcardData);
 
         return $this->carddavBackend->createCard($this->addressBookInfo['id'],$name,$vcardData);
 
@@ -137,7 +142,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      */
     public function setName($newName) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Renaming addressbooks is not yet supported');
+        throw new DAV\Exception\MethodNotAllowed('Renaming addressbooks is not yet supported');
 
     }
 
@@ -287,7 +292,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Changing ACL is not yet supported');
+        throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
     }
 
@@ -295,7 +300,7 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

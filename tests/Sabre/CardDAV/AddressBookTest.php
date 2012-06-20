@@ -1,19 +1,22 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+
 require_once 'Sabre/CardDAV/Backend/Mock.php';
 
-class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
+class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CardDAV_AddressBook
+     * @var Sabre\CardDAV\AddressBook
      */
     protected $ab;
     protected $backend;
 
     function setUp() {
 
-        $this->backend = new Sabre_CardDAV_Backend_Mock();
-        $this->ab = new Sabre_CardDAV_AddressBook(
+        $this->backend = new Backend\Mock();
+        $this->ab = new AddressBook(
             $this->backend,
             array(
                 'uri' => 'book1',
@@ -34,13 +37,13 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
     function testGetChild() {
 
         $card = $this->ab->getChild('card1');
-        $this->assertInstanceOf('Sabre_CardDAV_Card', $card);
+        $this->assertInstanceOf('Sabre\\CardDAV\\Card', $card);
         $this->assertEquals('card1', $card->getName());
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotFound
+     * @expectedException Sabre\DAV\Exception\NotFound
      */
     function testGetChildNotFound() {
 
@@ -59,7 +62,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateDirectory() {
 
@@ -86,7 +89,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetName() {
 
@@ -139,7 +142,7 @@ class Sabre_CardDAV_AddressBookTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetACL() {
 

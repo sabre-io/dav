@@ -1,17 +1,19 @@
 <?php
 
-class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CardDAV;
+
+class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CardDAV_UserAddressBooks
+     * @var Sabre\CardDAV\UserAddressBooks
      */
     protected $s;
     protected $backend;
 
     function setUp() {
 
-        $this->backend = new Sabre_CardDAV_Backend_Mock();
-        $this->s = new Sabre_CardDAV_UserAddressBooks(
+        $this->backend = new Backend\Mock();
+        $this->s = new UserAddressBooks(
             $this->backend,
             'principals/user1'
         );
@@ -25,7 +27,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetName() {
 
@@ -34,7 +36,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testDelete() {
 
@@ -49,7 +51,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateFile() {
 
@@ -58,7 +60,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateDirectory() {
 
@@ -69,13 +71,13 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     function testGetChild() {
 
         $child = $this->s->getChild('book1');
-        $this->assertInstanceOf('Sabre_CardDAV_AddressBook', $child);
+        $this->assertInstanceOf('Sabre\\CardDAV\\AddressBook', $child);
         $this->assertEquals('book1', $child->getName());
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotFound
+     * @expectedException Sabre\DAV\Exception\NotFound
      */
     function testGetChild404() {
 
@@ -87,7 +89,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
 
         $children = $this->s->getChildren();
         $this->assertEquals(1, count($children));
-        $this->assertInstanceOf('Sabre_CardDAV_AddressBook', $children[0]);
+        $this->assertInstanceOf('Sabre\\CardDAV\\AddressBook', $children[0]);
         $this->assertEquals('book1', $children[0]->getName());
 
     }
@@ -95,7 +97,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     function testCreateExtendedCollection() {
 
         $resourceType = array(
-            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook',
+            '{' . Plugin::NS_CARDDAV . '}addressbook',
             '{DAV:}collection',
         );
         $this->s->createExtendedCollection('book2', $resourceType, array('{DAV:}displayname' => 'a-book 2'));
@@ -110,7 +112,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_InvalidResourceType
+     * @expectedException Sabre\DAV\Exception\InvalidResourceType
      */
     function testCreateExtendedCollectionInvalid() {
 
@@ -142,7 +144,7 @@ class Sabre_CardDAV_UserAddressBooksTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetACL() {
 

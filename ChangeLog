@@ -26,6 +26,7 @@
 	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the
 	  PATCH method to update parts of a file.
 	* Added: Tons of timezone name mappings for Microsoft Exchange.
+	* Added: Support for an 'exception' event.
 
 1.6.4-stable (2012-??-??)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

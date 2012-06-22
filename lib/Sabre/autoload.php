@@ -19,9 +19,21 @@
  */
 function Sabre_autoload($className) {
 
-    if(strpos($className,'Sabre_')===0) {
+    // Old style class names, we're automatically gonna map them to namespaces
+    if (strpos($className,'Sabre_')===0) {
 
-        include dirname(__FILE__) . '/' . str_replace('_','/',substr($className,6)) . '.php';
+        $namespacedName = str_replace('_','\\', $className);
+
+        if (!class_exists($namespacedName, false) && !interface_exists($namespacedName, false)) {
+            include dirname(__FILE__) . '/' . str_replace('_','/',substr($className,6)) . '.php';
+        }
+
+        class_alias($namespacedName, $className);
+    }
+
+    if(strpos($className,'Sabre\\')===0) {
+
+        include dirname(__FILE__) . '/' . str_replace('\\','/',substr($className,6)) . '.php';
 
     }
 

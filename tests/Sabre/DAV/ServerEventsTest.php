@@ -9,6 +9,8 @@ class ServerEventsTest extends AbstractServer {
 
     private $tempPath;
 
+    private $exception;
+
     function testAfterBind() {
 
         $this->server->subscribeEvent('afterBind',array($this,'afterBindHandler'));
@@ -50,5 +52,25 @@ class ServerEventsTest extends AbstractServer {
 
     }
 
+    function testException() {
+
+        $this->server->subscribeEvent('exception', array($this, 'exceptionHandler'));
+
+        $req = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/not/exisitng',
+        ));
+        $this->server->httpRequest = $req;
+        $this->server->exec();
+
+        $this->assertInstanceOf('Sabre_DAV_Exception_NotFound', $this->exception);
+
+    }
+
+    function exceptionHandler(Exception $exception) {
+
+        $this->exception = $exception;
+
+    }
 
 }

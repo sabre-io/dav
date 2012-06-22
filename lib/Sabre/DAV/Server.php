@@ -210,6 +210,10 @@ class Server {
 
         } catch (Exception $e) {
 
+            try {
+                $this->broadcastEvent('exception', array($e));
+            } catch (Exception $ignore) {
+            }
             $DOM = new \DOMDocument('1.0','utf-8');
             $DOM->formatOutput = true;
 

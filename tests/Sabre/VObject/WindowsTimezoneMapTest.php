@@ -1,13 +1,15 @@
 <?php
 
-class Sabre_VObject_WindowsTimezoneMapTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\VObject;
+
+class WindowsTimezoneMapTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getMapping
      */
     function testCorrectTZ($timezoneName) {
 
-        $tz = new DateTimeZone($timezoneName);
+        $tz = new \DateTimeZone($timezoneName);
 
     }
 
@@ -18,7 +20,7 @@ class Sabre_VObject_WindowsTimezoneMapTest extends PHPUnit_Framework_TestCase {
             function($value) {
                 return array($value);
             },
-            Sabre_VObject_WindowsTimezoneMap::$map
+            WindowsTimezoneMap::$map
         );
 
     }

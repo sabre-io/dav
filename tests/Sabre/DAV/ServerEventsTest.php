@@ -56,14 +56,14 @@ class ServerEventsTest extends AbstractServer {
 
         $this->server->subscribeEvent('exception', array($this, 'exceptionHandler'));
 
-        $req = new Sabre_HTTP_Request(array(
+        $req = new HTTP\Request(array(
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/not/exisitng',
         ));
         $this->server->httpRequest = $req;
         $this->server->exec();
 
-        $this->assertInstanceOf('Sabre_DAV_Exception_NotFound', $this->exception);
+        $this->assertInstanceOf('Sabre\\DAV\\Exception\\NotFound', $this->exception);
 
     }
 

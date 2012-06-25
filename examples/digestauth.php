@@ -13,7 +13,7 @@ require_once 'Sabre/autoload.php';
 $u = 'admin';
 $p = '1234';
 
-$auth = new Sabre_HTTP_DigestAuth();
+$auth = new \Sabre\HTTP\DigestAuth();
 $auth->init();
 
 if ($auth->getUsername() != $u || !$auth->validatePassword($p)) {

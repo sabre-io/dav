@@ -16,12 +16,12 @@ date_default_timezone_set('Canada/Eastern');
 // $baseUri = '/';
 
 /* Database */
-$pdo = new PDO('sqlite:data/db.sqlite');
+$pdo = new \PDO('sqlite:data/db.sqlite');
 $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
 //Mapping PHP errors to exceptions
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+    throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 set_error_handler("exception_error_handler");
 
@@ -29,33 +29,33 @@ set_error_handler("exception_error_handler");
 require_once 'lib/Sabre/autoload.php';
 
 // Backends
-$authBackend = new Sabre_DAV_Auth_Backend_PDO($pdo);
-$calendarBackend = new Sabre_CalDAV_Backend_PDO($pdo);
-$principalBackend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+$authBackend = new \Sabre\DAV\Auth\Backend\PDO($pdo);
+$calendarBackend = new \Sabre\CalDAV\Backend\PDO($pdo);
+$principalBackend = new \Sabre\DAVACL\PrincipalBackend\PDO($pdo);
 
 // Directory structure 
 $tree = array(
-    new Sabre_CalDAV_Principal_Collection($principalBackend),
-    new Sabre_CalDAV_CalendarRootNode($principalBackend, $calendarBackend),
+    new \Sabre\CalDAV\Principal\Collection($principalBackend),
+    new \Sabre\CalDAV\CalendarRootNode($principalBackend, $calendarBackend),
 );
 
-$server = new Sabre_DAV_Server($tree);
+$server = new \Sabre\DAV\Server($tree);
 
 if (isset($baseUri))
     $server->setBaseUri($baseUri);
 
 /* Server Plugins */
-$authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV');
+$authPlugin = new \Sabre\DAV\Auth\Plugin($authBackend,'SabreDAV');
 $server->addPlugin($authPlugin);
 
-$aclPlugin = new Sabre_DAVACL_Plugin();
+$aclPlugin = new \Sabre\DAVACL\Plugin();
 $server->addPlugin($aclPlugin);
 
-$caldavPlugin = new Sabre_CalDAV_Plugin();
+$caldavPlugin = new \Sabre\CalDAV\Plugin();
 $server->addPlugin($caldavPlugin);
 
 // Support for html frontend
-$browser = new Sabre_DAV_Browser_Plugin();
+$browser = new \Sabre\DAV\Browser\Plugin();
 $server->addPlugin($browser);
 
 // And off we go!

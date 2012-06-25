@@ -13,7 +13,7 @@ require_once 'Sabre/autoload.php';
 $u = 'admin';
 $p = '1234';
 
-$auth = new Sabre_HTTP_BasicAuth();
+$auth = new \Sabre\HTTP\BasicAuth();
 
 $result = $auth->getUserPass();
 

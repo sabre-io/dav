@@ -224,7 +224,7 @@ TEXT;
 
 if (!isset($version)) {
     include 'lib/' . str_replace('_','/',$packageName) . '/Version.php';
-    $versionClassName = $packageName . '_Version';
+    $versionClassName = str_replace('_','\\',$packageName . '_Version');
     $version = $versionClassName::VERSION;
     $stability = $versionClassName::STABILITY;
 }

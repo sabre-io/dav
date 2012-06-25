@@ -251,9 +251,9 @@
                 public function main() {
 
                     include_once 'lib/Sabre/DAV/Version.php';
-                    $this->getProject()->setNewProperty('sabredav.version',Sabre_DAV_Version::VERSION);
-                    $this->getProject()->setNewProperty('sabredav.stability',Sabre_DAV_Version::STABILITY);
-                    $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre_DAV_Version::STABILITY));
+                    $this->getProject()->setNewProperty('sabredav.version',\Sabre\DAV\Version::VERSION);
+                    $this->getProject()->setNewProperty('sabredav.stability',\Sabre\DAV\Version::STABILITY);
+                    $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre\DAV\Version::STABILITY));
 
                 }
 

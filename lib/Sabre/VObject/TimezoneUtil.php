@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_VObject_WindowsTimezoneMap {
+class Sabre_VObject_TimezoneUtil {
 
     public static $map = array(
 
@@ -209,7 +209,143 @@ class Sabre_VObject_WindowsTimezoneMap {
 
     );
 
-    static public function lookup($tzid) {
-        return isset(self::$map[$tzid]) ? self::$map[$tzid] : null;
+    public static $microsoftExchangeMap = array(
+        0  => 'UTC',
+        31 => 'Africa/Casablanca',
+        2  => 'Europe/Lisbon',
+        1  => 'Europe/London',
+        4  => 'Europe/Berlin',
+        6  => 'Europe/Prague',
+        3  => 'Europe/Paris',
+        69 => 'Africa/Luanda', // This was a best guess
+        7  => 'Europe/Athens',
+        5  => 'Europe/Bucharest',
+        49 => 'Africa/Cairo',
+        50 => 'Africa/Harare',
+        59 => 'Europe/Helsinki',
+        27 => 'Asia/Jerusalem',
+        26 => 'Asia/Baghdad',
+        74 => 'Asia/Kuwait',
+        51 => 'Europe/Moscow',
+        56 => 'Africa/Nairobi',
+        25 => 'Asia/Tehran',
+        24 => 'Asia/Muscat', // Best guess
+        54 => 'Asia/Baku',
+        48 => 'Asia/Kabul',
+        58 => 'Asia/Yekaterinburg',
+        47 => 'Asia/Karachi',
+        23 => 'Asia/Calcutta',
+        62 => 'Asia/Kathmandu',
+        46 => 'Asia/Almaty',
+        71 => 'Asia/Dhaka',
+        66 => 'Asia/Colombo',
+        61 => 'Asia/Rangoon',
+        22 => 'Asia/Bangkok',
+        64 => 'Asia/Krasnoyarsk',
+        45 => 'Asia/Shanghai',
+        63 => 'Asia/Irkutsk',
+        21 => 'Asia/Singapore',
+        73 => 'Australia/Perth',
+        75 => 'Asia/Taipei',
+        20 => 'Asia/Tokyo',
+        72 => 'Asia/Seoul',
+        70 => 'Asia/Yakutsk',
+        19 => 'Australia/Adelaide',
+        44 => 'Australia/Darwin',
+        18 => 'Australia/Brisbane',
+        76 => 'Australia/Sydney',
+        43 => 'Pacific/Guam',
+        42 => 'Australia/Hobart',
+        68 => 'Asia/Vladivostok',
+        41 => 'Asia/Magadan',
+        17 => 'Pacific/Auckland',
+        40 => 'Pacific/Fiji',
+        67 => 'Pacific/Tongatapu',
+        29 => 'Atlantic/Azores',
+        53 => 'Atlantic/Cape_Verde',
+        30 => 'America/Noronha',
+         8 => 'America/Sao_Paulo', // Best guess
+        32 => 'America/Argentina/Buenos_Aires',
+        69 => 'America/Godthab',
+        28 => 'America/St_Johns',
+         9 => 'America/Halifax',
+        33 => 'America/Caracas',
+        65 => 'America/Santiago',
+        35 => 'America/Bogota',
+        10 => 'America/New_York',
+        34 => 'America/Indiana/Indianapolis',
+        55 => 'America/Guatemala',
+        11 => 'America/Chicago',
+        37 => 'America/Mexico_City',
+        36 => 'America/Edmonton',
+        38 => 'America/Phoenix',
+        12 => 'America/Denver', // Best guess
+        13 => 'America/Los_Angeles', // Best guess
+        14 => 'America/Anchorage',
+        15 => 'Pacific/Honolulu',
+        16 => 'Pacific/Midway',
+        39 => 'Pacific/Kwajalein',
+    );
+
+    /**
+     * This method will try to find out the correct timezone for an iCalendar
+     * date-time value.
+     *
+     * You must pass the contents of the TZID parameter, as well as the full
+     * calendar.
+     *
+     * If the lookup fails, this method will return UTC.
+     *
+     * @param string $tzid
+     * @param Sabre_VObject_Component $vcalendar
+     * @return DateTimeZone
+     */
+    static public function getTimeZone($tzid, Sabre_VObject_Component $vcalendar = null) {
+
+        // First we will just see if the tzid is a support timezone identifier.
+        try {
+            return new DateTimeZone($tzid);
+        } catch (\Exception $e) {
+        }
+
+        // Next, we check if the tzid is somewhere in our tzid map.
+        if (isset(self::$map[$tzid])) {
+            return new DateTimeZone(self::$map[$tzid]);
+        }
+
+        if ($vcalendar) {
+
+            // If that didn't work, we will scan VTIMEZONE objects
+            foreach($vcalendar->select('VTIMEZONE') as $vtimezone) {
+
+                if ((string)$vtimezone->TZID === $tzid) {
+
+                    // Some clients add 'X-LIC-LOCATION' with the olson name.
+                    if (isset($vtimezone->{'X-LIC-LOCATION'})) {
+                        try {
+                            return new DateTimeZone($vtimezone->{'X-LIC-LOCATION'});
+                        } catch (\Exception $e) {
+                        }
+
+                    }
+                    // Microsoft may add a magic number, which we also have an
+                    // answer for.
+                    if (isset($vtimezone->{'X-MICROSOFT-CDO-TZID'})) {
+                        if (isset(self::$microsoftExchangeMap[(int)$vtimezone->{'X-MICROSOFT-CDO-TZID'}->value])) {
+                            return new DateTimeZone(self::$microsoftExchangeMap[(int)$vtimezone->{'X-MICROSOFT-CDO-TZID'}->value]);
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        // If we got all the way here, we default to UTC.
+        return new DateTimeZone(date_default_timezone_get());
+
+
     }
+
+
 }

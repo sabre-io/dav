@@ -208,49 +208,17 @@ class DateTime extends VObject\Property {
             );
         }
 
-        try {
-            // tzid an Olson identifier?
-            $tz = new \DateTimeZone($tzid->value);
-        } catch (\Exception $e) {
-
-            // Not an Olson id, we're going to try to find the information
-            // through the time zone name map.
-            $newtzid = VObject\WindowsTimezoneMap::lookup($tzid->value);
-            if (is_null($newtzid)) {
-
-                // Not a well known time zone name either, we're going to try
-                // to find the information through the VTIMEZONE object.
-
-                // First we find the root object
-                $root = $property;
-                while($root->parent) {
-                    $root = $root->parent;
-                }
-
-                if (isset($root->VTIMEZONE)) {
-                    foreach($root->VTIMEZONE as $vtimezone) {
-                        if (((string)$vtimezone->TZID) == $tzid) {
-                            if (isset($vtimezone->{'X-LIC-LOCATION'})) {
-                                $newtzid = (string)$vtimezone->{'X-LIC-LOCATION'};
-                            } else {
-                                // No libical location specified. As a last resort we could
-                                // try matching $vtimezone's DST rules against all known
-                                // time zones returned by \DateTimeZone::list*
-
-                                // TODO
-                            }
-                        }
-                    }
-                }
-            }
-
-            try {
-                $tz = new \DateTimeZone($newtzid);
-            } catch (\Exception $e) {
-                // If all else fails, we use the default PHP timezone
-                $tz = new \DateTimeZone(date_default_timezone_get());
-            }
+        // To look up the timezone, we must first find the VCALENDAR component.
+        $root = $property;
+        while($root->parent) {
+            $root = $root->parent;
         }
+        if ($root->name === 'VCALENDAR') {
+            $tz = VObject\TimeZoneUtil::getTimeZone((string)$tzid, $root);
+        } else {
+            $tz = VObject\TimeZoneUtil::getTimeZone((string)$tzid);
+        }
+
         $dt = new \DateTime($dateStr, $tz);
         $dt->setTimeZone($tz);
 

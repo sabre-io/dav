@@ -39,8 +39,6 @@ interface Sabre_CalDAV_Notifications_INotificationType {
      * 
      * @return string 
      */
-    function getUrl() {
-
-    }
+    function getId();
 
 }

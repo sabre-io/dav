@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification_SystemStatus implements Sabre_CalDAV_Notifications_NotificationType {
+class Sabre_CalDAV_Notifications_Notification_SystemStatus implements Sabre_CalDAV_Notifications_INotificationType {
 
     const TYPE_LOW = 1;
     const TYPE_MEDIUM = 2;

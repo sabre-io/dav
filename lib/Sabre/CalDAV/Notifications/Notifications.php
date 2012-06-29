@@ -52,7 +52,7 @@ class Sabre_CalDAV_Notifications_Notifications extends Sabre_DAV_Collection impl
     public function getChildren() {
 
         $children = array();
-        $notifications = $this->notificationBackend->getNotificationsForPrincipal($principal);
+        $notifications = $this->notificationBackend->getNotificationsForPrincipal($this->principalUri);
 
         foreach($notifications as $notification) {
 

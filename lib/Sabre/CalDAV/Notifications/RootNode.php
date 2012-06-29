@@ -12,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVNotification_RootNode extends Sabre_DAVACL_AbstractPrincipalCollection {
+class Sabre_CalDAV_Notifications_RootNode extends Sabre_DAVACL_AbstractPrincipalCollection {
 
     /**
      * Notification backend
@@ -44,7 +44,7 @@ class Sabre_DAVNotification_RootNode extends Sabre_DAVACL_AbstractPrincipalColle
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new Sabre_CalDAV_Notifications_Notifications($this->notificationsBackend, $principal['uri']);
+        return new Sabre_CalDAV_Notifications_Notifications($this->notificationBackend, $principal['uri']);
 
     }
 

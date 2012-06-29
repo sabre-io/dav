@@ -57,7 +57,7 @@ class Sabre_CalDAV_Notifications_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Adding to the list of protected properties
         array_push($server->protectedProperties,
-            '{' . self::NS_CALENDARSERVER . '}notification-URL'
+            '{' . self::NS_CALENDARSERVER . '}notification-URL',
             '{' . self::NS_CALENDARSERVER . '}notificationtype'
         );
 
@@ -96,7 +96,7 @@ class Sabre_CalDAV_Notifications_Plugin extends Sabre_DAV_ServerPlugin {
         if ($node instanceof Sabre_CalDAV_Notifications_INotification) {
 
             $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
-            if ($index = array_search($notificationUrl, $requestedProperties)) {
+            if ($index = array_search($propertyName, $requestedProperties)) {
 
                 $returnedProperties[200][$propertyName] =
                     $node->getNotificationType();

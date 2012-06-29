@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification implements Sabre_CalDAV_Notifications_INotification {
+class Sabre_CalDAV_Notifications_Notification extends Sabre_DAV_File implements Sabre_CalDAV_Notifications_INotification {
 
     /**
      * The notification backend
@@ -49,7 +49,7 @@ class Sabre_CalDAV_Notifications_Notification implements Sabre_CalDAV_Notificati
      */
     public function getName() {
 
-        return $this->notification->getUrl();
+        return $this->notification->getId();
 
     }
 
@@ -72,6 +72,39 @@ class Sabre_CalDAV_Notifications_Notification implements Sabre_CalDAV_Notificati
      */
     public function get() {
 
+        $dom = new DOMDocument('1.0','utf-8');
+        //$dom->formatOutput = true;
+        $xnotification = $dom->createElement('cs:notification');
+        $dom->appendChild($xnotification);
+
+        $namespaces = array(
+            'DAV:' => 'd',
+            Sabre_CalDAV_Plugin::NS_CALENDARSERVER => 'cs',
+        );
+
+        // Adding in default namespaces
+        foreach($namespaces as $namespace=>$prefix) {
+
+            $xnotification->setAttribute('xmlns:' . $prefix,$namespace);
+
+        }
+
+        $this->notification->serializeBody($xnotification);
+
+        return $dom->saveXML();
+
+    }
+
+    /**
+     * Returns the mime-type for a file
+     *
+     * If null is returned, we'll assume application/octet-stream
+     *
+     * @return string|null
+     */
+    function getContentType() {
+
+        return 'application/xml';
 
     }
 

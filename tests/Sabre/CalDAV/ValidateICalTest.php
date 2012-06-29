@@ -22,6 +22,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
                 'id' => 'calendar1',
                 'principaluri' => 'principals/admin',
                 'uri' => 'calendar1',
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet( array('VEVENT','VTODO','VJOURNAL') ),
             )
         );
 

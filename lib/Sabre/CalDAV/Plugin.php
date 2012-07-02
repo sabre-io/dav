@@ -813,7 +813,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
-            $result = $this->iMIPMessage($originator, $recipients, $vObject);
+            $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
             $this->server->httpResponse->sendStatus(200);
             $this->server->httpResponse->setHeader('Content-Type','application/xml');
             $this->server->httpResponse->sendBody($this->generateScheduleResponse($result));
@@ -849,7 +849,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$this->imipHandler) {
             $resultStatus = '5.2;This server does not support this operation';
         } else {
-            $this->imipHandler->sendMessage($originator, $recipients, $vObject);
+            $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
             $resultStatus = '2.0;Success';
         }
 

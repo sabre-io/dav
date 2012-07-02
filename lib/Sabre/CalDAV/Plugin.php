@@ -706,7 +706,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         // Get the Supported Components for the target calendar
-        $calendarProperties = $this->server->getProperties(dirname($path),array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
+        list($parentPath,$object) = Sabre_Dav_URLUtil::splitPath($path);
+        $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
         $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
 
         $foundType = null;

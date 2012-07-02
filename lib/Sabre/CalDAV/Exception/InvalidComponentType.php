@@ -24,7 +24,7 @@ class Sabre_CalDAV_Exception_InvalidComponentType extends Sabre_DAV_Exception_Fo
 
         $doc = $errorNode->ownerDocument;
 
-        $np = $doc->createElementNS('CALDAV:','d:supported-calendar-component');
+        $np = $doc->createElementNS(Sabre_CalDAV_Plugin::NS_CALDAV,'cal:supported-calendar-component');
         $errorNode->appendChild($np);
 
     }

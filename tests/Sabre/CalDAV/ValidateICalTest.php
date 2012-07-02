@@ -225,7 +225,7 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 }

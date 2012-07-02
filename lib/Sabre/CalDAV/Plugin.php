@@ -721,7 +721,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     if (is_null($foundType)) {
                         $foundType = $component->name;
                         if (!in_array($foundType, $supportedComponents)) {
-                            throw new Sabre_DAV_Exception_BadRequest('This calendar only supports ' . implode(', ', $supportedComponents) . '. We found a ' . $foundType);
+                            throw new Sabre_CalDAV_Exception_InvalidComponentType('This calendar only supports ' . implode(', ', $supportedComponents) . '. We found a ' . $foundType);
                         }
                         if (!isset($component->UID)) {
                             throw new Sabre_DAV_Exception_BadRequest('Every ' . $component->name . ' component must have an UID');

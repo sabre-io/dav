@@ -191,7 +191,17 @@ class Sabre_CalDAV_OutboxPostTest extends Sabre_DAVServerTest {
 
         $req->setBody(implode("\r\n",$body));
 
-        $this->assertHTTPStatus(501, $req);
+
+        $response = $this->request($req);
+        $this->assertEquals('HTTP/1.1 200 OK', $response->status);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ), $response->headers);
+
+        // Lazily checking the body for a few expected values.
+        $this->assertTrue(strpos($response->body, '5.2;')!==false);
+        $this->assertTrue(strpos($response->body,'user2@example.org')!==false);
+
 
     }
 
@@ -218,7 +228,16 @@ class Sabre_CalDAV_OutboxPostTest extends Sabre_DAVServerTest {
         $handler = new Sabre_CalDAV_Schedule_IMip_Mock('server@example.org');
 
         $this->caldavPlugin->setIMIPhandler($handler);
-        $this->assertHTTPStatus(200, $req);
+
+        $response = $this->request($req);
+        $this->assertEquals('HTTP/1.1 200 OK', $response->status);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ), $response->headers);
+
+        // Lazily checking the body for a few expected values.
+        $this->assertTrue(strpos($response->body, '2.0;')!==false);
+        $this->assertTrue(strpos($response->body,'user2@example.org')!==false);
 
         $this->assertEquals(array(
             array(

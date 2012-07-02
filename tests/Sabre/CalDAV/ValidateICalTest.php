@@ -228,4 +228,19 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
+
+    function testUpdateFileInvalidComponent() {
+
+        $this->calBackend->createCalendarObject('calendar2','blabla.ics','foo');
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar2/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
 }

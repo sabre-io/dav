@@ -358,6 +358,10 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_UnsupportedMediaType('This collection can only support vcard objects.');
         }
 
+        if (!isset($vobj->UID)) {
+            throw new Sabre_DAV_Exception_BadRequest('Every vcard must have an UID.');
+        }
+
     }
 
 

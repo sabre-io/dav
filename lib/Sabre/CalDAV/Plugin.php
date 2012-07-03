@@ -813,9 +813,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
-            $this->iMIPMessage($originator, $recipients, $vObject, $principal);
+            $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
             $this->server->httpResponse->sendStatus(200);
-            $this->server->httpResponse->sendBody('Messages sent');
+            $this->server->httpResponse->setHeader('Content-Type','application/xml');
+            $this->server->httpResponse->sendBody($this->generateScheduleResponse($result));
         } else {
             throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
         }
@@ -825,18 +826,81 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Sends an iMIP message by email.
      *
+     * This method must return an array with status codes per recipient.
+     * This should look something like:
+     *
+     * array(
+     *    'user1@example.org' => '2.0;Success'
+     * )
+     *
+     * Formatting for this status code can be found at:
+     * https://tools.ietf.org/html/rfc5545#section-3.8.8.3
+     *
+     * A list of valid status codes can be found at:
+     * https://tools.ietf.org/html/rfc5546#section-3.6
+     *
      * @param string $originator
      * @param array $recipients
      * @param Sabre_VObject_Component $vObject
-     * @param string $principal Principal url
-     * @return void
+     * @return array
      */
     protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
-            throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
+            $resultStatus = '5.2;This server does not support this operation';
+        } else {
+            $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
+            $resultStatus = '2.0;Success';
         }
-        $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
+
+        $result = array();
+        foreach($recipients as $recipient) {
+            $result[$recipient] = $resultStatus;
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * Generates a schedule-response XML body
+     *
+     * The recipients array is a key->value list, containing email addresses
+     * and iTip status codes. See the iMIPMessage method for a description of
+     * the value.
+     *
+     * @param array $recipients
+     * @return string
+     */
+    public function generateScheduleResponse(array $recipients) {
+
+        $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
+        $xscheduleResponse = $dom->createElement('cal:schedule-response');
+        $dom->appendChild($xscheduleResponse);
+
+        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+
+            $xscheduleResponse->setAttribute('xmlns:' . $prefix, $namespace);
+
+        }
+
+        foreach($recipients as $recipient=>$status) {
+            $xresponse = $dom->createElement('cal:response');
+
+            $xrecipient = $dom->createElement('cal:recipient');
+            $xrecipient->appendChild($dom->createTextNode($recipient));
+            $xresponse->appendChild($xrecipient);
+
+            $xrequestStatus = $dom->createElement('cal:request-status');
+            $xrequestStatus->appendChild($dom->createTextNode($status));
+            $xresponse->appendChild($xrequestStatus);
+
+            $xscheduleResponse->appendChild($xresponse);
+
+        }
+
+        return $dom->saveXML();
 
     }
 

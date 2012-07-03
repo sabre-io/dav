@@ -95,7 +95,12 @@ foreach($fields17 as $field) {
 if ($found === 0) {
     echo "The database had the 1.6 schema. Table will now be altered.\n";
     echo "This may take some time for large tables\n";
-    $pdo->exec(<<<SQL
+
+    switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+
+        case 'mysql' :
+
+            $pdo->exec(<<<SQL
 ALTER TABLE calendarobjects 
 ADD etag VARCHAR(32),
 ADD size INT(11) UNSIGNED,
@@ -103,7 +108,20 @@ ADD componenttype VARCHAR(8),
 ADD firstoccurence INT(11) UNSIGNED,
 ADD lastoccurence INT(11) UNSIGNED
 SQL
-);
+        );
+            break;
+            case 'sqlite' :
+                $pdo->exec('ALTER TABLE calendarobjects ADD etag text');
+                $pdo->exec('ALTER TABLE calendarobjects ADD size integer');
+                $pdo->exec('ALTER TABLE calendarobjects ADD componenttype TEXT');
+                $pdo->exec('ALTER TABLE calendarobjects ADD firstoccurence integer');
+                $pdo->exec('ALTER TABLE calendarobjects ADD lastoccurence integer');
+                break;
+
+        default :
+            die('This upgrade script does not support this driver (' . $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) . ")\n");
+
+    } 
     echo "Database schema upgraded.\n";
 
 } elseif ($found === 5) {

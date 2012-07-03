@@ -24,7 +24,7 @@ include __DIR__ . '/Parameter.php';
 include __DIR__ . '/ParseException.php';
 include __DIR__ . '/Reader.php';
 include __DIR__ . '/RecurrenceIterator.php';
-include __DIR__ . '/TimezoneUtil.php';
+include __DIR__ . '/TimeZoneUtil.php';
 include __DIR__ . '/Version.php';
 include __DIR__ . '/Element.php';
 include __DIR__ . '/Property.php';

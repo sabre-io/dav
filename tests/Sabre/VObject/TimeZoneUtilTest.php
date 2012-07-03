@@ -1,6 +1,6 @@
 <?php
 
-class Sabre_VObject_TimezoneUtilTest extends PHPUnit_Framework_TestCase {
+class Sabre_VObject_TimeZoneUtilTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider getMapping
@@ -18,7 +18,7 @@ class Sabre_VObject_TimezoneUtilTest extends PHPUnit_Framework_TestCase {
             function($value) {
                 return array($value);
             },
-            Sabre_VObject_TimezoneUtil::$map
+            Sabre_VObject_TimeZoneUtil::$map
         );
 
     }

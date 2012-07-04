@@ -91,7 +91,7 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
                 break;
         }
 
-        $prop = $node->ownerDocument->createElementNS(Sabre_CalDAV_Plugin::NS_CALENDARSERVER, 'cs:systemstatus');
+        $prop = $node->ownerDocument->createElement('cs:systemstatus');
         $prop->setAttribute('type', $type);
 
         $node->appendChild($prop);
@@ -121,18 +121,18 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
                 break;
         }
 
-        $prop = $node->ownerDocument->createElementNS(Sabre_CalDAV_Plugin::NS_CALENDARSERVER, 'cs:systemstatus');
+        $prop = $node->ownerDocument->createElement('cs:systemstatus');
         $prop->setAttribute('type', $type);
 
         if ($this->description) {
             $text = $node->ownerDocument->createTextNode($this->description);
-            $desc = $node->ownerDocument->createElementNS(Sabre_CalDAV_Plugin::NS_CALENDARSERVER, 'cs:description');
+            $desc = $node->ownerDocument->createElement('cs:description');
             $desc->appendChild($text);
             $prop->appendChild($desc);
         }
         if ($this->href) {
             $text = $node->ownerDocument->createTextNode($this->href);
-            $href = $node->ownerDocument->createElementNS('DAV:', 'd:href');
+            $href = $node->ownerDocument->createElement('d:href');
             $href->appendChild($text);
             $prop->appendChild($href);
         }

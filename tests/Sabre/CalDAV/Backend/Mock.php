@@ -4,11 +4,13 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
 
     private $calendarData;
     private $calendars;
+    private $notifications;
 
-    function __construct(array $calendars, array $calendarData) {
+    function __construct(array $calendars, array $calendarData, array $notifications = array()) {
 
         $this->calendars = $calendars;
         $this->calendarData = $calendarData;
+        $this->notifications = $notifications;
 
     }
 
@@ -250,6 +252,9 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      */
     public function getNotificationsForPrincipal($principalUri) {
 
+        if (isset($this->notifications[$principalUri])) {
+            return $this->notifications[$principalUri];
+        }
         return array();
 
     }

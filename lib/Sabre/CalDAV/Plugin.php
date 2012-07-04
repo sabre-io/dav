@@ -395,7 +395,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         } // instanceof IPrincipal
 
-        if ($node instanceof Sabre_CalDAV_Notifications_INotification) {
+        if ($node instanceof Sabre_CalDAV_Notifications_INode) {
 
             $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
             if ($index = array_search($propertyName, $requestedProperties)) {
@@ -407,7 +407,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
-        } // instanceof INotification
+        } // instanceof Notifications_INode
 
 
         if ($node instanceof Sabre_CalDAV_ICalendarObject) {

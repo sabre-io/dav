@@ -73,7 +73,7 @@ class Sabre_CalDAV_Notifications_Collection extends Sabre_DAV_Collection impleme
      */
     public function getName() {
 
-        return 'notification';
+        return 'notifications';
 
     }
 

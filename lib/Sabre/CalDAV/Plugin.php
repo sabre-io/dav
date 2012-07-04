@@ -100,7 +100,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('calendar-access', 'calendar-proxy', 'calendarserver-sharing');
+        return array('calendar-access', 'calendar-proxy');
 
     }
 

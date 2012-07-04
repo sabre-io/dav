@@ -73,8 +73,7 @@ class Sabre_CalDAV_Notifications_Notifications extends Sabre_DAV_Collection impl
      */
     public function getName() {
 
-        list(, $name) = Sabre_DAV_URLUtil::splitPath($this->principalUri);
-        return $name;
+        return 'notification';
 
     }
 

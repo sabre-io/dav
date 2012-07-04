@@ -100,7 +100,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('calendar-access', 'calendar-proxy');
+        return array('calendar-access', 'calendar-proxy', 'calendarserver-sharing');
 
     }
 
@@ -172,6 +172,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_INotifications'] = '{' . self::NS_CALENDARSERVER . '}notification';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_INotification'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
 
@@ -195,7 +197,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
-            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for'
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . self::NS_CALENDARSERVER . '}notification-URL',
+            '{' . self::NS_CALENDARSERVER . '}notificationtype'
 
         );
     }
@@ -380,7 +384,30 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
+            // notification-URL property
+            $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
+            if ($index = array_search($notificationUrl, $requestedProperties)) {
+                $principalId = $node->getName();
+                $calendarHomePath = 'calendars/' . $principalId . '/notification';
+                unset($requestedProperties[$index]);
+                $returnedProperties[200][$notificationUrl] = new Sabre_DAV_Property_Href($calendarHomePath);
+            }
+
         } // instanceof IPrincipal
+
+        if ($node instanceof Sabre_CalDAV_Notifications_INotification) {
+
+            $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
+            if ($index = array_search($propertyName, $requestedProperties)) {
+
+                $returnedProperties[200][$propertyName] =
+                    new Sabre_CalDAV_Notifications_NtoP($node->getNotificationType());
+
+                unset($requestedProperties[$index]);
+
+            }
+
+        } // instanceof INotification
 
 
         if ($node instanceof Sabre_CalDAV_ICalendarObject) {

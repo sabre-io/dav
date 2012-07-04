@@ -1,9 +1,15 @@
 <?php
 
 /**
- * Abstract backend for notifications
+ * Adds caldav notification support to a backend.
  *
- * Implement this backend to create your own notification system.
+ * Notifications are defined at:
+ * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-notifications.txt
+ *
+ * These notifications are basically a list of server-generated notifications 
+ * displayed to the user. Users can dismiss notifications by deleting them.
+ *
+ * The primary usecase is to allow for calendar-sharing.
  * 
  * @package Sabre
  * @subpackage CalDAV
@@ -11,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_CalDAV_Notifications_Backend_Abstract {
+interface Sabre_CalDAV_Backend_NotificationSupport extends Sabre_CalDAV_Backend_BackendInterface {
 
     /**
      * Returns a list of notifications for a given principal url.
@@ -22,7 +28,7 @@ abstract class Sabre_CalDAV_Notifications_Backend_Abstract {
      * @param string $principalUri
      * @return array 
      */
-    abstract function getNotificationsForPrincipal($principalUri);
+    public function getNotificationsForPrincipal($principalUri);
 
     /**
      * This deletes a specific notifcation.
@@ -33,6 +39,6 @@ abstract class Sabre_CalDAV_Notifications_Backend_Abstract {
      * @param Sabre_CalDAV_Notifications_INotificationType $notification 
      * @return void
      */
-    abstract function deleteNotification($principalUri, Sabre_CalDAV_Notifications_INotificationType $notification); 
+    public function deleteNotification($principalUri, Sabre_CalDAV_Notifications_INotificationType $notification); 
 
 }

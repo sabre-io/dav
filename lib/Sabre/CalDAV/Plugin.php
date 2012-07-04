@@ -386,7 +386,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             // notification-URL property
             $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
-            if ($index = array_search($notificationUrl, $requestedProperties)) {
+            if (($index = array_search($notificationUrl, $requestedProperties)) !== false) {
                 $principalId = $node->getName();
                 $calendarHomePath = 'calendars/' . $principalId . '/notifications/';
                 unset($requestedProperties[$index]);
@@ -398,7 +398,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if ($node instanceof Sabre_CalDAV_Notifications_INode) {
 
             $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
-            if ($index = array_search($propertyName, $requestedProperties)) {
+            if (($index = array_search($propertyName, $requestedProperties)) !== false) {
 
                 $returnedProperties[200][$propertyName] =
                     $node->getNotificationType();

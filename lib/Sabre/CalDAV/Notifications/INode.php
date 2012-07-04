@@ -16,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CalDAV_Notifications_INotification extends Sabre_DAV_IFile {
+interface Sabre_CalDAV_Notifications_INode extends Sabre_DAV_IFile {
 
     /**
      * This method must return an xml element, using the 

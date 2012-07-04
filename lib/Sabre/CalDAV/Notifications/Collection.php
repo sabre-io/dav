@@ -15,14 +15,14 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notifications extends Sabre_DAV_Collection implements Sabre_CalDAV_Notifications_INotifications {
+class Sabre_CalDAV_Notifications_Collection extends Sabre_DAV_Collection implements Sabre_CalDAV_Notifications_INotifications {
 
     /**
      * The notification backend
      * 
-     * @var Sabre_CalDAV_Notifications_Backend_Abstract 
+     * @var Sabre_CalDAV_Backend_NotificationSupport
      */
-    protected $notificationBackend;
+    protected $caldavBackend;
 
     /**
      * Principal uri 
@@ -34,12 +34,12 @@ class Sabre_CalDAV_Notifications_Notifications extends Sabre_DAV_Collection impl
     /**
      * Constructor
      * 
-     * @param Sabre_CalDAV_Notifications_Backend_Abstract $notificationBackend
+     * @param Sabre_CalDAV_Backend_NotificationSupport $caldavBackend
      * @param string $principalUri 
      */
-    public function __construct(Sabre_CalDAV_Notifications_Backend_Abstract $notificationBackend, $principalUri) {
+    public function __construct(Sabre_CalDAV_Backend_NotificationSupport $caldavBackend, $principalUri) {
 
-        $this->notificationBackend = $notificationBackend;
+        $this->caldavBackend = $caldavBackend;
         $this->principalUri = $principalUri;
 
     }
@@ -52,12 +52,12 @@ class Sabre_CalDAV_Notifications_Notifications extends Sabre_DAV_Collection impl
     public function getChildren() {
 
         $children = array();
-        $notifications = $this->notificationBackend->getNotificationsForPrincipal($this->principalUri);
+        $notifications = $this->caldavBackend->getNotificationsForPrincipal($this->principalUri);
 
         foreach($notifications as $notification) {
 
-            $children[] = new Sabre_CalDAV_Notifications_Notification(
-                $this->notificationBackend,
+            $children[] = new Sabre_CalDAV_Notifications_Node(
+                $this->caldavBackend,
                 $notification
             );
         }

@@ -13,14 +13,14 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification extends Sabre_DAV_File implements Sabre_CalDAV_Notifications_INotification {
+class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_CalDAV_Notifications_INode {
 
     /**
      * The notification backend
      * 
-     * @var Sabre_CalDAV_Notifications_Backend_Abstract 
+     * @var Sabre_CalDAV_Backend_NotificationSupport
      */
-    protected $notificationBackend;
+    protected $caldavBackend;
 
     /**
      * The actual notification
@@ -32,12 +32,12 @@ class Sabre_CalDAV_Notifications_Notification extends Sabre_DAV_File implements 
     /**
      * Constructor
      *
-     * @param Sabre_CalDAV_Notifications_Backend_Abstract $notificationBackend
+     * @param Sabre_CalDAV_Backend_NotificationSupport $caldavBackend
      * @param Sabre_CalDAV_Notifications_INotificationType $notification
      */
-    public function __construct(Sabre_CalDAV_Notifications_Backend_Abstract $notificationBackend, Sabre_CalDAV_Notifications_INotificationType $notification) {        
+    public function __construct(Sabre_CalDAV_Backend_NotificationSupport $caldavBackend, Sabre_CalDAV_Notifications_INotificationType $notification) {        
 
-        $this->notificationBackend = $notificationBackend;
+        $this->caldavBackend = $caldavBackend;
         $this->notification = $notification;
 
     }
@@ -72,7 +72,7 @@ class Sabre_CalDAV_Notifications_Notification extends Sabre_DAV_File implements 
      */
     public function get() {
 
-        $dom = new DOMDocument('1.0','utf-8');
+        $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
         $xnotification = $dom->createElement('cs:notification');
         $dom->appendChild($xnotification);
@@ -96,15 +96,26 @@ class Sabre_CalDAV_Notifications_Notification extends Sabre_DAV_File implements 
     }
 
     /**
-     * Returns the mime-type for a file
-     *
-     * If null is returned, we'll assume application/octet-stream
+     * Returns the mime-type for this node 
      *
      * @return string|null
      */
-    function getContentType() {
+    public function getContentType() {
 
         return 'application/xml';
+
+    }
+
+    /**
+     * Returns the file size
+     *
+     * We just return nothing here, so the Content-Length is not sent back.
+     * 
+     * @return void
+     */
+    public function getSize() {
+
+        return null;
 
     }
 

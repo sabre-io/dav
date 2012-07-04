@@ -162,6 +162,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
         $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
         $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
+        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -696,6 +697,48 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             return;
 
         $this->validateICalendar($data, $path);
+
+    }
+
+    /**
+     * This event is triggered before any HTTP request is handled.
+     *
+     * We use this to intercept GET calls to notification nodes, and return the
+     * proper response.
+     * 
+     * @param string $method 
+     * @param string $path 
+     * @return void 
+     */
+    public function beforeMethod($method, $path) {
+
+        if ($method!=='GET') return;
+
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (Sabre_DAV_Exception_NotFound $e) {
+            return;
+        }
+
+        if (!$node instanceof Sabre_CalDAV_Notifications_INode)
+            return;
+
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+
+        $root = $dom->createElement('cs:notification');
+        foreach($this->server->xmlNamespaces as $namespace => $prefix) {
+            $root->setAttribute('xmlns:' . $prefix, $namespace);
+        }
+
+        $dom->appendChild($root);
+        $node->getNotificationType()->serializeBody($this->server, $root);
+
+        $this->server->httpResponse->setHeader('Content-Type','application/xml');
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody($dom->saveXML());
+
+        return false;
 
     }
 

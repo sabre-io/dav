@@ -7,35 +7,35 @@
  * interface to allow the Notifications plugin to mark the collection
  * as a notifications collection.
  *
- * This collection should only return Sabre_CalDAV_Notifications_INotification
- * nodes as it's children.
- * 
+ * This collection should only return Sabre_CalDAV_Notifications_INode nodes as
+ * its children.
+ *
  * @package Sabre
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Collection extends Sabre_DAV_Collection implements Sabre_CalDAV_Notifications_INotifications {
+class Sabre_CalDAV_Notifications_Collection extends Sabre_DAV_Collection implements Sabre_CalDAV_Notifications_ICollection {
 
     /**
      * The notification backend
-     * 
+     *
      * @var Sabre_CalDAV_Backend_NotificationSupport
      */
     protected $caldavBackend;
 
     /**
-     * Principal uri 
-     * 
-     * @var string 
+     * Principal uri
+     *
+     * @var string
      */
     protected $principalUri;
 
     /**
      * Constructor
-     * 
+     *
      * @param Sabre_CalDAV_Backend_NotificationSupport $caldavBackend
-     * @param string $principalUri 
+     * @param string $principalUri
      */
     public function __construct(Sabre_CalDAV_Backend_NotificationSupport $caldavBackend, $principalUri) {
 
@@ -46,8 +46,8 @@ class Sabre_CalDAV_Notifications_Collection extends Sabre_DAV_Collection impleme
 
     /**
      * Returns all notifications for a principal
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getChildren() {
 
@@ -68,8 +68,8 @@ class Sabre_CalDAV_Notifications_Collection extends Sabre_DAV_Collection impleme
 
     /**
      * Returns the name of this object
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function getName() {
 

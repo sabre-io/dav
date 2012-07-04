@@ -172,7 +172,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
-        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_INotifications'] = '{' . self::NS_CALENDARSERVER . '}notification';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
         $server->resourceTypeMapping['Sabre_CalDAV_Notifications_INode'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
@@ -401,7 +401,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if ($index = array_search($propertyName, $requestedProperties)) {
 
                 $returnedProperties[200][$propertyName] =
-                    new Sabre_CalDAV_Notifications_NtoP($node->getNotificationType());
+                    $node->getNotificationType();
 
                 unset($requestedProperties[$index]);
 

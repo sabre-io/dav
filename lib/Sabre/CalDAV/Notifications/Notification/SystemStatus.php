@@ -3,7 +3,7 @@
 /**
  * SystemStatus notification
  *
- * This notification can be used to indicate to the user that the system is 
+ * This notification can be used to indicate to the user that the system is
  * down.
  *
  * @package Sabre
@@ -12,50 +12,50 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification_SystemStatus implements Sabre_CalDAV_Notifications_INotificationType {
+class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
 
     const TYPE_LOW = 1;
     const TYPE_MEDIUM = 2;
     const TYPE_HIGH = 3;
 
     /**
-     * A unique id 
-     * 
-     * @var string 
+     * A unique id
+     *
+     * @var string
      */
     protected $id;
 
     /**
-     * The type of alert. This should be one of the TYPE_ constants. 
-     * 
-     * @var int 
+     * The type of alert. This should be one of the TYPE_ constants.
+     *
+     * @var int
      */
     protected $type;
 
     /**
      * A human-readable description of the problem.
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $description;
 
     /**
-     * A url to a website with more information for the user. 
-     * 
-     * @var string 
+     * A url to a website with more information for the user.
+     *
+     * @var string
      */
     protected $href;
 
     /**
      * Creates the notification.
      *
-     * Some kind of unique id should be provided. This is used to generate a 
+     * Some kind of unique id should be provided. This is used to generate a
      * url.
      *
-     * @param string $id 
-     * @param int $type 
-     * @param string $description 
-     * @param string $href 
+     * @param string $id
+     * @param int $type
+     * @param string $description
+     * @param string $href
      */
     public function __construct($id, $type = self::TYPE_HIGH, $description = null, $href = null) {
 
@@ -65,17 +65,18 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus implements Sabre_CalD
         $this->href = $href;
 
     }
-    
+
     /**
      * Serializes the notification as a single property.
-     * 
+     *
      * You should usually just encode the single top-level element of the
-     * notification. 
-     * 
-     * @param \DOMNode $node 
+     * notification.
+     *
+     * @param Sabre_DAV_Server $server
+     * @param DOMElement $node
      * @return void
      */
-    public function serializeProperty(\DOMNode $node) {
+    public function serialize(Sabre_DAV_Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :
@@ -100,11 +101,12 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus implements Sabre_CalD
     /**
      * This method serializes the entire notification, as it is used in the
      * response body.
-     * 
-     * @param \DOMNode $node 
+     *
+     * @param Sabre_DAV_Server $server
+     * @param DOMElement $node
      * @return void
      */
-    public function serializeBody(\DOMNode $node) {
+    public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :
@@ -142,12 +144,12 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus implements Sabre_CalD
     /**
      * Returns a unique id for this notification
      *
-     * This is just the base url. This should generally be some kind of unique 
+     * This is just the base url. This should generally be some kind of unique
      * id.
-     * 
-     * @return string 
+     *
+     * @return string
      */
-    public function getId() { 
+    public function getId() {
 
         return $this->id;
 

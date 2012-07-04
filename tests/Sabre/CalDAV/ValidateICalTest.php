@@ -22,6 +22,13 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
                 'id' => 'calendar1',
                 'principaluri' => 'principals/admin',
                 'uri' => 'calendar1',
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet( array('VEVENT','VTODO','VJOURNAL') ),
+            ),
+            array(
+                'id' => 'calendar2',
+                'principaluri' => 'principals/admin',
+                'uri' => 'calendar2',
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet( array('VTODO','VJOURNAL') ),
             )
         );
 
@@ -205,6 +212,35 @@ class Sabre_CalDAV_ValidateICalTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));
+
+    }
+
+    function testCreateFileInvalidComponent() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar2/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    function testUpdateFileInvalidComponent() {
+
+        $this->calBackend->createCalendarObject('calendar2','blabla.ics','foo');
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar2/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 }

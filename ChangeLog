@@ -27,11 +27,16 @@
 	  PATCH method to update parts of a file.
 	* Added: Tons of timezone name mappings for Microsoft Exchange.
 	* Added: Support for an 'exception' event.
+	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
+	* Fixed: Rejecting calendar objects if they are not in the
+	  supported-calendar-component list. (thanks Armin!)
 
 1.6.4-stable (2012-??-??)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on
 	  alarms, if an overridden event has it's alarm removed.
 	* Fixed: Compatibility for OS/X 10.8 iCal in the IMipHandler.
+	* Fixed: Issue 222: beforeWriteContent shouldn't be called for lock
+	  requests.
 
 1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

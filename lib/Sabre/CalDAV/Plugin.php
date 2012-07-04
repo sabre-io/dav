@@ -675,7 +675,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$node instanceof Sabre_CalDAV_ICalendarObject)
             return;
 
-        $this->validateICalendar($data);
+        $this->validateICalendar($data, $path);
 
     }
 
@@ -695,7 +695,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$parentNode instanceof Sabre_CalDAV_Calendar)
             return;
 
-        $this->validateICalendar($data);
+        $this->validateICalendar($data, $path);
 
     }
 
@@ -705,9 +705,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * An exception is thrown if it's not.
      *
      * @param resource|string $data
+     * @param string $path
      * @return void
      */
-    protected function validateICalendar(&$data) {
+    protected function validateICalendar(&$data, $path) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
@@ -731,6 +732,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_UnsupportedMediaType('This collection can only support iCalendar objects.');
         }
 
+        // Get the Supported Components for the target calendar
+        list($parentPath,$object) = Sabre_Dav_URLUtil::splitPath($path);
+        $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
+        $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
+
         $foundType = null;
         $foundUID = null;
         foreach($vobj->getComponents() as $component) {
@@ -742,6 +748,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 case 'VJOURNAL' :
                     if (is_null($foundType)) {
                         $foundType = $component->name;
+                        if (!in_array($foundType, $supportedComponents)) {
+                            throw new Sabre_CalDAV_Exception_InvalidComponentType('This calendar only supports ' . implode(', ', $supportedComponents) . '. We found a ' . $foundType);
+                        }
                         if (!isset($component->UID)) {
                             throw new Sabre_DAV_Exception_BadRequest('Every ' . $component->name . ' component must have an UID');
                         }

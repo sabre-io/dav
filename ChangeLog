@@ -27,7 +27,9 @@
 	  PATCH method to update parts of a file.
 	* Added: Tons of timezone name mappings for Microsoft Exchange.
 	* Added: Support for an 'exception' event.
-	* Fixed: Uploaded VCards without a UID are now rejected.
+	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
+	* Fixed: Rejecting calendar objects if they are not in the
+	  supported-calendar-component list. (thanks Armin!)
 
 1.6.4-stable (2012-??-??)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

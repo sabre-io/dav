@@ -162,6 +162,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
         $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
         $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
+        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -172,6 +173,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_ICollection'] = '{' . self::NS_CALENDARSERVER . '}notifications';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_INode'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
 
@@ -195,7 +198,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
-            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for'
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . self::NS_CALENDARSERVER . '}notification-URL',
+            '{' . self::NS_CALENDARSERVER . '}notificationtype'
 
         );
     }
@@ -380,7 +385,30 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
+            // notification-URL property
+            $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
+            if (($index = array_search($notificationUrl, $requestedProperties)) !== false) {
+                $principalId = $node->getName();
+                $calendarHomePath = 'calendars/' . $principalId . '/notifications/';
+                unset($requestedProperties[$index]);
+                $returnedProperties[200][$notificationUrl] = new Sabre_DAV_Property_Href($calendarHomePath);
+            }
+
         } // instanceof IPrincipal
+
+        if ($node instanceof Sabre_CalDAV_Notifications_INode) {
+
+            $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
+            if (($index = array_search($propertyName, $requestedProperties)) !== false) {
+
+                $returnedProperties[200][$propertyName] =
+                    $node->getNotificationType();
+
+                unset($requestedProperties[$index]);
+
+            }
+
+        } // instanceof Notifications_INode
 
 
         if ($node instanceof Sabre_CalDAV_ICalendarObject) {
@@ -669,6 +697,48 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             return;
 
         $this->validateICalendar($data, $path);
+
+    }
+
+    /**
+     * This event is triggered before any HTTP request is handled.
+     *
+     * We use this to intercept GET calls to notification nodes, and return the
+     * proper response.
+     * 
+     * @param string $method 
+     * @param string $path 
+     * @return void 
+     */
+    public function beforeMethod($method, $path) {
+
+        if ($method!=='GET') return;
+
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (Sabre_DAV_Exception_NotFound $e) {
+            return;
+        }
+
+        if (!$node instanceof Sabre_CalDAV_Notifications_INode)
+            return;
+
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+
+        $root = $dom->createElement('cs:notification');
+        foreach($this->server->xmlNamespaces as $namespace => $prefix) {
+            $root->setAttribute('xmlns:' . $prefix, $namespace);
+        }
+
+        $dom->appendChild($root);
+        $node->getNotificationType()->serializeBody($this->server, $root);
+
+        $this->server->httpResponse->setHeader('Content-Type','application/xml');
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody($dom->saveXML());
+
+        return false;
 
     }
 

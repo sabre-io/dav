@@ -12,7 +12,7 @@
 class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV_ICalendarObject, Sabre_DAVACL_IACL {
 
     /**
-     * Sabre_CalDAV_Backend_Abstract
+     * Sabre_CalDAV_Backend_BackendInterface
      *
      * @var array
      */
@@ -35,11 +35,11 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
     /**
      * Constructor
      *
-     * @param Sabre_CalDAV_Backend_Abstract $caldavBackend
+     * @param Sabre_CalDAV_Backend_BackendInterface $caldavBackend
      * @param array $calendarInfo
      * @param array $objectData
      */
-    public function __construct(Sabre_CalDAV_Backend_Abstract $caldavBackend,array $calendarInfo,array $objectData) {
+    public function __construct(Sabre_CalDAV_Backend_BackendInterface $caldavBackend,array $calendarInfo,array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
 

@@ -21,7 +21,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
     /**
      * CalDAV backend
      *
-     * @var Sabre_CalDAV_Backend_Abstract
+     * @var Sabre_CalDAV_Backend_BackendInterface
      */
     protected $caldavBackend;
 
@@ -36,10 +36,10 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
      * Constructor
      *
      * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
-     * @param Sabre_CalDAV_Backend_Abstract $caldavBackend
+     * @param Sabre_CalDAV_Backend_BackendInterface $caldavBackend
      * @param mixed $userUri
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_Abstract $caldavBackend, $userUri) {
+    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $userUri) {
 
         $this->principalBackend = $principalBackend;
         $this->caldavBackend = $caldavBackend;
@@ -171,6 +171,11 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
             $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
         }
         $objs[] = new Sabre_CalDAV_Schedule_Outbox($this->principalInfo['uri']);
+
+        // We're adding a notifications node, if it's supported by the backend.
+        if ($this->caldavBackend instanceof Sabre_CalDAV_Backend_NotificationSupport) {
+            $objs[] = new Sabre_CalDAV_Notifications_Collection($this->caldavBackend, $this->principalInfo['uri']);
+        }
         return $objs;
 
     }

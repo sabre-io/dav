@@ -765,7 +765,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
         }
 
-        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
+        if (!preg_match('/^mailto:(.*)@(.*)$/i', $originator)) {
             throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
         }
         $originator = substr($originator,7);
@@ -774,7 +774,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($recipients as $k=>$recipient) {
 
             $recipient = trim($recipient);
-            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) {
+            if (!preg_match('/^mailto:(.*)@(.*)$/i', $recipient)) {
                 throw new Sabre_DAV_Exception_BadRequest('Recipients must start with mailto: and must be valid email address');
             }
             $recipient = substr($recipient, 7);

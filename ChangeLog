@@ -37,6 +37,8 @@
 	* Fixed: Compatibility for OS/X 10.8 iCal in the IMipHandler.
 	* Fixed: Issue 222: beforeWriteContent shouldn't be called for lock
 	  requests.
+	* Fixed: Problem with POST requests to the outbox if mailto: was not lower
+	  cased.
 
 1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

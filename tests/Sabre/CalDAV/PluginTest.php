@@ -1063,7 +1063,20 @@ END:VCALENDAR';
         $server->addPlugin($caldav);
 
         $caldav->beforeMethod('GET','foo');
-        $this->fail('aaaah');
+
+        $this->assertEquals('HTTP/1.1 200 OK', $httpResponse->status);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ), $httpResponse->headers);
+
+        $expected = 
+'<?xml version="1.0" encoding="UTF-8"?>
+<cs:notification xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">
+  <cs:systemstatus type="high"/>
+</cs:notification>
+';
+
+        $this->assertEquals($expected, $httpResponse->body);
 
 
     }

@@ -1047,4 +1047,25 @@ END:VCALENDAR';
 
     }
 
+    function testNotificationGet() {
+
+        $notification = new Sabre_CalDAV_Notifications_Node(
+            $this->caldavBackend,
+            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+        );
+
+        $server = new Sabre_DAV_Server(array($notification));
+        $caldav = new Sabre_CalDAV_Plugin();
+
+        $httpResponse = new Sabre_HTTP_ResponseMock();
+        $server->httpResponse = $httpResponse;
+
+        $server->addPlugin($caldav);
+
+        $caldav->beforeMethod('GET','foo');
+        $this->fail('aaaah');
+
+
+    }
+
 }

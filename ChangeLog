@@ -12,6 +12,7 @@
 	* BC Break: Sabre_CalDAV_Schedule_IMip::sendMessage now has an extra
 	  argument. If you extended this class, you should fix this method. It's
 	  only used for informational purposes.
+	* New feature: Support for caldav notifications!
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
 	  heavy optimizations.

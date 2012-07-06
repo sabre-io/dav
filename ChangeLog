@@ -12,6 +12,7 @@
 	* BC Break: Sabre_CalDAV_Schedule_IMip::sendMessage now has an extra
 	  argument. If you extended this class, you should fix this method. It's
 	  only used for informational purposes.
+	* New feature: Support for caldav notifications!
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
 	  heavy optimizations.
@@ -25,8 +26,22 @@
 	  where we already has an exception class.
 	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the
 	  PATCH method to update parts of a file.
+	* Added: Tons of timezone name mappings for Microsoft Exchange.
+	* Added: Support for an 'exception' event.
+	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
+	* Fixed: Rejecting calendar objects if they are not in the
+	  supported-calendar-component list. (thanks Armin!)
 
-1.6.3-stable (2012-??-??)
+1.6.4-stable (2012-??-??)
+	* Fixed: Issue 220: Calendar-query filters may fail when filtering on
+	  alarms, if an overridden event has it's alarm removed.
+	* Fixed: Compatibility for OS/X 10.8 iCal in the IMipHandler.
+	* Fixed: Issue 222: beforeWriteContent shouldn't be called for lock
+	  requests.
+	* Fixed: Problem with POST requests to the outbox if mailto: was not lower
+	  cased.
+
+1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of
 	  authentication is to be used.
 	* Fixed: Issue 206: Sabre_DAV_Client PUT requests are fixed.

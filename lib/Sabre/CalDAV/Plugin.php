@@ -162,6 +162,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
         $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
         $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
+        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -172,6 +173,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_ICollection'] = '{' . self::NS_CALENDARSERVER . '}notifications';
+        $server->resourceTypeMapping['Sabre_CalDAV_Notifications_INode'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
 
@@ -195,7 +198,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
-            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for'
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . self::NS_CALENDARSERVER . '}notification-URL',
+            '{' . self::NS_CALENDARSERVER . '}notificationtype'
 
         );
     }
@@ -380,7 +385,30 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             }
 
+            // notification-URL property
+            $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
+            if (($index = array_search($notificationUrl, $requestedProperties)) !== false) {
+                $principalId = $node->getName();
+                $calendarHomePath = 'calendars/' . $principalId . '/notifications/';
+                unset($requestedProperties[$index]);
+                $returnedProperties[200][$notificationUrl] = new Sabre_DAV_Property_Href($calendarHomePath);
+            }
+
         } // instanceof IPrincipal
+
+        if ($node instanceof Sabre_CalDAV_Notifications_INode) {
+
+            $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
+            if (($index = array_search($propertyName, $requestedProperties)) !== false) {
+
+                $returnedProperties[200][$propertyName] =
+                    $node->getNotificationType();
+
+                unset($requestedProperties[$index]);
+
+            }
+
+        } // instanceof Notifications_INode
 
 
         if ($node instanceof Sabre_CalDAV_ICalendarObject) {
@@ -648,7 +676,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$node instanceof Sabre_CalDAV_ICalendarObject)
             return;
 
-        $this->validateICalendar($data);
+        $this->validateICalendar($data, $path);
 
     }
 
@@ -668,7 +696,49 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$parentNode instanceof Sabre_CalDAV_Calendar)
             return;
 
-        $this->validateICalendar($data);
+        $this->validateICalendar($data, $path);
+
+    }
+
+    /**
+     * This event is triggered before any HTTP request is handled.
+     *
+     * We use this to intercept GET calls to notification nodes, and return the
+     * proper response.
+     * 
+     * @param string $method 
+     * @param string $path 
+     * @return void 
+     */
+    public function beforeMethod($method, $path) {
+
+        if ($method!=='GET') return;
+
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (Sabre_DAV_Exception_NotFound $e) {
+            return;
+        }
+
+        if (!$node instanceof Sabre_CalDAV_Notifications_INode)
+            return;
+
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+
+        $root = $dom->createElement('cs:notification');
+        foreach($this->server->xmlNamespaces as $namespace => $prefix) {
+            $root->setAttribute('xmlns:' . $prefix, $namespace);
+        }
+
+        $dom->appendChild($root);
+        $node->getNotificationType()->serializeBody($this->server, $root);
+
+        $this->server->httpResponse->setHeader('Content-Type','application/xml');
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody($dom->saveXML());
+
+        return false;
 
     }
 
@@ -678,9 +748,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * An exception is thrown if it's not.
      *
      * @param resource|string $data
+     * @param string $path
      * @return void
      */
-    protected function validateICalendar(&$data) {
+    protected function validateICalendar(&$data, $path) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
@@ -704,6 +775,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_UnsupportedMediaType('This collection can only support iCalendar objects.');
         }
 
+        // Get the Supported Components for the target calendar
+        list($parentPath,$object) = Sabre_Dav_URLUtil::splitPath($path);
+        $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
+        $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
+
         $foundType = null;
         $foundUID = null;
         foreach($vobj->getComponents() as $component) {
@@ -715,6 +791,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 case 'VJOURNAL' :
                     if (is_null($foundType)) {
                         $foundType = $component->name;
+                        if (!in_array($foundType, $supportedComponents)) {
+                            throw new Sabre_CalDAV_Exception_InvalidComponentType('This calendar only supports ' . implode(', ', $supportedComponents) . '. We found a ' . $foundType);
+                        }
                         if (!isset($component->UID)) {
                             throw new Sabre_DAV_Exception_BadRequest('Every ' . $component->name . ' component must have an UID');
                         }
@@ -756,7 +835,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
         }
 
-        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
+        if (!preg_match('/^mailto:(.*)@(.*)$/i', $originator)) {
             throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
         }
         $originator = substr($originator,7);
@@ -765,7 +844,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($recipients as $k=>$recipient) {
 
             $recipient = trim($recipient);
-            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) {
+            if (!preg_match('/^mailto:(.*)@(.*)$/i', $recipient)) {
                 throw new Sabre_DAV_Exception_BadRequest('Recipients must start with mailto: and must be valid email address');
             }
             $recipient = substr($recipient, 7);
@@ -813,9 +892,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
-            $this->iMIPMessage($originator, $recipients, $vObject, $principal);
+            $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
             $this->server->httpResponse->sendStatus(200);
-            $this->server->httpResponse->sendBody('Messages sent');
+            $this->server->httpResponse->setHeader('Content-Type','application/xml');
+            $this->server->httpResponse->sendBody($this->generateScheduleResponse($result));
         } else {
             throw new Sabre_DAV_Exception_NotImplemented('This iTIP method is currently not implemented');
         }
@@ -825,18 +905,81 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Sends an iMIP message by email.
      *
+     * This method must return an array with status codes per recipient.
+     * This should look something like:
+     *
+     * array(
+     *    'user1@example.org' => '2.0;Success'
+     * )
+     *
+     * Formatting for this status code can be found at:
+     * https://tools.ietf.org/html/rfc5545#section-3.8.8.3
+     *
+     * A list of valid status codes can be found at:
+     * https://tools.ietf.org/html/rfc5546#section-3.6
+     *
      * @param string $originator
      * @param array $recipients
      * @param Sabre_VObject_Component $vObject
-     * @param string $principal Principal url
-     * @return void
+     * @return array
      */
     protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
-            throw new Sabre_DAV_Exception_NotImplemented('No iMIP handler is setup on this server.');
+            $resultStatus = '5.2;This server does not support this operation';
+        } else {
+            $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
+            $resultStatus = '2.0;Success';
         }
-        $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
+
+        $result = array();
+        foreach($recipients as $recipient) {
+            $result[$recipient] = $resultStatus;
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * Generates a schedule-response XML body
+     *
+     * The recipients array is a key->value list, containing email addresses
+     * and iTip status codes. See the iMIPMessage method for a description of
+     * the value.
+     *
+     * @param array $recipients
+     * @return string
+     */
+    public function generateScheduleResponse(array $recipients) {
+
+        $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
+        $xscheduleResponse = $dom->createElement('cal:schedule-response');
+        $dom->appendChild($xscheduleResponse);
+
+        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+
+            $xscheduleResponse->setAttribute('xmlns:' . $prefix, $namespace);
+
+        }
+
+        foreach($recipients as $recipient=>$status) {
+            $xresponse = $dom->createElement('cal:response');
+
+            $xrecipient = $dom->createElement('cal:recipient');
+            $xrecipient->appendChild($dom->createTextNode($recipient));
+            $xresponse->appendChild($xrecipient);
+
+            $xrequestStatus = $dom->createElement('cal:request-status');
+            $xrequestStatus->appendChild($dom->createTextNode($status));
+            $xresponse->appendChild($xrequestStatus);
+
+            $xscheduleResponse->appendChild($xresponse);
+
+        }
+
+        return $dom->saveXML();
 
     }
 

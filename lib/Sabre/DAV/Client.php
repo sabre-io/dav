@@ -22,6 +22,7 @@ class Sabre_DAV_Client {
     protected $userName;
     protected $password;
     protected $proxy;
+    protected $trustedCertificates;
 
     /**
      * Basic authentication
@@ -87,6 +88,18 @@ class Sabre_DAV_Client {
 
     }
 
+    /**
+	 * Add trusted root certificates to the webdav client.
+	 * 
+	 * The parameter certificates should be a absulute path to a file
+	 * which contains all trusted certificates
+     *
+     * @param string $certificates
+     */
+    public function addTrustedCertificates($certificates) {
+    	$this->trustedCertificates = $certificates;
+    }
+    
     /**
      * Does a PROPFIND request
      *
@@ -278,6 +291,10 @@ class Sabre_DAV_Client {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
         );
+        
+        if($this->trustedCertificates) {
+        	$curlSettings[CURLOPT_CAINFO] = $this->trustedCertificates;
+        }
 
         switch ($method) {
             case 'HEAD' :

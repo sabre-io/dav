@@ -75,6 +75,13 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         $server->resourceTypeMapping['Sabre_CalDAV_IShareableCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner';
         $server->resourceTypeMapping['Sabre_CalDAV_ISharedCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared';
 
+        array_push(
+            $this->server->protectedProperties,
+            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite',
+            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
+            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url'
+        );
+
         $this->server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
         $this->server->subscribeEvent('unknownMethod', array($this,'unknownMethod'));
 
@@ -111,6 +118,20 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                     new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
 
             }
+
+        }
+        if ($node instanceof Sabre_CalDAV_ISharedCalendar) {
+            if (($index = array_search('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url', $requestedProperties))!==false) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url'] =
+                    new Sabre_DAV_Property_Href(
+                        $node->getSharedUrl()
+                    );
+
+            }
+
+        }
 
     }
 

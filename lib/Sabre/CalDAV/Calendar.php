@@ -92,9 +92,6 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
             case '{urn:ietf:params:xml:ns:caldav}supported-collation-set' :
                 $response[$prop] =  new Sabre_CalDAV_Property_SupportedCollationSet();
                 break;
-            case '{DAV:}owner' :
-                $response[$prop] = new Sabre_DAVACL_Property_Principal(Sabre_DAVACL_Property_Principal::HREF,$this->calendarInfo['principaluri']);
-                break;
             default :
                 if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];
                 break;

@@ -6,7 +6,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre_DAVACL_IACL {
@@ -169,7 +169,11 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
         $objs = array();
         foreach($calendars as $calendar) {
             if ($this->caldavBackend instanceof Sabre_CalDAV_Backend_SharingSupport) {
-                $objs[] = new Sabre_CalDAV_ShareableCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
+                    $objs[] = new Sabre_CalDAV_SharedCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                } else {
+                    $objs[] = new Sabre_CalDAV_ShareableCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                }
             } else {
                 $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
             }

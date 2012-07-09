@@ -6,7 +6,7 @@
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_BackendInterface {
@@ -14,7 +14,7 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Backe
     /**
      * Updates the list of shares.
      *
-     * The first array is a list of people that are to be added to the 
+     * The first array is a list of people that are to be added to the
      * calendar.
      *
      * Every element in the add array has the following properties:
@@ -25,12 +25,12 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Backe
      *
      * Every element in the remove array is just the address string.
      *
-     * @param mixed $calendarId 
-     * @param array $add 
-     * @param array $remove 
+     * @param mixed $calendarId
+     * @param array $add
+     * @param array $remove
      * @return void
      */
-    function updateShares($calendarId, array $add, array $remove); 
+    function updateShares($calendarId, array $add, array $remove);
 
     /**
      * Returns the list of people whom this calendar is shared with.
@@ -42,9 +42,21 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Backe
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
      *
-     * @param mixed $calendarId 
-     * @return array 
+     * @param mixed $calendarId
+     * @return array
      */
-    function getShares($calendarId); 
+    function getShares($calendarId);
+
+    /**
+     * This method is called when a user replied to a request to share.
+     *
+     * @param string href The sharee who is replying (often a mailto: address)
+     * @param int status One of the SharingPlugin::STATUS_* constants
+     * @param string $calendarUri The url to the calendar thats being shared
+     * @param string $inReplyTo The unique id this message is a response to
+     * @param string $summary A description of the reply
+     * @return void
+     */
+    function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null);
 
 }

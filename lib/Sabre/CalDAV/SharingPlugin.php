@@ -156,13 +156,6 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         if (strpos($contentType,'application/xml')===false)
             return;
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($this->server->httpRequest->getBody());
-
-        // We're only handling 'share' documents
-        if (Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild) !== '{http://calendarserver.org/ns/}share') {
-            return;
-        }
-
         // Making sure the node exists
         try {
             $node = $this->server->tree->getNodeForPath($uri);
@@ -170,36 +163,78 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             return;
         }
 
-        // We can only deal with IShareableCalendar objects
-        if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
-            return;
-        }
 
-        // Getting ACL info
-        $acl = $this->server->getPlugin('acl');
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($this->server->httpRequest->getBody());
 
-        // If there's no ACL support, we allow everything
-        if ($acl) {
-            $acl->checkPrivileges($uri, '{DAV:}write');
+        $documentType = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
-            // Also, you can only make changes if you're the owner of the
-            // calendar (and not a sharee)
-            $principals = $acl->getCurrentUserPrincipals();
-            if (!in_array($node->getOwner(), $principals)) {
-                throw new Sabre_DAV_Exception_Forbidden('Only the owner of the calendar can make changes to the list of sharees');
+        // We're only handling 'share' documents
+        if ($documentType === '{http://calendarserver.org/ns/}share') {
+
+            // We can only deal with IShareableCalendar objects
+            if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                return;
             }
 
+            // Getting ACL info
+            $acl = $this->server->getPlugin('acl');
+
+            // If there's no ACL support, we allow everything
+            if ($acl) {
+                $acl->checkPrivileges($uri, '{DAV:}write');
+
+                // Also, you can only make changes if you're the owner of the
+                // calendar (and not a sharee)
+                $principals = $acl->getCurrentUserPrincipals();
+                if (!in_array($node->getOwner(), $principals)) {
+                    throw new Sabre_DAV_Exception_Forbidden('Only the owner of the calendar can make changes to the list of sharees');
+                }
+
+            }
+
+            $mutations = $this->parseShareRequest($dom);
+
+            $node->updateShares($mutations[0], $mutations[1]);
+
+            $this->server->httpResponse->sendStatus(200);
+            $this->server->httpResponse->sendBody('Updates shares');
+
+            // Breaking the event chain
+            return false;
+
+        } elseif ($documentType === '{http://calendarserver.org/ns/}share-reply') {
+
+            // This only works on the calendar-home-root node.
+            if (!$node instanceof Sabre_CalDAV_UserCalendars) {
+                return;
+            }
+
+            // Getting ACL info
+            $acl = $this->server->getPlugin('acl');
+
+            // If there's no ACL support, we allow everything
+            if ($acl) {
+                $acl->checkPrivileges($uri, '{DAV:}write');
+            }
+
+            $message = $this->parseShareReplyRequest($dom);
+
+            $node->shareReply(
+                $message['href'],
+                $message['status'],
+                $message['calendarUri'],
+                $message['inReplyTo'],
+                $message['summary']
+            );
+
+            $this->server->httpResponse->sendStatus(200);
+            $this->server->httpResponse->sendBody('Sent reply');
+
+            // Breaking the event chain
+            return false;
+
         }
 
-        $mutations = $this->parseShareRequest($dom);
-
-        $node->updateShares($mutations[0], $mutations[1]);
-
-        $this->server->httpResponse->sendStatus(200);
-        $this->server->httpResponse->sendBody('Updates shares');
-
-        // Breaking the event chain
-        return false;
 
     }
 
@@ -254,6 +289,35 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         }
 
         return array($set, $remove);
+
+    }
+
+    /**
+     * Parses the 'share-reply' POST request.
+     *
+     * This method returns an array, containing the following properties:
+     *   * href - The sharee who is replying
+     *   * status - One of the self::STATUS_* constants
+     *   * calendarUri - The url of the shared calendar
+     *   * inReplyTo - The unique id of the share invitation.
+     *   * summary - Optional description of the reply.  
+     *
+     * @param DOMDocument $dom
+     * @return array
+     */
+    protected function parseShareReplyRequest(DOMDocument $dom) {
+
+        $xpath = \DOMXPath($dom);
+        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $xpath->registerNamespace('d', 'urn:DAV');
+
+        return array(
+            'href' => $xpath->evaluate('string(d:href)'),
+            'calendarUri' => $this->server->calculateUri($xpath->evaluate('string(cs:host-url/d:href)')),
+            'inReplyTo' => $xpath->evaluate('string(cs:in-reply-to)'),
+            'summary' => $xpath->evaluate('string(cs:summary)'),
+            'status' => $xpath->evaluate('cs:invite-accepted')?self::STATUS_ACCEPTED:self::STATUS_DECLINED
+        );
 
     }
 

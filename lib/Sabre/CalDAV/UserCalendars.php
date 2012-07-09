@@ -322,4 +322,24 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
 
     }
 
+    /**
+     * This method is called when a user replied to a request to share.
+     *
+     * @param string href The sharee who is replying (often a mailto: address)
+     * @param int status One of the SharingPlugin::STATUS_* constants
+     * @param string $calendarUri The url to the calendar thats being shared
+     * @param string $inReplyTo The unique id this message is a response to
+     * @param string $summary A description of the reply
+     * @return void
+     */
+    public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
+
+        if (!$this->caldavBackend instanceof Sabre_CalDAV_Backend_SharingSupport) {
+            throw new Sabre_DAV_Exception_NotImplemented('Sharing support is not implemented by this backend.');
+        }
+
+        $this->caldavbackend->sharereply($href, $status, $calendaruri, $inreplyto, $summary);
+
+    }
+
 }

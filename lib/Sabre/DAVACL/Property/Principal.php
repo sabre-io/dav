@@ -35,6 +35,11 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
     const ALL = 4;
 
     /**
+     * The owner of a resource
+     */
+    const OWNER = 5;
+
+    /**
      * Principal-type
      *
      * Must be one of the UNAUTHENTICATED, AUTHENTICATED or HREF constants.
@@ -150,6 +155,9 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
                 return new self(self::HREF, $parent->textContent);
             case '{DAV:}all':
                 return new self(self::ALL);
+            case '{DAV:}property':
+                // FIXME: the only covered case is '<property><owner/></property>'
+                return new self(self::OWNER);
             default :
                 throw new Sabre_DAV_Exception_BadRequest('Unexpected element (' . Sabre_DAV_XMLUtil::toClarkNotation($parent) . '). Could not deserialize');
 

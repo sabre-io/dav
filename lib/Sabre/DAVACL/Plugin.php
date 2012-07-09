@@ -994,7 +994,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Normalizing urls
         foreach($newAcl as $k=>$newAce) {
-            $newAcl[$k]['principal'] = $this->server->calculateUri($newAce['principal']);
+            if(substr($newAce['principal'],0,6) != '{DAV:}')
+                $newAcl[$k]['principal'] = $this->server->calculateUri($newAce['principal']);
         }
 
         $node = $this->server->tree->getNodeForPath($uri);
@@ -1040,6 +1041,8 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
             // Looking up the principal
+            /* if(substr($newAce['principal'],0,6) != '{DAV:}') { // this line or the next one ? */
+            if($newAce['principal'] != '{DAV:}authenticated' && $newAce['principal'] != '{DAV:}unauthenticated' && $newAce['principal'] != '{DAV:}owner') {
             try {
                 $principal = $this->server->tree->getNodeForPath($newAce['principal']);
             } catch (Sabre_DAV_Exception_NotFound $e) {
@@ -1047,6 +1050,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
             if (!($principal instanceof Sabre_DAVACL_IPrincipal)) {
                 throw new Sabre_DAVACL_Exception_NotRecognizedPrincipal('The specified uri (' . $newAce['principal'] . ') is not a principal');
+            }
             }
 
         }

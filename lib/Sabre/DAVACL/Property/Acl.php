@@ -99,6 +99,9 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
             $principal = Sabre_DAVACL_Property_Principal::unserialize($principal->item(0));
 
             switch($principal->getType()) {
+                case Sabre_DAVACL_Property_Principal::OWNER :
+                    $principal = '{DAV:}owner';
+                    break;
                 case Sabre_DAVACL_Property_Principal::HREF :
                     $principal = $principal->getHref();
                     break;

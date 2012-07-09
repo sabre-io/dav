@@ -1,84 +1,76 @@
 <?php
 
+use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+
 /**
  * This class represents the cs:invite-reply notification element.
- * 
+ *
  * @package Sabre
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
 
     /**
-     * The invite has been accepted.
-     */
-    const TYPE_ACCEPTED = 1;
-
-    /**
-     * The invite has been declined.
-     */
-    const TYPE_DECLINED = 2;
-
-    /**
-     * A unique id for the message 
-     * 
-     * @var string 
+     * A unique id for the message
+     *
+     * @var string
      */
     protected $id;
 
     /**
      * The unique id of the notification this was a reply to.
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $inReplyTo;
 
     /**
-     * A url to the recipient of the original (!) notification. 
-     * 
-     * @var string 
+     * A url to the recipient of the original (!) notification.
+     *
+     * @var string
      */
     protected $href;
 
     /**
-     * The type of message, see the TYPE constants. 
-     * 
-     * @var int 
+     * The type of message, see the SharingPlugin::STATUS_ constants.
+     *
+     * @var int
      */
     protected $type;
 
     /**
-     * True if access to a calendar is read-only. 
-     * 
-     * @var bool 
+     * True if access to a calendar is read-only.
+     *
+     * @var bool
      */
     protected $readOnly;
 
     /**
-     * A url to the shared calendar. 
-     * 
-     * @var string 
+     * A url to the shared calendar.
+     *
+     * @var string
      */
     protected $hostUrl;
 
     /**
-     * A description of the share request 
-     * 
-     * @var string 
+     * A description of the share request
+     *
+     * @var string
      */
     protected $summary;
 
     /**
      * Creares the Invite notification
-     * 
+     *
      * @param string $id A unique id
-     * @param string $inReplyTo Which notification id this is a reply to 
-     * @param string $href A url to the recipient of the original(!) recipient 
-     * @param int $type The type of message, see the TYPE constants.
-     * @param bool $readOnly True if access to a calendar is read-only. 
+     * @param string $inReplyTo Which notification id this is a reply to
+     * @param string $href A url to the recipient of the original(!) recipient
+     * @param int $type The type of message, see the SharingPlugin::STATUS_* constants.
+     * @param bool $readOnly True if access to a calendar is read-only.
      * @param string $hostUrl A url to the shared calendar
-     * @param string $summary A description of the share request 
+     * @param string $summary A description of the share request
      */
     public function __construct($id, $inReplyTo, $href, $type, $readOnly, $hostUrl, $summary = null) {
 
@@ -136,10 +128,10 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
         $nodeName = null;
         switch($this->type) {
 
-            case TYPE_ACCEPTED :
+            case SharingPlugin::STATUS_ACCEPTED :
                 $nodeName = 'cs:invite-accepted';
                 break;
-            case TYPE_DECLINED :
+            case SharingPlugin::STATUS_DECLINED :
                 $nodeName = 'cs:invite-declined';
                 break;
 

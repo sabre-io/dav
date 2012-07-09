@@ -1,102 +1,84 @@
 <?php
 
+use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+
 /**
  * This class represents the cs:invite-notification notification element.
- * 
+ *
  * @package Sabre
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
 
     /**
-     * The invite has been accepted.
-     */
-    const TYPE_ACCEPTED = 1;
-
-    /**
-     * The invite has been declined.
-     */
-    const TYPE_DECLINED = 2;
-
-    /**
-     * The sharee deleted their instance of the calendar.
-     */
-    const TYPE_DELETED = 3;
-
-    /**
-     * The sharee hasn't responded to an invite.
-     */
-    const TYPE_NORESPONSE = 4;
-
-    /**
-     * A unique id for the message 
-     * 
-     * @var string 
+     * A unique id for the message
+     *
+     * @var string
      */
     protected $id;
 
     /**
-     * A url to the recipient of the notification 
-     * 
-     * @var string 
+     * A url to the recipient of the notification
+     *
+     * @var string
      */
     protected $href;
 
     /**
-     * The type of message, see the TYPE constants. 
-     * 
-     * @var int 
+     * The type of message, see the SharingPlugin::STATUS_* constants.
+     *
+     * @var int
      */
     protected $type;
 
     /**
-     * True if access to a calendar is read-only. 
-     * 
-     * @var bool 
+     * True if access to a calendar is read-only.
+     *
+     * @var bool
      */
     protected $readOnly;
 
     /**
-     * A url to the shared calendar. 
-     * 
-     * @var string 
+     * A url to the shared calendar.
+     *
+     * @var string
      */
     protected $hostUrl;
 
     /**
-     * Url to the sharer of the calendar 
-     * 
-     * @var string 
+     * Url to the sharer of the calendar
+     *
+     * @var string
      */
     protected $organizer;
 
     /**
-     * The name of the sharer. 
-     * 
-     * @var string 
+     * The name of the sharer.
+     *
+     * @var string
      */
     protected $commonName;
 
     /**
-     * A description of the share request 
-     * 
-     * @var string 
+     * A description of the share request
+     *
+     * @var string
      */
     protected $summary;
 
     /**
      * Creares the Invite notification
-     * 
-     * @param string $id A unique id 
-     * @param string $href A url to the recipient of the notification 
-     * @param int $type The type of message, see the TYPE constants.
-     * @param bool $readOnly True if access to a calendar is read-only. 
+     *
+     * @param string $id A unique id
+     * @param string $href A url to the recipient of the notification
+     * @param int $type The type of message, see the SharingPlugin::STATUS_* constants.
+     * @param bool $readOnly True if access to a calendar is read-only.
      * @param string $hostUrl A url to the shared calendar
      * @param string $organizer Url to the sharer of the calendar
      * @param string $commonName The name of the sharer (optional)
-     * @param string $summary A description of the share request 
+     * @param string $summary A description of the share request
      */
     public function __construct($id, $href, $type, $readOnly, $hostUrl, $organizer, $commonName = null, $summary = null) {
 
@@ -151,16 +133,16 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         $nodeName = null;
         switch($this->type) {
 
-            case TYPE_ACCEPTED :
+            case SharingPlugin::STATUS_ACCEPTED :
                 $nodeName = 'cs:invite-accepted';
                 break;
-            case TYPE_DECLINED :
+            case SharingPlugin::STATUS_DECLINED :
                 $nodeName = 'cs:invite-declined';
                 break;
-            case TYPE_DELETED :
+            case SharingPlugin::STATUS_DELETED :
                 $nodeName = 'cs:invite-deleted';
                 break;
-            case TYPE_NORESPONSE :
+            case SharingPlugin::STATUS_NORESPONSE :
                 $nodeName = 'cs:invite-noresponse';
                 break;
 

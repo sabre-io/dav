@@ -12,7 +12,16 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Sharing_Plugin extends Sabre_DAV_ServerPlugin {
+class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
+
+    /**
+     * These are the various status constants used by sharing-messages.
+     */
+    const STATUS_ACCEPTED = 1;
+    const STATUS_DECLINED = 2;
+    const STATUS_DELETED = 3;
+    const STATUS_NORESPONSE = 4;
+    const STATUS_INVALID = 5;
 
     /**
      * Reference to SabreDAV server object.

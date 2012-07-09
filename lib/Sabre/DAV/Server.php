@@ -1437,7 +1437,7 @@ class Sabre_DAV_Server {
 
             }
 
-            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties));
+            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties, $node));
 
             $newProperties['href'] = trim($myPath,'/');
 

@@ -168,7 +168,11 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
         $calendars = $this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']);
         $objs = array();
         foreach($calendars as $calendar) {
-            $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
+            if ($this->caldavBackend instanceof Sabre_CalDAV_Backend_SharingSupport) {
+                $objs[] = new Sabre_CalDAV_ShareableCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+            } else {
+                $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
+            }
         }
         $objs[] = new Sabre_CalDAV_Schedule_Outbox($this->principalInfo['uri']);
 
@@ -190,8 +194,22 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
      */
     public function createExtendedCollection($name, array $resourceType, array $properties) {
 
-        if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar',$resourceType) || count($resourceType)!==2) {
-            throw new Sabre_DAV_Exception_InvalidResourceType('Unknown resourceType for this collection');
+        $isCalendar = false;
+        foreach($resourceType as $rt) {
+            switch ($rt) {
+                case '{DAV:}collection' :
+                case '{http://calendarserver.org/ns/}shared-owner' :
+                    // ignore
+                    break;
+                case '{urn:ietf:params:xml:ns:caldav}calendar' :
+                    $isCalendar = true;
+                    break;
+                default :
+                    throw new Sabre_DAV_Exception_InvalidResourceType('Unknown resourceType: ' . $rt);
+            }
+        }
+        if (!$isCalendar) {
+            throw new Sabre_DAV_Exception_InvalidResourceType('You can only create calendars in this collection');
         }
         $this->caldavBackend->createCalendar($this->principalInfo['uri'], $name, $properties);
 

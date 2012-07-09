@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This object represents a CalDAV calendar that can be shared with other 
+ * This object represents a CalDAV calendar that can be shared with other
  * users.
  *
  * @package Sabre
@@ -15,7 +15,7 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
     /**
      * Updates the list of shares.
      *
-     * The first array is a list of people that are to be added to the 
+     * The first array is a list of people that are to be added to the
      * calendar.
      *
      * Every element in the add array has the following properties:
@@ -25,15 +25,18 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
      *   * readOnly - A boolean value
      *
      * Every element in the remove array is just the address string.
-     * 
-     * 
-     * @param array $add 
-     * @param array $remove 
+     *
+     * Note that if the calendar is currently marked as 'not shared' by
+     * getSharingEnabled, and this method is called; the calendar should be
+     * 'upgraded' to a shared calendar.
+     *
+     * @param array $add
+     * @param array $remove
      * @return void
      */
     public function updateShares(array $add, array $remove) {
 
-        $this->calendarBackend->updateShares($this->calendarInfo['id'], $add, $remove);
+        $this->caldavBackend->updateShares($this->calendarInfo['id'], $add, $remove);
 
     }
 
@@ -47,11 +50,42 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
      *
-     * @return array 
+     * @return array
      */
     public function getShares() {
 
-        $this->calendarBackend->getShares($this->calendarInfo['id']);
+        $this->caldavBackend->getShares($this->calendarInfo['id']);
+
+    }
+
+    /**
+     * This method should return a simple true or false, if the calendar is
+     * currently shared or not.
+     *
+     * Even if there are no 'sharees', the calendar may still be marked as
+     * 'shared'. This is a silly implementation choice, but we need to comply
+     * with the spec.
+     *
+     * @return bool
+     */
+    public function getSharingEnabled() {
+
+        return $this->calendarInfo['{http://sabredav.org/ns}sharing-enabled'];
+
+    }
+
+    /**
+     * This method marks the calendar as shared, or not.
+     *
+     * Note that if the calendar is currently shared by people, and false is
+     * passed here, all the sharees should be removed.
+     *
+     * @param bool $value
+     * @return void
+     */
+    public function setSharingEnabled($value) {
+
+        $this->caldavBackend->setSharingEnabled($this->calendarInfo['id'], $value);
 
     }
 

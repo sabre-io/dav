@@ -102,7 +102,6 @@ class Sabre_DAV_Server {
         '{DAV:}getetag',
         '{DAV:}getlastmodified',
         '{DAV:}lockdiscovery',
-        '{DAV:}resourcetype',
         '{DAV:}supportedlock',
 
         // RFC4331

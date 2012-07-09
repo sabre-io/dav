@@ -72,7 +72,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
     public function initialize(Sabre_DAV_Server $server) {
 
         $this->server = $server;
-        $server->resourceTypeMapping['Sabre_CalDAV_IShareableCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner';
+        //$server->resourceTypeMapping['Sabre_CalDAV_IShareableCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner';
         $server->resourceTypeMapping['Sabre_CalDAV_ISharedCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared';
 
         array_push(
@@ -83,6 +83,8 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         );
 
         $this->server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
+        $this->server->subscribeEvent('afterGetProperties', array($this, 'afterGetProperties'));
+        $this->server->subscribeEvent('updateProperties', array($this, 'updateProperties'));
         $this->server->subscribeEvent('unknownMethod', array($this,'unknownMethod'));
 
     }
@@ -132,6 +134,62 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
+
+    }
+
+    /**
+     * This method is triggered *after* all properties have been retrieved.
+     * This allows us to inject the correct resourcetype for calendars that
+     * have been shared.
+     *
+     * @param string $path
+     * @param array $properties
+     * @param Sabre_DAV_INode $node
+     * @return void
+     */
+    public function afterGetProperties($path, &$properties, Sabre_DAV_INode $node) {
+
+        if ($node instanceof Sabre_CalDAV_IShareableCalendar && isset($properties[200]['{DAV:}resourcetype'])) {
+            if ($node->getSharingEnabled()) {
+                $properties[200]['{DAV:}resourcetype']->add(
+                    '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'
+                );
+            }
+        }
+
+    }
+
+    /**
+     * This method is trigged when a user attempts to update a node's
+     * properties.
+     *
+     * In this case we need to intercept it, because a user may update the
+     * sharing status of a calendar.
+     *
+     * @param array $mutations
+     * @param array $result
+     * @param Sabre_DAV_INode $node
+     * @return void
+     */
+    public function updateProperties(array &$mutations, array &$result, Sabre_DAV_INode $node) {
+
+        if (!$node instanceof Sabre_CalDAV_IShareableCalendar)
+            return;
+
+        if (!isset($mutations['{DAV:}resourcetype'])) {
+            return;
+        }
+
+        // We are 'blindly' updating the resourcetype, depending on if
+        // shared-owner exists or not. This will work as expected in 99% of the
+        // cases.
+        $node->setSharingEnabled($mutations['{DAV:}resourcetype']->is('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'));
+
+        // We're marking this update as 200 OK
+        $result[200]['{DAV:}resourcetype'] = null;
+
+        // Removing it from the mutations list
+        unset($mutations['{DAV:}resourcetype']);
 
     }
 
@@ -300,7 +358,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      *   * status - One of the self::STATUS_* constants
      *   * calendarUri - The url of the shared calendar
      *   * inReplyTo - The unique id of the share invitation.
-     *   * summary - Optional description of the reply.  
+     *   * summary - Optional description of the reply.
      *
      * @param DOMDocument $dom
      * @return array

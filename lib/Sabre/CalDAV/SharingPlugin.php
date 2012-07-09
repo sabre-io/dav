@@ -81,15 +81,15 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This event is triggered when properties are requested for a certain 
+     * This event is triggered when properties are requested for a certain
      * node.
      *
-     * This allows us to inject any properties early. 
-     * 
-     * @param string $path 
-     * @param Sabre_DAV_INode $node 
-     * @param array $requestedProperties 
-     * @param array $returnedProperties 
+     * This allows us to inject any properties early.
+     *
+     * @param string $path
+     * @param Sabre_DAV_INode $node
+     * @param array $requestedProperties
+     * @param array $returnedProperties
      * @return void
      */
     public function beforeGetProperties($path, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
@@ -98,10 +98,17 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             if (($index = array_search('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
 
                 unset($requestedProperties[$index]);
-                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite'] = 
+                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite'] =
                     new Sabre_CalDAV_Property_Invite(
                         $node->getShares()
                     );
+
+            }
+            if (($index = array_search('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes', $requestedProperties))!==false) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes'] =
+                    new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
 
             }
 
@@ -115,7 +122,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $method
      * @param string $uri
-     * @return null|bool 
+     * @return null|bool
      */
     public function unknownMethod($method, $uri) {
 
@@ -154,12 +161,12 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         if ($acl) {
             $acl->checkPrivileges($uri, '{DAV:}write');
 
-            // Also, you can only make changes if you're the owner of the 
+            // Also, you can only make changes if you're the owner of the
             // calendar (and not a sharee)
             $principals = $acl->getCurrentUserPrincipals();
             if (!in_array($node->getOwner(), $principals)) {
                 throw new Sabre_DAV_Exception_Forbidden('Only the owner of the calendar can make changes to the list of sharees');
-            }  
+            }
 
         }
 
@@ -179,7 +186,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      * Parses the 'share' POST request.
      *
      * This method returns an array, containing two arrays.
-     * The first array is a list of new sharees. Every element is a struct 
+     * The first array is a list of new sharees. Every element is a struct
      * containing a:
      *   * href element. (usually a mailto: address)
      *   * commonName element (often a first and lastname, but can also be
@@ -189,9 +196,9 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      *
      * The second array is a list of sharees that are to be removed. This is
      * just a simple array with 'hrefs'.
-     * 
-     * @param DOMDocument $dom 
-     * @return array 
+     *
+     * @param DOMDocument $dom
+     * @return array
      */
     protected function parseShareRequest(DOMDocument $dom) {
 

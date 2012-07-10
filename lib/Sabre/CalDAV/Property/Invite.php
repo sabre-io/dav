@@ -106,6 +106,8 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
                $xuser->appendChild($summary);
            }
 
+           $node->appendChild($xuser);
+
        }
 
     }

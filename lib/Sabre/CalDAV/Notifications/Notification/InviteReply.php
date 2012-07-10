@@ -75,12 +75,11 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
     public function __construct($id, $inReplyTo, $href, $type, $readOnly, $hostUrl, $summary = null) {
 
         $this->id = $id;
+        $this->inReplyTo = $inReplyTo;
         $this->href = $href;
         $this->type = $type;
         $this->readOnly = $readOnly;
         $this->hostUrl = $hostUrl;
-        $this->organizer = $organizer;
-        $this->commonName = $commonName;
         $this->summary = $summary;
 
     }
@@ -116,15 +115,18 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
         $prop = $doc->createElement('cs:invite-reply');
         $node->appendChild($prop);
 
-        $prop->appendChild(
-            $doc->createElement('cs:uid', $doc->createTextNode($this->id))
-        );
-        $prop->appendChild(
-            $doc->createElement('cs:in-reply-to', $doc->createTextNode($this->inReplyTo))
-        );
-        $prop->appendChild(
-            $doc->createElement('d:href', $server->calculateUrl($this->href))
-        );
+        $uid = $doc->createElement('cs:uid');
+        $uid->appendChild($doc->createTextNode($this->id));
+        $prop->appendChild($uid);
+
+        $inReplyTo = $doc->createElement('cs:in-reply-to');
+        $inReplyTo->appendChild( $doc->createTextNode($this->inReplyTo) );
+        $prop->appendChild($inReplyTo);
+
+        $href = $doc->createElement('d:href');
+        $href->appendChild( $doc->createTextNode($this->href) );
+        $prop->appendChild($href);
+
         $nodeName = null;
         switch($this->type) {
 
@@ -139,7 +141,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
         $prop->appendChild(
             $doc->createElement($nodeName)
         );
-        $hostHref = $doc->createElement('d:href', $server->calculateUrl($this->hostUrl));
+        $hostHref = $doc->createElement('d:href', $server->getBaseUri() . $this->hostUrl);
         $hostUrl  = $doc->createElement('cs:hosturl');
         $hostUrl->appendChild($hostHref);
         $prop->appendChild($hostUrl);

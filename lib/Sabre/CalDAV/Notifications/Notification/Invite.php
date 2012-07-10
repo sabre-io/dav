@@ -124,12 +124,14 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         $prop = $doc->createElement('cs:invite-notification');
         $node->appendChild($prop);
 
-        $prop->appendChild(
-            $doc->createElement('cs:uid', $doc->createTextNode($this->id))
-        );
-        $prop->appendChild(
-            $doc->createElement('d:href', $server->calculateUrl($this->href))
-        );
+        $uid = $doc->createElement('cs:uid');
+        $uid->appendChild( $doc->createTextNode($this->id) );
+        $prop->appendChild($uid);
+
+        $href = $doc->createElement('d:href');
+        $href->appendChild( $doc->createTextNode( $this->href ) );
+        $prop->appendChild($href);
+
         $nodeName = null;
         switch($this->type) {
 
@@ -150,12 +152,12 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         $prop->appendChild(
             $doc->createElement($nodeName)
         );
-        $hostHref = $doc->createElement('d:href', $server->calculateUrl($this->hostUrl));
+        $hostHref = $doc->createElement('d:href', $server->getBaseUri() . $this->hostUrl);
         $hostUrl  = $doc->createElement('cs:hosturl');
         $hostUrl->appendChild($hostHref);
         $prop->appendChild($hostUrl);
 
-        $organizerHref = $doc->createElement('d:href', $server->calculateUrl($this->organizerUrl));
+        $organizerHref = $doc->createElement('d:href', $server->getBaseUri() . $this->organizer);
         $organizerUrl  = $doc->createElement('cs:organizer');
         if ($this->commonName) {
             $commonName = $doc->createElement('cs:common-name');

@@ -54,7 +54,7 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
      */
     public function getShares() {
 
-        $this->caldavBackend->getShares($this->calendarInfo['id']);
+        return $this->caldavBackend->getShares($this->calendarInfo['id']);
 
     }
 

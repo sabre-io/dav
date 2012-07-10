@@ -54,7 +54,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      */
     public function getPluginName() {
 
-        return 'calendarserver-sharing';
+        return 'caldav-sharing';
 
     }
 
@@ -209,9 +209,9 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             return;
         }
 
-        // Only handling application/xml
+        // Only handling xml
         $contentType = $this->server->httpRequest->getHeader('Content-Type');
-        if (strpos($contentType,'application/xml')===false)
+        if (strpos($contentType,'application/xml')===false && strpos($contentType,'text/xml')===false)
             return;
 
         // Making sure the node exists
@@ -222,7 +222,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         }
 
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($this->server->httpRequest->getBody());
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($this->server->httpRequest->getBody(true));
 
         $documentType = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
@@ -316,7 +316,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      */
     protected function parseShareRequest(DOMDocument $dom) {
 
-        $xpath = \DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d', 'urn:DAV');
 
@@ -365,7 +365,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      */
     protected function parseShareReplyRequest(DOMDocument $dom) {
 
-        $xpath = \DOMXPath($dom);
+        $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d', 'urn:DAV');
 

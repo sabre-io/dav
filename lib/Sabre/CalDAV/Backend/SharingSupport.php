@@ -44,6 +44,25 @@
  * that's shared to him, thus allowing clients to display the correct interface
  * and ACL enforcement.
  *
+ * If a sharee deletes their calendar, only their instance of the calendar
+ * should be deleted, the original should still exists.
+ * Pretty much any 'dead' WebDAV properties on these shared calendars should be
+ * specific to a user. This means that if the displayname is changed by a
+ * sharee, the original is not affected. This is also true for:
+ *   * The description
+ *   * The color
+ *   * The order
+ *   * And any other dead properties.
+ *
+ * Properties like a ctag should not change.
+ * Lastly, objects *within* calendars should also have user-specific data. The
+ * two things that are user-specific are:
+ *   * VALARM objects
+ *   * The TRANSP property
+ *
+ * This _also_ implies that if a VALARM is deleted by a sharee for some event,
+ * this has no effect on the original VALARM.
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.

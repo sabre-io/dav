@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Sabre/CalDAV/Backend/SharingMock.php';
+
 class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     protected $setupCalDAV = true;
@@ -7,6 +9,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function setup() {
 
+        $this->caldavBackend = new Sabre_CalDAV_Backend_SharingMock();
         parent::setup();
         $this->server->addPlugin(
             $this->sharingPlugin = new Sabre_CalDAV_SharingPlugin()

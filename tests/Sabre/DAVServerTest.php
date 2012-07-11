@@ -108,10 +108,10 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
-        if ($this->setupCalDAV) {
+        if ($this->setupCalDAV && is_null($this->caldavBackend)) {
             $this->caldavBackend = new Sabre_CalDAV_Backend_Mock($this->caldavCalendars, $this->caldavCalendarObjects);
         }
-        if ($this->setupCardDAV) {
+        if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new Sabre_CardDAV_Backend_Mock($this->carddavAddressBooks, $this->carddavCards);
         }
         if ($this->setupCardDAV || $this->setupCalDAV) {

@@ -667,6 +667,51 @@ class Sabre_VObject_RecurrenceIteratorTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends testValues
      */
+    function testYearlyLeapYear() {
+
+        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev->UID = 'bla';
+        $ev->RRULE = 'FREQ=YEARLY;COUNT=3';
+        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2012-02-29'),Sabre_VObject_Property_DateTime::UTC);
+
+        $ev->add($dtStart);
+
+        $vcal = Sabre_VObject_Component::create('VCALENDAR');
+        $vcal->add($ev);
+
+        $it = new Sabre_VObject_RecurrenceIterator($vcal,(string)$ev->uid);
+
+        $this->assertEquals('yearly', $it->frequency);
+        $this->assertEquals(3, $it->count);
+
+        $max = 20;
+        $result = array();
+        foreach($it as $k=>$item) {
+
+            $result[] = $item;
+            $max--;
+
+            if (!$max) break;
+
+        }
+
+        $tz = new DateTimeZone('UTC');
+
+        $this->assertEquals(
+            array(
+                new DateTime('2012-02-29', $tz),
+                new DateTime('2016-02-29', $tz),
+                new DateTime('2020-02-29', $tz),
+            ),
+            $result
+        );
+
+    }
+
+    /**
+     * @depends testValues
+     */
     function testYearlyByMonth() {
 
         $ev = new Sabre_VObject_Component('VEVENT');

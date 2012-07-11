@@ -3,37 +3,100 @@
 /**
  * Adds support for sharing features to a CalDAV server.
  *
- * A few notes:
- * Implementing NotificationSupport is also required to implement sharing.
+ * Early warning: Currently SabreDAV provides no implementation for this. This
+ * is, because in it's current state there is no elegant way to do this.
+ * The problem lies in the fact that a real CalDAV server with sharing support
+ * would first need email support (with invite notifications), and really also
+ * a browser-frontend that allows people to accept or reject these shares.
  *
- * When a user adds a sharee to the calenars they own, the change is not
- * instant. A 'notification' will first be sent to the recipient, that allows
- * the recipient to either accept or decline the invite.
+ * In addition, the CalDAV backends are currently kept as independent as
+ * possible, and should not be aware of principals, email addresses or
+ * accounts.
  *
- * The notification for sharing is represented by
- * Sabre_CalDAV_Notifications_Notification_Invite. When a user responded with
- * an accept or decline, this should also be notified back to the user using
- * Sabre_CalDAV_Notifications_Notification_InviteReply.
+ * Adding an implementation for Sharing to standard-sabredav would contradict
+ * these goals, so for this reason this is currently not implemented, although
+ * it may very well in the future; but probably not before SabreDAV 2.0.
  *
- * The unique id that used for Notification_Invite, is the same id that is sent
- * to the inReplyTo argument in the shareReply method.
+ * The interface works however, so if you implement all this, and do it
+ * correctly sharing _will_ work. It's not particularly easy, and I _urge you_
+ * to make yourself acquainted with the following document first:
  *
- * Calendars can be marked as 'shared' or not marked as 'shared'. Even when a
- * calendar does not have any people sharing it, it can still be marked as
- * 'shared'. This status should be sent along from the getCalendarsForUser
- * method. This is done through the following property:
+ * https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
+ *
+ * An overview
+ * ===========
+ *
+ * Implementing this interface will allow a user to share his or her calendars
+ * to other users. Effectively, when a calendar is shared the calendar will
+ * show up in both the Sharer's and Sharee's calendar-home root.
+ * This interface adds a few methods that ensure that this happens, and there
+ * are also a number of new requirements in the base-class you must now follow.
+ *
+ * How it works
+ * ============
+ *
+ * When a user shares a calendar, the addShare() method will be called with a
+ * list of sharees that are now added, and a list of sharees that have been
+ * removed.
+ * Removal is instant, but when a sharee is added the sharee first gets a
+ * chance to accept or reject the invitation for a share.
+ *
+ * After a share is accepted, the calendar will be returned from
+ * getUserCalendars for both the sharer, and the sharee.
+ *
+ * If the sharee deletes the calendar, only their share gets deleted. When the
+ * owner deletes a calendar, it will be removed for everybody.
+ *
+ * Marking a calendar as shared
+ * ============================
+ *
+ * Calendars can be marked as 'shared' and also not as 'shared'. Even when a
+ * calendar does not have any sharees, it can still be marked as shared. This
+ * is a (silly) detail from the spec, but it is important.
+ * When the status of a calendar (shared or non-shared) is set, the
+ * setSharingEnabled() method in this interface is called.
+ *
+ * When a calendar already has sharees, and sharing is subsequently disabled,
+ * the effect is 'as if all the sharees were removed'.
+ *
+ * If a calendar is marked as shared, this should be returned from
+ * getCalendarsForUser. Specifically, the following property should be set to
+ * true for these calendars:
  *
  * {http://sabredav.org/ns}sharing-enabled
  *
- * This property should be either true or false.
- * When a calendar is not marked as shared, but the updateShares method is
- * called, the calendar should be automatically upgraded to a 'shared' calendar
- * and thus the 'sharing-enabled' property should be marked as true.
+ * If a calendar is not 'enabled for sharing', but sharees are added, the
+ * calendar should be automatically upgraded to a shared calendar.
  *
- * The getCalendarsForUser method should besides a users' own calendars, now
- * also return the calendars that are shared TO him. If a user is not the owner
- * of a calendar, but the calendar is shared TO him, you must also provide the
- * following property:
+ * Note that this sharing-enabled property is _only_ returned for the owner of
+ * the calendar, and not sharees.
+ *
+ * Notifications
+ * =============
+ *
+ * During all these sharing operations, a lot of notifications are sent back
+ * and forward.
+ *
+ * Whenever the list of sharees for a calendar has been changed (they have been
+ * added, removed or modified) all sharees should get a notification for this
+ * change.
+ * This notification is always represented by:
+ *
+ * Sabre_CalDAV_Notifications_Notification_Invite
+ *
+ * In the case of an invite, the sharee may reply with an 'accept' or
+ * 'decline'. These are always represented by:
+ *
+ * Sabre_CalDAV_Notifications_Notification_Invite
+ *
+ *
+ * Calendar access by sharees
+ * ==========================
+ *
+ * As mentioned earlier, shared calendars must now also be returned for
+ * getCalendarsForUser for sharees. A few things change though.
+ *
+ * First, you must provide the following property:
  *
  * {http://calendarserver.org/ns/}shared-url
  *
@@ -54,7 +117,9 @@
  *   * The order
  *   * And any other dead properties.
  *
- * Properties like a ctag should not change.
+ * Properties like a ctag should not be different for multiple instances of the
+ * calendar.
+ *
  * Lastly, objects *within* calendars should also have user-specific data. The
  * two things that are user-specific are:
  *   * VALARM objects
@@ -62,6 +127,10 @@
  *
  * This _also_ implies that if a VALARM is deleted by a sharee for some event,
  * this has no effect on the original VALARM.
+ *
+ * Understandably, the this last requirement is one of the hardest.
+ * Realisticly, I can see people ignoring this part of the spec, but that could
+ * cause a different set of issues.
  *
  * @package Sabre
  * @subpackage CalDAV

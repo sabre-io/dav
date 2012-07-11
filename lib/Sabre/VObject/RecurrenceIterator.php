@@ -337,6 +337,8 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
             $this->endDate = clone $this->startDate;
             if (isset($this->baseEvent->DURATION)) {
                 $this->endDate->add(Sabre_VObject_DateTimeParser::parse($this->baseEvent->DURATION->value));
+            } elseif ($this->baseEvent->DTSTART->getDateType()===Sabre_VObject_Property_DateTime::DATE) {
+                $this->endDate->modify('+1 day');
             }
         }
         $this->currentDate = clone $this->startDate;

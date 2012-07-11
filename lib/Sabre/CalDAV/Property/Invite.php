@@ -90,15 +90,18 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
 
            }
 
+           $xaccess = $doc->createElement('cs:access');
+
            if ($user['readOnly']) {
-                $xuser->appendChild(
+                $xaccess->appendChild(
                     $doc->createElement('cs:read')
                 );
            } else {
-                $xuser->appendChild(
+                $xaccess->appendChild(
                     $doc->createElement('cs:read-write')
                 );
            }
+           $xuser->appendChild($xaccess);
 
            if (isset($user['summary']) && $user['summary']) {
                $summary = $doc->createElement('cs:summary');

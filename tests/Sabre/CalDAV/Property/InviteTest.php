@@ -60,26 +60,34 @@ class Sabre_CalDAV_Property_InviteTest extends PHPUnit_Framework_TestCase {
   <cs:user>
     <d:href>mailto:user1@example.org</d:href>
     <cs:invite-accepted/>
-    <cs:read-write/>
+    <cs:access>
+      <cs:read-write/>
+    </cs:access>
   </cs:user>
   <cs:user>
     <d:href>mailto:user2@example.org</d:href>
     <cs:common-name>John Doe</cs:common-name>
     <cs:invite-declined/>
-    <cs:read/>
+    <cs:access>
+      <cs:read/>
+    </cs:access>
   </cs:user>
   <cs:user>
     <d:href>mailto:user3@example.org</d:href>
     <cs:common-name>Joe Shmoe</cs:common-name>
     <cs:invite-noresponse/>
-    <cs:read/>
+    <cs:access>
+      <cs:read/>
+    </cs:access>
     <cs:summary>Something, something</cs:summary>
   </cs:user>
   <cs:user>
     <d:href>mailto:user4@example.org</d:href>
     <cs:common-name>Hoe Boe</cs:common-name>
     <cs:invite-invalid/>
-    <cs:read/>
+    <cs:access>
+      <cs:read/>
+    </cs:access>
   </cs:user>
 </d:root>
 ', $xml);

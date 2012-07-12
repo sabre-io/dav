@@ -37,6 +37,6 @@ SabreDAV allows you to easily add WebDAV support to a PHP application. SabreDAV 
 * Username: testuser
 * Password: test
 
-**Please note:** Due to the webserver stack (nginx with varnish) some clients will not work correctly. At the very least this includes Finder and Cyberduck. Any client using chunked tranfter encoding or Expect: 100-Continue will fail.
+**Please note:** Due to the webserver stack (nginx with varnish) some clients will not work correctly. At the very least this includes Finder and Cyberduck. Any client using chunked transfer encoding or expect *100-Continue* will fail.
 
 The demo site is kindly hosted by sourceforge, so take it easy with the diskspace. It's limited!

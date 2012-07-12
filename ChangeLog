@@ -47,6 +47,8 @@
 	* Fixed: Correctly checking if recurring, all-day events with no dtstart
 	  fall in a timerange if the start of the time-range exceeds the start of
 	  the instance of an event, but not the end.
+	* Fixed: All-day recurring events wouldn't match if an occurence ended
+	  exactly on the start of a time-range.
 
 1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

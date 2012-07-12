@@ -567,7 +567,7 @@ class Sabre_VObject_RecurrenceIterator implements Iterator {
      */
     public function fastForward(DateTime $dt) {
 
-        while($this->valid() && $this->getDTEnd() < $dt) {
+        while($this->valid() && $this->getDTEnd() <= $dt) {
             $this->next();
         }
 

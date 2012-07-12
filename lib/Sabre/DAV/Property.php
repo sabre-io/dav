@@ -13,8 +13,6 @@
  */
 abstract class Sabre_DAV_Property implements Sabre_DAV_PropertyInterface {
 
-    abstract function serialize(Sabre_DAV_Server $server, DOMElement $prop);
-
     static function unserialize(DOMElement $prop) {
 
         throw new Sabre_DAV_Exception('Unserialize has not been implemented for this class');

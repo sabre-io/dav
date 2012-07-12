@@ -31,6 +31,8 @@
 	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
 	* Fixed: Rejecting calendar objects if they are not in the
 	  supported-calendar-component list. (thanks Armin!)
+	* Fixed: Workaround for 10.8 Mountain Lion vCards, as it needs \r line
+	  endings to parse them correctly.
 
 1.6.4-stable (2012-??-??)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

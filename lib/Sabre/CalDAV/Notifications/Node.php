@@ -13,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_Node implements Sabre_CalDAV_Notifications_INode {
+class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_CalDAV_Notifications_INode {
 
     /**
      * The notification backend

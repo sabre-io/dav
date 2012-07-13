@@ -14,10 +14,12 @@ class Sabre_CalDAV_Notifications_Notification_InviteReplyTest extends \PHPUnit_F
             $notification[3],
             $notification[4],
             $notification[5],
-            isset($notification[6])?$notification[6]:null
+            $notification[6],
+            isset($notification[7])?$notification[7]:null
         );
 
         $this->assertEquals('foo', $notification->getId());
+        $this->assertEquals('"1"', $notification->getETag());
 
         $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>' . "\n";
 
@@ -44,7 +46,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteReplyTest extends \PHPUnit_F
 
         return array(
             array(
-                array('foo', 'bar', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED, true, 'calendar'),
+                array('foo', '"1"', 'bar', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED, true, 'calendar'),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
@@ -62,7 +64,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteReplyTest extends \PHPUnit_F
 FOO
             ),
             array(
-                array('foo', 'bar', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, true, 'calendar','Summary!'),
+                array('foo', '"1"', 'bar', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, true, 'calendar','Summary!'),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">

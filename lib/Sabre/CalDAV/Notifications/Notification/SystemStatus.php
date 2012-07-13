@@ -47,17 +47,25 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
     protected $href;
 
     /**
+     * Notification Etag
+     *
+     * @var string
+     */
+    protected $etag;
+
+    /**
      * Creates the notification.
      *
      * Some kind of unique id should be provided. This is used to generate a
      * url.
      *
      * @param string $id
+     * @param string $etag
      * @param int $type
      * @param string $description
      * @param string $href
      */
-    public function __construct($id, $type = self::TYPE_HIGH, $description = null, $href = null) {
+    public function __construct($id, $etag, $type = self::TYPE_HIGH, $description = null, $href = null) {
 
         $this->id = $id;
         $this->type = $type;
@@ -155,4 +163,16 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
 
     }
 
+    /*
+     * Returns the ETag for this notification.
+     *
+     * The ETag must be surrounded by literal double-quotes.
+     *
+     * @return string
+     */
+    public function getETag() {
+
+        return $this->etag;
+
+    }
 }

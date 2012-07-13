@@ -32,19 +32,19 @@ class Sabre_CalDAV_Notifications_Notification extends \PHPUnit_Framework_TestCas
         return array(
 
             array(
-                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo'),
+                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo','"1"'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="high"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="high"/></cs:root>' . "\n",
             ),
 
             array(
-                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo',Sabre_CalDAV_Notifications_Notification_SystemStatus::TYPE_MEDIUM,'bar'),
+                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo','"1"', Sabre_CalDAV_Notifications_Notification_SystemStatus::TYPE_MEDIUM,'bar'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"><cs:description>bar</cs:description></cs:systemstatus></cs:root>' . "\n",
             ),
 
             array(
-                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo',Sabre_CalDAV_Notifications_Notification_SystemStatus::TYPE_LOW,null,'http://example.org/'),
+                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo','"1"', Sabre_CalDAV_Notifications_Notification_SystemStatus::TYPE_LOW,null,'http://example.org/'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"><d:href>http://example.org/</d:href></cs:systemstatus></cs:root>' . "\n",
             )

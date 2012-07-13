@@ -6,7 +6,7 @@ class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestC
 
         $principalUri = 'principals/user1';
 
-        $systemStatus = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1);
+        $systemStatus = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1,'"1"');
 
         $caldavBackend = new Sabre_CalDAV_Backend_Mock(array(),array(), array(
             'principals/user1' => array(

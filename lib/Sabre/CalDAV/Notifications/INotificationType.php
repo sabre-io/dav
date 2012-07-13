@@ -43,4 +43,13 @@ interface Sabre_CalDAV_Notifications_INotificationType extends Sabre_DAV_Propert
      */
     function getId();
 
+    /**
+     * Returns the ETag for this notification.
+     *
+     * The ETag must be surrounded by literal double-quotes.
+     *
+     * @return string
+     */
+    function getETag();
+
 }

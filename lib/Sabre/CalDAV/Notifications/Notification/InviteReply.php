@@ -62,9 +62,17 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
     protected $summary;
 
     /**
+     * Notification Etag
+     *
+     * @var string
+     */
+    protected $etag;
+
+    /**
      * Creares the Invite notification
      *
      * @param string $id A unique id
+     * @param string $etag The etag for this notification
      * @param string $inReplyTo Which notification id this is a reply to
      * @param string $href A url to the recipient of the original(!) recipient
      * @param int $type The type of message, see the SharingPlugin::STATUS_* constants.
@@ -72,9 +80,10 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
      * @param string $hostUrl A url to the shared calendar
      * @param string $summary A description of the share request
      */
-    public function __construct($id, $inReplyTo, $href, $type, $readOnly, $hostUrl, $summary = null) {
+    public function __construct($id, $etag, $inReplyTo, $href, $type, $readOnly, $hostUrl, $summary = null) {
 
         $this->id = $id;
+        $this->etag = $etag;
         $this->inReplyTo = $inReplyTo;
         $this->href = $href;
         $this->type = $type;
@@ -168,4 +177,16 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
 
     }
 
+    /**
+     * Returns the ETag for this notification.
+     *
+     * The ETag must be surrounded by literal double-quotes.
+     *
+     * @return string
+     */
+    public function getETag() {
+
+        return $this->etag;
+
+    }
 }

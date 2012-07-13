@@ -14,11 +14,13 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
             $notification[3],
             $notification[4],
             $notification[5],
-            isset($notification[6])?$notification[6]:null,
-            isset($notification[7])?$notification[7]:null
+            $notification[6],
+            isset($notification[7])?$notification[7]:null,
+            isset($notification[8])?$notification[8]:null
         );
 
         $this->assertEquals('foo', $notification->getId());
+        $this->assertEquals('"1"', $notification->getETag());
 
         $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-notification/></cs:root>' . "\n";
 
@@ -45,7 +47,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
 
         return array(
             array(
-                array('foo', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED, true, 'calendar', 'principal/user1', 'John Doe', 'Awesome stuff!'),
+                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED, true, 'calendar', 'principal/user1', 'John Doe', 'Awesome stuff!'),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
@@ -67,7 +69,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
 FOO
             ),
             array(
-                array('foo', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, true, 'calendar', 'principal/user1', 'John Doe'),
+                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, true, 'calendar', 'principal/user1', 'John Doe'),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
@@ -88,7 +90,7 @@ FOO
 FOO
             ),
             array(
-                array('foo', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE, true, 'calendar', 'principal/user1'),
+                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE, true, 'calendar', 'principal/user1'),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
@@ -108,7 +110,7 @@ FOO
 FOO
             ),
             array(
-                array('foo', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DELETED, true, 'calendar', 'principal/user1'),
+                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DELETED, true, 'calendar', 'principal/user1'),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">

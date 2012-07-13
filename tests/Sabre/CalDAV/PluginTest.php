@@ -1034,7 +1034,7 @@ END:VCALENDAR';
         $result = array();
         $notification = new Sabre_CalDAV_Notifications_Node(
             $this->caldavBackend,
-            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo','"1"')
         );
         $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
 
@@ -1051,7 +1051,7 @@ END:VCALENDAR';
 
         $notification = new Sabre_CalDAV_Notifications_Node(
             $this->caldavBackend,
-            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo','"1"')
         );
 
         $server = new Sabre_DAV_Server(array($notification));

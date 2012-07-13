@@ -1057,6 +1057,9 @@ END:VCALENDAR';
         $server = new Sabre_DAV_Server(array($notification));
         $caldav = new Sabre_CalDAV_Plugin();
 
+        $server->httpRequest = new Sabre_HTTP_Request(array(
+            'REQUEST_URI' => '/foo.xml',
+        ));
         $httpResponse = new Sabre_HTTP_ResponseMock();
         $server->httpResponse = $httpResponse;
 
@@ -1067,6 +1070,7 @@ END:VCALENDAR';
         $this->assertEquals('HTTP/1.1 200 OK', $httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml',
+            'ETag'         => '"1"',
         ), $httpResponse->headers);
 
         $expected = 

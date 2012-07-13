@@ -71,6 +71,7 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
         $this->type = $type;
         $this->description = $description;
         $this->href = $href;
+        $this->etag = $etag;
 
     }
 

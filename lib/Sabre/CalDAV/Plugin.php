@@ -723,6 +723,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         if (!$node instanceof Sabre_CalDAV_Notifications_INode)
             return;
 
+        if (!$this->server->checkPreconditions(true)) return false;
+
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
 
@@ -735,6 +737,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $node->getNotificationType()->serializeBody($this->server, $root);
 
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
+        $this->server->httpResponse->setHeader('ETag',$node->getETag());
         $this->server->httpResponse->sendStatus(200);
         $this->server->httpResponse->sendBody($dom->saveXML());
 

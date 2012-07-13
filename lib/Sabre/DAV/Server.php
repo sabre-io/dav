@@ -1441,10 +1441,13 @@ class Sabre_DAV_Server {
             $newProperties['href'] = trim($myPath,'/');
 
             // Its is a WebDAV recommendation to add a trailing slash to collectionnames.
-            // Apple's iCal also requires a trailing slash for principals (rfc 3744).
-            // Therefore we add a trailing / for any non-file. This might need adjustments
-            // if we find there are other edge cases.
-            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype']) && count($newProperties[200]['{DAV:}resourcetype']->getValue())>0) $newProperties['href'] .='/';
+            // Apple's iCal also requires a trailing slash for principals (rfc 3744), though this is non-standard.
+            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype'])) {
+                $rt = $newProperties[200]['{DAV:}resourcetype'];
+                if ($rt->is('{DAV:}collection') || $rt->is('{DAV:}principal')) {
+                    $newProperties['href'] .='/';
+                }
+            }
 
             // If the resourcetype property was manually added to the requested property list,
             // we will remove it again.

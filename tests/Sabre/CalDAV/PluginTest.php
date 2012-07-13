@@ -1062,7 +1062,7 @@ END:VCALENDAR';
 
         $server->addPlugin($caldav);
 
-        $caldav->beforeMethod('GET','foo');
+        $caldav->beforeMethod('GET','foo.xml');
 
         $this->assertEquals('HTTP/1.1 200 OK', $httpResponse->status);
         $this->assertEquals(array(

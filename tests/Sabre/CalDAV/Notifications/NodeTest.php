@@ -16,7 +16,7 @@ class Sabre_CalDAV_Notifications_NodeTest extends \PHPUnit_Framework_TestCase {
 
 
         $node = new Sabre_CalDAV_Notifications_Node($caldavBackend, $systemStatus);
-        $this->assertEquals($systemStatus->getId(), $node->getName());
+        $this->assertEquals($systemStatus->getId() . '.xml', $node->getName());
 
     }
 

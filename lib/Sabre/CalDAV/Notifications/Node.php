@@ -49,7 +49,7 @@ class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_Node implements Sabre_Ca
      */
     public function getName() {
 
-        return $this->notification->getId();
+        return $this->notification->getId() . '.xml';
 
     }
 

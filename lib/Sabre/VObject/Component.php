@@ -30,7 +30,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
     public $children = array();
 
     /**
-     * If coponents are added to this map, they will be automatically mapped
+     * If components are added to this map, they will be automatically mapped
      * to their respective classes, if parsed by the reader or constructed with
      * the 'create' method.
      *

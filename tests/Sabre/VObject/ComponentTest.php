@@ -340,11 +340,14 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
             new Sabre_VObject_Component('VEVENT'),
             new Sabre_VObject_Component('VTODO')
         );
-        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n", $comp->serialize());
+
+        $str = $comp->serialize();
+
+        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n", $str);
 
     }
 
-    function testSerializeOrder() {
+    function testSerializeOrderCompAndProp() {
         
         $comp = new Sabre_VObject_Component('VCALENDAR');
         $comp->add(new Sabre_VObject_Component('VEVENT'));
@@ -358,7 +361,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    function testAnotherSerializeOrder() {
+    function testAnotherSerializeOrderProp() {
 
         $prop4s=array('1', '2', '3');
 

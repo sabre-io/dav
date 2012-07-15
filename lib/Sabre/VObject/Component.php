@@ -94,40 +94,51 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          *
          * This is solely used by the childrenSort method.
          *
-         * A higher score means the item will be higher in the list
+         * A lower score means the item will be higher in the list
          *
          * @param Sabre_VObject_Node $n
          * @return int
          */
-        $sortScore = function($n) {
-
+        $sortScore = function($n, $position) {
+            
             if ($n instanceof Sabre_VObject_Component) {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
                 if ($n->name === 'VTIMEZONE') {
-                    return 1;
+                    $score = 3;
+                    return $score;
                 } else {
-                    return 0;
+                    $score = $position;
+                    $score = 4+($score*0.1);
+                    return $score;
                 }
             } else {
+                // Properties get encoded first
                 // VCARD version 4.0 wants the VERSION property to appear first
-                if ($n->name === 'VERSION') {
-                    return 3;
-                } else {
-                    return 2;
+                if ($n instanceof Sabre_VObject_Property) {
+                    if ($n->name === 'VERSION') {
+                        return 1;
+                    } else {
+                        // All other properties
+                        $score = $position;
+                        $score = 2+($score*0.1);
+                        return $score;
+                    }
                 }
             }
+            next($children);
 
         };
 
-        usort($this->children, function($a, $b) use ($sortScore) {
+        $tmp = $this->children;
+        usort($this->children, function($a, $b) use ($sortScore, $tmp) {
 
-            $sA = $sortScore($a);
-            $sB = $sortScore($b);
+            $sA = $sortScore($a, array_search($a, (array)$tmp, true));
+            $sB = $sortScore($b, array_search($b, (array)$tmp, true));
 
             if ($sA === $sB) return 0;
 
-            return ($sA > $sB) ? -1 : 1;
+            return ($sA < $sB) ? -1 : 1;
 
         });
 

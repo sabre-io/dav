@@ -95,8 +95,9 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          * This is solely used by the childrenSort method.
          *
          * A higher score means the item will be lower in the list.
-         * (e.g. 20000000000 for the first property and 20000000000+$key
-         * for the next property, where $array[$key])
+         * To avoid score collisions, each "score category" has a reasonable
+         * space to accomodate elements. The $key is added to the $score to
+         * preserve the original relative order of elements.
          *
          * @param int $key
          * @param Sabre_VObject $array

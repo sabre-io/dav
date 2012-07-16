@@ -99,28 +99,28 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          * @param Sabre_VObject_Node $n
          * @return int
          */
-        $sortScore = function($n, $position) {
+        $sortScore = function($key, $array) {
             
-            if ($n instanceof Sabre_VObject_Component) {
+            if ($array[$key] instanceof Sabre_VObject_Component) {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
-                if ($n->name === 'VTIMEZONE') {
+                if ($array[$key]->name === 'VTIMEZONE') {
                     $score = 3;
                     return $score;
                 } else {
-                    $score = $position;
+                    $score = $key;
                     $score = 4+($score*0.1);
                     return $score;
                 }
             } else {
                 // Properties get encoded first
                 // VCARD version 4.0 wants the VERSION property to appear first
-                if ($n instanceof Sabre_VObject_Property) {
-                    if ($n->name === 'VERSION') {
+                if ($array[$key] instanceof Sabre_VObject_Property) {
+                    if ($array[$key]->name === 'VERSION') {
                         return 1;
                     } else {
                         // All other properties
-                        $score = $position;
+                        $score = $key;
                         $score = 2+($score*0.1);
                         return $score;
                     }
@@ -131,10 +131,10 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
         };
 
         $tmp = $this->children;
-        usort($this->children, function($a, $b) use ($sortScore, $tmp) {
+        uksort($this->children, function($a, $b) use ($sortScore, $tmp) {
 
-            $sA = $sortScore($a, array_search($a, (array)$tmp, true));
-            $sB = $sortScore($b, array_search($b, (array)$tmp, true));
+            $sA = $sortScore($a, $tmp);
+            $sB = $sortScore($b, $tmp);
 
             if ($sA === $sB) return 0;
 

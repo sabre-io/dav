@@ -95,10 +95,11 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          * This is solely used by the childrenSort method.
          *
          * A higher score means the item will be lower in the list.
-         * We are using "score + $key*0.1" to keep the existing order intact
-         * (e.g. 2 for 2 and 2.1 for the first two properties)
+         * (e.g. 20000000000 for the first property and 20000000000+$key
+         * for the next property, where $array[$key])
          *
-         * @param Sabre_VObject_Node $n
+         * @param int $key
+         * @param Sabre_VObject $array
          * @return int
          */
         $sortScore = function($key, $array) {
@@ -107,19 +108,23 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
                 if ($array[$key]->name === 'VTIMEZONE') {
-                    return 3;
+                    $score=300000000;
+                    return $score+$key;
                 } else {
-                    return 4+($key*0.1);
+                    $score=400000000;
+                    return $score+$key;
                 }
             } else {
                 // Properties get encoded first
                 // VCARD version 4.0 wants the VERSION property to appear first
                 if ($array[$key] instanceof Sabre_VObject_Property) {
                     if ($array[$key]->name === 'VERSION') {
-                        return 1;
+                        $score=100000000;
+                        return $score+$key;
                     } else {
                         // All other properties
-                        return 2+($key*0.1);
+                        $score=200000000;
+                        return $score+$key;
                     }
                 }
             }

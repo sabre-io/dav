@@ -94,7 +94,9 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          *
          * This is solely used by the childrenSort method.
          *
-         * A lower score means the item will be higher in the list
+         * A higher score means the item will be lower in the list.
+         * We are using "score + $key*0.1" to keep the existing order intact
+         * (e.g. 2 for 2 and 2.1 for the first two properties)
          *
          * @param Sabre_VObject_Node $n
          * @return int
@@ -105,12 +107,9 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
                 if ($array[$key]->name === 'VTIMEZONE') {
-                    $score = 3;
-                    return $score;
+                    return 3;
                 } else {
-                    $score = $key;
-                    $score = 4+($score*0.1);
-                    return $score;
+                    return 4+($key*0.1);
                 }
             } else {
                 // Properties get encoded first
@@ -120,9 +119,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
                         return 1;
                     } else {
                         // All other properties
-                        $score = $key;
-                        $score = 2+($score*0.1);
-                        return $score;
+                        return 2+($key*0.1);
                     }
                 }
             }

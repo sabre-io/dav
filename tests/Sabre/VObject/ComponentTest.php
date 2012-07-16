@@ -363,7 +363,7 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
 
     function testAnotherSerializeOrderProp() {
 
-        $prop4s=array('1', '2', '3');
+        $prop4s=array('1', '2', '3', '4', '5', '6', '7', '8', '9', '10');
 
         $comp = new Sabre_VObject_Component('VCARD');
         $comp->__set('SOMEPROP','FOO');
@@ -373,12 +373,17 @@ class Sabre_VObject_ComponentTest extends PHPUnit_Framework_TestCase {
             $comp->add('PROP4', 'FOO '.$prop4);
         }
         $comp->__set('PROPNUMBERFIVE', 'FOO');
+        $comp->__set('PROPNUMBERSIX', 'FOO');
+        $comp->__set('PROPNUMBERSEVEN', 'FOO');
+        $comp->__set('PROPNUMBEREIGHT', 'FOO');
+        $comp->__set('PROPNUMBERNINE', 'FOO');
+        $comp->__set('PROPNUMBERTEN', 'FOO');
         $comp->__set('VERSION','2.0');
         $comp->__set('UID', 'FOO');
 
         $str = $comp->serialize();
 
-        $this->assertEquals("BEGIN:VCARD\r\nVERSION:2.0\r\nSOMEPROP:FOO\r\nANOTHERPROP:FOO\r\nTHIRDPROP:FOO\r\nPROP4:FOO 1\r\nPROP4:FOO 2\r\nPROP4:FOO 3\r\nPROPNUMBERFIVE:FOO\r\nUID:FOO\r\nEND:VCARD\r\n", $str);
+        $this->assertEquals("BEGIN:VCARD\r\nVERSION:2.0\r\nSOMEPROP:FOO\r\nANOTHERPROP:FOO\r\nTHIRDPROP:FOO\r\nPROP4:FOO 1\r\nPROP4:FOO 2\r\nPROP4:FOO 3\r\nPROP4:FOO 4\r\nPROP4:FOO 5\r\nPROP4:FOO 6\r\nPROP4:FOO 7\r\nPROP4:FOO 8\r\nPROP4:FOO 9\r\nPROP4:FOO 10\r\nPROPNUMBERFIVE:FOO\r\nPROPNUMBERSIX:FOO\r\nPROPNUMBERSEVEN:FOO\r\nPROPNUMBEREIGHT:FOO\r\nPROPNUMBERNINE:FOO\r\nPROPNUMBERTEN:FOO\r\nUID:FOO\r\nEND:VCARD\r\n", $str);
 
     }
 

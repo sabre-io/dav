@@ -30,7 +30,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
     public $children = array();
 
     /**
-     * If coponents are added to this map, they will be automatically mapped
+     * If components are added to this map, they will be automatically mapped
      * to their respective classes, if parsed by the reader or constructed with
      * the 'create' method.
      *
@@ -94,40 +94,54 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          *
          * This is solely used by the childrenSort method.
          *
-         * A higher score means the item will be higher in the list
+         * A higher score means the item will be lower in the list.
+         * To avoid score collisions, each "score category" has a reasonable
+         * space to accomodate elements. The $key is added to the $score to
+         * preserve the original relative order of elements.
          *
-         * @param Sabre_VObject_Node $n
+         * @param int $key
+         * @param Sabre_VObject $array
          * @return int
          */
-        $sortScore = function($n) {
-
-            if ($n instanceof Sabre_VObject_Component) {
+        $sortScore = function($key, $array) {
+            
+            if ($array[$key] instanceof Sabre_VObject_Component) {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
-                if ($n->name === 'VTIMEZONE') {
-                    return 1;
+                if ($array[$key]->name === 'VTIMEZONE') {
+                    $score=300000000;
+                    return $score+$key;
                 } else {
-                    return 0;
+                    $score=400000000;
+                    return $score+$key;
                 }
             } else {
+                // Properties get encoded first
                 // VCARD version 4.0 wants the VERSION property to appear first
-                if ($n->name === 'VERSION') {
-                    return 3;
-                } else {
-                    return 2;
+                if ($array[$key] instanceof Sabre_VObject_Property) {
+                    if ($array[$key]->name === 'VERSION') {
+                        $score=100000000;
+                        return $score+$key;
+                    } else {
+                        // All other properties
+                        $score=200000000;
+                        return $score+$key;
+                    }
                 }
             }
+            next($children);
 
         };
 
-        usort($this->children, function($a, $b) use ($sortScore) {
+        $tmp = $this->children;
+        uksort($this->children, function($a, $b) use ($sortScore, $tmp) {
 
-            $sA = $sortScore($a);
-            $sB = $sortScore($b);
+            $sA = $sortScore($a, $tmp);
+            $sB = $sortScore($b, $tmp);
 
             if ($sA === $sB) return 0;
 
-            return ($sA > $sB) ? -1 : 1;
+            return ($sA < $sB) ? -1 : 1;
 
         });
 

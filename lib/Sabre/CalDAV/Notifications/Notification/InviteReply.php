@@ -20,6 +20,13 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
     protected $id;
 
     /**
+     * Timestamp of the notification
+     *
+     * @var DateTime
+     */
+    protected $dtStamp;
+
+    /**
      * The unique id of the notification this was a reply to.
      *
      * @var string
@@ -39,13 +46,6 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
      * @var int
      */
     protected $type;
-
-    /**
-     * True if access to a calendar is read-only.
-     *
-     * @var bool
-     */
-    protected $readOnly;
 
     /**
      * A url to the shared calendar.
@@ -69,27 +69,44 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
     protected $etag;
 
     /**
-     * Creares the Invite notification
+     * Creates the Invite Reply Notification.
      *
-     * @param string $id A unique id
-     * @param string $etag The etag for this notification
-     * @param string $inReplyTo Which notification id this is a reply to
-     * @param string $href A url to the recipient of the original(!) recipient
-     * @param int $type The type of message, see the SharingPlugin::STATUS_* constants.
-     * @param bool $readOnly True if access to a calendar is read-only.
-     * @param string $hostUrl A url to the shared calendar
-     * @param string $summary A description of the share request
+     * This constructor receives an array with the following elements:
+     *
+     *   * id           - A unique id
+     *   * etag         - The etag
+     *   * dtStamp      - A DateTime object with a timestamp for the notification.
+     *   * inReplyTo    - This should refer to the 'id' of the notification
+     *                    this is a reply to.
+     *   * type         - The type of notification, see SharingPlugin::STATUS_*
+     *                    constants for details.
+     *   * hostUrl      - A url to the shared calendar.
+     *   * summary      - Description of the share, can be the same as the
+     *                    calendar, but may also be modified (optional).
      */
-    public function __construct($id, $etag, $inReplyTo, $href, $type, $readOnly, $hostUrl, $summary = null) {
+    public function __construct(array $values) {
 
-        $this->id = $id;
-        $this->etag = $etag;
-        $this->inReplyTo = $inReplyTo;
-        $this->href = $href;
-        $this->type = $type;
-        $this->readOnly = $readOnly;
-        $this->hostUrl = $hostUrl;
-        $this->summary = $summary;
+        $required = array(
+            'id',
+            'etag',
+            'href',
+            'dtStamp',
+            'inReplyTo',
+            'type',
+            'hostUrl',
+        );
+        foreach($required as $item) {
+            if (!isset($values[$item])) {
+                throw new InvalidArgumentException($item . ' is a required constructor option');
+            }
+        }
+
+        foreach($values as $key=>$value) {
+            if (!property_exists($this, $key)) {
+                throw new InvalidArgumentException('Unknown option: ' . $key);
+            }
+            $this->$key = $value;
+        }
 
     }
 
@@ -121,6 +138,12 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
     public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
+
+        $dt = $doc->createElement('cs:dtstamp');
+        $this->dtStamp->setTimezone(new \DateTimezone('GMT'));
+        $dt->appendChild($doc->createTextNode($this->dtStamp->format('Ymd\\THis\\Z')));
+        $node->appendChild($dt);
+
         $prop = $doc->createElement('cs:invite-reply');
         $node->appendChild($prop);
 

@@ -20,7 +20,15 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     protected $id;
 
     /**
-     * A url to the recipient of the notification
+     * Timestamp of the notification
+     *
+     * @var DateTime
+     */
+    protected $dtStamp;
+
+    /**
+     * A url to the recipient of the notification. This can be an email
+     * address (mailto:), or a principal url.
      *
      * @var string
      */
@@ -76,29 +84,54 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     protected $etag;
 
     /**
-     * Creares the Invite notification
+     * Creates the Invite notification.
      *
-     * @param string $id A unique id
-     * @param string $etag The etag
-     * @param string $href A url to the recipient of the notification
-     * @param int $type The type of message, see the SharingPlugin::STATUS_* constants.
-     * @param bool $readOnly True if access to a calendar is read-only.
-     * @param string $hostUrl A url to the shared calendar
-     * @param string $organizer Url to the sharer of the calendar
-     * @param string $commonName The name of the sharer (optional)
-     * @param string $summary A description of the share request
+     * This constructor receives an array with the following elements:
+     *
+     *   * id           - A unique id
+     *   * etag         - The etag
+     *   * dtStamp      - A DateTime object with a timestamp for the notification.
+     *   * type         - The type of notification, see SharingPlugin::STATUS_*
+     *                    constants for details.
+     *   * readOnly     - This must be set to true, if this is an invite for
+     *                    read-only access to a calendar.
+     *   * hostUrl      - A url to the shared calendar.
+     *   * organizer    - Url to the sharer principal.
+     *   * commonName   - The real name of the sharer (optional).
+     *   * summary      - Description of the share, can be the same as the
+     *                    calendar, but may also be modified (optional).
+     *   * supported-calendar-component-set - An instance of
+     *                    Sabre_CalDAV_Property_SupportedCalendarComponentSet.
+     *                    This allows the client to determine which components
+     *                    will be supported in the shared calendar. This is
+     *                    also optional.
+     *
+     * @param array $values All the options
      */
-    public function __construct($id, $etag, $href, $type, $readOnly, $hostUrl, $organizer, $commonName = null, $summary = null) {
+    public function __construct(array $values) {
 
-        $this->id = $id;
-        $this->etag = $etag;
-        $this->href = $href;
-        $this->type = $type;
-        $this->readOnly = $readOnly;
-        $this->hostUrl = $hostUrl;
-        $this->organizer = $organizer;
-        $this->commonName = $commonName;
-        $this->summary = $summary;
+        $required = array(
+            'id',
+            'etag',
+            'href',
+            'dtStamp',
+            'type',
+            'readOnly',
+            'hostUrl',
+            'organizer',
+        );
+        foreach($required as $item) {
+            if (!isset($values[$item])) {
+                throw new InvalidArgumentException($item . ' is a required constructor option');
+            }
+        }
+
+        foreach($values as $key=>$value) {
+            if (!property_exists($this, $key)) {
+                throw new InvalidArgumentException('Unknown option: ' . $key);
+            }
+            $this->$key = $value;
+        }
 
     }
 
@@ -130,6 +163,12 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
+
+        $dt = $doc->createElement('cs:dtstamp');
+        $this->dtStamp->setTimezone(new \DateTimezone('GMT'));
+        $dt->appendChild($doc->createTextNode($this->dtStamp->format('Ymd\\THis\\Z')));
+        $node->appendChild($dt);
+
         $prop = $doc->createElement('cs:invite-notification');
         $node->appendChild($prop);
 
@@ -166,6 +205,14 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         $hostUrl->appendChild($hostHref);
         $prop->appendChild($hostUrl);
 
+        $access = $doc->createElement('cs:access');
+        if ($this->readOnly) {
+            $access->appendChild($doc->createElement('cs:read'));
+        } else {
+            $access->appendChild($doc->createElement('cs:read-write'));
+        }
+        $prop->appendChild($access);
+
         $organizerHref = $doc->createElement('d:href', $server->getBaseUri() . $this->organizer);
         $organizerUrl  = $doc->createElement('cs:organizer');
         if ($this->commonName) {
@@ -173,7 +220,6 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
             $commonName->appendChild($doc->createTextNode($this->commonName));
             $organizerUrl->appendChild($commonName);
         }
-
         $organizerUrl->appendChild($organizerHref);
         $prop->appendChild($organizerUrl);
 

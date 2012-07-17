@@ -7,17 +7,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
      */
     function testSerializers($notification, $expected) {
 
-        $notification = new Sabre_CalDAV_Notifications_Notification_Invite(
-            $notification[0],
-            $notification[1],
-            $notification[2],
-            $notification[3],
-            $notification[4],
-            $notification[5],
-            $notification[6],
-            isset($notification[7])?$notification[7]:null,
-            isset($notification[8])?$notification[8]:null
-        );
+        $notification = new Sabre_CalDAV_Notifications_Notification_Invite($notification);
 
         $this->assertEquals('foo', $notification->getId());
         $this->assertEquals('"1"', $notification->getETag());
@@ -45,12 +35,25 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
 
     function dataProvider() {
 
+        $dtStamp = new DateTime('2012-01-01 00:00:00', new DateTimeZone('GMT'));
         return array(
             array(
-                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED, true, 'calendar', 'principal/user1', 'John Doe', 'Awesome stuff!'),
+                array(
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
+                    'href' => 'mailto:foo@example.org',
+                    'type' => Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED,
+                    'readOnly' => true,
+                    'hostUrl' => 'calendar',
+                    'organizer' => 'principal/user1',
+                    'commonName' => 'John Doe',
+                    'summary' => 'Awesome stuff!'
+                ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
     <d:href>mailto:foo@example.org</d:href>
@@ -58,6 +61,9 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
     <cs:hosturl>
       <d:href>/calendar</d:href>
     </cs:hosturl>
+    <cs:access>
+      <cs:read/>
+    </cs:access>
     <cs:organizer>
       <cs:common-name>John Doe</cs:common-name>
       <d:href>/principal/user1</d:href>
@@ -69,10 +75,21 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
 FOO
             ),
             array(
-                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, true, 'calendar', 'principal/user1', 'John Doe'),
+                array(
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
+                    'href' => 'mailto:foo@example.org',
+                    'type' => Sabre_CalDAV_SharingPlugin::STATUS_DECLINED,
+                    'readOnly' => true,
+                    'hostUrl' => 'calendar',
+                    'organizer' => 'principal/user1',
+                    'commonName' => 'John Doe',
+                ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
     <d:href>mailto:foo@example.org</d:href>
@@ -80,6 +97,9 @@ FOO
     <cs:hosturl>
       <d:href>/calendar</d:href>
     </cs:hosturl>
+    <cs:access>
+      <cs:read/>
+    </cs:access>
     <cs:organizer>
       <cs:common-name>John Doe</cs:common-name>
       <d:href>/principal/user1</d:href>
@@ -90,10 +110,20 @@ FOO
 FOO
             ),
             array(
-                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE, true, 'calendar', 'principal/user1'),
+                array(
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
+                    'href' => 'mailto:foo@example.org',
+                    'type' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
+                    'readOnly' => true,
+                    'hostUrl' => 'calendar',
+                    'organizer' => 'principal/user1'
+                ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
     <d:href>mailto:foo@example.org</d:href>
@@ -101,6 +131,9 @@ FOO
     <cs:hosturl>
       <d:href>/calendar</d:href>
     </cs:hosturl>
+    <cs:access>
+      <cs:read/>
+    </cs:access>
     <cs:organizer>
       <d:href>/principal/user1</d:href>
     </cs:organizer>
@@ -110,10 +143,20 @@ FOO
 FOO
             ),
             array(
-                array('foo', '"1"', 'mailto:foo@example.org', Sabre_CalDAV_SharingPlugin::STATUS_DELETED, true, 'calendar', 'principal/user1'),
+                array(
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
+                    'href' => 'mailto:foo@example.org',
+                    'type' => Sabre_CalDAV_SharingPlugin::STATUS_DELETED,
+                    'readOnly' => false,
+                    'hostUrl' => 'calendar',
+                    'organizer' => 'principal/user1'
+                ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
     <d:href>mailto:foo@example.org</d:href>
@@ -121,6 +164,9 @@ FOO
     <cs:hosturl>
       <d:href>/calendar</d:href>
     </cs:hosturl>
+    <cs:access>
+      <cs:read-write/>
+    </cs:access>
     <cs:organizer>
       <d:href>/principal/user1</d:href>
     </cs:organizer>

@@ -84,6 +84,13 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     protected $etag;
 
     /**
+     * The list of supported components
+     *
+     * @var Sabre_CalDAV_Property_SupportedCalendarComponentSet
+     */
+    protected $supportedComponents;
+
+    /**
      * Creates the Invite notification.
      *
      * This constructor receives an array with the following elements:
@@ -100,7 +107,7 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      *   * commonName   - The real name of the sharer (optional).
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
-     *   * supported-calendar-component-set - An instance of
+     *   * supportedComponents - An instance of
      *                    Sabre_CalDAV_Property_SupportedCalendarComponentSet.
      *                    This allows the client to determine which components
      *                    will be supported in the shared calendar. This is
@@ -227,6 +234,13 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
             $summary = $doc->createElement('cs:summary');
             $summary->appendChild($doc->createTextNode($this->summary));
             $prop->appendChild($summary);
+        }
+        if ($this->supportedComponents) {
+
+            $xcomp = $doc->createElement('cal:supported-calendar-component-set');
+            $this->supportedComponents->serialize($server, $xcomp);
+            $prop->appendChild($xcomp);
+
         }
 
     }

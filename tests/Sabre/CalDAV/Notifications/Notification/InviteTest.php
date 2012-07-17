@@ -26,6 +26,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
         $elem = $dom->createElement('cs:root');
         $elem->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
         $elem->setAttribute('xmlns:d','DAV:');
+        $elem->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
         $dom->appendChild($elem);
         $notification->serializeBody(new Sabre_DAV_Server(), $elem);
         $this->assertEquals($expected, $dom->saveXML());
@@ -52,7 +53,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
@@ -88,7 +89,7 @@ FOO
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
@@ -122,7 +123,7 @@ FOO
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
@@ -151,11 +152,12 @@ FOO
                     'type' => Sabre_CalDAV_SharingPlugin::STATUS_DELETED,
                     'readOnly' => false,
                     'hostUrl' => 'calendar',
-                    'organizer' => 'principal/user1'
+                    'organizer' => 'principal/user1',
+                    'supportedComponents' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')),
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
+<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
   <cs:invite-notification>
     <cs:uid>foo</cs:uid>
@@ -170,6 +172,10 @@ FOO
     <cs:organizer>
       <d:href>/principal/user1</d:href>
     </cs:organizer>
+    <cal:supported-calendar-component-set>
+      <cal:comp name="VEVENT"/>
+      <cal:comp name="VTODO"/>
+    </cal:supported-calendar-component-set>
   </cs:invite-notification>
 </cs:root>
 

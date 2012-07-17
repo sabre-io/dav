@@ -6,9 +6,9 @@ class Sabre_VObject_Issue154Test extends PHPUnit_Framework_TestCase {
 
         $vcard = new Sabre_VObject_Component('VCARD');
         $vcard->VERSION = '3.0';
-        $vcard->UID = 'foo-bar';
         $vcard->PHOTO = base64_encode('random_stuff');
         $vcard->PHOTO->add('BASE64',null);
+        $vcard->UID = 'foo-bar';
 
         $result = $vcard->serialize();
         $expected = array(

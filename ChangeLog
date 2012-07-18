@@ -34,6 +34,8 @@
 	* Fixed: Workaround for 10.8 Mountain Lion vCards, as it needs \r line
 	  endings to parse them correctly.
 	* Fixed: Issue 219: serialize() now reorders correctly.
+	* Fixed: Sabre_DAV_XMLUtil no longer returns empty $dom->childNodes
+	  if there is whitespace in $dom.
 
 1.6.4-stable (2012-??-??)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

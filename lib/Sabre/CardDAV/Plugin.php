@@ -269,7 +269,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
 
-        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
+        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
         $propertyList = array();
 
         foreach($hrefElems as $elem) {

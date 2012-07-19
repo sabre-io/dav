@@ -536,9 +536,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -598,9 +598,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -663,9 +663,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -722,9 +722,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -811,9 +811,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -871,9 +871,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(Sabre_DAV_XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(

@@ -68,7 +68,7 @@ class Sabre_CalDAV_CalendarQueryParser {
 
         $this->xpath = new DOMXPath($dom);
         $this->xpath->registerNameSpace('cal',Sabre_CalDAV_Plugin::NS_CALDAV);
-        $this->xpath->registerNameSpace('dav','urn:DAV');
+        $this->xpath->registerNameSpace('dav','DAV:');
 
     }
 

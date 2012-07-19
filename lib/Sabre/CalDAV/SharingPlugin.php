@@ -260,7 +260,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             // Breaking the event chain
             return false;
 
-        } elseif ($documentType === '{http://calendarserver.org/ns/}share-reply') {
+        } elseif ($documentType === '{http://calendarserver.org/ns/}invite-reply') {
 
             // This only works on the calendar-home-root node.
             if (!$node instanceof Sabre_CalDAV_UserCalendars) {
@@ -275,7 +275,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 $acl->checkPrivileges($uri, '{DAV:}write');
             }
 
-            $message = $this->parseShareReplyRequest($dom);
+            $message = $this->parseInviteReplyRequest($dom);
 
             $node->shareReply(
                 $message['href'],
@@ -351,7 +351,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * Parses the 'share-reply' POST request.
+     * Parses the 'invite-reply' POST request.
      *
      * This method returns an array, containing the following properties:
      *   * href - The sharee who is replying
@@ -363,7 +363,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      * @param DOMDocument $dom
      * @return array
      */
-    protected function parseShareReplyRequest(DOMDocument $dom) {
+    protected function parseInviteReplyRequest(DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);

@@ -96,10 +96,11 @@ class Sabre_DAV_XMLUtil {
         libxml_clear_errors();
 
         $dom = new DOMDocument();
-        $dom->loadXML($xml,LIBXML_NOWARNING | LIBXML_NOERROR);
 
         // We don't generally care about any whitespace
         $dom->preserveWhiteSpace = false;
+        
+        $dom->loadXML($xml,LIBXML_NOWARNING | LIBXML_NOERROR);
 
         if ($error = libxml_get_last_error()) {
             libxml_clear_errors();

@@ -37,9 +37,9 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We expected a multi-status response. Full response body: ' . $this->response->body);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"DAV:\"",$this->response->body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop');
         $this->assertEquals(1,count($data),'We expected 1 \'d:prop\' element');
@@ -74,9 +74,9 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'We expected a multi-status response. Full response body: ' . $this->response->body);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"DAV:\"",$this->response->body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('x','http://www.rooftopsolutions.nl/testnamespace');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop');

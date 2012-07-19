@@ -60,7 +60,7 @@ class Sabre_DAV_Property_HrefTest extends PHPUnit_Framework_TestCase {
     function testUnserialize() {
 
         $xml = '<?xml version="1.0"?>
-<d:anything xmlns:d="urn:DAV"><d:href>/bla/path</d:href></d:anything>
+<d:anything xmlns:d="DAV:"><d:href>/bla/path</d:href></d:anything>
 ';
 
         $dom = new DOMDocument();
@@ -74,7 +74,7 @@ class Sabre_DAV_Property_HrefTest extends PHPUnit_Framework_TestCase {
     function testUnserializeIncompatible() {
 
         $xml = '<?xml version="1.0"?>
-<d:anything xmlns:d="urn:DAV"><d:href2>/bla/path</d:href2></d:anything>
+<d:anything xmlns:d="DAV:"><d:href2>/bla/path</d:href2></d:anything>
 ';
 
         $dom = new DOMDocument();

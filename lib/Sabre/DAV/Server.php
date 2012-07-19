@@ -1999,7 +1999,7 @@ class Sabre_DAV_Server {
         if (!$body) return array();
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
-        $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
+        $elem = $dom->getElementsByTagNameNS('DAV:','propfind')->item(0);
         return array_keys(Sabre_DAV_XMLUtil::parseProperties($elem));
 
     }

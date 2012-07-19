@@ -338,7 +338,7 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
             throw new Sabre_DAV_Exception_NotImplemented('Sharing support is not implemented by this backend.');
         }
 
-        $this->caldavbackend->sharereply($href, $status, $calendaruri, $inreplyto, $summary);
+        $this->caldavBackend->shareReply($href, $status, $calendarUri, $inReplyTo, $summary);
 
     }
 

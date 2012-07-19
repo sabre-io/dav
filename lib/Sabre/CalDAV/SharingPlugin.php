@@ -371,7 +371,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
         return array(
             'href' => $xpath->evaluate('string(d:href)'),
-            'calendarUri' => $this->server->calculateUri($xpath->evaluate('string(cs:host-url/d:href)')),
+            'calendarUri' => $this->server->calculateUri($xpath->evaluate('string(cs:hosturl/d:href)')),
             'inReplyTo' => $xpath->evaluate('string(cs:in-reply-to)'),
             'summary' => $xpath->evaluate('string(cs:summary)'),
             'status' => $xpath->evaluate('cs:invite-accepted')?self::STATUS_ACCEPTED:self::STATUS_DECLINED

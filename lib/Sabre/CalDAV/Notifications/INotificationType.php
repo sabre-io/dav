@@ -12,18 +12,6 @@
 interface Sabre_CalDAV_Notifications_INotificationType extends Sabre_DAV_PropertyInterface {
 
     /**
-     * Serializes the notification as a single property.
-     *
-     * You should usually just encode the single top-level element of the
-     * notification.
-     *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
-     * @return void
-     */
-    function serialize(Sabre_DAV_Server $server, \DOMElement $node);
-
-    /**
      * This method serializes the entire notification, as it is used in the
      * response body.
      *

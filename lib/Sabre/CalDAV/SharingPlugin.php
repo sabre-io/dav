@@ -255,7 +255,9 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             $node->updateShares($mutations[0], $mutations[1]);
 
             $this->server->httpResponse->sendStatus(200);
-            $this->server->httpResponse->sendBody('Updates shares');
+            // Adding this because sending a response body may cause issues, 
+            // and I wanted some type of indicator the response was handled.
+            $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
 
             // Breaking the event chain
             return false;
@@ -286,7 +288,9 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             );
 
             $this->server->httpResponse->sendStatus(200);
-            $this->server->httpResponse->sendBody('Sent reply');
+            // Adding this because sending a response body may cause issues, 
+            // and I wanted some type of indicator the response was handled.
+            $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
 
             // Breaking the event chain
             return false;

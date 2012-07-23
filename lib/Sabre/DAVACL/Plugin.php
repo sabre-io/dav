@@ -896,6 +896,18 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             $returnedProperties[200]['{DAV:}acl-restrictions'] = new Sabre_DAVACL_Property_AclRestrictions();
         }
 
+        /* Adding ACL properties */
+        if ($node instanceof Sabre_DAVACL_IACL) {
+
+            if (false !== ($index = array_search('{DAV:}owner', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}owner'] = new Sabre_DAV_Property_Href($node->getOwner());
+
+            }
+
+        }
+
     }
 
     /**

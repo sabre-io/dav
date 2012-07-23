@@ -85,7 +85,7 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
         );
         if (!$this->calendarInfo['{http://sabredav.org/ns}read-only']) {
             $acl[] = array(
-                'privilege' => '{DAV:}read',
+                'privilege' => '{DAV:}write',
                 'principal' => $this->calendarInfo['principaluri'],
                 'protected' => true,
             );

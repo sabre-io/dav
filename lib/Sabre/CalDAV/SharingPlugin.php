@@ -335,7 +335,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 'href' => $xpath->evaluate('string(d:href)', $xset),
                 'commonName' => $xpath->evaluate('string(cs:common-name)', $xset),
                 'summary' => $xpath->evaluate('string(cs:summary)', $xset),
-                'readOnly' => $xpath->evaluate('cs:read', $xset)!==false
+                'readOnly' => $xpath->evaluate('boolean(cs:read)', $xset)!==false
             );
 
         }
@@ -378,7 +378,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             'calendarUri' => $this->server->calculateUri($xpath->evaluate('string(cs:hosturl/d:href)')),
             'inReplyTo' => $xpath->evaluate('string(cs:in-reply-to)'),
             'summary' => $xpath->evaluate('string(cs:summary)'),
-            'status' => $xpath->evaluate('cs:invite-accepted')?self::STATUS_ACCEPTED:self::STATUS_DECLINED
+            'status' => $xpath->evaluate('boolean(cs:invite-accepted)')?self::STATUS_ACCEPTED:self::STATUS_DECLINED
         );
 
     }

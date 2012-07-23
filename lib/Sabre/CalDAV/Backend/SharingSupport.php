@@ -96,12 +96,21 @@
  * As mentioned earlier, shared calendars must now also be returned for
  * getCalendarsForUser for sharees. A few things change though.
  *
- * First, you must provide the following property:
+ * The following properties must be specified:
  *
- * {http://calendarserver.org/ns/}shared-url
+ * 1. {http://calendarserver.org/ns/}shared-url
  *
  * This property MUST contain the url to the original calendar, that is.. the
  * path to the calendar from the owner.
+ *
+ * 2. {http://sabredav.org/ns}owner-principal
+ *
+ * This is a url to to the principal who is sharing the calendar.
+ *
+ * 3. {http://sabredav.org/ns}read-only
+ *
+ * This should be either 0 or 1, depending on if the user has read-only or
+ * read-write access to the calendar.
  *
  * Only when this is done, the calendar will correctly be marked as a calendar
  * that's shared to him, thus allowing clients to display the correct interface

@@ -46,6 +46,17 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
     }
 
     /**
+     * Returns the list of users, as it was passed to the constructor.
+     *
+     * @return array
+     */
+    public function getValue() {
+
+        return $this->users;
+
+    }
+
+    /**
      * Serializes the property in a DOMDocument
      *
      * @param Sabre_DAV_Server $server
@@ -112,6 +123,50 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
            $node->appendChild($xuser);
 
        }
+
+    }
+
+    /**
+     * Unserializes the property.
+     *
+     * This static method should return a an instance of this object.
+     *
+     * @param DOMElement $prop
+     * @return Sabre_DAV_IProperty
+     */
+    static function unserialize(DOMElement $prop) {
+
+        $xpath = new \DOMXPath($prop->ownerDocument);
+        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $xpath->registerNamespace('d',  'DAV:');
+
+        $users = array();
+
+        foreach($xpath->query('cs:user') as $user) {
+
+            $status = null;
+            if ($xpath->evaluate('boolean(cs:invite-accepted)', $user)) {
+                $status = SharingPlugin::STATUS_ACCEPTED;
+            } elseif ($xpath->evaluate('boolean(cs:invite-declined)', $user)) {
+                $status = SharingPlugin::STATUS_DECLINED;
+            } elseif ($xpath->evaluate('boolean(cs:invite-noresponse)', $user)) {
+                $status = SharingPlugin::STATUS_NORESPONSE;
+            } elseif ($xpath->evaluate('boolean(cs:invite-invalid)', $user)) {
+                $status = SharingPlugin::STATUS_INVALID;
+            } else {
+                throw new Sabre_DAV_Exception('Every cs:user property must have one of cs:invite-accepted, cs:invite-declined, cs:invite-noresponse or cs:invite-invalid');
+            }
+            $users[] = array(
+                'href' => $xpath->evaluate('string(d:href)', $user),
+                'commonName' => $xpath->evaluate('string(cs:common-name)', $user),
+                'readOnly' => $xpath->evaluate('boolean(cs:access/cs:read)', $user),
+                'summary' => $xpath->evaluate('string(cs:summary)', $user),
+                'status' => $status,
+            );
+
+        }
+
+        return new self($users);
 
     }
 

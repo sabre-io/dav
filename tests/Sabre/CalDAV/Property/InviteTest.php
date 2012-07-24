@@ -94,4 +94,67 @@ class Sabre_CalDAV_Property_InviteTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testSerialize
+     */
+    public function testUnserialize() {
+
+        $input = array(
+            array(
+                'href' => 'mailto:user1@example.org',
+                'status' => Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED,
+                'readOnly' => false,
+                'commonName' => '',
+                'summary' => '',
+            ),
+            array(
+                'href' => 'mailto:user2@example.org',
+                'commonName' => 'John Doe',
+                'status' => Sabre_CalDAV_SharingPlugin::STATUS_DECLINED,
+                'readOnly' => true,
+                'summary' => '',
+            ),
+            array(
+                'href' => 'mailto:user3@example.org',
+                'commonName' => 'Joe Shmoe',
+                'status' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
+                'readOnly' => true,
+                'summary' => 'Something, something',
+            ),
+            array(
+                'href' => 'mailto:user4@example.org',
+                'commonName' => 'Hoe Boe',
+                'status' => Sabre_CalDAV_SharingPlugin::STATUS_INVALID,
+                'readOnly' => true,
+                'summary' => '',
+            ),
+        );
+
+        // Creating the xml
+        $doc = new DOMDocument();
+        $doc->formatOutput = true;
+        $root = $doc->createElement('d:root');
+        $root->setAttribute('xmlns:d','DAV:');
+        $root->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
+        $root->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+
+        $doc->appendChild($root);
+        $server = new Sabre_DAV_Server();
+
+        $inputProperty = new Sabre_CalDAV_Property_Invite($input);
+        $inputProperty->serialize($server, $root);
+
+        $xml = $doc->saveXML();
+
+        // Parsing it again
+
+        $doc2 = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+
+        $outputProperty = Sabre_CalDAV_Property_Invite::unserialize($doc2->firstChild);
+
+        $this->assertEquals($input, $outputProperty->getValue());
+
+
+    }
+
 }

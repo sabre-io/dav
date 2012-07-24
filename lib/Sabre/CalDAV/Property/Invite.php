@@ -142,7 +142,7 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
 
         $users = array();
 
-        foreach($xpath->query('cs:user') as $user) {
+        foreach($xpath->query('cs:user', $prop) as $user) {
 
             $status = null;
             if ($xpath->evaluate('boolean(cs:invite-accepted)', $user)) {

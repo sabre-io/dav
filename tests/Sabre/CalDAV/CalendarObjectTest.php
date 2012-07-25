@@ -200,6 +200,11 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
                 'principal' => 'principals/user1/calendar-proxy-read',
                 'protected' => true,
             ),
+            array(
+                'privilege' => '{'.Sabre_CalDAV_Plugin::NS_CALDAV.'}read-free-busy',
+                'principal' => '{DAV:}authenticated',
+                'protected' => true,
+            ),
         );
 
         $children = $this->calendar->getChildren();

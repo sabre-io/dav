@@ -206,6 +206,12 @@ class Sabre_CalDAV_CalendarObject extends Sabre_DAV_File implements Sabre_CalDAV
      */
     public function getACL() {
 
+        // An alternative acl may be specified in the object data.
+        if (isset($this->objectData['acl'])) {
+            return $this->objectData['acl'];
+        }
+
+        // The default ACL
         return array(
             array(
                 'privilege' => '{DAV:}read',

@@ -54,6 +54,8 @@
 	  the instance of an event, but not the end.
 	* Fixed: All-day recurring events wouldn't match if an occurence ended
 	  exactly on the start of a time-range.
+	* Fixed: HTTP basic auth did not correctly deal with passwords containing
+	  colons on some servers.
 
 1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

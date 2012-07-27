@@ -374,7 +374,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         $xpath->registerNamespace('d', 'DAV:');
 
         $hostHref = $xpath->evaluate('string(cs:hosturl/d:href)');
-        if ($hostHref) {
+        if (!$hostHref) {
             throw new Sabre_DAV_Exception_BadRequest('The {' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}hosturl/{DAV:}href element is required');
         }
 

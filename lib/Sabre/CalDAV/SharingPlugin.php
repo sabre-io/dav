@@ -113,13 +113,6 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                     );
 
             }
-            if (($index = array_search('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes', $requestedProperties))!==false) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes'] =
-                    new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
-
-            }
 
         }
         if ($node instanceof Sabre_CalDAV_ISharedCalendar) {
@@ -149,12 +142,20 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      */
     public function afterGetProperties($path, &$properties, Sabre_DAV_INode $node) {
 
-        if ($node instanceof Sabre_CalDAV_IShareableCalendar && isset($properties[200]['{DAV:}resourcetype'])) {
-            if ($node->getSharingEnabled()) {
-                $properties[200]['{DAV:}resourcetype']->add(
-                    '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'
-                );
+        if ($node instanceof Sabre_CalDAV_IShareableCalendar) {
+            if (isset($properties[200]['{DAV:}resourcetype'])) {
+                if ($node->getSharingEnabled()) {
+                    $properties[200]['{DAV:}resourcetype']->add(
+                        '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'
+                    );
+                }
             }
+            $propName = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes';
+            if (isset($properties[404][$propName])) {
+                unset($properties[404][$propName]);
+                $properties[200][$propName] = new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
+            } 
+            
         }
 
     }

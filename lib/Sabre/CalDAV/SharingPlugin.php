@@ -240,14 +240,6 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             // If there's no ACL support, we allow everything
             if ($acl) {
                 $acl->checkPrivileges($uri, '{DAV:}write');
-
-                // Also, you can only make changes if you're the owner of the
-                // calendar (and not a sharee)
-                $principals = $acl->getCurrentUserPrincipals();
-                if (!in_array($node->getOwner(), $principals)) {
-                    throw new Sabre_DAV_Exception_Forbidden('Only the owner of the calendar can make changes to the list of sharees');
-                }
-
             }
 
             $mutations = $this->parseShareRequest($dom);

@@ -104,7 +104,7 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
          * @return int
          */
         $sortScore = function($key, $array) {
-            
+
             if ($array[$key] instanceof Sabre_VObject_Component) {
                 // We want to encode VTIMEZONE first, this is a personal
                 // preference.
@@ -260,6 +260,27 @@ class Sabre_VObject_Component extends Sabre_VObject_Element {
             }
         }
 
+        return $result;
+
+    }
+
+    /**
+     * Validates the node for correctness.
+     * An array is returned with warnings.
+     *
+     * Every item in the array has the following properties:
+     *    * level - (number between 1 and 3 with severity information)
+     *    * message - (human readable message)
+     *    * node - (reference to the offending node)
+     *
+     * @return array
+     */
+    public function validate() {
+
+        $result = array();
+        foreach($this->children as $child) {
+            $result = array_merge($result, $child->validate());
+        }
         return $result;
 
     }

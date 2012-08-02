@@ -3,7 +3,6 @@
 /**
  * This unittest is created to check if the time-range filter is working correctly with all-day-events
  *
- *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -68,18 +67,9 @@ END:VCALENDAR
 </C:calendar-query>');
 
         $response = $this->request($request);
-        var_dump($response->body);
-        // Everts super awesome xml parser.
-        $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
-        );
-        $body = str_replace('&#13;','',$body);
 
-        $vObject = Sabre_VObject_Reader::read($body);
-
-        $this->assertEquals(0, count($vObject->VEVENT));
+        // We must check if absolutely nothing was returned from this query.
+        $this->assertFalse(strpos($response->body, 'BEGIN:VCALENDAR'));
 
     }
 }

@@ -153,7 +153,6 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
-                // Taking out \r to not screw up the xml output
                 $returnedProperties[200][$addressDataProp] = $val;
 
             }

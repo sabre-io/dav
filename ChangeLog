@@ -1,3 +1,6 @@
+1.6.5-stable (2012-??-??)
+	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
+
 1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on
 	  alarms, if an overridden event has it's alarm removed.

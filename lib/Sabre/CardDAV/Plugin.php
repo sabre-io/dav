@@ -364,7 +364,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if (!isset($vobj->UID)) {
-            throw new Sabre_DAV_Exception_BadRequest('Every vcard must have an UID.');
+            throw new DAV\Exception\BadRequest('Every vcard must have a UID.');
         }
 
     }

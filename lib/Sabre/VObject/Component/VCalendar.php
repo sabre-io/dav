@@ -202,7 +202,7 @@ class VCalendar extends VObject\Component {
         );
         $componentsFound = 0;
         foreach($this->children as $child) {
-            if($child instanceof Sabre_VObject_Component) {
+            if($child instanceof Component) {
                 $componentsFound++;
                 if (!in_array($child->name, $allowedComponents)) {
                     $warnings[] = array(
@@ -212,7 +212,7 @@ class VCalendar extends VObject\Component {
                     );
                 }
             }
-            if ($child instanceof Sabre_VObject_Property) {
+            if ($child instanceof Property) {
                 if (!in_array($child->name, $allowedProperties)) {
                     $warnings[] = array(
                         'level' => 2,

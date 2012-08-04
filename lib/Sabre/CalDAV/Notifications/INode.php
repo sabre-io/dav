@@ -1,9 +1,11 @@
 <?php
 
+namespace Sabre\CalDAV\Notifications;
+
 /**
  * This node represents a single notification.
  *
- * The signature is mostly identical to that of Sabre_DAV_IFile, but the get() method 
+ * The signature is mostly identical to that of Sabre\DAV\IFile, but the get() method 
  * MUST return an xml document that matches the requirements of the 
  * 'caldav-notifications.txt' spec.
  *
@@ -16,13 +18,13 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CalDAV_Notifications_INode {
+interface INode {
 
     /**
      * This method must return an xml element, using the 
-     * Sabre_CalDAV_Notifications_INotificationType classes.
+     * Sabre\CalDAV\Notifications\INotificationType classes.
      * 
-     * @return Sabre_DAVNotification_INotificationType
+     * @return Sabre\CalDAV\Notifications\INotificationType
      */
     function getNotificationType();
 

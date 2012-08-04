@@ -39,7 +39,10 @@
 	* Fixed: Sabre_DAV_XMLUtil no longer returns empty $dom->childNodes
 	  if there is whitespace in $dom.
 
-1.6.4-stable (2012-??-??)
+1.6.5-stable (2012-??-??)
+	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
+
+1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on
 	  alarms, if an overridden event has it's alarm removed.
 	* Fixed: Compatibility for OS/X 10.8 iCal in the IMipHandler.
@@ -56,6 +59,8 @@
 	  exactly on the start of a time-range.
 	* Fixed: HTTP basic auth did not correctly deal with passwords containing
 	  colons on some servers.
+	* Fixed: Issue 228: DTEND is now non-inclusive for all-day events in the
+	  calendar-query REPORT and free-busy calculations.
 
 1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

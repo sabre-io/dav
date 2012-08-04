@@ -28,13 +28,13 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
                 'id' => 'calendar1',
                 'principaluri' => 'principals/admin',
                 'uri' => 'calendar1',
-                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet( array('VEVENT','VTODO','VJOURNAL') ),
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet( array('VEVENT','VTODO','VJOURNAL') ),
             ),
             array(
                 'id' => 'calendar2',
                 'principaluri' => 'principals/admin',
                 'uri' => 'calendar2',
-                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet( array('VTODO','VJOURNAL') ),
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet( array('VTODO','VJOURNAL') ),
             )
         );
 
@@ -223,7 +223,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileInvalidComponent() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar2/blabla.ics',
         ));
@@ -238,7 +238,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
     function testUpdateFileInvalidComponent() {
 
         $this->calBackend->createCalendarObject('calendar2','blabla.ics','foo');
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/calendars/admin/calendar2/blabla.ics',
         ));

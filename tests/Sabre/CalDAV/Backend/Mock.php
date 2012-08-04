@@ -2,6 +2,7 @@
 
 namespace Sabre\CalDAV\Backend;
 use Sabre\DAV;
+use Sabre\CalDAV;
 
 class Mock extends AbstractBackend implements NotificationSupport {
 
@@ -63,12 +64,12 @@ class Mock extends AbstractBackend implements NotificationSupport {
      */
     function createCalendar($principalUri,$calendarUri,array $properties) {
 
-        $id = Sabre_DAV_UUIDUtil::getUUID();
+        $id = DAV\UUIDUtil::getUUID();
         $this->calendars[] = array_merge(array(
             'id' => $id,
             'principaluri' => $principalUri,
             'uri' => $calendarUri,
-            '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+            '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
         ), $properties);
 
         return $id;
@@ -248,7 +249,7 @@ class Mock extends AbstractBackend implements NotificationSupport {
      * Returns a list of notifications for a given principal url.
      *
      * The returned array should only consist of implementations of
-     * Sabre_CalDAV_Notifications_INotificationType.
+     * Sabre\CalDAV\Notifications\INotificationType.
      *
      * @param string $principalUri
      * @return array
@@ -268,12 +269,12 @@ class Mock extends AbstractBackend implements NotificationSupport {
      * This may be called by a client once it deems a notification handled.
      *
      * @param string $principalUri
-     * @param Sabre_CalDAV_Notifications_INotificationType $notification
+     * @param Sabre\CalDAV\Notifications\INotificationType $notification
      * @return void
      */
-    public function deleteNotification($principalUri, Sabre_CalDAV_Notifications_INotificationType $notification) {
+    public function deleteNotification($principalUri, Sabre\CalDAV\Notifications\INotificationType $notification) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('This doesn\'t work!');
+        throw new DAV\Exception\NotImplemented('This doesn\'t work!');
 
     }
 

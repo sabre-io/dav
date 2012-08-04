@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\HTTP;
+
 /**
  * This unittest is created to check if the time-range filter is working correctly with all-day-events
  *
@@ -7,7 +10,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Issue228Test extends Sabre_DAVServerTest {
+class Issue228Test extends Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
 
@@ -41,7 +44,7 @@ END:VCALENDAR
 
     function testIssue228() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',

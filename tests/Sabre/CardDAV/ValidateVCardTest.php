@@ -87,7 +87,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileNoUID() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));

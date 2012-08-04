@@ -238,7 +238,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>

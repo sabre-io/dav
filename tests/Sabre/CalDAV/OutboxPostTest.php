@@ -253,7 +253,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
                     'Reply-To: user1.sabredav@sabredav.org',
                     'From: server@example.org',
                     'Content-Type: text/calendar; method=REQUEST; charset=utf-8',
-                    'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY,
+                    'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY,
                 ),
            )
         ), $handler->getSentEmails());
@@ -262,7 +262,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
     function testSuccessRequestUpperCased() {
 
-        $req = new Sabre_HTTP_Request(array(
+        $req = new HTTP\Request(array(
             'REQUEST_METHOD'  => 'POST',
             'REQUEST_URI'     => '/calendars/user1/outbox',
             'HTTP_ORIGINATOR' => 'MAILTO:user1.sabredav@sabredav.org',
@@ -280,7 +280,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
         $req->setBody(implode("\r\n",$body));
 
-        $handler = new Sabre_CalDAV_Schedule_IMip_Mock('server@example.org');
+        $handler = new Schedule\IMip\Mock('server@example.org');
 
         $this->caldavPlugin->setIMIPhandler($handler);
 

@@ -1,6 +1,11 @@
 <?php
 
-class Sabre_CalDAV_Notifications_Notification extends \PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Notifications\Notification;
+
+use Sabre\CalDAV;
+use Sabre\DAV;
+
+class SystemStatusTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider dataProvider
@@ -10,18 +15,18 @@ class Sabre_CalDAV_Notifications_Notification extends \PHPUnit_Framework_TestCas
         $this->assertEquals('foo', $notification->getId());
 
 
-        $dom = new DOMDocument('1.0','UTF-8');
+        $dom = new \DOMDocument('1.0','UTF-8');
         $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
         $dom->appendChild($elem);
-        $notification->serialize(new Sabre_DAV_Server(), $elem);
+        $notification->serialize(new DAV\Server(), $elem);
         $this->assertEquals($expected1, $dom->saveXML());
 
-        $dom = new DOMDocument('1.0','UTF-8');
+        $dom = new \DOMDocument('1.0','UTF-8');
         $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
         $dom->appendChild($elem);
-        $notification->serializeBody(new Sabre_DAV_Server(), $elem);
+        $notification->serializeBody(new DAV\Server(), $elem);
         $this->assertEquals($expected2, $dom->saveXML());
 
 
@@ -32,19 +37,19 @@ class Sabre_CalDAV_Notifications_Notification extends \PHPUnit_Framework_TestCas
         return array(
 
             array(
-                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo'),
+                new SystemStatus('foo'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="high"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="high"/></cs:root>' . "\n",
             ),
 
             array(
-                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo',Sabre_CalDAV_Notifications_Notification_SystemStatus::TYPE_MEDIUM,'bar'),
+                new SystemStatus('foo', SystemStatus::TYPE_MEDIUM,'bar'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"><cs:description>bar</cs:description></cs:systemstatus></cs:root>' . "\n",
             ),
 
             array(
-                new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo',Sabre_CalDAV_Notifications_Notification_SystemStatus::TYPE_LOW,null,'http://example.org/'),
+                new SystemStatus('foo', SystemStatus::TYPE_LOW,null,'http://example.org/'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"><d:href>http://example.org/</d:href></cs:systemstatus></cs:root>' . "\n",
             )

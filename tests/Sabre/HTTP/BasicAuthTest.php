@@ -68,7 +68,7 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase {
             'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode('admin:1234:5678'),
         );
 
-        $request = new Sabre_HTTP_Request($server);
+        $request = new Request($server);
         $this->basicAuth->setHTTPRequest($request);
 
         $userPass = $this->basicAuth->getUserPass();

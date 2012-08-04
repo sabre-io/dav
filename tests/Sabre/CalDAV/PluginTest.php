@@ -446,9 +446,9 @@ END:VCALENDAR';
         $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/outbox',$prop->getHref());
 
-        $this->assertArrayHasKey('{'.Sabre_CalDAV_Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
-        $prop = $props[0][200]['{'.Sabre_CalDAV_Plugin::NS_CALENDARSERVER .'}notification-URL'];
-        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
+        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
+        $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
+        $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/notifications/',$prop->getHref());
 
 
@@ -1034,19 +1034,19 @@ END:VCALENDAR';
     function testNotificationProperties() {
 
         $request = array(
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}notificationtype',
+            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
         );
         $result = array();
-        $notification = new Sabre_CalDAV_Notifications_Node(
+        $notification = new Notifications\Node(
             $this->caldavBackend,
-            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+            new Notifications\Notification\SystemStatus('foo')
         );
         $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
 
         $this->assertEquals(
             array(
                 200 => array(
-                    '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}notificationtype' => $notification->getNotificationType()
+                    '{' . Plugin::NS_CALENDARSERVER . '}notificationtype' => $notification->getNotificationType()
                 )
             ), $result);
 
@@ -1054,15 +1054,15 @@ END:VCALENDAR';
 
     function testNotificationGet() {
 
-        $notification = new Sabre_CalDAV_Notifications_Node(
+        $notification = new Notifications\Node(
             $this->caldavBackend,
-            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+            new Notifications\Notification\SystemStatus('foo')
         );
 
-        $server = new Sabre_DAV_Server(array($notification));
-        $caldav = new Sabre_CalDAV_Plugin();
+        $server = new DAV\Server(array($notification));
+        $caldav = new Plugin();
 
-        $httpResponse = new Sabre_HTTP_ResponseMock();
+        $httpResponse = new HTTP\ResponseMock();
         $server->httpResponse = $httpResponse;
 
         $server->addPlugin($caldav);

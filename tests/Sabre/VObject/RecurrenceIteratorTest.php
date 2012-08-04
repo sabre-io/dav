@@ -717,18 +717,18 @@ class RecurrenceIteratorTest extends \PHPUnit_Framework_TestCase {
      */
     function testYearlyLeapYear() {
 
-        $ev = new Sabre_VObject_Component('VEVENT');
+        $ev = new Component('VEVENT');
         $ev->UID = 'bla';
         $ev->RRULE = 'FREQ=YEARLY;COUNT=3';
-        $dtStart = new Sabre_VObject_Property_DateTime('DTSTART');
-        $dtStart->setDateTime(new DateTime('2012-02-29'),Sabre_VObject_Property_DateTime::UTC);
+        $dtStart = new Property\DateTime('DTSTART');
+        $dtStart->setDateTime(new DateTime('2012-02-29'),Property\DateTime::UTC);
 
         $ev->add($dtStart);
 
-        $vcal = Sabre_VObject_Component::create('VCALENDAR');
+        $vcal = Component::create('VCALENDAR');
         $vcal->add($ev);
 
-        $it = new Sabre_VObject_RecurrenceIterator($vcal,(string)$ev->uid);
+        $it = new RecurrenceIterator($vcal,(string)$ev->uid);
 
         $this->assertEquals('yearly', $it->frequency);
         $this->assertEquals(3, $it->count);

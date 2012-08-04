@@ -367,7 +367,7 @@ class ComponentTest extends \PHPUnit_Framework_TestCase {
 
         $prop4s=array('1', '2', '3', '4', '5', '6', '7', '8', '9', '10');
 
-        $comp = new Sabre_VObject_Component('VCARD');
+        $comp = new Component('VCARD');
         $comp->__set('SOMEPROP','FOO');
         $comp->__set('ANOTHERPROP','FOO');
         $comp->__set('THIRDPROP','FOO');

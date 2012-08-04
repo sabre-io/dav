@@ -48,7 +48,7 @@ class BasicAuth extends AbstractAuth {
 
         if (strpos(strtolower($auth),'basic')!==0) return false;
 
-        return explode(':', base64_decode(substr($auth, 6)));
+        return explode(':', base64_decode(substr($auth, 6)),2);
 
     }
 

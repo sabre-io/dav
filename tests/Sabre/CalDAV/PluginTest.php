@@ -28,8 +28,34 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function setup() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('No PDO SQLite support');
-        $this->caldavBackend = TestUtil::getBackend();
+        $this->caldavBackend = new Backend\Mock(array(
+            array(
+                'id' => 1,
+                'uri' => 'UUID-123467',
+                'principaluri' => 'principals/user1',
+                '{DAV:}displayname' => 'user1 calendar',
+                '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar description',
+                '{http://apple.com/ns/ical/}calendar-order' => '1',
+                '{http://apple.com/ns/ical/}calendar-color' => '#FF0000',
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+            ),
+            array(
+                'id' => 2,
+                'uri' => 'UUID-123468',
+                'principaluri' => 'principals/user1',
+                '{DAV:}displayname' => 'user1 calendar2',
+                '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar description',
+                '{http://apple.com/ns/ical/}calendar-order' => '1',
+                '{http://apple.com/ns/ical/}calendar-color' => '#FF0000',
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+            )
+        ), array(
+            1 => array(
+                'UUID-2345' => array(
+                    'calendardata' => TestUtil::getTestCalendarData(),
+                )
+            )
+        ));
         $principalBackend = new DAVACL\MockPrincipalBackend();
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-read',array('principals/user1'));
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-write',array('principals/user1'));
@@ -403,6 +429,7 @@ END:VCALENDAR';
             '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
         ));
 
         $this->assertArrayHasKey(0,$props);
@@ -419,6 +446,12 @@ END:VCALENDAR';
         $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/outbox',$prop->getHref());
 
+        $this->assertArrayHasKey('{'.Sabre_CalDAV_Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
+        $prop = $props[0][200]['{'.Sabre_CalDAV_Plugin::NS_CALENDARSERVER .'}notification-URL'];
+        $this->assertTrue($prop instanceof Sabre_DAV_Property_Href);
+        $this->assertEquals('calendars/user1/notifications/',$prop->getHref());
+
+
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
         $this->assertTrue($prop instanceof DAV\Property\HrefList);
@@ -433,6 +466,7 @@ END:VCALENDAR';
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
         $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
         $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+
 
     }
 
@@ -507,9 +541,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -569,9 +603,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -634,9 +668,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -693,9 +727,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -760,7 +794,7 @@ END:VCALENDAR';
             '<d:prop>' .
             '  <c:calendar-data>' .
             '     <c:expand start="20000101T000000Z" end="20101231T235959Z" />' .
-            '  </c:calendar-data>' . 
+            '  </c:calendar-data>' .
             '  <d:getetag />' .
             '</d:prop>' .
             '<c:filter>' .
@@ -782,9 +816,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -842,9 +876,9 @@ END:VCALENDAR';
 
         $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $xml = simplexml_load_string($this->response->body);
 
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
         $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
 
         $check = array(
@@ -996,4 +1030,60 @@ END:VCALENDAR';
         $this->assertEquals('HTTP/1.1 400 Bad request',$this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
     }
+
+    function testNotificationProperties() {
+
+        $request = array(
+            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}notificationtype',
+        );
+        $result = array();
+        $notification = new Sabre_CalDAV_Notifications_Node(
+            $this->caldavBackend,
+            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+        );
+        $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
+
+        $this->assertEquals(
+            array(
+                200 => array(
+                    '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}notificationtype' => $notification->getNotificationType()
+                )
+            ), $result);
+
+    }
+
+    function testNotificationGet() {
+
+        $notification = new Sabre_CalDAV_Notifications_Node(
+            $this->caldavBackend,
+            new Sabre_CalDAV_Notifications_Notification_SystemStatus('foo')
+        );
+
+        $server = new Sabre_DAV_Server(array($notification));
+        $caldav = new Sabre_CalDAV_Plugin();
+
+        $httpResponse = new Sabre_HTTP_ResponseMock();
+        $server->httpResponse = $httpResponse;
+
+        $server->addPlugin($caldav);
+
+        $caldav->beforeMethod('GET','foo');
+
+        $this->assertEquals('HTTP/1.1 200 OK', $httpResponse->status);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ), $httpResponse->headers);
+
+        $expected = 
+'<?xml version="1.0" encoding="UTF-8"?>
+<cs:notification xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">
+  <cs:systemstatus type="high"/>
+</cs:notification>
+';
+
+        $this->assertEquals($expected, $httpResponse->body);
+
+
+    }
+
 }

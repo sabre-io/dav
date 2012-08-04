@@ -14,7 +14,7 @@ namespace Sabre\CalDAV;
 class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\DAVACL\IACL {
 
     /**
-     * Sabre\CalDAV\Backend\AbstractBackend
+     * Sabre\CalDAV\Backend\BackendInterface
      *
      * @var Sabre\CalDAV\Backend\AbstractBackend
      */
@@ -37,11 +37,11 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     /**
      * Constructor
      *
-     * @param Sabre\CalDAV\Backend\AbstractBackend $caldavBackend
+     * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo
      * @param array $objectData
      */
-    public function __construct(Backend\AbstractBackend $caldavBackend,array $calendarInfo,array $objectData) {
+    public function __construct(Backend\BackendInterface $caldavBackend,array $calendarInfo,array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
 

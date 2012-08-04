@@ -6,5 +6,8 @@ CREATE TABLE locks (
     token VARCHAR(100),
     scope TINYINT,
     depth TINYINT,
-    uri text
+    uri VARCHAR(1000),
+    INDEX(token),
+    INDEX(uri)
 );
+

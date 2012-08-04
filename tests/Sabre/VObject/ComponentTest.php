@@ -342,11 +342,14 @@ class ComponentTest extends \PHPUnit_Framework_TestCase {
             new Component('VEVENT'),
             new Component('VTODO')
         );
-        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $comp->serialize());
+
+        $str = $comp->serialize();
+
+        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n", $str);
 
     }
 
-    function testSerializeOrder() {
+    function testSerializeOrderCompAndProp() {
         
         $comp = new Component('VCALENDAR');
         $comp->add(new Component('VEVENT'));
@@ -357,6 +360,32 @@ class ComponentTest extends \PHPUnit_Framework_TestCase {
         $str = $comp->serialize();
 
         $this->assertEquals("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPROP1:BLABLA\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $str);
+
+    }
+
+    function testAnotherSerializeOrderProp() {
+
+        $prop4s=array('1', '2', '3', '4', '5', '6', '7', '8', '9', '10');
+
+        $comp = new Sabre_VObject_Component('VCARD');
+        $comp->__set('SOMEPROP','FOO');
+        $comp->__set('ANOTHERPROP','FOO');
+        $comp->__set('THIRDPROP','FOO');
+        foreach ($prop4s as $prop4) {
+            $comp->add('PROP4', 'FOO '.$prop4);
+        }
+        $comp->__set('PROPNUMBERFIVE', 'FOO');
+        $comp->__set('PROPNUMBERSIX', 'FOO');
+        $comp->__set('PROPNUMBERSEVEN', 'FOO');
+        $comp->__set('PROPNUMBEREIGHT', 'FOO');
+        $comp->__set('PROPNUMBERNINE', 'FOO');
+        $comp->__set('PROPNUMBERTEN', 'FOO');
+        $comp->__set('VERSION','2.0');
+        $comp->__set('UID', 'FOO');
+
+        $str = $comp->serialize();
+
+        $this->assertEquals("BEGIN:VCARD\r\nVERSION:2.0\r\nSOMEPROP:FOO\r\nANOTHERPROP:FOO\r\nTHIRDPROP:FOO\r\nPROP4:FOO 1\r\nPROP4:FOO 2\r\nPROP4:FOO 3\r\nPROP4:FOO 4\r\nPROP4:FOO 5\r\nPROP4:FOO 6\r\nPROP4:FOO 7\r\nPROP4:FOO 8\r\nPROP4:FOO 9\r\nPROP4:FOO 10\r\nPROPNUMBERFIVE:FOO\r\nPROPNUMBERSIX:FOO\r\nPROPNUMBERSEVEN:FOO\r\nPROPNUMBEREIGHT:FOO\r\nPROPNUMBERNINE:FOO\r\nPROPNUMBERTEN:FOO\r\nUID:FOO\r\nEND:VCARD\r\n", $str);
 
     }
 

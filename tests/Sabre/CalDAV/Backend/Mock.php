@@ -3,15 +3,17 @@
 namespace Sabre\CalDAV\Backend;
 use Sabre\DAV;
 
-class Mock extends AbstractBackend {
+class Mock extends AbstractBackend implements NotificationSupport {
 
     private $calendarData;
     private $calendars;
+    private $notifications;
 
-    function __construct(array $calendars, array $calendarData) {
+    function __construct(array $calendars, array $calendarData, array $notifications = array()) {
 
         $this->calendars = $calendars;
         $this->calendarData = $calendarData;
+        $this->notifications = $notifications;
 
     }
 
@@ -61,7 +63,15 @@ class Mock extends AbstractBackend {
      */
     function createCalendar($principalUri,$calendarUri,array $properties) {
 
-        throw new Exception('Not implemented');
+        $id = Sabre_DAV_UUIDUtil::getUUID();
+        $this->calendars[] = array_merge(array(
+            'id' => $id,
+            'principaluri' => $principalUri,
+            'uri' => $calendarUri,
+            '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+        ), $properties);
+
+        return $id;
 
     }
 
@@ -115,7 +125,11 @@ class Mock extends AbstractBackend {
      */
     public function deleteCalendar($calendarId) {
 
-        throw new Exception('Not implemented');
+        foreach($this->calendars as $k=>$calendar) {
+            if ($calendar['id'] === $calendarId) {
+                unset($this->calendars[$k]);
+            }
+        }
 
     }
 
@@ -227,6 +241,39 @@ class Mock extends AbstractBackend {
 
         throw new Exception('Not implemented');
 
+
+    }
+
+    /**
+     * Returns a list of notifications for a given principal url.
+     *
+     * The returned array should only consist of implementations of
+     * Sabre_CalDAV_Notifications_INotificationType.
+     *
+     * @param string $principalUri
+     * @return array
+     */
+    public function getNotificationsForPrincipal($principalUri) {
+
+        if (isset($this->notifications[$principalUri])) {
+            return $this->notifications[$principalUri];
+        }
+        return array();
+
+    }
+
+    /**
+     * This deletes a specific notifcation.
+     *
+     * This may be called by a client once it deems a notification handled.
+     *
+     * @param string $principalUri
+     * @param Sabre_CalDAV_Notifications_INotificationType $notification
+     * @return void
+     */
+    public function deleteNotification($principalUri, Sabre_CalDAV_Notifications_INotificationType $notification) {
+
+        throw new Sabre_DAV_Exception_NotImplemented('This doesn\'t work!');
 
     }
 

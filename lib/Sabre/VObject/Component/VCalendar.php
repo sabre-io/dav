@@ -133,5 +133,110 @@ class VCalendar extends VObject\Component {
 
     } 
 
+    /**
+     * Validates the node for correctness.
+     * An array is returned with warnings.
+     *
+     * Every item in the array has the following properties:
+     *    * level - (number between 1 and 3 with severity information)
+     *    * message - (human readable message)
+     *    * node - (reference to the offending node)
+     * 
+     * @return array 
+     */
+    public function validate() {
+
+        $warnings = array();
+
+        $version = $this->select('VERSION');
+        if (count($version)!==1) {
+            $warnings[] = array(
+                'level' => 1,
+                'message' => 'The VERSION property must appear in the VCALENDAR component exactly 1 time',
+                'node' => $this,
+            );
+        } else {
+            if ((string)$this->VERSION !== '2.0') {
+                $warnings[] = array(
+                    'level' => 1,
+                    'message' => 'Only iCalendar version 2.0 as defined in rfc5545 is supported.',
+                    'node' => $this,
+                );
+            }
+        } 
+        $version = $this->select('PRODID');
+        if (count($version)!==1) {
+            $warnings[] = array(
+                'level' => 2,
+                'message' => 'The PRODID property must appear in the VCALENDAR component exactly 1 time',
+                'node' => $this,
+            );
+        }
+        if (count($this->CALSCALE) > 1) {
+            $warnings[] = array(
+                'level' => 2,
+                'message' => 'The CALSCALE property must not be specified more than once.',
+                'node' => $this,
+            );
+        }
+        if (count($this->METHOD) > 1) {
+            $warnings[] = array(
+                'level' => 2,
+                'message' => 'The METHOD property must not be specified more than once.',
+                'node' => $this,
+            );
+        }
+
+        $allowedComponents = array(
+            'VEVENT',
+            'VTODO',
+            'VJOURNAL',
+            'VFREEBUSY',
+            'VTIMEZONE',
+        );
+        $allowedProperties = array(
+            'PRODID',
+            'VERSION',
+            'CALSCALE',
+            'METHOD',
+        );
+        $componentsFound = 0;
+        foreach($this->children as $child) {
+            if($child instanceof Sabre_VObject_Component) {
+                $componentsFound++;
+                if (!in_array($child->name, $allowedComponents)) {
+                    $warnings[] = array(
+                        'level' => 1,
+                        'message' => 'The ' . $child->name . " component is not allowed in the VCALENDAR component",
+                        'node' => $this,
+                    );
+                }
+            }
+            if ($child instanceof Sabre_VObject_Property) {
+                if (!in_array($child->name, $allowedProperties)) {
+                    $warnings[] = array(
+                        'level' => 2,
+                        'message' => 'The ' . $child->name . " property is not allowed in the VCALENDAR component",
+                        'node' => $this,
+                    );
+                }
+            }
+        }
+
+        if ($componentsFound===0) {
+            $warnings[] = array(
+                'level' => 1,
+                'message' => 'An iCalendar object must have at least 1 component.',
+                'node' => $this,
+            );
+        }
+
+        return array_merge(
+            $warnings,
+            parent::validate()
+        );
+
+    }
+
 }
 

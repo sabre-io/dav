@@ -26,7 +26,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
     /**
      * CalDAV backend
      *
-     * @var Sabre\CalDAV\Backend\Abstract
+     * @var Sabre\CalDAV\Backend\BackendInterface
      */
     protected $caldavBackend;
 
@@ -41,10 +41,10 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
      * Constructor
      *
      * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
-     * @param Sabre\CalDAV\Backend\Abstract $caldavBackend
+     * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
      * @param mixed $userUri
      */
-    public function __construct(DAVACL\IPrincipalBackend $principalBackend, Backend\AbstractBackend $caldavBackend, $userUri) {
+    public function __construct(DAVACL\IPrincipalBackend $principalBackend, Backend\BackendInterface $caldavBackend, $userUri) {
 
         $this->principalBackend = $principalBackend;
         $this->caldavBackend = $caldavBackend;
@@ -176,6 +176,11 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
             $objs[] = new Calendar($this->principalBackend, $this->caldavBackend, $calendar);
         }
         $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
+
+        // We're adding a notifications node, if it's supported by the backend.
+        if ($this->caldavBackend instanceof Backend\NotificationSupport) {
+            $objs[] = new Notifications\Collection($this->caldavBackend, $this->principalInfo['uri']);
+        }
         return $objs;
 
     }

@@ -196,7 +196,6 @@ class ServerMKCOLTest extends AbstractServer {
 
     }
 
-
     /**
      * @depends testMKCOLIncorrectResourceType2
      */
@@ -228,6 +227,38 @@ class ServerMKCOLTest extends AbstractServer {
 
     }
 
+    /**
+     * @depends testMKCOLIncorrectResourceType2
+     */
+    function testMKCOLWhiteSpaceResourceType() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
+            'HTTP_CONTENT_TYPE' => 'application/xml',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('<?xml version="1.0"?>
+<mkcol xmlns="DAV:">
+  <set>
+    <prop>
+        <resourcetype>
+            <collection />
+        </resourcetype>
+    </prop>
+  </set>
+</mkcol>');
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Length' => '0',
+        ),$this->response->headers);
+
+        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+
+    }
 
     /**
      * @depends testMKCOLIncorrectResourceType2

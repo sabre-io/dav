@@ -3,5 +3,8 @@ php:
   - 5.3
   - 5.4
 
+before_script:
+  - mysql -e 'create database sabredav'
+
 script: phpunit --configuration tests/phpunit.xml
 

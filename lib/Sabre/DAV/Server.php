@@ -514,8 +514,8 @@ class Server {
         $node = $this->tree->getNodeForPath($uri,0);
 
         if (!$this->checkPreconditions(true)) return false;
+        if (!$node instanceof IFile) throw new Exception\NotImplemented('GET is only implemented on File objects');
 
-        if (!($node instanceof IFile)) throw new Exception\NotImplemented('GET is only implemented on File objects');
         $body = $node->get();
 
         // Converting string into stream, if needed.
@@ -2002,7 +2002,7 @@ class Server {
         if (!$body) return array();
 
         $dom = XMLUtil::loadDOMDocument($body);
-        $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
+        $elem = $dom->getElementsByTagNameNS('DAV:','propfind')->item(0);
         return array_keys(XMLUtil::parseProperties($elem));
 
     }

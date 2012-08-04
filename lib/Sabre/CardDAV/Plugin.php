@@ -160,8 +160,7 @@ class Plugin extends DAV\ServerPlugin {
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
-                // Taking out \r to not screw up the xml output
-                $returnedProperties[200][$addressDataProp] = str_replace("\r","", $val);
+                $returnedProperties[200][$addressDataProp] = $val;
 
             }
         }
@@ -276,7 +275,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
-        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
+        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
         $propertyList = array();
 
         foreach($hrefElems as $elem) {
@@ -362,6 +361,10 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($vobj->name !== 'VCARD') {
             throw new DAV\Exception\UnsupportedMediaType('This collection can only support vcard objects.');
+        }
+
+        if (!isset($vobj->UID)) {
+            throw new Sabre_DAV_Exception_BadRequest('Every vcard must have an UID.');
         }
 
     }

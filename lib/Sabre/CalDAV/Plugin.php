@@ -168,6 +168,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
         $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
         $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
+        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'));
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -178,6 +179,8 @@ class Plugin extends DAV\ServerPlugin {
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notifications';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\INode'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
 
@@ -201,7 +204,9 @@ class Plugin extends DAV\ServerPlugin {
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
-            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for'
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . self::NS_CALENDARSERVER . '}notification-URL',
+            '{' . self::NS_CALENDARSERVER . '}notificationtype'
 
         );
     }
@@ -386,7 +391,30 @@ class Plugin extends DAV\ServerPlugin {
 
             }
 
+            // notification-URL property
+            $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
+            if (($index = array_search($notificationUrl, $requestedProperties)) !== false) {
+                $principalId = $node->getName();
+                $calendarHomePath = 'calendars/' . $principalId . '/notifications/';
+                unset($requestedProperties[$index]);
+                $returnedProperties[200][$notificationUrl] = new DAV\Property\Href($calendarHomePath);
+            }
+
         } // instanceof IPrincipal
+
+        if ($node instanceof Notifications\INode) {
+
+            $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
+            if (($index = array_search($propertyName, $requestedProperties)) !== false) {
+
+                $returnedProperties[200][$propertyName] =
+                    $node->getNotificationType();
+
+                unset($requestedProperties[$index]);
+
+            }
+
+        } // instanceof Notifications_INode
 
 
         if ($node instanceof ICalendarObject) {
@@ -420,11 +448,11 @@ class Plugin extends DAV\ServerPlugin {
     public function calendarMultiGetReport($dom) {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
-        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
+        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
-        $xpath->registerNameSpace('dav','urn:DAV');
+        $xpath->registerNameSpace('dav','DAV:');
 
         $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
         if ($expand->length>0) {
@@ -654,7 +682,7 @@ class Plugin extends DAV\ServerPlugin {
         if (!$node instanceof ICalendarObject)
             return;
 
-        $this->validateICalendar($data);
+        $this->validateICalendar($data, $path);
 
     }
 
@@ -674,7 +702,49 @@ class Plugin extends DAV\ServerPlugin {
         if (!$parentNode instanceof Calendar)
             return;
 
-        $this->validateICalendar($data);
+        $this->validateICalendar($data, $path);
+
+    }
+
+    /**
+     * This event is triggered before any HTTP request is handled.
+     *
+     * We use this to intercept GET calls to notification nodes, and return the
+     * proper response.
+     * 
+     * @param string $method 
+     * @param string $path 
+     * @return void 
+     */
+    public function beforeMethod($method, $path) {
+
+        if ($method!=='GET') return;
+
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (DAV\Exception\NotFound $e) {
+            return;
+        }
+
+        if (!$node instanceof Notifications\INode)
+            return;
+
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+
+        $root = $dom->createElement('cs:notification');
+        foreach($this->server->xmlNamespaces as $namespace => $prefix) {
+            $root->setAttribute('xmlns:' . $prefix, $namespace);
+        }
+
+        $dom->appendChild($root);
+        $node->getNotificationType()->serializeBody($this->server, $root);
+
+        $this->server->httpResponse->setHeader('Content-Type','application/xml');
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->sendBody($dom->saveXML());
+
+        return false;
 
     }
 
@@ -684,9 +754,10 @@ class Plugin extends DAV\ServerPlugin {
      * An exception is thrown if it's not.
      *
      * @param resource|string $data
+     * @param string $path
      * @return void
      */
-    protected function validateICalendar(&$data) {
+    protected function validateICalendar(&$data, $path) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
@@ -710,6 +781,11 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\UnsupportedMediaType('This collection can only support iCalendar objects.');
         }
 
+        // Get the Supported Components for the target calendar
+        list($parentPath,$object) = DAV\URLUtil::splitPath($path);
+        $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
+        $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
+
         $foundType = null;
         $foundUID = null;
         foreach($vobj->getComponents() as $component) {
@@ -721,6 +797,9 @@ class Plugin extends DAV\ServerPlugin {
                 case 'VJOURNAL' :
                     if (is_null($foundType)) {
                         $foundType = $component->name;
+                        if (!in_array($foundType, $supportedComponents)) {
+                            throw new Exception\InvalidComponentType('This calendar only supports ' . implode(', ', $supportedComponents) . '. We found a ' . $foundType);
+                        }
                         if (!isset($component->UID)) {
                             throw new DAV\Exception\BadRequest('Every ' . $component->name . ' component must have an UID');
                         }
@@ -762,7 +841,7 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\BadRequest('The Recipient: header must be specified when making POST requests');
         }
 
-        if (!preg_match('/^mailto:(.*)@(.*)$/', $originator)) {
+        if (!preg_match('/^mailto:(.*)@(.*)$/i', $originator)) {
             throw new DAV\Exception\BadRequest('Originator must start with mailto: and must be valid email address');
         }
         $originator = substr($originator,7);
@@ -771,7 +850,7 @@ class Plugin extends DAV\ServerPlugin {
         foreach($recipients as $k=>$recipient) {
 
             $recipient = trim($recipient);
-            if (!preg_match('/^mailto:(.*)@(.*)$/', $recipient)) {
+            if (!preg_match('/^mailto:(.*)@(.*)$/i', $recipient)) {
                 throw new DAV\Exception\BadRequest('Recipients must start with mailto: and must be valid email address');
             }
             $recipient = substr($recipient, 7);
@@ -819,9 +898,10 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if (in_array($method, array('REQUEST','REPLY','ADD','CANCEL')) && $componentType==='VEVENT') {
-            $this->iMIPMessage($originator, $recipients, $vObject, $principal);
+            $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
             $this->server->httpResponse->sendStatus(200);
-            $this->server->httpResponse->sendBody('Messages sent');
+            $this->server->httpResponse->setHeader('Content-Type','application/xml');
+            $this->server->httpResponse->sendBody($this->generateScheduleResponse($result));
         } else {
             throw new DAV\Exception\NotImplemented('This iTIP method is currently not implemented');
         }
@@ -831,18 +911,82 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Sends an iMIP message by email.
      *
+     * This method must return an array with status codes per recipient.
+     * This should look something like:
+     *
+     * array(
+     *    'user1@example.org' => '2.0;Success'
+     * )
+     *
+     * Formatting for this status code can be found at:
+     * https://tools.ietf.org/html/rfc5545#section-3.8.8.3
+     *
+     * A list of valid status codes can be found at:
+     * https://tools.ietf.org/html/rfc5546#section-3.6
+     *
      * @param string $originator
      * @param array $recipients
      * @param Sabre\VObject\Component $vObject
      * @param string $principal Principal url
-     * @return void
+     * @return array 
      */
     protected function iMIPMessage($originator, array $recipients, VObject\Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
-            throw new DAV\Exception\NotImplemented('No iMIP handler is setup on this server.');
+            $resultStatus = '5.2;This server does not support this operation';
+        } else {
+            $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
+            $resultStatus = '2.0;Success';
         }
-        $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
+
+        $result = array();
+        foreach($recipients as $recipient) {
+            $result[$recipient] = $resultStatus;
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * Generates a schedule-response XML body
+     *
+     * The recipients array is a key->value list, containing email addresses
+     * and iTip status codes. See the iMIPMessage method for a description of
+     * the value.
+     *
+     * @param array $recipients
+     * @return string
+     */
+    public function generateScheduleResponse(array $recipients) {
+
+        $dom = new DOMDocument('1.0','utf-8');
+        $dom->formatOutput = true;
+        $xscheduleResponse = $dom->createElement('cal:schedule-response');
+        $dom->appendChild($xscheduleResponse);
+
+        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+
+            $xscheduleResponse->setAttribute('xmlns:' . $prefix, $namespace);
+
+        }
+
+        foreach($recipients as $recipient=>$status) {
+            $xresponse = $dom->createElement('cal:response');
+
+            $xrecipient = $dom->createElement('cal:recipient');
+            $xrecipient->appendChild($dom->createTextNode($recipient));
+            $xresponse->appendChild($xrecipient);
+
+            $xrequestStatus = $dom->createElement('cal:request-status');
+            $xrequestStatus->appendChild($dom->createTextNode($status));
+            $xresponse->appendChild($xrequestStatus);
+
+            $xscheduleResponse->appendChild($xresponse);
+
+        }
+
+        return $dom->saveXML();
 
     }
 

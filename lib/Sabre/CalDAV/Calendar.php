@@ -26,7 +26,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
     /**
      * CalDAV backend
      *
-     * @var \Sabre\CalDAV\Backend\Abstract
+     * @var Sabre\CalDAV\Backend\BackendInterface
      */
     protected $caldavBackend;
 
@@ -40,11 +40,10 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
     /**
      * Constructor
      *
-     * @param \Sabre\DAVACL\IPrincipalBackend $principalBackend
-     * @param \Sabre\CalDAV\Backend\Abstract $caldavBackend
+     * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(\Sabre\DAVACL\IPrincipalBackend $principalBackend, Backend\AbstractBackend $caldavBackend, $calendarInfo) {
+    public function __construct(\Sabre\DAVACL\IPrincipalBackend $principalBackend, Backend\BackendInterface $caldavBackend, $calendarInfo) {
 
         $this->caldavBackend = $caldavBackend;
         $this->principalBackend = $principalBackend;

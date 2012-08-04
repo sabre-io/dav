@@ -142,7 +142,7 @@ class Response extends DAV\Property implements IHref {
                 if (is_scalar($propertyValue)) {
                     $text = $document->createTextNode($propertyValue);
                     $currentProperty->appendChild($text);
-                } elseif ($propertyValue instanceof DAV\Property) {
+                } elseif ($propertyValue instanceof DAV\PropertyInterface) {
                     $propertyValue->serialize($server,$currentProperty);
                 } elseif (!is_null($propertyValue)) {
                     throw new DAV\Exception('Unknown property value type: ' . gettype($propertyValue) . ' for property: ' . $propertyName);

@@ -34,6 +34,23 @@ abstract class Node implements \IteratorAggregate, \ArrayAccess, \Countable {
      */
     public $parent = null;
 
+    /**
+     * Validates the node for correctness.
+     * An array is returned with warnings.
+     *
+     * Every item in the array has the following properties:
+     *    * level - (number between 1 and 3 with severity information)
+     *    * message - (human readable message)
+     *    * node - (reference to the offending node)
+     *
+     * @return array
+     */
+    public function validate() {
+
+        return array();
+
+    }
+
     /* {{{ IteratorAggregator interface */
 
     /**

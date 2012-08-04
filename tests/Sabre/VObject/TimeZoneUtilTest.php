@@ -20,7 +20,7 @@ class TimezoneUtilTest extends \PHPUnit_Framework_TestCase {
             function($value) {
                 return array($value);
             },
-            TimezoneUtil::$map
+            TimeZoneUtil::$map
         );
 
     }

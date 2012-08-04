@@ -71,19 +71,34 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
-        $request->setBody("BEGIN:VCARD\r\nEND:VCARD\r\n");
+        $request->setBody("BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n");
 
         $response = $this->request($request);
 
         $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $expected = array(
             'uri'          => 'blabla.vcf',
-            'carddata' => "BEGIN:VCARD\r\nEND:VCARD\r\n",
+            'carddata' => "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n",
         );
 
         $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1','blabla.vcf'));
 
     }
+
+    function testCreateFileNoUID() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
+        ));
+        $request->setBody("BEGIN:VCARD\r\nEND:VCARD\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
 
     function testCreateFileVCalendar() {
 
@@ -120,7 +135,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
-        $body = "BEGIN:VCARD\r\nEND:VCARD\r\n";
+        $body = "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n";
         $request->setBody($body);
 
         $response = $this->request($request);

@@ -272,7 +272,7 @@ class Mock extends AbstractBackend implements NotificationSupport {
      * @param Sabre\CalDAV\Notifications\INotificationType $notification
      * @return void
      */
-    public function deleteNotification($principalUri, Sabre\CalDAV\Notifications\INotificationType $notification) {
+    public function deleteNotification($principalUri, CalDAV\Notifications\INotificationType $notification) {
 
         throw new DAV\Exception\NotImplemented('This doesn\'t work!');
 

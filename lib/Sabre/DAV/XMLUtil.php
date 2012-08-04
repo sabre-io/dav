@@ -97,7 +97,7 @@ class XMLUtil {
         // Clearing any previous errors
         libxml_clear_errors();
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
 
         // We don't generally care about any whitespace
         $dom->preserveWhiteSpace = false;

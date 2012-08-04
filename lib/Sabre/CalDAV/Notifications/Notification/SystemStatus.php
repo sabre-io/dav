@@ -81,7 +81,7 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre\DAV\Server $server, \DOMElement $node) {
+    public function serialize(DAV\Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :

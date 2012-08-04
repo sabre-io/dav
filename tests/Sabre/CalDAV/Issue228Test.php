@@ -10,7 +10,7 @@ use Sabre\HTTP;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Issue228Test extends Sabre\DAVServerTest {
+class Issue228Test extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
 

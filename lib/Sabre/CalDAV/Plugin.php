@@ -729,7 +729,7 @@ class Plugin extends DAV\ServerPlugin {
         if (!$node instanceof Notifications\INode)
             return;
 
-        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
 
         $root = $dom->createElement('cs:notification');
@@ -960,7 +960,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function generateScheduleResponse(array $recipients) {
 
-        $dom = new DOMDocument('1.0','utf-8');
+        $dom = new \DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
         $xscheduleResponse = $dom->createElement('cal:schedule-response');
         $dom->appendChild($xscheduleResponse);

@@ -14,6 +14,7 @@
 	  only used for informational purposes.
 	* BC Break: The DAV: namespace is no longer converted to urn:DAV. This was
 	  a workaround for a bug in older PHP versions (pre-5.3).
+	* Changed: The Sabre_VObject library now spawned into it's own project!
 	* New feature: Support for caldav notifications!
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
@@ -33,8 +34,6 @@
 	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
 	* Fixed: Rejecting calendar objects if they are not in the
 	  supported-calendar-component list. (thanks Armin!)
-	* Fixed: Workaround for 10.8 Mountain Lion vCards, as it needs \r line
-	  endings to parse them correctly.
 	* Fixed: Issue 219: serialize() now reorders correctly.
 	* Fixed: Sabre_DAV_XMLUtil no longer returns empty $dom->childNodes
 	  if there is whitespace in $dom.

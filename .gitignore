@@ -13,3 +13,5 @@ tmpdata
 tests/temp
 tests/.sabredav
 *.swp
+vendor
+composer.lock

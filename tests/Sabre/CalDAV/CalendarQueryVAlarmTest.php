@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
 
     /**
@@ -8,16 +10,16 @@ class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
      */
     function testValarm() {
 
-        $vevent = Sabre_VObject_Component::create('VEVENT');
+        $vevent = VObject\Component::create('VEVENT');
         $vevent->RRULE = 'FREQ=MONTHLY';
         $vevent->DTSTART = '20120101T120000Z';
         $vevent->UID = 'bla';
 
-        $valarm = Sabre_VObject_Component::create('VALARM');
+        $valarm = VObject\Component::create('VALARM');
         $valarm->TRIGGER = '-P15D';
         $vevent->add($valarm);
 
-        $vcalendar = Sabre_VObject_Component::create('VCALENDAR');
+        $vcalendar = VObject\Component::create('VCALENDAR');
         $vcalendar->add($vevent);
 
         $filter = array(
@@ -52,16 +54,16 @@ class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
 
 
         // A limited recurrence rule, should return false
-        $vevent = Sabre_VObject_Component::create('VEVENT');
+        $vevent = VObject\Component::create('VEVENT');
         $vevent->RRULE = 'FREQ=MONTHLY;COUNT=1';
         $vevent->DTSTART = '20120101T120000Z';
         $vevent->UID = 'bla';
 
-        $valarm = Sabre_VObject_Component::create('VALARM');
+        $valarm = VObject\Component::create('VALARM');
         $valarm->TRIGGER = '-P15D';
         $vevent->add($valarm);
 
-        $vcalendar = Sabre_VObject_Component::create('VCALENDAR');
+        $vcalendar = VObject\Component::create('VCALENDAR');
         $vcalendar->add($vevent);
 
         $this->assertFalse($validator->validate($vcalendar, $filter));
@@ -69,15 +71,15 @@ class Sabre_CalDAV_CalendarQueryVAlarmTest extends PHPUnit_Framework_TestCase {
 
     function testAlarmWayBefore() {
 
-        $vevent = Sabre_VObject_Component::create('VEVENT');
+        $vevent = VObject\Component::create('VEVENT');
         $vevent->DTSTART = '20120101T120000Z';
         $vevent->UID = 'bla';
 
-        $valarm = Sabre_VObject_Component::create('VALARM');
+        $valarm = VObject\Component::create('VALARM');
         $valarm->TRIGGER = '-P2W1D';
         $vevent->add($valarm);
 
-        $vcalendar = Sabre_VObject_Component::create('VCALENDAR');
+        $vcalendar = VObject\Component::create('VCALENDAR');
         $vcalendar->add($vevent);
 
         $filter = array(

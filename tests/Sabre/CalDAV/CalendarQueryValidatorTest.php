@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 class Sabre_CalDAV_CalendarQueryValidatorTest extends PHPUnit_Framework_TestCase {
 
     /**
@@ -19,7 +21,7 @@ class Sabre_CalDAV_CalendarQueryValidatorTest extends PHPUnit_Framework_TestCase
             'time-range' => null,
         );
 
-        $vObject = Sabre_VObject_Reader::read($icalObject);
+        $vObject = VObject\Reader::read($icalObject);
 
         switch($outcome) {
             case 0 :
@@ -31,7 +33,7 @@ class Sabre_CalDAV_CalendarQueryValidatorTest extends PHPUnit_Framework_TestCase
             case -1 :
                 try {
                     $validator->validate($vObject, $filters);
-                } catch (Sabre_DAV_Exception $e) {
+                } catch (Exception $e) {
                     // Success
                 }
                 break;

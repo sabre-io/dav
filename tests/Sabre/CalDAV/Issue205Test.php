@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * This unittest is created to check if a VALARM TRIGGER of PT0S is supported
  *
@@ -86,7 +88,7 @@ END:VCALENDAR
         );
         $body = str_replace('&#13;','',$body);
 
-        $vObject = Sabre_VObject_Reader::read($body);
+        $vObject = VObject\Reader::read($body);
 
         $this->assertEquals(1, count($vObject->VEVENT));
 

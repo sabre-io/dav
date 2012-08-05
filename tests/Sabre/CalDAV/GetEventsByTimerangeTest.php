@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * This unittest is created to check if queries for time-range include the start timestamp or not
  *
@@ -82,7 +84,7 @@ END:VCALENDAR
         );
         $body = str_replace('&#13;','',$body);
 
-        $vObject = Sabre_VObject_Reader::read($body);
+        $vObject = VObject\Reader::read($body);
 
         // We expect 1 event
         $this->assertEquals(1, count($vObject->VEVENT), 'We got 0 events instead of 1. Output: ' . $body);

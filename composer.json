@@ -1,21 +1,30 @@
 {
-    "name": "evert/sabredav",
+    "name": "sabre/dav",
     "type": "library",
     "description": "WebDAV Framework for PHP",
     "keywords": ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],
     "homepage": "http://code.google.com/p/sabredav/",
-    "license": "New BSD License",
+    "license" : "BSD-3-Clause",
     "authors": [
         {
             "name": "Evert Pot",
             "email": "evert@rooftopsolutions.nl",
-            "homepage" : "http://www.rooftopsolutions.nl/"
+            "homepage" : "http://www.rooftopsolutions.nl/",
+            "role" : "Developer"
         }
     ],
     "require": {
-        "php": ">=5.3.1"
+        "php": ">=5.3.1",
+        "sabre/vobject" : "master-dev"
+    },
+    "provide" : { 
+        "evert/sabredav" : "2.0.0" 
     },
     "autoload": {
         "psr-0": { "Sabre": "lib/" }
+    },
+    "support" : {
+        "forum" : "https://groups.google.com/group/sabredav-discuss",
+        "source" : "https://github.com/evert/sabredav"
     }
 }

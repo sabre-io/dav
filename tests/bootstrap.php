@@ -4,7 +4,7 @@ define('SABRE_MYSQLDSN','mysql:host=127.0.0.1;dbname=sabredav');
 define('SABRE_MYSQLUSER','root');
 define('SABRE_MYSQLPASS','');
 
-set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
+set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATOR . get_include_path());
 
 include __DIR__ . '/../vendor/autoload.php';
 include 'Sabre/DAVServerTest.php';

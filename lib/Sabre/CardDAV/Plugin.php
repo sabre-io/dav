@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * CardDAV plugin
  *
@@ -345,9 +347,9 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         try {
 
-            $vobj = Sabre_VObject_Reader::read($data);
+            $vobj = VObject\Reader::read($data);
 
-        } catch (Sabre_VObject_ParseException $e) {
+        } catch (VObject\ParseException $e) {
 
             throw new Sabre_DAV_Exception_UnsupportedMediaType('This resource only supports valid vcard data. Parse error: ' . $e->getMessage());
 
@@ -441,7 +443,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function validateFilters($vcardData, array $filters, $test) {
 
-        $vcard = Sabre_VObject_Reader::read($vcardData);
+        $vcard = VObject\Reader::read($vcardData);
 
         if (!$filters) return true;
 

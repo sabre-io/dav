@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * CalDAV plugin
  *
@@ -456,8 +458,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if(!$start || !$end) {
                 throw new Sabre_DAV_Exception_BadRequest('The "start" and "end" attributes are required for the CALDAV:expand element');
             }
-            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
-            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
+            $start = VObject\DateTimeParser::parseDateTime($start);
+            $end = VObject\DateTimeParser::parseDateTime($end);
 
             if ($end <= $start) {
                 throw new Sabre_DAV_Exception_BadRequest('The end-date must be larger than the start-date in the expand element.');
@@ -476,7 +478,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             list($objProps) = $this->server->getPropertiesForPath($uri,$properties);
 
             if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
-                $vObject = Sabre_VObject_Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
+                $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
                 $vObject->expand($start, $end);
                 $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
             }
@@ -543,7 +545,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (isset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) {
 
                 $validator = new Sabre_CalDAV_CalendarQueryValidator();
-                $vObject = Sabre_VObject_Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                $vObject = VObject\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                 if ($validator->validate($vObject,$parser->filters)) {
 
                     // If the client didn't require the calendar-data property,
@@ -577,7 +579,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 if ($parser->expand) {
                     // We need to do some post-processing
-                    $vObject = Sabre_VObject_Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
+                    $vObject = VObject\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                     $vObject->expand($parser->expand['start'], $parser->expand['end']);
                     $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                 }
@@ -617,10 +619,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
         if ($start) {
-            $start = Sabre_VObject_DateTimeParser::parseDateTime($start);
+            $start = VObject\DateTimeParser::parseDateTime($start);
         }
         if ($end) {
-            $end = Sabre_VObject_DateTimeParser::parseDateTime($end);
+            $end = VObject\DateTimeParser::parseDateTime($end);
         }
 
         if (!$start && !$end) {
@@ -647,7 +649,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             return $obj;
         }, $calendar->getChildren());
 
-        $generator = new Sabre_VObject_FreeBusyGenerator();
+        $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
         $result = $generator->getResult();
@@ -763,9 +765,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         try {
 
-            $vobj = Sabre_VObject_Reader::read($data);
+            $vobj = VObject\Reader::read($data);
 
-        } catch (Sabre_VObject_ParseException $e) {
+        } catch (VObject\ParseException $e) {
 
             throw new Sabre_DAV_Exception_UnsupportedMediaType('This resource only supports valid iCalendar 2.0 data. Parse error: ' . $e->getMessage());
 
@@ -868,8 +870,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         try {
-            $vObject = Sabre_VObject_Reader::read($this->server->httpRequest->getBody(true));
-        } catch (Sabre_VObject_ParseException $e) {
+            $vObject = VObject\Reader::read($this->server->httpRequest->getBody(true));
+        } catch (VObject\ParseException $e) {
             throw new Sabre_DAV_Exception_BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
         }
 
@@ -920,10 +922,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $originator
      * @param array $recipients
-     * @param Sabre_VObject_Component $vObject
+     * @param Sabre\VObject\Component $vObject
      * @return array
      */
-    protected function iMIPMessage($originator, array $recipients, Sabre_VObject_Component $vObject, $principal) {
+    protected function iMIPMessage($originator, array $recipients, VObject\Component $vObject, $principal) {
 
         if (!$this->imipHandler) {
             $resultStatus = '5.2;This server does not support this operation';

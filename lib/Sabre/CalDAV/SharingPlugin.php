@@ -154,8 +154,8 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             if (isset($properties[404][$propName])) {
                 unset($properties[404][$propName]);
                 $properties[200][$propName] = new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
-            } 
-            
+            }
+
         }
 
     }
@@ -227,66 +227,96 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
         $documentType = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
-        // We're only handling 'share' documents
-        if ($documentType === '{http://calendarserver.org/ns/}share') {
+        switch($documentType) {
+            // Dealing with the 'share' document, which modified invitees on a
+            // calendar.
+            case '{http://calendarserver.org/ns/}share' :
 
-            // We can only deal with IShareableCalendar objects
-            if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
-                return;
-            }
+                // We can only deal with IShareableCalendar objects
+                if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                    return;
+                }
 
-            // Getting ACL info
-            $acl = $this->server->getPlugin('acl');
+                // Getting ACL info
+                $acl = $this->server->getPlugin('acl');
 
-            // If there's no ACL support, we allow everything
-            if ($acl) {
-                $acl->checkPrivileges($uri, '{DAV:}write');
-            }
+                // If there's no ACL support, we allow everything
+                if ($acl) {
+                    $acl->checkPrivileges($uri, '{DAV:}write');
+                }
 
-            $mutations = $this->parseShareRequest($dom);
+                $mutations = $this->parseShareRequest($dom);
 
-            $node->updateShares($mutations[0], $mutations[1]);
+                $node->updateShares($mutations[0], $mutations[1]);
 
-            $this->server->httpResponse->sendStatus(200);
-            // Adding this because sending a response body may cause issues, 
-            // and I wanted some type of indicator the response was handled.
-            $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                $this->server->httpResponse->sendStatus(200);
+                // Adding this because sending a response body may cause issues,
+                // and I wanted some type of indicator the response was handled.
+                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
 
-            // Breaking the event chain
-            return false;
+                // Breaking the event chain
+                return false;
 
-        } elseif ($documentType === '{http://calendarserver.org/ns/}invite-reply') {
+            // The invite-reply document is sent when the user replies to an
+            // invitation of a calendar share.
+            case '{http://calendarserver.org/ns/}invite-reply' :
 
-            // This only works on the calendar-home-root node.
-            if (!$node instanceof Sabre_CalDAV_UserCalendars) {
-                return;
-            }
+                // This only works on the calendar-home-root node.
+                if (!$node instanceof Sabre_CalDAV_UserCalendars) {
+                    return;
+                }
 
-            // Getting ACL info
-            $acl = $this->server->getPlugin('acl');
+                // Getting ACL info
+                $acl = $this->server->getPlugin('acl');
 
-            // If there's no ACL support, we allow everything
-            if ($acl) {
-                $acl->checkPrivileges($uri, '{DAV:}write');
-            }
+                // If there's no ACL support, we allow everything
+                if ($acl) {
+                    $acl->checkPrivileges($uri, '{DAV:}write');
+                }
 
-            $message = $this->parseInviteReplyRequest($dom);
+                $message = $this->parseInviteReplyRequest($dom);
 
-            $node->shareReply(
-                $message['href'],
-                $message['status'],
-                $message['calendarUri'],
-                $message['inReplyTo'],
-                $message['summary']
-            );
+                $node->shareReply(
+                    $message['href'],
+                    $message['status'],
+                    $message['calendarUri'],
+                    $message['inReplyTo'],
+                    $message['summary']
+                );
 
-            $this->server->httpResponse->sendStatus(200);
-            // Adding this because sending a response body may cause issues, 
-            // and I wanted some type of indicator the response was handled.
-            $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                $this->server->httpResponse->sendStatus(200);
+                // Adding this because sending a response body may cause issues,
+                // and I wanted some type of indicator the response was handled.
+                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
 
-            // Breaking the event chain
-            return false;
+                // Breaking the event chain
+                return false;
+
+            case '{http://calendarserver.org/ns/}publish-calendar' :
+
+                // We can only deal with IShareableCalendar objects
+                if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                    return;
+                }
+
+                // Getting ACL info
+                $acl = $this->server->getPlugin('acl');
+
+                // If there's no ACL support, we allow everything
+                if ($acl) {
+                    $acl->checkPrivileges($uri, '{DAV:}write');
+                }
+
+                $node->publishCalendar();
+
+                // iCloud sends back the 202, so we will too.
+                $this->server->httpResponse->sendStatus(202);
+
+                // Adding this because sending a response body may cause issues,
+                // and I wanted some type of indicator the response was handled.
+                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                break;
+
 
         }
 

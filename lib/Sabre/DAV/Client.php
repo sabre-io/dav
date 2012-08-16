@@ -30,6 +30,16 @@ class Sabre_DAV_Client {
      *
      * @var array
      */
+	static $defaultCurlSettings=array(
+		CURLOPT_RETURNTRANSFER => true,
+		// Return headers as part of the response
+		CURLOPT_HEADER => true,
+		// Automatically follow redirects
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_MAXREDIRS => 5,
+		/*CURLOPT_SSL_VERIFYHOST =>0,
+		CURLOPT_SSL_VERIFYPEER =>0,*/
+	);
     public $propertyMap = array();
 
     protected $baseUri;
@@ -99,27 +109,22 @@ class Sabre_DAV_Client {
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre_DAV_Property_ResourceType';
 		
+		static::initCurl($settings['curl']);
+    }
+	
+	protected function initCurl(&$settings){
 		$this->ch=curl_init();
 		if (!$this->ch) {
             throw new Sabre_DAV_Exception('[CURL] unable to initialize curl handle');
         }
-		$curlSettings = array(
-            CURLOPT_RETURNTRANSFER => true,
-            // Return headers as part of the response
-            CURLOPT_HEADER => true,
-            // Automatically follow redirects
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
-			/*CURLOPT_SSL_VERIFYHOST =>0,
-			CURLOPT_SSL_VERIFYPEER =>0,*/
-        );
-		if (isset($settings['curl'])){
-			$curlSettings+=$settings['curl'];
-			unset($settings['curl']);
+		$curlSettings = static::$defaultCurlSettings;
+		if (isset($settings)){
+			$curlSettings+=$settings;
+			unset($settings);
 		}
 		curl_setopt_array($this->ch, $curlSettings);
 		unset($curlSettings);
-    }
+	}
 
     /**
      * Does a PROPFIND request

@@ -441,12 +441,12 @@ class Sabre_DAV_Client {
 					throw new Sabre_DAV_Exception('Upload Error : file ' . $file . ' doesnt exist');
 				}
 				if(!$remoteName)$remoteName=basename($file);
-				new dBug($url.$remoteName);
+				//new dBug($url.$remoteName);
 				return $this->request('PUT', $url.$remoteName, array("file"=>'@'.$file));
 			break;
 			case 1:
 				if(!$remoteName)throw new Sabre_DAV_Exception('You MUST specify $remoteName if you upload blob');
-				new dBug($url.$remoteName);
+				//new dBug($url.$remoteName);
 				return $this->request('PUT', $url.$remoteName, $file);
 			break;
 			default:

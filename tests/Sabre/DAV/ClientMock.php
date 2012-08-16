@@ -7,9 +7,9 @@ class Sabre_DAV_ClientMock extends Sabre_DAV_Client {
     public $url;
     public $curlSettings;
 
-    protected function curlRequest($url, $curlSettings) {
+    protected function curlRequest($curlSettings) {
 
-        $this->url = $url;
+        $this->url = $curlSettings[CURLOPT_URL];
         $this->curlSettings = $curlSettings;
         return $this->response;
 

@@ -790,22 +790,22 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
     }
 	function testPuttingString() {
 		$webdav = new Sabre_DAV_ClientMock(array(
-			'baseUri' => 'http://example.org/foo/bar/',
+			'baseUri' => 'http://example.org/foo/',
 		));
 		$str=sha1(rand());
-		$webdav->put($str,$dir,'test.txt',1);
-		$res=$webdav->request('GET', $dir.'test.txt');
+		$webdav->put($str,'bar/','test.txt',1);
+		$res=$webdav->request('GET', 'bar/test.txt');
 		$this->assertEquals($str, $res['body']);
-		$webdav->request('DELETE', $dir.'test.txt');
+		$webdav->request('DELETE', 'bar/test.txt');
     }
 	function testPuttingFile() {
 		$webdav = new Sabre_DAV_ClientMock(array(
-			'baseUri' => 'http://example.org/foo/bar/',
+			'baseUri' => 'http://example.org/foo/',
 		));
 		$str=sha1(rand());
 		$filename=__DIR__.'/'.'test.txt';
 		file_put_contents($filename,$str);
-		$webdav->put($filename,$dir,'test.txt');
+		$webdav->put($filename,"bar/",'test.txt');
 		unlink($filename);
 		$res=$webdav->request('GET', $dir.'test.txt');
 		$this->assertEquals($str, $res['body']);

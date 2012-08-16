@@ -355,7 +355,7 @@ class Sabre_DAV_Client {
             $curlInfo,
             $curlErrNo,
             $curlError
-        ) = $this->curlRequest($url, $curlSettings);
+        ) = $this->curlRequest($curlSettings);
 
         $headerBlob = substr($response, 0, $curlInfo['header_size']);
         $response = substr($response, $curlInfo['header_size']);
@@ -465,7 +465,7 @@ class Sabre_DAV_Client {
      * @param array $settings
      * @return array
      */
-    protected function curlRequest($url, $settings) {
+    protected function curlRequest($settings) {
 
         curl_setopt_array($this->ch, $settings);
 

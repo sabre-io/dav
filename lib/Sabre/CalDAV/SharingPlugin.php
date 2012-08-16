@@ -307,7 +307,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                     $acl->checkPrivileges($uri, '{DAV:}write');
                 }
 
-                $node->publishCalendar();
+                $node->publish();
 
                 // iCloud sends back the 202, so we will too.
                 $this->server->httpResponse->sendStatus(202);

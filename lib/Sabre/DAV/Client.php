@@ -100,7 +100,7 @@ class Sabre_DAV_Client {
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre_DAV_Property_ResourceType';
 		
 		$this->ch=curl_init();
-		if ($this->ch) {
+		if (!$this->ch) {
             throw new Sabre_DAV_Exception('[CURL] unable to initialize curl handle');
         }
 		$curlSettings = array(

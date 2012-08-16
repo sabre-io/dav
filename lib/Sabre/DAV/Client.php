@@ -289,6 +289,9 @@ class Sabre_DAV_Client {
             // Automatically follow redirects
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
+    		CURLOPT_SSL_VERIFYHOST =>0,
+			CURLOPT_SSL_VERIFYPEER =>0,
+			
         );
 
         switch ($method) {
@@ -407,7 +410,15 @@ class Sabre_DAV_Client {
         return $response;
 
     }
-
+	
+	public function upload($url='/',$fileName,$remoteName=''){
+		if(!file_exists($fileName)){
+			throw new Sabre_DAV_Exception('Upload Error : file ' . $fileName . ' doesnt exist');
+		}
+		if(!$remoteName)$remoteName=basename($fileName);
+		return $this->request('PUT', $url.$remoteName, array("file"=>'@'.$fileName));
+	}
+	
     /**
      * Wrapper for all curl functions.
      *

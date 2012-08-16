@@ -99,7 +99,7 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
      */
     public function publish() {
 
-        $this->caldavbackend->publishCalendar($this->calendarInfo['id']);
+        $this->caldavBackend->publishCalendar($this->calendarInfo['id']);
 
     }
 

@@ -315,8 +315,9 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
                 $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
-                break;
 
+                // Breaking the event chain
+                return false;
 
         }
 

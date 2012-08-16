@@ -11,7 +11,9 @@
  * @package Sabre
  * @subpackage DAVClient
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) by KOLANICH 2012.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @author KOLANICH
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_DAV_Client {
@@ -96,7 +98,27 @@ class Sabre_DAV_Client {
         }
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre_DAV_Property_ResourceType';
-
+		
+		$this->ch=curl_init();
+		if (!$this->ch) {
+            throw new Sabre_DAV_Exception('[CURL] unable to initialize curl handle');
+        }
+		$curlSettings = array(
+            CURLOPT_RETURNTRANSFER => true,
+            // Return headers as part of the response
+            CURLOPT_HEADER => true,
+            // Automatically follow redirects
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+			/*CURLOPT_SSL_VERIFYHOST =>0,
+			CURLOPT_SSL_VERIFYPEER =>0,*/
+        );
+		if (isset($settings['curl'])){
+			$curlSettings+=$settings['curl'];
+			unset($settings['curl']);
+		}
+		curl_setopt_array($this->ch, $curlSettings);
+		unset($curlSettings);
     }
 
     /**
@@ -280,15 +302,9 @@ class Sabre_DAV_Client {
     public function request($method, $url = '', $body = null, $headers = array()) {
 
         $url = $this->getAbsoluteUrl($url);
-
         $curlSettings = array(
-            CURLOPT_RETURNTRANSFER => true,
-            // Return headers as part of the response
-            CURLOPT_HEADER => true,
+            CURLOPT_URL => $url,
             CURLOPT_POSTFIELDS => $body,
-            // Automatically follow redirects
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
         );
 
         switch ($method) {
@@ -339,7 +355,7 @@ class Sabre_DAV_Client {
             $curlInfo,
             $curlErrNo,
             $curlError
-        ) = $this->curlRequest($url, $curlSettings);
+        ) = $this->curlRequest($curlSettings);
 
         $headerBlob = substr($response, 0, $curlInfo['header_size']);
         $response = substr($response, $curlInfo['header_size']);
@@ -407,7 +423,38 @@ class Sabre_DAV_Client {
         return $response;
 
     }
-
+	
+	 /**
+     * Puts a file or buffer to server.
+	 * If you wanna put a file, $mode must be 0 (it is by default), $file should contain filename.
+     * If you wanna put a binary string, you must set $mode into 1 and $remoteName also must be set
+     * @param string $url
+     * @param string $file
+	 * @param string $remoteName
+	 * @param integer $mode
+     * @return array
+     */
+	public function put($file, $url='/', $remoteName='', $mode=0){
+		switch ($mode){
+			case 0:
+				if(!file_exists($file)){
+					throw new Sabre_DAV_Exception('Upload Error : file ' . $file . ' doesnt exist');
+				}
+				if(!$remoteName)$remoteName=basename($file);
+				new dBug($url.$remoteName);
+				return $this->request('PUT', $url.$remoteName, array("file"=>'@'.$file));
+			break;
+			case 1:
+				if(!$remoteName)throw new Sabre_DAV_Exception('You MUST specify $remoteName if you upload blob');
+				new dBug($url.$remoteName);
+				return $this->request('PUT', $url.$remoteName, $file);
+			break;
+			default:
+				throw new Sabre_DAV_Exception('Bad mode value');
+			break;
+		}
+	}
+	
     /**
      * Wrapper for all curl functions.
      *
@@ -418,16 +465,15 @@ class Sabre_DAV_Client {
      * @param array $settings
      * @return array
      */
-    protected function curlRequest($url, $settings) {
+    protected function curlRequest($settings) {
 
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $settings);
+        curl_setopt_array($this->ch, $settings);
 
         return array(
-            curl_exec($curl),
-            curl_getinfo($curl),
-            curl_errno($curl),
-            curl_error($curl)
+            curl_exec($this->ch),
+            curl_getinfo($this->ch),
+            curl_errno($this->ch),
+            curl_error($this->ch)
         );
 
     }

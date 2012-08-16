@@ -46,8 +46,9 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -95,8 +96,9 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -145,8 +147,9 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -196,8 +199,9 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -247,8 +251,9 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -737,8 +742,9 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('HEAD', 'baz');
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -776,8 +782,10 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
         $result = $client->request('PUT', 'bar','newcontent');
 
-        $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/bar',
+			CURLOPT_URL => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,

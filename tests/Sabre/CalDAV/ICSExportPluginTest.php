@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
@@ -49,7 +51,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);
 
-        $obj = Sabre_VObject_Reader::read($s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
@@ -98,7 +100,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);
 
-        $obj = Sabre_VObject_Reader::read($s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
@@ -211,7 +213,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);
 
-        $obj = Sabre_VObject_Reader::read($s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));

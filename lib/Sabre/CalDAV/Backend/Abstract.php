@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * Abstract Calendaring backend. Extend this class to create your own backends.
  *
@@ -140,7 +142,7 @@ abstract class Sabre_CalDAV_Backend_Abstract implements Sabre_CalDAV_Backend_Bac
             $object = $this->getCalendarObject($object['calendarid'], $object['uri']);
         }
 
-        $vObject = Sabre_VObject_Reader::read($object['calendardata']);
+        $vObject = VObject\Reader::read($object['calendardata']);
 
         $validator = new Sabre_CalDAV_CalendarQueryValidator();
         return $validator->validate($vObject, $filters);

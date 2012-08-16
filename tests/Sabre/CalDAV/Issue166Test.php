@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 class Sabre_CalDAV_Issue166Test extends PHPUnit_Framework_TestCase {
 
     function testFlaw() {
@@ -51,7 +53,7 @@ HI;
             'is-not-defined' => false,
             'time-range' => null,
         );
-        $input = Sabre_VObject_Reader::read($input);
+        $input = VObject\Reader::read($input);
         $this->assertTrue($validator->validate($input,$filters));
 
     }

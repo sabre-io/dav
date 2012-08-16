@@ -14,6 +14,7 @@
 	  only used for informational purposes.
 	* BC Break: The DAV: namespace is no longer converted to urn:DAV. This was
 	  a workaround for a bug in older PHP versions (pre-5.3).
+	* Changed: The Sabre_VObject library now spawned into it's own project!
 	* New feature: Support for caldav notifications!
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
@@ -33,13 +34,14 @@
 	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
 	* Fixed: Rejecting calendar objects if they are not in the
 	  supported-calendar-component list. (thanks Armin!)
-	* Fixed: Workaround for 10.8 Mountain Lion vCards, as it needs \r line
-	  endings to parse them correctly.
 	* Fixed: Issue 219: serialize() now reorders correctly.
 	* Fixed: Sabre_DAV_XMLUtil no longer returns empty $dom->childNodes
 	  if there is whitespace in $dom.
 
-1.6.4-stable (2012-??-??)
+1.6.5-stable (2012-??-??)
+	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
+
+1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on
 	  alarms, if an overridden event has it's alarm removed.
 	* Fixed: Compatibility for OS/X 10.8 iCal in the IMipHandler.
@@ -56,6 +58,8 @@
 	  exactly on the start of a time-range.
 	* Fixed: HTTP basic auth did not correctly deal with passwords containing
 	  colons on some servers.
+	* Fixed: Issue 228: DTEND is now non-inclusive for all-day events in the
+	  calendar-query REPORT and free-busy calculations.
 
 1.6.3-stable (2012-06-12)
 	* Added: It's now possible to specify in Sabre_DAV_Client which type of

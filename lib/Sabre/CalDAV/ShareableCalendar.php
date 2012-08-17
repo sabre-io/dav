@@ -95,11 +95,12 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
      * Publishing a calendar should automatically create a read-only, public,
      * subscribable calendar.
      *
+     * @param bool $value
      * @return void
      */
-    public function publish() {
+    public function setPublishStatus($value) {
 
-        $this->caldavBackend->publishCalendar($this->calendarInfo['id']);
+        $this->caldavBackend->setPublishStatus($this->calendarInfo['id'], $value);
 
     }
 

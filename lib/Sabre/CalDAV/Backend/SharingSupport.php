@@ -142,37 +142,24 @@
  * cause a different set of issues.
  *
  *
- * Publishing Calendars
- * ====================
+ * Publishing
+ * ==========
  *
- * Aside from sharing with different users, it's also possible for a user to
- * mark a calendar as published.
+ * When a user publishes a url, the server should generate a 'publish url'.
+ * This is a read-only url, anybody can use to consume the calendar feed.
  *
- * When a calendar gets published, a new calendar feed should be created on a
- * different url, where everybody can subscribe to the url, using a 'subscribe'
- * feature often found in calendar software.
+ * Calendars are in one of two states:
+ *   * published
+ *   * unpublished
  *
- * Publishing is a lot easier, because there's no need for notifications or
- * invites.
- *
- * If a user 'unshares' the calendar, publishing should be stopped as well. If
- * a user starts publishing the calendar, the calendar should be marked as
- * 'shared' as well.
- *
- * If a calendar is published, the following property should be returned:
+ * If a calendar is published, the following property should be returned
+ * for each calendar in getCalendarsForPrincipal.
  *
  * {http://calendarserver.org/ns/}publish-url
  *
  * This element should contain a {DAV:}href element, which points to the
- * public url that does not require authentication.
- *
- * Note that even though there's a usecase for a calendar to be both shared and
- * published, iCal at least does not seem to provide this ability. So it's
- * assumed that a calendar can only ever be not-shared, shared or published,
- * but never a combination.
- *
- * The implication is that only owners of calendars can publish calendars.
- * Sharees can not.
+ * public url that does not require authentication. Unlike every other href,
+ * this url must be absolute.
  *
  * @package Sabre
  * @subpackage CalDAV
@@ -250,8 +237,9 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Notif
      * Publishes a calendar
      *
      * @param mixed $calendarId
+     * @param bool $value
      * @return void
      */
-    function publishCalendar($calendarId);
+    function setPublishStatus($calendarId, $value);
 
 }

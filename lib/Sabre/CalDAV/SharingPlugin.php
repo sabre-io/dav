@@ -307,10 +307,36 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                     $acl->checkPrivileges($uri, '{DAV:}write');
                 }
 
-                $node->publish();
+                $node->setPublishStatus(true);
 
                 // iCloud sends back the 202, so we will too.
                 $this->server->httpResponse->sendStatus(202);
+
+                // Adding this because sending a response body may cause issues,
+                // and I wanted some type of indicator the response was handled.
+                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+
+                // Breaking the event chain
+                return false;
+
+            case '{http://calendarserver.org/ns/}unpublish-calendar' :
+
+                // We can only deal with IShareableCalendar objects
+                if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                    return;
+                }
+
+                // Getting ACL info
+                $acl = $this->server->getPlugin('acl');
+
+                // If there's no ACL support, we allow everything
+                if ($acl) {
+                    $acl->checkPrivileges($uri, '{DAV:}write');
+                }
+
+                $node->setPublishStatus(false);
+
+                $this->server->httpResponse->sendStatus(200);
 
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.

@@ -228,9 +228,10 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         $documentType = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
         switch($documentType) {
+
             // Dealing with the 'share' document, which modified invitees on a
             // calendar.
-            case '{http://calendarserver.org/ns/}share' :
+            case '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}share' :
 
                 // We can only deal with IShareableCalendar objects
                 if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
@@ -259,7 +260,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
             // The invite-reply document is sent when the user replies to an
             // invitation of a calendar share.
-            case '{http://calendarserver.org/ns/}invite-reply' :
+            case '{'. Sabre_CalDAV_Plugin::NS_CALENDARSERVER.'}invite-reply' :
 
                 // This only works on the calendar-home-root node.
                 if (!$node instanceof Sabre_CalDAV_UserCalendars) {
@@ -292,7 +293,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 // Breaking the event chain
                 return false;
 
-            case '{http://calendarserver.org/ns/}publish-calendar' :
+            case '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}publish-calendar' :
 
                 // We can only deal with IShareableCalendar objects
                 if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
@@ -319,7 +320,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 // Breaking the event chain
                 return false;
 
-            case '{http://calendarserver.org/ns/}unpublish-calendar' :
+            case '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}unpublish-calendar' :
 
                 // We can only deal with IShareableCalendar objects
                 if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {

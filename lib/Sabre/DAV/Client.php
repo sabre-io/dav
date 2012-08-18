@@ -396,7 +396,7 @@ class Sabre_DAV_Client {
                 case 500 :
                     throw new Sabre_DAV_Exception('Internal server error');
                 case 501 :
-                    throw new Sabre_DAV_Exception_NotImplemented('Not Implemeneted');
+                    throw new Sabre_DAV_Exception_NotImplemented('Not Implemented');
                 case 507 :
                     throw new Sabre_DAV_Exception_InsufficientStorage('Insufficient storage');
                 default:

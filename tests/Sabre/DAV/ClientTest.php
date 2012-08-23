@@ -140,7 +140,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             ""
         );
 
-        $client->addTrustedCertificates(array('bla'));
+        $client->addTrustedCertificates('bla');
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
@@ -152,7 +152,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
-            CURLOPT_CAINFO => array('bla'),
+            CURLOPT_CAINFO => 'bla',
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
         ), $client->curlSettings);
 

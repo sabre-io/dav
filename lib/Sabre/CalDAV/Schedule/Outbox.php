@@ -104,6 +104,11 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
                 'protected' => true,
             ),
             array(
+                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ),
+            array(
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner(),
                 'protected' => true,
@@ -143,6 +148,9 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
         $default = Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet();
         $default['aggregates'][] = array(
             'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy',
+        );
+        $default['aggregates'][] = array(
+            'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
         );
 
         return $default;

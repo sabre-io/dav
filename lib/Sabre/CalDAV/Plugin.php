@@ -879,13 +879,17 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($componentType === 'VFREEBUSY' && $method === 'REQUEST') {
 
-            $acl->checkPrivileges($uri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy');
+            $acl && $acl->checkPrivileges($uri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy');
             $this->handleFreeBusyRequest($outboxNode, $vObject);
 
         } elseif ($componentType === 'VEVENT' && in_array($method, array('REQUEST','REPLY','ADD','CANCEL'))) {
 
-            $acl->checkPrivileges($uri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent');
+            $acl && $acl->checkPrivileges($uri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent');
             $this->handleEventNotification($outboxNode, $vObject);
+
+        } else {
+
+            throw new Sabre_DAV_Exception_NotImplemented('SabreDAV supports only VFREEBUSY (REQUEST) and VEVENT (REQUEST, REPLY, ADD, CANCEL)');
 
         }
 
@@ -1172,13 +1176,13 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        $vcalendar = new Sabre_VObject_Component('VCALENDAR');
+        $vcalendar = VObject\Component::create('VCALENDAR');
         $vcalendar->VERSION = '2.0';
         $vcalendar->METHOD = 'REPLY';
         $vcalendar->CALSCALE = 'GREGORIAN';
         $vcalendar->PRODID = '-//SabreDAV//SabreDAV ' . Sabre_DAV_Version::VERSION . '//EN';
 
-        $generator = new Sabre_VObject_FreeBusyGenerator();
+        $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
         $generator->setBaseObject($vcalendar);

@@ -106,6 +106,38 @@ class Sabre_VObject_DateTimeParserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * TCheck if a date with year > 4000 will not throw an exception. iOS seems to use 45001231 in yearly recurring events
+     */
+    function testParseICalendarDateGreaterThan4000() {
+
+        $dateTime = Sabre_VObject_DateTimeParser::parseDate('45001231');
+
+        $expected = new DateTime('4500-12-31 00:00:00',new DateTimeZone('UTC'));
+
+        $this->assertEquals($expected, $dateTime);
+
+        $dateTime = Sabre_VObject_DateTimeParser::parse('45001231');
+        $this->assertEquals($expected, $dateTime);
+
+    }
+
+    /**
+     * Check if a datetime with year > 4000 will not throw an exception. iOS seems to use 45001231T235959 in yearly recurring events
+     */
+    function testParseICalendarDateTimeGreaterThan4000() {
+
+        $dateTime = Sabre_VObject_DateTimeParser::parseDateTime('45001231T235959');
+
+        $expected = new DateTime('4500-12-31 23:59:59',new DateTimeZone('UTC'));
+
+        $this->assertEquals($expected, $dateTime);
+
+        $dateTime = Sabre_VObject_DateTimeParser::parse('45001231T235959');
+        $this->assertEquals($expected, $dateTime);
+
+    }
+
+    /**
      * @depends testParseICalendarDate
      * @expectedException Sabre_DAV_Exception_BadRequest
      */

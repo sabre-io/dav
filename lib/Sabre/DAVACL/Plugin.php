@@ -243,6 +243,14 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * This array holds a cache for all the principals that are associated with
+     * a single principal.
+     *
+     * @var array
+     */
+    protected $currentUserPrincipalsCache = array();
+
+    /**
      * Returns a list of principals that's associated to the current
      * user, either directly or through group membership.
      *
@@ -253,6 +261,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $currentUser = $this->getCurrentUserPrincipal();
 
         if (is_null($currentUser)) return array();
+
+        // First check our cache
+        if (isset($this->currentUserPrincipalsCache[$currentUser])) {
+            return $this->currentUserPrincipalsCache[$currentUser];
+        }
 
         $check = array($currentUser);
         $principals = array($currentUser);
@@ -277,6 +290,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
+
+        // Store the result in the cache
+        $this->currentUserPrincipalsCache[$currentUser] = $principals;
 
         return $principals;
 
@@ -929,6 +945,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $node->setGroupMemberSet($memberSet);
+        // We must also clear our cache, just in case
+
+        $this->currentUserPrincipalsCache = array();
 
         $result[200]['{DAV:}group-member-set'] = null;
         unset($propertyDelta['{DAV:}group-member-set']);

@@ -182,6 +182,9 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($expected,$acl->getCurrentUserPrincipals());
 
+        // The second one should trigger the cache and be identical
+        $this->assertEquals($expected,$acl->getCurrentUserPrincipals());
+
     }
 
     function testGetACL() {

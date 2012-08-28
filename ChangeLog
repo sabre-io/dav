@@ -44,6 +44,7 @@
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
 	* Added: Ability to allow users to set SSL certificates for the Client
 	  class. (Thanks schiesbn!).
+	* Fixed: Directory indexes with lots of nodes should be a lot faster.
 
 1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

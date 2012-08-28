@@ -1482,6 +1482,9 @@ class Sabre_DAV_Server {
         if (!$this->broadcastEvent('beforeBind',array($uri))) return false;
 
         $parent = $this->tree->getNodeForPath($dir);
+        if (!$parent instanceof Sabre_DAV_ICollection) {
+            throw new Sabre_DAV_Exception_Conflict('Files can only be created as children of collections');
+        }
 
         if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
 

@@ -34,6 +34,7 @@ class Sabre_DAV_Client {
     protected $userName;
     protected $password;
     protected $proxy;
+    protected $trustedCertificates;
 
     /**
      * Basic authentication
@@ -97,6 +98,18 @@ class Sabre_DAV_Client {
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre_DAV_Property_ResourceType';
 
+    }
+
+    /**
+     * Add trusted root certificates to the webdav client.
+     *
+     * The parameter certificates should be a absulute path to a file
+     * which contains all trusted certificates
+     *
+     * @param string $certificates
+     */
+    public function addTrustedCertificates($certificates) {
+        $this->trustedCertificates = $certificates;
     }
 
     /**
@@ -291,6 +304,10 @@ class Sabre_DAV_Client {
             CURLOPT_MAXREDIRS => 5,
         );
 
+        if($this->trustedCertificates) {
+            $curlSettings[CURLOPT_CAINFO] = $this->trustedCertificates;
+        }
+
         switch ($method) {
             case 'HEAD' :
 
@@ -396,7 +413,7 @@ class Sabre_DAV_Client {
                 case 500 :
                     throw new Sabre_DAV_Exception('Internal server error');
                 case 501 :
-                    throw new Sabre_DAV_Exception_NotImplemented('Not Implemeneted');
+                    throw new Sabre_DAV_Exception_NotImplemented('Not Implemented');
                 case 507 :
                     throw new Sabre_DAV_Exception_InsufficientStorage('Insufficient storage');
                 default:

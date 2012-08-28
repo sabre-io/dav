@@ -39,6 +39,8 @@
 	  if there is whitespace in $dom.
 	* Fixed: Returning 409 Conflict instead of 500 when an attempt is made to
 	  create a file as a child of something that's not a collection.
+	* Fixed: Caching results for principal lookups. This should cut down
+	  queries and performance for a number of heavy requests.
 
 1.6.5-stable (2012-??-??)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.

@@ -37,6 +37,8 @@
 	* Fixed: Issue 219: serialize() now reorders correctly.
 	* Fixed: Sabre_DAV_XMLUtil no longer returns empty $dom->childNodes
 	  if there is whitespace in $dom.
+	* Fixed: Returning 409 Conflict instead of 500 when an attempt is made to
+	  create a file as a child of something that's not a collection.
 
 1.6.5-stable (2012-??-??)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.

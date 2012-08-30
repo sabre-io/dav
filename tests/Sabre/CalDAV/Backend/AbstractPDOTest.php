@@ -508,4 +508,35 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         ), $backend->calendarQuery(1, $filters));
 
     }
+    function testCalendarQueryTimeRangeNoEnd() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => array(
+                        'start' => new DateTime('20120102'),
+                        'end' => null,
+                    ),
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $this->assertEquals(array(
+            "event2",
+        ), $backend->calendarQuery(1, $filters));
+
+    }
 }

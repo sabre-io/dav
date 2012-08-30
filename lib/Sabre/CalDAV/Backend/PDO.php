@@ -616,6 +616,12 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             // There was a time-range filter
             if ($componentType == 'VEVENT' && isset($filters['comp-filters'][0]['time-range'])) {
                 $timeRange = $filters['comp-filters'][0]['time-range'];
+
+                // If start time OR the end time is not specified, we can do a
+                // 100% accurate mysql query.
+                if (!$timeRange['start'] || !$timeRange['end']) {
+                    $requirePostFilter = false;
+                }
             }
 
         }

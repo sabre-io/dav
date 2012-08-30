@@ -619,7 +619,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
                 // If start time OR the end time is not specified, we can do a
                 // 100% accurate mysql query.
-                if (!$timeRange['start'] || !$timeRange['end']) {
+                if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['prop-filters'] && (!$timeRange['start'] || !$timeRange['end'])) {
                     $requirePostFilter = false;
                 }
             }

@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 echo "SabreDAV migrate script for version 1.7\n";
@@ -169,20 +170,32 @@ while($row = $result->fetch()) {
         echo "Completed: $done / $total\n";
     }
 }
+echo "Completed: $done / $total\n";
 
-echo "Adding the transparent field to the calendars table\n";
+echo "Checking the calendars table needs changes.\n";
+$row = $pdo->query("SELECT * FROM calendars LIMIT 1")->fetch();
 
-switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+if (array_key_exists('transparent', $row)) {
 
-    case 'mysql' :
-        $pdo->exec("ALTER TABLE calendars ADD transparent TINYINT(1) NOT NULL DEFAULT '0'");
-        break;
-    case 'sqlite' :
-        $pdo->exec("ALTER TABLE calendars ADD transparent bool");
-        break;
+    echo "The calendars table is already up to date\n";
 
-    default :
-        die('This upgrade script does not support this driver (' . $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) . ")\n");
+} else {
+
+    echo "Adding the 'transparent' field to the calendars table\n";
+
+    switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+
+        case 'mysql' :
+            $pdo->exec("ALTER TABLE calendars ADD transparent TINYINT(1) NOT NULL DEFAULT '0'");
+            break;
+        case 'sqlite' :
+            $pdo->exec("ALTER TABLE calendars ADD transparent bool");
+            break;
+
+        default :
+            die('This upgrade script does not support this driver (' . $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) . ")\n");
+
+    }
 
 }
 

@@ -1483,6 +1483,9 @@ class Server {
         if (!$this->broadcastEvent('beforeBind',array($uri))) return false;
 
         $parent = $this->tree->getNodeForPath($dir);
+        if (!$parent instanceof ICollection) {
+            throw new Exception\Conflict('Files can only be created as children of collections');
+        }
 
         if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
 

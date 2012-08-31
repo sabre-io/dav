@@ -1,5 +1,5 @@
 CREATE TABLE calendarobjects (
-	id integer primary key asc,
+    id integer primary key asc,
     calendardata blob,
     uri text,
     calendarid integer,
@@ -16,10 +16,11 @@ CREATE TABLE calendars (
     principaluri text,
     displayname text,
     uri text,
-	ctag integer,
+    ctag integer,
     description text,
-	calendarorder integer,
+    calendarorder integer,
     calendarcolor text,
-	timezone text,
-	components text
+    timezone text,
+    components text,
+    transparent bool
 );

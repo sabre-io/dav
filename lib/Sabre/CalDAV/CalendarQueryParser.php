@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\VObject;
+
 /**
  * Parses the calendar-query report request body.
  *
@@ -242,12 +244,12 @@ class CalendarQueryParser {
         $timeRangeNode = $timeRangeNodes->item(0);
 
         if ($start = $timeRangeNode->getAttribute('start')) {
-            $start = \Sabre\VObject\DateTimeParser::parseDateTime($start);
+            $start = VObject\DateTimeParser::parseDateTime($start);
         } else {
             $start = null;
         }
         if ($end = $timeRangeNode->getAttribute('end')) {
-            $end = \Sabre\VObject\DateTimeParser::parseDateTime($end);
+            $end = VObject\DateTimeParser::parseDateTime($end);
         } else {
             $end = null;
         }
@@ -275,13 +277,14 @@ class CalendarQueryParser {
         if(!$start) {
             throw new \Sabre\DAV\Exception\BadRequest('The "start" attribute is required for the CALDAV:expand element');
         } 
-        $start = \Sabre\VObject\DateTimeParser::parseDateTime($start);
+        $start = VObject\DateTimeParser::parseDateTime($start);
 
         $end = $parentNode->getAttribute('end');
         if(!$end) {
             throw new \Sabre\DAV\Exception\BadRequest('The "end" attribute is required for the CALDAV:expand element');
         } 
-        $end = \Sabre\VObject\DateTimeParser::parseDateTime($end);
+
+        $end = VObject\DateTimeParser::parseDateTime($end);
         
         if ($end <= $start) {
             throw new \Sabre\DAV\Exception\BadRequest('The end-date must be larger than the start-date in the expand element.');

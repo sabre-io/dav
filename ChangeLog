@@ -10,19 +10,25 @@
 	  have been previously deprecated. Namely:
 		- Sabre_DAV_Directory (now: Sabre_DAV_Collection)
 		- Sabre_DAV_SimpleDirectory (now: Sabre_DAV_SimpleCollection)
-	    - Sabre_VObject_Element_DateTime (now: .._Property_DateTime)
-		- Sabre_VObject_Element_MultiDateTime (-> .._Property_MultiDateTime)
 	* BC Break: Sabre_CalDAV_Schedule_IMip::sendMessage now has an extra
 	  argument. If you extended this class, you should fix this method. It's
 	  only used for informational purposes.
 	* BC Break: The DAV: namespace is no longer converted to urn:DAV. This was
 	  a workaround for a bug in older PHP versions (pre-5.3).
+	* Changed: The Sabre_VObject library now spawned into it's own project!
+	  The VObject library is still included in the SabreDAV zip package.
 	* New feature: Support for caldav notifications!
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
 	  heavy optimizations.
 	* Changed: The CalDAV PDO backend is now a lot faster for common
 	  calendar queries.
+	* Changed: We are now using the composer autoloader.
+	* Update: Caching results for principal lookups. This should cut down
+	  queries and performance for a number of heavy requests.
+	* Update: ObjectTree caches lookups much more aggresively, which will help
+	  especially speeding up a bunch of REPORT queries.
+	* Added: Support for the schedule-calendar-transp property.
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8
 	  encoded.
 	* Fixed: Workaround for the SOGO connector, as it doesn't understand
@@ -32,18 +38,22 @@
 	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the
 	  PATCH method to update parts of a file.
 	* Added: Tons of timezone name mappings for Microsoft Exchange.
-	* Added: Support for an 'exception' event.
+	* Added: Support for an 'exception' event in the server class.
 	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
 	* Fixed: Rejecting calendar objects if they are not in the
 	  supported-calendar-component list. (thanks Armin!)
-	* Fixed: Workaround for 10.8 Mountain Lion vCards, as it needs \r line
-	  endings to parse them correctly.
 	* Fixed: Issue 219: serialize() now reorders correctly.
 	* Fixed: Sabre_DAV_XMLUtil no longer returns empty $dom->childNodes
 	  if there is whitespace in $dom.
+	* Fixed: Returning 409 Conflict instead of 500 when an attempt is made to
+	  create a file as a child of something that's not a collection.
+
 
 1.6.5-stable (2012-??-??)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
+	* Added: Ability to allow users to set SSL certificates for the Client
+	  class. (Thanks schiesbn!).
+	* Fixed: Directory indexes with lots of nodes should be a lot faster.
 
 1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

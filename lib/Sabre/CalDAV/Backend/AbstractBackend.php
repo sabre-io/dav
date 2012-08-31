@@ -2,6 +2,9 @@
 
 namespace Sabre\CalDAV\Backend;
 
+use Sabre\VObject;
+use Sabre\CalDAV;
+
 /**
  * Abstract Calendaring backend. Extend this class to create your own backends.
  *
@@ -142,9 +145,9 @@ abstract class AbstractBackend implements BackendInterface {
             $object = $this->getCalendarObject($object['calendarid'], $object['uri']);
         }
 
-        $vObject = \Sabre\VObject\Reader::read($object['calendardata']);
+        $vObject = VObject\Reader::read($object['calendardata']);
 
-        $validator = new \Sabre\CalDAV\CalendarQueryValidator();
+        $validator = new CalDAV\CalendarQueryValidator();
         return $validator->validate($vObject, $filters);
 
     }

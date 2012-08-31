@@ -215,6 +215,22 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
+    function testPutNoParentCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt/item.txt',
+            'REQUEST_METHOD' => 'PUT',
+        );
+
+        $request = new HTTP\Request($serverVars);
+        $request->setBody('Testing updated file');
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status);
+
+    }
+
     function testPutContentRange() {
 
         $serverVars = array(

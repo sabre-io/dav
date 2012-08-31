@@ -173,7 +173,8 @@ class Plugin extends DAV\ServerPlugin {
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
 
-        $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = '\\Sabre\\CalDAV\\Property\\SupportedCalendarComponentSet';
+        $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Property\\SupportedCalendarComponentSet';
+        $server->propertyMap['{' . self::NS_CALDAV . '}schedule-calendar-transp'] = 'Sabre\\CalDAV\\Property\\ScheduleCalendarTransp';
 
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
@@ -549,6 +550,7 @@ class Plugin extends DAV\ServerPlugin {
             if (isset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'])) {
 
                 $validator = new CalendarQueryValidator();
+
                 $vObject = VObject\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                 if ($validator->validate($vObject,$parser->filters)) {
 

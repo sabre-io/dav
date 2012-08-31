@@ -2,6 +2,10 @@
 
 namespace Sabre\CalDAV\Backend;
 
+use Sabre\VObject;
+use Sabre\CalDAV;
+use Sabre\DAV;
+
 /**
  * PDO CalDAV backend
  *
@@ -49,8 +53,9 @@ class PDO extends AbstractBackend {
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
+     * Add your own properties by simply adding on to this array.
      *
-     * Add your own properties by simply adding on to this array
+     * Note that only string-based properties are supported here.
      *
      * @var array
      */
@@ -102,6 +107,7 @@ class PDO extends AbstractBackend {
         $fields[] = 'ctag';
         $fields[] = 'components';
         $fields[] = 'principaluri';
+        $fields[] = 'transparent';
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
@@ -120,8 +126,9 @@ class PDO extends AbstractBackend {
                 'id' => $row['id'],
                 'uri' => $row['uri'],
                 'principaluri' => $row['principaluri'],
-                '{' . \Sabre\CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
-                '{' . \Sabre\CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new \Sabre\CalDAV\Property\SupportedCalendarComponentSet($components),
+                '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
+                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet($components),
+                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
             );
 
 
@@ -154,11 +161,13 @@ class PDO extends AbstractBackend {
             'principaluri',
             'uri',
             'ctag',
+            'transparent',
         );
         $values = array(
             ':principaluri' => $principalUri,
             ':uri'          => $calendarUri,
             ':ctag'         => 1,
+            ':transparent'  => 0,
         );
 
         // Default value
@@ -167,10 +176,14 @@ class PDO extends AbstractBackend {
         if (!isset($properties[$sccs])) {
             $values[':components'] = 'VEVENT,VTODO';
         } else {
-            if (!($properties[$sccs] instanceof \Sabre\CalDAV\Property\SupportedCalendarComponentSet)) {
-                throw new \Sabre\DAV\Exception('The ' . $sccs . ' property must be of type: \Sabre\CalDAV\Property\SupportedCalendarComponentSet');
+            if (!($properties[$sccs] instanceof CalDAV\Property\SupportedCalendarComponentSet)) {
+                throw new DAV\Exception('The ' . $sccs . ' property must be of type: \Sabre\CalDAV\Property\SupportedCalendarComponentSet');
             }
             $values[':components'] = implode(',',$properties[$sccs]->getValue());
+        }
+        $transp = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
+        if (isset($properties[$transp])) {
+            $values[':transparent'] = $properties[$transp]->getValue()==='transparent';
         }
 
         foreach($this->propertyMap as $xmlName=>$dbName) {
@@ -237,16 +250,24 @@ class PDO extends AbstractBackend {
 
         foreach($mutations as $propertyName=>$propertyValue) {
 
-            // We don't know about this property.
-            if (!isset($this->propertyMap[$propertyName])) {
-                $hasError = true;
-                $result[403][$propertyName] = null;
-                unset($mutations[$propertyName]);
-                continue;
-            }
+            switch($propertyName) {
+                case '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' :
+                    $fieldName = 'transparent';
+                    $newValues[$fieldName] = $propertyValue->getValue()==='transparent';
+                    break;
+                default :
+                    // Checking the property map
+                    if (!isset($this->propertyMap[$propertyName])) {
+                        // We don't know about this property.
+                        $hasError = true;
+                        $result[403][$propertyName] = null;
+                        unset($mutations[$propertyName]);
+                        continue;
+                    }
 
-            $fieldName = $this->propertyMap[$propertyName];
-            $newValues[$fieldName] = $propertyValue;
+                    $fieldName = $this->propertyMap[$propertyName];
+                    $newValues[$fieldName] = $propertyValue;
+            }
 
         }
 
@@ -464,7 +485,7 @@ class PDO extends AbstractBackend {
      */
     protected function getDenormalizedData($calendarData) {
 
-        $vObject = \Sabre\VObject\Reader::read($calendarData);
+        $vObject = VObject\Reader::read($calendarData);
         $componentType = null;
         $component = null;
         $firstOccurence = null;
@@ -486,9 +507,9 @@ class PDO extends AbstractBackend {
                     $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
                 } elseif (isset($component->DURATION)) {
                     $endDate = clone $component->DTSTART->getDateTime();
-                    $endDate->add(\Sabre\VObject\DateTimeParser::parse($component->DURATION->value));
+                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->value));
                     $lastOccurence = $endDate->getTimeStamp();
-                } elseif ($component->DTSTART->getDateType()===\Sabre\VObject\Property\DateTime::DATE) {
+                } elseif ($component->DTSTART->getDateType()===VObject\Property\DateTime::DATE) {
                     $endDate = clone $component->DTSTART->getDateTime();
                     $endDate->modify('+1 day');
                     $lastOccurence = $endDate->getTimeStamp();
@@ -496,7 +517,7 @@ class PDO extends AbstractBackend {
                     $lastOccurence = $firstOccurence;
                 }
             } else {
-                $it = new \Sabre\VObject\RecurrenceIterator($vObject, (string)$component->UID);
+                $it = new VObject\RecurrenceIterator($vObject, (string)$component->UID);
                 $maxDate = new \DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();
@@ -616,6 +637,12 @@ class PDO extends AbstractBackend {
             // There was a time-range filter
             if ($componentType == 'VEVENT' && isset($filters['comp-filters'][0]['time-range'])) {
                 $timeRange = $filters['comp-filters'][0]['time-range'];
+
+                // If start time OR the end time is not specified, we can do a
+                // 100% accurate mysql query.
+                if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['prop-filters'] && (!$timeRange['start'] || !$timeRange['end'])) {
+                    $requirePostFilter = false;
+                }
             }
 
         }

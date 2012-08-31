@@ -53,24 +53,30 @@ class ObjectTree extends Tree {
         $path = trim($path,'/');
         if (isset($this->cache[$path])) return $this->cache[$path];
 
-        //if (!$path || $path=='.') return $this->rootNode;
-        $currentNode = $this->rootNode;
+        // Is it the root node?
+        if (!strlen($path)) {
+            return $this->rootNode;
+        }
 
-        // We're splitting up the path variable into folder/subfolder components and traverse to the correct node..
-        foreach(explode('/',$path) as $pathPart) {
+        // Attempting to fetch its parent
+        list($parentName, $baseName) = URLUtil::splitPath($path);
 
-            // If this part of the path is just a dot, it actually means we can skip it
-            if ($pathPart=='.' || $pathPart=='') continue;
+        // If there was no parent, we must simply ask it from the root node.
+        if ($parentName==="") {
+            $node = $this->rootNode->getChild($baseName);
+        } else {
+            // Otherwise, we recursively grab the parent and ask him/her.
+            $parent = $this->getNodeForPath($parentName);
 
-            if (!($currentNode instanceof ICollection))
+            if (!($parent instanceof ICollection))
                 throw new Exception\NotFound('Could not find node at path: ' . $path);
 
-            $currentNode = $currentNode->getChild($pathPart);
+            $node = $parent->getChild($baseName);
 
         }
 
-        $this->cache[$path] = $currentNode;
-        return $currentNode;
+        $this->cache[$path] = $node;
+        return $node;
 
     }
 

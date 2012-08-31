@@ -37,6 +37,8 @@ class CalendarQueryValidatorTest extends \PHPUnit_Framework_TestCase {
                     $validator->validate($vObject, $filters);
                 } catch (DAV\Exception $e) {
                     // Success
+                } catch (\LogicException $e) {
+                    // Success
                 }
                 break;
 

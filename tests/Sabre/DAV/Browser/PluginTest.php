@@ -35,6 +35,7 @@ class PluginTest extends DAV\AbstractServer{
         );
 
         $this->assertTrue(strpos($this->response->body, 'Index for dir/') !== false);
+        $this->assertTrue(strpos($this->response->body, '<a href="/dir/child.txt"><img src="/?sabreAction=asset&assetName=icons%2Ffile.png" alt="" width="24" />')!==false);
 
     }
 

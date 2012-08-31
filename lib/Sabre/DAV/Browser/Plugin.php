@@ -342,7 +342,7 @@ class Plugin extends DAV\ServerPlugin {
             $icon = '';
 
             if ($this->enableAssets) {
-                $node = $parent->getChild($name);
+                $node = $this->server->tree->getNodeForPath(($path?$path.'/':'') . $name);
                 foreach(array_reverse($this->iconMap) as $class=>$iconName) {
 
                     if ($node instanceof $class) {

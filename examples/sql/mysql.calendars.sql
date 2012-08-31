@@ -23,5 +23,6 @@ CREATE TABLE calendars (
     calendarcolor VARCHAR(10),
     timezone TEXT,
     components VARCHAR(20),
+    transparent TINYINT(1) NOT NULL DEFAULT '0',
     UNIQUE(principaluri, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

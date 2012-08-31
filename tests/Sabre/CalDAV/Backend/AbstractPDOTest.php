@@ -31,6 +31,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT')),
             '{DAV:}displayname' => 'Hello!',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         ));
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
@@ -39,6 +40,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             'uri'               => 'somerandomid',
             '{DAV:}displayname' => 'Hello!',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         );
 
         $this->assertInternalType('array',$calendars);
@@ -66,6 +68,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         // Updating the calendar
         $result = $backend->updateCalendar($newId,array(
             '{DAV:}displayname' => 'myCalendar',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         ));
 
         // Verifying the result of the update
@@ -82,6 +85,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
             '{http://calendarserver.org/ns/}getctag' => '2',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         );
 
         $this->assertInternalType('array',$calendars);

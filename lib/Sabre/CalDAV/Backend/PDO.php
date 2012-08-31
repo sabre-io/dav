@@ -49,8 +49,9 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
+     * Add your own properties by simply adding on to this array.
      *
-     * Add your own properties by simply adding on to this array
+     * Note that only string-based properties are supported here.
      *
      * @var array
      */
@@ -102,6 +103,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $fields[] = 'ctag';
         $fields[] = 'components';
         $fields[] = 'principaluri';
+        $fields[] = 'transparent';
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
@@ -122,6 +124,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 'principaluri' => $row['principaluri'],
                 '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
                 '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet($components),
+                '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
             );
 
 
@@ -154,11 +157,13 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             'principaluri',
             'uri',
             'ctag',
+            'transparent',
         );
         $values = array(
             ':principaluri' => $principalUri,
             ':uri'          => $calendarUri,
             ':ctag'         => 1,
+            ':transparent'  => 0,
         );
 
         // Default value
@@ -171,6 +176,10 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 throw new Sabre_DAV_Exception('The ' . $sccs . ' property must be of type: Sabre_CalDAV_Property_SupportedCalendarComponentSet');
             }
             $values[':components'] = implode(',',$properties[$sccs]->getValue());
+        }
+        $transp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp';
+        if (isset($properties[$transp])) {
+            $values[':transparent'] = $properties[$transp]->getValue()==='transparent';
         }
 
         foreach($this->propertyMap as $xmlName=>$dbName) {
@@ -237,16 +246,24 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
         foreach($mutations as $propertyName=>$propertyValue) {
 
-            // We don't know about this property.
-            if (!isset($this->propertyMap[$propertyName])) {
-                $hasError = true;
-                $result[403][$propertyName] = null;
-                unset($mutations[$propertyName]);
-                continue;
-            }
+            switch($propertyName) {
+                case '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp' :
+                    $fieldName = 'transparent';
+                    $newValues[$fieldName] = $propertyValue->getValue()==='transparent';
+                    break;
+                default :
+                    // Checking the property map
+                    if (!isset($this->propertyMap[$propertyName])) {
+                        // We don't know about this property.
+                        $hasError = true;
+                        $result[403][$propertyName] = null;
+                        unset($mutations[$propertyName]);
+                        continue;
+                    }
 
-            $fieldName = $this->propertyMap[$propertyName];
-            $newValues[$fieldName] = $propertyValue;
+                    $fieldName = $this->propertyMap[$propertyName];
+                    $newValues[$fieldName] = $propertyValue;
+            }
 
         }
 

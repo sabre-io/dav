@@ -25,6 +25,7 @@
 	  queries and performance for a number of heavy requests.
 	* Update: ObjectTree caches lookups much more aggresively, which will help
 	  especially speeding up a bunch of REPORT queries.
+	* Added: Support for the schedule-calendar-transp property.
 	* Fixed: Marking both the text/calendar and text/x-vcard as UTF-8
 	  encoded.
 	* Fixed: Workaround for the SOGO connector, as it doesn't understand
@@ -34,7 +35,7 @@
 	* Added: Sabre_DAV_PartialUpdate. This plugin allows you to use the
 	  PATCH method to update parts of a file.
 	* Added: Tons of timezone name mappings for Microsoft Exchange.
-	* Added: Support for an 'exception' event.
+	* Added: Support for an 'exception' event in the server class.
 	* Fixed: Uploaded VCards without a UID are now rejected. (thanks Dominik!)
 	* Fixed: Rejecting calendar objects if they are not in the
 	  supported-calendar-component list. (thanks Armin!)

@@ -62,10 +62,10 @@ if (!$row) {
 }
 
 $requiredFields = array(
-    'id', 
+    'id',
     'calendardata',
     'uri',
-    'calendarid', 
+    'calendarid',
     'lastmodified',
 );
 
@@ -101,12 +101,12 @@ if ($found === 0) {
         case 'mysql' :
 
             $pdo->exec(<<<SQL
-ALTER TABLE calendarobjects 
+ALTER TABLE calendarobjects
 ADD etag VARCHAR(32),
 ADD size INT(11) UNSIGNED,
 ADD componenttype VARCHAR(8),
 ADD firstoccurence INT(11) UNSIGNED,
-ADD lastoccurence INT(11) UNSIGNED
+ADD lastoccurence INT(11) UNSIGNED,
 SQL
         );
             break;
@@ -121,7 +121,7 @@ SQL
         default :
             die('This upgrade script does not support this driver (' . $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) . ")\n");
 
-    } 
+    }
     echo "Database schema upgraded.\n";
 
 } elseif ($found === 5) {
@@ -139,7 +139,7 @@ SQL
 echo "Now, we need to parse every record and pull out some information.\n";
 
 $result = $pdo->query('SELECT id, calendardata FROM calendarobjects');
-$stmt = $pdo->prepare('UPDATE calendarobjects SET etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE id = ?'); 
+$stmt = $pdo->prepare('UPDATE calendarobjects SET etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE id = ?');
 
 echo "Total records found: " . $result->rowCount() . "\n";
 $done = 0;
@@ -167,7 +167,23 @@ while($row = $result->fetch()) {
 
     if ($done % 500 === 0) {
         echo "Completed: $done / $total\n";
-    } 
+    }
+}
+
+echo "Adding the transparent field to the calendars table\n";
+
+switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+
+    case 'mysql' :
+        $pdo->exec("ALTER TABLE calendars ADD transparent TINYINT(1) NOT NULL DEFAULT '0'");
+        break;
+    case 'sqlite' :
+        $pdo->exec("ALTER TABLE calendars ADD transparent bool");
+        break;
+
+    default :
+        die('This upgrade script does not support this driver (' . $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) . ")\n");
+
 }
 
 echo "Process completed!\n";

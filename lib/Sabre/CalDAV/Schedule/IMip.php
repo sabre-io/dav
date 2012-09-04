@@ -86,6 +86,9 @@ class Sabre_CalDAV_Schedule_IMip {
 
     }
 
+    // @codeCoverageIgnoreStart
+    // This is deemed untestable in a reasonable manner
+
     /**
      * This function is reponsible for sending the actual email.
      *
@@ -97,9 +100,11 @@ class Sabre_CalDAV_Schedule_IMip {
      */
     protected function mail($to, $subject, $body, array $headers) {
 
+
         mail($to, $subject, $body, implode("\r\n", $headers));
 
     }
 
+    // @codeCoverageIgnoreEnd
 
 }

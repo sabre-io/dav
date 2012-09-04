@@ -20,6 +20,7 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     protected $setupCalDAV = false;
     protected $setupCardDAV = false;
+    protected $setupACL = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
@@ -41,7 +42,17 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
      * @var Sabre_CalDAV_Plugin
      */
     protected $caldavPlugin;
+
+    /**
+     * @var Sabre_CardDAV_Plugin
+     */
     protected $carddavPlugin;
+
+    /**
+     * @var Sabre_DAVACL_Plugin
+     */
+    protected $aclPlugin;
+
 
     function setUp() {
 
@@ -57,6 +68,10 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new Sabre_CardDAV_Plugin();
             $this->server->addPlugin($this->carddavPlugin);
+        }
+        if ($this->setupACL) {
+            $this->aclPlugin = new Sabre_DAVACL_Plugin();
+            $this->server->addPlugin($this->aclPlugin);
         }
 
     }

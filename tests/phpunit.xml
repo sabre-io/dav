@@ -5,8 +5,11 @@
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
   >
-  <testsuite name="SabreDAV">
-    <directory>Sabre/</directory>
+  <testsuite name="sabre-dav">
+      <directory>Sabre/</directory>
+  </testsuite>
+  <testsuite name="sabre-vobject">
+      <directory>../vendor/sabre/vobject/tests/Sabre/VObject</directory>
   </testsuite>
 
   <filter>

@@ -880,12 +880,12 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         if ($componentType === 'VFREEBUSY' && $method === 'REQUEST') {
 
-            $acl && $acl->checkPrivileges($uri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy');
+            $acl && $acl->checkPrivileges($outboxUri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy');
             $this->handleFreeBusyRequest($outboxNode, $vObject);
 
         } elseif ($componentType === 'VEVENT' && in_array($method, array('REQUEST','REPLY','ADD','CANCEL'))) {
 
-            $acl && $acl->checkPrivileges($uri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent');
+            $acl && $acl->checkPrivileges($outboxUri,'{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent');
             $this->handleEventNotification($outboxNode, $vObject);
 
         } else {
@@ -1044,6 +1044,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function handleFreeBusyRequest(Sabre_CalDAV_Schedule_IOutbox $outbox, VObject\Component $vObject) {
 
+        $vFreeBusy = $vObject->VFREEBUSY;
         $organizer = $vFreeBusy->organizer;
 
         $organizer = (string)$organizer;
@@ -1108,7 +1109,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $scheduleResponse->appendChild($response);
         }
 
-        return $dom->saveXML();
+        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setHeader('Content-Type','application/xml');
+        $this->server->httpResponse->sendBody($dom->saveXML());
 
     }
 
@@ -1130,7 +1133,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * @param Sabre_VObject_Component $request
      * @return Sabre_VObject_Component
      */
-    protected function getFreeBusyForEmail($email, DateTime $start, DateTime $end, Sabre_VObject_Component $request) {
+    protected function getFreeBusyForEmail($email, DateTime $start, DateTime $end, VObject\Component $request) {
 
         $caldavNS = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}';
 

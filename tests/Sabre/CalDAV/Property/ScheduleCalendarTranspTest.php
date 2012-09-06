@@ -79,7 +79,6 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
 
     /**
      * @depends testSimple
-     * @expectedException Sabre_DAV_Exception_BadRequest
      */
     function testUnserializerBadData() {
 
@@ -90,7 +89,7 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
 
-        Sabre_CalDAV_Property_ScheduleCalendarTransp::unserialize($dom->firstChild);
+        $this->assertNull(Sabre_CalDAV_Property_ScheduleCalendarTransp::unserialize($dom->firstChild));
 
     }
 }

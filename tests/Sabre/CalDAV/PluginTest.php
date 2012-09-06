@@ -1084,7 +1084,23 @@ END:VCALENDAR';
 
         $this->assertEquals($expected, $httpResponse->body);
 
+    }
+
+    function testGETPassthrough() {
+
+        $server = new Sabre_DAV_Server();
+        $caldav = new Sabre_CalDAV_Plugin();
+
+        $httpResponse = new Sabre_HTTP_ResponseMock();
+        $server->httpResponse = $httpResponse;
+
+        $server->addPlugin($caldav);
+
+        $caldav->beforeMethod('GET','foo');
+
+        $this->assertNull($caldav->beforeMethod('GET','foozz'));
 
     }
+
 
 }

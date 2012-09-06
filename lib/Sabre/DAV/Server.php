@@ -1489,7 +1489,7 @@ class Sabre_DAV_Server {
         if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
 
         $etag = $parent->createFile($name,$data);
-        $this->tree->markDirty($dir);
+        $this->tree->markDirty($dir . '/' . $name);
 
         $this->broadcastEvent('afterBind',array($uri));
         $this->broadcastEvent('afterCreateFile',array($uri, $parent));

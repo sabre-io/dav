@@ -222,8 +222,8 @@ ICS;
         ), $this->response->headers);
 
         $strings = array(
-            '<cal:recipient>mailto:user2.sabredav@sabredav.org</cal:recipient>',
-            '<cal:recipient>mailto:user3.sabredav@sabredav.org</cal:recipient>',
+            '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
+            '<d:href>mailto:user3.sabredav@sabredav.org</d:href>',
             '<cal:request-status>2.0;Success</cal:request-status>',
             '<cal:request-status>3.7;Could not find principal</cal:request-status>',
             'FREEBUSY;FBTYPE=BUSY:20110101T130000Z/20110101T140000Z',
@@ -262,7 +262,7 @@ ICS;
         ), $this->response->headers);
 
         $strings = array(
-            '<cal:recipient>mailto:user2.sabredav@sabredav.org</cal:recipient>',
+            '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
             '<cal:request-status>3.7;No calendar-home-set property found</cal:request-status>',
         );
 

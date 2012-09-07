@@ -107,7 +107,7 @@ ADD etag VARCHAR(32),
 ADD size INT(11) UNSIGNED,
 ADD componenttype VARCHAR(8),
 ADD firstoccurence INT(11) UNSIGNED,
-ADD lastoccurence INT(11) UNSIGNED,
+ADD lastoccurence INT(11) UNSIGNED
 SQL
         );
             break;

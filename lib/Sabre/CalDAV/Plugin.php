@@ -715,10 +715,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * We use this to intercept GET calls to notification nodes, and return the
      * proper response.
-     * 
-     * @param string $method 
-     * @param string $path 
-     * @return void 
+     *
+     * @param string $method
+     * @param string $path
+     * @return void
      */
     public function beforeMethod($method, $path) {
 
@@ -900,9 +900,9 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method handles the REQUEST, REPLY, ADD and CANCEL methods for 
+     * This method handles the REQUEST, REPLY, ADD and CANCEL methods for
      * VEVENT iTip messages.
-     * 
+     *
      * @return void
      */
     protected function handleEventNotification(Sabre_CalDAV_Schedule_IOutbox $outboxNode, VObject\Component $vObject) {
@@ -1088,14 +1088,22 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $dom = new DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
-        $scheduleResponse = $dom->createElementNS(Sabre_CalDAV_Plugin::NS_CALDAV, 'cal:schedule-response');
+        $scheduleResponse = $dom->createElement('cal:schedule-response');
+        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+
+            $scheduleResponse->setAttribute('xmlns:' . $prefix,$namespace);
+
+        }
         $dom->appendChild($scheduleResponse);
 
         foreach($results as $result) {
             $response = $dom->createElement('cal:response');
 
             $recipient = $dom->createElement('cal:recipient');
-            $recipient->appendChild($dom->createTextNode($result['href']));
+            $recipientHref = $dom->createElement('d:href');
+
+            $recipientHref->appendChild($dom->createTextNode($result['href']));
+            $recipient->appendChild($recipientHref);
             $response->appendChild($recipient);
 
             $reqStatus = $dom->createElement('cal:request-status');
@@ -1198,6 +1206,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $vcalendar->VFREEBUSY->ATTENDEE = 'mailto:' . $email;
         $vcalendar->VFREEBUSY->UID = (string)$request->VFREEBUSY->UID;
+        $vcalendar->VFREEBUSY->ORGANIZER = clone $request->VFREEBUSY->ORGANIZER;
 
         return array(
             'calendar-data' => $result,

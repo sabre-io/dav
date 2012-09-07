@@ -12,6 +12,7 @@
 	  only used for informational purposes.
 	* BC Break: The DAV: namespace is no longer converted to urn:DAV. This was
 	  a workaround for a bug in older PHP versions (pre-5.3).
+	* Removed: Sabre.includes.php was deprecated, and is now removed.
 	* Changed: The Sabre_VObject library now spawned into it's own project!
 	  The VObject library is still included in the SabreDAV zip package.
 	* New feature: Support for caldav notifications!

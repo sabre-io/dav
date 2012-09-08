@@ -649,13 +649,34 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_NotImplemented('The free-busy-query REPORT is only implemented on calendars');
         }
 
-        $objects = array_map(function($child) {
-            $obj = $child->get();
+        // Doing a calendar-query first, to make sure we get the most
+        // performance.
+        $urls = $calendar->calendarQuery(array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => array(
+                        'start' => $start,
+                        'end' => $end,
+                    ),
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        ));
+
+        $objects = array_map(function($url) use ($calendar) {
+            $obj = $calendar->getChild($url)->get();
             if (is_resource($obj)) {
                 $obj = stream_get_contents($obj);
             }
             return $obj;
-        }, $calendar->getChildren());
+        }, $urls);
 
         $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
@@ -1182,10 +1203,30 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             }
             $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
 
-            $calObjects = array_map(function($child) {
-                $obj = $child->get();
+            // Getting the list of object uris within the time-range
+            $urls = $node->calendarQuery(array(
+                'name' => 'VCALENDAR',
+                'comp-filters' => array(
+                    array(
+                        'name' => 'VEVENT',
+                        'comp-filters' => array(),
+                        'prop-filters' => array(),
+                        'is-not-defined' => false,
+                        'time-range' => array(
+                            'start' => $start,
+                            'end' => $end,
+                        ),
+                    ),
+                ),
+                'prop-filters' => array(),
+                'is-not-defined' => false,
+                'time-range' => null,
+            ));
+
+            $calObjects = array_map(function($url) use ($node) {
+                $obj = $node->getChild($url)->get();
                 return $obj;
-            }, $node->getChildren());
+            }, $urls);
 
             $objects = array_merge($objects,$calObjects);
 

@@ -3,9 +3,11 @@ php:
   - 5.3
   - 5.4
 
+services:
+  - mysql
+
 before_script:
   - mysql -e 'create database sabredav'
   - composer install
 
 script: phpunit --configuration tests/phpunit.xml
-

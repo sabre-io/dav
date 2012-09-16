@@ -643,6 +643,52 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * This was reported in Issue 235.
+     *
+     * If no '200 Ok' properties are returned, the client will throw an
+     * E_NOTICE.
+     */
+    function testPropFindNo200s() {
+
+        $client = new Sabre_DAV_ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "",
+            "<?xml version=\"1.0\"?>",
+            "<d:multistatus xmlns:d=\"DAV:\">",
+            "  <d:response>",
+            "    <d:href>/foo/bar/</d:href>",
+            "    <d:propstat>",
+            "      <d:prop>",
+            "         <d:bar />",
+            "      </d:prop>",
+            "      <d:status>HTTP/1.1 404 Not Found</d:status>",
+            "    </d:propstat>",
+            "  </d:response>",
+            "</d:multistatus>",
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 19,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->propfind('', array('{DAV:}foo','{DAV:}bar'));
+
+        $this->assertEquals(array(
+        ), $result);
+
+    }
+
     function testPropFindDepth1CustomProp() {
 
         $client = new Sabre_DAV_ClientMock(array(

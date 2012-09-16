@@ -47,7 +47,7 @@
 	  if there is whitespace in $dom.
 	* Fixed: Returning 409 Conflict instead of 500 when an attempt is made to
 	  create a file as a child of something that's not a collection.
-
+	* Fixed: Issue 237: xml-encoding values in SabreDAV error responses.
 
 1.6.5-stable (2012-??-??)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.

@@ -156,13 +156,13 @@ class Sabre_DAV_Client {
         if ($depth===0) {
             reset($result);
             $result = current($result);
-            return $result[200];
+            return isset($result[200])?$result[200]:array();
         }
 
         $newResult = array();
         foreach($result as $href => $statusList) {
 
-            $newResult[$href] = $statusList[200];
+            $newResult[$href] = isset($statusList[200])?$statusList[200]:array();
 
         }
 

@@ -3,6 +3,8 @@
 	* Added: Ability to allow users to set SSL certificates for the Client
 	  class. (Thanks schiesbn!).
 	* Fixed: Directory indexes with lots of nodes should be a lot faster.
+	* Fixed: Issue 235: E_NOTICE thrown when doing a propfind request with
+	  Sabre_DAV_Client, and no valid properties are returned.
 
 1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

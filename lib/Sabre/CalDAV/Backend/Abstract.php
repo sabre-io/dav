@@ -142,7 +142,8 @@ abstract class Sabre_CalDAV_Backend_Abstract implements Sabre_CalDAV_Backend_Bac
             $object = $this->getCalendarObject($object['calendarid'], $object['uri']);
         }
 
-        $vObject = VObject\Reader::read($object['calendardata']);
+        $data = is_resource($object['calendardata'])?stream_get_contents($object['calendardata']):$object['calendardata'];
+        $vObject = VObject\Reader::read($data);
 
         $validator = new Sabre_CalDAV_CalendarQueryValidator();
         return $validator->validate($vObject, $filters);

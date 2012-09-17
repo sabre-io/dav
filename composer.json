@@ -15,7 +15,8 @@
     ],
     "require": {
         "php": ">=5.3.1",
-        "sabre/vobject" : "master-dev"
+        "sabre/vobject" : "master-dev",
+        "sabre/http"    : "master-dev"
     },
     "provide" : { 
         "evert/sabredav" : "2.0.0" 

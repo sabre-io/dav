@@ -17,7 +17,8 @@
 	  use Sabre_DAV_Server and check the examples in the examples/ directory.
 	* Changed: The Sabre_VObject library now spawned into it's own project!
 	  The VObject library is still included in the SabreDAV zip package.
-	* New feature: Support for caldav notifications!
+	* Added: Added interfaces to allow implementation of caldav-sharing. Note
+	  that no implementation is provided yet, just the api hooks.
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
 	  heavy optimizations.

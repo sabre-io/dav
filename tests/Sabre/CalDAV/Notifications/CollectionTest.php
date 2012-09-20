@@ -6,7 +6,7 @@ class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestC
 
         $principalUri = 'principals/user1';
 
-        $systemStatus = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1);
+        $systemStatus = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1,'"1"');
 
         $caldavBackend = new Sabre_CalDAV_Backend_Mock(array(),array(), array(
             'principals/user1' => array(
@@ -19,7 +19,7 @@ class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestC
         $this->assertEquals('notifications', $col->getName());
 
         $this->assertEquals(array(
-            new Sabre_CalDAV_Notifications_Node($caldavBackend, $systemStatus)
+            new Sabre_CalDAV_Notifications_Node($caldavBackend, $principalUri, $systemStatus)
         ), $col->getChildren()); 
 
     }

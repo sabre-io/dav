@@ -86,6 +86,7 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
     public function setSharingEnabled($value) {
 
         $this->caldavBackend->setSharingEnabled($this->calendarInfo['id'], $value);
+        $this->calendarInfo['{http://sabredav.org/ns}sharing-enabled'] = $value;
 
     }
 

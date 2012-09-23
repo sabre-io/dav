@@ -16,7 +16,7 @@
     <whitelist addUncoveredFilesFromWhitelist="true">
        <directory suffix=".php">../lib/</directory>
        <exclude>
-         <file>../lib/Sabre.includes.php</file>
+         <file>../lib/Sabre/autoload.php</file>
          <file>../lib/Sabre/CalDAV/includes.php</file>
          <file>../lib/Sabre/CardDAV/includes.php</file>
          <file>../lib/Sabre/DAVACL/includes.php</file>

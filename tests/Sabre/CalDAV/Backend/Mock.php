@@ -396,7 +396,19 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      */
     public function setPublishStatus($calendarId, $value) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('This doesn\'t work!');
+        foreach($this->calendars as $k=>$cal) {
+            if ($cal['id'] === $calendarId) {
+                if (!$value) {
+                    unset($cal['{http://calendarserver.org/ns/}publish-url']);
+                } else {
+                    $cal['{http://calendarserver.org/ns/}publish-url'] = 'http://example.org/public/ ' . $calendarId . '.ics';
+                }
+                return;
+            }
+        }
+
+        throw new Sabre_DAV_Exception('Calendar with id "' . $calendarId . '" not found');
+
 
     }
 

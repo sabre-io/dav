@@ -43,7 +43,7 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
      */
     public function getSharedUrl() {
 
-        return $this->calendarProperties['{http://calendarserver.org/ns/}shared-url'];
+        return $this->calendarInfo['{http://calendarserver.org/ns/}shared-url'];
 
     }
 

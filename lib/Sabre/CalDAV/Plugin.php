@@ -672,9 +672,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $objects = array_map(function($url) use ($calendar) {
             $obj = $calendar->getChild($url)->get();
-            if (is_resource($obj)) {
-                $obj = stream_get_contents($obj);
-            }
             return $obj;
         }, $urls);
 

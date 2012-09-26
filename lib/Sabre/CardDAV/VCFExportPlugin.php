@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * VCF Exporter
  *
@@ -82,7 +84,8 @@ class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
      * @return string
      */
     public function generateVCF(array $nodes) {
-        $objects = array();
+
+        $output = "";
 
         foreach($nodes as $node) {
 
@@ -90,11 +93,14 @@ class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
                 continue;
             }
             $nodeData = $node[200]['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}address-data'];
-            $objects[] = $nodeData;
+
+            // Parsing this node so VObject can clean up the output.
+            $output .=
+               VObject\Reader::read($nodeData)->serialize();
 
         }
 
-        return implode("\r\n", $objects) . "\r\n";
+        return $output;
 
     }
 

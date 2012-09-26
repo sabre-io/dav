@@ -435,6 +435,7 @@ class Sabre_DAV_Client {
      * @param array $settings
      * @return array
      */
+    // @codeCoverageIgnoreStart
     protected function curlRequest($url, $settings) {
 
         $curl = curl_init($url);
@@ -448,6 +449,7 @@ class Sabre_DAV_Client {
         );
 
     }
+    // @codeCoverageIgnoreEnd
 
     /**
      * Returns the full url based on the given url (which may be relative). All

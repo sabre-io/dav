@@ -154,6 +154,26 @@ class Sabre_CalDAV_Property_InviteTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($input, $outputProperty->getValue());
 
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception
+     */
+    function testUnserializeNoStatus() {
+
+$xml = '<?xml version="1.0"?>
+<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '" xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '">
+  <cs:user>
+    <d:href>mailto:user1@example.org</d:href>
+    <!-- <cs:invite-accepted/> -->
+    <cs:access>
+      <cs:read-write/>
+    </cs:access>
+  </cs:user>
+</d:root>';
+
+        $doc2 = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $outputProperty = Sabre_CalDAV_Property_Invite::unserialize($doc2->firstChild);
 
     }
 

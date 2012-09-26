@@ -159,6 +159,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
             return array();
 
         $objects = $this->calendarData[$calendarId];
+
         foreach($objects as $uri => &$object) {
             $object['calendarid'] = $calendarId;
             $object['uri'] = $uri;
@@ -304,13 +305,13 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      */
     public function updateShares($calendarId, array $add, array $remove) {
 
+        if (!isset($this->shares[$calendarId])) {
+            $this->shares[$calendarId] = array();
+        }
+
         foreach($add as $val) {
-            if (!isset($this->shares[$calendarId])) {
-                $val['status'] = Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE;
-                $this->shares[$calendarId] = array($val);
-            } else {
-                $this->shares[$calendarId][] = $val;
-            }
+            $val['status'] = Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE;
+            $this->shares[$calendarId][] = $val;
         }
 
         foreach($this->shares[$calendarId] as $k=>$share) {
@@ -322,7 +323,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
         }
 
         // Re-numbering keys
-        $this->shares = array_values($this->shares);
+        $this->shares[$calendarId] = array_values($this->shares[$calendarId]);
 
     }
 
@@ -361,7 +362,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      */
     public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('This doesn\'t work!');
+        // This operation basically doesn't do anything yet
 
     }
 

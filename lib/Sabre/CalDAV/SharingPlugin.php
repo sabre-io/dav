@@ -151,7 +151,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 }
             }
             $propName = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes';
-            if (isset($properties[404][$propName])) {
+            if (array_key_exists($propName, $properties[404])) {
                 unset($properties[404][$propName]);
                 $properties[200][$propName] = new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
             }

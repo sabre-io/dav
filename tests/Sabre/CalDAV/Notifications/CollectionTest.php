@@ -2,26 +2,85 @@
 
 class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestCase {
 
-    function testGetChildren() {
+    protected $caldavBackend;
+    protected $principalUri;
+    protected $notification;
 
-        $principalUri = 'principals/user1';
+    function getInstance() {
 
-        $systemStatus = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1,'"1"');
+        $this->principalUri = 'principals/user1';
 
-        $caldavBackend = new Sabre_CalDAV_Backend_Mock(array(),array(), array(
+        $this->notification = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1,'"1"');
+
+        $this->caldavBackend = new Sabre_CalDAV_Backend_Mock(array(),array(), array(
             'principals/user1' => array(
-                $systemStatus
+                $this->notification
             )
         )); 
 
+        return new Sabre_CalDAV_Notifications_Collection($this->caldavBackend, $this->principalUri);
 
-        $col = new Sabre_CalDAV_Notifications_Collection($caldavBackend, $principalUri);
+    }
+
+    function testGetChildren() {
+
+        $col = $this->getInstance();
         $this->assertEquals('notifications', $col->getName());
 
         $this->assertEquals(array(
-            new Sabre_CalDAV_Notifications_Node($caldavBackend, $principalUri, $systemStatus)
+            new Sabre_CalDAV_Notifications_Node($this->caldavBackend, $this->principalUri, $this->notification)
         ), $col->getChildren()); 
 
     }
 
+    function testGetOwner() {
+
+        $col = $this->getInstance();
+        $this->assertEquals('principals/user1', $col->getOwner());
+
+    }
+
+    function testGetGroup() {
+
+        $col = $this->getInstance();
+        $this->assertNull($col->getGroup());
+
+    }
+
+    function testGetACL() {
+
+        $col = $this->getInstance();
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalUri,
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => $this->principalUri,
+                'protected' => true,
+            ),
+        );
+
+        $this->assertEquals($expected, $col->getACL());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_NotImplemented
+     */
+    function testSetACL() {
+
+        $col = $this->getInstance();
+        $col->setACL(array());
+
+    }
+
+    function testGetSupportedPrivilegeSet() {
+
+        $col = $this->getInstance();
+        $this->assertNull($col->getSupportedPrivilegeSet());
+
+    }
 }

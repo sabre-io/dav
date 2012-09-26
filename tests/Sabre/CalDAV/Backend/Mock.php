@@ -271,7 +271,11 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      */
     public function deleteNotification($principalUri, Sabre_CalDAV_Notifications_INotificationType $notification) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('This doesn\'t work!');
+        foreach($this->notifications[$principalUri] as $key=>$value) {
+            if ($notification === $value) {
+                unset($this->notifications[$principalUri][$key]);
+            }
+        }
 
     }
 

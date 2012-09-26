@@ -98,4 +98,32 @@ FOO
 
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testMissingArg() {
+
+        new Sabre_CalDAV_Notifications_Notification_InviteReply(array());
+
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testUnknownArg() {
+
+        new Sabre_CalDAV_Notifications_Notification_InviteReply(array(
+            'foo-i-will-break' => true,
+
+            'id' => 1,
+            'etag' => '"bla"',
+            'href' => 'abc',
+            'dtStamp' => 'def',
+            'inReplyTo' => 'qrs',
+            'type' => 'ghi',
+            'hostUrl' => 'jkl',
+        ));
+
+    }
+
 }

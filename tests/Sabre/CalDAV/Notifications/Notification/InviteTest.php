@@ -186,4 +186,32 @@ FOO
 
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testMissingArg() {
+
+        new Sabre_CalDAV_Notifications_Notification_Invite(array());
+
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testUnknownArg() {
+
+        new Sabre_CalDAV_Notifications_Notification_Invite(array(
+            'foo-i-will-break' => true,
+
+            'id' => 1,
+            'etag' => '"bla"',
+            'href' => 'abc',
+            'dtStamp' => 'def',
+            'type' => 'ghi',
+            'readOnly' => true,
+            'hostUrl' => 'jkl',
+            'organizer' => 'mno',
+        ));
+
+    }
 }

@@ -8,6 +8,7 @@ class Sabre_CalDAV_Notifications_Notification extends \PHPUnit_Framework_TestCas
     function testSerializers($notification, $expected1, $expected2) {
 
         $this->assertEquals('foo', $notification->getId());
+        $this->assertEquals('"1"', $notification->getETag());
 
 
         $dom = new DOMDocument('1.0','UTF-8');

@@ -17,14 +17,25 @@
 	  use Sabre_DAV_Server and check the examples in the examples/ directory.
 	* Changed: The Sabre_VObject library now spawned into it's own project!
 	  The VObject library is still included in the SabreDAV zip package.
-	* Added: Added interfaces to allow implementation of caldav-sharing. Note
-	  that no implementation is provided yet, just the api hooks.
+	* Added: Experimental interfaces to allow implementation of caldav-sharing.
+	  Note that no implementation is provided yet, just the api hooks.
+	* Added: Free-busy reporting compliant with the caldav-scheduling
+	  standard. This allows iCal and other clients to fetch other users'
+	  free-busy data.
+	* Added: Experimental NotificationSupport interface to add
+	  caldav notifications.
+	* Added: VCF Export plugin. If enabled, it can generate an export of an
+	  entire addressbook.
+	* Added: Support for PATCH using a SabreDAV format, to live-patch files.
 	* Changed: Responsibility for dealing with the calendar-query is now
 	  moved from the CalDAV plugin to the CalDAV backends. This allows for
 	  heavy optimizations.
 	* Changed: The CalDAV PDO backend is now a lot faster for common
 	  calendar queries.
 	* Changed: We are now using the composer autoloader.
+	* Changed: The CalDAV backend now all implement an interface.
+	* Changed: Instead of Sabre_DAV_Property, Sabre_DAV_PropertyInterface is
+	  now the basis of every property class.
 	* Update: Caching results for principal lookups. This should cut down
 	  queries and performance for a number of heavy requests.
 	* Update: ObjectTree caches lookups much more aggresively, which will help
@@ -49,6 +60,7 @@
 	* Fixed: Returning 409 Conflict instead of 500 when an attempt is made to
 	  create a file as a child of something that's not a collection.
 	* Fixed: Issue 237: xml-encoding values in SabreDAV error responses.
+	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
 1.6.5-stable (2012-??-??)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.

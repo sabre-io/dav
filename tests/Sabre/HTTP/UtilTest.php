@@ -61,4 +61,16 @@ class Sabre_Util_UtilTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testStrtotimeFail() {
+
+        // Strtotime may return -1 when the date cannot be parsed.
+        // We are simulating this situation by testing a date that actually
+        // results in -1. (because I have found no other way to break this
+        // code)
+
+        $time = 'Wed, 13 Oct 1960 10:26:00 GMT';
+
+        $this->assertNull(Sabre_HTTP_Util::parseHTTPDate($time));
+
+    }
 }

@@ -46,8 +46,8 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
                 ),
              ),
             '/addressbooks/user1/book1/card2' => array(
-                200 => array(
-                    '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD") . '"',
+                404 => array(
+                    '{DAV:}getetag' => null,
                 ),
             )
         ), $result);

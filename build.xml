@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="SabreDAV" default="build" basedir=".">
+<project name="SabreDAV" default="buildzip" basedir=".">
 
     <!-- Any default properties -->
     <property file="build.properties" />
@@ -7,192 +7,19 @@
     <!-- Where to write api documentation -->
     <property name="sabredav.apidocspath" value="docs/api" />
 
-    <target name="build" depends="init, test, clean">
+    <target name="buildzip" depends="init, test, clean">
         <mkdir dir="build" />
-
-        <echo msg="Building Sabre pear package" />
-        <mkdir dir="build/Sabre" />
-        <copy todir="build/Sabre">
-            <fileset dir="lib">
-                <include name="Sabre/autoload.php" />
-            </fileset>
-        </copy>
-        <copy todir="build/Sabre">
-            <fileset dir=".">
-                <include name="LICENSE" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre" checkreturn="true" />
-
-        <echo msg="Building Sabre_HTTP pear package" />
-        <mkdir dir="build/Sabre_HTTP" />
-        <mkdir dir="build/Sabre_HTTP/Sabre" />
-        <copy todir="build/Sabre_HTTP" includeemptydirs="true" >
-            <fileset dir="lib">
-                <include name="Sabre/HTTP/**" />
-            </fileset>
-        </copy>
-        <copy todir="build/Sabre_HTTP">
-            <fileset dir=".">
-                <include name="LICENSE" />
-                <include name="ChangeLog" />
-                <include name="examples/basicauth.php" />
-                <include name="examples/digestauth.php" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre_HTTP" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre_HTTP" checkreturn="true" />
-
-        <echo msg="Building Sabre_DAV pear package" />
-        <mkdir dir="build/Sabre_DAV" />
-        <mkdir dir="build/Sabre_DAV/Sabre" />
-        <copy todir="build/Sabre_DAV" includeemptydirs="true" >
-            <fileset dir="lib">
-                <include name="Sabre/DAV/**" />
-                <exclude name="Sabre/DAVACL/**" />
-                <include name="Sabre.includes.php" />
-            </fileset>
-        </copy>
-        <copy todir="build/Sabre_DAV" includeemptydirs="true">
-            <fileset dir="." >
-                <include name="LICENSE" />
-                <include name="ChangeLog" />
-                <include name="examples/fileserver.php" />
-                <include name="examples/simplefsserver.php" />
-                <include name="examples/sql/*.locks.sql" />
-                <include name="examples/sql/*.users.sql" />
-                <include name="examples/webserver/*.conf" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre_DAV" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre_DAV" checkreturn="true" />
-
-        <!-- DAVACL -->
-        <echo msg="Building Sabre_DAVACL pear package" />
-        <mkdir dir="build/Sabre_DAVACL" />
-        <mkdir dir="build/Sabre_DAVACL/Sabre" />
-        <copy todir="build/Sabre_DAVACL" includeemptydirs="true" >
-            <fileset dir="lib">
-                <include name="Sabre/DAVACL/**" />
-            </fileset>
-        </copy>
-        <mkdir dir="build/Sabre_DAVACL" />
-        <copy todir="build/Sabre_DAVACL">
-            <fileset dir=".">
-                <include name="LICENSE" />
-                <include name="ChangeLog" />
-                <include name="examples/sql/*.principals.sql" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre_DAVACL" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre_DAVACL" checkreturn="true" />
-
-        <!-- CalDAV -->
-        <echo msg="Building Sabre_CalDAV pear package" />
-        <mkdir dir="build/Sabre_CalDAV" />
-        <mkdir dir="build/Sabre_CalDAV/Sabre" />
-        <copy todir="build/Sabre_CalDAV" includeemptydirs="true" >
-            <fileset dir="lib">
-                <include name="Sabre/CalDAV/**" />
-            </fileset>
-        </copy>
-        <mkdir dir="build/Sabre_CalDAV" />
-        <copy todir="build/Sabre_CalDAV">
-            <fileset dir=".">
-                <include name="LICENSE" />
-                <include name="ChangeLog" />
-                <include name="examples/calendarserver.php" />
-                <include name="examples/sql/*.calendars.sql" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre_CalDAV" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre_CalDAV" checkreturn="true" />
-
-        <!-- CardDAV -->
-        <echo msg="Building Sabre_CardDAV pear package" />
-        <mkdir dir="build/Sabre_CardDAV" />
-        <mkdir dir="build/Sabre_CardDAV/Sabre" />
-        <copy todir="build/Sabre_CardDAV" includeemptydirs="true" >
-            <fileset dir="lib">
-                <include name="Sabre/CardDAV/**" />
-            </fileset>
-        </copy>
-        <mkdir dir="build/Sabre_CardDAV" />
-        <copy todir="build/Sabre_CardDAV">
-            <fileset dir=".">
-                <include name="LICENSE" />
-                <include name="ChangeLog" />
-                <include name="examples/addressbookserver.php" />
-                <include name="examples/sql/*.addressbooks.sql" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre_CardDAV" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre_CardDAV" checkreturn="true" />
-
-        <!-- VObject -->
-        <echo msg="Building Sabre_VObject pear package" />
-        <mkdir dir="build/Sabre_VObject" />
-        <mkdir dir="build/Sabre_VObject/Sabre" />
-        <copy todir="build/Sabre_VObject" includeemptydirs="true" >
-            <fileset dir="lib">
-                <include name="Sabre/VObject/**" />
-            </fileset>
-        </copy>
-        <mkdir dir="build/Sabre_VObject" />
-        <copy todir="build/Sabre_VObject">
-            <fileset dir=".">
-                <include name="LICENSE" />
-                <include name="ChangeLog" />
-            </fileset>
-        </copy>
-        <exec command="bin/pearpackage3.php make Sabre_VObject" checkreturn="true" />
-        <exec command="pear package" dir="build/Sabre_VObject" checkreturn="true" />
-
-        <!-- moving tgz files -->
-        <move todir="build">
-            <mapper type="flatten" />
-            <fileset dir="build/">
-                <include name="**/*.tgz" />
-            </fileset>
-        </move>
-
-
-        <echo>Creating combined SabreDAV build</echo>
         <mkdir dir="build/SabreDAV" />
-        <mkdir dir="build/SabreDAV/lib" />
-        <mkdir dir="build/SabreDAV/lib/Sabre" />
-        <mkdir dir="build/SabreDAV/lib/Sabre/CalDAV" />
-        <mkdir dir="build/SabreDAV/lib/Sabre/DAV" />
-        <mkdir dir="build/SabreDAV/lib/Sabre/DAV/Auth" />
-        <mkdir dir="build/SabreDAV/lib/Sabre/DAV/Locks" />
-        <mkdir dir="build/SabreDAV/lib/Sabre/HTTP" />
-        <mkdir dir="build/SabreDAV/lib/Sabre/VObject" />
-        <mkdir dir="build/SabreDAV/tests" />
-        <mkdir dir="build/SabreDAV/tests/Sabre" />
-        <mkdir dir="build/SabreDAV/tests/Sabre/CalDAV" />
-        <mkdir dir="build/SabreDAV/tests/Sabre/DAV" />
-        <mkdir dir="build/SabreDAV/tests/Sabre/HTTP" />
-        <mkdir dir="build/SabreDAV/tests/Sabre/DAV/Auth" />
-        <mkdir dir="build/SabreDAV/tests/Sabre/DAV/Locks" />
-        <mkdir dir="build/SabreDAV/tests/Sabre/VObject" />
-        <copy todir="build/SabreDAV" includeemptydirs="true">
-            <fileset dir=".">
-                <include name="lib/**/*.php" />
-                <include name="lib/Sabre/DAV/Browser/assets/**" />
-                <include name="ChangeLog" />
-                <include name="LICENSE" />
-                <include name="examples/**.php" />
-                <include name="examples/**/*.sql" />
-                <include name="bin/naturalselection.py" />
-                <include name="bin/migrateto17.php" />
-                <include name="tests/**/*.xml" />
-                <include name="tests/**/*.php" />
-            </fileset>
-        </copy>
-        <mkdir dir="build/SabreDAV/tests/temp" />
+        <echo>Running composer</echo>
+        <exec command="composer.phar create-project sabre/dav build/SabreDAV ${sabredav.version}" checkreturn="false" passthru="1" />
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
+    </target>
 
+    <target name="uploadzip" depends="buildzip">
+        <echo>Uploading to Google Code</echo>
+        <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
+        <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
+        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
     </target>
 
     <target name="clean" depends="init">
@@ -201,13 +28,9 @@
         <delete dir="build" />
     </target>
 
-    <target name="release" depends="init,clean,test,build">
+    <target name="markrelease" depends="init,clean,test">
         <echo>Creating Git release tag</echo>
         <exec command="git tag ${sabredav.version}" checkreturn="false" passthru="1" />
-        <echo>Uploading to Google Code</echo>
-        <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
-        <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
-        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
     </target>
 
     <target name="test">

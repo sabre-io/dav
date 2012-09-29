@@ -2,7 +2,7 @@
     * BC Break: The calendarobjects database table has a bunch of new
 	  fields, and a migration script is required to ensure everything will
 	  keep working. Read the wiki for more details.
-	* BC Break: The iCalendar interface now has a new method: calendarQuery.
+	* BC Break: The ICalendar interface now has a new method: calendarQuery.
 	* BC Break: In this version a number of classes have been deleted, that
 	  have been previously deprecated. Namely:
 		- Sabre_DAV_Directory (now: Sabre_DAV_Collection)

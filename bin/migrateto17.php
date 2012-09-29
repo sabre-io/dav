@@ -8,8 +8,7 @@ if ($argc<2) {
     echo <<<HELLO
 
 This script help you migrate from a pre-1.7 database to 1.7 and later\n
-It is important to note, that this script only touches the 'calendarobjects'
-table.
+Both the 'calendarobjects' and 'calendars' tables will be upgraded.
 
 If you do not have this table, or don't use the default PDO CalDAV backend
 it's pointless to run this script.
@@ -21,12 +20,12 @@ takes a while.
 
 Usage:
 
-{$argv[0]} [pdo-dsn] [username] [password]
+php {$argv[0]} [pdo-dsn] [username] [password]
 
 For example:
 
-{$argv[0]} mysql:host=localhost;dbname=sabredav root password
-{$argv[0]} sqlite:data/sabredav.db
+php {$argv[0]} mysql:host=localhost;dbname=sabredav root password
+php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 

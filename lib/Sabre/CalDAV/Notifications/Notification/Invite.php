@@ -6,6 +6,7 @@ use Sabre_CalDAV_SharingPlugin as SharingPlugin;
  * This class represents the cs:invite-notification notification element.
  *
  * @package Sabre
+ * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

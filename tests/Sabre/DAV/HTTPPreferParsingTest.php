@@ -132,11 +132,6 @@ BLA
 
     }
 
-    /**
-     * propfindMinimal
-     *
-     * @return void
-     */
     function testproppatchMinimal() {
 
         $request = new Sabre_HTTP_Request(array(
@@ -172,4 +167,30 @@ BLA
 
     }
 
+    function testproppatchMinimalError() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PROPPATCH',
+            'REQUEST_URI'    => '/',
+            'HTTP_PREFER' => 'return-minimal',
+        ));
+        $request->setBody(<<<BLA
+<?xml version="1.0"?>
+<d:proppatch xmlns:d="DAV:">
+    <d:set>
+        <d:prop>
+            <d:something>nope!</d:something>
+        </d:prop>
+    </d:set>
+</d:proppatch>
+BLA
+        );
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status);
+        $this->assertTrue(strpos($response->body, 'something')!==false);
+        $this->assertTrue(strpos($response->body, 'HTTP/1.1 403 Forbidden')!==false);
+
+    }
 }

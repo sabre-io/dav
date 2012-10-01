@@ -656,7 +656,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals('HTTP/1.1 403 Forbidden',$this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
 
     }
 

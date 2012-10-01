@@ -1,4 +1,4 @@
-1.7.0-alpha (2012-??-??)
+1.7.0-stable (2012-??-??)
     * BC Break: The calendarobjects database table has a bunch of new
 	  fields, and a migration script is required to ensure everything will
 	  keep working. Read the wiki for more details.
@@ -62,6 +62,8 @@
 	* Fixed: Returning 409 Conflict instead of 500 when an attempt is made to
 	  create a file as a child of something that's not a collection.
 	* Fixed: Issue 237: xml-encoding values in SabreDAV error responses.
+	* Fixed: Returning 403, instead of 501 when an unknown REPORT is
+	  requested.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
 1.6.5-stable (2012-??-??)

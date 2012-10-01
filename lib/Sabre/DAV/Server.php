@@ -1043,7 +1043,7 @@ class Sabre_DAV_Server {
         if ($this->broadcastEvent('report',array($reportName,$dom, $uri))) {
 
             // If broadcastEvent returned true, it means the report was not supported
-            throw new Sabre_DAV_Exception_ReportNotImplemented();
+            throw new Sabre_DAV_Exception_ReportNotSupported();
 
         }
 

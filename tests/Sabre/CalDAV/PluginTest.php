@@ -114,7 +114,7 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $this->response->status);
 
     }
 

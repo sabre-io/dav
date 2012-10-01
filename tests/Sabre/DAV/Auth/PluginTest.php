@@ -59,7 +59,7 @@ class Sabre_DAV_Auth_PluginTest extends PHPUnit_Framework_TestCase {
         $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
         $fakeServer->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $fakeServer->httpResponse->status);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $fakeServer->httpResponse->status);
 
     }
 

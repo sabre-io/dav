@@ -60,7 +60,7 @@ include __DIR__ . '/Exception/NotFound.php';
 include __DIR__ . '/Exception/NotImplemented.php';
 include __DIR__ . '/Exception/PaymentRequired.php';
 include __DIR__ . '/Exception/PreconditionFailed.php';
-include __DIR__ . '/Exception/ReportNotImplemented.php';
+include __DIR__ . '/Exception/ReportNotSupported.php';
 include __DIR__ . '/Exception/RequestedRangeNotSatisfiable.php';
 include __DIR__ . '/Exception/UnsupportedMediaType.php';
 include __DIR__ . '/FS/Node.php';

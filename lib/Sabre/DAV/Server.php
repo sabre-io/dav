@@ -713,6 +713,8 @@ class Sabre_DAV_Server {
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
 
+        $prefer = $this->getHttpPrefer();
+
         $data = $this->generateMultiStatus($newProperties);
         $this->httpResponse->sendBody($data);
 
@@ -1164,6 +1166,76 @@ class Sabre_DAV_Server {
             $matches[1]!==''?$matches[1]:null,
             $matches[2]!==''?$matches[2]:null,
         );
+
+    }
+
+    /**
+     * Returns the HTTP Prefer header information.
+     *
+     * The prefer header is defined in:
+     * http://tools.ietf.org/html/draft-snell-http-prefer-14
+     *
+     * This method will return an array with options. If an option was not
+     * requested by the client, it will not be returned.
+     *
+     * Currently, the following options may be returned:
+     *   array(
+     *      'return-asynch'         => true,
+     *      'return-minimal'        => true,
+     *      'return-representation' => true,
+     *      'wait'                  => 30,
+     *      'strict'                => true,
+     *      'lenient'               => true,
+     *   )
+     *
+     * This method also supports the Brief header, and will also return
+     * 'return-minimal' if the brief header was set to 't'.
+     *
+     * @return array
+     */
+    public function getHTTPPrefer() {
+
+        $result = array();
+
+        if ($prefer = $this->httpRequest->getHeader('Prefer')) {
+
+            $parameters = array_map('trim',
+                explode(',', $prefer)
+            );
+
+            foreach($parameters as $parameter) {
+
+                // Right now our regex only supports the tokens actually
+                // specified in the draft. We may need to expand this if new
+                // tokens get registered.
+                if(!preg_match('/^(?P<token>[a-z0-9-]+)(?:=(?P<value>[0-9]+))?$/', $parameter, $matches)) {
+                    continue;
+                }
+
+                switch($matches['token']) {
+
+                    case 'result-asynch' :
+                    case 'result-minimal' :
+                    case 'result-representation' :
+                    case 'strict' :
+                    case 'lenient' :
+                        $result[$matches['token']] = true;
+                        break;
+                    case 'wait' :
+                        $result[$matches['token']] = $matches['value'];
+                        break;
+
+                }
+
+            }
+
+        }
+
+        if ($this->httpRequest->getHeader('brief')==='t') {
+            $result['result-minimal'] = true;
+        }
+
+        return $result;
 
     }
 

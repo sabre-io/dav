@@ -1,18 +1,23 @@
 <?php
 
-class Sabre_DAV_HTTPPReferParsingTest extends PHPUnit_Framework_TestCase {
+class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
 
     function testParseSimple() {
 
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_PREFER' => 'result-asynch',
+            'HTTP_PREFER' => 'return-asynch',
         ));
 
         $server = new Sabre_DAV_Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
-            'result-asynch' => true,
+            'return-asynch' => true,
+            'return-minimal' => false,
+            'return-representation' => false,
+            'strict' => false,
+            'lenient' => false,
+            'wait' => null,
         ), $server->getHTTPPrefer());
 
     }
@@ -27,6 +32,11 @@ class Sabre_DAV_HTTPPReferParsingTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
+            'return-asynch' => false,
+            'return-minimal' => false,
+            'return-representation' => false,
+            'strict' => false,
+            'lenient' => false,
             'wait' => 10,
         ), $server->getHTTPPrefer());
 
@@ -35,16 +45,19 @@ class Sabre_DAV_HTTPPReferParsingTest extends PHPUnit_Framework_TestCase {
     function testParseMultiple() {
 
         $httpRequest = new Sabre_HTTP_Request(array(
-            'HTTP_PREFER' => 'result-minimal, strict,lenient',
+            'HTTP_PREFER' => 'return-minimal, strict,lenient',
         ));
 
         $server = new Sabre_DAV_Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
-            'result-minimal' => true,
+            'return-asynch' => false,
+            'return-minimal' => true,
+            'return-representation' => false,
             'strict' => true,
             'lenient' => true,
+            'wait' => null,
         ), $server->getHTTPPrefer());
 
     }
@@ -59,6 +72,12 @@ class Sabre_DAV_HTTPPReferParsingTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
+            'strict' => false,
+            'lenient' => false,
+            'wait' => null,
+            'return-asynch' => false,
+            'return-minimal' => false,
+            'return-representation' => false,
         ), $server->getHTTPPrefer());
 
     }
@@ -73,8 +92,83 @@ class Sabre_DAV_HTTPPReferParsingTest extends PHPUnit_Framework_TestCase {
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
-            'result-minimal' => true,
+            'strict' => false,
+            'lenient' => false,
+            'wait' => null,
+            'return-asynch' => false,
+            'return-minimal' => true,
+            'return-representation' => false,
         ), $server->getHTTPPrefer());
+
+    }
+
+    /**
+     * propfindMinimal
+     *
+     * @return void
+     */
+    function testpropfindMinimal() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PROPFIND',
+            'REQUEST_URI'    => '/',
+            'HTTP_PREFER' => 'return-minimal',
+        ));
+        $request->setBody(<<<BLA
+<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:">
+    <d:prop>
+        <d:something />
+        <d:resourcetype />
+    </d:prop>
+</d:propfind>
+BLA
+        );
+
+        $response = $this->request($request);
+
+        $this->assertTrue(strpos($response->body, 'resourcetype')!==false);
+        $this->assertTrue(strpos($response->body, 'something')===false);
+
+    }
+
+    /**
+     * propfindMinimal
+     *
+     * @return void
+     */
+    function testproppatchMinimal() {
+
+        $request = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD' => 'PROPPATCH',
+            'REQUEST_URI'    => '/',
+            'HTTP_PREFER' => 'return-minimal',
+        ));
+        $request->setBody(<<<BLA
+<?xml version="1.0"?>
+<d:proppatch xmlns:d="DAV:">
+    <d:set>
+        <d:prop>
+            <d:something>nope!</d:something>
+        </d:prop>
+    </d:set>
+</d:proppatch>
+BLA
+        );
+
+        $this->server->subscribeEvent('updateProperties', function(&$props, &$result) {
+
+            if (isset($props['{DAV:}something'])) {
+                unset($props['{DAV:}something']);
+                $result[200]['{DAV:}something'] = null;
+            }
+
+        });
+
+        $response = $this->request($request);
+
+        $this->assertEquals(0, strlen($response->body), 'Expected empty body: ' . $response->body);
+        $this->assertEquals('HTTP/1.1 204 No Content', $response->status);
 
     }
 

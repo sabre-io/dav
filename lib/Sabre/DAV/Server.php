@@ -713,9 +713,10 @@ class Sabre_DAV_Server {
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
 
-        $prefer = $this->getHttpPrefer();
+        $prefer = $this->getHTTPPrefer();
+        $minimal = $prefer['return-minimal'];
 
-        $data = $this->generateMultiStatus($newProperties);
+        $data = $this->generateMultiStatus($newProperties, $minimal);
         $this->httpResponse->sendBody($data);
 
     }
@@ -734,6 +735,28 @@ class Sabre_DAV_Server {
         $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
         $result = $this->updateProperties($uri, $newProperties);
+
+        $prefer = $this->getHTTPPrefer();
+        if ($prefer['return-minimal']) {
+
+            // If return-minimal is specified, we only have to check if the
+            // request was succesful, and don't need to return the
+            // multi-status.
+            $ok = true;
+            foreach($result as $code=>$prop) {
+                if ((int)$code > 299) {
+                    $ok = false;
+                }
+            }
+
+            if ($ok) {
+
+                $this->httpResponse->sendStatus(204);
+                return;
+
+            }
+
+        }
 
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
@@ -1175,8 +1198,7 @@ class Sabre_DAV_Server {
      * The prefer header is defined in:
      * http://tools.ietf.org/html/draft-snell-http-prefer-14
      *
-     * This method will return an array with options. If an option was not
-     * requested by the client, it will not be returned.
+     * This method will return an array with options.
      *
      * Currently, the following options may be returned:
      *   array(
@@ -1191,11 +1213,21 @@ class Sabre_DAV_Server {
      * This method also supports the Brief header, and will also return
      * 'return-minimal' if the brief header was set to 't'.
      *
+     * For the boolean options, false will be returned if the headers are not
+     * specified. For the integer options it will be 'null'.
+     *
      * @return array
      */
     public function getHTTPPrefer() {
 
-        $result = array();
+        $result = array(
+            'return-asynch'         => false,
+            'return-minimal'        => false,
+            'return-representation' => false,
+            'wait'                  => null,
+            'strict'                => false,
+            'lenient'               => false,
+        );
 
         if ($prefer = $this->httpRequest->getHeader('Prefer')) {
 
@@ -1214,9 +1246,9 @@ class Sabre_DAV_Server {
 
                 switch($matches['token']) {
 
-                    case 'result-asynch' :
-                    case 'result-minimal' :
-                    case 'result-representation' :
+                    case 'return-asynch' :
+                    case 'return-minimal' :
+                    case 'return-representation' :
                     case 'strict' :
                     case 'lenient' :
                         $result[$matches['token']] = true;
@@ -1231,8 +1263,8 @@ class Sabre_DAV_Server {
 
         }
 
-        if ($this->httpRequest->getHeader('brief')==='t') {
-            $result['result-minimal'] = true;
+        if ($this->httpRequest->getHeader('Brief')=='t') {
+            $result['return-minimal'] = true;
         }
 
         return $result;
@@ -1988,12 +2020,15 @@ class Sabre_DAV_Server {
 
 
     /**
-     * Generates a WebDAV propfind response body based on a list of nodes
+     * Generates a WebDAV propfind response body based on a list of nodes.
+     *
+     * If 'strip404s' is set to true, all 404 responses will be removed.
      *
      * @param array $fileProperties The list with nodes
+     * @param bool strip404s
      * @return string
      */
-    public function generateMultiStatus(array $fileProperties) {
+    public function generateMultiStatus(array $fileProperties, $strip404s = false) {
 
         $dom = new DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -2011,6 +2046,10 @@ class Sabre_DAV_Server {
 
             $href = $entry['href'];
             unset($entry['href']);
+
+            if ($strip404s && isset($entry[404])) {
+                unset($entry[404]);
+            }
 
             $response = new Sabre_DAV_Property_Response($href,$entry);
             $response->serialize($this,$multiStatus);

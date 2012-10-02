@@ -26,10 +26,6 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
      *
      * Every element in the remove array is just the address string.
      *
-     * Note that if the calendar is currently marked as 'not shared' by
-     * getSharingEnabled, and this method is called; the calendar should be
-     * 'upgraded' to a shared calendar.
-     *
      * @param array $add
      * @param array $remove
      * @return void
@@ -55,38 +51,6 @@ class Sabre_CalDAV_ShareableCalendar extends Sabre_CalDAV_Calendar implements Sa
     public function getShares() {
 
         return $this->caldavBackend->getShares($this->calendarInfo['id']);
-
-    }
-
-    /**
-     * This method should return a simple true or false, if the calendar is
-     * currently shared or not.
-     *
-     * Even if there are no 'sharees', the calendar may still be marked as
-     * 'shared'. This is a silly implementation choice, but we need to comply
-     * with the spec.
-     *
-     * @return bool
-     */
-    public function getSharingEnabled() {
-
-        return $this->calendarInfo['{http://sabredav.org/ns}sharing-enabled'];
-
-    }
-
-    /**
-     * This method marks the calendar as shared, or not.
-     *
-     * Note that if the calendar is currently shared by people, and false is
-     * passed here, all the sharees should be removed.
-     *
-     * @param bool $value
-     * @return void
-     */
-    public function setSharingEnabled($value) {
-
-        $this->caldavBackend->setSharingEnabled($this->calendarInfo['id'], $value);
-        $this->calendarInfo['{http://sabredav.org/ns}sharing-enabled'] = $value;
 
     }
 

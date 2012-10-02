@@ -15,7 +15,6 @@ class Sabre_CalDAV_UserCalendarsSharedCalendarsTest extends PHPUnit_Framework_Te
         $calendars = array(
             array(
                 'id' => 1,
-                '{http://sabredav.org/ns}sharing-enabled' => true,
                 'principaluri' => 'principals/user1',
             ),
             array(

@@ -144,7 +144,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
         if ($node instanceof Sabre_CalDAV_IShareableCalendar) {
             if (isset($properties[200]['{DAV:}resourcetype'])) {
-                if ($node->getSharingEnabled()) {
+                if (count($node->getShares())>0) {
                     $properties[200]['{DAV:}resourcetype']->add(
                         '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'
                     );
@@ -164,8 +164,12 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      * This method is trigged when a user attempts to update a node's
      * properties.
      *
-     * In this case we need to intercept it, because a user may update the
-     * sharing status of a calendar.
+     * A previous draft of the sharing spec stated that it was possible to use
+     * PROPPATCH to remove 'shared-owner' from the resourcetype, thus unsharing
+     * the calendar.
+     *
+     * Even though this is no longer in the current spec, we keep this around
+     * because OS X 10.7 may still make use of this feature.
      *
      * @param array $mutations
      * @param array $result
@@ -181,10 +185,15 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             return;
         }
 
-        // We are 'blindly' updating the resourcetype, depending on if
-        // shared-owner exists or not. This will work as expected in 99% of the
-        // cases.
-        $node->setSharingEnabled($mutations['{DAV:}resourcetype']->is('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'));
+        // Only doing something if shared-owner is indeed not in the list.
+        if($mutations['{DAV:}resourcetype']->is('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner')) return; 
+
+        $shares = $node->getShares();
+        $remove = array();
+        foreach($shares as $share) {
+            $remove[] = $share['href'];
+        }
+        $node->updateShares(array(), $remove);
 
         // We're marking this update as 200 OK
         $result[200]['{DAV:}resourcetype'] = null;

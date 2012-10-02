@@ -9,7 +9,6 @@ class Sabre_CalDAV_ShareableCalendarTest extends PHPUnit_Framework_TestCase {
 
         $props = array(
             'id' => 1,
-            '{http://sabredav.org/ns}sharing-enabled' => true
         );
 
         $this->backend = new Sabre_CalDAV_Backend_Mock(
@@ -50,18 +49,6 @@ class Sabre_CalDAV_ShareableCalendarTest extends PHPUnit_Framework_TestCase {
             'readOnly' => false,
             'status' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
         )), $this->instance->getShares());
-
-    }
-
-    function testGetSetSharingEnabled() {
-
-        $this->assertTrue(
-            $this->instance->getSharingEnabled()
-        );
-        $this->instance->setSharingEnabled(false);
-        $this->assertFalse(
-            $this->instance->getSharingEnabled()
-        );
 
     }
 

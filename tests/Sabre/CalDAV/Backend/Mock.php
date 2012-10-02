@@ -367,32 +367,6 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
     }
 
     /**
-     * This method marks the calendar as shared, or not.
-     *
-     * Note that if the calendar is currently shared by people, and false is
-     * passed here, all the sharees should be removed.
-     *
-     * @param mixed $calendarId
-     * @param bool $value
-     * @return void
-     */
-    public function setSharingEnabled($calendarId, $value) {
-
-        if (!$value && isset($this->shares[$calendarId])) {
-            $this->shares[$calendarId] = array();
-        }
-        foreach($this->calendars as $k=>$cal) {
-            if ($cal['id'] === $calendarId) {
-                $cal['{http://sabredav.org/ns}sharing-enabled'] = $value;
-                return;
-            }
-        }
-
-        throw new Sabre_DAV_Exception('Calendar with id "' . $calendarId . '" not found');
-
-    }
-
-    /**
      * Publishes a calendar
      *
      * @param mixed $calendarId

@@ -14,7 +14,6 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
                 'principaluri' => 'principals/user1',
                 'id' => 1,
                 'uri' => 'cal1',
-                '{http://sabredav.org/ns}sharing-enabled' => true,
             ),
             array(
                 'principaluri' => 'principals/user1',
@@ -28,7 +27,6 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
                 'principaluri' => 'principals/user1',
                 'id' => 3,
                 'uri' => 'cal3',
-                '{http://sabredav.org/ns}sharing-enabled' => false,
             ),
         ); 
 
@@ -74,18 +72,24 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function testUpdateProperties() {
 
-        $result = $this->server->updateProperties('calendars/user1/cal3', array(
-            '{DAV:}resourcetype' => new Sabre_DAV_Property_ResourceType(array(
-                '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'
-            ))
+        $this->caldavBackend->updateShares(1,
+            array(
+                'href' => 'mailto:joe@example.org',
+            ),
+            array()
+        );
+        $result = $this->server->updateProperties('calendars/user1/cal1', array(
+            '{DAV:}resourcetype' => new Sabre_DAV_Property_ResourceType(array('{DAV:}collection'))
         ));
 
         $this->assertEquals(array(
             200 => array(
                 '{DAV:}resourcetype' => null,
             ),
-            'href' => 'calendars/user1/cal3',
+            'href' => 'calendars/user1/cal1',
         ), $result);
+
+        $this->assertEquals(0, count($this->caldavBackend->getShares(1)));
 
     }
 
@@ -153,8 +157,9 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
-        $xml = '<?xml version="1.0"?>
-<cs:share xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
+        $xml = <<<RRR
+<?xml version="1.0"?>
+<cs:share xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
     <cs:set>
         <d:href>mailto:joe@example.org</d:href>
         <cs:common-name>Joe Shmoe</cs:common-name>
@@ -164,7 +169,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
         <d:href>mailto:nancy@example.org</d:href>
     </cs:remove>
 </cs:share>
-';
+RRR;
 
         $request->setBody($xml);
 
@@ -178,6 +183,12 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
             'status' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
             'summary' => '',
         )), $this->caldavBackend->getShares(1));
+
+        // Verifying that the calendar is now marked shared.
+        $props = $this->server->getProperties('calendars/user1/cal1', array('{DAV:}resourcetype'));
+        $this->assertTrue(
+            $props['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared-owner')
+        );
 
     }
 

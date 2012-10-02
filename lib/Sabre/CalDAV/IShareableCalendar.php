@@ -25,10 +25,6 @@ interface Sabre_CalDAV_IShareableCalendar extends Sabre_CalDAV_ICalendar {
      *
      * Every element in the remove array is just the address string.
      *
-     * Note that if the calendar is currently marked as 'not shared' by
-     * getSharingEnabled, and this method is called; the calendar should be
-     * 'upgraded' to a shared calendar.
-     *
      * @param array $add
      * @param array $remove
      * @return void
@@ -48,28 +44,5 @@ interface Sabre_CalDAV_IShareableCalendar extends Sabre_CalDAV_ICalendar {
      * @return array
      */
     function getShares();
-
-    /**
-     * This method should return a simple true or false, if the calendar is
-     * currently shared or not.
-     *
-     * Even if there are no 'sharees', the calendar may still be marked as
-     * 'shared'. This is a silly implementation choice, but we need to comply
-     * with the spec.
-     *
-     * @return bool
-     */
-    function getSharingEnabled();
-
-    /**
-     * This method marks the calendar as shared, or not.
-     *
-     * Note that if the calendar is currently shared by people, and false is
-     * passed here, all the sharees should be removed.
-     *
-     * @param bool $value
-     * @return void
-     */
-    function setSharingEnabled($value);
 
 }

@@ -50,26 +50,7 @@
  * Marking a calendar as shared
  * ============================
  *
- * Calendars can be marked as 'shared' and also not as 'shared'. Even when a
- * calendar does not have any sharees, it can still be marked as shared. This
- * is a (silly) detail from the spec, but it is important.
- * When the status of a calendar (shared or non-shared) is set, the
- * setSharingEnabled() method in this interface is called.
- *
- * When a calendar already has sharees, and sharing is subsequently disabled,
- * the effect is 'as if all the sharees were removed'.
- *
- * If a calendar is marked as shared, this should be returned from
- * getCalendarsForUser. Specifically, the following property should be set to
- * true for these calendars:
- *
- * {http://sabredav.org/ns}sharing-enabled
- *
- * If a calendar is not 'enabled for sharing', but sharees are added, the
- * calendar should be automatically upgraded to a shared calendar.
- *
- * Note that this sharing-enabled property is _only_ returned for the owner of
- * the calendar, and not sharees.
+ * TODO
  *
  * Notifications
  * =============
@@ -220,18 +201,6 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Notif
      * @return void
      */
     function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null);
-
-    /**
-     * This method marks the calendar as shared, or not.
-     *
-     * Note that if the calendar is currently shared by people, and false is
-     * passed here, all the sharees should be removed.
-     *
-     * @param mixed $calendarId
-     * @param bool $value
-     * @return void
-     */
-    function setSharingEnabled($calendarId, $value);
 
     /**
      * Publishes a calendar

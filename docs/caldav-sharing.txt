@@ -4,7 +4,7 @@
 Calendar Server Extension                                       C. Daboo
                                                                  E. York
                                                               Apple Inc.
-                                                         October 6, 2010
+                                                      September 19, 2012
 
 
                 Shared and Published Calendars in CalDAV
@@ -33,67 +33,67 @@ Table of Contents
        5.2.3.  CS:allowed-sharing-modes Property  . . . . . . . . . .  8
        5.2.4.  CS:shared-url Property . . . . . . . . . . . . . . . .  9
      5.3.  Sharer Actions on Shared Calendars . . . . . . . . . . . .  9
-       5.3.1.  Creating a Shared Calendar . . . . . . . . . . . . . .  9
-         5.3.1.1.  Example: Successful MKCALENDAR Request . . . . . . 10
-         5.3.1.2.  Example: Successful Extended MKCOL Request . . . . 10
-       5.3.2.  Sharing an Existing Calendar . . . . . . . . . . . . . 11
-         5.3.2.1.  Example: Successful PROPPATCH Request  . . . . . . 11
-       5.3.3.  Manipulating Sharees of a Shared Calendar  . . . . . . 12
-         5.3.3.1.  Example: Successful Sharee Add Request . . . . . . 13
-         5.3.3.2.  Example: Successful Multiple Sharee Change
-                   Request  . . . . . . . . . . . . . . . . . . . . . 14
-     5.4.  Sharee Actions on Shared Calendars . . . . . . . . . . . . 15
-       5.4.1.  Replying to a Sharing Invite . . . . . . . . . . . . . 15
-       5.4.2.  Removing a Shared Calendar . . . . . . . . . . . . . . 16
-     5.5.  General Considerations . . . . . . . . . . . . . . . . . . 16
-       5.5.1.  Access Levels  . . . . . . . . . . . . . . . . . . . . 16
-       5.5.2.  Allowing or Disallowing Sharing  . . . . . . . . . . . 16
-       5.5.3.  Per-user WebDAV Properties . . . . . . . . . . . . . . 17
+       5.3.1.  Sharing or Unsharing a Calendar  . . . . . . . . . . .  9
+       5.3.2.  Manipulating Sharees of a Shared Calendar  . . . . . . 10
+         5.3.2.1.  Example: Successful Sharee Add Request . . . . . . 11
+         5.3.2.2.  Example: Successful Multiple Sharee Change
+                   Request  . . . . . . . . . . . . . . . . . . . . . 11
+     5.4.  Sharee Actions on Shared Calendars . . . . . . . . . . . . 12
+       5.4.1.  Replying to a Sharing Invite . . . . . . . . . . . . . 12
+       5.4.2.  Removing a Shared Calendar . . . . . . . . . . . . . . 13
+     5.5.  General Considerations . . . . . . . . . . . . . . . . . . 13
+       5.5.1.  Access Levels  . . . . . . . . . . . . . . . . . . . . 13
+       5.5.2.  Allowing or Disallowing Sharing  . . . . . . . . . . . 13
+       5.5.3.  Per-user WebDAV Properties . . . . . . . . . . . . . . 14
+       5.5.4.  Per-user Calendar Data . . . . . . . . . . . . . . . . 14
+       5.5.5.  Scheduling . . . . . . . . . . . . . . . . . . . . . . 15
+   6.  XML Element Definitions  . . . . . . . . . . . . . . . . . . . 16
+     6.1.  CS:shared-owner  . . . . . . . . . . . . . . . . . . . . . 16
 
 
 
 Daboo & York                                                    [Page 1]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
-       5.5.4.  Per-user Calendar Data . . . . . . . . . . . . . . . . 17
-       5.5.5.  Scheduling . . . . . . . . . . . . . . . . . . . . . . 18
-   6.  XML Element Definitions  . . . . . . . . . . . . . . . . . . . 19
-     6.1.  CS:shared-owner  . . . . . . . . . . . . . . . . . . . . . 19
-     6.2.  CS:shared  . . . . . . . . . . . . . . . . . . . . . . . . 20
-     6.3.  CS:can-be-shared . . . . . . . . . . . . . . . . . . . . . 20
-     6.4.  CS:can-be-published  . . . . . . . . . . . . . . . . . . . 21
-     6.5.  CS:user  . . . . . . . . . . . . . . . . . . . . . . . . . 21
-     6.6.  CS:invite-noresponse . . . . . . . . . . . . . . . . . . . 21
-     6.7.  CS:invite-deleted  . . . . . . . . . . . . . . . . . . . . 22
-     6.8.  CS:invite-accepted . . . . . . . . . . . . . . . . . . . . 22
-     6.9.  CS:invite-declined . . . . . . . . . . . . . . . . . . . . 22
-     6.10. CS:invite-invalid  . . . . . . . . . . . . . . . . . . . . 23
-     6.11. CS:access  . . . . . . . . . . . . . . . . . . . . . . . . 23
-     6.12. CS:read  . . . . . . . . . . . . . . . . . . . . . . . . . 24
-     6.13. CS:read-write  . . . . . . . . . . . . . . . . . . . . . . 24
-     6.14. CS:summary . . . . . . . . . . . . . . . . . . . . . . . . 24
-     6.15. CS:invite-notification . . . . . . . . . . . . . . . . . . 25
-     6.16. CS:uid . . . . . . . . . . . . . . . . . . . . . . . . . . 25
-     6.17. CS:hosturl . . . . . . . . . . . . . . . . . . . . . . . . 25
-     6.18. CS:organizer . . . . . . . . . . . . . . . . . . . . . . . 26
-     6.19. CS:common-name . . . . . . . . . . . . . . . . . . . . . . 26
-     6.20. CS:invite-reply  . . . . . . . . . . . . . . . . . . . . . 26
-     6.21. CS:in-reply-to . . . . . . . . . . . . . . . . . . . . . . 27
-     6.22. CS:notification  . . . . . . . . . . . . . . . . . . . . . 27
-     6.23. CS:dtstamp . . . . . . . . . . . . . . . . . . . . . . . . 28
-     6.24. CS:share . . . . . . . . . . . . . . . . . . . . . . . . . 28
-     6.25. CS:set . . . . . . . . . . . . . . . . . . . . . . . . . . 28
-     6.26. CS:remove  . . . . . . . . . . . . . . . . . . . . . . . . 29
-     6.27. CS:shared-as . . . . . . . . . . . . . . . . . . . . . . . 29
-   7.  Security Considerations  . . . . . . . . . . . . . . . . . . . 29
-   8.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 29
-   9.  Acknowledgments  . . . . . . . . . . . . . . . . . . . . . . . 30
-   10. Normative References . . . . . . . . . . . . . . . . . . . . . 30
-   Appendix A.  Change History  . . . . . . . . . . . . . . . . . . . 30
-   Appendix B.  Change History  . . . . . . . . . . . . . . . . . . . 30
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 31
+     6.2.  CS:shared  . . . . . . . . . . . . . . . . . . . . . . . . 17
+     6.3.  CS:can-be-shared . . . . . . . . . . . . . . . . . . . . . 17
+     6.4.  CS:can-be-published  . . . . . . . . . . . . . . . . . . . 18
+     6.5.  CS:user  . . . . . . . . . . . . . . . . . . . . . . . . . 18
+     6.6.  CS:invite-noresponse . . . . . . . . . . . . . . . . . . . 18
+     6.7.  CS:invite-deleted  . . . . . . . . . . . . . . . . . . . . 19
+     6.8.  CS:invite-accepted . . . . . . . . . . . . . . . . . . . . 19
+     6.9.  CS:invite-declined . . . . . . . . . . . . . . . . . . . . 19
+     6.10. CS:invite-invalid  . . . . . . . . . . . . . . . . . . . . 20
+     6.11. CS:access  . . . . . . . . . . . . . . . . . . . . . . . . 20
+     6.12. CS:read  . . . . . . . . . . . . . . . . . . . . . . . . . 21
+     6.13. CS:read-write  . . . . . . . . . . . . . . . . . . . . . . 21
+     6.14. CS:summary . . . . . . . . . . . . . . . . . . . . . . . . 21
+     6.15. CS:invite-notification . . . . . . . . . . . . . . . . . . 22
+     6.16. CS:uid . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+     6.17. CS:hosturl . . . . . . . . . . . . . . . . . . . . . . . . 23
+     6.18. CS:organizer . . . . . . . . . . . . . . . . . . . . . . . 23
+     6.19. CS:common-name . . . . . . . . . . . . . . . . . . . . . . 23
+     6.20. CS:first-name  . . . . . . . . . . . . . . . . . . . . . . 24
+     6.21. CS:last-name . . . . . . . . . . . . . . . . . . . . . . . 24
+     6.22. CS:invite-reply  . . . . . . . . . . . . . . . . . . . . . 24
+     6.23. CS:in-reply-to . . . . . . . . . . . . . . . . . . . . . . 25
+     6.24. CS:notification  . . . . . . . . . . . . . . . . . . . . . 25
+     6.25. CS:dtstamp . . . . . . . . . . . . . . . . . . . . . . . . 26
+     6.26. CS:share . . . . . . . . . . . . . . . . . . . . . . . . . 26
+     6.27. CS:set . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+     6.28. CS:remove  . . . . . . . . . . . . . . . . . . . . . . . . 27
+     6.29. CS:shared-as . . . . . . . . . . . . . . . . . . . . . . . 27
+   7.  Security Considerations  . . . . . . . . . . . . . . . . . . . 27
+   8.  IANA Considerations  . . . . . . . . . . . . . . . . . . . . . 27
+   9.  Acknowledgments  . . . . . . . . . . . . . . . . . . . . . . . 28
+   10. Normative References . . . . . . . . . . . . . . . . . . . . . 28
+   Appendix A.  Change History  . . . . . . . . . . . . . . . . . . . 28
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+
+
 
 
 
@@ -110,7 +110,7 @@ Daboo & York                                                    [Page 1]
 
 Daboo & York                                                    [Page 2]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 1.  Introduction
@@ -166,7 +166,7 @@ Daboo & York                                                    [Page 2]
 
 Daboo & York                                                    [Page 3]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    Sharee  A calendar user to whom a calendar has been shared.
@@ -222,7 +222,7 @@ Daboo & York                                                    [Page 3]
 
 Daboo & York                                                    [Page 4]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 4.  Notifications
@@ -238,12 +238,12 @@ Daboo & York                                                    [Page 4]
 
    The notification collection referenced by the CS:notification-URL
    (Section 4.1.1) property MUST have a DAV:resourcetype property with
-   DAV:collection and CS:notification (Section 6.22) child elements.
+   DAV:collection and CS:notification (Section 6.24) child elements.
 
    Notification "messages" are XML documents stored as resources in the
    notification collection.  Each XML document contains a CS:
-   notification (Section 6.22) element as its root.  The root element
-   contains a CS:dtstamp (Section 6.23) element, and one additional
+   notification (Section 6.24) element as its root.  The root element
+   contains a CS:dtstamp (Section 6.25) element, and one additional
    element which represents the type of notification being conveyed in
    the message.  That child element will typically contain additional
    content that describes the notification.
@@ -278,7 +278,7 @@ Daboo & York                                                    [Page 4]
 
 Daboo & York                                                    [Page 5]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 4.1.1.  CS:notification-URL Property
@@ -334,7 +334,7 @@ Daboo & York                                                    [Page 5]
 
 Daboo & York                                                    [Page 6]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    COPY/MOVE behavior:  This property value MUST be preserved in COPY
@@ -390,7 +390,7 @@ Daboo & York                                                    [Page 6]
 
 Daboo & York                                                    [Page 7]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 5.2.2.  CS:invite Property
@@ -411,15 +411,20 @@ Daboo & York                                                    [Page 7]
       and MOVE operations.
 
    Description:  This WebDAV property is present on a calendar
-      collection resource that has been shared by the owner.  It MUST
-      NOT appear on the calendar collection resources of the sharees of
-      the calendar.  It provides a list of users to whom the calendar
-      has been shared, along with the "status" of the sharing invites
-      sent to each user.
+      collection resource that has been shared by the owner, or on the
+      calendar collection resources of the sharees of the calendar.  It
+      provides a list of users to whom the calendar has been shared,
+      along with the "status" of the sharing invites sent to each user.
+      In addition, servers SHOULD include a CS:organizer XML element on
+      calendar collection resources of the sharees to provide clients
+      with a fast way to determine who the sharer is.  A server's local
+      privacy policy may prevent sharees from knowing about other
+      sharees on a shared calendar.  If that is so server will not
+      include CS:user XML elements for other sharees.
 
    Definition:
 
-   <!ELEMENT invite (user*)>
+   <!ELEMENT invite (organizer?, user*)>
 
 5.2.3.  CS:allowed-sharing-modes Property
 
@@ -436,18 +441,16 @@ Daboo & York                                                    [Page 7]
       PROPFIND allprop request (as defined in Section 14.2 of
       [RFC4918]).
 
-   COPY/MOVE behavior:  This property value MUST be preserved in COPY
-      and MOVE operations.
-
-
-
 
 
 
 Daboo & York                                                    [Page 8]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
+
+   COPY/MOVE behavior:  This property value MUST be preserved in COPY
+      and MOVE operations.
 
    Description:  This WebDAV property is present on a calendar
       collection resource that can been shared or published.  It
@@ -487,202 +490,44 @@ Daboo & York                                                    [Page 8]
 
 5.3.  Sharer Actions on Shared Calendars
 
-5.3.1.  Creating a Shared Calendar
+5.3.1.  Sharing or Unsharing a Calendar
 
-   To create a shared calendar, clients use the MKCALENDAR [RFC4791] or
-   extended MKCOL [RFC5689] requests, and include a DAV:resourcetype
-   property to be set upon creation.  That property MUST contain DAV:
-   collection, CALDAV:calendar and CS:shared-owner child elements to
-   enable sharing.
-
-
-
+   To update an existing calendar to be shared, the sharer simply adds
+   one or more sharees to the calendar collection as per Section 5.3.2.
+   The server MUST update the DAV:resourcetype property on the calendar
+   collection to ensure it contains a CS:shared-owner XML element to
+   indicate the calendar collection is now shared.
 
 
 
 Daboo & York                                                    [Page 9]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
-5.3.1.1.  Example: Successful MKCALENDAR Request
+   To unshare a calendar, the sharer simply removes all sharees to the
+   CS:invite property of the calendar collection as per Section 5.3.2.
+   The server MUST update the DAV:resourcetype property on the calendar
+   collection to ensure it does not contain a CS:shared-owner XML
+   element to indicate the calendar collection is not shared.
 
-   This example shows how the MKCALENDAR request is used to create a
-   shared calendar collection.  The response body is empty as the
-   request completed successfully.
-
-   >> Request <<
-
-   MKCALENDAR /calendars/users/cyrus/shared/ HTTP/1.1
-   Host: calendar.example.com
-   Content-Type: application/xml; charset="utf-8"
-   Content-Length: xxxx
-
-   <?xml version="1.0" encoding="utf-8" ?>
-   <C:mkcalendar xmlns:D="DAV:"
-                 xmlns:C="urn:ietf:params:xml:ns:caldav"
-                 xmlns:CS="http://calendarserver.org/ns/">
-     <D:set>
-       <D:prop>
-         <D:resourcetype>
-           <D:collection/>
-           <C:calendar/>
-           <CS:shared-owner/>
-         </D:resourcetype>
-       </D:prop>
-     </D:set>
-   </C:mkcalendar>
-
-   >> Response <<
-
-   HTTP/1.1 201 Created
-   Cache-Control: no-cache
-   Date: Sat, 11 Nov 2006 09:32:12 GMT
-
-5.3.1.2.  Example: Successful Extended MKCOL Request
-
-   This example shows how the extended MKCOL request is used to create a
-   shared calendar collection.  The response body is empty as the
-   request completed successfully.
-
-
-
-
-
-
-
-
-
-
-
-
-Daboo & York                                                   [Page 10]
-
-                      CalDAV Sharing and Publishing         October 2010
-
-
-   >> Request <<
-
-   MKCOL /calendars/users/cyrus/shared/ HTTP/1.1
-   Host: calendar.example.com
-   Content-Type: application/xml; charset="utf-8"
-   Content-Length: xxxx
-
-   <?xml version="1.0" encoding="utf-8" ?>
-   <D:mkcol xmlns:D="DAV:"
-                 xmlns:C="urn:ietf:params:xml:ns:caldav"
-                 xmlns:CS="http://calendarserver.org/ns/">
-     <D:set>
-       <D:prop>
-         <D:resourcetype>
-           <D:collection/>
-           <C:calendar/>
-           <CS:shared-owner/>
-         </D:resourcetype>
-       </D:prop>
-     </D:set>
-   </D:mkcol>
-
-   >> Response <<
-
-   HTTP/1.1 201 Created
-   Cache-Control: no-cache
-   Date: Sat, 11 Nov 2006 09:32:12 GMT
-
-5.3.2.  Sharing an Existing Calendar
-
-   Sharing an existing calendar can be accomplished in two ways.  One
-   option is to use a PROPPATCH request to set the DAV:resourcetype
-   property to include CS:shared-owner as a child element.  Another
-   option is to add sharee's directly to the calendar collection (as
-   described in Section 5.3.3) - that action MUST upgrade a non-shared
-   calendar to a shared calendar when it completes successfully,
-   assuming that such an upgrade is allowed as per Section 5.5.2.
-
-5.3.2.1.  Example: Successful PROPPATCH Request
-
-   This example shows how the PROPPATCH request is used to upgrade to a
-   shared calendar collection.
-
-
-
-
-
-
-
-
-
-Daboo & York                                                   [Page 11]
-
-                      CalDAV Sharing and Publishing         October 2010
-
-
-   >> Request <<
-
-   PROPPATCH /calendars/users/cyrus/shared/ HTTP/1.1
-   Host: calendar.example.com
-   Content-Type: application/xml; charset="utf-8"
-   Content-Length: xxxx
-
-   <?xml version="1.0" encoding="utf-8" ?>
-   <D:propertyupdate xmlns:D="DAV:"
-                 xmlns:C="urn:ietf:params:xml:ns:caldav"
-                 xmlns:CS="http://calendarserver.org/ns/">
-     <D:set>
-       <D:prop>
-         <D:resourcetype>
-           <D:collection/>
-           <C:calendar/>
-           <CS:shared-owner/>
-         </D:resourcetype>
-       </D:prop>
-     </D:set>
-   </D:propertyupdate>
-
-   >> Response <<
-
-   HTTP/1.1 207 Multi-Status
-   Date: Sat, 11 Nov 2006 09:32:12 GMT
-   Content-Type: application/xml; charset="utf-8"
-   Content-Length: xxxx
-
-   <?xml version="1.0" encoding="utf-8" ?>
-   <D:multistatus xmlns:D="DAV:">
-     <D:response>
-       <D:href>/calendars/users/cyrus/shared/</D:href>
-       <D:propstat>
-         <D:prop>
-           <D:resourcetype/>
-         </D:prop>
-         <D:status>HTTP/1.1 200 OK</D:status>
-       </D:propstat>
-     </D:response>
-   </D:multistatus>
-
-5.3.3.  Manipulating Sharees of a Shared Calendar
+5.3.2.  Manipulating Sharees of a Shared Calendar
 
    The sharer of a shared calendar is able to manipulate the sharee list
-   by issuing a POST request targeted at the shared calendar collection
+   by issuing a POST request targeted at the calendar collection
    resource.  The POST request MUST contain an XML document as its body
-   with the root element being CS:share (Section 6.24).
+   with the root element being CS:share (Section 6.26).
 
-
-
-Daboo & York                                                   [Page 12]
-
-                      CalDAV Sharing and Publishing         October 2010
-
-
-   The CS:share (Section 6.24) element in the POST requests MUST contain
-   one or more CS:set (Section 6.25) or CS:remove (Section 6.26)
-   elements.  For each CS:set (Section 6.25) element, the server MUST
-   add the specified sharee access to the shared calendar.  For each CS:
-   remove (Section 6.26) element the server MUST remove the specified
-   sharee access from the shared calendar.  In each case the server MUST
-   send a notification message to any sharees whose status is changed
-   (added, modified or removed), indicating to them a change in status
-   for the shared calendar.  The server SHOULD NOT send notification
-   messages to sharees whose status is unchanged.
+   The CS:share (Section 6.26) element in the POST requests MUST contain
+   one or more CS:set (Section 6.27) or CS:remove (Section 6.28)
+   elements.  For each CS:set (Section 6.27) element, the server MUST
+   add the specified sharee access to the calendar.  For each CS:remove
+   (Section 6.28) element the server MUST remove the specified sharee
+   access from the shared calendar.  In each case the server MUST send a
+   notification message to any sharees whose status is changed (added,
+   modified or removed), indicating to them a change in status for the
+   shared calendar.  The server SHOULD NOT send notification messages to
+   sharees whose status is unchanged.
 
    Sharee's are identified via a DAV:href element whose value is either
    a principal-URL for a sharee hosted on the same server, a calendar
@@ -694,7 +539,7 @@ Daboo & York                                                   [Page 12]
    sharees via the CS:invite property (Section 5.2.2).
 
    The client MAY include a CS:common-name (Section 6.19) element in the
-   CS:set (Section 6.25) element.  When provided, the value represents
+   CS:set (Section 6.27) element.  When provided, the value represents
    the common name for the sharee, and is returned in the list of
    sharees via the CS:invite property (Section 5.2.2).  The server MAY
    change this to a suitable alternative when it is able to match the
@@ -708,26 +553,19 @@ Daboo & York                                                   [Page 12]
    sharing status.  This is accomplished by sending a CS:invite-
    notification (Section 6.15) notification to each sharee.
 
-5.3.3.1.  Example: Successful Sharee Add Request
+
+
+
+Daboo & York                                                   [Page 10]
+
+                      CalDAV Sharing and Publishing       September 2012
+
+
+5.3.2.1.  Example: Successful Sharee Add Request
 
    This example shows how to add a single sharee (with calendar user
    address "mailto:eric@example.com") to a shared calendar with CS:read-
    write access.
-
-
-
-
-
-
-
-
-
-
-
-Daboo & York                                                   [Page 13]
-
-                      CalDAV Sharing and Publishing         October 2010
-
 
    >> Request <<
 
@@ -753,7 +591,7 @@ Daboo & York                                                   [Page 13]
    Cache-Control: no-cache
    Date: Sat, 11 Nov 2006 09:32:12 GMT
 
-5.3.3.2.  Example: Successful Multiple Sharee Change Request
+5.3.2.2.  Example: Successful Multiple Sharee Change Request
 
    This example shows how multiple sharee's can be manipulated in a
    single request.  The sharee with calendar user address
@@ -774,15 +612,9 @@ Daboo & York                                                   [Page 13]
 
 
 
-
-
-
-
-
-
-Daboo & York                                                   [Page 14]
+Daboo & York                                                   [Page 11]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    >> Request <<
@@ -819,9 +651,9 @@ Daboo & York                                                   [Page 14]
    decline the invite by issuing a POST request to the sharee's calendar
    home collection resource.  The POST request MUST contain an XML
    document as its body with the root element being CS:invite-reply
-   (Section 6.20).
+   (Section 6.22).
 
-   The CS:invite-reply (Section 6.20) element in the POST request
+   The CS:invite-reply (Section 6.22) element in the POST request
    specifies the sharee who is replying in the DAV:href element, the
    accept or decline action via the CS:invite-accepted or CS:invite-
    declined elements, the URL of the shared calendar in the CS:hosturl
@@ -829,22 +661,22 @@ Daboo & York                                                   [Page 14]
    in the CS:in-reply-to element, and an optional CS:summary element.
 
    The response to a POST request that accepts a shared calendar invite
-   MUST be an XML document containing CS:shared-as (Section 6.27) as its
+   MUST be an XML document containing CS:shared-as (Section 6.29) as its
    root element.  That root element contains a single DAV:href element
    whose content is the URI of the shared calendar in the sharee's
    calendar home created by the invite acceptance.
 
 
 
-Daboo & York                                                   [Page 15]
+Daboo & York                                                   [Page 12]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    When the sharee replies to an invite, the server SHOULD send a
    notification to the sharer to update them on the change in the sharee
    state.  This is accomplished by sending a CS:invite-reply
-   (Section 6.20) notification to the sharer.
+   (Section 6.22) notification to the sharer.
 
 5.4.2.  Removing a Shared Calendar
 
@@ -892,9 +724,9 @@ Daboo & York                                                   [Page 15]
 
 
 
-Daboo & York                                                   [Page 16]
+Daboo & York                                                   [Page 13]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
       calendar collection cannot be published.
@@ -948,9 +780,9 @@ Daboo & York                                                   [Page 16]
 
 
 
-Daboo & York                                                   [Page 17]
+Daboo & York                                                   [Page 14]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    status without "interfering" with other users who also have access to
@@ -981,10 +813,10 @@ Daboo & York                                                   [Page 17]
 
 5.5.5.  Scheduling
 
-   CalDAV Scheduling [I-D.desruisseaux-caldav-sched] defines how a
-   CalDAV server carries out scheduling operations when calendar object
-   resources are created, modified or deleted and include "ORGANIZER"
-   and "ATTENDEE" iCalendar properties.
+   CalDAV Scheduling [RFC6638] defines how a CalDAV server carries out
+   scheduling operations when calendar object resources are created,
+   modified or deleted and include "ORGANIZER" and "ATTENDEE" iCalendar
+   properties.
 
    When calendar object resources are created, modified or deleted in
    shared calendars by sharees, the following restrictions apply:
@@ -1004,9 +836,9 @@ Daboo & York                                                   [Page 17]
 
 
 
-Daboo & York                                                   [Page 18]
+Daboo & York                                                   [Page 15]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    2.  The server MUST reject any attempt by a sharee to MOVE a calendar
@@ -1022,8 +854,8 @@ Daboo & York                                                   [Page 18]
        granted, the sharee can add themselves as an Attendee.
 
    4.  The default calendar collection defined in Section 6.3 of
-       [I-D.desruisseaux-caldav-sched] MUST NOT be a calendar shared to
-       the corresponding calendar user.
+       [RFC6638] MUST NOT be a calendar shared to the corresponding
+       calendar user.
 
    Following are additional considerations for scheduling with shared
    calendars:
@@ -1060,9 +892,9 @@ Daboo & York                                                   [Page 18]
 
 
 
-Daboo & York                                                   [Page 19]
+Daboo & York                                                   [Page 16]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    Name:  shared-owner
@@ -1116,9 +948,9 @@ Daboo & York                                                   [Page 19]
 
 
 
-Daboo & York                                                   [Page 20]
+Daboo & York                                                   [Page 17]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 6.4.  CS:can-be-published
@@ -1172,9 +1004,9 @@ Daboo & York                                                   [Page 20]
 
 
 
-Daboo & York                                                   [Page 21]
+Daboo & York                                                   [Page 18]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    Definition:
@@ -1228,9 +1060,9 @@ Daboo & York                                                   [Page 21]
 
 
 
-Daboo & York                                                   [Page 22]
+Daboo & York                                                   [Page 19]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    Purpose:  Sharing invite status.
@@ -1276,7 +1108,7 @@ Daboo & York                                                   [Page 22]
 
    Definition:
 
-   <!ELEMENT invite-invalid (read | read-write)>
+   <!ELEMENT access (read | read-write)>
 
 
 
@@ -1284,9 +1116,9 @@ Daboo & York                                                   [Page 22]
 
 
 
-Daboo & York                                                   [Page 23]
+Daboo & York                                                   [Page 20]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 6.12.  CS:read
@@ -1340,9 +1172,9 @@ Daboo & York                                                   [Page 23]
 
 
 
-Daboo & York                                                   [Page 24]
+Daboo & York                                                   [Page 21]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    Definition:
@@ -1360,14 +1192,21 @@ Daboo & York                                                   [Page 24]
    Description:  Defines a notification message sent automatically by
       the server when a sharer adds, changes or removes a sharee from a
       shared calendar.  The DAV:href element specifies the calendar user
-      address of the sharee to whom the message was sent.
+      address of the sharee to whom the message was sent.  The CALDAV:
+      supported-calendar-component-set is a copy of the matching WebDAV
+      property on the sharers calendar collection, to allow clients to
+      know what restrictions might apply to the shared calendar before
+      accepting it.
 
    Definition:
 
-   <!ELEMENT invite-notification (uid, DAV:href,
-                                  (invite-noresponse | invite-deleted |
-                                   invite-accepted | invite-declined),
-                                  access, hosturl, organizer, summary?>
+   <!ELEMENT invite-notification (
+               uid, DAV:href,
+               (invite-noresponse | invite-deleted |
+               invite-accepted | invite-declined),
+               access, hosturl, organizer,
+               summary?,
+               CALDAV:supported-calendar-component-set?>
 
 6.16.  CS:uid
 
@@ -1384,22 +1223,21 @@ Daboo & York                                                   [Page 24]
 
    <!ELEMENT uid (#PCDATA)>
 
+
+
+
+
+
+Daboo & York                                                   [Page 22]
+
+                      CalDAV Sharing and Publishing       September 2012
+
+
 6.17.  CS:hosturl
 
    Name:  hosturl
 
    Namespace:  http://calendarserver.org/ns/
-
-
-
-
-
-
-
-Daboo & York                                                   [Page 25]
-
-                      CalDAV Sharing and Publishing         October 2010
-
 
    Purpose:  Identifies the source URL of a shared calendar.
 
@@ -1421,17 +1259,35 @@ Daboo & York                                                   [Page 25]
 
    Description:  Contains a single DAV:href element that identifies the
       calendar user address of the sharer of a shared calendar, and an
-      optional CS:common-name element that matches that user.
+      optional CS:common-name element that matches that user, and an
+      option CS:first-name, CS:last-name pair of elements that match
+      that user.  In some cases servers might have directory information
+      that includes only the common name, or only the first or last
+      name, and it is better to expose those directly to the client
+      as-is rather than to try and split or combine the attributes to
+      synthesize one set or the other.
 
    Definition:
 
-   <!ELEMENT organizer (DAV:href, CS:common-name?)>
+   <!ELEMENT organizer (DAV:href,
+                        CS:common-name?,
+                        (CS:first-name, CS:last-name)?)>
 
 6.19.  CS:common-name
 
    Name:  common-name
 
    Namespace:  http://calendarserver.org/ns/
+
+
+
+
+
+
+Daboo & York                                                   [Page 23]
+
+                      CalDAV Sharing and Publishing       September 2012
+
 
    Purpose:  The common name of a sharer or sharee.
 
@@ -1444,7 +1300,38 @@ Daboo & York                                                   [Page 25]
 
    <!ELEMENT common-name (#PCDATA)>
 
-6.20.  CS:invite-reply
+6.20.  CS:first-name
+
+   Name:  first-name
+
+   Namespace:  http://calendarserver.org/ns/
+
+   Purpose:  The first name of a sharer or sharee.
+
+   Description:  The first name is optionally included by the server
+      when returning results for sharers or sharees and in
+      notifications.
+
+   Definition:
+
+   <!ELEMENT first-name (#PCDATA)>
+
+6.21.  CS:last-name
+
+   Name:  last-name
+
+   Namespace:  http://calendarserver.org/ns/
+
+   Purpose:  The last name of a sharer or sharee.
+
+   Description:  The last name is optionally included by the server when
+      returning results for sharers or sharees and in notifications.
+
+   Definition:
+
+   <!ELEMENT last-name (#PCDATA)>
+
+6.22.  CS:invite-reply
 
 
 
@@ -1452,9 +1339,10 @@ Daboo & York                                                   [Page 25]
 
 
 
-Daboo & York                                                   [Page 26]
+
+Daboo & York                                                   [Page 24]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
    Name:  invite-reply
@@ -1474,7 +1362,7 @@ Daboo & York                                                   [Page 26]
                            (invite-accepted | invite-declined),
                            hosturl, in-reply-to, summary?>
 
-6.21.  CS:in-reply-to
+6.23.  CS:in-reply-to
 
    Name:  in-reply-to
 
@@ -1489,7 +1377,7 @@ Daboo & York                                                   [Page 26]
 
    <!ELEMENT in-reply-to (#PCDATA)>
 
-6.22.  CS:notification
+6.24.  CS:notification
 
    Name:  notification
 
@@ -1508,12 +1396,12 @@ Daboo & York                                                   [Page 26]
 
 
 
-Daboo & York                                                   [Page 27]
+Daboo & York                                                   [Page 25]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
-6.23.  CS:dtstamp
+6.25.  CS:dtstamp
 
    Name:  dtstamp
 
@@ -1528,7 +1416,7 @@ Daboo & York                                                   [Page 27]
 
    <!ELEMENT dtstamp (#PCDATA)>
 
-6.24.  CS:share
+6.26.  CS:share
 
    Name:  share
 
@@ -1543,7 +1431,7 @@ Daboo & York                                                   [Page 27]
 
    <!ELEMENT share (set | remove)*>
 
-6.25.  CS:set
+6.27.  CS:set
 
    Name:  set
 
@@ -1564,12 +1452,12 @@ Daboo & York                                                   [Page 27]
 
 
 
-Daboo & York                                                   [Page 28]
+Daboo & York                                                   [Page 26]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
-6.26.  CS:remove
+6.28.  CS:remove
 
    Name:  remove
 
@@ -1584,7 +1472,7 @@ Daboo & York                                                   [Page 28]
 
    <!ELEMENT remove (DAV:href)>
 
-6.27.  CS:shared-as
+6.29.  CS:shared-as
 
    Name:  shared-as
 
@@ -1620,9 +1508,9 @@ Daboo & York                                                   [Page 28]
 
 
 
-Daboo & York                                                   [Page 29]
+Daboo & York                                                   [Page 27]
 
-                      CalDAV Sharing and Publishing         October 2010
+                      CalDAV Sharing and Publishing       September 2012
 
 
 9.  Acknowledgments
@@ -1632,11 +1520,6 @@ Daboo & York                                                   [Page 29]
 
 
 10.  Normative References
-
-   [I-D.desruisseaux-caldav-sched]
-              Daboo, C. and B. Desruisseaux, "CalDAV Scheduling
-              Extensions to WebDAV", draft-desruisseaux-caldav-sched-08
-              (work in progress), August 2009.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
@@ -1652,11 +1535,26 @@ Daboo & York                                                   [Page 29]
    [RFC4918]  Dusseault, L., "HTTP Extensions for Web Distributed
               Authoring and Versioning (WebDAV)", RFC 4918, June 2007.
 
-   [RFC5689]  Daboo, C., "Extended MKCOL for Web Distributed Authoring
-              and Versioning (WebDAV)", RFC 5689, September 2009.
+   [RFC6638]  Daboo, C. and B. Desruisseaux, "Scheduling Extensions to
+              CalDAV", RFC 6638, June 2012.
 
 
 Appendix A.  Change History
+
+   Changes in -03:
+
+   1.  Fixed access element DTD.
+
+   2.  Remove MKxxx and PROPPATCH mechanism for upgrading/downgrading
+       shared state on a calendar collection.  Instead the server
+       implicitly sets the state based on whether there are any sharees
+       or not..
+
+   3.  Added CS:first-name and CS:last-name optional element to CS:
+       organizer.
+
+   4.  Added CALDAV:supported-calendar-component-set optional element to
+       CS:invite-notification.
 
    Changes in -02:
 
@@ -1665,7 +1563,11 @@ Appendix A.  Change History
        header
 
 
-Appendix B.  Change History
+
+Daboo & York                                                   [Page 28]
+
+                      CalDAV Sharing and Publishing       September 2012
+
 
    Changes in -01:
 
@@ -1673,12 +1575,6 @@ Appendix B.  Change History
 
    2.  Clarified that notifications are only required to be sent when
        sharee status is changed
-
-
-
-Daboo & York                                                   [Page 30]
-
-                      CalDAV Sharing and Publishing         October 2010
 
 
 Authors' Addresses
@@ -1724,13 +1620,5 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-Daboo & York                                                   [Page 31]
+Daboo & York                                                   [Page 29]
 

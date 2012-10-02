@@ -64,6 +64,7 @@
 	* Fixed: Issue 237: xml-encoding values in SabreDAV error responses.
 	* Fixed: Returning 403, instead of 501 when an unknown REPORT is
 	  requested.
+	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
 1.6.5-stable (2012-??-??)

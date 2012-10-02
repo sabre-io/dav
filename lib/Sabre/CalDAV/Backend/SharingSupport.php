@@ -21,7 +21,7 @@
  * correctly sharing _will_ work. It's not particularly easy, and I _urge you_
  * to make yourself acquainted with the following document first:
  *
- * https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
+ * https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing.txt
  *
  * An overview
  * ===========
@@ -31,6 +31,7 @@
  * show up in both the Sharer's and Sharee's calendar-home root.
  * This interface adds a few methods that ensure that this happens, and there
  * are also a number of new requirements in the base-class you must now follow.
+ *
  *
  * How it works
  * ============
@@ -47,10 +48,6 @@
  * If the sharee deletes the calendar, only their share gets deleted. When the
  * owner deletes a calendar, it will be removed for everybody.
  *
- * Marking a calendar as shared
- * ============================
- *
- * TODO
  *
  * Notifications
  * =============
@@ -141,6 +138,27 @@
  * This element should contain a {DAV:}href element, which points to the
  * public url that does not require authentication. Unlike every other href,
  * this url must be absolute.
+ *
+ * Ideally, the following property is always returned
+ *
+ * {http://calendarserver.org/ns/}pre-publish-url
+ *
+ * This property should contain the url that the calendar _would_ have, if it
+ * were to be published. iCal uses this to display the url, before the user
+ * will actually publish it.
+ *
+ *
+ * Selectively disabling publish or share feature
+ * ==============================================
+ *
+ * If Sabre_CalDAV_Property_AllowedSharingModes is returned from
+ * getCalendarsByUser, this allows the server to specify wether either sharing,
+ * or publishing is supported.
+ *
+ * This allows a client to determine in advance which features are available,
+ * and update the interface appropriately. If this property is not returned by
+ * the backend, the SharingPlugin automatically injects it and assumes both
+ * features are available.
  *
  * @package Sabre
  * @subpackage CalDAV

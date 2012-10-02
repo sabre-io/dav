@@ -450,7 +450,7 @@ END:VCALENDAR';
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
         $this->assertTrue($prop instanceof Sabre_DAV_Property_HrefList);
-        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1'),$prop->getHrefs());
+        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1/'),$prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];

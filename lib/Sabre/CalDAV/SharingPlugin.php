@@ -4,7 +4,13 @@
  * This plugin implements support for caldav sharing.
  *
  * This spec is defined at:
- * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
+ * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-sharing.txt
+ *
+ * See:
+ * Sabre_CalDAV_Backend_SharingSupport for all the documentation.
+ *
+ * Note: This feature is experimental, and may change in between different
+ * SabreDAV versions.
  *
  * @package Sabre
  * @subpackage CalDAV

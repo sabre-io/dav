@@ -3,6 +3,9 @@
 /**
  * Adds caldav notification support to a backend.
  *
+ * Note: This feature is experimental, and may change in between different
+ * SabreDAV versions.
+ *
  * Notifications are defined at:
  * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-notifications.txt
  *
@@ -10,7 +13,7 @@
  * displayed to the user. Users can dismiss notifications by deleting them.
  *
  * The primary usecase is to allow for calendar-sharing.
- * 
+ *
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.

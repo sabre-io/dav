@@ -3,6 +3,9 @@
 /**
  * Adds support for sharing features to a CalDAV server.
  *
+ * Note: This feature is experimental, and may change in between different
+ * SabreDAV versions.
+ *
  * Early warning: Currently SabreDAV provides no implementation for this. This
  * is, because in it's current state there is no elegant way to do this.
  * The problem lies in the fact that a real CalDAV server with sharing support

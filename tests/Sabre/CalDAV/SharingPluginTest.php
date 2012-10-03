@@ -74,7 +74,9 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
         $this->caldavBackend->updateShares(1,
             array(
-                'href' => 'mailto:joe@example.org',
+                array(
+                    'href' => 'mailto:joe@example.org',
+                ),
             ),
             array()
         );

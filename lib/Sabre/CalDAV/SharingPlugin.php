@@ -292,7 +292,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
                 $message = $this->parseInviteReplyRequest($dom);
 
-                $node->shareReply(
+                $url = $node->shareReply(
                     $message['href'],
                     $message['status'],
                     $message['calendarUri'],
@@ -304,6 +304,24 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
                 $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+
+                if ($url) {
+                    $dom = new DOMDocument('1.0', 'UTF-8');
+                    $dom->formatOutput = true;
+
+                    $root = $dom->createElement('cs:shared-as');
+                    foreach($this->server->xmlNamespaces as $namespace => $prefix) {
+                        $root->setAttribute('xmlns:' . $prefix, $namespace);
+                    }
+
+                    $dom->appendChild($root);
+                    $href = new Sabre_DAV_Property_Href($url);
+
+                    $href->serialize($this->server, $root);
+                    $this->server->httpResponse->setHeader('Content-Type','application/xml');
+                    $this->server->httpResponse->sendBody($dom->saveXML());
+
+                }
 
                 // Breaking the event chain
                 return false;

@@ -363,6 +363,9 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
     public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
 
         // This operation basically doesn't do anything yet
+        if ($status === Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED) {
+            return 'calendars/blabla/calendar';
+        }
 
     }
 

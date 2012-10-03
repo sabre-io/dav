@@ -214,12 +214,15 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Notif
     /**
      * This method is called when a user replied to a request to share.
      *
+     * If the user chose to accept the share, this method should return the
+     * newly created calendar url.
+     *
      * @param string href The sharee who is replying (often a mailto: address)
      * @param int status One of the SharingPlugin::STATUS_* constants
      * @param string $calendarUri The url to the calendar thats being shared
      * @param string $inReplyTo The unique id this message is a response to
      * @param string $summary A description of the reply
-     * @return void
+     * @return null|string
      */
     function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null);
 

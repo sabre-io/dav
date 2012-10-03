@@ -233,6 +233,7 @@ RRR;
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
     <cs:hosturl><d:href>/principals/owner</d:href></cs:hosturl>
+    <cs:invite-accepted />
 </cs:invite-reply>
 ';
 

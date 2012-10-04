@@ -67,13 +67,14 @@
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
-1.6.5-stable (2012-??-??)
+1.6.5-stable (2012-10-04)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
 	* Added: Ability to allow users to set SSL certificates for the Client
 	  class. (Thanks schiesbn!).
 	* Fixed: Directory indexes with lots of nodes should be a lot faster.
 	* Fixed: Issue 235: E_NOTICE thrown when doing a propfind request with
 	  Sabre_DAV_Client, and no valid properties are returned.
+	* Fixed: Issue with filtering on alarms in tasks.
 
 1.6.4-stable (2012-08-02)
 	* Fixed: Issue 220: Calendar-query filters may fail when filtering on

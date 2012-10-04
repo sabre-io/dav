@@ -137,5 +137,34 @@ class Sabre_VObject_Component_VAlarmTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * This bug was found and reported on the mailing list.
+     */
+    public function testInTimeRangeBuggy() {
+
+$input = <<<BLA
+BEGIN:VCALENDAR
+BEGIN:VTODO
+DTSTAMP:20121003T064931Z
+UID:b848cb9a7bb16e464a06c222ca1f8102@examle.com
+STATUS:NEEDS-ACTION
+DUE:20121005T000000Z
+SUMMARY:Task 1
+CATEGORIES:AlarmCategory
+BEGIN:VALARM
+TRIGGER:-PT10M
+ACTION:DISPLAY
+DESCRIPTION:Task 1
+END:VALARM
+END:VTODO
+END:VCALENDAR
+BLA;
+
+        $vobj = Sabre_VObject_Reader::read($input);
+
+        $this->assertTrue($vobj->VTODO->VALARM->isInTimeRange(new \DateTime('2012-10-01 00:00:00'), new \DateTime('2012-11-01 00:00:00')));
+
+    }
+
 }
 

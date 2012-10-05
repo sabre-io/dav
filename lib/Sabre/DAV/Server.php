@@ -705,6 +705,7 @@ class Sabre_DAV_Server {
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->httpResponse->setHeader('Vary','Brief,Prefer');
 
         // Normally this header is only needed for OPTIONS responses, however..
         // iCal seems to also depend on these being set for PROPFIND. Since
@@ -737,6 +738,8 @@ class Sabre_DAV_Server {
         $result = $this->updateProperties($uri, $newProperties);
 
         $prefer = $this->getHTTPPrefer();
+        $this->httpResponse->setHeader('Vary','Brief,Prefer');
+
         if ($prefer['return-minimal']) {
 
             // If return-minimal is specified, we only have to check if the

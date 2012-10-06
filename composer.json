@@ -15,11 +15,11 @@
     ],
     "require": {
         "php": ">=5.3.1",
-        "sabre/vobject" : "master-dev"
+        "sabre/vobject" : "2.0.*"
     },
-    "provide" : { 
-        "evert/sabredav" : "2.0.0" 
-    },
+    "provide" : {
+        "evert/sabredav" : "1.7.*"
+    }, 
     "autoload": {
         "psr-0": { "Sabre": "lib/" }
     },

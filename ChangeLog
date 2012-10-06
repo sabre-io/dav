@@ -1,4 +1,4 @@
-1.7.0-stable (2012-??-??)
+1.7.0-stable (2012-10-06)
     * BC Break: The calendarobjects database table has a bunch of new
 	  fields, and a migration script is required to ensure everything will
 	  keep working. Read the wiki for more details.

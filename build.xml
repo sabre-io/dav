@@ -9,7 +9,6 @@
 
     <target name="buildzip" depends="init, test, clean">
         <mkdir dir="build" />
-        <mkdir dir="build/SabreDAV" />
         <echo>Running composer</echo>
         <exec command="composer.phar create-project sabre/dav build/SabreDAV ${sabredav.version}" checkreturn="false" passthru="1" />
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />

@@ -43,6 +43,7 @@ $paths = array(
 foreach($paths as $path) {
     if (file_exists($path)) {
         include $path;
+        break;
     }
 }
 

@@ -224,7 +224,7 @@ echo "Process completed!\n";
  */
 function getDenormalizedData($calendarData) {
 
-    $vObject = Sabre_VObject_Reader::read($calendarData);
+    $vObject = \Sabre\VObject\Reader::read($calendarData);
     $componentType = null;
     $component = null;
     $firstOccurence = null;
@@ -246,9 +246,9 @@ function getDenormalizedData($calendarData) {
                 $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
             } elseif (isset($component->DURATION)) {
                 $endDate = clone $component->DTSTART->getDateTime();
-                $endDate->add(Sabre_VObject_DateTimeParser::parse($component->DURATION->value));
+                $endDate->add(\Sabre\VObject\DateTimeParser::parse($component->DURATION->value));
                 $lastOccurence = $endDate->getTimeStamp();
-            } elseif ($component->DTSTART->getDateType()===Sabre_VObject_Property_DateTime::DATE) {
+            } elseif ($component->DTSTART->getDateType()===\Sabre\VObject\Property\DateTime::DATE) {
                 $endDate = clone $component->DTSTART->getDateTime();
                 $endDate->modify('+1 day');
                 $lastOccurence = $endDate->getTimeStamp();
@@ -256,7 +256,7 @@ function getDenormalizedData($calendarData) {
                 $lastOccurence = $firstOccurence;
             }
         } else {
-            $it = new Sabre_VObject_RecurrenceIterator($vObject, (string)$component->UID);
+            $it = new \Sabre\VObject\RecurrenceIterator($vObject, (string)$component->UID);
             $maxDate = new DateTime(Sabre_CalDAV_Backend_PDO::MAX_DATE);
             if ($it->isInfinite()) {
                 $lastOccurence = $maxDate->getTimeStamp();

@@ -1,3 +1,6 @@
+1.7.1-stable (2012-10-07)
+	* Fixed: include path problem in the migration script.
+
 1.7.0-stable (2012-10-06)
     * BC Break: The calendarobjects database table has a bunch of new
 	  fields, and a migration script is required to ensure everything will

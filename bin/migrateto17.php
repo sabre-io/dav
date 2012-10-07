@@ -33,12 +33,17 @@ HELLO;
 
 }
 
-if (file_exists(__DIR__ . '/../lib/Sabre/VObject/includes.php')) {
-    include __DIR__ . '/../lib/Sabre/VObject/includes.php';
-} else {
-    // If, for some reason VObject was not found in the vicinity,
-    // we'll try to grab it from the default path.
-    require 'Sabre/VObject/includes.php';
+// There's a bunch of places where the autoloader could be, so we'll try all of
+// them.
+$paths = array(
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+);
+
+foreach($paths as $path) {
+    if (file_exists($path)) {
+        include $path;
+    }
 }
 
 $dsn = $argv[1];

@@ -24,7 +24,7 @@ php {$argv[0]} [pdo-dsn] [username] [password]
 
 For example:
 
-php {$argv[0]} mysql:host=localhost;dbname=sabredav root password
+php {$argv[0]} "mysql:host=localhost;dbname=sabredav" root password
 php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;

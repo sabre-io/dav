@@ -694,7 +694,7 @@ class Sabre_DAV_Server {
     protected function httpPropfind($uri) {
 
         // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
-        $requestedProperties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
+        $requestedProperties = $this->parsePropFindRequest($this->httpRequest->getBody(true));
 
         $depth = $this->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1

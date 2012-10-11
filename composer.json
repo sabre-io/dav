@@ -20,13 +20,22 @@
         "ext-pcre": "*",
         "ext-spl": "*",
         "ext-simplexml": "*",
-        "ext-mbstring" : "*"
+        "ext-mbstring" : "*",
+        "ext-ctype" : "*",
+        "ext-date" : "*",
+        "ext-iconv" : "*",
+        "ext-libxml" : "*"
     },
     "require-dev" : {
         "phpunit/phpunit" : "3.7.*"
     },
     "provide" : {
         "evert/sabredav" : "1.7.*"
+    },
+    "suggest" : {
+        "ext-apc" : "*",
+        "ext-curl" : "*",
+        "ext-pdo" : "*"
     }, 
     "autoload": {
         "psr-0": { "Sabre": "lib/" }

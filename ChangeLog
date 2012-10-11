@@ -1,3 +1,7 @@
+1.7.2-stable (2012-??-??)
+	* Added: ACL plugin advertises support for 'calendarserver-principal-
+	  property-search'.
+
 1.7.1-stable (2012-10-07)
 	* Fixed: include path problem in the migration script.
 

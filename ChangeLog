@@ -1,6 +1,8 @@
 1.8.0-alpha (????-??-??)
 	* Added: Sabre_DAVACL_IPrincipalCollection interface, to advertise support
 	  for principal-property-search on any node.
+	* Added: Simple console script to fire up a fileserver in the current
+	  directory using PHP 5.4's built-in webserver.
 
 1.7.2-stable (2012-??-??)
 	* Added: ACL plugin advertises support for 'calendarserver-principal-

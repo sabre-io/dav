@@ -43,5 +43,8 @@
     "support" : {
         "forum" : "https://groups.google.com/group/sabredav-discuss",
         "source" : "https://github.com/evert/sabredav"
-    }
+    },
+    "bin" : [
+        "bin/sabredav"
+    ]
 }

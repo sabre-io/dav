@@ -1,14 +1,18 @@
 <?php
 
-class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
+namespace Sabre\DAV;
+
+use Sabre\HTTP;
+
+class HTTPPReferParsingTest extends \Sabre\DAVServerTest {
 
     function testParseSimple() {
 
-        $httpRequest = new Sabre_HTTP_Request(array(
+        $httpRequest = new HTTP\Request(array(
             'HTTP_PREFER' => 'return-asynch',
         ));
 
-        $server = new Sabre_DAV_Server();
+        $server = new Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
@@ -24,11 +28,11 @@ class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
 
     function testParseValue() {
 
-        $httpRequest = new Sabre_HTTP_Request(array(
+        $httpRequest = new HTTP\Request(array(
             'HTTP_PREFER' => 'wait=10',
         ));
 
-        $server = new Sabre_DAV_Server();
+        $server = new Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
@@ -44,11 +48,11 @@ class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
 
     function testParseMultiple() {
 
-        $httpRequest = new Sabre_HTTP_Request(array(
+        $httpRequest = new HTTP\Request(array(
             'HTTP_PREFER' => 'return-minimal, strict,lenient',
         ));
 
-        $server = new Sabre_DAV_Server();
+        $server = new Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
@@ -64,11 +68,11 @@ class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
 
     function testParseWeirdValue() {
 
-        $httpRequest = new Sabre_HTTP_Request(array(
+        $httpRequest = new HTTP\Request(array(
             'HTTP_PREFER' => 'BOOOH',
         ));
 
-        $server = new Sabre_DAV_Server();
+        $server = new Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
@@ -84,11 +88,11 @@ class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
 
     function testBrief() {
 
-        $httpRequest = new Sabre_HTTP_Request(array(
+        $httpRequest = new HTTP\Request(array(
             'HTTP_BRIEF' => 't',
         ));
 
-        $server = new Sabre_DAV_Server();
+        $server = new Server();
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals(array(
@@ -109,7 +113,7 @@ class Sabre_DAV_HTTPPReferParsingTest extends Sabre_DAVServerTest {
      */
     function testpropfindMinimal() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PROPFIND',
             'REQUEST_URI'    => '/',
             'HTTP_PREFER' => 'return-minimal',
@@ -134,7 +138,7 @@ BLA
 
     function testproppatchMinimal() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PROPPATCH',
             'REQUEST_URI'    => '/',
             'HTTP_PREFER' => 'return-minimal',
@@ -169,7 +173,7 @@ BLA
 
     function testproppatchMinimalError() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PROPPATCH',
             'REQUEST_URI'    => '/',
             'HTTP_PREFER' => 'return-minimal',

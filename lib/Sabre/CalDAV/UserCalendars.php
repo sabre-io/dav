@@ -342,8 +342,8 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
      */
     public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
 
-        if (!$this->caldavBackend instanceof Sabre_CalDAV_Backend_SharingSupport) {
-            throw new Sabre_DAV_Exception_NotImplemented('Sharing support is not implemented by this backend.');
+        if (!$this->caldavBackend instanceof Backend\SharingSupport) {
+            throw new DAV\Exception\NotImplemented('Sharing support is not implemented by this backend.');
         }
 
         return $this->caldavBackend->shareReply($href, $status, $calendarUri, $inReplyTo, $summary);

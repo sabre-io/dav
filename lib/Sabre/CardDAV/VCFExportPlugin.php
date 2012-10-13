@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
 use Sabre\VObject;
 
 /**
@@ -9,29 +12,27 @@ use Sabre\VObject;
  * This is useful for clients that don't support CardDAV yet. They often do
  * support vcf files.
  *
- * @package Sabre
- * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @author Thomas Tanghus (http://tanghus.net/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
+class VCFExportPlugin extends DAV\ServerPlugin {
 
     /**
      * Reference to Server class
      *
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     private $server;
 
     /**
      * Initializes the plugin and registers event handlers
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @return void
      */
-    public function initialize(Sabre_DAV_Server $server) {
+    public function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $this->server->subscribeEvent('beforeMethod',array($this,'beforeMethod'), 90);
@@ -56,7 +57,7 @@ class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
 
         $node = $this->server->tree->getNodeForPath($uri);
 
-        if (!($node instanceof Sabre_CardDAV_IAddressBook)) return;
+        if (!($node instanceof IAddressBook)) return;
 
         // Checking ACL, if available.
         if ($aclPlugin = $this->server->getPlugin('acl')) {
@@ -67,7 +68,7 @@ class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
         $this->server->httpResponse->sendStatus(200);
 
         $nodes = $this->server->getPropertiesForPath($uri, array(
-            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}address-data',
+            '{' . Plugin::NS_CARDDAV . '}address-data',
         ),1);
 
         $this->server->httpResponse->sendBody($this->generateVCF($nodes));
@@ -89,10 +90,10 @@ class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
 
         foreach($nodes as $node) {
 
-            if (!isset($node[200]['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}address-data'])) {
+            if (!isset($node[200]['{' . Plugin::NS_CARDDAV . '}address-data'])) {
                 continue;
             }
-            $nodeData = $node[200]['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}address-data'];
+            $nodeData = $node[200]['{' . Plugin::NS_CARDDAV . '}address-data'];
 
             // Parsing this node so VObject can clean up the output.
             $output .=

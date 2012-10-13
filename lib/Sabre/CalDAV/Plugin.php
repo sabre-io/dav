@@ -1115,7 +1115,7 @@ class Plugin extends DAV\ServerPlugin {
             $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange, $vObject);
         }
 
-        $dom = new DOMDocument('1.0','utf-8');
+        $dom = new \DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
         $scheduleResponse = $dom->createElement('cal:schedule-response');
         foreach($this->server->xmlNamespaces as $namespace=>$prefix) {

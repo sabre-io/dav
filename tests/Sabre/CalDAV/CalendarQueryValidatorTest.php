@@ -648,8 +648,8 @@ yow;
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2012-09-01 00:00:00', new DateTimeZone('UTC')),
-                        'end' => new DateTime('2012-10-01 00:00:00', new DateTimeZone('UTC')),
+                        'start' => new \DateTime('2012-09-01 00:00:00', new \DateTimeZone('UTC')),
+                        'end' => new \DateTime('2012-10-01 00:00:00', new \DateTimeZone('UTC')),
                     )
                 ),
             ),

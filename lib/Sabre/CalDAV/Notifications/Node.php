@@ -49,7 +49,7 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
      * @param string $principalUri
      * @param Sabre\CalDAV\Notifications\INotificationType $notification
      */
-    public function __construct(Backend\NotificationSupport $caldavBackend, $principalUri, INotificationType $notification) {
+    public function __construct(CalDAV\Backend\NotificationSupport $caldavBackend, $principalUri, INotificationType $notification) {
 
         $this->caldavBackend = $caldavBackend;
         $this->principalUri = $principalUri;
@@ -83,9 +83,9 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
 
     /**
      * This method must return an xml element, using the
-     * Sabre_CalDAV_Notifications_INotificationType classes.
+     * Sabre\CalDAV\Notifications\INotificationType classes.
      *
-     * @return Sabre/CalDAV/Notifications/INotificationType
+     * @return Sabre\CalDAV\Notifications\INotificationType
      */
     public function getNotificationType() {
 
@@ -169,7 +169,7 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('Updating ACLs is not implemented here');
+        throw new DAV\Exception\NotImplemented('Updating ACLs is not implemented here');
 
     }
 
@@ -177,7 +177,7 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

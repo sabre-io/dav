@@ -21,7 +21,7 @@ abstract class Property implements PropertyInterface {
      * This static method should return a an instance of this object.
      *
      * @param DOMElement $prop
-     * @return Sabre_DAV_IProperty
+     * @return Sabre\DAV\IProperty
      */
     static function unserialize(\DOMElement $prop) {
 

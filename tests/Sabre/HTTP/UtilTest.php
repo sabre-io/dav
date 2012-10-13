@@ -72,7 +72,7 @@ class UtilTest extends \PHPUnit_Framework_TestCase {
 
         $time = 'Wed, 13 Oct 1960 10:26:00 GMT';
 
-        $this->assertNull(Sabre_HTTP_Util::parseHTTPDate($time));
+        $this->assertNull(Util::parseHTTPDate($time));
 
     }
 }

@@ -26,7 +26,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
     function testPostPassThruNotTextCalendar() {
 
-        $req = new Sabre_HTTP_Request(array(
+        $req = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/admin/outbox',
         ));

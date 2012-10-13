@@ -46,7 +46,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
        fwrite($stream, "222");
        rewind($stream);
 
-       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file = new File(SABRE_TEMPDIR . '/file.txt');
        $file->put('0000000');
        $file->putRange($stream,3);
 

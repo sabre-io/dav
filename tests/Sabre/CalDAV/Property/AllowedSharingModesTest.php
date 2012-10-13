@@ -1,10 +1,15 @@
 <?php
 
-class Sabre_CalDAV_Property_AllowedSharingModesTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Property;
+
+use Sabre\CalDAV;
+use Sabre\DAV;
+
+class AllowedSharingModesTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $sccs = new Sabre_CalDAV_Property_AllowedSharingModes(true,true);
+        $sccs = new AllowedSharingModes(true,true);
 
     }
 
@@ -13,16 +18,16 @@ class Sabre_CalDAV_Property_AllowedSharingModesTest extends PHPUnit_Framework_Te
      */
     function testSerialize() {
 
-        $property = new Sabre_CalDAV_Property_AllowedSharingModes(true,true);
+        $property = new AllowedSharingModes(true,true);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
-        $root->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
-        $root->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $root->setAttribute('xmlns:cal',CalDAV\Plugin::NS_CALDAV);
+        $root->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
 
         $doc->appendChild($root);
-        $server = new Sabre_DAV_Server();
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -30,7 +35,7 @@ class Sabre_CalDAV_Property_AllowedSharingModesTest extends PHPUnit_Framework_Te
 
         $this->assertEquals(
 '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '" xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '" xmlns:cs="' . CalDAV\Plugin::NS_CALENDARSERVER . '">' .
 '<cs:can-be-shared/>' .
 '<cs:can-be-published/>' .
 '</d:root>

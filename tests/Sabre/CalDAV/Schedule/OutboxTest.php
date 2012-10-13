@@ -21,7 +21,7 @@ class OutboxTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
                 'principal' => 'principals/user1',
                 'protected' => true,
             ),

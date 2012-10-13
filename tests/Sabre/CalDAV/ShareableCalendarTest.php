@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CalDAV_ShareableCalendarTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV;
+
+use Sabre\DAVACL;
+
+class ShareableCalendarTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
     protected $instance;
@@ -11,7 +15,7 @@ class Sabre_CalDAV_ShareableCalendarTest extends PHPUnit_Framework_TestCase {
             'id' => 1,
         );
 
-        $this->backend = new Sabre_CalDAV_Backend_Mock(
+        $this->backend = new Backend\Mock(
             array($props),
             array(),
             array()
@@ -24,10 +28,9 @@ class Sabre_CalDAV_ShareableCalendarTest extends PHPUnit_Framework_TestCase {
             ),
         ), array()); 
 
-        $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $pBackend = new DAVACL\MockPrincipalBackend();
 
-
-        $this->instance = new Sabre_CalDAV_ShareableCalendar($pBackend, $this->backend, $props); 
+        $this->instance = new ShareableCalendar($pBackend, $this->backend, $props); 
 
     }
 
@@ -47,7 +50,7 @@ class Sabre_CalDAV_ShareableCalendarTest extends PHPUnit_Framework_TestCase {
             'commonName' => 'Foo Bar',
             'summary' => 'Booh',
             'readOnly' => false,
-            'status' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
+            'status' => SharingPlugin::STATUS_NORESPONSE,
         )), $this->instance->getShares());
 
     }

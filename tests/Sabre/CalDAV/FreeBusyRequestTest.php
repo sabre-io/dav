@@ -1,11 +1,17 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/CalDAV/Backend/Mock.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_CalDAV_FreeBusyRequestTest extends PHPUnit_Framework_TestCase {
+class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
     protected $plugin;
     protected $server;
@@ -36,32 +42,32 @@ END:VCALENDAR',
 
         );
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $caldavBackend = new Sabre_CalDAV_Backend_Mock($calendars, $calendarobjects);
+        $principalBackend = new DAVACL\MockPrincipalBackend();
+        $caldavBackend = new Backend\Mock($calendars, $calendarobjects);
 
         $tree = array(
-            new Sabre_DAVACL_PrincipalCollection($principalBackend),
-            new Sabre_CalDAV_CalendarRootNode($principalBackend, $caldavBackend),
+            new DAVACL\PrincipalCollection($principalBackend),
+            new CalendarRootNode($principalBackend, $caldavBackend),
         );
 
-        $this->request = new Sabre_HTTP_Request(array(
+        $this->request = new HTTP\Request(array(
             'CONTENT_TYPE' => 'text/calendar',
         ));
-        $this->response = new Sabre_HTTP_ResponseMock();
+        $this->response = new HTTP\ResponseMock();
 
-        $this->server = new Sabre_DAV_Server($tree);
+        $this->server = new DAV\Server($tree);
         $this->server->httpRequest = $this->request;
         $this->server->httpResponse = $this->response;
 
-        $this->aclPlugin = new Sabre_DAVACL_Plugin();
+        $this->aclPlugin = new DAVACL\Plugin();
         $this->server->addPlugin($this->aclPlugin);
 
-        $authBackend = new Sabre_DAV_Auth_MockBackend();
+        $authBackend = new DAV\Auth\MockBackend();
         $authBackend->setCurrentUser('user1');
-        $this->authPlugin = new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV');
+        $this->authPlugin = new DAV\Auth\Plugin($authBackend,'SabreDAV');
         $this->server->addPlugin($this->authPlugin);
 
-        $this->plugin = new Sabre_CalDAV_Plugin();
+        $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 
     }
@@ -76,7 +82,7 @@ END:VCALENDAR',
 
     function testWrongContentType() {
 
-        $this->server->httpRequest = new Sabre_HTTP_Request(array(
+        $this->server->httpRequest = new HTTP\Request(array(
             'CONTENT_TYPE' => 'text/plain',
         ));
 
@@ -103,7 +109,7 @@ END:VCALENDAR',
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoItipMethod() {
 
@@ -120,7 +126,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoVFreeBusy() {
 
@@ -138,7 +144,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testIncorrectOrganizer() {
 
@@ -157,7 +163,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoAttendees() {
 
@@ -176,7 +182,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoDTStart() {
 

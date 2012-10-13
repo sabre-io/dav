@@ -181,7 +181,7 @@ class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_InvalidResourceType
+     * @expectedException Sabre\DAV\Exception\InvalidResourceType
      * @depends testSimple
      */
     function testCreateExtendedCollectionNotACalendar() {
@@ -197,11 +197,11 @@ class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotImplemented
+     * @expectedException Sabre\DAV\Exception\NotImplemented
      */
     function testShareReplyFail() {
 
-        $this->usercalendars->shareReply('uri', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $this->usercalendars->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
 
     }
 

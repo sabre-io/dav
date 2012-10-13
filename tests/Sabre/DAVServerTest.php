@@ -48,22 +48,22 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavPlugin;
 
     /**
-     * @var Sabre_CardDAV_Plugin
+     * @var Sabre\CardDAV\Plugin
      */
     protected $carddavPlugin;
 
     /**
-     * @var Sabre_DAVACL_Plugin
+     * @var Sabre\DAVACL\Plugin
      */
     protected $aclPlugin;
 
     /**
-     * @var Sabre_CalDAV_SharingPlugin
+     * @var Sabre\CalDAV\SharingPlugin
      */
     protected $caldavSharingPlugin;
 
     /**
-     * @var Sabre_DAV_Auth_Plugin
+     * @var Sabre\DAV\Auth\Plugin
      */
     protected $authPlugin;
 
@@ -86,7 +86,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->server->addPlugin($this->caldavPlugin);
         }
         if ($this->setupCalDAVSharing) {
-            $this->caldavSharingPlugin = new Sabre_CalDAV_SharingPlugin();
+            $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
         }
         if ($this->setupCardDAV) {
@@ -94,13 +94,13 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->server->addPlugin($this->carddavPlugin);
         }
         if ($this->setupACL) {
-            $this->aclPlugin = new Sabre_DAVACL_Plugin();
+            $this->aclPlugin = new DAVACL\Plugin();
             $this->server->addPlugin($this->aclPlugin);
         }
         if ($this->autoLogin) {
-            $authBackend = new Sabre_DAV_Auth_MockBackend();
+            $authBackend = new DAV\Auth\MockBackend();
             $authBackend->defaultUser = $this->autoLogin;
-            $this->authPlugin = new Sabre_DAV_Auth_Plugin($authBackend, 'SabreDAV');
+            $this->authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
             $this->server->addPlugin($this->authPlugin);
         }
 

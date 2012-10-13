@@ -39,13 +39,15 @@ foreach($paths as $path) {
     }
 }
 
+use Sabre\DAV;
+
 // Root 
-$root = new Sabre_DAV_FS_Directory(getcwd());
+$root = new DAV\FS\Directory(getcwd());
 
 // Setting up server.
-$server = new Sabre_DAV_Server($root);
+$server = new DAV\Server($root);
 
 // Browser plugin
-$server->addPlugin(new Sabre_DAV_Browser_Plugin());
+$server->addPlugin(new DAV\Browser\Plugin());
 
 $server->exec();

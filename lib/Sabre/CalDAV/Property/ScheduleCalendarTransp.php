@@ -95,9 +95,9 @@ class ScheduleCalendarTransp extends DAV\Property {
                     break;
             }
         }
-        if (is_null($value)) {
-            throw new DAV\Exception\BadRequest('The schedule-calendar-transp property must contain either an "opaque" or a "transparent" element');
-        }
+        if (is_null($value))
+           return null;
+
         return new self($value);
 
     }

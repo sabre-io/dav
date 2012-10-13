@@ -109,6 +109,11 @@ class Outbox extends DAV\Collection implements IOutbox {
                 'protected' => true,
             ),
             array(
+                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ),
+            array(
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner(),
                 'protected' => true,
@@ -148,6 +153,9 @@ class Outbox extends DAV\Collection implements IOutbox {
         $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
         $default['aggregates'][] = array(
             'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
+        );
+        $default['aggregates'][] = array(
+            'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
         );
 
         return $default;

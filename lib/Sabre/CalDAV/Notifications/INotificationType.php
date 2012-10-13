@@ -15,18 +15,6 @@ use Sabre\DAV;
 interface INotificationType extends DAV\PropertyInterface {
 
     /**
-     * Serializes the notification as a single property.
-     *
-     * You should usually just encode the single top-level element of the
-     * notification.
-     *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
-     * @return void
-     */
-    function serialize(DAV\Server $server, \DOMElement $node);
-
-    /**
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
@@ -45,5 +33,14 @@ interface INotificationType extends DAV\PropertyInterface {
      * @return string
      */
     function getId();
+
+    /**
+     * Returns the ETag for this notification.
+     *
+     * The ETag must be surrounded by literal double-quotes.
+     *
+     * @return string
+     */
+    function getETag();
 
 }

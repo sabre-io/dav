@@ -16,7 +16,10 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $aclPlugin = new Plugin();
         $this->assertEquals('acl',$aclPlugin->getPluginName());
-        $this->assertEquals(array('access-control'), $aclPlugin->getFeatures());
+        $this->assertEquals(
+            array('access-control', 'calendarserver-principal-property-search'),
+            $aclPlugin->getFeatures()
+        );
 
         $this->assertEquals(
             array(

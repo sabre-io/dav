@@ -13,6 +13,7 @@ class SystemStatusTest extends \PHPUnit_Framework_TestCase {
     function testSerializers($notification, $expected1, $expected2) {
 
         $this->assertEquals('foo', $notification->getId());
+        $this->assertEquals('"1"', $notification->getETag());
 
 
         $dom = new \DOMDocument('1.0','UTF-8');
@@ -37,19 +38,19 @@ class SystemStatusTest extends \PHPUnit_Framework_TestCase {
         return array(
 
             array(
-                new SystemStatus('foo'),
+                new SystemStatus('foo', '"1"'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="high"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="high"/></cs:root>' . "\n",
             ),
 
             array(
-                new SystemStatus('foo', SystemStatus::TYPE_MEDIUM,'bar'),
+                new SystemStatus('foo', '"1"', SystemStatus::TYPE_MEDIUM,'bar'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"><cs:description>bar</cs:description></cs:systemstatus></cs:root>' . "\n",
             ),
 
             array(
-                new SystemStatus('foo', SystemStatus::TYPE_LOW,null,'http://example.org/'),
+                new SystemStatus('foo', '"1"', SystemStatus::TYPE_LOW,null,'http://example.org/'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"><d:href>http://example.org/</d:href></cs:systemstatus></cs:root>' . "\n",
             )

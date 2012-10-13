@@ -170,13 +170,13 @@ class Client {
         if ($depth===0) {
             reset($result);
             $result = current($result);
-            return $result[200];
+            return isset($result[200])?$result[200]:array();
         }
 
         $newResult = array();
         foreach($result as $href => $statusList) {
 
-            $newResult[$href] = $statusList[200];
+            $newResult[$href] = isset($statusList[200])?$statusList[200]:array();
 
         }
 
@@ -437,6 +437,7 @@ class Client {
      * @param array $settings
      * @return array
      */
+    // @codeCoverageIgnoreStart
     protected function curlRequest($url, $settings) {
 
         $curl = curl_init($url);
@@ -450,6 +451,7 @@ class Client {
         );
 
     }
+    // @codeCoverageIgnoreEnd
 
     /**
      * Returns the full url based on the given url (which may be relative). All

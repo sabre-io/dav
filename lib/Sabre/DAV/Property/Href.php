@@ -86,7 +86,7 @@ class Href extends DAV\Property implements IHref {
      */
     static function unserialize(\DOMElement $dom) {
 
-        if (DAV\XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
+        if ($dom->firstChild && XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
             return new self($dom->firstChild->textContent,false);
         }
 

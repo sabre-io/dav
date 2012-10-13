@@ -31,6 +31,13 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 
 
     }
+    function testSetHeaders() {
+
+        $this->response->setHeaders(array('Content-Type'=>'text/html'));
+        $this->assertEquals('text/html', $this->response->headers['Content-Type']);
+
+
+    }
 
     function testSendStatus() {
 

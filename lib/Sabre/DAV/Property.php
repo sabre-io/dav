@@ -15,6 +15,14 @@ namespace Sabre\DAV;
  */
 abstract class Property implements PropertyInterface {
 
+    /**
+     * Unserializes the property.
+     *
+     * This static method should return a an instance of this object.
+     *
+     * @param DOMElement $prop
+     * @return Sabre_DAV_IProperty
+     */
     static function unserialize(\DOMElement $prop) {
 
         throw new Exception('Unserialize has not been implemented for this class');

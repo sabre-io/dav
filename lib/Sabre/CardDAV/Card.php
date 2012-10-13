@@ -134,7 +134,13 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
         if (isset($this->cardData['etag'])) {
             return $this->cardData['etag'];
         } else {
-            return '"' . md5($this->get()) . '"';
+            $data = $this->get();
+            if (is_string($data)) {
+                return '"' . md5($data) . '"';
+            } else {
+                // We refuse to calculate the md5 if it's a stream.
+                return null;
+            }
         }
 
     }

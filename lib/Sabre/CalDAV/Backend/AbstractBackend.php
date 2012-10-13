@@ -145,7 +145,8 @@ abstract class AbstractBackend implements BackendInterface {
             $object = $this->getCalendarObject($object['calendarid'], $object['uri']);
         }
 
-        $vObject = VObject\Reader::read($object['calendardata']);
+        $data = is_resource($object['calendardata'])?stream_get_contents($object['calendardata']):$object['calendardata'];
+        $vObject = VObject\Reader::read($data);
 
         $validator = new CalDAV\CalendarQueryValidator();
         return $validator->validate($vObject, $filters);

@@ -1,9 +1,5 @@
 <?php
 
-// !!!! Make sure the Sabre directory is in the include_path !!!
-// example:
-set_include_path('lib/' . PATH_SEPARATOR . get_include_path());
-
 /*
 
 This is the best starting point if you're just interested in setting up a fileserver.
@@ -24,7 +20,7 @@ $tmpDir = 'tmpdata';
 
 
 // Files we need
-require_once 'Sabre/autoload.php';
+require_once 'vendor/autoload.php';
 
 // Create the root node
 $root = new \Sabre\DAV\FS\Directory($publicDir);

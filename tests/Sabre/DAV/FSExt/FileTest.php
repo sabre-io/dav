@@ -40,6 +40,21 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testRangeStream() {
+
+       $stream = fopen('php://memory','r+');
+       fwrite($stream, "222");
+       rewind($stream);
+
+       $file = new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/file.txt');
+       $file->put('0000000');
+       $file->putRange($stream,3);
+
+       $this->assertEquals('0022200',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
+
+    }
+
+
     function testGet() {
 
        $file = new File(SABRE_TEMPDIR . '/file.txt');

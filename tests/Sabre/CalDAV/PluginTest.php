@@ -119,7 +119,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $this->response->status);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $this->response->status);
 
     }
 
@@ -455,7 +455,7 @@ END:VCALENDAR';
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
         $this->assertTrue($prop instanceof DAV\Property\HrefList);
-        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1'),$prop->getHrefs());
+        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1/'),$prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
@@ -1039,7 +1039,8 @@ END:VCALENDAR';
         $result = array();
         $notification = new Notifications\Node(
             $this->caldavBackend,
-            new Notifications\Notification\SystemStatus('foo')
+            'principals/user1',
+            new Notifications\Notification\SystemStatus('foo','"1"')
         );
         $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
 
@@ -1056,22 +1057,27 @@ END:VCALENDAR';
 
         $notification = new Notifications\Node(
             $this->caldavBackend,
-            new Notifications\Notification\SystemStatus('foo')
+            'principals/user1',
+            new Notifications\Notification\SystemStatus('foo','"1"')
         );
 
         $server = new DAV\Server(array($notification));
         $caldav = new Plugin();
 
+        $server->httpRequest = new HTTP\Request(array(
+            'REQUEST_URI' => '/foo.xml',
+        ));
         $httpResponse = new HTTP\ResponseMock();
         $server->httpResponse = $httpResponse;
 
         $server->addPlugin($caldav);
 
-        $caldav->beforeMethod('GET','foo');
+        $caldav->beforeMethod('GET','foo.xml');
 
         $this->assertEquals('HTTP/1.1 200 OK', $httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml',
+            'ETag'         => '"1"',
         ), $httpResponse->headers);
 
         $expected = 
@@ -1083,7 +1089,23 @@ END:VCALENDAR';
 
         $this->assertEquals($expected, $httpResponse->body);
 
+    }
+
+    function testGETPassthrough() {
+
+        $server = new DAV\Server();
+        $caldav = new Plugin();
+
+        $httpResponse = new HTTP\ResponseMock();
+        $server->httpResponse = $httpResponse;
+
+        $server->addPlugin($caldav);
+
+        $caldav->beforeMethod('GET','foo');
+
+        $this->assertNull($caldav->beforeMethod('GET','foozz'));
 
     }
+
 
 }

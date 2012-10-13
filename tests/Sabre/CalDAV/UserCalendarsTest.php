@@ -180,9 +180,28 @@ class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException Sabre_DAV_Exception_InvalidResourceType
+     * @depends testSimple
+     */
+    function testCreateExtendedCollectionNotACalendar() {
+
+        $this->usercalendars->createExtendedCollection('newcalendar', array('{DAV:}collection'), array());
+
+    }
+
     function testGetSupportedPrivilegesSet() {
 
         $this->assertNull($this->usercalendars->getSupportedPrivilegeSet());
+
+    }
+
+    /**
+     * @expectedException Sabre_DAV_Exception_NotImplemented
+     */
+    function testShareReplyFail() {
+
+        $this->usercalendars->shareReply('uri', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, 'curi', '1');
 
     }
 

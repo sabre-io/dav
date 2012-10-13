@@ -122,7 +122,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('access-control');
+        return array('access-control', 'calendarserver-principal-property-search');
 
     }
 
@@ -601,7 +601,7 @@ class Plugin extends DAV\ServerPlugin {
         foreach($uris as $uri) {
 
             $principalCollection = $this->server->tree->getNodeForPath($uri);
-            if (!$principalCollection instanceof AbstractPrincipalCollection) {
+            if (!$principalCollection instanceof IPrincipalCollection) {
                 // Not a principal collection, we're simply going to ignore
                 // this.
                 continue;
@@ -913,6 +913,18 @@ class Plugin extends DAV\ServerPlugin {
         if (false !== ($index = array_search('{DAV:}acl-restrictions', $requestedProperties))) {
             unset($requestedProperties[$index]);
             $returnedProperties[200]['{DAV:}acl-restrictions'] = new Property\AclRestrictions();
+        }
+
+        /* Adding ACL properties */
+        if ($node instanceof IACL) {
+
+            if (false !== ($index = array_search('{DAV:}owner', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}owner'] = new DAV\Property\Href($node->getOwner() . '/');
+
+            }
+
         }
 
     }
@@ -1291,10 +1303,12 @@ class Plugin extends DAV\ServerPlugin {
         }
         $result = $this->principalSearch($searchProperties, $requestedProperties, $uri);
 
-        $xml = $this->server->generateMultiStatus($result);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $prefer = $this->server->getHTTPPRefer();
+
         $this->server->httpResponse->sendStatus(207);
-        $this->server->httpResponse->sendBody($xml);
+        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
+        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
 
     }
 

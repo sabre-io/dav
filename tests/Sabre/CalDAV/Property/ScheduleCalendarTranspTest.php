@@ -83,7 +83,6 @@ class ScheduleCalendarTranspTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @depends testSimple
-     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testUnserializerBadData() {
 
@@ -94,7 +93,7 @@ class ScheduleCalendarTranspTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        ScheduleCalendarTransp::unserialize($dom->firstChild);
+        $this->assertNull(ScheduleCalendarTransp::unserialize($dom->firstChild));
 
     }
 }

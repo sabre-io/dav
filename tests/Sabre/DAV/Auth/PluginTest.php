@@ -64,7 +64,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->exec();
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented', $fakeServer->httpResponse->status);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $fakeServer->httpResponse->status);
 
     }
 

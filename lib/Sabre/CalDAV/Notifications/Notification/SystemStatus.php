@@ -52,22 +52,31 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
     protected $href;
 
     /**
+     * Notification Etag
+     *
+     * @var string
+     */
+    protected $etag;
+
+    /**
      * Creates the notification.
      *
      * Some kind of unique id should be provided. This is used to generate a
      * url.
      *
      * @param string $id
+     * @param string $etag
      * @param int $type
      * @param string $description
      * @param string $href
      */
-    public function __construct($id, $type = self::TYPE_HIGH, $description = null, $href = null) {
+    public function __construct($id, $etag, $type = self::TYPE_HIGH, $description = null, $href = null) {
 
         $this->id = $id;
         $this->type = $type;
         $this->description = $description;
         $this->href = $href;
+        $this->etag = $etag;
 
     }
 
@@ -160,4 +169,16 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
 
     }
 
+    /*
+     * Returns the ETag for this notification.
+     *
+     * The ETag must be surrounded by literal double-quotes.
+     *
+     * @return string
+     */
+    public function getETag() {
+
+        return $this->etag;
+
+    }
 }

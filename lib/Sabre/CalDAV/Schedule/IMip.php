@@ -89,6 +89,9 @@ class IMip {
 
     }
 
+    // @codeCoverageIgnoreStart
+    // This is deemed untestable in a reasonable manner
+
     /**
      * This function is reponsible for sending the actual email.
      *
@@ -100,9 +103,11 @@ class IMip {
      */
     protected function mail($to, $subject, $body, array $headers) {
 
+
         mail($to, $subject, $body, implode("\r\n", $headers));
 
     }
 
+    // @codeCoverageIgnoreEnd
 
 }

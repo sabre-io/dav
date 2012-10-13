@@ -69,7 +69,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     function testGetProperties() {
 
         $question = array(
-            '{DAV:}owner',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
             '{urn:ietf:params:xml:ns:caldav}supported-collation-set',

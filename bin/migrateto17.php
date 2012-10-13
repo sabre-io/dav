@@ -8,8 +8,7 @@ if ($argc<2) {
     echo <<<HELLO
 
 This script help you migrate from a pre-1.7 database to 1.7 and later\n
-It is important to note, that this script only touches the 'calendarobjects'
-table.
+Both the 'calendarobjects' and 'calendars' tables will be upgraded.
 
 If you do not have this table, or don't use the default PDO CalDAV backend
 it's pointless to run this script.
@@ -21,12 +20,12 @@ takes a while.
 
 Usage:
 
-{$argv[0]} [pdo-dsn] [username] [password]
+php {$argv[0]} [pdo-dsn] [username] [password]
 
 For example:
 
-{$argv[0]} mysql:host=localhost;dbname=sabredav root password
-{$argv[0]} sqlite:data/sabredav.db
+php {$argv[0]} "mysql:host=localhost;dbname=sabredav" root password
+php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 
@@ -34,12 +33,18 @@ HELLO;
 
 }
 
-if (file_exists(__DIR__ . '/../lib/Sabre/VObject/includes.php')) {
-    include __DIR__ . '/../lib/Sabre/VObject/includes.php';
-} else {
-    // If, for some reason VObject was not found in the vicinity,
-    // we'll try to grab it from the default path.
-    require 'Sabre/VObject/includes.php';
+// There's a bunch of places where the autoloader could be, so we'll try all of
+// them.
+$paths = array(
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+);
+
+foreach($paths as $path) {
+    if (file_exists($path)) {
+        include $path;
+        break;
+    }
 }
 
 $dsn = $argv[1];
@@ -107,7 +112,7 @@ ADD etag VARCHAR(32),
 ADD size INT(11) UNSIGNED,
 ADD componenttype VARCHAR(8),
 ADD firstoccurence INT(11) UNSIGNED,
-ADD lastoccurence INT(11) UNSIGNED,
+ADD lastoccurence INT(11) UNSIGNED
 SQL
         );
             break;

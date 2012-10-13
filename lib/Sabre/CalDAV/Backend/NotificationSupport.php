@@ -5,6 +5,9 @@ namespace Sabre\CalDAV\Backend;
 /**
  * Adds caldav notification support to a backend.
  *
+ * Note: This feature is experimental, and may change in between different
+ * SabreDAV versions.
+ *
  * Notifications are defined at:
  * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-notifications.txt
  *

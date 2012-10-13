@@ -89,6 +89,9 @@ class Response {
 
     }
 
+    // @codeCoverageIgnoreStart
+    // We cannot reasonably test header() related methods.
+
     /**
      * Sends an HTTP status header to the client
      *
@@ -118,7 +121,9 @@ class Response {
             return header($name . ': ' . $value, $replace);
         else return false;
 
+
     }
+    // @codeCoverageIgnoreEnd
 
     /**
      * Sets a bunch of HTTP Headers

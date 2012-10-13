@@ -26,7 +26,7 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 set_error_handler("exception_error_handler");
 
 // Files we need
-require_once 'lib/Sabre/autoload.php';
+require_once 'vendor/autoload.php';
 
 // Backends
 $authBackend = new \Sabre\DAV\Auth\Backend\PDO($pdo);

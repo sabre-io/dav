@@ -8,6 +8,8 @@ class MockBackend implements IBackend {
 
     protected $currentUser;
 
+    public $defaultUser = 'admin';
+
     /**
      * @param Sabre\DAV\Server $server
      * @param string $realm
@@ -16,8 +18,7 @@ class MockBackend implements IBackend {
     function authenticate(DAV\Server $server, $realm) {
 
         if ($realm=='failme') throw new DAV\Exception\NotAuthenticated('deliberate fail');
-
-        $this->currentUser = 'admin';
+        $this->currentUser = $this->defaultUser;
 
     }
 

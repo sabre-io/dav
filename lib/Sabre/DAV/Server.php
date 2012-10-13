@@ -105,7 +105,6 @@ class Server {
         '{DAV:}getetag',
         '{DAV:}getlastmodified',
         '{DAV:}lockdiscovery',
-        '{DAV:}resourcetype',
         '{DAV:}supportedlock',
 
         // RFC4331
@@ -221,17 +220,23 @@ class Server {
             $error->setAttribute('xmlns:s',self::NS_SABREDAV);
             $DOM->appendChild($error);
 
-            $error->appendChild($DOM->createElement('s:exception',get_class($e)));
-            $error->appendChild($DOM->createElement('s:message',$e->getMessage()));
+            $h = function($v) {
+
+                return htmlspecialchars($v, ENT_NOQUOTES, 'UTF-8');
+
+            };
+
+            $error->appendChild($DOM->createElement('s:exception',$h(get_class($e))));
+            $error->appendChild($DOM->createElement('s:message',$h($e->getMessage())));
             if ($this->debugExceptions) {
-                $error->appendChild($DOM->createElement('s:file',$e->getFile()));
-                $error->appendChild($DOM->createElement('s:line',$e->getLine()));
-                $error->appendChild($DOM->createElement('s:code',$e->getCode()));
-                $error->appendChild($DOM->createElement('s:stacktrace',$e->getTraceAsString()));
+                $error->appendChild($DOM->createElement('s:file',$h($e->getFile())));
+                $error->appendChild($DOM->createElement('s:line',$h($e->getLine())));
+                $error->appendChild($DOM->createElement('s:code',$h($e->getCode())));
+                $error->appendChild($DOM->createElement('s:stacktrace',$h($e->getTraceAsString())));
 
             }
             if (self::$exposeVersion) {
-                $error->appendChild($DOM->createElement('s:sabredav-version',Version::VERSION));
+                $error->appendChild($DOM->createElement('s:sabredav-version',$h(Version::VERSION)));
             }
 
             if($e instanceof Exception) {
@@ -691,8 +696,8 @@ class Server {
      */
     protected function httpPropfind($uri) {
 
-        // $xml = new Sabre\DAV\XMLReader(file_get_contents('php://input'));
-        $requestedProperties = $this->parsePropfindRequest($this->httpRequest->getBody(true));
+        // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
+        $requestedProperties = $this->parsePropFindRequest($this->httpRequest->getBody(true));
 
         $depth = $this->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1
@@ -703,6 +708,7 @@ class Server {
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->httpResponse->setHeader('Vary','Brief,Prefer');
 
         // Normally this header is only needed for OPTIONS responses, however..
         // iCal seems to also depend on these being set for PROPFIND. Since
@@ -711,7 +717,10 @@ class Server {
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
 
-        $data = $this->generateMultiStatus($newProperties);
+        $prefer = $this->getHTTPPrefer();
+        $minimal = $prefer['return-minimal'];
+
+        $data = $this->generateMultiStatus($newProperties, $minimal);
         $this->httpResponse->sendBody($data);
 
     }
@@ -730,6 +739,30 @@ class Server {
         $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
         $result = $this->updateProperties($uri, $newProperties);
+
+        $prefer = $this->getHTTPPrefer();
+        $this->httpResponse->setHeader('Vary','Brief,Prefer');
+
+        if ($prefer['return-minimal']) {
+
+            // If return-minimal is specified, we only have to check if the
+            // request was succesful, and don't need to return the
+            // multi-status.
+            $ok = true;
+            foreach($result as $code=>$prop) {
+                if ((int)$code > 299) {
+                    $ok = false;
+                }
+            }
+
+            if ($ok) {
+
+                $this->httpResponse->sendStatus(204);
+                return;
+
+            }
+
+        }
 
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
@@ -1016,7 +1049,7 @@ class Server {
         if ($this->broadcastEvent('report',array($reportName,$dom, $uri))) {
 
             // If broadcastEvent returned true, it means the report was not supported
-            throw new Exception\ReportNotImplemented();
+            throw new Exception\ReportNotSupported();
 
         }
 
@@ -1162,6 +1195,85 @@ class Server {
             $matches[1]!==''?$matches[1]:null,
             $matches[2]!==''?$matches[2]:null,
         );
+
+    }
+
+    /**
+     * Returns the HTTP Prefer header information.
+     *
+     * The prefer header is defined in:
+     * http://tools.ietf.org/html/draft-snell-http-prefer-14
+     *
+     * This method will return an array with options.
+     *
+     * Currently, the following options may be returned:
+     *   array(
+     *      'return-asynch'         => true,
+     *      'return-minimal'        => true,
+     *      'return-representation' => true,
+     *      'wait'                  => 30,
+     *      'strict'                => true,
+     *      'lenient'               => true,
+     *   )
+     *
+     * This method also supports the Brief header, and will also return
+     * 'return-minimal' if the brief header was set to 't'.
+     *
+     * For the boolean options, false will be returned if the headers are not
+     * specified. For the integer options it will be 'null'.
+     *
+     * @return array
+     */
+    public function getHTTPPrefer() {
+
+        $result = array(
+            'return-asynch'         => false,
+            'return-minimal'        => false,
+            'return-representation' => false,
+            'wait'                  => null,
+            'strict'                => false,
+            'lenient'               => false,
+        );
+
+        if ($prefer = $this->httpRequest->getHeader('Prefer')) {
+
+            $parameters = array_map('trim',
+                explode(',', $prefer)
+            );
+
+            foreach($parameters as $parameter) {
+
+                // Right now our regex only supports the tokens actually
+                // specified in the draft. We may need to expand this if new
+                // tokens get registered.
+                if(!preg_match('/^(?P<token>[a-z0-9-]+)(?:=(?P<value>[0-9]+))?$/', $parameter, $matches)) {
+                    continue;
+                }
+
+                switch($matches['token']) {
+
+                    case 'return-asynch' :
+                    case 'return-minimal' :
+                    case 'return-representation' :
+                    case 'strict' :
+                    case 'lenient' :
+                        $result[$matches['token']] = true;
+                        break;
+                    case 'wait' :
+                        $result[$matches['token']] = $matches['value'];
+                        break;
+
+                }
+
+            }
+
+        }
+
+        if ($this->httpRequest->getHeader('Brief')=='t') {
+            $result['return-minimal'] = true;
+        }
+
+        return $result;
 
     }
 
@@ -1440,15 +1552,18 @@ class Server {
 
             }
 
-            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties));
+            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties, $node));
 
             $newProperties['href'] = trim($myPath,'/');
 
             // Its is a WebDAV recommendation to add a trailing slash to collectionnames.
-            // Apple's iCal also requires a trailing slash for principals (rfc 3744).
-            // Therefore we add a trailing / for any non-file. This might need adjustments
-            // if we find there are other edge cases.
-            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype']) && count($newProperties[200]['{DAV:}resourcetype']->getValue())>0) $newProperties['href'] .='/';
+            // Apple's iCal also requires a trailing slash for principals (rfc 3744), though this is non-standard.
+            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype'])) {
+                $rt = $newProperties[200]['{DAV:}resourcetype'];
+                if ($rt->is('{DAV:}collection') || $rt->is('{DAV:}principal')) {
+                    $newProperties['href'] .='/';
+                }
+            }
 
             // If the resourcetype property was manually added to the requested property list,
             // we will remove it again.
@@ -1490,7 +1605,7 @@ class Server {
         if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
 
         $etag = $parent->createFile($name,$data);
-        $this->tree->markDirty($dir);
+        $this->tree->markDirty($dir . '/' . $name);
 
         $this->broadcastEvent('afterBind',array($uri));
         $this->broadcastEvent('afterCreateFile',array($uri, $parent));
@@ -1911,12 +2026,15 @@ class Server {
 
 
     /**
-     * Generates a WebDAV propfind response body based on a list of nodes
+     * Generates a WebDAV propfind response body based on a list of nodes.
+     *
+     * If 'strip404s' is set to true, all 404 responses will be removed.
      *
      * @param array $fileProperties The list with nodes
+     * @param bool strip404s
      * @return string
      */
-    public function generateMultiStatus(array $fileProperties) {
+    public function generateMultiStatus(array $fileProperties, $strip404s = false) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -1934,6 +2052,10 @@ class Server {
 
             $href = $entry['href'];
             unset($entry['href']);
+
+            if ($strip404s && isset($entry[404])) {
+                unset($entry[404]);
+            }
 
             $response = new Property\Response($href,$entry);
             $response->serialize($this,$multiStatus);

@@ -11,7 +11,7 @@ use Sabre\DAVACL;
  * @package Sabre
  * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
@@ -173,7 +173,15 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
         $calendars = $this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']);
         $objs = array();
         foreach($calendars as $calendar) {
-            $objs[] = new Calendar($this->principalBackend, $this->caldavBackend, $calendar);
+            if ($this->caldavBackend instanceof Backend\SharingSupport) {
+                if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
+                    $objs[] = new SharedCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                } else {
+                    $objs[] = new ShareableCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                }
+            } else {
+                $objs[] = new Calendar($this->principalBackend, $this->caldavBackend, $calendar);
+            }
         }
         $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
 
@@ -195,8 +203,22 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
      */
     public function createExtendedCollection($name, array $resourceType, array $properties) {
 
-        if (!in_array('{urn:ietf:params:xml:ns:caldav}calendar',$resourceType) || count($resourceType)!==2) {
-            throw new DAV\Exception\InvalidResourceType('Unknown resourceType for this collection');
+        $isCalendar = false;
+        foreach($resourceType as $rt) {
+            switch ($rt) {
+                case '{DAV:}collection' :
+                case '{http://calendarserver.org/ns/}shared-owner' :
+                    // ignore
+                    break;
+                case '{urn:ietf:params:xml:ns:caldav}calendar' :
+                    $isCalendar = true;
+                    break;
+                default :
+                    throw new DAV\Exception\InvalidResourceType('Unknown resourceType: ' . $rt);
+            }
+        }
+        if (!$isCalendar) {
+            throw new DAV\Exception\InvalidResourceType('You can only create calendars in this collection');
         }
         $this->caldavBackend->createCalendar($this->principalInfo['uri'], $name, $properties);
 
@@ -302,6 +324,29 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
     public function getSupportedPrivilegeSet() {
 
         return null;
+
+    }
+
+    /**
+     * This method is called when a user replied to a request to share.
+     *
+     * This method should return the url of the newly created calendar if the
+     * share was accepted.
+     *
+     * @param string href The sharee who is replying (often a mailto: address)
+     * @param int status One of the SharingPlugin::STATUS_* constants
+     * @param string $calendarUri The url to the calendar thats being shared
+     * @param string $inReplyTo The unique id this message is a response to
+     * @param string $summary A description of the reply
+     * @return null|string
+     */
+    public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
+
+        if (!$this->caldavBackend instanceof Sabre_CalDAV_Backend_SharingSupport) {
+            throw new Sabre_DAV_Exception_NotImplemented('Sharing support is not implemented by this backend.');
+        }
+
+        return $this->caldavBackend->shareReply($href, $status, $calendarUri, $inReplyTo, $summary);
 
     }
 

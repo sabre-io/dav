@@ -22,10 +22,13 @@ class Mock extends AbstractBackend {
                 ),
             );
 
+            $card2 = fopen('php://memory','r+');
+            fwrite($card2,"BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD");
+            rewind($card2);
             $this->cards = array(
                 'foo' => array(
                     'card1' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
-                    'card2' => "BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD",
+                    'card2' => $card2,
                 ),
             );
         }

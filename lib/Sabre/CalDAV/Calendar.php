@@ -2,6 +2,9 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\DAV;
+use Sabre\DAVACL;
+
 /**
  * This object represents a CalDAV calendar.
  *
@@ -14,7 +17,7 @@ namespace Sabre\CalDAV;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL {
+class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
 
     /**
      * This is an array with calendar information
@@ -43,12 +46,11 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
      * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(\Sabre\DAVACL\IPrincipalBackend $principalBackend, Backend\BackendInterface $caldavBackend, $calendarInfo) {
+    public function __construct(DAVACL\IPrincipalBackend $principalBackend, Backend\BackendInterface $caldavBackend, $calendarInfo) {
 
         $this->caldavBackend = $caldavBackend;
         $this->principalBackend = $principalBackend;
         $this->calendarInfo = $calendarInfo;
-
 
     }
 
@@ -94,7 +96,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
                 $response[$prop] =  new Property\SupportedCollationSet();
                 break;
             case '{DAV:}owner' :
-                $response[$prop] = new \Sabre\DAVACL\Property\Principal(\Sabre\DAVACL\Property\Principal::HREF,$this->calendarInfo['principaluri']);
+                $response[$prop] = new DAVACL\Property\Principal(DAVACL\Property\Principal::HREF,$this->calendarInfo['principaluri']);
                 break;
             default :
                 if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];
@@ -116,7 +118,17 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
     public function getChild($name) {
 
         $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$name);
-        if (!$obj) throw new \Sabre\DAV\Exception\NotFound('Calendar object not found');
+
+        if (!$obj) throw new DAV\Exception\NotFound('Calendar object not found');
+
+        $obj['acl'] = $this->getACL();
+        // Removing the irrelivant
+        foreach($obj['acl'] as $key=>$acl) {
+            if ($acl['privilege'] === '{' . Plugin::NS_CALDAV . '}read-free-busy') {
+                unset($obj['acl'][$key]);
+            }
+        }
+
         return new CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
 
     }
@@ -131,6 +143,13 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
         $objs = $this->caldavBackend->getCalendarObjects($this->calendarInfo['id']);
         $children = array();
         foreach($objs as $obj) {
+            $obj['acl'] = $this->getACL();
+            // Removing the irrelivant
+            foreach($obj['acl'] as $key=>$acl) {
+                if ($acl['privilege'] === '{' . Plugin::NS_CALDAV . '}read-free-busy') {
+                    unset($obj['acl'][$key]);
+                }
+            }
             $children[] = new CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
         }
         return $children;
@@ -163,7 +182,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
      */
     public function createDirectory($name) {
 
-        throw new \Sabre\DAV\Exception\MethodNotAllowed('Creating collections in calendar objects is not allowed');
+        throw new DAV\Exception\MethodNotAllowed('Creating collections in calendar objects is not allowed');
 
     }
 
@@ -205,7 +224,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
      */
     public function setName($newName) {
 
-        throw new \Sabre\DAV\Exception\MethodNotAllowed('Renaming calendars is not yet supported');
+        throw new DAV\Exception\MethodNotAllowed('Renaming calendars is not yet supported');
 
     }
 
@@ -263,27 +282,27 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
         return array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => $this->calendarInfo['principaluri'],
+                'principal' => $this->getOwner(),
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}write',
-                'principal' => $this->calendarInfo['principaluri'],
+                'principal' => $this->getOwner(),
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}write',
-                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                'principal' => $this->getOwner() . '/calendar-proxy-read',
                 'protected' => true,
             ),
             array(
@@ -306,7 +325,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
      */
     public function setACL(array $acl) {
 
-        throw new \Sabre\DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
+        throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
     }
 
@@ -324,7 +343,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
      */
     public function getSupportedPrivilegeSet() {
 
-        $default = \Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
+        $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
 
         // We need to inject 'read-free-busy' in the tree, aggregated under
         // {DAV:}read.
@@ -333,7 +352,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
             if ($agg['privilege'] !== '{DAV:}read') continue;
 
             $agg['aggregates'][] = array(
-                'privilege' => '{' . \Sabre\CalDAV\Plugin::NS_CALDAV . '}read-free-busy',
+                'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
             );
 
         }
@@ -353,7 +372,7 @@ class Calendar implements ICalendar, \Sabre\DAV\IProperties, \Sabre\DAVACL\IACL 
      * query.
      *
      * The list of filters are specified as an array. The exact array is
-     * documented by \Sabre\CalDAV\CalendarQueryParser.
+     * documented by Sabre\CalDAV\CalendarQueryParser.
      *
      * @param array $filters
      * @return array

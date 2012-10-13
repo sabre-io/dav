@@ -15,17 +15,37 @@
     ],
     "require": {
         "php": ">=5.3.1",
-        "sabre/vobject" : "master-dev",
+        "sabre/vobject" : "2.0.*",
         "sabre/http"    : "master-dev"
+        "ext-dom": "*",
+        "ext-pcre": "*",
+        "ext-spl": "*",
+        "ext-simplexml": "*",
+        "ext-mbstring" : "*",
+        "ext-ctype" : "*",
+        "ext-date" : "*",
+        "ext-iconv" : "*",
+        "ext-libxml" : "*"
     },
-    "provide" : { 
-        "evert/sabredav" : "2.0.0" 
+    "require-dev" : {
+        "phpunit/phpunit" : "3.7.*"
     },
+    "provide" : {
+        "evert/sabredav" : "1.7.*"
+    },
+    "suggest" : {
+        "ext-apc" : "*",
+        "ext-curl" : "*",
+        "ext-pdo" : "*"
+    }, 
     "autoload": {
         "psr-0": { "Sabre": "lib/" }
     },
     "support" : {
         "forum" : "https://groups.google.com/group/sabredav-discuss",
         "source" : "https://github.com/evert/sabredav"
-    }
+    },
+    "bin" : [
+        "bin/sabredav"
+    ]
 }

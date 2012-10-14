@@ -17,6 +17,11 @@ class Sabre_CalDAV_Schedule_OutboxTest extends PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
+                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
@@ -40,17 +45,18 @@ class Sabre_CalDAV_Schedule_OutboxTest extends PHPUnit_Framework_TestCase {
         $outbox = new Sabre_CalDAV_Schedule_Outbox('principals/user1');
         $r = $outbox->getSupportedPrivilegeSet();
 
-        $ok = false;
+        $ok = 0;
         foreach($r['aggregates'] as $priv) {
 
             if ($priv['privilege'] == '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy') {
-                $ok = true;
+                $ok++;
+            }
+            if ($priv['privilege'] == '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent') {
+                $ok++;
             }
         }
 
-        if (!$ok) {
-            $this->fail('{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy was not found as a supported privilege');
-        }
+        $this->assertEquals(2, $ok, "We're missing one or more privileges");
 
     }
 

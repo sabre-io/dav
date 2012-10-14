@@ -92,9 +92,9 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
         $this->assertEquals('HTTP/1.1 200 OK',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"DAV:\"",$this->response->body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d','DAV:');
 
         $elements = array(
             '/d:prop',

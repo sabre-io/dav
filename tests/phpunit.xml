@@ -5,15 +5,18 @@
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
   >
-  <testsuite name="SabreDAV">
-    <directory>Sabre/</directory>
+  <testsuite name="sabre-dav">
+      <directory>Sabre/</directory>
+  </testsuite>
+  <testsuite name="sabre-vobject">
+      <directory>../vendor/sabre/vobject/tests/Sabre/VObject</directory>
   </testsuite>
 
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">
        <directory suffix=".php">../lib/</directory>
        <exclude>
-         <file>../lib/Sabre.includes.php</file>
+         <file>../lib/Sabre/autoload.php</file>
          <file>../lib/Sabre/CalDAV/includes.php</file>
          <file>../lib/Sabre/CardDAV/includes.php</file>
          <file>../lib/Sabre/DAVACL/includes.php</file>

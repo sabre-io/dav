@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * This unittests is created to find out why recurring events have wrong DTSTART value
  *
@@ -83,13 +85,13 @@ END:VCALENDAR
         );
         $body = str_replace('&#13;','',$body);
 
-        $vObject = Sabre_VObject_Reader::read($body);
+        $vObject = VObject\Reader::read($body);
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre_VObject_Component_VEvent */
+            /** @var $vevent Sabre\VObject\Component_VEvent */
             foreach ($vevent->children as $child) {
-                /** @var $child Sabre_VObject_Property */
+                /** @var $child Sabre\VObject\Property */
 
                 if ($child->name == 'DTSTART') {
                     // DTSTART has to be one of three valid values

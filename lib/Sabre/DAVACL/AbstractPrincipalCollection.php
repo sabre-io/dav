@@ -14,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collection  {
+abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collection implements Sabre_DAVACL_IPrincipalCollection {
 
     /**
      * Node or 'directory' name.

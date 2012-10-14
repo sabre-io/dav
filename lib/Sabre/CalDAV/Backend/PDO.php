@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * PDO CalDAV backend
  *
@@ -16,8 +18,13 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
+     *
+     * On 32 bit system the maximum for a signed integer is 2147483647, so
+     * MAX_DATE cannot be higher than date('Y-m-d', 2147483647) which results
+     * in 2038-01-19 to avoid problems when the date is converted
+     * to a unix timestamp.
      */
-    const MAX_DATE = '2040-01-01';
+    const MAX_DATE = '2038-01-01';
 
     /**
      * pdo
@@ -42,8 +49,9 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
+     * Add your own properties by simply adding on to this array.
      *
-     * Add your own properties by simply adding on to this array
+     * Note that only string-based properties are supported here.
      *
      * @var array
      */
@@ -95,6 +103,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $fields[] = 'ctag';
         $fields[] = 'components';
         $fields[] = 'principaluri';
+        $fields[] = 'transparent';
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
@@ -115,6 +124,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 'principaluri' => $row['principaluri'],
                 '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
                 '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet($components),
+                '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
             );
 
 
@@ -147,11 +157,13 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             'principaluri',
             'uri',
             'ctag',
+            'transparent',
         );
         $values = array(
             ':principaluri' => $principalUri,
             ':uri'          => $calendarUri,
             ':ctag'         => 1,
+            ':transparent'  => 0,
         );
 
         // Default value
@@ -164,6 +176,10 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 throw new Sabre_DAV_Exception('The ' . $sccs . ' property must be of type: Sabre_CalDAV_Property_SupportedCalendarComponentSet');
             }
             $values[':components'] = implode(',',$properties[$sccs]->getValue());
+        }
+        $transp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp';
+        if (isset($properties[$transp])) {
+            $values[':transparent'] = $properties[$transp]->getValue()==='transparent';
         }
 
         foreach($this->propertyMap as $xmlName=>$dbName) {
@@ -230,16 +246,24 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
 
         foreach($mutations as $propertyName=>$propertyValue) {
 
-            // We don't know about this property.
-            if (!isset($this->propertyMap[$propertyName])) {
-                $hasError = true;
-                $result[403][$propertyName] = null;
-                unset($mutations[$propertyName]);
-                continue;
-            }
+            switch($propertyName) {
+                case '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp' :
+                    $fieldName = 'transparent';
+                    $newValues[$fieldName] = $propertyValue->getValue()==='transparent';
+                    break;
+                default :
+                    // Checking the property map
+                    if (!isset($this->propertyMap[$propertyName])) {
+                        // We don't know about this property.
+                        $hasError = true;
+                        $result[403][$propertyName] = null;
+                        unset($mutations[$propertyName]);
+                        continue;
+                    }
 
-            $fieldName = $this->propertyMap[$propertyName];
-            $newValues[$fieldName] = $propertyValue;
+                    $fieldName = $this->propertyMap[$propertyName];
+                    $newValues[$fieldName] = $propertyValue;
+            }
 
         }
 
@@ -457,7 +481,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      */
     protected function getDenormalizedData($calendarData) {
 
-        $vObject = Sabre_VObject_Reader::read($calendarData);
+        $vObject = VObject\Reader::read($calendarData);
         $componentType = null;
         $component = null;
         $firstOccurence = null;
@@ -479,9 +503,9 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                     $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
                 } elseif (isset($component->DURATION)) {
                     $endDate = clone $component->DTSTART->getDateTime();
-                    $endDate->add(Sabre_VObject_DateTimeParser::parse($component->DURATION->value));
+                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->value));
                     $lastOccurence = $endDate->getTimeStamp();
-                } elseif ($component->DTSTART->getDateType()===Sabre_VObject_Property_DateTime::DATE) {
+                } elseif ($component->DTSTART->getDateType()===VObject\Property\DateTime::DATE) {
                     $endDate = clone $component->DTSTART->getDateTime();
                     $endDate->modify('+1 day');
                     $lastOccurence = $endDate->getTimeStamp();
@@ -489,7 +513,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                     $lastOccurence = $firstOccurence;
                 }
             } else {
-                $it = new Sabre_VObject_RecurrenceIterator($vObject, (string)$component->UID);
+                $it = new VObject\RecurrenceIterator($vObject, (string)$component->UID);
                 $maxDate = new DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();
@@ -609,6 +633,12 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             // There was a time-range filter
             if ($componentType == 'VEVENT' && isset($filters['comp-filters'][0]['time-range'])) {
                 $timeRange = $filters['comp-filters'][0]['time-range'];
+
+                // If start time OR the end time is not specified, we can do a
+                // 100% accurate mysql query.
+                if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['prop-filters'] && (!$timeRange['start'] || !$timeRange['end'])) {
+                    $requirePostFilter = false;
+                }
             }
 
         }

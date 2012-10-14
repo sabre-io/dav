@@ -48,7 +48,7 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 set_error_handler("exception_error_handler");
 
 // Autoloader
-require_once 'lib/Sabre/autoload.php';
+require_once 'vendor/autoload.php';
 
 /**
  * The backends. Yes we do really need all of them.

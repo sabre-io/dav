@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 /**
  * This unittests is created to find out why certain events show up twice.
  *
@@ -85,7 +87,7 @@ END:VCALENDAR
         );
         $body = str_replace('&#13;','',$body);
 
-        $vObject = Sabre_VObject_Reader::read($body);
+        $vObject = VObject\Reader::read($body);
 
         // We only expect 3 events
         $this->assertEquals(3, count($vObject->VEVENT),'We got 6 events instead of 3. Output: ' . $body);

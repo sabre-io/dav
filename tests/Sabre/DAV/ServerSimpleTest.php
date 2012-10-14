@@ -211,6 +211,22 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
 
     }
 
+    function testPutNoParentCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt/item.txt',
+            'REQUEST_METHOD' => 'PUT',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('Testing updated file');
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status);
+
+    }
+
     function testPutContentRange() {
 
         $serverVars = array(
@@ -640,7 +656,7 @@ class Sabre_DAV_ServerSimpleTest extends Sabre_DAV_AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 501 Not Implemented',$this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals('HTTP/1.1 403 Forbidden',$this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
 
     }
 

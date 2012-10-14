@@ -66,7 +66,6 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     function testGetProperties() {
 
         $question = array(
-            '{DAV:}owner',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
             '{urn:ietf:params:xml:ns:caldav}supported-collation-set',
@@ -79,9 +78,6 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
 
         $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Sabre_CalDAV_Property_SupportedCollationSet);
-
-        $this->assertTrue($result['{DAV:}owner'] instanceof Sabre_DAVACL_Property_Principal);
-        $this->assertEquals('principals/user1', $result['{DAV:}owner']->getHref());
 
     }
 

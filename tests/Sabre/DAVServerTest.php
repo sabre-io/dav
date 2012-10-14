@@ -4,6 +4,7 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/CalDAV/Backend/Mock.php';
 require_once 'Sabre/CardDAV/Backend/Mock.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+require_once 'Sabre/DAV/Auth/MockBackend.php';
 
 /**
  * This class may be used as a basis for other webdav-related unittests.
@@ -20,6 +21,8 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     protected $setupCalDAV = false;
     protected $setupCardDAV = false;
+    protected $setupACL = false;
+    protected $setupCalDAVSharing = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
@@ -41,7 +44,32 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
      * @var Sabre_CalDAV_Plugin
      */
     protected $caldavPlugin;
+
+    /**
+     * @var Sabre_CardDAV_Plugin
+     */
     protected $carddavPlugin;
+
+    /**
+     * @var Sabre_DAVACL_Plugin
+     */
+    protected $aclPlugin;
+
+    /**
+     * @var Sabre_CalDAV_SharingPlugin
+     */
+    protected $caldavSharingPlugin;
+
+    /**
+     * @var Sabre_DAV_Auth_Plugin
+     */
+    protected $authPlugin;
+
+    /**
+     * If this string is set, we will automatically log in the user with this
+     * name.
+     */
+    protected $autoLogin = null;
 
     function setUp() {
 
@@ -49,14 +77,29 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
         $this->setUpTree();
 
         $this->server = new Sabre_DAV_Server($this->tree);
+        $this->server->debugExceptions = true;
 
         if ($this->setupCalDAV) {
             $this->caldavPlugin = new Sabre_CalDAV_Plugin();
             $this->server->addPlugin($this->caldavPlugin);
         }
+        if ($this->setupCalDAVSharing) {
+            $this->caldavSharingPlugin = new Sabre_CalDAV_SharingPlugin();
+            $this->server->addPlugin($this->caldavSharingPlugin);
+        }
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new Sabre_CardDAV_Plugin();
             $this->server->addPlugin($this->carddavPlugin);
+        }
+        if ($this->setupACL) {
+            $this->aclPlugin = new Sabre_DAVACL_Plugin();
+            $this->server->addPlugin($this->aclPlugin);
+        }
+        if ($this->autoLogin) {
+            $authBackend = new Sabre_DAV_Auth_MockBackend();
+            $authBackend->defaultUser = $this->autoLogin;
+            $this->authPlugin = new Sabre_DAV_Auth_Plugin($authBackend, 'SabreDAV');
+            $this->server->addPlugin($this->authPlugin);
         }
 
     }
@@ -108,10 +151,10 @@ abstract class Sabre_DAVServerTest extends PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
-        if ($this->setupCalDAV) {
+        if ($this->setupCalDAV && is_null($this->caldavBackend)) {
             $this->caldavBackend = new Sabre_CalDAV_Backend_Mock($this->caldavCalendars, $this->caldavCalendarObjects);
         }
-        if ($this->setupCardDAV) {
+        if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new Sabre_CardDAV_Backend_Mock($this->carddavAddressBooks, $this->carddavCards);
         }
         if ($this->setupCardDAV || $this->setupCalDAV) {

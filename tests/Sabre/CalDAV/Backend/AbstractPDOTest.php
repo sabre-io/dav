@@ -31,6 +31,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT')),
             '{DAV:}displayname' => 'Hello!',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         ));
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
@@ -39,6 +40,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             'uri'               => 'somerandomid',
             '{DAV:}displayname' => 'Hello!',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         );
 
         $this->assertInternalType('array',$calendars);
@@ -66,6 +68,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
         // Updating the calendar
         $result = $backend->updateCalendar($newId,array(
             '{DAV:}displayname' => 'myCalendar',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         ));
 
         // Verifying the result of the update
@@ -82,6 +85,7 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
             '{http://calendarserver.org/ns/}getctag' => '2',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent'),
         );
 
         $this->assertInternalType('array',$calendars);
@@ -495,6 +499,37 @@ abstract class Sabre_CalDAV_Backend_AbstractPDOTest extends PHPUnit_Framework_Te
                     'time-range' => array(
                         'start' => new DateTime('20120103'),
                         'end'   => new DateTime('20120104'),
+                    ),
+                ),
+            ),
+            'prop-filters' => array(),
+            'is-not-defined' => false,
+            'time-range' => null,
+        );
+
+        $this->assertEquals(array(
+            "event2",
+        ), $backend->calendarQuery(1, $filters));
+
+    }
+    function testCalendarQueryTimeRangeNoEnd() {
+
+        $backend = new Sabre_CalDAV_Backend_PDO($this->pdo);
+        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject(1, "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = array(
+            'name' => 'VCALENDAR',
+            'comp-filters' => array(
+                array(
+                    'name' => 'VEVENT',
+                    'comp-filters' => array(),
+                    'prop-filters' => array(),
+                    'is-not-defined' => false,
+                    'time-range' => array(
+                        'start' => new DateTime('20120102'),
+                        'end' => null,
                     ),
                 ),
             ),

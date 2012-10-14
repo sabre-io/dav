@@ -11,4 +11,7 @@ groupwareserver.php
 package.xml
 tmpdata
 tests/temp
+tests/.sabredav
 *.swp
+vendor
+composer.lock

@@ -24,9 +24,9 @@ date_default_timezone_set('Canada/Eastern');
 $publicDir = 'public';
 
 // Files we need
-require_once 'Sabre/autoload.php';
+require_once 'vendor/autoload.php';
 
-class MyDirectory extends Sabre_DAV_Directory {
+class MyCollection extends Sabre_DAV_Collection {
 
   private $myPath;
 
@@ -65,7 +65,7 @@ class MyDirectory extends Sabre_DAV_Directory {
 
         if (is_dir($path)) {
 
-            return new MyDirectory($name);
+            return new MyCollection($name);
 
         } else {
 
@@ -114,7 +114,7 @@ class MyFile extends Sabre_DAV_File {
 }
 
 // Make sure there is a directory in your current directory named 'public'. We will be exposing that directory to WebDAV
-$rootNode = new MyDirectory($publicDir);
+$rootNode = new MyCollection($publicDir);
 
 // The rootNode needs to be passed to the server object.
 $server = new Sabre_DAV_Server($rootNode);

@@ -99,6 +99,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
+            'Vary'         => 'Brief,Prefer',
         ), $server->httpResponse->headers);
 
     }
@@ -137,6 +138,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
+            'Vary'         => 'Brief,Prefer',
         ), $server->httpResponse->headers);
 
 
@@ -200,6 +202,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
+            'Vary'         => 'Brief,Prefer',
         ), $server->httpResponse->headers);
 
 

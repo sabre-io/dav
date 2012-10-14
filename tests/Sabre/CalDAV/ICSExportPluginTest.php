@@ -1,5 +1,7 @@
 <?php
 
+use Sabre\VObject;
+
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
@@ -49,12 +51,62 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);
 
-        $obj = Sabre_VObject_Reader::read($s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
+        $this->assertTrue(strpos((string)$obj->PRODID, Sabre_DAV_Version::VERSION)!==false);
+        $this->assertEquals(1,count($obj->VTIMEZONE));
+        $this->assertEquals(1,count($obj->VEVENT));
+
+    }
+    function testBeforeMethodNoVersion() {
+
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
+        $cbackend = Sabre_CalDAV_TestUtil::getBackend();
+        $pbackend = new Sabre_DAVACL_MockPrincipalBackend();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Sabre_CalDAV_Calendar($pbackend,$cbackend,$props),
+        );
+
+        $p = new Sabre_CalDAV_ICSExportPlugin();
+
+        $s = new Sabre_DAV_Server($tree);
+
+        $s->addPlugin($p);
+        $s->addPlugin(new Sabre_CalDAV_Plugin());
+
+        $h = new Sabre_HTTP_Request(array(
+            'QUERY_STRING' => 'export',
+        ));
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new Sabre_HTTP_ResponseMock();
+
+        Sabre_DAV_Server::$exposeVersion = false;
+        $this->assertFalse($p->beforeMethod('GET','UUID-123467?export'));
+        Sabre_DAV_Server::$exposeVersion = true; 
+
+        $this->assertEquals('HTTP/1.1 200 OK',$s->httpResponse->status);
+        $this->assertEquals(array(
+            'Content-Type' => 'text/calendar',
+        ), $s->httpResponse->headers);
+
+        $obj = VObject\Reader::read($s->httpResponse->body);
+
+        $this->assertEquals(5,count($obj->children()));
+        $this->assertEquals(1,count($obj->VERSION));
+        $this->assertEquals(1,count($obj->CALSCALE));
+        $this->assertEquals(1,count($obj->PRODID));
+        $this->assertFalse(strpos((string)$obj->PRODID, Sabre_DAV_Version::VERSION)!==false);
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
 
@@ -161,7 +213,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);
 
-        $obj = Sabre_VObject_Reader::read($s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));

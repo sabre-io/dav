@@ -60,6 +60,25 @@ class Sabre_HTTP_BasicAuthTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetUserPassWithColon() {
+
+        $server = array(
+            'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode('admin:1234:5678'),
+        );
+
+        $request = new Sabre_HTTP_Request($server);
+        $this->basicAuth->setHTTPRequest($request);
+
+        $userPass = $this->basicAuth->getUserPass();
+
+        $this->assertEquals(
+            array('admin','1234:5678'),
+            $userPass,
+            'We did not get the username and password we expected'
+        );
+
+    }
+
     function testGetUserPassApacheEdgeCase() {
 
         $server = array(

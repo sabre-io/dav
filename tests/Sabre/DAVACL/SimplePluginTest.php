@@ -10,7 +10,10 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
 
         $aclPlugin = new Sabre_DAVACL_Plugin();
         $this->assertEquals('acl',$aclPlugin->getPluginName());
-        $this->assertEquals(array('access-control'), $aclPlugin->getFeatures());
+        $this->assertEquals(
+            array('access-control', 'calendarserver-principal-property-search'),
+            $aclPlugin->getFeatures()
+        );
 
         $this->assertEquals(
             array(
@@ -180,6 +183,9 @@ class Sabre_DAVACL_SimplePluginTest extends PHPUnit_Framework_TestCase {
             'principals/groups',
         );
 
+        $this->assertEquals($expected,$acl->getCurrentUserPrincipals());
+
+        // The second one should trigger the cache and be identical
         $this->assertEquals($expected,$acl->getCurrentUserPrincipals());
 
     }

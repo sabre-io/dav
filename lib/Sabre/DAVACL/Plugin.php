@@ -119,7 +119,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('access-control');
+        return array('access-control', 'calendarserver-principal-property-search');
 
     }
 
@@ -243,6 +243,14 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
+     * This array holds a cache for all the principals that are associated with
+     * a single principal.
+     *
+     * @var array
+     */
+    protected $currentUserPrincipalsCache = array();
+
+    /**
      * Returns a list of principals that's associated to the current
      * user, either directly or through group membership.
      *
@@ -253,6 +261,11 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $currentUser = $this->getCurrentUserPrincipal();
 
         if (is_null($currentUser)) return array();
+
+        // First check our cache
+        if (isset($this->currentUserPrincipalsCache[$currentUser])) {
+            return $this->currentUserPrincipalsCache[$currentUser];
+        }
 
         $check = array($currentUser);
         $principals = array($currentUser);
@@ -277,6 +290,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             }
 
         }
+
+        // Store the result in the cache
+        $this->currentUserPrincipalsCache[$currentUser] = $principals;
 
         return $principals;
 
@@ -582,7 +598,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         foreach($uris as $uri) {
 
             $principalCollection = $this->server->tree->getNodeForPath($uri);
-            if (!$principalCollection instanceof Sabre_DAVACL_AbstractPrincipalCollection) {
+            if (!$principalCollection instanceof Sabre_DAVACL_IPrincipalCollection) {
                 // Not a principal collection, we're simply going to ignore
                 // this.
                 continue;
@@ -896,6 +912,18 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
             $returnedProperties[200]['{DAV:}acl-restrictions'] = new Sabre_DAVACL_Property_AclRestrictions();
         }
 
+        /* Adding ACL properties */
+        if ($node instanceof Sabre_DAVACL_IACL) {
+
+            if (false !== ($index = array_search('{DAV:}owner', $requestedProperties))) {
+
+                unset($requestedProperties[$index]);
+                $returnedProperties[200]['{DAV:}owner'] = new Sabre_DAV_Property_Href($node->getOwner() . '/');
+
+            }
+
+        }
+
     }
 
     /**
@@ -929,6 +957,9 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         $node->setGroupMemberSet($memberSet);
+        // We must also clear our cache, just in case
+
+        $this->currentUserPrincipalsCache = array();
 
         $result[200]['{DAV:}group-member-set'] = null;
         unset($propertyDelta['{DAV:}group-member-set']);
@@ -1269,10 +1300,12 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         }
         $result = $this->principalSearch($searchProperties, $requestedProperties, $uri);
 
-        $xml = $this->server->generateMultiStatus($result);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $prefer = $this->server->getHTTPPRefer();
+
         $this->server->httpResponse->sendStatus(207);
-        $this->server->httpResponse->sendBody($xml);
+        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
+        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
 
     }
 

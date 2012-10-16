@@ -940,11 +940,6 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             throw new Sabre_DAV_Exception_BadRequest('The Recipient: header must be specified when making POST requests');
         }
 
-        if (!preg_match('/^mailto:(.*)@(.*)$/i', $originator)) {
-            throw new Sabre_DAV_Exception_BadRequest('Originator must start with mailto: and must be valid email address');
-        }
-        $originator = substr($originator,7);
-
         $recipients = explode(',',$recipients);
         foreach($recipients as $k=>$recipient) {
 
@@ -968,9 +963,31 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
         }
 
-        if (!in_array('mailto:' . $originator, $addresses)) {
+        $found = false;
+        foreach($addresses as $address) {
+
+            // Trimming the / on both sides, just in case..
+            if (rtrim(strtolower($originator),'/') === rtrim(strtolower($address),'/')) {
+                $found = true;
+                break;
+            }
+
+        }
+
+        if (!$found) {
             throw new Sabre_DAV_Exception_Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
         }
+
+        // If the Originator header was a url, and not a mailto: address..
+        // we're going to try to pull the mailto: from the vobject body.
+        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
+            $originator = (string)$vObject->VEVENT->ORGANIZER;
+
+        }
+        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
+            throw new Sabre_DAV_Exception_Forbidden('Could not find mailto: address in both the Orignator header, and the ORGANIZER property in the VEVENT');
+        }
+        $originator = substr($originator,7);
 
         $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
         $this->server->httpResponse->sendStatus(200);

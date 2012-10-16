@@ -1075,7 +1075,7 @@ END:VCALENDAR';
             'ETag'         => '"1"',
         ), $httpResponse->headers);
 
-        $expected = 
+        $expected =
 '<?xml version="1.0" encoding="UTF-8"?>
 <cs:notification xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">
   <cs:systemstatus type="high"/>

@@ -7,6 +7,10 @@
 1.7.2-stable (2012-??-??)
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
 	  property-search'.
+	* Fixed: [#153] Allowing for relative http principals in iMip requests.
+
+Note: bug numbers after this line refer to Google Code tickets. We're using
+github now.
 
 1.7.1-stable (2012-10-07)
 	* Fixed: include path problem in the migration script.

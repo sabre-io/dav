@@ -71,6 +71,20 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     protected $commonName;
 
     /**
+     * The name of the sharer.
+     *
+     * @var string
+     */
+    protected $firstName;
+
+    /**
+     * The name of the sharer.
+     *
+     * @var string
+     */
+    protected $lastName;
+
+    /**
      * A description of the share request
      *
      * @var string
@@ -106,6 +120,8 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      *   * hostUrl      - A url to the shared calendar.
      *   * organizer    - Url to the sharer principal.
      *   * commonName   - The real name of the sharer (optional).
+     *   * firstName    - The first name of the sharer (optional).
+     *   * lastName     - The last name of the sharer (optional).
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
      *   * supportedComponents - An instance of
@@ -227,6 +243,16 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
             $commonName = $doc->createElement('cs:common-name');
             $commonName->appendChild($doc->createTextNode($this->commonName));
             $organizerUrl->appendChild($commonName);
+        }
+        if ($this->firstName) {
+            $firstName = $doc->createElement('cs:first-name');
+            $firstName->appendChild($doc->createTextNode($this->firstName));
+            $organizerUrl->appendChild($firstName);
+        }
+        if ($this->lastName) {
+            $lastName = $doc->createElement('cs:last-name');
+            $lastName->appendChild($doc->createTextNode($this->lastName));
+            $organizerUrl->appendChild($lastName);
         }
         $organizerUrl->appendChild($organizerHref);
         $prop->appendChild($organizerUrl);

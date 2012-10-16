@@ -2,6 +2,8 @@
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
 	  property-search'.
 	* Fixed: [#153] Allowing for relative http principals in iMip requests.
+	* Added: Support for cs:first-name and cs:last-name properties in sharing
+	  invites.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

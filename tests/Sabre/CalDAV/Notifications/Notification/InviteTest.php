@@ -119,7 +119,9 @@ FOO
                     'type' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
                     'readOnly' => true,
                     'hostUrl' => 'calendar',
-                    'organizer' => 'principal/user1'
+                    'organizer' => 'principal/user1',
+                    'firstName' => 'Foo',
+                    'lastName'  => 'Bar',
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
@@ -136,6 +138,8 @@ FOO
       <cs:read/>
     </cs:access>
     <cs:organizer>
+      <cs:first-name>Foo</cs:first-name>
+      <cs:last-name>Bar</cs:last-name>
       <d:href>/principal/user1</d:href>
     </cs:organizer>
   </cs:invite-notification>

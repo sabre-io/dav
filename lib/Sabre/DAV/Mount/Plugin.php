@@ -17,7 +17,7 @@ class Sabre_DAV_Mount_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @var Sabre_DAV_Server
      */
-    private $server;
+    protected $server;
 
     /**
      * Initializes the plugin and registers event handles

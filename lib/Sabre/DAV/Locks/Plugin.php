@@ -23,14 +23,14 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @var Sabre_DAV_Locks_Backend_Abstract
      */
-    private $locksBackend;
+    protected $locksBackend;
 
     /**
      * server
      *
      * @var Sabre_DAV_Server
      */
-    private $server;
+    protected $server;
 
     /**
      * __construct

@@ -22,14 +22,14 @@ class Sabre_DAV_Auth_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @var Sabre_DAV_Server
      */
-    private $server;
+    protected $server;
 
     /**
      * Authentication backend
      *
      * @var Sabre_DAV_Auth_IBackend
      */
-    private $authBackend;
+    protected $authBackend;
 
     /**
      * The authentication realm.

@@ -16,7 +16,7 @@ class Sabre_CardDAV_Version {
     /**
      * Full version number
      */
-    const VERSION = '1.7.0';
+    const VERSION = '1.7.2';
 
     /**
      * Stability : alpha, beta, stable

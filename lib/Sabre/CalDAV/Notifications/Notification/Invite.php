@@ -243,16 +243,29 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
             $commonName = $doc->createElement('cs:common-name');
             $commonName->appendChild($doc->createTextNode($this->commonName));
             $organizerUrl->appendChild($commonName);
+
+            $commonNameOld = $doc->createElement('cs:organizer-cn');
+            $commonNameOld->appendChild($doc->createTextNode($this->commonName));
+            $prop->appendChild($commonNameOld);
+
         }
         if ($this->firstName) {
             $firstName = $doc->createElement('cs:first-name');
             $firstName->appendChild($doc->createTextNode($this->firstName));
             $organizerUrl->appendChild($firstName);
+
+            $firstNameOld = $doc->createElement('cs:organizer-first');
+            $firstNameOld->appendChild($doc->createTextNode($this->firstName));
+            $prop->appendChild($firstNameOld);
         }
         if ($this->lastName) {
             $lastName = $doc->createElement('cs:last-name');
             $lastName->appendChild($doc->createTextNode($this->lastName));
             $organizerUrl->appendChild($lastName);
+
+            $lastNameOld = $doc->createElement('cs:organizer-last');
+            $lastNameOld->appendChild($doc->createTextNode($this->lastName));
+            $prop->appendChild($lastNameOld);
         }
         $organizerUrl->appendChild($organizerHref);
         $prop->appendChild($organizerUrl);

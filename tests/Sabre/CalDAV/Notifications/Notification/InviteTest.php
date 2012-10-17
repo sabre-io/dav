@@ -65,6 +65,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteTest extends \PHPUnit_Framew
     <cs:access>
       <cs:read/>
     </cs:access>
+    <cs:organizer-cn>John Doe</cs:organizer-cn>
     <cs:organizer>
       <cs:common-name>John Doe</cs:common-name>
       <d:href>/principal/user1</d:href>
@@ -101,6 +102,7 @@ FOO
     <cs:access>
       <cs:read/>
     </cs:access>
+    <cs:organizer-cn>John Doe</cs:organizer-cn>
     <cs:organizer>
       <cs:common-name>John Doe</cs:common-name>
       <d:href>/principal/user1</d:href>
@@ -137,6 +139,8 @@ FOO
     <cs:access>
       <cs:read/>
     </cs:access>
+    <cs:organizer-first>Foo</cs:organizer-first>
+    <cs:organizer-last>Bar</cs:organizer-last>
     <cs:organizer>
       <cs:first-name>Foo</cs:first-name>
       <cs:last-name>Bar</cs:last-name>

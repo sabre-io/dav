@@ -6,6 +6,8 @@
 	  invites.
 	* Fixed: Made a bunch of properties protected, where they were private
 	  before.
+	* Added: Some non-standard properties for sharing to improve
+	  compatibility.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

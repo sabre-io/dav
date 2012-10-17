@@ -45,19 +45,19 @@ class Sabre_DAV_TemporaryFileFilterPlugin extends Sabre_DAV_ServerPlugin {
     );
 
     /**
+     * A reference to the main Server class
+     *
+     * @var Sabre_DAV_Server
+     */
+    protected $server;
+
+    /**
      * This is the directory where this plugin
      * will store it's files.
      *
      * @var string
      */
     private $dataDir;
-
-    /**
-     * A reference to the main Server class
-     *
-     * @var Sabre_DAV_Server
-     */
-    private $server;
 
     /**
      * Creates the plugin.

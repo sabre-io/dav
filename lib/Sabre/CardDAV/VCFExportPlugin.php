@@ -23,7 +23,7 @@ class Sabre_CardDAV_VCFExportPlugin extends Sabre_DAV_ServerPlugin {
      *
      * @var Sabre_DAV_Server
      */
-    private $server;
+    protected $server;
 
     /**
      * Initializes the plugin and registers event handlers

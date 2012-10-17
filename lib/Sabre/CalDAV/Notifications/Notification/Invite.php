@@ -237,8 +237,16 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         }
         $prop->appendChild($access);
 
-        $organizerHref = $doc->createElement('d:href', $server->getBaseUri() . $this->organizer);
         $organizerUrl  = $doc->createElement('cs:organizer');
+        // If the organizer contains a 'mailto:' part, it means it should be
+        // treated as absolute.
+        if (strtolower(substr($this->organizer,0,7))==='mailto:') {
+            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, false);
+        } else {
+            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, true);
+        }
+        $organizerHref->serialize($server, $organizerUrl);
+
         if ($this->commonName) {
             $commonName = $doc->createElement('cs:common-name');
             $commonName->appendChild($doc->createTextNode($this->commonName));
@@ -267,7 +275,6 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
             $lastNameOld->appendChild($doc->createTextNode($this->lastName));
             $prop->appendChild($lastNameOld);
         }
-        $organizerUrl->appendChild($organizerHref);
         $prop->appendChild($organizerUrl);
 
         if ($this->summary) {

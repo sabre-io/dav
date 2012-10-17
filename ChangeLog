@@ -1,4 +1,6 @@
 1.8.0-alpha (????-??-??)
+	* BC Break: Sabre_CalDAV_ISharedCalendar now also has a getShares method,
+	  so sharees can figure out who is also on a shared calendar.
 	* Added: Sabre_DAVACL_IPrincipalCollection interface, to advertise support
 	  for principal-property-search on any node.
 	* Added: Simple console script to fire up a fileserver in the current

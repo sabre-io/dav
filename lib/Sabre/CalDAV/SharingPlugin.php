@@ -140,19 +140,29 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 unset($requestedProperties[$index]);
 
                 // Fetching owner information
-                $props = $this->server->getProperties($node->getOwner(), array(
+                $props = $this->server->getPropertiesForPath($node->getOwner(), array(
                     '{http://sabredav.org/ns}email-address',
                     '{DAV:}displayname',
-                ));
+                ), 1);
 
                 $ownerInfo = array(
                     'href' => $node->getOwner(),
                 );
-                if (isset($props['{http://sabredav.org/ns}email-address'])) {
-                    $ownerinfo['href'] = $props['{http://sabredav.org/ns}email-address'];
-                }
-                if (isset($props['{DAV:}displayname'])) {
-                    $ownerinfo['commonName'] = $props['{DAV:}displayname'];
+
+                if ($props && isset($props[0]) && isset($props[0][200])) {
+
+                    // We're mapping the internal webdav properties to the
+                    // elements caldav-sharing expects.
+                    $mapping = array(
+                        '{http://sabredav.org/ns}email-address' => 'href',
+                        '{DAV:}displayname' => 'commonName',
+                    );
+                    foreach($mapping as $source=>$dest) {
+                        if (isset($props[0][200][$source])) {
+                            $ownerInfo[$dest] = $props[0][200][$source];
+                        }
+                    }
+
                 }
 
                 $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite'] =

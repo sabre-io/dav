@@ -8,6 +8,8 @@
 	  before.
 	* Added: Some non-standard properties for sharing to improve
 	  compatibility.
+	* Fixed: When requesting some properties using PROPFIND, they could show
+	  up as both '200 Ok' and '403 Forbidden'.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

@@ -174,8 +174,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         $server->resourceTypeMapping['Sabre_CalDAV_ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
         $server->resourceTypeMapping['Sabre_CalDAV_Schedule_IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
-        $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
-        $server->resourceTypeMapping['Sabre_CalDAV_Principal_ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['Sabre_CalDAV_Principal_IProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
+        $server->resourceTypeMapping['Sabre_CalDAV_Principal_IProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
         $server->resourceTypeMapping['Sabre_CalDAV_Notifications_ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
@@ -375,10 +375,10 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                     // If the node is either ap proxy-read or proxy-write
                     // group, we grab the parent principal and add it to the
                     // list.
-                    if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyRead) {
+                    if ($groupNode instanceof Sabre_CalDAV_Principal_IProxyRead) {
                         list($readList[]) = Sabre_DAV_URLUtil::splitPath($group);
                     }
-                    if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyWrite) {
+                    if ($groupNode instanceof Sabre_CalDAV_Principal_IProxyWrite) {
                         list($writeList[]) = Sabre_DAV_URLUtil::splitPath($group);
                     }
 

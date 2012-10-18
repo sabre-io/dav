@@ -334,7 +334,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (in_array($calHome,$requestedProperties)) {
                 $principalId = $node->getName();
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
-                unset($requestedProperties[$calHome]);
+                unset($requestedProperties[array_search($calHome, $requestedProperties)]);
                 $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
             }
 
@@ -343,7 +343,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (in_array($scheduleProp,$requestedProperties)) {
                 $principalId = $node->getName();
                 $outboxPath = self::CALENDAR_ROOT . '/' . $principalId . '/outbox';
-                unset($requestedProperties[$scheduleProp]);
+                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
                 $returnedProperties[200][$scheduleProp] = new Sabre_DAV_Property_Href($outboxPath);
             }
 
@@ -353,7 +353,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                 $addresses = $node->getAlternateUriSet();
                 $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
-                unset($requestedProperties[$calProp]);
+                unset($requestedProperties[array_search($calProp, $requestedProperties)]);
                 $returnedProperties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
 
             }

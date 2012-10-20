@@ -2125,6 +2125,9 @@ class Sabre_DAV_Server {
 
         $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
         $elem = $dom->getElementsByTagNameNS('DAV:','propfind')->item(0);
+        // if element could not be found return empty array
+        if (!$elem) return array();
+
         return array_keys(Sabre_DAV_XMLUtil::parseProperties($elem));
 
     }

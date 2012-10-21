@@ -1,10 +1,14 @@
 1.8.0-alpha (????-??-??)
+	* BC Break: Sabre_CalDAV_ISharedCalendar now also has a getShares method,
+	  so sharees can figure out who is also on a shared calendar.
 	* Added: Sabre_DAVACL_IPrincipalCollection interface, to advertise support
 	  for principal-property-search on any node.
 	* Added: Simple console script to fire up a fileserver in the current
 	  directory using PHP 5.4's built-in webserver.
 	* Added: Sharee's can now also read out the list of invites for a shared
 	  calendar.
+	* Added: The Proxy principal classes now both implement an interface, for
+	  greater flexiblity.
 
 1.7.2-stable (2012-??-??)
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
@@ -17,6 +21,8 @@
 	* Added: Some non-standard properties for sharing to improve
 	  compatibility.
 	* Fixed: missing comma in postgres sql script.
+	* Fixed: When requesting some properties using PROPFIND, they could show
+	  up as both '200 Ok' and '403 Forbidden'.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

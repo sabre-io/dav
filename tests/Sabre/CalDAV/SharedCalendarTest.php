@@ -38,6 +38,16 @@ class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('calendars/owner/original', $this->getInstance()->getSharedUrl());
     }
 
+    function testGetShares() {
+
+        $this->assertEquals(array(array(
+            'href' => 'mailto:removeme@example.org',
+            'commonName' => 'To be removed',
+            'readOnly' => true,
+            'status' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
+        )), $this->getInstance()->getShares());
+
+    }
 
     function testGetOwner() {
         $this->assertEquals('principals/owner', $this->getInstance()->getOwner());

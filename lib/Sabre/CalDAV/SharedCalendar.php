@@ -94,5 +94,22 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
 
     }
 
+    /**
+     * Returns the list of people whom this calendar is shared with.
+     *
+     * Every element in this array should have the following properties:
+     *   * href - Often a mailto: address
+     *   * commonName - Optional, for example a first + last name
+     *   * status - See the Sabre_CalDAV_SharingPlugin::STATUS_ constants.
+     *   * readOnly - boolean
+     *   * summary - Optional, a description for the share
+     *
+     * @return array
+     */
+    public function getShares() {
+
+        return $this->caldavBackend->getShares($this->calendarInfo['id']);
+
+    }
 
 }

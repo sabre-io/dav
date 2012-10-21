@@ -16,6 +16,7 @@
 	  before.
 	* Added: Some non-standard properties for sharing to improve
 	  compatibility.
+	* Fixed: missing comma in postgres sql script.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

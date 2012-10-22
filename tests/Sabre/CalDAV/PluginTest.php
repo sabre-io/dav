@@ -75,6 +75,17 @@ class Sabre_CalDAV_PluginTest extends PHPUnit_Framework_TestCase {
         $this->plugin = new Sabre_CalDAV_Plugin();
         $this->server->addPlugin($this->plugin);
 
+        // Adding ACL plugin
+        $this->server->addPlugin(new Sabre_DAVACL_Plugin());
+
+        // Adding Auth plugin, and ensuring that we are logged in.
+        $authBackend = new Sabre_DAV_Auth_MockBackend();
+        $authBackend->defaultUser = 'user1';
+        $authPlugin = new Sabre_DAV_Auth_Plugin($authBackend, 'SabreDAV');
+        $this->server->addPlugin($authPlugin);
+
+        $authPlugin->beforeMethod('GET', '/');
+
         $this->response = new Sabre_HTTP_ResponseMock();
         $this->server->httpResponse = $this->response;
 
@@ -479,6 +490,9 @@ END:VCALENDAR';
 
         $this->assertTrue($prop instanceof Sabre_DAV_Property_SupportedReportSet);
         $value = array(
+            '{DAV:}expand-property',
+            '{DAV:}principal-property-search',
+            '{DAV:}principal-search-property-set'
         );
         $this->assertEquals($value,$prop->getValue());
 
@@ -504,6 +518,9 @@ END:VCALENDAR';
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
             '{urn:ietf:params:xml:ns:caldav}free-busy-query',
+            '{DAV:}expand-property',
+            '{DAV:}principal-property-search',
+            '{DAV:}principal-search-property-set'
         );
         $this->assertEquals($value,$prop->getValue());
 

@@ -11,6 +11,8 @@
 	* Fixed: missing comma in postgres sql script.
 	* Fixed: When requesting some properties using PROPFIND, they could show
 	  up as both '200 Ok' and '403 Forbidden'.
+	* Fixed: calendar-proxy principals were not checked for deeper principal
+	  membership than 1 level.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

@@ -364,7 +364,8 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
             if (in_array($propRead,$requestedProperties) || in_array($propWrite,$requestedProperties)) {
 
-                $membership = $node->getGroupMembership();
+                $aclPlugin = $this->server->getPlugin('acl');
+                $membership = $aclPlugin->getPrincipalMembership($path);
                 $readList = array();
                 $writeList = array();
 

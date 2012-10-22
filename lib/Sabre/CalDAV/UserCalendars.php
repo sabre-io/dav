@@ -12,13 +12,6 @@
 class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre_DAVACL_IACL {
 
     /**
-     * Principal backend
-     *
-     * @var Sabre_DAVACL_IPrincipalBackend
-     */
-    protected $principalBackend;
-
-    /**
      * CalDAV backend
      *
      * @var Sabre_CalDAV_Backend_BackendInterface
@@ -35,15 +28,13 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
     /**
      * Constructor
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
      * @param Sabre_CalDAV_Backend_BackendInterface $caldavBackend
      * @param mixed $userUri
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $userUri) {
+    public function __construct(Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $principalInfo) {
 
-        $this->principalBackend = $principalBackend;
         $this->caldavBackend = $caldavBackend;
-        $this->principalInfo = $principalBackend->getPrincipalByPath($userUri);
+        $this->principalInfo = $principalInfo;
 
     }
 
@@ -170,12 +161,12 @@ class Sabre_CalDAV_UserCalendars implements Sabre_DAV_IExtendedCollection, Sabre
         foreach($calendars as $calendar) {
             if ($this->caldavBackend instanceof Sabre_CalDAV_Backend_SharingSupport) {
                 if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
-                    $objs[] = new Sabre_CalDAV_SharedCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                    $objs[] = new Sabre_CalDAV_SharedCalendar($this->caldavBackend, $calendar);
                 } else {
-                    $objs[] = new Sabre_CalDAV_ShareableCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                    $objs[] = new Sabre_CalDAV_ShareableCalendar($this->caldavBackend, $calendar);
                 }
             } else {
-                $objs[] = new Sabre_CalDAV_Calendar($this->principalBackend, $this->caldavBackend, $calendar);
+                $objs[] = new Sabre_CalDAV_Calendar($this->caldavBackend, $calendar);
             }
         }
         $objs[] = new Sabre_CalDAV_Schedule_Outbox($this->principalInfo['uri']);

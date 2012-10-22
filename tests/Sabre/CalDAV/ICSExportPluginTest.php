@@ -20,7 +20,6 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = Sabre_CalDAV_TestUtil::getBackend();
-        $pbackend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -28,7 +27,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Sabre_CalDAV_Calendar($pbackend,$cbackend,$props),
+            new Sabre_CalDAV_Calendar($cbackend,$props),
         );
 
         $p = new Sabre_CalDAV_ICSExportPlugin();
@@ -66,7 +65,6 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = Sabre_CalDAV_TestUtil::getBackend();
-        $pbackend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -74,7 +72,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Sabre_CalDAV_Calendar($pbackend,$cbackend,$props),
+            new Sabre_CalDAV_Calendar($cbackend,$props),
         );
 
         $p = new Sabre_CalDAV_ICSExportPlugin();
@@ -141,7 +139,6 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = Sabre_CalDAV_TestUtil::getBackend();
-        $pbackend = new Sabre_DAVACL_MockPrincipalBackend();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -149,7 +146,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Sabre_CalDAV_Calendar($pbackend,$cbackend,$props),
+            new Sabre_CalDAV_Calendar($cbackend,$props),
         );
 
         $p = new Sabre_CalDAV_ICSExportPlugin();
@@ -182,7 +179,7 @@ class Sabre_CalDAV_ICSExportPluginTest extends PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Sabre_CalDAV_Calendar($pbackend,$cbackend,$props),
+            new Sabre_CalDAV_Calendar($cbackend,$props),
             new Sabre_DAVACL_PrincipalCollection($pbackend),
         );
 

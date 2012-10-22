@@ -54,9 +54,8 @@ ics
 
 
         $caldavBackend = new Sabre_CalDAV_Backend_Mock(array(), $calendarData);
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
 
-        $calendar = new Sabre_CalDAV_Calendar($principalBackend,$caldavBackend, array(
+        $calendar = new Sabre_CalDAV_Calendar($caldavBackend, array(
             'id' => 1,
             'uri' => 'calendar',
             'principaluri' => 'principals/user1',

@@ -32,8 +32,9 @@ class Sabre_CalDAV_UserCalendarsSharedCalendarsTest extends PHPUnit_Framework_Te
             array()
         );
 
-        $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        return new Sabre_CalDAV_UserCalendars($pBackend, $this->backend, 'principals/user1');
+        return new Sabre_CalDAV_UserCalendars($this->backend, array(
+            'uri' => 'principals/user1'
+        ));
 
     }
 

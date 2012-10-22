@@ -27,10 +27,9 @@ class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
                 'commonName' => 'To be removed',
                 'readOnly' => true,
             ),
-        ), array()); 
+        ), array());
 
-        $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        return new Sabre_CalDAV_SharedCalendar($pBackend, $this->backend, $props); 
+        return new Sabre_CalDAV_SharedCalendar($this->backend, $props);
 
     }
 

@@ -14,11 +14,10 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
     /**
      * Constructor
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
      * @param Sabre_CalDAV_Backend_BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $calendarInfo) {
+    public function __construct(Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $calendarInfo) {
 
         $required = array(
             '{http://calendarserver.org/ns/}shared-url',
@@ -31,7 +30,7 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
             }
         }
 
-        parent::__construct($principalBackend, $caldavBackend, $calendarInfo);
+        parent::__construct($caldavBackend, $calendarInfo);
 
     }
 

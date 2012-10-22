@@ -69,7 +69,7 @@ class Sabre_CalDAV_CalendarRootNode extends Sabre_DAVACL_AbstractPrincipalCollec
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new Sabre_CalDAV_UserCalendars($this->principalBackend, $this->caldavBackend, $principal['uri']);
+        return new Sabre_CalDAV_UserCalendars($this->caldavBackend, $principal);
 
     }
 

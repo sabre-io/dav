@@ -29,23 +29,14 @@ class Sabre_CalDAV_Calendar implements Sabre_CalDAV_ICalendar, Sabre_DAV_IProper
     protected $caldavBackend;
 
     /**
-     * Principal backend
-     *
-     * @var Sabre_DAVACL_IPrincipalBackend
-     */
-    protected $principalBackend;
-
-    /**
      * Constructor
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
      * @param Sabre_CalDAV_Backend_BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $calendarInfo) {
+    public function __construct(Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $calendarInfo) {
 
         $this->caldavBackend = $caldavBackend;
-        $this->principalBackend = $principalBackend;
         $this->calendarInfo = $calendarInfo;
 
     }

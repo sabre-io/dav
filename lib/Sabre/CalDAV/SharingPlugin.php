@@ -123,7 +123,9 @@ class SharingPlugin extends DAV\ServerPlugin {
             }
 
         }
+
         if ($node instanceof ISharedCalendar) {
+
             if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}shared-url', $requestedProperties))!==false) {
 
                 unset($requestedProperties[$index]);
@@ -133,6 +135,47 @@ class SharingPlugin extends DAV\ServerPlugin {
                     );
 
             }
+            // The 'invite' property is slightly different for the 'shared'
+            // instance of the calendar, as it also contains the owner
+            // information.
+            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
+
+                unset($requestedProperties[$index]);
+
+                // Fetching owner information
+                $props = $this->server->getPropertiesForPath($node->getOwner(), array(
+                    '{http://sabredav.org/ns}email-address',
+                    '{DAV:}displayname',
+                ), 1);
+
+                $ownerInfo = array(
+                    'href' => $node->getOwner(),
+                );
+
+                if ($props && isset($props[0]) && isset($props[0][200])) {
+
+                    // We're mapping the internal webdav properties to the
+                    // elements caldav-sharing expects.
+                    $mapping = array(
+                        '{http://sabredav.org/ns}email-address' => 'href',
+                        '{DAV:}displayname' => 'commonName',
+                    );
+                    foreach($mapping as $source=>$dest) {
+                        if (isset($props[0][200][$source])) {
+                            $ownerInfo[$dest] = $props[0][200][$source];
+                        }
+                    }
+
+                }
+
+                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}invite'] =
+                    new Property\Invite(
+                        $node->getShares(),
+                        $ownerInfo
+                    );
+
+            }
+
 
         }
 

@@ -25,7 +25,6 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
-        $pbackend = new DAVACL\MockPrincipalBackend();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -70,8 +69,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
     function testBeforeMethodNoVersion() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $cbackend = TestUtil::getBackend();
-        $pbackend = new DAVACL\MockPrincipalBackend();
+        $cbackend = Sabre_CalDAV_TestUtil::getBackend();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -79,7 +77,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Calendar($pbackend,$cbackend,$props),
+            new Calendar($cbackend,$props),
         );
 
         $p = new ICSExportPlugin();
@@ -146,7 +144,6 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
-        $pbackend = new DAVACL\MockPrincipalBackend();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -154,7 +151,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Calendar($pbackend,$cbackend,$props),
+            new Calendar($cbackend,$props),
         );
 
         $p = new ICSExportPlugin();
@@ -187,7 +184,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Calendar($pbackend,$cbackend,$props),
+            new Calendar($cbackend,$props),
             new DAVACL\PrincipalCollection($pbackend),
         );
 

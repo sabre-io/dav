@@ -70,9 +70,10 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
     <cs:access>
       <cs:read/>
     </cs:access>
+    <cs:organizer-cn>John Doe</cs:organizer-cn>
     <cs:organizer>
-      <cs:common-name>John Doe</cs:common-name>
       <d:href>/principal/user1</d:href>
+      <cs:common-name>John Doe</cs:common-name>
     </cs:organizer>
     <cs:summary>Awesome stuff!</cs:summary>
   </cs:invite-notification>
@@ -106,9 +107,10 @@ FOO
     <cs:access>
       <cs:read/>
     </cs:access>
+    <cs:organizer-cn>John Doe</cs:organizer-cn>
     <cs:organizer>
-      <cs:common-name>John Doe</cs:common-name>
       <d:href>/principal/user1</d:href>
+      <cs:common-name>John Doe</cs:common-name>
     </cs:organizer>
   </cs:invite-notification>
 </cs:root>
@@ -124,7 +126,9 @@ FOO
                     'type' => CalDAV\SharingPlugin::STATUS_NORESPONSE,
                     'readOnly' => true,
                     'hostUrl' => 'calendar',
-                    'organizer' => 'principal/user1'
+                    'organizer' => 'principal/user1',
+                    'firstName' => 'Foo',
+                    'lastName'  => 'Bar',
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
@@ -140,8 +144,12 @@ FOO
     <cs:access>
       <cs:read/>
     </cs:access>
+    <cs:organizer-first>Foo</cs:organizer-first>
+    <cs:organizer-last>Bar</cs:organizer-last>
     <cs:organizer>
       <d:href>/principal/user1</d:href>
+      <cs:first-name>Foo</cs:first-name>
+      <cs:last-name>Bar</cs:last-name>
     </cs:organizer>
   </cs:invite-notification>
 </cs:root>
@@ -157,7 +165,7 @@ FOO
                     'type' => CalDAV\SharingPlugin::STATUS_DELETED,
                     'readOnly' => false,
                     'hostUrl' => 'calendar',
-                    'organizer' => 'principal/user1',
+                    'organizer' => 'mailto:user1@fruux.com',
                     'supportedComponents' => new CalDAV\Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
                 ),
 <<<FOO
@@ -175,7 +183,7 @@ FOO
       <cs:read-write/>
     </cs:access>
     <cs:organizer>
-      <d:href>/principal/user1</d:href>
+      <d:href>mailto:user1@fruux.com</d:href>
     </cs:organizer>
     <cal:supported-calendar-component-set>
       <cal:comp name="VEVENT"/>

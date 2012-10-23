@@ -70,7 +70,7 @@ class CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection {
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new UserCalendars($this->principalBackend, $this->caldavBackend, $principal['uri']);
+        return new UserCalendars($this->caldavBackend, $principal['uri']);
 
     }
 

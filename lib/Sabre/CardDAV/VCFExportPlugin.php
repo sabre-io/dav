@@ -24,7 +24,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
      *
      * @var Sabre\DAV\Server
      */
-    private $server;
+    protected $server;
 
     /**
      * Initializes the plugin and registers event handlers

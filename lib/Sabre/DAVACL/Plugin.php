@@ -245,13 +245,6 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-    /**
-     * This array holds a cache for all the principals that are associated with
-     * a single principal.
-     *
-     * @var array
-     */
-    protected $currentUserPrincipalsCache = array();
 
     /**
      * Returns a list of principals that's associated to the current
@@ -265,13 +258,37 @@ class Plugin extends DAV\ServerPlugin {
 
         if (is_null($currentUser)) return array();
 
+        return array_merge(
+            array($currentUser),
+            $this->getPrincipalMembership($currentUser)
+        );
+
+    }
+
+    /**
+     * This array holds a cache for all the principals that are associated with
+     * a single principal.
+     *
+     * @var array
+     */
+    protected $principalMembershipCache = array();
+
+
+    /**
+     * Returns all the principal groups the specified principal is a member of.
+     *
+     * @param string $principal
+     * @return array
+     */
+    public function getPrincipalMembership($mainPrincipal) {
+
         // First check our cache
-        if (isset($this->currentUserPrincipalsCache[$currentUser])) {
-            return $this->currentUserPrincipalsCache[$currentUser];
+        if (isset($this->principalMembershipCache[$mainPrincipal])) {
+            return $this->principalMembershipCache[$mainPrincipal];
         }
 
-        $check = array($currentUser);
-        $principals = array($currentUser);
+        $check = array($mainPrincipal);
+        $principals = array();
 
         while(count($check)) {
 
@@ -295,7 +312,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         // Store the result in the cache
-        $this->currentUserPrincipalsCache[$currentUser] = $principals;
+        $this->principalMembershipCache[$mainPrincipal] = $principals;
 
         return $principals;
 
@@ -962,7 +979,7 @@ class Plugin extends DAV\ServerPlugin {
         $node->setGroupMemberSet($memberSet);
         // We must also clear our cache, just in case
 
-        $this->currentUserPrincipalsCache = array();
+        $this->principalMembershipCache = array();
 
         $result[200]['{DAV:}group-member-set'] = null;
         unset($propertyDelta['{DAV:}group-member-set']);

@@ -60,9 +60,8 @@ ics
 
 
         $caldavBackend = new Backend\Mock(array(), $calendarData);
-        $principalBackend = new DAVACL\MockPrincipalBackend();
 
-        $calendar = new Calendar($principalBackend,$caldavBackend, array(
+        $calendar = new Calendar($caldavBackend, array(
             'id' => 1,
             'uri' => 'calendar',
             'principaluri' => 'principals/user1',

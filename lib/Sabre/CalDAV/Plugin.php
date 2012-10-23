@@ -41,7 +41,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @var DAV\Server
      */
-    private $server;
+    protected $server;
 
     /**
      * The email handler for invites and other scheduling messages.
@@ -178,8 +178,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\ProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\ProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
@@ -338,8 +338,10 @@ class Plugin extends DAV\ServerPlugin {
             if (in_array($calHome,$requestedProperties)) {
                 $principalId = $node->getName();
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
-                unset($requestedProperties[$calHome]);
+
+                unset($requestedProperties[array_search($calHome, $requestedProperties)]);
                 $returnedProperties[200][$calHome] = new DAV\Property\Href($calendarHomePath);
+
             }
 
             // schedule-outbox-URL property
@@ -347,8 +349,10 @@ class Plugin extends DAV\ServerPlugin {
             if (in_array($scheduleProp,$requestedProperties)) {
                 $principalId = $node->getName();
                 $outboxPath = self::CALENDAR_ROOT . '/' . $principalId . '/outbox';
-                unset($requestedProperties[$scheduleProp]);
+
+                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
                 $returnedProperties[200][$scheduleProp] = new DAV\Property\Href($outboxPath);
+
             }
 
             // calendar-user-address-set property
@@ -357,7 +361,7 @@ class Plugin extends DAV\ServerPlugin {
 
                 $addresses = $node->getAlternateUriSet();
                 $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
-                unset($requestedProperties[$calProp]);
+                unset($requestedProperties[array_search($calProp, $requestedProperties)]);
                 $returnedProperties[200][$calProp] = new DAV\Property\HrefList($addresses, false);
 
             }
@@ -368,7 +372,8 @@ class Plugin extends DAV\ServerPlugin {
             $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
             if (in_array($propRead,$requestedProperties) || in_array($propWrite,$requestedProperties)) {
 
-                $membership = $node->getGroupMembership();
+                $aclPlugin = $this->server->getPlugin('acl');
+                $membership = $aclPlugin->getPrincipalMembership($path);
                 $readList = array();
                 $writeList = array();
 
@@ -379,10 +384,10 @@ class Plugin extends DAV\ServerPlugin {
                     // If the node is either ap proxy-read or proxy-write
                     // group, we grab the parent principal and add it to the
                     // list.
-                    if ($groupNode instanceof Principal\ProxyRead) {
+                    if ($groupNode instanceof Principal\IProxyRead) {
                         list($readList[]) = DAV\URLUtil::splitPath($group);
                     }
-                    if ($groupNode instanceof Principal\ProxyWrite) {
+                    if ($groupNode instanceof Principal\IProxyWrite) {
                         list($writeList[]) = DAV\URLUtil::splitPath($group);
                     }
 
@@ -945,11 +950,6 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\BadRequest('The Recipient: header must be specified when making POST requests');
         }
 
-        if (!preg_match('/^mailto:(.*)@(.*)$/i', $originator)) {
-            throw new DAV\Exception\BadRequest('Originator must start with mailto: and must be valid email address');
-        }
-        $originator = substr($originator,7);
-
         $recipients = explode(',',$recipients);
         foreach($recipients as $k=>$recipient) {
 
@@ -973,9 +973,31 @@ class Plugin extends DAV\ServerPlugin {
             $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
         }
 
-        if (!in_array('mailto:' . $originator, $addresses)) {
+        $found = false;
+        foreach($addresses as $address) {
+
+            // Trimming the / on both sides, just in case..
+            if (rtrim(strtolower($originator),'/') === rtrim(strtolower($address),'/')) {
+                $found = true;
+                break;
+            }
+
+        }
+
+        if (!$found) {
             throw new DAV\Exception\Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
         }
+
+        // If the Originator header was a url, and not a mailto: address..
+        // we're going to try to pull the mailto: from the vobject body.
+        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
+            $originator = (string)$vObject->VEVENT->ORGANIZER;
+
+        }
+        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
+            throw new DAV\Exception\Forbidden('Could not find mailto: address in both the Orignator header, and the ORGANIZER property in the VEVENT');
+        }
+        $originator = substr($originator,7);
 
         $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
         $this->server->httpResponse->sendStatus(200);

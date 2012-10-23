@@ -26,11 +26,9 @@ class ShareableCalendarTest extends \PHPUnit_Framework_TestCase {
                 'commonName' => 'To be removed',
                 'readOnly' => true,
             ),
-        ), array()); 
+        ), array());
 
-        $pBackend = new DAVACL\MockPrincipalBackend();
-
-        $this->instance = new ShareableCalendar($pBackend, $this->backend, $props); 
+        $this->instance = new ShareableCalendar($this->backend, $props);
 
     }
 

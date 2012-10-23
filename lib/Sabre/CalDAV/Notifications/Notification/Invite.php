@@ -73,6 +73,20 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
     protected $commonName;
 
     /**
+     * The name of the sharer.
+     *
+     * @var string
+     */
+    protected $firstName;
+
+    /**
+     * The name of the sharer.
+     *
+     * @var string
+     */
+    protected $lastName;
+
+    /**
      * A description of the share request
      *
      * @var string
@@ -108,6 +122,8 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
      *   * hostUrl      - A url to the shared calendar.
      *   * organizer    - Url to the sharer principal.
      *   * commonName   - The real name of the sharer (optional).
+     *   * firstName    - The first name of the sharer (optional).
+     *   * lastName     - The last name of the sharer (optional).
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
      *   * supportedComponents - An instance of
@@ -223,14 +239,44 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
         }
         $prop->appendChild($access);
 
-        $organizerHref = $doc->createElement('d:href', $server->getBaseUri() . $this->organizer);
         $organizerUrl  = $doc->createElement('cs:organizer');
+        // If the organizer contains a 'mailto:' part, it means it should be
+        // treated as absolute.
+        if (strtolower(substr($this->organizer,0,7))==='mailto:') {
+            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, false);
+        } else {
+            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, true);
+        }
+        $organizerHref->serialize($server, $organizerUrl);
+
         if ($this->commonName) {
             $commonName = $doc->createElement('cs:common-name');
             $commonName->appendChild($doc->createTextNode($this->commonName));
             $organizerUrl->appendChild($commonName);
+
+            $commonNameOld = $doc->createElement('cs:organizer-cn');
+            $commonNameOld->appendChild($doc->createTextNode($this->commonName));
+            $prop->appendChild($commonNameOld);
+
         }
-        $organizerUrl->appendChild($organizerHref);
+        if ($this->firstName) {
+            $firstName = $doc->createElement('cs:first-name');
+            $firstName->appendChild($doc->createTextNode($this->firstName));
+            $organizerUrl->appendChild($firstName);
+
+            $firstNameOld = $doc->createElement('cs:organizer-first');
+            $firstNameOld->appendChild($doc->createTextNode($this->firstName));
+            $prop->appendChild($firstNameOld);
+        }
+        if ($this->lastName) {
+            $lastName = $doc->createElement('cs:last-name');
+            $lastName->appendChild($doc->createTextNode($this->lastName));
+            $organizerUrl->appendChild($lastName);
+
+            $lastNameOld = $doc->createElement('cs:organizer-last');
+            $lastNameOld->appendChild($doc->createTextNode($this->lastName));
+            $prop->appendChild($lastNameOld);
+        }
         $prop->appendChild($organizerUrl);
 
         if ($this->summary) {

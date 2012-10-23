@@ -28,6 +28,14 @@ class Invite extends DAV\Property {
     protected $users;
 
     /**
+     * The organizer contains information about the person who shared the
+     * object.
+     *
+     * @var array
+     */
+    protected $organizer;
+
+    /**
      * Creates the property.
      *
      * Users is an array. Each element of the array has the following
@@ -39,11 +47,24 @@ class Invite extends DAV\Property {
      *   * readOnly - true or false
      *   * summary - Optional, description of the share
      *
+     * The organizer key is optional to specify. It's only useful when a
+     * 'sharee' requests the sharing information.
+     *
+     * The organizer may have the following properties:
+     *   * href - Often a mailto: address.
+     *   * commonName - Optional human-readable name.
+     *   * firstName - Optional first name.
+     *   * lastName - Optional last name.
+     *
+     * If you wonder why these two structures are so different, I guess a
+     * valid answer is that the current spec is still a draft.
+     *
      * @param array $users
      */
-    public function __construct(array $users) {
+    public function __construct(array $users, array $organizer = null) {
 
         $this->users = $users;
+        $this->organizer = $organizer;
 
     }
 
@@ -68,6 +89,36 @@ class Invite extends DAV\Property {
     public function serialize(DAV\Server $server,\DOMElement $node) {
 
        $doc = $node->ownerDocument;
+
+       if (!is_null($this->organizer)) {
+
+           $xorganizer = $doc->createElement('cs:organizer');
+
+           $href = $doc->createElement('d:href');
+           $href->appendChild($doc->createTextNode($this->organizer['href']));
+           $xorganizer->appendChild($href);
+
+           if (isset($this->organizer['commonName']) && $this->organizer['commonName']) {
+               $commonName = $doc->createElement('cs:common-name');
+               $commonName->appendChild($doc->createTextNode($this->organizer['commonName']));
+               $xorganizer->appendChild($commonName);
+           }
+           if (isset($this->organizer['firstName']) && $this->organizer['firstName']) {
+               $firstName = $doc->createElement('cs:first-name');
+               $firstName->appendChild($doc->createTextNode($this->organizer['firstName']));
+               $xorganizer->appendChild($firstName);
+           }
+           if (isset($this->organizer['lastName']) && $this->organizer['lastName']) {
+               $lastName = $doc->createElement('cs:last-name');
+               $lastName->appendChild($doc->createTextNode($this->organizer['lastName']));
+               $xorganizer->appendChild($lastName);
+           }
+
+           $node->appendChild($xorganizer);
+
+
+       }
+
        foreach($this->users as $user) {
 
            $xuser = $doc->createElement('cs:user');
@@ -125,6 +176,7 @@ class Invite extends DAV\Property {
            $node->appendChild($xuser);
 
        }
+
 
     }
 

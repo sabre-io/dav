@@ -25,12 +25,12 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
+
         $this->backend = TestUtil::getBackend();
-        $this->principalBackend = new DAVACL\MockPrincipalBackend();
 
         $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(2, count($this->calendars));
-        $this->calendar = new Calendar($this->principalBackend, $this->backend, $this->calendars[0]);
+        $this->calendar = new Calendar($this->backend, $this->calendars[0]);
 
 
     }
@@ -166,7 +166,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
         fwrite($file,TestUtil::getTestCalendarData());
         rewind($file);
 
-        $calendar = new Calendar($this->principalBackend, $this->backend, $this->calendars[1]);
+        $calendar = new Calendar($this->backend, $this->calendars[1]);
         $calendar->createFile('hello',$file);
 
         $file = $calendar->getChild('hello');

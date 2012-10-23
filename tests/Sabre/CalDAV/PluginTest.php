@@ -80,6 +80,17 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 
+        // Adding ACL plugin
+        $this->server->addPlugin(new DAVACL\Plugin());
+
+        // Adding Auth plugin, and ensuring that we are logged in.
+        $authBackend = new DAV\Auth\MockBackend();
+        $authBackend->defaultUser = 'user1';
+        $authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+        $this->server->addPlugin($authPlugin);
+
+        $authPlugin->beforeMethod('GET', '/');
+
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
@@ -484,6 +495,9 @@ END:VCALENDAR';
 
         $this->assertInstanceOf('\\Sabre\\DAV\\Property\\SupportedReportSet', $prop);
         $value = array(
+            '{DAV:}expand-property',
+            '{DAV:}principal-property-search',
+            '{DAV:}principal-search-property-set'
         );
         $this->assertEquals($value,$prop->getValue());
 
@@ -509,6 +523,9 @@ END:VCALENDAR';
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
             '{urn:ietf:params:xml:ns:caldav}free-busy-query',
+            '{DAV:}expand-property',
+            '{DAV:}principal-property-search',
+            '{DAV:}principal-search-property-set'
         );
         $this->assertEquals($value,$prop->getValue());
 
@@ -1080,7 +1097,7 @@ END:VCALENDAR';
             'ETag'         => '"1"',
         ), $httpResponse->headers);
 
-        $expected = 
+        $expected =
 '<?xml version="1.0" encoding="UTF-8"?>
 <cs:notification xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">
   <cs:systemstatus type="high"/>

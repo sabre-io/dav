@@ -17,13 +17,6 @@ use Sabre\DAVACL;
 class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
 
     /**
-     * Principal backend
-     *
-     * @var Sabre\DAVACL\IPrincipalBackend
-     */
-    protected $principalBackend;
-
-    /**
      * CalDAV backend
      *
      * @var Sabre\CalDAV\Backend\BackendInterface
@@ -40,15 +33,13 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
     /**
      * Constructor
      *
-     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
      * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
      * @param mixed $userUri
      */
-    public function __construct(DAVACL\IPrincipalBackend $principalBackend, Backend\BackendInterface $caldavBackend, $userUri) {
+    public function __construct(Backend\BackendInterface $caldavBackend, $principalInfo) {
 
-        $this->principalBackend = $principalBackend;
         $this->caldavBackend = $caldavBackend;
-        $this->principalInfo = $principalBackend->getPrincipalByPath($userUri);
+        $this->principalInfo = $principalInfo;
 
     }
 
@@ -175,12 +166,12 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
         foreach($calendars as $calendar) {
             if ($this->caldavBackend instanceof Backend\SharingSupport) {
                 if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
-                    $objs[] = new SharedCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                    $objs[] = new SharedCalendar($this->caldavBackend, $calendar);
                 } else {
-                    $objs[] = new ShareableCalendar($this->principalBackend, $this->caldavBackend, $calendar);
+                    $objs[] = new ShareableCalendar($this->caldavBackend, $calendar);
                 }
             } else {
-                $objs[] = new Calendar($this->principalBackend, $this->caldavBackend, $calendar);
+                $objs[] = new Calendar($this->caldavBackend, $calendar);
             }
         }
         $objs[] = new Schedule\Outbox($this->principalInfo['uri']);

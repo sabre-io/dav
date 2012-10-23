@@ -20,14 +20,14 @@ class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
      * @var Sabre\CalDAV\Backend\PDO
      */
     protected $backend;
-    protected $principalBackend;
 
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = TestUtil::getBackend();
-        $this->principalBackend = new DAVACL\MockPrincipalBackend('realm');
-        $this->usercalendars = new UserCalendars($this->principalBackend, $this->backend, 'principals/user1');
+        $this->usercalendars = new UserCalendars($this->backend, array(
+            'uri' => 'principals/user1'
+        ));
 
     }
 

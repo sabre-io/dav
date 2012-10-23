@@ -19,4 +19,18 @@ interface ISharedCalendar extends ICalendar {
      */
     function getSharedUrl();
 
+    /**
+     * Returns the list of people whom this calendar is shared with.
+     *
+     * Every element in this array should have the following properties:
+     *   * href - Often a mailto: address
+     *   * commonName - Optional, for example a first + last name
+     *   * status - See the Sabre_CalDAV_SharingPlugin::STATUS_ constants.
+     *   * readOnly - boolean
+     *   * summary - Optional, a description for the share
+     *
+     * @return array
+     */
+    function getShares();
+
 }

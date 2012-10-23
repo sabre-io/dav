@@ -43,6 +43,11 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
                 'status' => CalDAV\SharingPlugin::STATUS_INVALID,
                 'readOnly' => true,
             ),
+        ), array(
+            'href' => 'mailto:thedoctor@example.org',
+            'commonName' => 'The Doctor',
+            'firstName' => 'The',
+            'lastName' => 'Doctor',
         ));
 
         $doc = new \DOMDocument();
@@ -62,6 +67,12 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '" xmlns:cs="' . CalDAV\Plugin::NS_CALENDARSERVER . '">
+  <cs:organizer>
+    <d:href>mailto:thedoctor@example.org</d:href>
+    <cs:common-name>The Doctor</cs:common-name>
+    <cs:first-name>The</cs:first-name>
+    <cs:last-name>Doctor</cs:last-name>
+  </cs:organizer>
   <cs:user>
     <d:href>mailto:user1@example.org</d:href>
     <cs:invite-accepted/>

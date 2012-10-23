@@ -36,8 +36,9 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
             array()
         );
 
-        $pBackend = new DAVACL\MockPrincipalBackend();
-        return new UserCalendars($pBackend, $this->backend, 'principals/user1');
+        return new UserCalendars($this->backend, array(
+            'uri' => 'principals/user1'
+        ));
 
     }
 

@@ -16,11 +16,10 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
     /**
      * Constructor
      *
-     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
      * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(DAVACL\IPrincipalBackend $principalBackend, Backend\BackendInterface $caldavBackend, $calendarInfo) {
+    public function __construct(Backend\BackendInterface $caldavBackend, $calendarInfo) {
 
         $required = array(
             '{http://calendarserver.org/ns/}shared-url',
@@ -33,7 +32,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
             }
         }
 
-        parent::__construct($principalBackend, $caldavBackend, $calendarInfo);
+        parent::__construct($caldavBackend, $calendarInfo);
 
     }
 
@@ -96,5 +95,22 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
 
     }
 
+    /**
+     * Returns the list of people whom this calendar is shared with.
+     *
+     * Every element in this array should have the following properties:
+     *   * href - Often a mailto: address
+     *   * commonName - Optional, for example a first + last name
+     *   * status - See the Sabre_CalDAV_SharingPlugin::STATUS_ constants.
+     *   * readOnly - boolean
+     *   * summary - Optional, a description for the share
+     *
+     * @return array
+     */
+    public function getShares() {
+
+        return $this->caldavBackend->getShares($this->calendarInfo['id']);
+
+    }
 
 }

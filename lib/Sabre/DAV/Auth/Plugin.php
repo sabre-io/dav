@@ -25,14 +25,14 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @var Sabre\DAV\Server
      */
-    private $server;
+    protected $server;
 
     /**
      * Authentication backend
      *
      * @var Sabre\DAV\Auth\IBackend
      */
-    private $authBackend;
+    protected $authBackend;
 
     /**
      * The authentication realm.

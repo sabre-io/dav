@@ -106,7 +106,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
         );
         $req->setBody(implode("\r\n",$body));
 
-        $this->assertHTTPStatus(400, $req);
+        $this->assertHTTPStatus(403, $req);
 
     }
 
@@ -324,6 +324,58 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
     }
 
+    function testSuccessRequestUseRelativePrincipal() {
+
+        $req = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD'  => 'POST',
+            'REQUEST_URI'     => '/calendars/user1/outbox',
+            'HTTP_ORIGINATOR' => '/principals/user1/',
+            'HTTP_RECIPIENT'  => 'mailto:user2@example.org',
+            'HTTP_CONTENT_TYPE' => 'text/calendar',
+        ));
+
+        $body = array(
+            'BEGIN:VCALENDAR',
+            'METHOD:REQUEST',
+            'BEGIN:VEVENT',
+            'SUMMARY:An invitation',
+            'ORGANIZER:mailto:user1.sabredav@sabredav.org',
+            'END:VEVENT',
+            'END:VCALENDAR',
+        );
+
+        $req->setBody(implode("\r\n",$body));
+
+        $handler = new Sabre_CalDAV_Schedule_IMip_Mock('server@example.org');
+
+        $this->caldavPlugin->setIMIPhandler($handler);
+
+        $response = $this->request($req);
+        $this->assertEquals('HTTP/1.1 200 OK', $response->status, 'Full body: ' . $response->body);
+        $this->assertEquals(array(
+            'Content-Type' => 'application/xml',
+        ), $response->headers);
+
+        // Lazily checking the body for a few expected values.
+        $this->assertTrue(strpos($response->body, '2.0;')!==false);
+        $this->assertTrue(strpos($response->body,'user2@example.org')!==false);
+
+        $this->assertEquals(array(
+            array(
+                'to' => 'user2@example.org',
+                'subject' => 'Invitation for: An invitation',
+                'body' => implode("\r\n", $body) . "\r\n",
+                'headers' => array(
+                    'Reply-To: user1.sabredav@sabredav.org',
+                    'From: server@example.org',
+                    'Content-Type: text/calendar; method=REQUEST; charset=utf-8',
+                    'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY,
+                ),
+           )
+        ), $handler->getSentEmails());
+
+    }
+
     function testSuccessRequestUpperCased() {
 
         $req = new HTTP\Request(array(
@@ -457,6 +509,37 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
            )
         ), $handler->getSentEmails());
 
+
+    }
+
+    function testUseRelativePrincipalNoFallback() {
+
+        $req = new Sabre_HTTP_Request(array(
+            'REQUEST_METHOD'  => 'POST',
+            'REQUEST_URI'     => '/calendars/user1/outbox',
+            'HTTP_ORIGINATOR' => '/principals/user1/',
+            'HTTP_RECIPIENT'  => 'mailto:user2@example.org',
+            'HTTP_CONTENT_TYPE' => 'text/calendar',
+        ));
+
+        $body = array(
+            'BEGIN:VCALENDAR',
+            'METHOD:REQUEST',
+            'BEGIN:VEVENT',
+            'SUMMARY:An invitation',
+            'ORGANIZER:rrrrrr',
+            'END:VEVENT',
+            'END:VCALENDAR',
+        );
+
+        $req->setBody(implode("\r\n",$body));
+
+        $handler = new Sabre_CalDAV_Schedule_IMip_Mock('server@example.org');
+
+        $this->caldavPlugin->setIMIPhandler($handler);
+
+        $response = $this->request($req);
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full body: ' . $response->body);
 
     }
 }

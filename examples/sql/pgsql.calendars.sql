@@ -25,7 +25,7 @@ CREATE TABLE calendarobjects (
     etag VARCHAR(32),
     size INTEGER NOT NULL,
     componenttype VARCHAR(8),
-    lastmodified INTEGER
+    lastmodified INTEGER,
     firstoccurence INTEGER,
     lastoccurence INTEGER
 );

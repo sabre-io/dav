@@ -206,6 +206,11 @@ interface SharingSupport extends NotificationSupport {
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
      *
+     * This method may be called by either the original instance of the
+     * calendar, as well as the shared instances. In the case of the shared
+     * instances, it is perfectly acceptable to return an empty array in case
+     * there are privacy concerns.
+     *
      * @param mixed $calendarId
      * @return array
      */

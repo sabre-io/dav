@@ -696,7 +696,6 @@ class Server {
      */
     protected function httpPropfind($uri) {
 
-        // $xml = new Sabre_DAV_XMLReader(file_get_contents('php://input'));
         $requestedProperties = $this->parsePropFindRequest($this->httpRequest->getBody(true));
 
         $depth = $this->getHTTPDepth(1);

@@ -243,9 +243,9 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
         // If the organizer contains a 'mailto:' part, it means it should be
         // treated as absolute.
         if (strtolower(substr($this->organizer,0,7))==='mailto:') {
-            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, false);
+            $organizerHref = new DAV\Property\Href($this->organizer, false);
         } else {
-            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, true);
+            $organizerHref = new DAV\Property\Href($this->organizer, true);
         }
         $organizerHref->serialize($server, $organizerUrl);
 

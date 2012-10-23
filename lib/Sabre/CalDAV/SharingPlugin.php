@@ -80,7 +80,6 @@ class SharingPlugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        //$server->resourceTypeMapping['Sabre_CalDAV_IShareableCalendar'] = '{' . Plugin::NS_CALENDARSERVER . '}shared-owner';
         $server->resourceTypeMapping['Sabre\\CalDAV\\ISharedCalendar'] = '{' . Plugin::NS_CALENDARSERVER . '}shared';
 
         array_push(

@@ -69,7 +69,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
     function testBeforeMethodNoVersion() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $cbackend = Sabre_CalDAV_TestUtil::getBackend();
+        $cbackend = TestUtil::getBackend();
 
         $props = array(
             'uri'=>'UUID-123467',

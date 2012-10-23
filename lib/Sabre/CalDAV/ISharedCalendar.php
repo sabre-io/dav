@@ -25,7 +25,7 @@ interface ISharedCalendar extends ICalendar {
      * Every element in this array should have the following properties:
      *   * href - Often a mailto: address
      *   * commonName - Optional, for example a first + last name
-     *   * status - See the Sabre_CalDAV_SharingPlugin::STATUS_ constants.
+     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
      *

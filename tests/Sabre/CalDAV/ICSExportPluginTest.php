@@ -32,7 +32,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
             'id' => 1,
         );
         $tree = array(
-            new Calendar($pbackend,$cbackend,$props),
+            new Calendar($cbackend,$props),
         );
 
         $p = new ICSExportPlugin();

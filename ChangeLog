@@ -15,6 +15,9 @@
 	  membership than 1 level.
 	* Fixed: setGroupMemberSet argument now correctly receives relative
 	  principal urls, instead of the absolute ones.
+	* Fixed: Server class will filter out any bonus properties if any extra
+	  were returned. This means the implementor of the IProperty class can be
+	  a bit lazier when implementing.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

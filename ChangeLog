@@ -13,6 +13,8 @@
 	  up as both '200 Ok' and '403 Forbidden'.
 	* Fixed: calendar-proxy principals were not checked for deeper principal
 	  membership than 1 level.
+	* Fixed: setGroupMemberSet argument now correctly receives relative
+	  principal urls, instead of the absolute ones.
 
 Note: bug numbers after this line refer to Google Code tickets. We're using
 github now.

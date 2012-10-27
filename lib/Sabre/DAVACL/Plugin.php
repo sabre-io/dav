@@ -960,7 +960,10 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         if (is_null($propertyDelta['{DAV:}group-member-set'])) {
             $memberSet = array();
         } elseif ($propertyDelta['{DAV:}group-member-set'] instanceof Sabre_DAV_Property_HrefList) {
-            $memberSet = $propertyDelta['{DAV:}group-member-set']->getHrefs();
+            $memberSet = array_map(
+                array($this->server,'calculateUri'),
+                $propertyDelta['{DAV:}group-member-set']->getHrefs()
+            );
         } else {
             throw new Sabre_DAV_Exception('The group-member-set property MUST be an instance of Sabre_DAV_Property_HrefList or null');
         }

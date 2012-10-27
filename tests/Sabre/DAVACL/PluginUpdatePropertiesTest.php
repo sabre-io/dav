@@ -60,7 +60,7 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
         $server->addPlugin(new Sabre_DAVACL_Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array('bar','baz')),
+            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array('/bar','/baz'), true),
         ));
 
         $expected = array(
@@ -101,7 +101,7 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
         $server->addPlugin(new Sabre_DAVACL_Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array('bar','baz')),
+            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array('/bar','/baz'),false),
             '{DAV:}bar' => 'baz',
         ));
 

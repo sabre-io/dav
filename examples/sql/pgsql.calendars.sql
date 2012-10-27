@@ -8,7 +8,8 @@ CREATE TABLE calendars (
     calendarorder INTEGER NOT NULL DEFAULT 0,
     calendarcolor VARCHAR(10),
     timezone TEXT,
-    components VARCHAR(20)
+    components VARCHAR(20),
+    transparent SMALLINT NOT NULL DEFAULT '0'
 );
 
 ALTER TABLE ONLY calendars

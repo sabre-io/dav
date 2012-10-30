@@ -1,10 +1,17 @@
 <?php
 
-class Sabre_DAVACL_Property_SupportedPrivilegeSetTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
+
+class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $prop = new Sabre_DAVACL_Property_SupportedPrivilegeSet(array(
+        $prop = new SupportedPrivilegeSet(array(
             'privilege' => '{DAV:}all',
         ));
 
@@ -16,16 +23,16 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSetTest extends PHPUnit_Framework_
      */
     function testSerializeSimple() {
 
-        $prop = new Sabre_DAVACL_Property_SupportedPrivilegeSet(array(
+        $prop = new SupportedPrivilegeSet(array(
             'privilege' => '{DAV:}all',
         ));
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElementNS('DAV:', 'd:supported-privilege-set');
 
         $doc->appendChild($root);
 
-        $server = new Sabre_DAV_Server();
+        $server = new DAV\Server();
         $prop->serialize($server, $root);
 
         $xml = $doc->saveXML();
@@ -48,7 +55,7 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSetTest extends PHPUnit_Framework_
      */
     function testSerializeAggregate() {
 
-        $prop = new Sabre_DAVACL_Property_SupportedPrivilegeSet(array(
+        $prop = new SupportedPrivilegeSet(array(
             'privilege' => '{DAV:}all',
             'abstract'  => true,
             'aggregates' => array(
@@ -62,12 +69,12 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSetTest extends PHPUnit_Framework_
             ),
         ));
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElementNS('DAV:', 'd:supported-privilege-set');
 
         $doc->appendChild($root);
 
-        $server = new Sabre_DAV_Server();
+        $server = new DAV\Server();
         $prop->serialize($server, $root);
 
         $xml = $doc->saveXML();

@@ -1,15 +1,17 @@
 <?php
 
+namespace Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
+class AWSAuthTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_HTTP_ResponseMock
+     * @var Sabre\HTTP\ResponseMock
      */
     private $response;
     /**
-     * @var Sabre_HTTP_AWSAuth
+     * @var Sabre\HTTP\AWSAuth
      */
     private $auth;
 
@@ -17,8 +19,8 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
 
-        $this->response = new Sabre_HTTP_ResponseMock();
-        $this->auth = new Sabre_HTTP_AWSAuth();
+        $this->response = new ResponseMock();
+        $this->auth = new AWSAuth();
         $this->auth->setRealm(self::REALM);
         $this->auth->setHTTPResponse($this->response);
 
@@ -26,7 +28,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
     public function testNoHeader() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'GET',
         ));
 
@@ -35,7 +37,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $result = $this->auth->init();
 
         $this->assertFalse($result,'No AWS Authorization header was supplied, so we should have gotten false');
-        $this->assertEquals(Sabre_HTTP_AWSAuth::ERR_NOAWSHEADER,$this->auth->errorCode);
+        $this->assertEquals(AWSAuth::ERR_NOAWSHEADER,$this->auth->errorCode);
 
     }
 
@@ -44,7 +46,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD'      => 'GET',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => 'garbage',
@@ -56,7 +58,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $result = $this->auth->validate($secretKey);
 
         $this->assertFalse($result);
-        $this->assertEquals(Sabre_HTTP_AWSAuth::ERR_MD5CHECKSUMWRONG,$this->auth->errorCode);
+        $this->assertEquals(AWSAuth::ERR_MD5CHECKSUMWRONG,$this->auth->errorCode);
 
     }
 
@@ -68,7 +70,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $contentMD5 = base64_encode(md5($content,true));
 
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
@@ -81,7 +83,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $result = $this->auth->validate($secretKey);
 
         $this->assertFalse($result);
-        $this->assertEquals(Sabre_HTTP_AWSAuth::ERR_INVALIDDATEFORMAT,$this->auth->errorCode);
+        $this->assertEquals(AWSAuth::ERR_INVALIDDATEFORMAT,$this->auth->errorCode);
 
     }
 
@@ -92,11 +94,11 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true));
 
-        $date = new DateTime('@' . (time() + (60*20)));
-        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = new \DateTime('@' . (time() + (60*20)));
+        $date->setTimeZone(new \DateTimeZone('GMT'));
         $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
@@ -110,7 +112,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $result = $this->auth->validate($secretKey);
 
         $this->assertFalse($result);
-        $this->assertEquals(Sabre_HTTP_AWSAuth::ERR_REQUESTTIMESKEWED,$this->auth->errorCode);
+        $this->assertEquals(AWSAuth::ERR_REQUESTTIMESKEWED,$this->auth->errorCode);
 
     }
 
@@ -121,11 +123,11 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true));
 
-        $date = new DateTime('@' . (time() - (60*20)));
-        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = new \DateTime('@' . (time() - (60*20)));
+        $date->setTimeZone(new \DateTimeZone('GMT'));
         $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
@@ -139,7 +141,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $result = $this->auth->validate($secretKey);
 
         $this->assertFalse($result);
-        $this->assertEquals(Sabre_HTTP_AWSAuth::ERR_REQUESTTIMESKEWED,$this->auth->errorCode);
+        $this->assertEquals(AWSAuth::ERR_REQUESTTIMESKEWED,$this->auth->errorCode);
 
     }
 
@@ -151,11 +153,11 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
 
         $contentMD5 = base64_encode(md5($content,true));
 
-        $date = new DateTime('now');
-        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = new \DateTime('now');
+        $date->setTimeZone(new \DateTimeZone('GMT'));
         $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,
@@ -170,7 +172,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $result = $this->auth->validate($secretKey);
 
         $this->assertFalse($result);
-        $this->assertEquals(Sabre_HTTP_AWSAuth::ERR_INVALIDSIGNATURE,$this->auth->errorCode);
+        $this->assertEquals(AWSAuth::ERR_INVALIDSIGNATURE,$this->auth->errorCode);
 
     }
 
@@ -181,8 +183,8 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
         $content = 'thisisthebody';
         $contentMD5 = base64_encode(md5($content,true));
 
-        $date = new DateTime('now');
-        $date->setTimeZone(new DateTimeZone('GMT'));
+        $date = new \DateTime('now');
+        $date->setTimeZone(new \DateTimeZone('GMT'));
         $date = $date->format('D, d M Y H:i:s \\G\\M\\T');
 
 
@@ -190,7 +192,7 @@ class Sabre_HTTP_AWSAuthTest extends PHPUnit_Framework_TestCase {
             "POST\n$contentMD5\n\n$date\nx-amz-date:$date\n/evert"
         ));
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD'      => 'POST',
             'HTTP_AUTHORIZATION'  => "AWS $accessKey:$sig",
             'HTTP_CONTENT_MD5'    => $contentMD5,

@@ -1,4 +1,10 @@
 <?php
+
+namespace Sabre\DAV\Auth\Backend;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 /**
  * HTTP Basic authentication backend class
  *
@@ -13,7 +19,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Auth_Backend_AbstractBasic implements Sabre_DAV_Auth_IBackend {
+abstract class AbstractBasic implements DAV\Auth\IBackend {
 
     /**
      * This variable holds the currently logged in username.
@@ -52,27 +58,27 @@ abstract class Sabre_DAV_Auth_Backend_AbstractBasic implements Sabre_DAV_Auth_IB
      * If authentication is successful, true must be returned.
      * If authentication fails, an exception must be thrown.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param string $realm
-     * @throws Sabre_DAV_Exception_NotAuthenticated
+     * @throws Sabre\DAV\Exception\NotAuthenticated
      * @return bool
      */
-    public function authenticate(Sabre_DAV_Server $server, $realm) {
+    public function authenticate(DAV\Server $server, $realm) {
 
-        $auth = new Sabre_HTTP_BasicAuth();
+        $auth = new HTTP\BasicAuth();
         $auth->setHTTPRequest($server->httpRequest);
         $auth->setHTTPResponse($server->httpResponse);
         $auth->setRealm($realm);
         $userpass = $auth->getUserPass();
         if (!$userpass) {
             $auth->requireLogin();
-            throw new Sabre_DAV_Exception_NotAuthenticated('No basic authentication headers were found');
+            throw new DAV\Exception\NotAuthenticated('No basic authentication headers were found');
         }
 
         // Authenticates the user
         if (!$this->validateUserPass($userpass[0],$userpass[1])) {
             $auth->requireLogin();
-            throw new Sabre_DAV_Exception_NotAuthenticated('Username or password does not match');
+            throw new DAV\Exception\NotAuthenticated('Username or password does not match');
         }
         $this->currentUser = $userpass[0];
         return true;

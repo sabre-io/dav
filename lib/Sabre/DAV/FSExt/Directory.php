@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\FSExt;
+
+use Sabre\DAV;
+
 /**
  * Directory class
  *
@@ -9,7 +13,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DAV_ICollection, Sabre_DAV_IQuota {
+class Directory extends Node implements DAV\ICollection, DAV\IQuota {
 
     /**
      * Creates a new file in the directory
@@ -38,7 +42,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     public function createFile($name, $data = null) {
 
         // We're not allowing dots
-        if ($name=='.' || $name=='..') throw new Sabre_DAV_Exception_Forbidden('Permission denied to . and ..');
+        if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         file_put_contents($newPath,$data);
 
@@ -55,7 +59,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     public function createDirectory($name) {
 
         // We're not allowing dots
-        if ($name=='.' || $name=='..') throw new Sabre_DAV_Exception_Forbidden('Permission denied to . and ..');
+        if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
 
@@ -64,27 +68,27 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     /**
      * Returns a specific child node, referenced by its name
      *
-     * This method must throw Sabre_DAV_Exception_NotFound if the node does not
+     * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_NotFound
-     * @return Sabre_DAV_INode
+     * @throws Sabre\DAV\Exception\NotFound
+     * @return Sabre\DAV\INode
      */
     public function getChild($name) {
 
         $path = $this->path . '/' . $name;
 
-        if (!file_exists($path)) throw new Sabre_DAV_Exception_NotFound('File could not be located');
-        if ($name=='.' || $name=='..') throw new Sabre_DAV_Exception_Forbidden('Permission denied to . and ..');
+        if (!file_exists($path)) throw new DAV\Exception\NotFound('File could not be located');
+        if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
 
         if (is_dir($path)) {
 
-            return new Sabre_DAV_FSExt_Directory($path);
+            return new Directory($path);
 
         } else {
 
-            return new Sabre_DAV_FSExt_File($path);
+            return new File($path);
 
         }
 
@@ -99,7 +103,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     public function childExists($name) {
 
         if ($name=='.' || $name=='..')
-            throw new Sabre_DAV_Exception_Forbidden('Permission denied to . and ..');
+            throw new DAV\Exception\Forbidden('Permission denied to . and ..');
 
         $path = $this->path . '/' . $name;
         return file_exists($path);
@@ -109,7 +113,7 @@ class Sabre_DAV_FSExt_Directory extends Sabre_DAV_FSExt_Node implements Sabre_DA
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre_DAV_INode[]
+     * @return Sabre\DAV\INode[]
      */
     public function getChildren() {
 

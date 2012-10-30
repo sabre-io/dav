@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\DAVACL\Property;
+use Sabre\DAV;
+
 /**
  * Principal property
  *
@@ -12,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
+class Principal extends DAV\Property implements DAV\Property\IHref {
 
     /**
      * To specify a not-logged-in user, use the UNAUTHENTICATED principal
@@ -67,7 +70,7 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
         $this->type = $type;
 
         if ($type===self::HREF && is_null($href)) {
-            throw new Sabre_DAV_Exception('The href argument must be specified for the HREF principal type.');
+            throw new DAV\Exception('The href argument must be specified for the HREF principal type.');
         }
         $this->href = $href;
 
@@ -98,11 +101,11 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
     /**
      * Serializes the property into a DOMElement.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, DOMElement $node) {
+    public function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prefix = $server->xmlNamespaces['DAV:'];
         switch($this->type) {
@@ -131,16 +134,16 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
      * Deserializes a DOM element into a property object.
      *
      * @param DOMElement $dom
-     * @return Sabre_DAVACL_Property_Principal
+     * @return Sabre\DAVACL\Property\Principal
      */
-    static public function unserialize(DOMElement $dom) {
+    static public function unserialize(\DOMElement $dom) {
 
         $parent = $dom->firstChild;
-        while(!Sabre_DAV_XMLUtil::toClarkNotation($parent)) {
+        while(!DAV\XMLUtil::toClarkNotation($parent)) {
             $parent = $parent->nextSibling;
         }
 
-        switch(Sabre_DAV_XMLUtil::toClarkNotation($parent)) {
+        switch(DAV\XMLUtil::toClarkNotation($parent)) {
 
             case '{DAV:}unauthenticated' :
                 return new self(self::UNAUTHENTICATED);
@@ -151,7 +154,7 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
             case '{DAV:}all':
                 return new self(self::ALL);
             default :
-                throw new Sabre_DAV_Exception_BadRequest('Unexpected element (' . Sabre_DAV_XMLUtil::toClarkNotation($parent) . '). Could not deserialize');
+                throw new DAV\Exception\BadRequest('Unexpected element (' . DAV\XMLUtil::toClarkNotation($parent) . '). Could not deserialize');
 
         }
 

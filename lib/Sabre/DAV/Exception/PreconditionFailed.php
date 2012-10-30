@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Exception;
+
+use Sabre\DAV;
+
 /**
  * PreconditionFailed
  *
@@ -13,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Exception_PreconditionFailed extends Sabre_DAV_Exception {
+class PreconditionFailed extends DAV\Exception {
 
     /**
      * When this exception is thrown, the header-name might be set.
@@ -52,11 +56,11 @@ class Sabre_DAV_Exception_PreconditionFailed extends Sabre_DAV_Exception {
     /**
      * This method allows the exception to include additional information into the WebDAV error response
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $errorNode
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $errorNode) {
+    public function serialize(DAV\Server $server,\DOMElement $errorNode) {
 
         if ($this->header) {
             $prop = $errorNode->ownerDocument->createElement('s:header');

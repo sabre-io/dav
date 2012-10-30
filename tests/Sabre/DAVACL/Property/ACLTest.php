@@ -1,22 +1,28 @@
 <?php
 
-class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
+class ACLTest extends \PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
-        $acl = new Sabre_DAVACL_Property_Acl(array());
+        $acl = new Acl(array());
 
     }
 
     function testSerializeEmpty() {
 
-        $dom = new DOMDocument('1.0');
+        $dom = new \DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
 
         $dom->appendChild($root);
 
-        $acl = new Sabre_DAVACL_Property_Acl(array());
-        $acl->serialize(new Sabre_DAV_Server(), $root);
+        $acl = new Acl(array());
+        $acl->serialize(new DAV\Server(), $root);
 
         $xml = $dom->saveXML();
         $expected = '<?xml version="1.0"?>
@@ -28,7 +34,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
-        $dom = new DOMDocument('1.0');
+        $dom = new \DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
 
         $dom->appendChild($root);
@@ -47,8 +53,8 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
             ),
         );
 
-        $acl = new Sabre_DAVACL_Property_Acl($privileges);
-        $acl->serialize(new Sabre_DAV_Server(), $root);
+        $acl = new Acl($privileges);
+        $acl->serialize(new DAV\Server(), $root);
 
         $dom->formatOutput = true;
 
@@ -84,7 +90,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
     function testSerializeSpecialPrincipals() {
 
-        $dom = new DOMDocument('1.0');
+        $dom = new \DOMDocument('1.0');
         $root = $dom->createElementNS('DAV:','d:root');
 
         $dom->appendChild($root);
@@ -108,8 +114,8 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 
         );
 
-        $acl = new Sabre_DAVACL_Property_Acl($privileges);
-        $acl->serialize(new Sabre_DAV_Server(), $root);
+        $acl = new Acl($privileges);
+        $acl->serialize(new DAV\Server(), $root);
 
         $dom->formatOutput = true;
 
@@ -180,10 +186,10 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        $result = Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+        $dom = DAV\XMLUtil::loadDOMDocument($source);
+        $result = Acl::unserialize($dom->firstChild);
 
-        $this->assertInstanceOf('Sabre_DAVACL_Property_Acl', $result);
+        $this->assertInstanceOf('Sabre\\DAVACL\\Property\\ACL', $result);
 
         $expected = array(
             array(
@@ -204,7 +210,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testUnserializeNoPrincipal() {
 
@@ -220,8 +226,8 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+        $dom = DAV\XMLUtil::loadDOMDocument($source);
+        Acl::unserialize($dom->firstChild);
 
     }
 
@@ -256,10 +262,10 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        $result = Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+        $dom = DAV\XMLUtil::loadDOMDocument($source);
+        $result = Acl::unserialize($dom->firstChild);
 
-        $this->assertInstanceOf('Sabre_DAVACL_Property_Acl', $result);
+        $this->assertInstanceOf('Sabre\\DAVACL\\Property\\Acl', $result);
 
         $expected = array(
             array(
@@ -285,7 +291,7 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotImplemented
+     * @expectedException Sabre\DAV\Exception\NotImplemented
      */
     function testUnserializeDeny() {
 
@@ -302,12 +308,12 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+        $dom = DAV\XMLUtil::loadDOMDocument($source);
+        Acl::unserialize($dom->firstChild);
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testUnserializeMissingPriv() {
 
@@ -322,8 +328,8 @@ class Sabre_DAVACL_Property_ACLTest extends PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        Sabre_DAVACL_Property_Acl::unserialize($dom->firstChild);
+        $dom = DAV\XMLUtil::loadDOMDocument($source);
+        Acl::unserialize($dom->firstChild);
 
     }
 }

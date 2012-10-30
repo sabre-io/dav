@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Notifications;
+
+use Sabre\CalDAV;
+
+class CollectionTest extends \PHPUnit_Framework_TestCase {
 
     protected $caldavBackend;
     protected $principalUri;
@@ -10,15 +14,15 @@ class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestC
 
         $this->principalUri = 'principals/user1';
 
-        $this->notification = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1,'"1"');
+        $this->notification = new Notification\SystemStatus(1,'"1"');
 
-        $this->caldavBackend = new Sabre_CalDAV_Backend_Mock(array(),array(), array(
+        $this->caldavBackend = new CalDAV\Backend\Mock(array(),array(), array(
             'principals/user1' => array(
                 $this->notification
             )
         )); 
 
-        return new Sabre_CalDAV_Notifications_Collection($this->caldavBackend, $this->principalUri);
+        return new Collection($this->caldavBackend, $this->principalUri);
 
     }
 
@@ -28,7 +32,7 @@ class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestC
         $this->assertEquals('notifications', $col->getName());
 
         $this->assertEquals(array(
-            new Sabre_CalDAV_Notifications_Node($this->caldavBackend, $this->principalUri, $this->notification)
+            new Node($this->caldavBackend, $this->principalUri, $this->notification)
         ), $col->getChildren()); 
 
     }
@@ -68,7 +72,7 @@ class Sabre_CalDAV_Notifications_CollectionTest extends \PHPUnit_Framework_TestC
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotImplemented
+     * @expectedException Sabre\DAV\Exception\NotImplemented
      */
     function testSetACL() {
 

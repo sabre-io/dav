@@ -1,6 +1,10 @@
 <?php
 
+namespace Sabre\CalDAV\Backend;
+
 use Sabre\VObject;
+use Sabre\CalDAV;
+use Sabre\DAV;
 
 /**
  * PDO CalDAV backend
@@ -14,7 +18,7 @@ use Sabre\VObject;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
+class PDO extends AbstractBackend {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -29,7 +33,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
     /**
      * pdo
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 
@@ -66,11 +70,11 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
     /**
      * Creates the backend
      *
-     * @param PDO $pdo
+     * @param \PDO $pdo
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
      */
-    public function __construct(PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects') {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects') {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
@@ -111,7 +115,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         $stmt->execute(array($principalUri));
 
         $calendars = array();
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             $components = array();
             if ($row['components']) {
@@ -122,9 +126,9 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 'id' => $row['id'],
                 'uri' => $row['uri'],
                 'principaluri' => $row['principaluri'],
-                '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
-                '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet($components),
-                '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp' => new Sabre_CalDAV_Property_ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
+                '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
+                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet($components),
+                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
             );
 
 
@@ -172,12 +176,12 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         if (!isset($properties[$sccs])) {
             $values[':components'] = 'VEVENT,VTODO';
         } else {
-            if (!($properties[$sccs] instanceof Sabre_CalDAV_Property_SupportedCalendarComponentSet)) {
-                throw new Sabre_DAV_Exception('The ' . $sccs . ' property must be of type: Sabre_CalDAV_Property_SupportedCalendarComponentSet');
+            if (!($properties[$sccs] instanceof CalDAV\Property\SupportedCalendarComponentSet)) {
+                throw new DAV\Exception('The ' . $sccs . ' property must be of type: \Sabre\CalDAV\Property\SupportedCalendarComponentSet');
             }
             $values[':components'] = implode(',',$properties[$sccs]->getValue());
         }
-        $transp = '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp';
+        $transp = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
         if (isset($properties[$transp])) {
             $values[':transparent'] = $properties[$transp]->getValue()==='transparent';
         }
@@ -247,7 +251,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
         foreach($mutations as $propertyName=>$propertyValue) {
 
             switch($propertyName) {
-                case '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-calendar-transp' :
+                case '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' :
                     $fieldName = 'transparent';
                     $newValues[$fieldName] = $propertyValue->getValue()==='transparent';
                     break;
@@ -493,7 +497,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
             }
         }
         if (!$componentType) {
-            throw new Sabre_DAV_Exception_BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
+            throw new \Sabre\DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
         }
         if ($componentType === 'VEVENT') {
             $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
@@ -514,7 +518,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
                 }
             } else {
                 $it = new VObject\RecurrenceIterator($vObject, (string)$component->UID);
-                $maxDate = new DateTime(self::MAX_DATE);
+                $maxDate = new \DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();
                 } else {
@@ -568,7 +572,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      * query.
      *
      * The list of filters are specified as an array. The exact array is
-     * documented by Sabre_CalDAV_CalendarQueryParser.
+     * documented by \Sabre\CalDAV\CalendarQueryParser.
      *
      * Note that it is extremely likely that getCalendarObject for every path
      * returned from this method will be called almost immediately after. You
@@ -597,7 +601,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
      * time-range filter specified on a VEVENT must for instance also handle
      * recurrence rules correctly.
      * A good example of how to interprete all these filters can also simply
-     * be found in Sabre_CalDAV_CalendarQueryFilter. This class is as correct
+     * be found in \Sabre\CalDAV\CalendarQueryFilter. This class is as correct
      * as possible, so it gives you a good idea on what type of stuff you need
      * to think of.
      *
@@ -611,7 +615,7 @@ class Sabre_CalDAV_Backend_PDO extends Sabre_CalDAV_Backend_Abstract {
     public function calendarQuery($calendarId, array $filters) {
 
         $result = array();
-        $validator = new Sabre_CalDAV_CalendarQueryValidator();
+        $validator = new \Sabre\CalDAV\CalendarQueryValidator();
 
         $componentType = null;
         $requirePostFilter = true;

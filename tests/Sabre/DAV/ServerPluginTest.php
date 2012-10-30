@@ -1,12 +1,15 @@
 <?php
 
+namespace Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 require_once 'Sabre/DAV/TestPlugin.php';
 
-class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
+class ServerPluginTest extends AbstractServer {
 
     /**
-     * @var Sabre_DAV_TestPlugin
+     * @var Sabre\DAV\TestPlugin
      */
     protected $testPlugin;
 
@@ -14,18 +17,18 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
         parent::setUp();
 
-        $testPlugin = new Sabre_DAV_TestPlugin();
+        $testPlugin = new TestPlugin();
         $this->server->addPlugin($testPlugin);
         $this->testPlugin = $testPlugin;
 
     }
 
     /**
-     * @covers Sabre_DAV_ServerPlugin
+     * @covers ServerPlugin
      */
     function testBaseClass() {
 
-        $p = new Sabre_DAV_ServerPluginMock();
+        $p = new ServerPluginMock();
         $this->assertEquals(array(),$p->getFeatures());
         $this->assertEquals(array(),$p->getHTTPMethods(''));
 
@@ -38,7 +41,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
             'REQUEST_METHOD' => 'OPTIONS',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -48,7 +51,7 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
             'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE',
             'Accept-Ranges'  => 'bytes',
             'Content-Length' =>  '0',
-            'X-Sabre-Version' => Sabre_DAV_Version::VERSION,
+            'X-Sabre-Version' => Version::VERSION,
         ),$this->response->headers);
 
         $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
@@ -88,8 +91,8 @@ class Sabre_DAV_ServerPluginTest extends Sabre_DAV_AbstractServer {
 
 }
 
-class Sabre_DAV_ServerPluginMock extends Sabre_DAV_ServerPlugin {
+class ServerPluginMock extends ServerPlugin {
 
-    function initialize(Sabre_DAV_Server $s) { }
+    function initialize(Server $s) { }
 
 }

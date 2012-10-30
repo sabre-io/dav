@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * Abstract tree object
  *
@@ -9,15 +11,15 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Tree {
+abstract class Tree {
 
     /**
      * This function must return an INode object for a path
      * If a Path doesn't exist, thrown a Exception_NotFound
      *
      * @param string $path
-     * @throws Sabre_DAV_Exception_NotFound
-     * @return Sabre_DAV_INode
+     * @throws Sabre\DAV\Exception\NotFound
+     * @return Sabre\DAV\INode
      */
     abstract function getNodeForPath($path);
 
@@ -37,7 +39,7 @@ abstract class Sabre_DAV_Tree {
             $this->getNodeForPath($path);
             return true;
 
-        } catch (Sabre_DAV_Exception_NotFound $e) {
+        } catch (Exception\NotFound $e) {
 
             return false;
 
@@ -57,7 +59,7 @@ abstract class Sabre_DAV_Tree {
         $sourceNode = $this->getNodeForPath($sourcePath);
 
         // grab the dirname and basename components
-        list($destinationDir, $destinationName) = Sabre_DAV_URLUtil::splitPath($destinationPath);
+        list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
 
         $destinationParent = $this->getNodeForPath($destinationDir);
         $this->copyNode($sourceNode,$destinationParent,$destinationName);
@@ -75,8 +77,8 @@ abstract class Sabre_DAV_Tree {
      */
     public function move($sourcePath, $destinationPath) {
 
-        list($sourceDir, $sourceName) = Sabre_DAV_URLUtil::splitPath($sourcePath);
-        list($destinationDir, $destinationName) = Sabre_DAV_URLUtil::splitPath($destinationPath);
+        list($sourceDir, $sourceName) = URLUtil::splitPath($sourcePath);
+        list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
 
         if ($sourceDir===$destinationDir) {
             $renameable = $this->getNodeForPath($sourcePath);
@@ -101,7 +103,7 @@ abstract class Sabre_DAV_Tree {
         $node = $this->getNodeForPath($path);
         $node->delete();
 
-        list($parent) = Sabre_DAV_URLUtil::splitPath($path);
+        list($parent) = URLUtil::splitPath($path);
         $this->markDirty($parent);
 
     }
@@ -145,16 +147,16 @@ abstract class Sabre_DAV_Tree {
     /**
      * copyNode
      *
-     * @param Sabre_DAV_INode $source
-     * @param Sabre_DAV_ICollection $destinationParent
+     * @param Sabre\DAV\INode $source
+     * @param Sabre\DAV\ICollection $destinationParent
      * @param string $destinationName
      * @return void
      */
-    protected function copyNode(Sabre_DAV_INode $source,Sabre_DAV_ICollection $destinationParent,$destinationName = null) {
+    protected function copyNode(INode $source,ICollection $destinationParent,$destinationName = null) {
 
         if (!$destinationName) $destinationName = $source->getName();
 
-        if ($source instanceof Sabre_DAV_IFile) {
+        if ($source instanceof IFile) {
 
             $data = $source->get();
 
@@ -168,7 +170,7 @@ abstract class Sabre_DAV_Tree {
             $destinationParent->createFile($destinationName,$data);
             $destination = $destinationParent->getChild($destinationName);
 
-        } elseif ($source instanceof Sabre_DAV_ICollection) {
+        } elseif ($source instanceof ICollection) {
 
             $destinationParent->createDirectory($destinationName);
 
@@ -180,7 +182,7 @@ abstract class Sabre_DAV_Tree {
             }
 
         }
-        if ($source instanceof Sabre_DAV_IProperties && $destination instanceof Sabre_DAV_IProperties) {
+        if ($source instanceof IProperties && $destination instanceof IProperties) {
 
             $props = $source->getProperties(array());
             $destination->updateProperties($props);

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Locks\Backend;
+
+use Sabre\DAV\Locks;
+
 /**
  * The Lock manager allows you to handle all file-locks centrally.
  *
@@ -11,10 +15,10 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_Locks_Backend_Abstract {
+abstract class AbstractBackend {
 
     /**
-     * Returns a list of Sabre_DAV_Locks_LockInfo objects
+     * Returns a list of Sabre\DAV\Locks\LockInfo objects
      *
      * This method should return all the locks for a particular uri, including
      * locks that might be set on a parent uri.
@@ -32,19 +36,19 @@ abstract class Sabre_DAV_Locks_Backend_Abstract {
      * Locks a uri
      *
      * @param string $uri
-     * @param Sabre_DAV_Locks_LockInfo $lockInfo
+     * @param Sabre\DAV\Locks\LockInfo $lockInfo
      * @return bool
      */
-    abstract function lock($uri,Sabre_DAV_Locks_LockInfo $lockInfo);
+    abstract function lock($uri,Locks\LockInfo $lockInfo);
 
     /**
      * Removes a lock from a uri
      *
      * @param string $uri
-     * @param Sabre_DAV_Locks_LockInfo $lockInfo
+     * @param Sabre\DAV\Locks\LockInfo $lockInfo
      * @return bool
      */
-    abstract function unlock($uri,Sabre_DAV_Locks_LockInfo $lockInfo);
+    abstract function unlock($uri,Locks\LockInfo $lockInfo);
 
 }
 

@@ -1,14 +1,20 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
-class Sabre_DAVACL_PrincipalCollectionTest extends PHPUnit_Framework_TestCase {
+class PrincipalCollectionTest extends \PHPUnit_Framework_TestCase {
 
     public function testBasic() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
-        $pc = new Sabre_DAVACL_PrincipalCollection($backend);
-        $this->assertTrue($pc instanceof Sabre_DAVACL_PrincipalCollection);
+        $backend = new MockPrincipalBackend();
+        $pc = new PrincipalCollection($backend);
+        $this->assertTrue($pc instanceof PrincipalCollection);
 
         $this->assertEquals('principals',$pc->getName());
 
@@ -19,26 +25,26 @@ class Sabre_DAVACL_PrincipalCollectionTest extends PHPUnit_Framework_TestCase {
      */
     public function testGetChildren() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
-        $pc = new Sabre_DAVACL_PrincipalCollection($backend);
+        $backend = new MockPrincipalBackend();
+        $pc = new PrincipalCollection($backend);
 
         $children = $pc->getChildren();
         $this->assertTrue(is_array($children));
 
         foreach($children as $child) {
-            $this->assertTrue($child instanceof Sabre_DAVACL_IPrincipal);
+            $this->assertTrue($child instanceof IPrincipal);
         }
 
     }
 
     /**
      * @depends testBasic
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     public function testGetChildrenDisable() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
-        $pc = new Sabre_DAVACL_PrincipalCollection($backend);
+        $backend = new MockPrincipalBackend();
+        $pc = new PrincipalCollection($backend);
         $pc->disableListing = true;
 
         $children = $pc->getChildren();

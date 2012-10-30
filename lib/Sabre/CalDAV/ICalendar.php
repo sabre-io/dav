@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CalDAV;
+use Sabre\DAV;
+
 /**
  * Calendar interface
  *
@@ -11,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CalDAV_ICalendar extends Sabre_DAV_ICollection {
+interface ICalendar extends DAV\ICollection {
 
     /**
      * Performs a calendar-query on the contents of this calendar.
@@ -25,7 +28,7 @@ interface Sabre_CalDAV_ICalendar extends Sabre_DAV_ICollection {
      * query.
      *
      * The list of filters are specified as an array. The exact array is
-     * documented by Sabre_CalDAV_CalendarQueryParser.
+     * documented by \Sabre\CalDAV\CalendarQueryParser.
      *
      * @param array $filters
      * @return array

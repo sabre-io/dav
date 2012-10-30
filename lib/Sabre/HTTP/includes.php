@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Sabre_HTTP includes file
+ * Sabre\HTTP includes file
  *
- * Including this file will automatically include all files from the Sabre_HTTP
+ * Including this file will automatically include all files from the Sabre\HTTP
  * package.
  *
  * This often allows faster loadtimes, as autoload-speed is often quite slow.

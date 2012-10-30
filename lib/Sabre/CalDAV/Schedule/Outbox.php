@@ -1,5 +1,10 @@
 <?php
 
+namespace Sabre\CalDAV\Schedule;
+use Sabre\DAV;
+use Sabre\CalDAV;
+use Sabre\DAVACL;
+
 /**
  * The CalDAV scheduling outbox
  *
@@ -13,7 +18,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre_CalDAV_Schedule_IOutbox {
+class Outbox extends DAV\Collection implements IOutbox {
 
     /**
      * The principal Uri
@@ -49,7 +54,7 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre_DAV_INode[]
+     * @return Sabre\DAV\INode[]
      */
     public function getChildren() {
 
@@ -99,12 +104,12 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
 
         return array(
             array(
-                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy',
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
                 'principal' => $this->getOwner(),
                 'protected' => true,
             ),
             array(
-                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
                 'principal' => $this->getOwner(),
                 'protected' => true,
             ),
@@ -127,7 +132,7 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('You\'re not allowed to update the ACL');
+        throw new DAV\Exception\MethodNotAllowed('You\'re not allowed to update the ACL');
 
     }
 
@@ -135,7 +140,7 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,
@@ -145,12 +150,12 @@ class Sabre_CalDAV_Schedule_Outbox extends Sabre_DAV_Collection implements Sabre
      */
     public function getSupportedPrivilegeSet() {
 
-        $default = Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet();
+        $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
         $default['aggregates'][] = array(
-            'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-query-freebusy',
+            'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
         );
         $default['aggregates'][] = array(
-            'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}schedule-post-vevent',
+            'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
         );
 
         return $default;

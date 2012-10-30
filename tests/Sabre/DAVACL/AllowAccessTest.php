@@ -1,20 +1,25 @@
 <?php
 
-class Sabre_DAVACL_AllowAccessTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class AllowAccessTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_DAV_Server
+     * @var DAV\Server
      */
     protected $server;
 
     function setUp() {
 
         $nodes = array(
-            new Sabre_DAV_SimpleCollection('testdir'),
+            new DAV\SimpleCollection('testdir'),
         );
 
-        $this->server = new Sabre_DAV_Server($nodes);
-        $aclPlugin = new Sabre_DAVACL_Plugin();
+        $this->server = new DAV\Server($nodes);
+        $aclPlugin = new Plugin();
         $aclPlugin->allowAccessToNodesWithoutACL = true;
         $this->server->addPlugin($aclPlugin);
 

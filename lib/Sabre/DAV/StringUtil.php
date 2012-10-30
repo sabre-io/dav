@@ -1,11 +1,13 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * String utility
  *
  * This class is mainly used to implement the 'text-match' filter, used by both
  * the CalDAV calendar-query REPORT, and CardDAV addressbook-query REPORT.
- * Because they both need it, it was decided to put it in Sabre_DAV instead.
+ * Because they both need it, it was decided to put it in Sabre\DAV instead.
  *
  * @package Sabre
  * @subpackage DAV
@@ -13,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_StringUtil {
+class StringUtil {
 
     /**
      * Checks if a needle occurs in a haystack ;)
@@ -45,7 +47,7 @@ class Sabre_DAV_StringUtil {
                 break;
 
             default :
-                throw new Sabre_DAV_Exception_BadRequest('Collation type: ' . $collation . ' is not supported');
+                throw new Exception\BadRequest('Collation type: ' . $collation . ' is not supported');
 
         }
 
@@ -60,7 +62,7 @@ class Sabre_DAV_StringUtil {
             case 'ends-with' :
                 return strrpos($haystack, $needle)===strlen($haystack)-strlen($needle);
             default :
-                throw new Sabre_DAV_Exception_BadRequest('Match-type: ' . $matchType . ' is not supported');
+                throw new Exception\BadRequest('Match-type: ' . $matchType . ' is not supported');
 
         }
 

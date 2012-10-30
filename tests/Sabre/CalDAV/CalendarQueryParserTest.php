@@ -1,6 +1,9 @@
 <?php
 
-class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV;
+use Sabre\DAV;
+
+class CalendarQueryParserTest extends \PHPUnit_Framework_TestCase {
 
     function parse($xml) {
 
@@ -10,16 +13,16 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
 ' . implode("\n", $xml) . '
 </c:calendar-query>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q = new CalendarQueryParser($dom);
         $q->parse();
         return $q->filters;
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoFilter() {
 
@@ -29,7 +32,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testTwoCompFilter() {
 
@@ -104,7 +107,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testCompTimeRangeOnVCALENDAR() {
 
@@ -147,8 +150,8 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('GMT')),
-                        'end' => new DateTime('2011-12-31 23:59:59', new DateTimeZone('GMT')),
+                        'start' => new \DateTime('2011-01-01 00:00:00', new \DateTimeZone('GMT')),
+                        'end' => new \DateTime('2011-12-31 23:59:59', new \DateTimeZone('GMT')),
                     ),
                 ),
                 array(
@@ -157,7 +160,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('GMT')),
+                        'start' => new \DateTime('2011-01-01 00:00:00', new \DateTimeZone('GMT')),
                         'end' => null,
                     ),
                 ),
@@ -168,7 +171,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                     'is-not-defined' => false,
                     'time-range' => array(
                         'start' => null,
-                        'end' => new DateTime('2011-12-31 23:59:59', new DateTimeZone('GMT')),
+                        'end' => new \DateTime('2011-12-31 23:59:59', new \DateTimeZone('GMT')),
                     ),
                 ),
             ),
@@ -185,7 +188,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testCompTimeRangeBadRange() {
 
@@ -303,7 +306,7 @@ class Sabre_CalDAV_CalendarQueryParserTest extends PHPUnit_Framework_TestCase {
                             'param-filters' => array(),
                             'text-match' => null,
                             'time-range' => array(
-                                'start' => new DateTime('2011-07-04 00:00:00', new DateTimeZone('GMT')),
+                                'start' => new \DateTime('2011-07-04 00:00:00', new \DateTimeZone('GMT')),
                                 'end' => null,
                             ),
                         ),
@@ -369,9 +372,9 @@ xmlns:C="urn:ietf:params:xml:ns:caldav">
 </C:calendar-query>
 BLA;
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($body);
+        $dom = DAV\XMLUtil::loadDOMDocument($body);
 
-        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $q = new CalendarQueryParser($dom);
         $q->parse();
 
         $this->assertEquals(array(
@@ -387,8 +390,8 @@ BLA;
                     'comp-filters' => array(),
                     'prop-filters' => array(),
                     'time-range' => array(
-                        'start' => new DateTime('2009-01-01 00:00:00', new DateTimeZone('UTC')),
-                        'end' => new DateTime('2012-12-02 00:00:00', new DateTimeZone('UTC')),
+                        'start' => new \DateTime('2009-01-01 00:00:00', new \DateTimeZone('UTC')),
+                        'end' => new \DateTime('2012-12-02 00:00:00', new \DateTimeZone('UTC')),
                     ),
                     'is-not-defined' => false,
                 ),
@@ -421,8 +424,8 @@ BLA;
 ' . implode("\n", $xml) . '
 </c:calendar-query>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
+        $q = new CalendarQueryParser($dom);
         $q->parse();
 
 
@@ -445,8 +448,8 @@ BLA;
 
         $this->assertEquals(
             array(
-                'start' => new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC')),
-                'end' => new DateTime('2012-01-01 00:00:00', new DateTimeZone('UTC')),
+                'start' => new \DateTime('2011-01-01 00:00:00', new \DateTimeZone('UTC')),
+                'end' => new \DateTime('2012-01-01 00:00:00', new \DateTimeZone('UTC')),
             ),
             $q->expand
         );
@@ -454,7 +457,7 @@ BLA;
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testExpandNoStart() {
 
@@ -475,13 +478,13 @@ BLA;
 ' . implode("\n", $xml) . '
 </c:calendar-query>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
+        $q = new CalendarQueryParser($dom);
         $q->parse();
 
     }
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testExpandNoEnd() {
 
@@ -502,13 +505,13 @@ BLA;
 ' . implode("\n", $xml) . '
 </c:calendar-query>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
+        $q = new CalendarQueryParser($dom);
         $q->parse();
 
     }
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testExpandBadTimes() {
 
@@ -529,8 +532,8 @@ BLA;
 ' . implode("\n", $xml) . '
 </c:calendar-query>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
-        $q = new Sabre_CalDAV_CalendarQueryParser($dom);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
+        $q = new CalendarQueryParser($dom);
         $q->parse();
 
     }

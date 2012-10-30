@@ -1,15 +1,17 @@
 <?php
 
+namespace Sabre\CalDAV\Backend;
+
 require_once 'Sabre/TestUtil.php';
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/CalDAV/Backend/AbstractPDOTest.php';
 
-class Sabre_CalDAV_Backend_PDOMySQLTest extends Sabre_CalDAV_Backend_AbstractPDOTest {
+class PDOMySQLTest extends AbstractPDOTest {
 
     function setup() {
 
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or not properly configured');
-        $pdo = Sabre_TestUtil::getMySQLDB();
+        $pdo = \Sabre\TestUtil::getMySQLDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to mysql database');
 
         $pdo->query('DROP TABLE IF EXISTS calendarobjects, calendars');

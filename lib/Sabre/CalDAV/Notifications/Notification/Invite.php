@@ -1,17 +1,19 @@
 <?php
 
-use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+namespace Sabre\CalDAV\Notifications\Notification;
+
+use Sabre\CalDAV\SharingPlugin as SharingPlugin;
+use Sabre\DAV;
+use Sabre\CalDAV;
 
 /**
  * This class represents the cs:invite-notification notification element.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
+class Invite extends DAV\Property implements CalDAV\Notifications\INotificationType {
 
     /**
      * A unique id for the message
@@ -101,7 +103,7 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     /**
      * The list of supported components
      *
-     * @var Sabre_CalDAV_Property_SupportedCalendarComponentSet
+     * @var Sabre\CalDAV\Property\SupportedCalendarComponentSet
      */
     protected $supportedComponents;
 
@@ -125,7 +127,7 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
      *   * supportedComponents - An instance of
-     *                    Sabre_CalDAV_Property_SupportedCalendarComponentSet.
+     *                    Sabre\CalDAV\Property\SupportedCalendarComponentSet.
      *                    This allows the client to determine which components
      *                    will be supported in the shared calendar. This is
      *                    also optional.
@@ -146,13 +148,13 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         );
         foreach($required as $item) {
             if (!isset($values[$item])) {
-                throw new InvalidArgumentException($item . ' is a required constructor option');
+                throw new \InvalidArgumentException($item . ' is a required constructor option');
             }
         }
 
         foreach($values as $key=>$value) {
             if (!property_exists($this, $key)) {
-                throw new InvalidArgumentException('Unknown option: ' . $key);
+                throw new \InvalidArgumentException('Unknown option: ' . $key);
             }
             $this->$key = $value;
         }
@@ -165,11 +167,11 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      * You should usually just encode the single top-level element of the
      * notification.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prop = $node->ownerDocument->createElement('cs:invite-notification');
         $node->appendChild($prop);
@@ -180,11 +182,11 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
 
@@ -241,9 +243,9 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         // If the organizer contains a 'mailto:' part, it means it should be
         // treated as absolute.
         if (strtolower(substr($this->organizer,0,7))==='mailto:') {
-            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, false);
+            $organizerHref = new DAV\Property\Href($this->organizer, false);
         } else {
-            $organizerHref = new Sabre_DAV_Property_Href($this->organizer, true);
+            $organizerHref = new DAV\Property\Href($this->organizer, true);
         }
         $organizerHref->serialize($server, $organizerUrl);
 

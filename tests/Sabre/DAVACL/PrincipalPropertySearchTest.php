@@ -1,26 +1,31 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
-class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCase {
+class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
     function getServer() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
+        $backend = new MockPrincipalBackend();
 
-        $dir = new Sabre_DAV_SimpleCollection('root');
-        $principals = new Sabre_DAVACL_PrincipalCollection($backend);
+        $dir = new DAV\SimpleCollection('root');
+        $principals = new PrincipalCollection($backend);
         $dir->addChild($principals);
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
-        $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
+        $fakeServer = new DAV\Server(new DAV\ObjectTree($dir));
+        $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->debugExceptions = true;
-        $plugin = new Sabre_DAVACL_MockPlugin($backend,'realm');
+        $plugin = new MockPlugin($backend,'realm');
         $plugin->allowAccessToNodesWithoutACL = true;
 
-        $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
+        $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
@@ -50,7 +55,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -88,7 +93,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -127,7 +132,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
             'REQUEST_URI'    => '/',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -191,7 +196,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
             'REQUEST_URI'    => '/',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -229,7 +234,7 @@ class Sabre_DAVACL_PrincipalPropertySearchTest extends PHPUnit_Framework_TestCas
     }
 }
 
-class Sabre_DAVACL_MockPlugin extends Sabre_DAVACL_Plugin {
+class MockPlugin extends Plugin {
 
     function getCurrentUserPrivilegeSet($node) {
 

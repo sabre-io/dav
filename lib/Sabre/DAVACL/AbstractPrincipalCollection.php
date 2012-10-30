@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\DAVACL;
+use Sabre\DAV;
+
 /**
  * Principals Collection
  *
@@ -14,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collection implements Sabre_DAVACL_IPrincipalCollection {
+abstract class AbstractPrincipalCollection extends DAV\Collection implements IPrincipalCollection {
 
     /**
      * Node or 'directory' name.
@@ -26,7 +29,7 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
     /**
      * Principal backend
      *
-     * @var Sabre_DAVACL_IPrincipalBackend
+     * @var Sabre\DAVACL\IPrincipalBackend
      */
     protected $principalBackend;
 
@@ -47,10 +50,10 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
      * collection, override $principalPrefix
      *
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
+     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
      * @param string $principalPrefix
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, $principalPrefix = 'principals') {
+    public function __construct(IPrincipalBackend $principalBackend, $principalPrefix = 'principals') {
 
         $this->principalPrefix = $principalPrefix;
         $this->principalBackend = $principalBackend;
@@ -65,7 +68,7 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
      * supplied by the authentication backend.
      *
      * @param array $principalInfo
-     * @return Sabre_DAVACL_IPrincipal
+     * @return Sabre\DAVACL\IPrincipal
      */
     abstract function getChildForPrincipal(array $principalInfo);
 
@@ -76,7 +79,7 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
      */
     public function getName() {
 
-        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->principalPrefix);
+        list(,$name) = DAV\URLUtil::splitPath($this->principalPrefix);
         return $name;
 
     }
@@ -89,7 +92,7 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
     public function getChildren() {
 
         if ($this->disableListing)
-            throw new Sabre_DAV_Exception_MethodNotAllowed('Listing members of this collection is disabled');
+            throw new DAV\Exception\MethodNotAllowed('Listing members of this collection is disabled');
 
         $children = array();
         foreach($this->principalBackend->getPrincipalsByPrefix($this->principalPrefix) as $principalInfo) {
@@ -106,13 +109,13 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
      * Returns a child object, by its name.
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_NotFound
-     * @return Sabre_DAVACL_IPrincipal
+     * @throws Sabre\DAV\Exception\NotFound
+     * @return Sabre\DAVACL\IPrincipal
      */
     public function getChild($name) {
 
         $principalInfo = $this->principalBackend->getPrincipalByPath($this->principalPrefix . '/' . $name);
-        if (!$principalInfo) throw new Sabre_DAV_Exception_NotFound('Principal with name ' . $name . ' not found');
+        if (!$principalInfo) throw new DAV\Exception\NotFound('Principal with name ' . $name . ' not found');
         return $this->getChildForPrincipal($principalInfo);
 
     }
@@ -144,7 +147,7 @@ abstract class Sabre_DAVACL_AbstractPrincipalCollection extends Sabre_DAV_Collec
         $r = array();
 
         foreach($result as $row) {
-            list(, $r[]) = Sabre_DAV_URLUtil::splitPath($row);
+            list(, $r[]) = DAV\URLUtil::splitPath($row);
         }
 
         return $r;

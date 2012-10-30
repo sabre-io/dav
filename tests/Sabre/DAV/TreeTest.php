@@ -1,13 +1,15 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
- * @covers Sabre_DAV_Tree
+ * @covers Tree
  */
-class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
+class TreeTest extends \PHPUnit_Framework_TestCase {
 
     function testNodeExists() {
 
-        $tree = new Sabre_DAV_TreeMock();
+        $tree = new TreeMock();
 
         $this->assertTrue($tree->nodeExists('hi'));
         $this->assertFalse($tree->nodeExists('hello'));
@@ -16,7 +18,7 @@ class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
 
     function testCopy() {
 
-        $tree = new Sabre_DAV_TreeMock();
+        $tree = new TreeMock();
         $tree->copy('hi','hi2');
 
         $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
@@ -27,7 +29,7 @@ class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
 
     function testMove() {
 
-        $tree = new Sabre_DAV_TreeMock();
+        $tree = new TreeMock();
         $tree->move('hi','hi2');
 
         $this->assertEquals('hi2', $tree->getNodeForPath('hi')->getName());
@@ -37,7 +39,7 @@ class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
 
     function testDeepMove() {
 
-        $tree = new Sabre_DAV_TreeMock();
+        $tree = new TreeMock();
         $tree->move('hi/sub','hi2');
 
         $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
@@ -47,7 +49,7 @@ class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
 
     function testDelete() {
 
-        $tree = new Sabre_DAV_TreeMock();
+        $tree = new TreeMock();
         $tree->delete('hi');
         $this->assertTrue($tree->getNodeForPath('hi')->isDeleted);
 
@@ -55,7 +57,7 @@ class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
 
     function testGetChildren() {
 
-        $tree = new Sabre_DAV_TreeMock();
+        $tree = new TreeMock();
         $children = $tree->getChildren('');
         $this->assertEquals(1,count($children));
         $this->assertEquals('hi', $children[0]->getName());
@@ -64,31 +66,31 @@ class Sabre_DAV_TreeTest extends PHPUnit_Framework_TestCase {
 
 }
 
-class Sabre_DAV_TreeMock extends Sabre_DAV_Tree {
+class TreeMock extends Tree {
 
     private $nodes = array();
 
     function __construct() {
 
-        $this->nodes['hi/sub'] = new Sabre_DAV_TreeDirectoryTester('sub');
-        $this->nodes['hi/file'] = new Sabre_DAV_TreeFileTester('file');
+        $this->nodes['hi/sub'] = new TreeDirectoryTester('sub');
+        $this->nodes['hi/file'] = new TreeFileTester('file');
         $this->nodes['hi/file']->properties = array('test1' => 'value');
         $this->nodes['hi/file']->data = 'foobar';
-        $this->nodes['hi'] = new Sabre_DAV_TreeDirectoryTester('hi',array($this->nodes['hi/sub'], $this->nodes['hi/file']));
-        $this->nodes[''] = new Sabre_DAV_TreeDirectoryTester('hi', array($this->nodes['hi']));
+        $this->nodes['hi'] = new TreeDirectoryTester('hi',array($this->nodes['hi/sub'], $this->nodes['hi/file']));
+        $this->nodes[''] = new TreeDirectoryTester('hi', array($this->nodes['hi']));
 
     }
 
     function getNodeForPath($path) {
 
         if (isset($this->nodes[$path])) return $this->nodes[$path];
-        throw new Sabre_DAV_Exception_NotFound('item not found');
+        throw new Exception\NotFound('item not found');
 
     }
 
 }
 
-class Sabre_DAV_TreeDirectoryTester extends Sabre_DAV_SimpleCollection {
+class TreeDirectoryTester extends SimpleCollection {
 
     public $newDirectories = array();
     public $newFiles = array();
@@ -109,8 +111,8 @@ class Sabre_DAV_TreeDirectoryTester extends Sabre_DAV_SimpleCollection {
 
     function getChild($name) {
 
-        if (isset($this->newDirectories[$name])) return new Sabre_DAV_TreeDirectoryTester($name);
-        if (isset($this->newFiles[$name])) return new Sabre_DAV_TreeFileTester($name, $this->newFiles[$name]);
+        if (isset($this->newDirectories[$name])) return new TreeDirectoryTester($name);
+        if (isset($this->newFiles[$name])) return new TreeFileTester($name, $this->newFiles[$name]);
         return parent::getChild($name);
 
     }
@@ -130,7 +132,7 @@ class Sabre_DAV_TreeDirectoryTester extends Sabre_DAV_SimpleCollection {
 
 }
 
-class Sabre_DAV_TreeFileTester extends Sabre_DAV_File implements Sabre_DAV_IProperties {
+class TreeFileTester extends File implements IProperties {
 
     public $name;
     public $data;

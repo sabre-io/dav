@@ -1,13 +1,16 @@
 <?php
 
+namespace Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
+class ServerPropsTest extends AbstractServer {
 
     protected function getRootNode() {
 
-        return new Sabre_DAV_FSExt_Directory(SABRE_TEMPDIR);
+        return new FSExt\Directory(SABRE_TEMPDIR);
 
     }
 
@@ -18,7 +21,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
         file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
         mkdir(SABRE_TEMPDIR . '/col');
         file_put_contents(SABRE_TEMPDIR . 'col/test.txt', 'Test contents');
-        $this->server->addPlugin(new Sabre_DAV_Locks_Plugin(new Sabre_DAV_Locks_Backend_File(SABRE_TEMPDIR . '/.locksdb')));
+        $this->server->addPlugin(new Locks\Plugin(new Locks\Backend\File(SABRE_TEMPDIR . '/.locksdb')));
 
     }
 
@@ -37,7 +40,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
             'HTTP_DEPTH'          => '0',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($body);
 
         $this->server->httpRequest = ($request);
@@ -157,7 +160,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
-     * @covers Sabre_DAV_Server::parsePropPatchRequest
+     * @covers Sabre\DAV\Server::parsePropPatchRequest
      */
     public function testParsePropPatchRequest() {
 
@@ -179,7 +182,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
-     * @covers Sabre_DAV_Server::updateProperties
+     * @covers Sabre\DAV\Server::updateProperties
      */
     public function testUpdateProperties() {
 
@@ -197,7 +200,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
-     * @covers Sabre_DAV_Server::updateProperties
+     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
      */
     public function testUpdatePropertiesProtected() {
@@ -218,13 +221,13 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
-     * @covers Sabre_DAV_Server::updateProperties
+     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
      */
     public function testUpdatePropertiesFail1() {
 
-        $dir = new Sabre_DAV_PropTestDirMock('updatepropsfalse');
-        $objectTree = new Sabre_DAV_ObjectTree($dir);
+        $dir = new PropTestDirMock('updatepropsfalse');
+        $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
         $props = array(
@@ -241,13 +244,13 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
-     * @covers Sabre_DAV_Server::updateProperties
+     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
      */
     public function testUpdatePropertiesFail2() {
 
-        $dir = new Sabre_DAV_PropTestDirMock('updatepropsarray');
-        $objectTree = new Sabre_DAV_ObjectTree($dir);
+        $dir = new PropTestDirMock('updatepropsarray');
+        $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
         $props = array(
@@ -264,14 +267,14 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     }
 
     /**
-     * @covers Sabre_DAV_Server::updateProperties
+     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     public function testUpdatePropertiesFail3() {
 
-        $dir = new Sabre_DAV_PropTestDirMock('updatepropsobj');
-        $objectTree = new Sabre_DAV_ObjectTree($dir);
+        $dir = new PropTestDirMock('updatepropsobj');
+        $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
         $props = array(
@@ -285,7 +288,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
     /**
      * @depends testParsePropPatchRequest
      * @depends testUpdateProperties
-     * @covers Sabre_DAV_Server::httpPropPatch
+     * @covers Sabre\DAV\Server::httpPropPatch
      */
     public function testPropPatch() {
 
@@ -299,7 +302,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
   <d:set><d:prop><s:someprop>somevalue</s:someprop></d:prop></d:set>
 </d:propertyupdate>';
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($body);
 
         $this->server->httpRequest = ($request);
@@ -361,7 +364,7 @@ class Sabre_DAV_ServerPropsTest extends Sabre_DAV_AbstractServer {
 
 }
 
-class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleCollection implements Sabre_DAV_IProperties {
+class PropTestDirMock extends SimpleCollection implements IProperties {
 
     public $type;
 
@@ -381,7 +384,7 @@ class Sabre_DAV_PropTestDirMock extends Sabre_DAV_SimpleCollection implements Sa
                 foreach($updateProperties as $k=>$v) $r[402][$k] = null;
                 return $r;
             case 'updatepropsobj' :
-                return new STDClass();
+                return new \STDClass();
         }
 
     }

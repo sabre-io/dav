@@ -1,10 +1,14 @@
 <?php
 
+namespace Sabre\DAV;
+
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 require_once 'Sabre/DAV/Exception.php';
 
-class Sabre_DAV_ServerFinderBlockTest extends Sabre_DAV_AbstractServer{
+class ServerFinderBlockTest extends AbstractServer{
 
     function testPut() {
 
@@ -14,7 +18,7 @@ class Sabre_DAV_ServerFinderBlockTest extends Sabre_DAV_AbstractServer{
             'HTTP_X_EXPECTED_ENTITY_LENGTH' => '20',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('Testing finder');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -35,7 +39,7 @@ class Sabre_DAV_ServerFinderBlockTest extends Sabre_DAV_AbstractServer{
             'HTTP_X_EXPECTED_ENTITY_LENGTH' => '20',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('');
         $this->server->httpRequest = $request;
         $this->server->exec();

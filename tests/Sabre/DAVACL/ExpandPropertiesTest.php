@@ -1,35 +1,40 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
+class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
     function getServer() {
 
         $tree = array(
-            new Sabre_DAVACL_MockPropertyNode('node1', array(
+            new MockPropertyNode('node1', array(
                 '{http://sabredav.org/ns}simple' => 'foo',
-                '{http://sabredav.org/ns}href'   => new Sabre_DAV_Property_Href('node2'),
+                '{http://sabredav.org/ns}href'   => new DAV\Property\Href('node2'),
                 '{DAV:}displayname'     => 'Node 1',
             )),
-            new Sabre_DAVACL_MockPropertyNode('node2', array(
+            new MockPropertyNode('node2', array(
                 '{http://sabredav.org/ns}simple' => 'simple',
-                '{http://sabredav.org/ns}hreflist' => new Sabre_DAV_Property_HrefList(array('node1','node3')),
+                '{http://sabredav.org/ns}hreflist' => new DAV\Property\HrefList(array('node1','node3')),
                 '{DAV:}displayname'     => 'Node 2',
             )),
-            new Sabre_DAVACL_MockPropertyNode('node3', array(
+            new MockPropertyNode('node3', array(
                 '{http://sabredav.org/ns}simple' => 'simple',
                 '{DAV:}displayname'     => 'Node 3',
             )),
         );
 
-        $fakeServer = new Sabre_DAV_Server($tree);
+        $fakeServer = new DAV\Server($tree);
         $fakeServer->debugExceptions = true;
-        $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
-        $plugin = new Sabre_DAVACL_Plugin();
+        $fakeServer->httpResponse = new HTTP\ResponseMock();
+        $plugin = new Plugin();
         $plugin->allowAccessToNodesWithoutACL = true;
 
-        $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
+        $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
@@ -53,7 +58,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node1',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -115,7 +120,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node1',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -179,7 +184,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node2',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -246,7 +251,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node2',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -298,7 +303,7 @@ class Sabre_DAVACL_ExpandPropertiesTest extends PHPUnit_Framework_TestCase {
 
     }
 }
-class Sabre_DAVACL_MockPropertyNode implements Sabre_DAV_INode, Sabre_DAV_IProperties {
+class MockPropertyNode implements DAV\INode, DAV\IProperties {
 
     function __construct($name, array $properties) {
 
@@ -328,13 +333,13 @@ class Sabre_DAVACL_MockPropertyNode implements Sabre_DAV_INode, Sabre_DAV_IPrope
 
     function delete() {
 
-        throw new Sabre_DAV_Exception('Not implemented');
+        throw new DAV\Exception('Not implemented');
 
     }
 
     function setName($name) {
 
-        throw new Sabre_DAV_Exception('Not implemented');
+        throw new DAV\Exception('Not implemented');
 
     }
 
@@ -346,7 +351,7 @@ class Sabre_DAVACL_MockPropertyNode implements Sabre_DAV_INode, Sabre_DAV_IPrope
 
     function updateProperties($properties) {
 
-        throw new Sabre_DAV_Exception('Not implemented');
+        throw new DAV\Exception('Not implemented');
 
     }
 

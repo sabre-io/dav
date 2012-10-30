@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\CardDAV\Backend;
+
 /**
  * Abstract Backend class
  *
@@ -15,7 +17,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_CardDAV_Backend_Abstract {
+abstract class AbstractBackend {
 
     /**
      * Returns the list of addressbooks for a specific user.
@@ -39,12 +41,12 @@ abstract class Sabre_CardDAV_Backend_Abstract {
     /**
      * Updates an addressbook's properties
      *
-     * See Sabre_DAV_IProperties for a description of the mutations array, as
+     * See Sabre\DAV\IProperties for a description of the mutations array, as
      * well as the return value.
      *
      * @param mixed $addressBookId
      * @param array $mutations
-     * @see Sabre_DAV_IProperties::updateProperties
+     * @see Sabre\DAV\IProperties::updateProperties
      * @return bool|array
      */
     public abstract function updateAddressBook($addressBookId, array $mutations);

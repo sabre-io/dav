@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\HTTP;
 use Sabre\VObject;
 
 /**
@@ -12,7 +15,7 @@ use Sabre\VObject;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_ExpandEventsDoubleEventsTest extends Sabre_DAVServerTest {
+class ExpandEventsDoubleEventsTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
 
@@ -53,7 +56,7 @@ END:VCALENDAR
 
     function testExpand() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',

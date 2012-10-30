@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_DAV_SimpleFileTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV;
+
+class SimpleFileTest extends \PHPUnit_Framework_TestCase {
 
     function testAll() {
 
-        $file = new Sabre_DAV_SimpleFile('filename.txt','contents','text/plain');
+        $file = new SimpleFile('filename.txt','contents','text/plain');
 
         $this->assertEquals('filename.txt', $file->getName());
         $this->assertEquals('contents', $file->get());

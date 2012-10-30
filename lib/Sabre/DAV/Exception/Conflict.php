@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV\Exception;
+
 /**
  * Conflict
  *
@@ -12,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Exception_Conflict extends Sabre_DAV_Exception {
+class Conflict extends \Sabre\DAV\Exception {
 
     /**
      * Returns the HTTP statuscode for this exception

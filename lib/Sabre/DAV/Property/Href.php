@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+
 /**
  * Href property
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_Href extends Sabre_DAV_Property implements Sabre_DAV_Property_IHref {
+class Href extends DAV\Property implements IHref {
 
     /**
      * href
@@ -57,11 +61,11 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property implements Sabre_DAV_Pr
      *
      * It will additionally prepend the href property with the server's base uri.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $dom
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, DOMElement $dom) {
+    public function serialize(DAV\Server $server, \DOMElement $dom) {
 
         $prefix = $server->xmlNamespaces['DAV:'];
 
@@ -78,11 +82,11 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property implements Sabre_DAV_Pr
      * It will only decode {DAV:}href values. For non-compatible elements null will be returned.
      *
      * @param DOMElement $dom
-     * @return Sabre_DAV_Property_Href
+     * @return Sabre\DAV\Property\Href
      */
-    static function unserialize(DOMElement $dom) {
+    static function unserialize(\DOMElement $dom) {
 
-        if ($dom->firstChild && Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
+        if ($dom->firstChild && DAV\XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
             return new self($dom->firstChild->textContent,false);
         }
 

@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\CalDAV\Property;
+use Sabre\DAV;
+
 /**
  * supported-collation-set property
  *
@@ -12,16 +15,16 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Property_SupportedCollationSet extends Sabre_DAV_Property {
+class SupportedCollationSet extends DAV\Property {
 
     /**
      * Serializes the property in a DOM document
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
 

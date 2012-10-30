@@ -1,6 +1,10 @@
 <?php
 
-use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+namespace Sabre\CalDAV\Property;
+
+use Sabre\CalDAV\SharingPlugin as SharingPlugin;
+use Sabre\DAV;
+use Sabre\CalDAV;
 
 /**
  * Invite property
@@ -9,14 +13,12 @@ use Sabre_CalDAV_SharingPlugin as SharingPlugin;
  * the 'caldav-sharing-02' spec, in the http://calendarserver.org/ns/
  * namespace.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @see https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
+class Invite extends DAV\Property {
 
     /**
      * The list of users a calendar has been shared to.
@@ -80,11 +82,11 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
     /**
      * Serializes the property in a DOMDocument
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
        $doc = $node->ownerDocument;
 
@@ -184,12 +186,12 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
      * This static method should return a an instance of this object.
      *
      * @param DOMElement $prop
-     * @return Sabre_DAV_IProperty
+     * @return Sabre\DAV\IProperty
      */
-    static function unserialize(DOMElement $prop) {
+    static function unserialize(\DOMElement $prop) {
 
         $xpath = new \DOMXPath($prop->ownerDocument);
-        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $xpath->registerNamespace('cs', CalDAV\Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d',  'DAV:');
 
         $users = array();
@@ -206,7 +208,7 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
             } elseif ($xpath->evaluate('boolean(cs:invite-invalid)', $user)) {
                 $status = SharingPlugin::STATUS_INVALID;
             } else {
-                throw new Sabre_DAV_Exception('Every cs:user property must have one of cs:invite-accepted, cs:invite-declined, cs:invite-noresponse or cs:invite-invalid');
+                throw new DAV\Exception('Every cs:user property must have one of cs:invite-accepted, cs:invite-declined, cs:invite-noresponse or cs:invite-invalid');
             }
             $users[] = array(
                 'href' => $xpath->evaluate('string(d:href)', $user),

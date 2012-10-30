@@ -1,6 +1,11 @@
 <?php
 
-class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
+namespace Sabre\CalDAV;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class SharingPluginTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
     protected $setupCalDAVSharing = true;
@@ -19,7 +24,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
                 'principaluri' => 'principals/user1',
                 'id' => 2,
                 'uri' => 'cal2',
-                '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url' => 'calendars/user1/cal2',
+                '{' . Plugin::NS_CALENDARSERVER . '}shared-url' => 'calendars/user1/cal2',
                 '{http://sabredav.org/ns}owner-principal' => 'principals/user2',
                 '{http://sabredav.org/ns}read-only' => 'true',
             ),
@@ -36,7 +41,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function testSimple() {
 
-        $this->assertInstanceOf('Sabre_CalDAV_SharingPlugin', $this->server->getPlugin('caldav-sharing'));
+        $this->assertInstanceOf('Sabre\\CalDAV\\SharingPlugin', $this->server->getPlugin('caldav-sharing'));
 
     }
 
@@ -51,24 +56,24 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
         // Forcing the server to authenticate:
         $this->authPlugin->beforeMethod('GET','');
         $props = $this->server->getProperties('calendars/user1/cal1', array(
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite',
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
+            '{' . Plugin::NS_CALENDARSERVER . '}invite',
+            '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
         ));
 
-        $this->assertInstanceOf('Sabre_CalDAV_Property_Invite', $props['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite']);
-        $this->assertInstanceOf('Sabre_CalDAV_Property_AllowedSharingModes', $props['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes']);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Property\\AllowedSharingModes', $props['{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes']);
 
     }
 
     function testBeforeGetSharedCalendar() {
 
         $props = $this->server->getProperties('calendars/user1/cal2', array(
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url',
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite',
+            '{' . Plugin::NS_CALENDARSERVER . '}shared-url',
+            '{' . Plugin::NS_CALENDARSERVER . '}invite',
         ));
 
-        $this->assertInstanceOf('Sabre_CalDAV_Property_Invite', $props['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite']);
-        $this->assertInstanceOf('Sabre_DAV_Property_IHref', $props['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url']);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
+        $this->assertInstanceOf('Sabre\\DAV\\Property\\IHref', $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
 
     }
 
@@ -83,7 +88,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
             array()
         );
         $result = $this->server->updateProperties('calendars/user1/cal1', array(
-            '{DAV:}resourcetype' => new Sabre_DAV_Property_ResourceType(array('{DAV:}collection'))
+            '{DAV:}resourcetype' => new DAV\Property\ResourceType(array('{DAV:}collection'))
         ));
 
         $this->assertEquals(array(
@@ -114,7 +119,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function testUnknownMethodNoPOST() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/',
         ));
@@ -127,7 +132,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function testUnknownMethodNoXML() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/',
             'CONTENT_TYPE'   => 'text/plain',
@@ -141,7 +146,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function testUnknownMethodNoNode() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/foo',
             'CONTENT_TYPE'   => 'text/xml',
@@ -155,7 +160,7 @@ class Sabre_CalDAV_SharingPluginTest extends Sabre_DAVServerTest {
 
     function testShareRequest() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
@@ -184,7 +189,7 @@ RRR;
             'href' => 'mailto:joe@example.org',
             'commonName' => 'Joe Shmoe',
             'readOnly' => false,
-            'status' => Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE,
+            'status' => SharingPlugin::STATUS_NORESPONSE,
             'summary' => '',
         )), $this->caldavBackend->getShares(1));
 
@@ -198,14 +203,14 @@ RRR;
 
     function testShareRequestNoShareableCalendar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:share xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
+<cs:share xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
     <cs:set>
         <d:href>mailto:joe@example.org</d:href>
         <cs:common-name>Joe Shmoe</cs:common-name>
@@ -226,14 +231,14 @@ RRR;
 
     function testInviteReply() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:invite-reply xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
+<cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
     <cs:hosturl><d:href>/principals/owner</d:href></cs:hosturl>
     <cs:invite-accepted />
 </cs:invite-reply>
@@ -247,14 +252,14 @@ RRR;
 
     function testInviteBadXML() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:invite-reply xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
+<cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
 </cs:invite-reply>
 ';
         $request->setBody($xml);
@@ -265,14 +270,14 @@ RRR;
 
     function testInviteWrongUrl() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:invite-reply xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
+<cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
     <cs:hosturl><d:href>/principals/owner</d:href></cs:hosturl>
 </cs:invite-reply>
 ';
@@ -284,14 +289,14 @@ RRR;
 
     function testPublish() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:publish-calendar xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
+<cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
         $request->setBody($xml);
@@ -303,14 +308,14 @@ RRR;
 
     function testUnpublish() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:unpublish-calendar xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
+<cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
         $request->setBody($xml);
@@ -322,14 +327,14 @@ RRR;
 
     function testPublishWrongUrl() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:publish-calendar xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
+<cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
         $request->setBody($xml);
@@ -341,14 +346,14 @@ RRR;
 
     function testUnpublishWrongUrl() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:unpublish-calendar xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
+<cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
         $request->setBody($xml);
@@ -360,14 +365,14 @@ RRR;
 
     function testUnknownXmlDoc() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
         ));
 
         $xml = '<?xml version="1.0"?>
-<cs:foo-bar xmlns:cs="' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />';
+<cs:foo-bar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />';
 
         $request->setBody($xml);
 

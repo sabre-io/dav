@@ -29,28 +29,28 @@ set_error_handler("exception_error_handler");
 require_once 'vendor/autoload.php';
 
 // Backends
-$authBackend      = new Sabre_DAV_Auth_Backend_PDO($pdo);
-$principalBackend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
-$carddavBackend   = new Sabre_CardDAV_Backend_PDO($pdo);
-//$caldavBackend    = new Sabre_CalDAV_Backend_PDO($pdo);
+$authBackend      = new Sabre\DAV\Auth\Backend\PDO($pdo);
+$principalBackend = new Sabre\DAVACL\PrincipalBackend\PDO($pdo);
+$carddavBackend   = new Sabre\CardDAV\Backend\PDO($pdo);
+//$caldavBackend    = new Sabre\CalDAV\Backend\PDO($pdo);
 
 // Setting up the directory tree //
 $nodes = array(
-    new Sabre_DAVACL_PrincipalCollection($principalBackend),
-//    new Sabre_CalDAV_CalendarRootNode($authBackend, $caldavBackend),
-    new Sabre_CardDAV_AddressBookRoot($principalBackend, $carddavBackend),
+    new Sabre\DAVACL\PrincipalCollection($principalBackend),
+//    new Sabre\CalDAV\CalendarRootNode($authBackend, $caldavBackend),
+    new Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend),
 );
 
 // The object tree needs in turn to be passed to the server class
-$server = new Sabre_DAV_Server($nodes);
+$server = new Sabre\DAV\Server($nodes);
 $server->setBaseUri($baseUri);
 
 // Plugins
-$server->addPlugin(new Sabre_DAV_Auth_Plugin($authBackend,'SabreDAV'));
-$server->addPlugin(new Sabre_DAV_Browser_Plugin());
-//$server->addPlugin(new Sabre_CalDAV_Plugin());
-$server->addPlugin(new Sabre_CardDAV_Plugin());
-$server->addPlugin(new Sabre_DAVACL_Plugin());
+$server->addPlugin(new Sabre\DAV\Auth\Plugin($authBackend,'SabreDAV'));
+$server->addPlugin(new Sabre\DAV\Browser\Plugin());
+//$server->addPlugin(new Sabre\CalDAV\Plugin());
+$server->addPlugin(new Sabre\CardDAV\Plugin());
+$server->addPlugin(new Sabre\DAVACL\Plugin());
 
 // And off we go!
 $server->exec();

@@ -1,8 +1,10 @@
 <?php
 
+namespace Sabre\CalDAV;
 use Sabre\VObject;
+use Sabre\DAV;
 
-class Sabre_CalDAV_Issue166Test extends PHPUnit_Framework_TestCase {
+class Issue166Test extends \PHPUnit_Framework_TestCase {
 
     function testFlaw() {
 
@@ -33,7 +35,7 @@ END:VEVENT
 END:VCALENDAR
 HI;
 
-        $validator = new Sabre_CalDAV_CalendarQueryValidator();
+        $validator = new CalendarQueryValidator();
 
         $filters = array(
             'name' => 'VCALENDAR',
@@ -44,8 +46,8 @@ HI;
                     'prop-filters' => array(),
                     'is-not-defined' => false,
                     'time-range' => array(
-                        'start' => new DateTime('2011-12-01'),
-                        'end'   => new DateTime('2012-02-01'),
+                        'start' => new \DateTime('2011-12-01'),
+                        'end'   => new \DateTime('2012-02-01'),
                     ),
                 ),
             ),

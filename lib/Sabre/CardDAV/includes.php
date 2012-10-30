@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Sabre_CardDAV includes file
+ * Sabre\CardDAV includes file
  *
  * Including this file will automatically include all files from the
- * Sabre_CardDAV package.
+ * Sabre\CardDAV package.
  *
  * This often allows faster loadtimes, as autoload-speed is often quite slow.
  *

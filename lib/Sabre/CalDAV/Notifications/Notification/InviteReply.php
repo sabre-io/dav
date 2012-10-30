@@ -1,17 +1,19 @@
 <?php
 
-use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+namespace Sabre\CalDAV\Notifications\Notification;
+
+use Sabre\CalDAV\SharingPlugin as SharingPlugin;
+use Sabre\DAV;
+use Sabre\CalDAV;
 
 /**
  * This class represents the cs:invite-reply notification element.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
+class InviteReply extends DAV\Property implements CalDAV\Notifications\INotificationType {
 
     /**
      * A unique id for the message
@@ -98,13 +100,13 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
         );
         foreach($required as $item) {
             if (!isset($values[$item])) {
-                throw new InvalidArgumentException($item . ' is a required constructor option');
+                throw new \InvalidArgumentException($item . ' is a required constructor option');
             }
         }
 
         foreach($values as $key=>$value) {
             if (!property_exists($this, $key)) {
-                throw new InvalidArgumentException('Unknown option: ' . $key);
+                throw new \InvalidArgumentException('Unknown option: ' . $key);
             }
             $this->$key = $value;
         }
@@ -117,11 +119,11 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
      * You should usually just encode the single top-level element of the
      * notification.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prop = $node->ownerDocument->createElement('cs:invite-reply');
         $node->appendChild($prop);
@@ -132,11 +134,11 @@ class Sabre_CalDAV_Notifications_Notification_InviteReply extends Sabre_DAV_Prop
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
 

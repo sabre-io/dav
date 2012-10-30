@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\DAVACL;
+use Sabre\DAV;
+
 /**
  * ACL-enabled node
  *
@@ -11,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAVACL_IACL extends Sabre_DAV_INode {
+interface IACL extends DAV\INode {
 
     /**
      * Returns the owner principal
@@ -59,7 +62,7 @@ interface Sabre_DAVACL_IACL extends Sabre_DAV_INode {
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+
 /**
  * CurrentUserPrivilegeSet
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Property_CurrentUserPrivilegeSet extends Sabre_DAV_Property {
+class CurrentUserPrivilegeSet extends DAV\Property {
 
     /**
      * List of privileges
@@ -37,11 +41,11 @@ class Sabre_DAVACL_Property_CurrentUserPrivilegeSet extends Sabre_DAV_Property {
     /**
      * Serializes the property in the DOM
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         foreach($this->privileges as $privName) {

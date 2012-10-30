@@ -1,14 +1,19 @@
 <?php
 
-class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class ACLMethodTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testCallback() {
 
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server();
+        $acl = new Plugin();
+        $server = new DAV\Server();
         $server->addPlugin($acl);
 
         $acl->unknownMethod('ACL','test');
@@ -17,8 +22,8 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
 
     function testCallbackPassthru() {
 
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server();
+        $acl = new Plugin();
+        $server = new DAV\Server();
         $server->addPlugin($acl);
 
         $this->assertNull($acl->unknownMethod('FOO','test'));
@@ -28,16 +33,16 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     /**
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testNotSupportedByNode() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('test'),
+            new DAV\SimpleCollection('test'),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
 </d:acl>';
@@ -51,11 +56,11 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     function testSuccessSimple() {
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',array()),
+            new MockACLNode('test',array()),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
 </d:acl>';
@@ -67,16 +72,16 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_NotRecognizedPrincipal
+     * @expectedException Sabre\DAVACL\Exception\NotRecognizedPrincipal
      */
     function testUnrecognizedPrincipal() {
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',array()),
+            new MockACLNode('test',array()),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -92,19 +97,19 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_NotRecognizedPrincipal
+     * @expectedException Sabre\DAVACL\Exception\NotRecognizedPrincipal
      */
     function testUnrecognizedPrincipal2() {
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',array()),
-            new Sabre_DAV_SimpleCollection('principals',array(
-                new Sabre_DAV_SimpleCollection('notaprincipal'),
+            new MockACLNode('test',array()),
+            new DAV\SimpleCollection('principals',array(
+                new DAV\SimpleCollection('notaprincipal'),
             )),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -120,16 +125,16 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_NotSupportedPrivilege
+     * @expectedException Sabre\DAVACL\Exception\NotSupportedPrivilege
      */
     function testUnknownPrivilege() {
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',array()),
+            new MockACLNode('test',array()),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -145,16 +150,16 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_NoAbstract
+     * @expectedException Sabre\DAVACL\Exception\NoAbstract
      */
     function testAbstractPrivilege() {
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',array()),
+            new MockACLNode('test',array()),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -170,7 +175,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_AceConflict
+     * @expectedException Sabre\DAVACL\Exception\AceConflict
      */
     function testUpdateProtectedPrivilege() {
 
@@ -183,11 +188,11 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         );
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',$oldACL),
+            new MockACLNode('test',$oldACL),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -203,7 +208,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_AceConflict
+     * @expectedException Sabre\DAVACL\Exception\AceConflict
      */
     function testUpdateProtectedPrivilege2() {
 
@@ -216,11 +221,11 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         );
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',$oldACL),
+            new MockACLNode('test',$oldACL),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -236,7 +241,7 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAVACL_Exception_AceConflict
+     * @expectedException Sabre\DAVACL\Exception\AceConflict
      */
     function testUpdateProtectedPrivilege3() {
 
@@ -249,11 +254,11 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         );
 
         $tree = array(
-            new Sabre_DAVACL_MockACLNode('test',$oldACL),
+            new MockACLNode('test',$oldACL),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -283,15 +288,15 @@ class Sabre_DAVACL_ACLMethodTest extends PHPUnit_Framework_TestCase {
         );
 
         $tree = array(
-            $node = new Sabre_DAVACL_MockACLNode('test',$oldACL),
-            new Sabre_DAV_SimpleCollection('principals', array(
-                new Sabre_DAVACL_MockPrincipal('foo','principals/foo'),
-                new Sabre_DAVACL_MockPrincipal('baz','principals/baz'),
+            $node = new MockACLNode('test',$oldACL),
+            new DAV\SimpleCollection('principals', array(
+                new MockPrincipal('foo','principals/foo'),
+                new MockPrincipal('baz','principals/baz'),
             )),
         );
-        $acl = new Sabre_DAVACL_Plugin();
-        $server = new Sabre_DAV_Server($tree);
-        $server->httpRequest = new Sabre_HTTP_Request();
+        $acl = new Plugin();
+        $server = new DAV\Server($tree);
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>

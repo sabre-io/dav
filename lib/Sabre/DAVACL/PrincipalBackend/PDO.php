@@ -1,12 +1,15 @@
 <?php
 
+namespace Sabre\DAVACL\PrincipalBackend;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
+
 /**
  * PDO principal backend
  *
- * This is a simple principal backend that maps exactly to the users table, as
- * used by Sabre_DAV_Auth_Backend_PDO.
  *
- * It assumes all principals are in a single collection. The default collection
+ * This backend assumes all principals are in a single collection. The default collection
  * is 'principals/', but this can be overriden.
  *
  * @package Sabre
@@ -15,7 +18,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBackend {
+class PDO implements DAVACL\IPrincipalBackend {
 
     /**
      * pdo
@@ -78,7 +81,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
      * @param string $tableName
      * @param string $groupMembersTableName
      */
-    public function __construct(PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
+    public function __construct(\PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
 
         $this->pdo = $pdo;
         $this->tableName = $tableName;
@@ -116,10 +119,10 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
 
         $principals = array();
 
-        while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
 
             // Checking if the principal is in the prefix
-            list($rowPrefix) = Sabre_DAV_URLUtil::splitPath($row['uri']);
+            list($rowPrefix) = DAV\URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
             $principal = array(
@@ -159,7 +162,7 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         $stmt = $this->pdo->prepare('SELECT '.implode(',', $fields).'  FROM '. $this->tableName . ' WHERE uri = ?');
         $stmt->execute(array($path));
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$row) return;
 
         $principal = array(
@@ -326,10 +329,10 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         $stmt->execute($values);
 
         $principals = array();
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             // Checking if the principal is in the prefix
-            list($rowPrefix) = Sabre_DAV_URLUtil::splitPath($row['uri']);
+            list($rowPrefix) = DAV\URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
             $principals[] = $row['uri'];
@@ -349,13 +352,13 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     public function getGroupMemberSet($principal) {
 
         $principal = $this->getPrincipalByPath($principal);
-        if (!$principal) throw new Sabre_DAV_Exception('Principal not found');
+        if (!$principal) throw new DAV\Exception('Principal not found');
 
         $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM '.$this->groupMembersTableName.' AS groupmembers LEFT JOIN '.$this->tableName.' AS principals ON groupmembers.member_id = principals.id WHERE groupmembers.principal_id = ?');
         $stmt->execute(array($principal['id']));
 
         $result = array();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $result[] = $row['uri'];
         }
         return $result;
@@ -371,13 +374,13 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
     public function getGroupMembership($principal) {
 
         $principal = $this->getPrincipalByPath($principal);
-        if (!$principal) throw new Sabre_DAV_Exception('Principal not found');
+        if (!$principal) throw new DAV\Exception('Principal not found');
 
         $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM '.$this->groupMembersTableName.' AS groupmembers LEFT JOIN '.$this->tableName.' AS principals ON groupmembers.principal_id = principals.id WHERE groupmembers.member_id = ?');
         $stmt->execute(array($principal['id']));
 
         $result = array();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $result[] = $row['uri'];
         }
         return $result;
@@ -402,14 +405,14 @@ class Sabre_DAVACL_PrincipalBackend_PDO implements Sabre_DAVACL_IPrincipalBacken
         $memberIds = array();
         $principalId = null;
 
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             if ($row['uri'] == $principal) {
                 $principalId = $row['id'];
             } else {
                 $memberIds[] = $row['id'];
             }
         }
-        if (!$principalId) throw new Sabre_DAV_Exception('Principal not found');
+        if (!$principalId) throw new DAV\Exception('Principal not found');
 
         // Wiping out old members
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->groupMembersTableName.' WHERE principal_id = ?;');

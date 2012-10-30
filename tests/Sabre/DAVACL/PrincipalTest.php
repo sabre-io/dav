@@ -1,42 +1,47 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
-class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
+class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testConstruct() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertTrue($principal instanceof Sabre_DAVACL_Principal);
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
+        $this->assertTrue($principal instanceof Principal);
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     public function testConstructNoUri() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array());
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array());
 
     }
 
     public function testGetName() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('admin',$principal->getName());
 
     }
 
     public function testGetDisplayName() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('admin',$principal->getDisplayname());
 
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array(
+        $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin'
         ));
@@ -46,8 +51,8 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testGetProperties() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array(
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
@@ -70,8 +75,8 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testUpdateProperties() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $result = $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
         $this->assertEquals(true,$result);
 
@@ -79,16 +84,16 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testGetPrincipalUrl() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('principals/admin',$principal->getPrincipalUrl());
 
     }
 
     public function testGetAlternateUriSet() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array(
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
@@ -111,8 +116,8 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
     }
     public function testGetAlternateUriSetEmpty() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array(
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
         ));
 
@@ -124,23 +129,23 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testGetGroupMemberSet() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals(array(),$principal->getGroupMemberSet());
 
     }
     public function testGetGroupMembership() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals(array(),$principal->getGroupMembership());
 
     }
 
     public function testSetGroupMemberSet() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $principal->setGroupMemberSet(array('principals/foo'));
 
         $this->assertEquals(array(
@@ -151,24 +156,24 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
 
     public function testGetOwner() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('principals/admin',$principal->getOwner());
 
     }
 
     public function testGetGroup() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertNull($principal->getGroup());
 
     }
 
     public function testGetACl() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals(array(
             array(
                 'privilege' => '{DAV:}read',
@@ -180,20 +185,20 @@ class Sabre_DAVACL_PrincipalTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     public function testSetACl() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $principal->setACL(array());
 
     }
 
     public function testGetSupportedPrivilegeSet() {
 
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_DAVACL_Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principalBackend = new MockPrincipalBackend();
+        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertNull($principal->getSupportedPrivilegeSet());
 
     }

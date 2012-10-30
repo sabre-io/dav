@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CalDAV_Notifications_NodeTest extends \PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Notifications;
+
+use Sabre\CalDAV;
+
+class NodeTest extends \PHPUnit_Framework_TestCase {
 
     protected $systemStatus;
     protected $caldavBackend;
@@ -9,15 +13,15 @@ class Sabre_CalDAV_Notifications_NodeTest extends \PHPUnit_Framework_TestCase {
 
         $principalUri = 'principals/user1';
 
-        $this->systemStatus = new Sabre_CalDAV_Notifications_Notification_SystemStatus(1,'"1"');
+        $this->systemStatus = new Notification\SystemStatus(1,'"1"');
 
-        $this->caldavBackend = new Sabre_CalDAV_Backend_Mock(array(),array(), array(
+        $this->caldavBackend = new CalDAV\Backend\Mock(array(),array(), array(
             'principals/user1' => array(
                 $this->systemStatus
             )
         )); 
 
-        $node = new Sabre_CalDAV_Notifications_Node($this->caldavBackend, 'principals/user1', $this->systemStatus);
+        $node = new Node($this->caldavBackend, 'principals/user1', $this->systemStatus);
         return $node;
 
     }
@@ -79,7 +83,7 @@ class Sabre_CalDAV_Notifications_NodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotImplemented
+     * @expectedException Sabre\DAV\Exception\NotImplemented
      */
     function testSetACL() {
 

@@ -1,13 +1,15 @@
 <?php
 
+namespace Sabre\DAV\Locks\Backend;
+
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_DAV_Locks_Backend_PDOMySQLTest extends Sabre_DAV_Locks_Backend_AbstractTest {
+class PDOMySQLTest extends AbstractTest {
 
     function getBackend() {
 
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or it was not properly configured');
-        $pdo = Sabre_TestUtil::getMySQLDB();
+        $pdo = \Sabre\TestUtil::getMySQLDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to MySQL database');
         $pdo->query('DROP TABLE IF EXISTS locks;');
         $pdo->query("
@@ -22,7 +24,7 @@ CREATE TABLE locks (
 	uri text
 );");
 
-        $backend = new Sabre_DAV_Locks_Backend_PDO($pdo);
+        $backend = new PDO($pdo);
         return $backend;
 
     }

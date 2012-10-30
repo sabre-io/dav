@@ -1,5 +1,8 @@
 <?php
 
+namespace Sabre\DAV\FSExt;
+use Sabre\DAV;
+
 /**
  * File class
  *
@@ -9,7 +12,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_FSExt_File extends Sabre_DAV_FSExt_Node implements Sabre_DAV_PartialUpdate_IFile {
+class File extends Node implements DAV\PartialUpdate\IFile {
 
     /**
      * Updates the data

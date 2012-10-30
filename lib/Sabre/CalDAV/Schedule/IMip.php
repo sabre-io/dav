@@ -1,6 +1,9 @@
 <?php
 
+namespace Sabre\CalDAV\Schedule;
+
 use Sabre\VObject;
+use Sabre\DAV;
 
 /**
  * iMIP handler.
@@ -18,7 +21,7 @@ use Sabre\VObject;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Schedule_IMip {
+class IMip {
 
     /**
      * Email address used in From: header.
@@ -74,8 +77,8 @@ class Sabre_CalDAV_Schedule_IMip {
             $headers[] = 'Reply-To: ' . $replyTo;
             $headers[] = 'From: ' . $this->senderEmail;
             $headers[] = 'Content-Type: text/calendar; method=' . (string)$vObject->method . '; charset=utf-8';
-            if (Sabre_DAV_Server::$exposeVersion) {
-                $headers[] = 'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY;
+            if (DAV\Server::$exposeVersion) {
+                $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY;
             }
 
             $vcalBody = $vObject->serialize();

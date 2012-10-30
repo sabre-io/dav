@@ -26,7 +26,7 @@ $publicDir = 'public';
 // Files we need
 require_once 'vendor/autoload.php';
 
-class MyCollection extends Sabre_DAV_Collection {
+class MyCollection extends Sabre\DAV\Collection {
 
   private $myPath;
 
@@ -58,18 +58,18 @@ class MyCollection extends Sabre_DAV_Collection {
         $path = $this->myPath . '/' . $name;
 
         // We have to throw a NotFound exception if the file didn't exist
-        if (!file_exists($this->myPath)) throw new Sabre_DAV_Exception_NotFound('The file with name: ' . $name . ' could not be found');
+        if (!file\exists($this->myPath)) throw new \Sabre\DAV\Exception\NotFound('The file with name: ' . $name . ' could not be found');
         // Some added security
 
-        if ($name[0]=='.')  throw new Sabre_DAV_Exception_NotFound('Access denied');
+        if ($name[0]=='.')  throw new \Sabre\DAV\Exception\Forbidden('Access denied');
 
         if (is_dir($path)) {
 
-            return new MyCollection($name);
+            return new \MyCollection($name);
 
         } else {
 
-            return new MyFile($path);
+            return new \MyFile($path);
 
         }
 
@@ -83,7 +83,7 @@ class MyCollection extends Sabre_DAV_Collection {
 
 }
 
-class MyFile extends Sabre_DAV_File {
+class MyFile extends \Sabre\DAV\File {
 
   private $myPath;
 
@@ -114,10 +114,10 @@ class MyFile extends Sabre_DAV_File {
 }
 
 // Make sure there is a directory in your current directory named 'public'. We will be exposing that directory to WebDAV
-$rootNode = new MyCollection($publicDir);
+$rootNode = new \MyCollection($publicDir);
 
 // The rootNode needs to be passed to the server object.
-$server = new Sabre_DAV_Server($rootNode);
+$server = new \Sabre\DAV\Server($rootNode);
 
 // And off we go!
 $server->exec();

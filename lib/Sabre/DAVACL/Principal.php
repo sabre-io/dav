@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+
 /**
  * Principal class
  *
@@ -17,7 +21,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPrincipal, Sabre_DAV_IProperties, Sabre_DAVACL_IACL {
+class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
     /**
      * Struct with principal information.
@@ -29,20 +33,20 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
     /**
      * Principal backend
      *
-     * @var Sabre_DAVACL_IPrincipalBackend
+     * @var Sabre\DAVACL\IPrincipalBackend
      */
     protected $principalBackend;
 
     /**
      * Creates the principal object
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
+     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
      * @param array $principalProperties
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalProperties = array()) {
+    public function __construct(IPrincipalBackend $principalBackend, array $principalProperties = array()) {
 
         if (!isset($principalProperties['uri'])) {
-            throw new Sabre_DAV_Exception('The principal properties must at least contain the \'uri\' key');
+            throw new DAV\Exception('The principal properties must at least contain the \'uri\' key');
         }
         $this->principalBackend = $principalBackend;
         $this->principalProperties = $principalProperties;
@@ -139,7 +143,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
     public function getName() {
 
         $uri = $this->principalProperties['uri'];
-        list(, $name) = Sabre_DAV_URLUtil::splitPath($uri);
+        list(, $name) = DAV\URLUtil::splitPath($uri);
         return $name;
 
     }
@@ -184,7 +188,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      * Updates this principals properties.
      * 
      * @param array $mutations
-     * @see Sabre_DAV_IProperties::updateProperties
+     * @see Sabre\DAV\IProperties::updateProperties
      * @return bool|array
      */
     public function updateProperties($mutations) {
@@ -254,7 +258,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Updating ACLs is not allowed here');
+        throw new DAV\Exception\MethodNotAllowed('Updating ACLs is not allowed here');
 
     }
 
@@ -262,7 +266,7 @@ class Sabre_DAVACL_Principal extends Sabre_DAV_Node implements Sabre_DAVACL_IPri
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

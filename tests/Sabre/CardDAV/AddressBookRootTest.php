@@ -1,26 +1,30 @@
 <?php
 
-class Sabre_CardDAV_AddressBookRootTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CardDAV;
+
+use Sabre\DAVACL;
+
+class AddressBookRootTest extends \PHPUnit_Framework_TestCase {
 
     function testGetName() {
 
-        $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $cBackend = new Sabre_CardDAV_Backend_Mock();
-        $root = new Sabre_CardDAV_AddressBookRoot($pBackend, $cBackend);
+        $pBackend = new DAVACL\MockPrincipalBackend();
+        $cBackend = new Backend\Mock();
+        $root = new AddressBookRoot($pBackend, $cBackend);
         $this->assertEquals('addressbooks', $root->getName());
 
     }
 
     function testGetChildForPrincipal() {
 
-        $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        $cBackend = new Sabre_CardDAV_Backend_Mock();
-        $root = new Sabre_CardDAV_AddressBookRoot($pBackend, $cBackend);
+        $pBackend = new DAVACL\MockPrincipalBackend();
+        $cBackend = new Backend\Mock();
+        $root = new AddressBookRoot($pBackend, $cBackend);
 
         $children = $root->getChildren();
         $this->assertEquals(3, count($children));
 
-        $this->assertInstanceOf('Sabre_CardDAV_UserAddressBooks', $children[0]);
+        $this->assertInstanceOf('Sabre\\CardDAV\\UserAddressBooks', $children[0]);
         $this->assertEquals('user1', $children[0]->getName());
 
     }

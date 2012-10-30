@@ -1,10 +1,15 @@
 <?php
 
-class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Property;
+
+use Sabre\CalDAV;
+use Sabre\DAV;
+
+class ScheduleCalendarTranspTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $sccs = new Sabre_CalDAV_Property_ScheduleCalendarTransp('transparent');
+        $sccs = new ScheduleCalendarTransp('transparent');
         $this->assertEquals('transparent', $sccs->getValue());
 
     }
@@ -14,7 +19,7 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
      */
     function testBadArg() {
 
-        $sccs = new Sabre_CalDAV_Property_ScheduleCalendarTransp('foo');
+        $sccs = new ScheduleCalendarTransp('foo');
 
     }
 
@@ -33,16 +38,15 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
      */
     function testSerialize($value) {
 
-        $property = new Sabre_CalDAV_Property_ScheduleCalendarTransp($value);
+        $property = new ScheduleCalendarTransp($value);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
-        $root->setAttribute('xmlns:cal',Sabre_CalDAV_Plugin::NS_CALDAV);
+        $root->setAttribute('xmlns:cal',CalDAV\Plugin::NS_CALDAV);
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -50,7 +54,7 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
 
         $this->assertEquals(
 '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '">' .
 '<cal:' . $value . '/>' .
 '</d:root>
 ', $xml);
@@ -64,15 +68,15 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
     function testUnserializer($value) {
 
         $xml = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '">' .
 '<cal:'.$value.'/>' .
 '</d:root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $property = Sabre_CalDAV_Property_ScheduleCalendarTransp::unserialize($dom->firstChild);
+        $property = ScheduleCalendarTransp::unserialize($dom->firstChild);
 
-        $this->assertTrue($property instanceof Sabre_CalDAV_Property_ScheduleCalendarTransp);
+        $this->assertTrue($property instanceof ScheduleCalendarTransp);
         $this->assertEquals($value, $property->getValue());
 
     }
@@ -83,13 +87,13 @@ class Sabre_CalDAV_Property_ScheduleCalendarTranspTest extends PHPUnit_Framework
     function testUnserializerBadData() {
 
         $xml = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . Sabre_CalDAV_Plugin::NS_CALDAV . '">' .
+<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '">' .
 '<cal:foo/>' .
 '</d:root>';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $this->assertNull(Sabre_CalDAV_Property_ScheduleCalendarTransp::unserialize($dom->firstChild));
+        $this->assertNull(ScheduleCalendarTransp::unserialize($dom->firstChild));
 
     }
 }

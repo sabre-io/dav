@@ -1,12 +1,16 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\DAVACL;
+
 require_once 'Sabre/CalDAV/TestUtil.php';
 require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 /**
- * @covers Sabre_CalDAV_UserCalendars
+ * @covers Sabre\CalDAV\UserCalendars
  */
-class Sabre_CalDAV_UserCalendarsSharedCalendarsTest extends PHPUnit_Framework_TestCase {
+class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
 
@@ -26,13 +30,13 @@ class Sabre_CalDAV_UserCalendarsSharedCalendarsTest extends PHPUnit_Framework_Te
             ),
         );
 
-        $this->backend = new Sabre_CalDAV_Backend_Mock(
+        $this->backend = new Backend\Mock(
             $calendars,
             array(),
             array()
         );
 
-        return new Sabre_CalDAV_UserCalendars($this->backend, array(
+        return new UserCalendars($this->backend, array(
             'uri' => 'principals/user1'
         ));
 
@@ -59,16 +63,16 @@ class Sabre_CalDAV_UserCalendarsSharedCalendarsTest extends PHPUnit_Framework_Te
         
         foreach($children as $child) {
 
-            if ($child instanceof Sabre_CalDAV_IShareableCalendar) {
+            if ($child instanceof IShareableCalendar) {
                 $hasShareable = true;
             }
-            if ($child instanceof Sabre_CalDAV_ISharedCalendar) {
+            if ($child instanceof ISharedCalendar) {
                 $hasShared = true;
             }
-            if ($child instanceof Sabre_CalDAV_Schedule_IOutbox) {
+            if ($child instanceof Schedule\IOutbox) {
                 $hasOutbox = true;
             }
-            if ($child instanceof Sabre_CalDAV_Notifications_ICollection) {
+            if ($child instanceof Notifications\ICollection) {
                 $hasNotifications = true;
             }
 
@@ -83,7 +87,7 @@ class Sabre_CalDAV_UserCalendarsSharedCalendarsTest extends PHPUnit_Framework_Te
     function testShareReply() {
 
         $instance = $this->getInstance();
-        $instance->shareReply('uri', Sabre_CalDAV_SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $instance->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
 
     }
 

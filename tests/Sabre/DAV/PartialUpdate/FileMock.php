@@ -1,6 +1,9 @@
 <?php
 
-class Sabre_DAV_PartialUpdate_FileMock implements Sabre_DAV_PartialUpdate_IFile {
+namespace Sabre\DAV\PartialUpdate;
+use Sabre\DAV;
+
+class FileMock implements IFile {
 
     protected $data = '';
 
@@ -50,13 +53,13 @@ class Sabre_DAV_PartialUpdate_FileMock implements Sabre_DAV_PartialUpdate_IFile 
 
     function delete() {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed();
+        throw new DAV\Exception\MethodNotAllowed();
 
     }
 
     function setName($name) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed();
+        throw new DAV\Exception\MethodNotAllowed();
 
     }
 

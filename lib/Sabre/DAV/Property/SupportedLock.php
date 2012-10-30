@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+
 /**
  * This class represents the {DAV:}supportedlock property
  *
@@ -12,7 +16,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Property_SupportedLock extends Sabre_DAV_Property {
+class SupportedLock extends DAV\Property {
 
     /**
      * supportsLocks
@@ -35,11 +39,11 @@ class Sabre_DAV_Property_SupportedLock extends Sabre_DAV_Property {
     /**
      * serialize
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @param DOMElement       $prop
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $prop) {
+    public function serialize(DAV\Server $server,\DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
 

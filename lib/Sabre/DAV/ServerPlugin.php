@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * The baseclass for all server plugins.
  *
@@ -11,20 +13,20 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class Sabre_DAV_ServerPlugin {
+abstract class ServerPlugin {
 
     /**
      * This initializes the plugin.
      *
-     * This function is called by Sabre_DAV_Server, after
+     * This function is called by Sabre\DAV\Server, after
      * addPlugin is called.
      *
      * This method should set up the required event subscriptions.
      *
-     * @param Sabre_DAV_Server $server
+     * @param Sabre\DAV\Server $server
      * @return void
      */
-    abstract public function initialize(Sabre_DAV_Server $server);
+    abstract public function initialize(Server $server);
 
     /**
      * This method should return a list of server-features.
@@ -60,7 +62,7 @@ abstract class Sabre_DAV_ServerPlugin {
      * Returns a plugin name.
      *
      * Using this name other plugins will be able to access other plugins
-     * using Sabre_DAV_Server::getPlugin
+     * using \Sabre\DAV\Server::getPlugin
      *
      * @return string
      */

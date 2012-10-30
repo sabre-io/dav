@@ -1,13 +1,18 @@
 <?php
 
+namespace Sabre\DAV\Browser;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
+class PluginTest extends DAV\AbstractServer{
 
     function setUp() {
 
         parent::setUp();
-        $this->server->addPlugin(new Sabre_DAV_Browser_Plugin());
+        $this->server->addPlugin(new Plugin());
 
     }
 
@@ -18,7 +23,7 @@ class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -41,7 +46,7 @@ class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -56,7 +61,7 @@ class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
             'REQUEST_METHOD' => 'POST',
             'CONTENT_TYPE' => 'text/xml',
         );
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -73,7 +78,7 @@ class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
         );
         $postVars = array();
 
-        $request = new Sabre_HTTP_Request($serverVars,$postVars);
+        $request = new HTTP\Request($serverVars,$postVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -93,7 +98,7 @@ class Sabre_DAV_Browser_PluginTest extends Sabre_DAV_AbstractServer{
             'name' => 'new_collection',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars,$postVars);
+        $request = new HTTP\Request($serverVars,$postVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 

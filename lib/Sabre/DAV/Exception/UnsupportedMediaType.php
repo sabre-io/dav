@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV\Exception;
+
 /**
  * UnSupportedMediaType
  *
@@ -12,7 +14,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_Exception_UnsupportedMediaType extends Sabre_DAV_Exception {
+class UnsupportedMediaType extends \Sabre\DAV\Exception {
 
     /**
      * returns the http statuscode for this exception

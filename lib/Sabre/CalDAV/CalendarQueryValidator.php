@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\CalDAV;
+
 use Sabre\VObject;
 
 /**
@@ -17,14 +19,14 @@ use Sabre\VObject;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarQueryValidator {
+class CalendarQueryValidator {
 
     /**
      * Verify if a list of filters applies to the calendar data object
      *
-     * The list of filters must be formatted as parsed by Sabre_CalDAV_CalendarQueryParser
+     * The list of filters must be formatted as parsed by \Sabre\CalDAV\CalendarQueryParser
      *
-     * @param VObject\Component $vObject
+     * @param Sabre\VObject\Component $vObject
      * @param array $filters
      * @return bool
      */
@@ -50,7 +52,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * component we're checking should be specified, not the component to check
      * itself.
      *
-     * @param VObject\Component $parent
+     * @param Sabre\VObject\Component $parent
      * @param array $filters
      * @return bool
      */
@@ -119,7 +121,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * property we're checking should be specified, not the property to check
      * itself.
      *
-     * @param VObject\Component $parent
+     * @param Sabre\VObject\Component $parent
      * @param array $filters
      * @return bool
      */
@@ -189,7 +191,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * parameter we're checking should be specified, not the parameter to check
      * itself.
      *
-     * @param VObject\Property $parent
+     * @param Sabre\VObject\Property $parent
      * @param array $filters
      * @return bool
      */
@@ -245,7 +247,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * A single text-match should be specified as well as the specific property
      * or parameter we need to validate.
      *
-     * @param VObject\Node $parent
+     * @param Sabre\VObject\Node $parent
      * @param array $textMatch
      * @return bool
      */
@@ -253,7 +255,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
         $value = (string)$parent;
 
-        $isMatching = Sabre_DAV_StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
+        $isMatching = \Sabre\DAV\StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
 
         return ($textMatch['negate-condition'] xor $isMatching);
 
@@ -265,7 +267,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
      * This is all based on the rules specified in rfc4791, which are quite
      * complex.
      *
-     * @param VObject\Node $component
+     * @param Sabre\VObject\Node $component
      * @param DateTime $start
      * @param DateTime $end
      * @return bool
@@ -273,10 +275,10 @@ class Sabre_CalDAV_CalendarQueryValidator {
     protected function validateTimeRange(VObject\Node $component, $start, $end) {
 
         if (is_null($start)) {
-            $start = new DateTime('1900-01-01');
+            $start = new \DateTime('1900-01-01');
         }
         if (is_null($end)) {
-            $end = new DateTime('3000-01-01');
+            $end = new \DateTime('3000-01-01');
         }
 
         switch($component->name) {
@@ -349,7 +351,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 }
 
             case 'VFREEBUSY' :
-                throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
+                throw new \Sabre\DAV\Exception\NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
 
             case 'COMPLETED' :
             case 'CREATED' :
@@ -363,7 +365,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
 
             default :
-                throw new Sabre_DAV_Exception_BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');
+                throw new \Sabre\DAV\Exception\BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');
 
         }
 

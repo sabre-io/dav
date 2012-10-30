@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * This interface represents a file in the directory tree
  *
@@ -13,7 +15,7 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAV_IFile extends Sabre_DAV_INode {
+interface IFile extends INode {
 
     /**
      * Updates the data

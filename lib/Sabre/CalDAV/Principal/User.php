@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CalDAV\Principal;
+use Sabre\DAV;
+use Sabre\DAVACL;
+
 /**
  * CalDAV principal
  *
@@ -13,19 +17,19 @@
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabre_DAV_ICollection {
+class User extends DAVACL\Principal implements DAV\ICollection {
 
     /**
      * Creates a new file in the directory
      *
      * @param string $name Name of the file
      * @param resource $data Initial payload, passed as a readable stream resource.
-     * @throws Sabre_DAV_Exception_Forbidden
+     * @throws DAV\Exception\Forbidden
      * @return void
      */
     public function createFile($name, $data = null) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to create file (filename ' . $name . ')');
+        throw new DAV\Exception\Forbidden('Permission denied to create file (filename ' . $name . ')');
 
     }
 
@@ -33,12 +37,12 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
      * Creates a new subdirectory
      *
      * @param string $name
-     * @throws Sabre_DAV_Exception_Forbidden
+     * @throws DAV\Exception\Forbidden
      * @return void
      */
     public function createDirectory($name) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to create directory');
+        throw new DAV\Exception\Forbidden('Permission denied to create directory');
 
     }
 
@@ -46,37 +50,37 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
      * Returns a specific child node, referenced by its name
      *
      * @param string $name
-     * @return Sabre_DAV_INode
+     * @return DAV\INode
      */
     public function getChild($name) {
 
         $principal = $this->principalBackend->getPrincipalByPath($this->getPrincipalURL() . '/' . $name);
         if (!$principal) {
-            throw new Sabre_DAV_Exception_NotFound('Node with name ' . $name . ' was not found');
+            throw new DAV\Exception\NotFound('Node with name ' . $name . ' was not found');
         }
         if ($name === 'calendar-proxy-read')
-            return new Sabre_CalDAV_Principal_ProxyRead($this->principalBackend, $this->principalProperties);
+            return new ProxyRead($this->principalBackend, $this->principalProperties);
 
         if ($name === 'calendar-proxy-write')
-            return new Sabre_CalDAV_Principal_ProxyWrite($this->principalBackend, $this->principalProperties);
+            return new ProxyWrite($this->principalBackend, $this->principalProperties);
 
-        throw new Sabre_DAV_Exception_NotFound('Node with name ' . $name . ' was not found');
+        throw new DAV\Exception\NotFound('Node with name ' . $name . ' was not found');
 
     }
 
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre_DAV_INode[]
+    * @return DAV\INode[]
      */
     public function getChildren() {
 
         $r = array();
         if ($this->principalBackend->getPrincipalByPath($this->getPrincipalURL() . '/calendar-proxy-read')) {
-            $r[] = new Sabre_CalDAV_Principal_ProxyRead($this->principalBackend, $this->principalProperties);
+            $r[] = new ProxyRead($this->principalBackend, $this->principalProperties);
         }
         if ($this->principalBackend->getPrincipalByPath($this->getPrincipalURL() . '/calendar-proxy-write')) {
-            $r[] = new Sabre_CalDAV_Principal_ProxyWrite($this->principalBackend, $this->principalProperties);
+            $r[] = new ProxyWrite($this->principalBackend, $this->principalProperties);
         }
 
         return $r;
@@ -94,7 +98,7 @@ class Sabre_CalDAV_Principal_User extends Sabre_DAVACL_Principal implements Sabr
         try {
             $this->getChild($name);
             return true;
-        } catch (Sabre_DAV_Exception_NotFound $e) {
+        } catch (DAV\Exception\NotFound $e) {
             return false;
         }
 

@@ -1,7 +1,5 @@
-2.0.0-alpha (2012-??-??)
-	* BC Break: Moved the entire codebase to PHP namespaces.
-
 1.8.0-alpha (????-??-??)
+	* BC Break: Moved the entire codebase to PHP namespaces.
 	* BC Break: Sabre_CalDAV_ISharedCalendar now also has a getShares method,
 	  so sharees can figure out who is also on a shared calendar.
 	* BC Break: Changed a bunch of constructor signatures in the CalDAV

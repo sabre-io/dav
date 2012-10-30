@@ -60,6 +60,10 @@ interface IProperties extends INode {
      *
      * If the array is empty, it means 'all properties' were requested.
      *
+     * Note that it's fine to liberally give properties back, instead of
+     * conforming to the list of requested properties.
+     * The Server class will filter out the extra.
+     *
      * @param array $properties
      * @return void
      */

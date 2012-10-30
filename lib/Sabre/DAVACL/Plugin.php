@@ -963,7 +963,10 @@ class Plugin extends DAV\ServerPlugin {
         if (is_null($propertyDelta['{DAV:}group-member-set'])) {
             $memberSet = array();
         } elseif ($propertyDelta['{DAV:}group-member-set'] instanceof DAV\Property\HrefList) {
-            $memberSet = $propertyDelta['{DAV:}group-member-set']->getHrefs();
+            $memberSet = array_map(
+                array($this->server,'calculateUri'),
+                $propertyDelta['{DAV:}group-member-set']->getHrefs()
+            );
         } else {
             throw new DAV\Exception('The group-member-set property MUST be an instance of Sabre\DAV\Property\HrefList or null');
         }

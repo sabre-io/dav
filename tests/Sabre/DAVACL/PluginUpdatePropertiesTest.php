@@ -66,7 +66,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new DAV\Property\HrefList(array('bar','baz')),
+            '{DAV:}group-member-set' => new DAV\Property\HrefList(array('/bar','/baz'), true),
         ));
 
         $expected = array(
@@ -107,7 +107,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new DAV\Property\HrefList(array('bar','baz')),
+            '{DAV:}group-member-set' => new DAV\Property\HrefList(array('/bar','/baz'),false),
             '{DAV:}bar' => 'baz',
         ));
 

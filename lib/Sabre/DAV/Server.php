@@ -1496,11 +1496,25 @@ class Server {
 
             if (count($currentPropertyNames) > 0) {
 
-                if ($node instanceof IProperties)
-                    $newProperties['200'] = $newProperties[200] + $node->getProperties($currentPropertyNames);
+                if ($node instanceof IProperties) {
+                    $nodeProperties = $node->getProperties($currentPropertyNames);
+
+                    // The getProperties method may give us too much,
+                    // properties, in case the implementor was lazy.
+                    //
+                    // So as we loop through this list, we will only take the
+                    // properties that were actually requested and discard the
+                    // rest.
+                    foreach($currentPropertyNames as $k=>$currentPropertyName) {
+                        if (isset($nodeProperties[$currentPropertyName])) {
+                            unset($currentPropertyNames[$k]);
+                            $newProperties[200][$currentPropertyName] = $nodeProperties[$currentPropertyName];
+                        }
+                    }
+
+                }
 
             }
-
 
             foreach($currentPropertyNames as $prop) {
 

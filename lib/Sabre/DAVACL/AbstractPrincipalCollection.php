@@ -66,7 +66,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * supplied by the authentication backend.
      *
      * @param array $principalInfo
-     * @return Sabre\DAVACL\IPrincipal
+     * @return IPrincipal
      */
     abstract function getChildForPrincipal(array $principalInfo);
 
@@ -107,8 +107,8 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * Returns a child object, by its name.
      *
      * @param string $name
-     * @throws Sabre\DAV\Exception\NotFound
-     * @return Sabre\DAVACL\IPrincipal
+     * @throws DAV\Exception\NotFound
+     * @return IPrincipal
      */
     public function getChild($name) {
 

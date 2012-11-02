@@ -66,7 +66,7 @@ class Util {
      * We're serializing it as the RFC 1123 date, which, for HTTP must be
      * specified as GMT.
      *
-     * @param DateTime $dateTime
+     * @param \DateTime $dateTime
      * @return string
      */
     static function toHTTPDate(\DateTime $dateTime) {

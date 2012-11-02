@@ -617,7 +617,7 @@ class Plugin extends DAV\ServerPlugin {
      * Parses a webdav lock xml body, and returns a new Sabre\DAV\Locks\LockInfo object
      *
      * @param string $body
-     * @return Sabre\DAV\Locks\LockInfo
+     * @return DAV\Locks\LockInfo
      */
     protected function parseLockRequest($body) {
 

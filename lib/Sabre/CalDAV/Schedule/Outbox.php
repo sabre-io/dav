@@ -52,7 +52,7 @@ class Outbox extends DAV\Collection implements IOutbox {
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre\DAV\INode[]
+     * @return \Sabre\DAV\INode[]
      */
     public function getChildren() {
 

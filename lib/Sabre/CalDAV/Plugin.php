@@ -1188,8 +1188,8 @@ class Plugin extends DAV\ServerPlugin {
      *   * 3.7;description
      *
      * @param string $email address
-     * @param DateTime $start
-     * @param DateTime $end
+     * @param \DateTime $start
+     * @param \DateTime $end
      * @param VObject\Component $request
      * @return array
      */

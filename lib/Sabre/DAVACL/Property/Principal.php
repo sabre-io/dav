@@ -132,7 +132,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      * Deserializes a DOM element into a property object.
      *
      * @param \DOMElement $dom
-     * @return Sabre\DAVACL\Property\Principal
+     * @return Principal
      */
     static public function unserialize(\DOMElement $dom) {
 

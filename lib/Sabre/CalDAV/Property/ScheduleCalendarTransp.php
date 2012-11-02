@@ -78,7 +78,7 @@ class ScheduleCalendarTransp extends DAV\Property {
      * Unserializes the DOMElement back into a Property class.
      *
      * @param \DOMElement $node
-     * @return Sabre\CalDAV\Property\ScheduleCalendarTransp
+     * @return ScheduleCalendarTransp
      */
     static function unserialize(\DOMElement $node) {
 

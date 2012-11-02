@@ -8,7 +8,7 @@ abstract class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @abstract
-     * @return Sabre\DAV\Locks\Backend\AbstractBackend
+     * @return AbstractBackend
      */
     abstract function getBackend();
 

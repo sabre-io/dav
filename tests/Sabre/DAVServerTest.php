@@ -112,8 +112,8 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
      * You can either pass an instance of Sabre\HTTP\Request, or an array,
      * which will then be used as the _SERVER array.
      *
-     * @param array|Sabre\HTTP\Request $request
-     * @return Sabre\HTTP\Response
+     * @param array|\Sabre\HTTP\Request $request
+     * @return \Sabre\HTTP\Response
      */
     function request($request) {
 

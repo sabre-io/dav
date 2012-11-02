@@ -87,7 +87,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre\DAV\INode[]
+     * @return DAV\INode[]
      */
     public function getChildren() {
 

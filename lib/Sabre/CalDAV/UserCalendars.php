@@ -121,7 +121,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
      *
      * @param string $name
      * @todo needs optimizing
-     * @return Sabre\CalDAV\Calendar
+     * @return Calendar
      */
     public function getChild($name) {
 

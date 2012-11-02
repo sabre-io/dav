@@ -83,7 +83,7 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
      * This method must return an xml element, using the
      * Sabre\CalDAV\Notifications\INotificationType classes.
      *
-     * @return Sabre\CalDAV\Notifications\INotificationType
+     * @return INotificationType
      */
     public function getNotificationType() {
 

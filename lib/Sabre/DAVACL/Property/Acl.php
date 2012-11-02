@@ -85,7 +85,7 @@ class Acl extends DAV\Property {
      * Unserializes the {DAV:}acl xml element.
      *
      * @param \DOMElement $dom
-     * @return Sabre\DAVACL\Property\Acl
+     * @return Acl
      */
     static public function unserialize(\DOMElement $dom) {
 

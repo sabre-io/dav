@@ -82,8 +82,8 @@ class SimpleCollection extends Collection {
      * exist.
      *
      * @param string $name
-     * @throws Sabre\DAV\Exception\NotFound
-     * @return Sabre\DAV\INode
+     * @throws Exception\NotFound
+     * @return INode
      */
     public function getChild($name) {
 

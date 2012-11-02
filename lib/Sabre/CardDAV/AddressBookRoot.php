@@ -69,7 +69,7 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection {
      * supplied by the authentication backend.
      *
      * @param array $principal
-     * @return Sabre\DAV\INode
+     * @return \Sabre\DAV\INode
      */
     public function getChildForPrincipal(array $principal) {
 

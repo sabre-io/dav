@@ -70,8 +70,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      * exist.
      *
      * @param string $name
-     * @throws Sabre\DAV\Exception\NotFound
-     * @return Sabre\DAV\INode
+     * @throws DAV\Exception\NotFound
+     * @return DAV\INode
      */
     public function getChild($name) {
 
@@ -111,7 +111,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre\DAV\INode[]
+     * @return DAV\INode[]
      */
     public function getChildren() {
 

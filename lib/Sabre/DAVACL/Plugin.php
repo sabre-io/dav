@@ -325,7 +325,7 @@ class Plugin extends DAV\ServerPlugin {
      * You can either get the list of privileges by a uri (path) or by
      * specifying a Node.
      *
-     * @param string|Sabre\DAV\INode $node
+     * @param string|DAV\INode $node
      * @return array
      */
     public function getSupportedPrivilegeSet($node) {
@@ -415,7 +415,7 @@ class Plugin extends DAV\ServerPlugin {
      *   - abstract
      *   - concrete
      *
-     * @param string|Sabre\DAV\INode $node
+     * @param string|DAV\INode $node
      * @return array
      */
     final public function getFlatPrivilegeSet($node) {
@@ -469,11 +469,11 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Returns the full ACL list.
      *
-     * Either a uri or a Sabre\DAV\INode may be passed.
+     * Either a uri or a DAV\INode may be passed.
      *
      * null will be returned if the node doesn't support ACLs.
      *
-     * @param string|Sabre\DAV\INode $node
+     * @param string|DAV\INode $node
      * @return array
      */
     public function getACL($node) {
@@ -500,11 +500,11 @@ class Plugin extends DAV\ServerPlugin {
      * Returns a list of privileges the current user has
      * on a particular node.
      *
-     * Either a uri or a Sabre\DAV\INode may be passed.
+     * Either a uri or a DAV\INode may be passed.
      *
      * null will be returned if the node doesn't support ACLs.
      *
-     * @param string|Sabre\DAV\INode $node
+     * @param string|DAV\INode $node
      * @return array
      */
     public function getCurrentUserPrivilegeSet($node) {

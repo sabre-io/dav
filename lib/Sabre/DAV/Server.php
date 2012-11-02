@@ -350,7 +350,7 @@ class Server {
      * This function returns null if the plugin was not found.
      *
      * @param string $name
-     * @return Sabre\DAV\ServerPlugin
+     * @return ServerPlugin
      */
     public function getPlugin($name) {
 

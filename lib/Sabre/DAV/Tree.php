@@ -16,8 +16,8 @@ abstract class Tree {
      * If a Path doesn't exist, thrown a Exception_NotFound
      *
      * @param string $path
-     * @throws Sabre\DAV\Exception\NotFound
-     * @return Sabre\DAV\INode
+     * @throws Exception\NotFound
+     * @return INode
      */
     abstract function getNodeForPath($path);
 

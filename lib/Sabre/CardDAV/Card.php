@@ -39,7 +39,7 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
     /**
      * Constructor
      *
-     * @param Backend\Abstract $carddavBackend
+     * @param Backend\AbstractBackend $carddavBackend
      * @param array $addressBookInfo
      * @param array $cardData
      */

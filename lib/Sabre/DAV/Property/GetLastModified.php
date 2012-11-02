@@ -66,7 +66,7 @@ class GetLastModified extends DAV\Property {
     /**
      * getTime
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getTime() {
 

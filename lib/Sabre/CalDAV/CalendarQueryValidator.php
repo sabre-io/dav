@@ -24,7 +24,7 @@ class CalendarQueryValidator {
      *
      * The list of filters must be formatted as parsed by \Sabre\CalDAV\CalendarQueryParser
      *
-     * @param Sabre\VObject\Component $vObject
+     * @param VObject\Component $vObject
      * @param array $filters
      * @return bool
      */
@@ -50,7 +50,7 @@ class CalendarQueryValidator {
      * component we're checking should be specified, not the component to check
      * itself.
      *
-     * @param Sabre\VObject\Component $parent
+     * @param VObject\Component $parent
      * @param array $filters
      * @return bool
      */
@@ -119,7 +119,7 @@ class CalendarQueryValidator {
      * property we're checking should be specified, not the property to check
      * itself.
      *
-     * @param Sabre\VObject\Component $parent
+     * @param VObject\Component $parent
      * @param array $filters
      * @return bool
      */
@@ -189,7 +189,7 @@ class CalendarQueryValidator {
      * parameter we're checking should be specified, not the parameter to check
      * itself.
      *
-     * @param Sabre\VObject\Property $parent
+     * @param VObject\Property $parent
      * @param array $filters
      * @return bool
      */
@@ -245,7 +245,7 @@ class CalendarQueryValidator {
      * A single text-match should be specified as well as the specific property
      * or parameter we need to validate.
      *
-     * @param Sabre\VObject\Node $parent
+     * @param VObject\Node $parent
      * @param array $textMatch
      * @return bool
      */
@@ -265,7 +265,7 @@ class CalendarQueryValidator {
      * This is all based on the rules specified in rfc4791, which are quite
      * complex.
      *
-     * @param Sabre\VObject\Node $component
+     * @param VObject\Node $component
      * @param DateTime $start
      * @param DateTime $end
      * @return bool

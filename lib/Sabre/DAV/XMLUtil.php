@@ -23,7 +23,7 @@ class XMLUtil {
      *
      * This function will return null if a nodetype other than an Element is passed.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return string
      */
     static function toClarkNotation(\DOMNode $dom) {
@@ -132,7 +132,7 @@ class XMLUtil {
      * When any of these properties are found, the unserialize() method will be
      * (statically) called. The result of this method is used as the value.
      *
-     * @param DOMElement $parentNode
+     * @param \DOMElement $parentNode
      * @param array $propertyMap
      * @return array
      */

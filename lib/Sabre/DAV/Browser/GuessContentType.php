@@ -47,7 +47,7 @@ class GuessContentType extends DAV\ServerPlugin {
     /**
      * Initializes the plugin
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {

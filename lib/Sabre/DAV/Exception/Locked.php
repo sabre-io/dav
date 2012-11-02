@@ -28,7 +28,7 @@ class Locked extends DAV\Exception {
      * A LockInfo object should be passed if the user should be informed
      * which lock actually has the file locked.
      *
-     * @param Sabre\DAV\Locks\LockInfo $lock
+     * @param DAV\Locks\LockInfo $lock
      */
     public function __construct(DAV\Locks\LockInfo $lock = null) {
 
@@ -51,7 +51,7 @@ class Locked extends DAV\Exception {
      * This method allows the exception to include additional information into the WebDAV error response
      *
      * @param DAV\Server $server
-     * @param DOMElement $errorNode
+     * @param \DOMElement $errorNode
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $errorNode) {

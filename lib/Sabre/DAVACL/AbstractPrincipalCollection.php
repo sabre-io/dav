@@ -48,7 +48,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * collection, override $principalPrefix
      *
      *
-     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
+     * @param IPrincipalBackend $principalBackend
      * @param string $principalPrefix
      */
     public function __construct(IPrincipalBackend $principalBackend, $principalPrefix = 'principals') {

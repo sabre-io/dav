@@ -39,8 +39,8 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection {
      * actually located in a different path, use the $principalPrefix argument
      * to override this.
      *
-     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
-     * @param Sabre\CardDAV\Backend\AbstractBackend $carddavBackend
+     * @param DAVACL\IPrincipalBackend $principalBackend
+     * @param Backend\AbstractBackend $carddavBackend
      * @param string $principalPrefix
      */
     public function __construct(DAVACL\IPrincipalBackend $principalBackend,Backend\AbstractBackend $carddavBackend, $principalPrefix = 'principals') {

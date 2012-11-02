@@ -145,8 +145,8 @@ abstract class Tree {
     /**
      * copyNode
      *
-     * @param Sabre\DAV\INode $source
-     * @param Sabre\DAV\ICollection $destinationParent
+     * @param INode $source
+     * @param ICollection $destinationParent
      * @param string $destinationName
      * @return void
      */

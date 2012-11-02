@@ -19,8 +19,8 @@ class NoAbstract extends DAV\Exception\PreconditionFailed {
      *
      * This method adds the {DAV:}no-abstract element as defined in rfc3744
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $errorNode
+     * @param DAV\Server $server
+     * @param \DOMElement $errorNode
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $errorNode) {

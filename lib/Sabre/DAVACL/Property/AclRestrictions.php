@@ -18,8 +18,8 @@ class AclRestrictions extends DAV\Property {
     /**
      * Serializes the property into a DOMElement
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $elem
+     * @param DAV\Server $server
+     * @param \DOMElement $elem
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $elem) {

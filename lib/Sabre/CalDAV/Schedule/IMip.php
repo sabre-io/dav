@@ -47,7 +47,7 @@ class IMip {
      *
      * @param string $originator Originator Email
      * @param array $recipients Array of email addresses
-     * @param Sabre\VObject\Component $vObject
+     * @param VObject\Component $vObject
      * @param string $principal Principal Url of the originator
      * @return void
      */

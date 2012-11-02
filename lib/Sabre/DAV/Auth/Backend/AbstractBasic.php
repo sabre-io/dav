@@ -56,9 +56,9 @@ abstract class AbstractBasic implements DAV\Auth\IBackend {
      * If authentication is successful, true must be returned.
      * If authentication fails, an exception must be thrown.
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @param string $realm
-     * @throws Sabre\DAV\Exception\NotAuthenticated
+     * @throws DAV\Exception\NotAuthenticated
      * @return bool
      */
     public function authenticate(DAV\Server $server, $realm) {

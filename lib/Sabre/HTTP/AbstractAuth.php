@@ -51,7 +51,7 @@ abstract class AbstractAuth {
     /**
      * Sets an alternative HTTP response object
      *
-     * @param Sabre\HTTP\Response $response
+     * @param Response $response
      * @return void
      */
     public function setHTTPResponse(Response $response) {
@@ -63,7 +63,7 @@ abstract class AbstractAuth {
     /**
      * Sets an alternative HTTP request object
      *
-     * @param Sabre\HTTP\Request $request
+     * @param Request $request
      * @return void
      */
     public function setHTTPRequest(Request $request) {

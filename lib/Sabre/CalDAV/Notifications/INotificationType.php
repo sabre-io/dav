@@ -16,8 +16,8 @@ interface INotificationType extends DAV\PropertyInterface {
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     function serializeBody(DAV\Server $server, \DOMElement $node);

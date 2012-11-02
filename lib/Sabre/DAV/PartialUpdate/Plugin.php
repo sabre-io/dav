@@ -32,7 +32,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This method is automatically called by the Server class after addPlugin.
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {

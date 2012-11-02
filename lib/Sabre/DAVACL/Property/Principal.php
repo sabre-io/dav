@@ -99,8 +99,8 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
     /**
      * Serializes the property into a DOMElement.
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     public function serialize(DAV\Server $server, \DOMElement $node) {
@@ -131,7 +131,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
     /**
      * Deserializes a DOM element into a property object.
      *
-     * @param DOMElement $dom
+     * @param \DOMElement $dom
      * @return Sabre\DAVACL\Property\Principal
      */
     static public function unserialize(\DOMElement $dom) {

@@ -66,8 +66,8 @@ class Acl extends DAV\Property {
     /**
      * Serializes the property into a DOMElement
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $node) {
@@ -84,7 +84,7 @@ class Acl extends DAV\Property {
     /**
      * Unserializes the {DAV:}acl xml element.
      *
-     * @param DOMElement $dom
+     * @param \DOMElement $dom
      * @return Sabre\DAVACL\Property\Acl
      */
     static public function unserialize(\DOMElement $dom) {
@@ -164,13 +164,13 @@ class Acl extends DAV\Property {
     /**
      * Serializes a single access control entry.
      *
-     * @param DOMDocument $doc
-     * @param DOMElement $node
+     * @param \DOMDocument $doc
+     * @param \DOMElement $node
      * @param array $ace
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
-    private function serializeAce($doc,$node,$ace, $server) {
+    private function serializeAce($doc,$node,$ace, DAV\Server $server) {
 
         $xace  = $doc->createElementNS('DAV:','d:ace');
         $node->appendChild($xace);

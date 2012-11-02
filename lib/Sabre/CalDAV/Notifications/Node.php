@@ -43,9 +43,9 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
     /**
      * Constructor
      *
-     * @param Sabre\CalDAV\Backend\NotificationSupport $caldavBackend
+     * @param CalDAV\Backend\NotificationSupport $caldavBackend
      * @param string $principalUri
-     * @param Sabre\CalDAV\Notifications\INotificationType $notification
+     * @param CalDAV\Notifications\INotificationType $notification
      */
     public function __construct(CalDAV\Backend\NotificationSupport $caldavBackend, $principalUri, INotificationType $notification) {
 

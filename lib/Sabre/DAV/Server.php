@@ -162,7 +162,7 @@ class Server {
      * If an array is passed, we automatically create a root node, and use
      * the nodes in the array as top-level children.
      *
-     * @param Sabre\DAV\Tree|Sabre\DAV\INode|array|null $treeOrNode The tree object
+     * @param Tree|INode|array|null $treeOrNode The tree object
      */
     public function __construct($treeOrNode = null) {
 
@@ -334,7 +334,7 @@ class Server {
      *
      * For more information, console the documentation of Sabre\DAV\ServerPlugin
      *
-     * @param Sabre\DAV\ServerPlugin $plugin
+     * @param ServerPlugin $plugin
      * @return void
      */
     public function addPlugin(ServerPlugin $plugin) {

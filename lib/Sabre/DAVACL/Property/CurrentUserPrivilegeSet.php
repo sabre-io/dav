@@ -39,8 +39,8 @@ class CurrentUserPrivilegeSet extends DAV\Property {
     /**
      * Serializes the property in the DOM
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $node) {
@@ -57,8 +57,8 @@ class CurrentUserPrivilegeSet extends DAV\Property {
     /**
      * Serializes one privilege
      *
-     * @param DOMDocument $doc
-     * @param DOMElement $node
+     * @param \DOMDocument $doc
+     * @param \DOMElement $node
      * @param string $privName
      * @return void
      */

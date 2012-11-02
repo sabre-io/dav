@@ -55,7 +55,7 @@ class ScheduleCalendarTransp extends DAV\Property {
      * Serializes the property in a DOMDocument
      *
      * @param DAV\Server $server
-     * @param DOMElement $node
+     * @param \DOMElement $node
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $node) {
@@ -77,7 +77,7 @@ class ScheduleCalendarTransp extends DAV\Property {
     /**
      * Unserializes the DOMElement back into a Property class.
      *
-     * @param DOMElement $node
+     * @param \DOMElement $node
      * @return Sabre\CalDAV\Property\ScheduleCalendarTransp
      */
     static function unserialize(\DOMElement $node) {

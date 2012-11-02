@@ -34,7 +34,7 @@ abstract class AbstractBackend {
      * Locks a uri
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param Locks\LockInfo $lockInfo
      * @return bool
      */
     abstract function lock($uri,Locks\LockInfo $lockInfo);
@@ -43,7 +43,7 @@ abstract class AbstractBackend {
      * Removes a lock from a uri
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param Locks\LockInfo $lockInfo
      * @return bool
      */
     abstract function unlock($uri,Locks\LockInfo $lockInfo);

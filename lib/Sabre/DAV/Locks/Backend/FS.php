@@ -93,7 +93,7 @@ class FS extends AbstractBackend {
      * Locks a uri
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param LockInfo $lockInfo
      * @return bool
      */
     public function lock($uri, LockInfo $lockInfo) {
@@ -116,7 +116,7 @@ class FS extends AbstractBackend {
      * Removes a lock from a uri
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param LockInfo $lockInfo
      * @return bool
      */
     public function unlock($uri, LockInfo $lockInfo) {

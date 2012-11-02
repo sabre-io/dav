@@ -29,7 +29,7 @@ class MethodNotAllowed extends \Sabre\DAV\Exception {
      *
      * The headers must be returned as an array.
      *
-     * @param Sabre\DAV\Server $server
+     * @param \Sabre\DAV\Server $server
      * @return array
      */
     public function getHTTPHeaders(\Sabre\DAV\Server $server) {

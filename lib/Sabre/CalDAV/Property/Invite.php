@@ -82,8 +82,8 @@ class Invite extends DAV\Property {
     /**
      * Serializes the property in a DOMDocument
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $node) {
@@ -185,8 +185,8 @@ class Invite extends DAV\Property {
      *
      * This static method should return a an instance of this object.
      *
-     * @param DOMElement $prop
-     * @return Sabre\DAV\IProperty
+     * @param \DOMElement $prop
+     * @return DAV\IProperty
      */
     static function unserialize(\DOMElement $prop) {
 

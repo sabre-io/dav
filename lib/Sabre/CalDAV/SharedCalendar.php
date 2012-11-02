@@ -16,7 +16,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
     /**
      * Constructor
      *
-     * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
+     * @param Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
     public function __construct(Backend\BackendInterface $caldavBackend, $calendarInfo) {

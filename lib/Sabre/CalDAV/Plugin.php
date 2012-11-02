@@ -252,7 +252,7 @@ class Plugin extends DAV\ServerPlugin {
      * This functions handles REPORT requests specific to CalDAV
      *
      * @param string $reportName
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return bool
      */
     public function report($reportName,$dom) {
@@ -452,7 +452,7 @@ class Plugin extends DAV\ServerPlugin {
      * This report is used by the client to fetch the content of a series
      * of urls. Effectively avoiding a lot of redundant requests.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     public function calendarMultiGetReport($dom) {
@@ -516,7 +516,7 @@ class Plugin extends DAV\ServerPlugin {
      * This report is used by clients to request calendar objects based on
      * complex conditions.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     public function calendarQueryReport($dom) {
@@ -621,7 +621,7 @@ class Plugin extends DAV\ServerPlugin {
      * This method is responsible for parsing the request and generating the
      * response for the CALDAV:free-busy-query REPORT.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     protected function freeBusyQueryReport(\DOMNode $dom) {
@@ -872,7 +872,7 @@ class Plugin extends DAV\ServerPlugin {
      * extensions, but iCal depends on a feature from that spec, so we
      * implement it.
      *
-     * @param Sabre\CalDAV\Schedule\IOutbox $outboxNode
+     * @param Schedule\IOutbox $outboxNode
      * @param string $outboxUri
      * @return void
      */
@@ -1022,7 +1022,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $originator
      * @param array $recipients
-     * @param Sabre\VObject\Component $vObject
+     * @param VObject\Component $vObject
      * @param string $principal Principal url
      * @return array 
      */
@@ -1090,7 +1090,7 @@ class Plugin extends DAV\ServerPlugin {
      * This method is responsible for parsing a free-busy query request and
      * returning it's result.
      *
-     * @param Sabre\CalDAV\Schedule\IOutbox $outbox
+     * @param Schedule\IOutbox $outbox
      * @param string $request
      * @return string
      */
@@ -1190,7 +1190,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $email address
      * @param DateTime $start
      * @param DateTime $end
-     * @param Sabre\VObject\Component $request
+     * @param VObject\Component $request
      * @return array
      */
     protected function getFreeBusyForEmail($email, \DateTime $start, \DateTime $end, VObject\Component $request) {

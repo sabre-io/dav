@@ -52,7 +52,7 @@ class SimpleCollection extends Collection {
     /**
      * Adds a new childnode to this collection
      *
-     * @param Sabre\DAV\INode $child
+     * @param INode $child
      * @return void
      */
     public function addChild(INode $child) {

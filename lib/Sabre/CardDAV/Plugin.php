@@ -45,7 +45,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Initializes the plugin
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {
@@ -120,7 +120,7 @@ class Plugin extends DAV\ServerPlugin {
      * Adds all CardDAV-specific properties
      *
      * @param string $path
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @return void
@@ -190,10 +190,10 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param array $mutations
      * @param array $result
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @return bool
      */
-    public function updateProperties(&$mutations, &$result, $node) {
+    public function updateProperties(&$mutations, &$result, DAV\INode $node) {
 
         if (!$node instanceof UserAddressBooks) {
             return true;
@@ -240,7 +240,7 @@ class Plugin extends DAV\ServerPlugin {
      * This functions handles REPORT requests specific to CardDAV
      *
      * @param string $reportName
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return bool
      */
     public function report($reportName,$dom) {
@@ -266,7 +266,7 @@ class Plugin extends DAV\ServerPlugin {
      * This report is used by the client to fetch the content of a series
      * of urls. Effectively avoiding a lot of redundant requests.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     public function addressbookMultiGetReport($dom) {
@@ -299,7 +299,7 @@ class Plugin extends DAV\ServerPlugin {
      * vcard data.
      *
      * @param string $path
-     * @param Sabre\DAV\IFile $node
+     * @param DAV\IFile $node
      * @param resource $data
      * @return void
      */
@@ -320,7 +320,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $path
      * @param resource $data
-     * @param Sabre\DAV\ICollection $parentNode
+     * @param DAV\ICollection $parentNode
      * @return void
      */
     public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode) {
@@ -377,7 +377,7 @@ class Plugin extends DAV\ServerPlugin {
      * This report is used by the client to filter an addressbook based on a
      * complex query.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     protected function addressbookQueryReport($dom) {
@@ -655,7 +655,7 @@ class Plugin extends DAV\ServerPlugin {
      * Sabre\DAV\Browser\Plugin. This allows us to generate an interface users
      * can use to create new calendars.
      *
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @param string $output
      * @return bool
      */

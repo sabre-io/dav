@@ -37,8 +37,8 @@ class SupportedLock extends DAV\Property {
     /**
      * serialize
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement       $prop
+     * @param DAV\Server $server
+     * @param \DOMElement $prop
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $prop) {

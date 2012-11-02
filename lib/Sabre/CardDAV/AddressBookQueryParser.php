@@ -66,7 +66,7 @@ class AddressBookQueryParser {
     /**
      * Creates the parser
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      */
     public function __construct(\DOMDocument $dom) {
 
@@ -131,7 +131,7 @@ class AddressBookQueryParser {
     /**
      * Parses the prop-filter xml element
      *
-     * @param DOMElement $propFilterNode
+     * @param \DOMElement $propFilterNode
      * @return array
      */
     protected function parsePropFilterNode(\DOMElement $propFilterNode) {
@@ -169,7 +169,7 @@ class AddressBookQueryParser {
     /**
      * Parses the param-filter element
      *
-     * @param DOMElement $paramFilterNode
+     * @param \DOMElement $paramFilterNode
      * @return array
      */
     public function parseParamFilterNode(\DOMElement $paramFilterNode) {
@@ -191,7 +191,7 @@ class AddressBookQueryParser {
     /**
      * Text match
      *
-     * @param DOMElement $textMatchNode
+     * @param \DOMElement $textMatchNode
      * @return array
      */
     public function parseTextMatchNode(\DOMElement $textMatchNode) {

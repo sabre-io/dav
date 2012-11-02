@@ -78,8 +78,8 @@ class SupportedReportSet extends DAV\Property {
     /**
      * Serializes the node
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $prop
+     * @param DAV\Server $server
+     * @param \DOMElement $prop
      * @return void
      */
     public function serialize(DAV\Server $server, \DOMElement $prop) {

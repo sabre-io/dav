@@ -31,7 +31,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
     /**
      * Constructor
      *
-     * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
+     * @param Backend\BackendInterface $caldavBackend
      * @param mixed $userUri
      */
     public function __construct(Backend\BackendInterface $caldavBackend, $principalInfo) {

@@ -82,7 +82,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * This is called automatically be the Server class after this plugin is
      * added with Sabre\DAV\Server::addPlugin()
      *
-     * @param Sabre\DAV\Server $server
+     * @param Server $server
      * @return void
      */
     public function initialize(Server $server) {

@@ -74,7 +74,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      *
      * This method should set up the required event subscriptions.
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {
@@ -103,7 +103,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      * This allows us to inject any properties early.
      *
      * @param string $path
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @return void
@@ -187,7 +187,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      *
      * @param string $path
      * @param array $properties
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @return void
      */
     public function afterGetProperties($path, &$properties, DAV\INode $node) {
@@ -223,7 +223,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      *
      * @param array $mutations
      * @param array $result
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @return void
      */
     public function updateProperties(array &$mutations, array &$result, DAV\INode $node) {
@@ -443,7 +443,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      * The second array is a list of sharees that are to be removed. This is
      * just a simple array with 'hrefs'.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return array
      */
     protected function parseShareRequest(\DOMDocument $dom) {
@@ -492,7 +492,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      *   * inReplyTo - The unique id of the share invitation.
      *   * summary - Optional description of the reply.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return array
      */
     protected function parseInviteReplyRequest(\DOMDocument $dom) {

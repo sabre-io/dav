@@ -59,8 +59,8 @@ class Href extends DAV\Property implements IHref {
      *
      * It will additionally prepend the href property with the server's base uri.
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $dom
+     * @param DAV\Server $server
+     * @param \DOMElement $dom
      * @return void
      */
     public function serialize(DAV\Server $server, \DOMElement $dom) {
@@ -79,8 +79,8 @@ class Href extends DAV\Property implements IHref {
      * This method returns an instance of this class.
      * It will only decode {DAV:}href values. For non-compatible elements null will be returned.
      *
-     * @param DOMElement $dom
-     * @return Sabre\DAV\Property\Href
+     * @param \DOMElement $dom
+     * @return DAV\Property\Href
      */
     static function unserialize(\DOMElement $dom) {
 

@@ -17,7 +17,7 @@ interface IBackend {
      * If authentication is successful, true must be returned.
      * If authentication fails, an exception must be thrown.
      *
-     * @param Sabre\DAV\Server $server
+     * @param \Sabre\DAV\Server $server
      * @param string $realm
      * @return bool
      */

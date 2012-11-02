@@ -31,8 +31,8 @@ class CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection {
      * actually located in a different path, use the $principalPrefix argument
      * to override this.
      *
-     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
-     * @param Sabre\CalDAV\Backend\BackendInterface $caldavBackend
+     * @param \Sabre\DAVACL\IPrincipalBackend $principalBackend
+     * @param Backend\BackendInterface $caldavBackend
      * @param string $principalPrefix
      */
     public function __construct(\Sabre\DAVACL\IPrincipalBackend $principalBackend,Backend\BackendInterface $caldavBackend, $principalPrefix = 'principals') {

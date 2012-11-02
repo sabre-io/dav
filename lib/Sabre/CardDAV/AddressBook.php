@@ -33,7 +33,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
     /**
      * Constructor
      *
-     * @param Sabre\CardDAV\Backend\AbstractBackend $carddavBackend
+     * @param Backend\AbstractBackend $carddavBackend
      * @param array $addressBookInfo
      */
     public function __construct(Backend\AbstractBackend $carddavBackend, array $addressBookInfo) {

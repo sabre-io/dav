@@ -26,7 +26,7 @@ interface NotificationSupport extends BackendInterface {
      * Returns a list of notifications for a given principal url.
      *
      * The returned array should only consist of implementations of
-     * Sabre\CalDAV\Notifications\INotificationType.
+     * \Sabre\CalDAV\Notifications\INotificationType.
      *
      * @param string $principalUri
      * @return array
@@ -39,7 +39,7 @@ interface NotificationSupport extends BackendInterface {
      * This may be called by a client once it deems a notification handled.
      *
      * @param string $principalUri
-     * @param Sabre\CalDAV\Notifications\INotificationType $notification
+     * @param \Sabre\CalDAV\Notifications\INotificationType $notification
      * @return void
      */
     public function deleteNotification($principalUri, \Sabre\CalDAV\Notifications\INotificationType $notification);

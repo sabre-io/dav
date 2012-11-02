@@ -38,7 +38,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
     /**
      * Creates the principal object
      *
-     * @param Sabre\DAVACL\IPrincipalBackend $principalBackend
+     * @param IPrincipalBackend $principalBackend
      * @param array $principalProperties
      */
     public function __construct(IPrincipalBackend $principalBackend, array $principalProperties = array()) {

@@ -44,8 +44,8 @@ class ResponseList extends DAV\Property {
     /**
      * serialize
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $dom
+     * @param DAV\Server $server
+     * @param \DOMElement $dom
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $dom) {

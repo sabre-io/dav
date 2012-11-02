@@ -44,8 +44,8 @@ class ResourceType extends DAV\Property {
     /**
      * serialize
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $prop
+     * @param DAV\Server $server
+     * @param \DOMElement $prop
      * @return void
      */
     public function serialize(DAV\Server $server, \DOMElement $prop) {
@@ -108,8 +108,8 @@ class ResourceType extends DAV\Property {
     /**
      * Unserializes a DOM element into a ResourceType property.
      *
-     * @param DOMElement $dom
-     * @return Sabre\DAV\Property\ResourceType
+     * @param \DOMElement $dom
+     * @return DAV\Property\ResourceType
      */
     static public function unserialize(\DOMElement $dom) {
 

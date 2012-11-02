@@ -58,8 +58,8 @@ class HrefList extends DAV\Property {
      *
      * It will additionally prepend the href property with the server's base uri.
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $dom
+     * @param DAV\Server $server
+     * @param \DOMElement $dom
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $dom) {
@@ -80,8 +80,8 @@ class HrefList extends DAV\Property {
      * This method returns an instance of this class.
      * It will only decode {DAV:}href values.
      *
-     * @param DOMElement $dom
-     * @return Sabre\DAV\Property\HrefList
+     * @param \DOMElement $dom
+     * @return DAV\Property\HrefList
      */
     static function unserialize(\DOMElement $dom) {
 

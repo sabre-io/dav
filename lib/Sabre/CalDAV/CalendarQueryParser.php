@@ -31,17 +31,17 @@ class CalendarQueryParser {
     public $filters;
 
     /**
-     * This property will contain null if CALDAV:expand was not specified, 
-     * otherwise it will contain an array with 2 elements (start, end). Each 
+     * This property will contain null if CALDAV:expand was not specified,
+     * otherwise it will contain an array with 2 elements (start, end). Each
      * contain a DateTime object.
      *
-     * If expand is specified, recurring calendar objects are to be expanded 
-     * into their individual components, and only the components that fall 
+     * If expand is specified, recurring calendar objects are to be expanded
+     * into their individual components, and only the components that fall
      * within the specified time-range are to be returned.
      *
      * For more details, see rfc4791, section 9.6.5.
-     * 
-     * @var null|array 
+     *
+     * @var null|array
      */
     public $expand;
 
@@ -62,7 +62,7 @@ class CalendarQueryParser {
     /**
      * Creates the parser
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      */
     public function __construct(\DOMDocument $dom) {
 
@@ -99,14 +99,14 @@ class CalendarQueryParser {
         if ($expand->length>0) {
             $this->expand = $this->parseExpand($expand->item(0));
         }
-             
+
 
     }
 
     /**
      * Parses all the 'comp-filter' elements from a node
      *
-     * @param DOMElement $parentNode
+     * @param \DOMElement $parentNode
      * @return array
      */
     protected function parseCompFilters(\DOMElement $parentNode) {
@@ -146,7 +146,7 @@ class CalendarQueryParser {
     /**
      * Parses all the prop-filter elements from a node
      *
-     * @param DOMElement $parentNode
+     * @param \DOMElement $parentNode
      * @return array
      */
     protected function parsePropFilters(\DOMElement $parentNode) {
@@ -175,7 +175,7 @@ class CalendarQueryParser {
     /**
      * Parses the param-filter element
      *
-     * @param DOMElement $parentNode
+     * @param \DOMElement $parentNode
      * @return array
      */
     protected function parseParamFilters(\DOMElement $parentNode) {
@@ -202,7 +202,7 @@ class CalendarQueryParser {
     /**
      * Parses the text-match element
      *
-     * @param DOMElement $parentNode
+     * @param \DOMElement $parentNode
      * @return array|null
      */
     protected function parseTextMatch(\DOMElement $parentNode) {
@@ -229,7 +229,7 @@ class CalendarQueryParser {
     /**
      * Parses the time-range element
      *
-     * @param DOMElement $parentNode
+     * @param \DOMElement $parentNode
      * @return array|null
      */
     protected function parseTimeRange(\DOMElement $parentNode) {
@@ -265,8 +265,8 @@ class CalendarQueryParser {
 
     /**
      * Parses the CALDAV:expand element
-     * 
-     * @param DOMElement $parentNode 
+     *
+     * @param \DOMElement $parentNode
      * @return void
      */
     protected function parseExpand(\DOMElement $parentNode) {
@@ -274,16 +274,16 @@ class CalendarQueryParser {
         $start = $parentNode->getAttribute('start');
         if(!$start) {
             throw new \Sabre\DAV\Exception\BadRequest('The "start" attribute is required for the CALDAV:expand element');
-        } 
+        }
         $start = VObject\DateTimeParser::parseDateTime($start);
 
         $end = $parentNode->getAttribute('end');
         if(!$end) {
             throw new \Sabre\DAV\Exception\BadRequest('The "end" attribute is required for the CALDAV:expand element');
-        } 
+        }
 
         $end = VObject\DateTimeParser::parseDateTime($end);
-        
+
         if ($end <= $start) {
             throw new \Sabre\DAV\Exception\BadRequest('The end-date must be larger than the start-date in the expand element.');
         }

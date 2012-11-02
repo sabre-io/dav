@@ -37,7 +37,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * __construct
      *
-     * @param Sabre\DAV\Locks\Backend\AbstractBackend $locksBackend
+     * @param Backend\AbstractBackend $locksBackend
      */
     public function __construct(Backend\AbstractBackend $locksBackend = null) {
 
@@ -50,7 +50,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This method is automatically called by the Server class after addPlugin.
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {
@@ -364,7 +364,7 @@ class Plugin extends DAV\ServerPlugin {
      * It is important that if the existing timeout is ignored, the property is overwritten, as this needs to be sent back to the client
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param LockInfo $lockInfo
      * @return bool
      */
     public function lockNode($uri,LockInfo $lockInfo) {
@@ -382,7 +382,7 @@ class Plugin extends DAV\ServerPlugin {
      * This method removes a lock from a uri. It is assumed all the supplied information is correct and verified
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param LockInfo $lockInfo
      * @return bool
      */
     public function unlockNode($uri, LockInfo $lockInfo) {
@@ -423,7 +423,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Generates the response for successful LOCK requests
      *
-     * @param Sabre\DAV\Locks\LockInfo $lockInfo
+     * @param LockInfo $lockInfo
      * @return string
      */
     protected function generateLockResponse(LockInfo $lockInfo) {

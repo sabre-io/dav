@@ -33,7 +33,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
     /**
      * Constructor
      *
-     * @param Sabre\CardDAV\Backend\AbstractBackend $carddavBackend
+     * @param Backend\AbstractBackend $carddavBackend
      * @param string $principalUri
      */
     public function __construct(Backend\AbstractBackend $carddavBackend, $principalUri) {

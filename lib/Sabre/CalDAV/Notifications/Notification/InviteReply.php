@@ -119,8 +119,8 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      * You should usually just encode the single top-level element of the
      * notification.
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     public function serialize(DAV\Server $server, \DOMElement $node) {
@@ -134,8 +134,8 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
     public function serializeBody(DAV\Server $server, \DOMElement $node) {

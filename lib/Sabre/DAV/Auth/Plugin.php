@@ -42,7 +42,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * __construct
      *
-     * @param Sabre\DAV\Auth\IBackend $authBackend
+     * @param IBackend $authBackend
      * @param string $realm
      */
     public function __construct(IBackend $authBackend, $realm) {
@@ -55,7 +55,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Initializes the plugin. This function is automatically called by the server
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {

@@ -19,8 +19,8 @@ class NotSupportedPrivilege extends DAV\Exception\PreconditionFailed {
      *
      * This method adds the {DAV:}not-supported-privilege element as defined in rfc3744
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $errorNode
+     * @param DAV\Server $server
+     * @param \DOMElement $errorNode
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $errorNode) {

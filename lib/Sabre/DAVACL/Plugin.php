@@ -646,7 +646,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This method is automatically called by the server class.
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {
@@ -789,7 +789,7 @@ class Plugin extends DAV\ServerPlugin {
      * Triggered before a node is unlocked.
      *
      * @param string $uri
-     * @param Sabre\DAV\Locks\LockInfo $lock
+     * @param DAV\Locks\LockInfo $lock
      * @TODO: not yet implemented
      * @return void
      */
@@ -802,7 +802,7 @@ class Plugin extends DAV\ServerPlugin {
      * Triggered before properties are looked up in specific nodes.
      *
      * @param string $uri
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @TODO really should be broken into multiple methods, or even a class.
@@ -950,7 +950,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param array $propertyDelta
      * @param array $result
-     * @param Sabre\DAV\INode $node
+     * @param DAV\INode $node
      * @return bool
      */
     public function updateProperties(&$propertyDelta, &$result, DAV\INode $node) {
@@ -991,7 +991,7 @@ class Plugin extends DAV\ServerPlugin {
      * This method handles HTTP REPORT requests
      *
      * @param string $reportName
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return bool
      */
     public function report($reportName, $dom) {
@@ -1121,7 +1121,7 @@ class Plugin extends DAV\ServerPlugin {
      * Other rfc's, such as ACL rely on this report, so it made sense to put
      * it in this plugin.
      *
-     * @param DOMElement $dom
+     * @param \DOMElement $dom
      * @return void
      */
     protected function expandPropertyReport($dom) {
@@ -1159,7 +1159,7 @@ class Plugin extends DAV\ServerPlugin {
      * This method is used by expandPropertyReport to parse
      * out the entire HTTP request.
      *
-     * @param DOMElement $node
+     * @param \DOMElement $node
      * @return array
      */
     protected function parseExpandPropertyReportRequest($node) {
@@ -1246,7 +1246,7 @@ class Plugin extends DAV\ServerPlugin {
      * of properties the client may search on, using the
      * {DAV:}principal-property-search report.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return void
      */
     protected function principalSearchPropertySetReport(\DOMDocument $dom) {
@@ -1308,7 +1308,7 @@ class Plugin extends DAV\ServerPlugin {
      * clients to search for groups of principals, based on the value of one
      * or more properties.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return void
      */
     protected function principalPropertySearchReport(\DOMDocument $dom) {
@@ -1340,7 +1340,7 @@ class Plugin extends DAV\ServerPlugin {
      *  1. an array with properties to search on, and their values
      *  2. a list of propertyvalues that should be returned for the request.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return array
      */
     protected function parsePrincipalPropertySearchReportRequest($dom) {

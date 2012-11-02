@@ -29,7 +29,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
     /**
      * Initializes the plugin and registers event handlers
      *
-     * @param Sabre\DAV\Server $server
+     * @param DAV\Server $server
      * @return void
      */
     public function initialize(DAV\Server $server) {

@@ -54,8 +54,8 @@ class PreconditionFailed extends DAV\Exception {
     /**
      * This method allows the exception to include additional information into the WebDAV error response
      *
-     * @param Sabre\DAV\Server $server
-     * @param DOMElement $errorNode
+     * @param DAV\Server $server
+     * @param \DOMElement $errorNode
      * @return void
      */
     public function serialize(DAV\Server $server,\DOMElement $errorNode) {

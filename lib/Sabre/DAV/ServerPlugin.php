@@ -21,7 +21,7 @@ abstract class ServerPlugin {
      *
      * This method should set up the required event subscriptions.
      *
-     * @param Sabre\DAV\Server $server
+     * @param Server $server
      * @return void
      */
     abstract public function initialize(Server $server);

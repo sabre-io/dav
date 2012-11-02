@@ -146,5 +146,15 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetGetVars() {
+
+        $get = array(
+            'bla' => 'foo',
+        );
+        $r = new Request(array(),null,$get);
+        $this->assertEquals($get, $r->getGetVars('bla'));
+
+    }
+
 
 }

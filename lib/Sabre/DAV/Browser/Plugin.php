@@ -13,8 +13,6 @@ use Sabre\DAV;
  * The class intercepts GET requests to collection resources and generates a simple
  * html index.
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

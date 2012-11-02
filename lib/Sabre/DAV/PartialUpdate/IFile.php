@@ -9,8 +9,6 @@ use Sabre\DAV;
  * It may be used to update a file chunk, upload big a file into smaller
  * chunks or resume an upload
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

@@ -9,8 +9,6 @@ namespace Sabre\DAV;
  * the CalDAV calendar-query REPORT, and CardDAV addressbook-query REPORT.
  * Because they both need it, it was decided to put it in Sabre\DAV instead.
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

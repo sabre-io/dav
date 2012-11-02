@@ -8,8 +8,6 @@ namespace Sabre\DAV\Exception;
  * The BadRequest is thrown when the user submitted an invalid HTTP request
  * BadRequest
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

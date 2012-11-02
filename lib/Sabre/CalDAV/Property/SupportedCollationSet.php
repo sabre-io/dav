@@ -9,8 +9,6 @@ use Sabre\DAV;
  * This property is a representation of the supported-collation-set property
  * in the CalDAV namespace.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

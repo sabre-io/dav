@@ -10,8 +10,6 @@ use Sabre\DAV;
  * The 403-need privileges is thrown when a user didn't have the appropriate
  * permissions to perform an operation
  *
- * @package Sabre
- * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

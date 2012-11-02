@@ -10,8 +10,6 @@ namespace Sabre\DAV;
  *
  * NOTE: This class is experimental, it's api will likely change in the future.
  *
- * @package Sabre
- * @subpackage DAVClient
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

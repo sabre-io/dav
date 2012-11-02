@@ -12,8 +12,6 @@ use Sabre\HTTP;
  * Most of the digest logic is handled, implementors just need to worry about
  * the validateUserPass method.
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author James David Low (http://jameslow.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)

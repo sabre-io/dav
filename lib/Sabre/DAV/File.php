@@ -8,8 +8,6 @@ namespace Sabre\DAV;
  * This is a helper class, that should aid in getting file classes setup.
  * Most of its methods are implemented, and throw permission denied exceptions
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

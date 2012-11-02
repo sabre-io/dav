@@ -8,8 +8,6 @@ namespace Sabre\DAV\Locks;
  * An object of the LockInfo class holds all the information relevant to a
  * single lock.
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

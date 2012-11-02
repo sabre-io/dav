@@ -10,8 +10,6 @@ use Sabre\DAV;
  * The href property represents a url within a {DAV:}href element.
  * This is used by many WebDAV extensions, but not really within the WebDAV core spec
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

@@ -12,8 +12,6 @@ use Sabre\VObject;
  * This plugin provides functionality added by CalDAV (RFC 4791)
  * It implements new reports, and the MKCALENDAR method.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License

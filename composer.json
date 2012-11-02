@@ -38,7 +38,13 @@
         "ext-pdo" : "*"
     }, 
     "autoload": {
-        "psr-0": { "Sabre": "lib/" }
+        "psr-0" : {
+            "Sabre\\DAV"     : "lib/",
+            "Sabre\\HTTP"    : "lib/",
+            "Sabre\\DAVACL"  : "lib/",
+            "Sabre\\CalDAV"  : "lib/",
+            "Sabre\\CardDAV" : "lib/"
+        }
     },
     "support" : {
         "forum" : "https://groups.google.com/group/sabredav-discuss",

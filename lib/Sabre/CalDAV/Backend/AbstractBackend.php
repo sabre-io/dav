@@ -131,7 +131,7 @@ abstract class AbstractBackend implements BackendInterface {
      * the given object.
      *
      * @param array $object
-     * @param array $filter
+     * @param array $filters
      * @return bool
      */
     protected function validateFilterForObject(array $object, array $filters) {

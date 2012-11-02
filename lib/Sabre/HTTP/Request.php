@@ -33,6 +33,13 @@ class Request {
     protected $_POST;
 
     /**
+     * PHP's $_GET data
+     *
+     * @var array
+     */
+    protected $_GET;
+
+    /**
      * The request body, if any.
      *
      * This is stored in the form of a stream resource.
@@ -53,19 +60,23 @@ class Request {
     /**
      * Sets up the object
      *
-     * The serverData and postData array can be used to override usage of PHP's
-     * global _SERVER and _POST variable respectively.
+     * The serverData, postData and getData array can be used to override usage of PHP's
+     * global _SERVER, _POST and _GET variable respectively.
      *
      * @param array $serverData
      * @param array $postData
+     * @param array $getData
      */
-    public function __construct(array $serverData = null, array $postData = null) {
+    public function __construct(array $serverData = null, array $postData = null, array $getData = null) {
 
        if ($serverData) $this->_SERVER = $serverData;
        else $this->_SERVER =& $_SERVER;
 
        if ($postData) $this->_POST = $postData;
        else $this->_POST =& $_POST;
+
+       if ($getData) $this->_GET = $getData;
+       else $this->_GET =& $_GET;
 
     }
 
@@ -247,6 +258,20 @@ class Request {
     public function getPostVars() {
 
         return $this->_POST;
+
+    }
+
+    /**
+     * Returns PHP's _GET variable.
+     *
+     * The reason this is in a method is so it can be subclassed and
+     * overridden.
+     *
+     * @return array
+     */
+    public function getGetVars() {
+
+        return $this->_GET;
 
     }
 

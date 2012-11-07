@@ -4,6 +4,9 @@
 	  so sharees can figure out who is also on a shared calendar.
 	* BC Break: Changed a bunch of constructor signatures in the CalDAV
 	  package, to reduce dependencies on the ACL package.
+	* BC Break: Every backend package (CalDAV, CardDAV, Auth, Locks,
+	  Principals) now has consistent naming conventions. There's a
+	  BackendInterface, and an AbstractBackend class.
 	* Added: Sabre_DAVACL_IPrincipalCollection interface, to advertise support
 	  for principal-property-search on any node.
 	* Added: Simple console script to fire up a fileserver in the current

@@ -442,15 +442,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $caught = false;
         try {
             $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Exception $e) {
-            $caught = true;
-            $this->assertEquals($e->getHTTPCode(), $error);
-        }
-        if (!$caught) {
             $this->fail('Exception was not thrown');
+        } catch (Exception $e) {
+            $this->assertEquals($e->getHTTPCode(), $error);
         }
 
 
@@ -498,15 +494,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $caught = false;
         try {
             $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Exception $e) {
-            $caught = true;
-            $this->assertEquals(500, $e->getHTTPCode());
-        }
-        if (!$caught) {
             $this->fail('Exception was not thrown');
+        } catch (Exception $e) {
+            $this->assertEquals(500, $e->getHTTPCode());
         }
 
 

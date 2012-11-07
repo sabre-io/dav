@@ -15,3 +15,5 @@ tests/.sabredav
 *.swp
 vendor
 composer.lock
+bin/phpdocmd
+bin/phpunit

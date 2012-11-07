@@ -36,6 +36,16 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception\NotFound
+     */
+    function testGetNodeForPath_DoesntExist() {
+
+        $fs = new Filesystem(SABRE_TEMPDIR);
+        $node = $fs->getNodeForPath('whoop/file.txt');
+
+    }
+
     function testGetNodeForPath_Directory() {
 
         $fs = new Filesystem(SABRE_TEMPDIR);

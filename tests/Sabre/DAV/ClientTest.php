@@ -475,6 +475,43 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testUnsupportedHTTPError() {
+
+        $client = new ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 580 blabla",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 42,
+                'http_code' => "580"
+            ),
+            0,
+            ""
+        );
+
+        $caught = false;
+        try {
+            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        } catch (Exception $e) {
+            $caught = true;
+            $this->assertEquals(500, $e->getHTTPCode());
+        }
+        if (!$caught) {
+            $this->fail('Exception was not thrown');
+        }
+
+
+    }
+
     function testGetAbsoluteUrl() {
 
         $client = new ClientMock(array(

@@ -623,6 +623,26 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
+    /**
+     * @covers \Sabre\DAV\Server::guessBaseUri
+     * @depends testGuessBaseUri
+     * @expectedException \Sabre\DAV\Exception
+     */
+    function testGuessBaseUriBadConfig() {
+
+        $serverVars = array(
+            'REQUEST_URI' => '/index.php/root/heyyy',
+            'PATH_INFO'   => '/root',
+        );
+
+        $httpRequest = new HTTP\Request($serverVars);
+        $server = new Server();
+        $server->httpRequest = $httpRequest;
+
+        $server->guessBaseUri();
+
+    }
+
     function testTriggerException() {
 
         $serverVars = array(

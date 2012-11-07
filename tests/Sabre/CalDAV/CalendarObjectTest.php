@@ -4,9 +4,6 @@ namespace Sabre\CalDAV;
 use Sabre\DAVACL;
 
 require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-require_once 'Sabre/CalDAV/Backend/Mock.php';
 
 class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
 

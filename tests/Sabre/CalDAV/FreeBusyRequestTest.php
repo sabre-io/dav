@@ -6,9 +6,6 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
@@ -42,7 +39,7 @@ END:VCALENDAR',
 
         );
 
-        $principalBackend = new DAVACL\MockPrincipalBackend();
+        $principalBackend = new DAVACL\PrincipalBackend\Mock();
         $caldavBackend = new Backend\Mock($calendars, $calendarobjects);
 
         $tree = array(
@@ -62,7 +59,7 @@ END:VCALENDAR',
         $this->aclPlugin = new DAVACL\Plugin();
         $this->server->addPlugin($this->aclPlugin);
 
-        $authBackend = new DAV\Auth\MockBackend();
+        $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setCurrentUser('user1');
         $this->authPlugin = new DAV\Auth\Plugin($authBackend,'SabreDAV');
         $this->server->addPlugin($this->authPlugin);

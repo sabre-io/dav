@@ -8,7 +8,6 @@ use Sabre\VObject;
 use Sabre\DAVACL;
 
 require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
@@ -176,7 +175,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
-        $pbackend = new DAVACL\MockPrincipalBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
 
         $props = array(
             'uri'=>'UUID-123467',
@@ -194,7 +193,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
-        $s->addPlugin(new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'SabreDAV'));
+        $s->addPlugin(new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'SabreDAV'));
 
         // Forcing login
         $s->getPlugin('acl')->adminPrincipals = array('principals/admin');

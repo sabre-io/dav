@@ -4,7 +4,6 @@ namespace Sabre\CalDAV;
 use Sabre\DAVACL;
 
 require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class CalendarTest extends \PHPUnit_Framework_TestCase {
 

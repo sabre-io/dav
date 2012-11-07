@@ -26,17 +26,17 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
     /**
      * carddavBackend
      *
-     * @var Sabre\CardDAV\Backend\AbstractBackend
+     * @var Backend\BackendInterface
      */
     protected $carddavBackend;
 
     /**
      * Constructor
      *
-     * @param Backend\AbstractBackend $carddavBackend
+     * @param Backend\BackendInterface $carddavBackend
      * @param string $principalUri
      */
-    public function __construct(Backend\AbstractBackend $carddavBackend, $principalUri) {
+    public function __construct(Backend\BackendInterface $carddavBackend, $principalUri) {
 
         $this->carddavBackend = $carddavBackend;
         $this->principalUri = $principalUri;

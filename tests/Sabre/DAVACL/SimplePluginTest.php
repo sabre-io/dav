@@ -6,7 +6,6 @@ use Sabre\DAV;
 use Sabre\HTTP;
 
 
-require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/DAVACL/MockPrincipal.php';
 require_once 'Sabre/DAVACL/MockACLNode.php';
 
@@ -149,7 +148,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $server = new DAV\Server($tree);
         $server->addPlugin($acl);
 
-        $auth = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'SabreDAV');
+        $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'SabreDAV');
         $server->addPlugin($auth);
 
         //forcing login
@@ -176,7 +175,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $server = new DAV\Server($tree);
         $server->addPlugin($acl);
 
-        $auth = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'SabreDAV');
+        $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'SabreDAV');
         $server->addPlugin($auth);
 
         //forcing login
@@ -253,7 +252,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $aclPlugin = new Plugin();
         $server->addPlugin($aclPlugin);
 
-        $auth = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'SabreDAV');
+        $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'SabreDAV');
         $server->addPlugin($auth);
 
         //forcing login
@@ -307,7 +306,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $aclPlugin = new Plugin();
         $server->addPlugin($aclPlugin);
 
-        $auth = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'SabreDAV');
+        $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'SabreDAV');
         $server->addPlugin($auth);
 
         //forcing login

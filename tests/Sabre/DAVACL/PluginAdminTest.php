@@ -7,15 +7,13 @@ use Sabre\HTTP;
 
 
 require_once 'Sabre/DAVACL/MockACLNode.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class PluginAdminTest extends \PHPUnit_Framework_TestCase {
 
     function testNoAdminAccess() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
 
         $tree = array(
             new MockACLNode('adminonly', array()),
@@ -23,7 +21,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
-        $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
@@ -50,7 +48,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
      */
     function testAdminAccess() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
 
         $tree = array(
             new MockACLNode('adminonly', array()),
@@ -58,7 +56,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
-        $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->adminPrincipals = array(

@@ -1,10 +1,10 @@
 <?php
 
-namespace Sabre\DAV\Auth;
+namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\DAV;
 
-class MockBackend implements IBackend {
+class Mock implements BackendInterface {
 
     protected $currentUser;
 

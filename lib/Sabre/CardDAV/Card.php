@@ -18,7 +18,7 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
     /**
      * CardDAV backend
      *
-     * @var Sabre\CardDAV\Backend\Abstract
+     * @var Backend\BackendInterface
      */
     private $carddavBackend;
 
@@ -39,11 +39,11 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
     /**
      * Constructor
      *
-     * @param Backend\AbstractBackend $carddavBackend
+     * @param Backend\BackendInterface $carddavBackend
      * @param array $addressBookInfo
      * @param array $cardData
      */
-    public function __construct(Backend\AbstractBackend $carddavBackend,array $addressBookInfo,array $cardData) {
+    public function __construct(Backend\BackendInterface $carddavBackend,array $addressBookInfo,array $cardData) {
 
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;

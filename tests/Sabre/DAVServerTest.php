@@ -5,8 +5,8 @@ namespace Sabre;
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/CalDAV/Backend/Mock.php';
 require_once 'Sabre/CardDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAVACL/PrincipalBackend/Mock.php';
+require_once 'Sabre/DAV/Auth/Backend/Mock.php';
 
 /**
  * This class may be used as a basis for other webdav-related unittests.
@@ -98,7 +98,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->server->addPlugin($this->aclPlugin);
         }
         if ($this->autoLogin) {
-            $authBackend = new DAV\Auth\MockBackend();
+            $authBackend = new DAV\Auth\Backend\Mock();
             $authBackend->defaultUser = $this->autoLogin;
             $this->authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
             $this->server->addPlugin($this->authPlugin);
@@ -163,7 +163,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);
         }
         if ($this->setupCardDAV || $this->setupCalDAV) {
-            $this->principalBackend = new DAVACL\MockPrincipalBackend();
+            $this->principalBackend = new DAVACL\PrincipalBackend\Mock();
         }
 
     }

@@ -8,7 +8,7 @@ class AddressBookRootTest extends \PHPUnit_Framework_TestCase {
 
     function testGetName() {
 
-        $pBackend = new DAVACL\MockPrincipalBackend();
+        $pBackend = new DAVACL\PrincipalBackend\Mock();
         $cBackend = new Backend\Mock();
         $root = new AddressBookRoot($pBackend, $cBackend);
         $this->assertEquals('addressbooks', $root->getName());
@@ -17,7 +17,7 @@ class AddressBookRootTest extends \PHPUnit_Framework_TestCase {
 
     function testGetChildForPrincipal() {
 
-        $pBackend = new DAVACL\MockPrincipalBackend();
+        $pBackend = new DAVACL\PrincipalBackend\Mock();
         $cBackend = new Backend\Mock();
         $root = new AddressBookRoot($pBackend, $cBackend);
 

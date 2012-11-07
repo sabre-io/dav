@@ -23,7 +23,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * locksBackend
      *
-     * @var Sabre\DAV\Locks\Backend\AbstractBackend
+     * @var Backend\Backend\Interface
      */
     protected $locksBackend;
 
@@ -37,9 +37,9 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * __construct
      *
-     * @param Backend\AbstractBackend $locksBackend
+     * @param Backend\BackendInterface $locksBackend
      */
-    public function __construct(Backend\AbstractBackend $locksBackend = null) {
+    public function __construct(Backend\BackendInterface $locksBackend = null) {
 
         $this->locksBackend = $locksBackend;
 

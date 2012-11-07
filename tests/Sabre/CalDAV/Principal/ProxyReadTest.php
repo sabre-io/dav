@@ -9,7 +9,7 @@ class ProxyReadTest extends \PHPUnit_Framework_TestCase {
 
     function getInstance() {
 
-        $backend = new DAVACL\MockPrincipalBackend();
+        $backend = new DAVACL\PrincipalBackend\Mock();
         $principal = new ProxyRead($backend, array(
             'uri' => 'principal/user',
         ));

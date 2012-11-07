@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabre\DAV\Auth;
+namespace Sabre\DAV\Auth\Backend;
 
 /**
  * This is the base class for any authentication object.
@@ -9,7 +9,7 @@ namespace Sabre\DAV\Auth;
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface IBackend {
+interface BackendInterface {
 
     /**
      * Authenticates the user based on the current request.

@@ -6,9 +6,6 @@ use Sabre\DAV;
 use Sabre\HTTP;
 
 
-require_once 'Sabre/DAV/Auth/MockBackend.php';
-require_once 'Sabre/DAVACL/MockPrincipal.php';
-
 class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
     function testPrincipalCollectionSet() {
@@ -51,7 +48,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testCurrentUserPrincipal() {
 
         $fakeServer = new DAV\Server();
-        $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
@@ -187,7 +184,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($nodes);
         $server->addPlugin($plugin);
-        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $server->addPlugin($authPlugin);
 
         // Force login
@@ -230,7 +227,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($nodes);
         $server->addPlugin($plugin);
-        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $server->addPlugin($authPlugin);
 
         // Force login

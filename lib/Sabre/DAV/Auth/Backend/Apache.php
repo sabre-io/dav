@@ -15,7 +15,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Apache implements DAV\Auth\IBackend {
+class Apache implements BackendInterface {
 
     /**
      * Current apache user

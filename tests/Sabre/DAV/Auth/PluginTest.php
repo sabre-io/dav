@@ -5,7 +5,6 @@ namespace Sabre\DAV\Auth;
 use Sabre\HTTP;
 use Sabre\DAV;
 
-require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
@@ -13,7 +12,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testInit() {
 
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new MockBackend(),'realm');
+        $plugin = new Plugin(new Backend\Mock(),'realm');
         $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
@@ -26,7 +25,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testAuthenticate() {
 
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new MockBackend(),'realm');
+        $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
@@ -41,7 +40,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testAuthenticateFail() {
 
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new MockBackend(),'failme');
+        $plugin = new Plugin(new Backend\Mock(),'failme');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
 
@@ -50,7 +49,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testReportPassThrough() {
 
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new MockBackend(),'realm');
+        $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
 
         $request = new HTTP\Request(array(
@@ -74,7 +73,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testGetCurrentUserPrincipal() {
 
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new MockBackend(),'realm');
+        $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
         $this->assertEquals('admin', $plugin->getCurrentUser());

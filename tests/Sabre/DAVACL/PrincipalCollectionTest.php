@@ -6,13 +6,11 @@ use Sabre\DAV;
 use Sabre\HTTP;
 
 
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-
 class PrincipalCollectionTest extends \PHPUnit_Framework_TestCase {
 
     public function testBasic() {
 
-        $backend = new MockPrincipalBackend();
+        $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
         $this->assertTrue($pc instanceof PrincipalCollection);
 
@@ -25,7 +23,7 @@ class PrincipalCollectionTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetChildren() {
 
-        $backend = new MockPrincipalBackend();
+        $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
 
         $children = $pc->getChildren();
@@ -43,7 +41,7 @@ class PrincipalCollectionTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetChildrenDisable() {
 
-        $backend = new MockPrincipalBackend();
+        $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
         $pc->disableListing = true;
 

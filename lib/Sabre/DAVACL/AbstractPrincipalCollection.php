@@ -27,7 +27,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
     /**
      * Principal backend
      *
-     * @var Sabre\DAVACL\IPrincipalBackend
+     * @var PrincipalBackend\BackendInterface
      */
     protected $principalBackend;
 
@@ -48,10 +48,10 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * collection, override $principalPrefix
      *
      *
-     * @param IPrincipalBackend $principalBackend
+     * @param PrincipalBackend\BackendInterface $principalBackend
      * @param string $principalPrefix
      */
-    public function __construct(IPrincipalBackend $principalBackend, $principalPrefix = 'principals') {
+    public function __construct(PrincipalBackend\BackendInterface $principalBackend, $principalPrefix = 'principals') {
 
         $this->principalPrefix = $principalPrefix;
         $this->principalBackend = $principalBackend;

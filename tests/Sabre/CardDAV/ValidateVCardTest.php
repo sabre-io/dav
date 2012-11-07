@@ -6,8 +6,6 @@ use Sabre\DAV;
 use Sabre\HTTP;
 use Sabre\DAVACL;
 
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
@@ -26,7 +24,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->cardBackend = new Backend\Mock($addressbooks,array());
-        $principalBackend = new DAVACL\MockPrincipalBackend();
+        $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = array(
             new AddressBookRoot($principalBackend, $this->cardBackend),

@@ -7,7 +7,7 @@ class ProxyWriteTest extends ProxyReadTest {
 
     function getInstance() {
 
-        $backend = new DAVACL\MockPrincipalBackend();
+        $backend = new DAVACL\PrincipalBackend\Mock();
         $principal = new ProxyWrite($backend, array(
             'uri' => 'principal/user',
         ));

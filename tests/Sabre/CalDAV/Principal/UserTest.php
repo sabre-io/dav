@@ -7,7 +7,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
 
     function getInstance() {
 
-        $backend = new DAVACL\MockPrincipalBackend();
+        $backend = new DAVACL\PrincipalBackend\Mock();
         $backend->addPrincipal(array(
             'uri' => 'principals/user/calendar-proxy-read',
         ));

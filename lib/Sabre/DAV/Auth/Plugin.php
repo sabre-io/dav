@@ -28,7 +28,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Authentication backend
      *
-     * @var Sabre\DAV\Auth\IBackend
+     * @var Backend\BackendInterface
      */
     protected $authBackend;
 
@@ -42,10 +42,10 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * __construct
      *
-     * @param IBackend $authBackend
+     * @param Backend\BackendInterface $authBackend
      * @param string $realm
      */
-    public function __construct(IBackend $authBackend, $realm) {
+    public function __construct(Backend\BackendInterface $authBackend, $realm) {
 
         $this->authBackend = $authBackend;
         $this->realm = $realm;

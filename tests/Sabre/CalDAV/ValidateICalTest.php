@@ -6,8 +6,6 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ValidateICalTest extends \PHPUnit_Framework_TestCase {
@@ -39,7 +37,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->calBackend = new Backend\Mock($calendars,array());
-        $principalBackend = new DAVACL\MockPrincipalBackend();
+        $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = array(
             new CalendarRootNode($principalBackend, $this->calBackend),

@@ -5,7 +5,6 @@ use Sabre\DAVACL;
 use Sabre\DAV;
 
 require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 /**
  * @covers Sabre\CalDAV\UserCalendars

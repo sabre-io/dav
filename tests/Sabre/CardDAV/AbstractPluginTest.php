@@ -5,9 +5,6 @@ namespace Sabre\CardDAV;
 use Sabre\DAV;
 use Sabre\DAVACL;
 
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-
 abstract class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -19,14 +16,14 @@ abstract class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
      */
     protected $server;
     /**
-     * @var Sabre\CardDAV\MockBackend
+     * @var Sabre\CardDAV\Backend\Mock;
      */
     protected $backend;
 
     function setUp() {
 
         $this->backend = new Backend\Mock();
-        $principalBackend = new DAVACL\MockPrincipalBackend();
+        $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = array(
             new AddressBookRoot($principalBackend, $this->backend),

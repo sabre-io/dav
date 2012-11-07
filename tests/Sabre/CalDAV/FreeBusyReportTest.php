@@ -7,7 +7,6 @@ use Sabre\DAVACL;
 use Sabre\HTTP;
 
 require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {

@@ -31,7 +31,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
     /**
      * Principal backend
      *
-     * @var Sabre\DAVACL\IPrincipalBackend
+     * @var PrincipalBackend\BackendInterface
      */
     protected $principalBackend;
 
@@ -41,7 +41,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
      * @param IPrincipalBackend $principalBackend
      * @param array $principalProperties
      */
-    public function __construct(IPrincipalBackend $principalBackend, array $principalProperties = array()) {
+    public function __construct(PrincipalBackend\BackendInterface $principalBackend, array $principalProperties = array()) {
 
         if (!isset($principalProperties['uri'])) {
             throw new DAV\Exception('The principal properties must at least contain the \'uri\' key');

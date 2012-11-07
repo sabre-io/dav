@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabre\DAVACL;
+namespace Sabre\DAVACL\PrincipalBackend;
 
 /**
  * Implement this interface to create your own principal backends.
@@ -13,7 +13,7 @@ namespace Sabre\DAVACL;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface IPrincipalBackend {
+interface BackendInterface {
 
     /**
      * Returns a list of principals based on a prefix.

@@ -17,7 +17,7 @@ use Sabre\HTTP;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-abstract class AbstractBasic implements DAV\Auth\IBackend {
+abstract class AbstractBasic implements BackendInterface {
 
     /**
      * This variable holds the currently logged in username.

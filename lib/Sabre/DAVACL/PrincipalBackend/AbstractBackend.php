@@ -1,15 +1,13 @@
 <?php
 
-namespace Sabre\DAV\Locks\Backend;
-
-use Sabre\DAV\Locks;
+namespace Sabre\DAVACL\PrincipalBackend;
 
 /**
- * This is an Abstract clas for lock backends.
+ * Abstract Principal Backend
  *
- * Currently this backend has no function, but it exists for consistency, and
- * to ensure that if default code is required in the backend, there will be a
- * non-bc-breaking way to do so.
+ * Currently this class has no function. It's here for consistency and so we
+ * have a non-bc-breaking way to add a default generic implementation to
+ * functions we may add in the future.
  *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
@@ -18,4 +16,3 @@ use Sabre\DAV\Locks;
 abstract class AbstractBackend implements BackendInterface {
 
 }
-

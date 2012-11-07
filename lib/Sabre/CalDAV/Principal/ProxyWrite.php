@@ -27,7 +27,7 @@ class ProxyWrite implements IProxyWrite {
     /**
      * Principal Backend
      *
-     * @var DAVACL\IPrincipalBackend
+     * @var DAVACL\PrincipalBackend\BackendInterface
      */
     protected $principalBackend;
 
@@ -36,10 +36,10 @@ class ProxyWrite implements IProxyWrite {
      *
      * Note that you MUST supply the parent principal information.
      *
-     * @param DAVACL\IPrincipalBackend $principalBackend
+     * @param DAVACL\PrincipalBackend\BackendInterface $principalBackend
      * @param array $principalInfo
      */
-    public function __construct(DAVACL\IPrincipalBackend $principalBackend, array $principalInfo) {
+    public function __construct(DAVACL\PrincipalBackend\BackendInterface $principalBackend, array $principalInfo) {
 
         $this->principalInfo = $principalInfo;
         $this->principalBackend = $principalBackend;

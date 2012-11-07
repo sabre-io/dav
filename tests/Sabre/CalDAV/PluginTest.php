@@ -6,9 +6,7 @@ use Sabre\DAV;
 use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
 require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
@@ -56,7 +54,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
                 )
             )
         ));
-        $principalBackend = new DAVACL\MockPrincipalBackend();
+        $principalBackend = new DAVACL\PrincipalBackend\Mock();
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-read',array('principals/user1'));
         $principalBackend->setGroupMemberSet('principals/admin/calendar-proxy-write',array('principals/user1'));
         $principalBackend->addPrincipal(array(
@@ -84,7 +82,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->addPlugin(new DAVACL\Plugin());
 
         // Adding Auth plugin, and ensuring that we are logged in.
-        $authBackend = new DAV\Auth\MockBackend();
+        $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->defaultUser = 'user1';
         $authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
         $this->server->addPlugin($authPlugin);

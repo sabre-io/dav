@@ -5,13 +5,11 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-
 class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testConstruct() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertTrue($principal instanceof Principal);
 
@@ -22,14 +20,14 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
      */
     public function testConstructNoUri() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array());
 
     }
 
     public function testGetName() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('admin',$principal->getName());
 
@@ -37,7 +35,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetDisplayName() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('admin',$principal->getDisplayname());
 
@@ -51,7 +49,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetProperties() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
@@ -75,7 +73,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateProperties() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $result = $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
         $this->assertEquals(true,$result);
@@ -84,7 +82,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetPrincipalUrl() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('principals/admin',$principal->getPrincipalUrl());
 
@@ -92,7 +90,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetAlternateUriSet() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
@@ -116,7 +114,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
     }
     public function testGetAlternateUriSetEmpty() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array(
             'uri' => 'principals/admin',
         ));
@@ -129,14 +127,14 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetGroupMemberSet() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals(array(),$principal->getGroupMemberSet());
 
     }
     public function testGetGroupMembership() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals(array(),$principal->getGroupMembership());
 
@@ -144,7 +142,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testSetGroupMemberSet() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $principal->setGroupMemberSet(array('principals/foo'));
 
@@ -156,7 +154,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetOwner() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals('principals/admin',$principal->getOwner());
 
@@ -164,7 +162,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetGroup() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertNull($principal->getGroup());
 
@@ -172,7 +170,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetACl() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertEquals(array(
             array(
@@ -189,7 +187,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
      */
     public function testSetACl() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $principal->setACL(array());
 
@@ -197,7 +195,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetSupportedPrivilegeSet() {
 
-        $principalBackend = new MockPrincipalBackend();
+        $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
         $this->assertNull($principal->getSupportedPrivilegeSet());
 

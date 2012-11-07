@@ -4,7 +4,6 @@ namespace Sabre\CardDAV;
 
 use Sabre\DAV;
 
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
 require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 
 class PluginTest extends AbstractPluginTest {

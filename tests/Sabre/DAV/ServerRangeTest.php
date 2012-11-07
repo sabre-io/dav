@@ -140,7 +140,7 @@ class ServerRangeTest extends AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeEtag() {
 
@@ -174,7 +174,7 @@ class ServerRangeTest extends AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeEtagIncorrect() {
 
@@ -207,7 +207,7 @@ class ServerRangeTest extends AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeModificationDate() {
 
@@ -241,7 +241,7 @@ class ServerRangeTest extends AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeModificationDateModified() {
 

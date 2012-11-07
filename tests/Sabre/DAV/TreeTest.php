@@ -3,7 +3,7 @@
 namespace Sabre\DAV;
 
 /**
- * @covers Tree
+ * @covers \Sabre\DAV\Tree
  */
 class TreeTest extends \PHPUnit_Framework_TestCase {
 

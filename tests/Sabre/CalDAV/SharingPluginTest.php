@@ -37,6 +37,10 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
         parent::setUp();
 
+        // Making the logged in user an admin, for full access:
+        $this->aclPlugin->adminPrincipals[] = 'principals/user1';
+        $this->aclPlugin->adminPrincipals[] = 'principals/user2';
+
     }
 
     function testSimple() {

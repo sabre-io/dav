@@ -17,7 +17,8 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.2-stable (2012-??-??)
+1.7.2-stable (2012-11-08)
+    * The zip release ships with sabre/vobject 2.0.5. 
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
 	  property-search'.
 	* Fixed: [#153] Allowing for relative http principals in iMip requests.

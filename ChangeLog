@@ -1,4 +1,6 @@
 1.9.0-alpha (20??-??-??)
+	* Fixed: If event handlers modify the request body from a PUT request, an
+	  ETag is no longer sent back.
 
 1.8.0-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.

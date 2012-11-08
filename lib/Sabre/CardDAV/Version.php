@@ -16,11 +16,11 @@ class Version {
     /**
      * Full version number
      */
-    const VERSION = '1.8.0';
+    const VERSION = '1.9.0';
 
     /**
      * Stability : alpha, beta, stable
      */
-    const STABILITY = 'stable';
+    const STABILITY = 'alpha';
 
 }

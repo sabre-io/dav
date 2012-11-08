@@ -1439,6 +1439,8 @@ class Sabre_DAV_Server {
 
         if ($depth!=0) $depth = 1;
 
+        $path = rtrim($path,'/');
+
         $returnPropertyList = array();
 
         $parentNode = $this->tree->getNodeForPath($path);

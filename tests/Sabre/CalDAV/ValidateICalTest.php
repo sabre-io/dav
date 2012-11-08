@@ -87,6 +87,10 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(array(
+            'Content-Length' => '0',
+            'ETag' => '"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"',
+        ), $response->headers);
         $expected = array(
             'uri'          => 'blabla.ics',
             'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
@@ -245,6 +249,28 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    /**
+     * What we are testing here, is if we send in a latin1 character, the
+     * server should automatically transform this into UTF-8.
+     *
+     * More importantly. If any transformation happens, the etag must no longer
+     * be returned by the server.
+     */
+    function testCreateFileModified() {
+
+        $request = new HTTP\Request(array(
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/calendars/admin/calendar1/blabla.ics',
+        ));
+        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nSUMMARY:Meeting in M\xfcnster\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertFalse(isset($response->headers['ETag']));
 
     }
 }

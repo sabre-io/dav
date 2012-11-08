@@ -301,14 +301,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @param DAV\IFile $node
      * @param resource $data
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data) {
+    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICard)
             return;
 
-        $this->validateVCard($data);
+        $this->validateVCard($data, $modified);
 
     }
 
@@ -321,14 +323,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @param resource $data
      * @param DAV\ICollection $parentNode
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode) {
+    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
         if (!$parentNode instanceof IAddressBook)
             return;
 
-        $this->validateVCard($data);
+        $this->validateVCard($data, $modified);
 
     }
 
@@ -338,17 +342,23 @@ class Plugin extends DAV\ServerPlugin {
      * An exception is thrown if it's not.
      *
      * @param resource|string $data
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    protected function validateVCard(&$data) {
+    protected function validateVCard(&$data, $modified) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
 
+        $before = md5($data);
+
         // Converting the data to unicode, if needed.
         $data = DAV\StringUtil::ensureUTF8($data);
+
+        if (md5($data) !== $before) $modified = true;
 
         try {
 

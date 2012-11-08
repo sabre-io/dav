@@ -212,6 +212,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
             'calendarid' => $calendarId,
             'uri' => $objectUri,
         );
+        return '"' . md5($calendarData) . '"';
 
     }
 
@@ -230,6 +231,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
             'calendarid' => $calendarId,
             'uri' => $objectUri,
         );
+        return '"' . md5($calendarData) . '"';
 
     }
 

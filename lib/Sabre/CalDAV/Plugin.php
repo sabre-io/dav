@@ -710,14 +710,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @param DAV\IFile $node
      * @param resource $data
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data) {
+    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICalendarObject)
             return;
 
-        $this->validateICalendar($data, $path);
+        $this->validateICalendar($data, $path, $modified);
 
     }
 
@@ -730,14 +732,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @param resource $data
      * @param DAV\ICollection $parentNode
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode) {
+    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
         if (!$parentNode instanceof Calendar)
             return;
 
-        $this->validateICalendar($data, $path);
+        $this->validateICalendar($data, $path, $modified);
 
     }
 
@@ -793,17 +797,23 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param resource|string $data
      * @param string $path
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    protected function validateICalendar(&$data, $path) {
+    protected function validateICalendar(&$data, $path, &$modified) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
 
+        $before = md5($data);
         // Converting the data to unicode, if needed.
         $data = DAV\StringUtil::ensureUTF8($data);
+
+        if ($before!==md5($data)) $modified = true;
+
 
         try {
 
@@ -1024,7 +1034,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param array $recipients
      * @param VObject\Component $vObject
      * @param string $principal Principal url
-     * @return array 
+     * @return array
      */
     protected function iMIPMessage($originator, array $recipients, VObject\Component $vObject, $principal) {
 

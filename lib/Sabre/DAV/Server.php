@@ -863,14 +863,21 @@ class Server {
 
             // If the node is a collection, we'll deny it
             if (!($node instanceof IFile)) throw new Exception\Conflict('PUT is not allowed on non-files.');
-            if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body))) return false;
+
+            // It is possible for an event handler to modify the content of the
+            // body, before it gets written. If this is the case, $modified
+            // should be set to true.
+            //
+            // If $modified is true, we must not send back an etag.
+            $modified = false;
+            if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body, &$modified))) return false;
 
             $etag = $node->put($body);
 
             $this->broadcastEvent('afterWriteContent',array($uri, $node));
 
             $this->httpResponse->setHeader('Content-Length','0');
-            if ($etag) $this->httpResponse->setHeader('ETag',$etag);
+            if ($etag && !$modified) $this->httpResponse->setHeader('ETag',$etag);
             $this->httpResponse->sendStatus(204);
 
         } else {
@@ -1613,9 +1620,18 @@ class Server {
             throw new Exception\Conflict('Files can only be created as children of collections');
         }
 
-        if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent))) return false;
+        // It is possible for an event handler to modify the content of the
+        // body, before it gets written. If this is the case, $modified
+        // should be set to true.
+        //
+        // If $modified is true, we must not send back an etag.
+        $modified = false;
+        if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent, &$modified))) return false;
 
         $etag = $parent->createFile($name,$data);
+
+        if ($modified) $etag = null;
+
         $this->tree->markDirty($dir . '/' . $name);
 
         $this->broadcastEvent('afterBind',array($uri));

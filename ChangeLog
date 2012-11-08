@@ -1,4 +1,4 @@
-1.7.2-stable (2012-??-??)
+1.7.2-stable (2012-11-08)
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
 	  property-search'.
 	* Fixed: [#153] Allowing for relative http principals in iMip requests.

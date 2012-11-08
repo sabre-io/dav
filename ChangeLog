@@ -1,3 +1,6 @@
+1.8.1-stable (????-??-??)
+	* Includes fixes from 1.7.2.
+
 1.8.0-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.
 	* BC Break: Moved the entire codebase to PHP namespaces.
@@ -17,6 +20,9 @@
 	  calendar.
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
+
+1.7.2-stable (????-??-??)
+	* Fixed: Removing double slashes from getPropertiesForPath.
 
 1.7.2-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.

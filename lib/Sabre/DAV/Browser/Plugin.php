@@ -299,6 +299,9 @@ class Plugin extends DAV\ServerPlugin {
                         case '{urn:ietf:params:xml:ns:carddav}addressbook' :
                             $type[$k] = 'Addressbook';
                             break;
+                        case '{urn:ietf:params:xml:ns:carddav}directory' :
+                            $type[$k] = 'Directory';
+                            break;
                         case '{urn:ietf:params:xml:ns:caldav}calendar' :
                             $type[$k] = 'Calendar';
                             break;

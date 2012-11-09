@@ -119,7 +119,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
     }
 
     /**
-     * Returns a single calendar, by name
+     * Returns a single addressbook, by name
      *
      * @param string $name
      * @todo needs optimizing

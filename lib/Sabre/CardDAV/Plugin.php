@@ -663,7 +663,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * This method is used to generate HTML output for the
      * Sabre\DAV\Browser\Plugin. This allows us to generate an interface users
-     * can use to create new calendars.
+     * can use to create new addressbooks.
      *
      * @param DAV\INode $node
      * @param string $output
@@ -688,8 +688,8 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This method allows us to intercept the 'mkcalendar' sabreAction. This
-     * action enables the user to create new calendars from the browser plugin.
+     * This method allows us to intercept the 'mkaddressbook' sabreAction. This
+     * action enables the user to create new addressbooks from the browser plugin.
      *
      * @param string $uri
      * @param string $action

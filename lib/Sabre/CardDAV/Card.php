@@ -16,21 +16,21 @@ class Sabre_CardDAV_Card extends Sabre_DAV_File implements Sabre_CardDAV_ICard, 
      *
      * @var Sabre_CardDAV_Backend_Abstract
      */
-    private $carddavBackend;
+    protected $carddavBackend;
 
     /**
      * Array with information about this Card
      *
      * @var array
      */
-    private $cardData;
+    protected $cardData;
 
     /**
      * Array with information about the containing addressbook
      *
      * @var array
      */
-    private $addressBookInfo;
+    protected $addressBookInfo;
 
     /**
      * Constructor

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Sync;
+
+use Sabre\DAV;
+
 /**
  * If a class extends ISyncCollection, it supports WebDAV-sync.
  *
@@ -7,13 +11,11 @@
  * means that if any child nodes in this collection was created, modified or
  * deleted in any way, you should maintain an updated changelist.
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAV_ISyncCollection extends Sabre_DAV_Collection {
+interface ISyncCollection extends DAV\Collection {
 
     /**
      * This method returns the current sync-token for this collection.
@@ -63,7 +65,7 @@ interface Sabre_DAV_ISyncCollection extends Sabre_DAV_Collection {
      * should be treated as infinite.
      *
      * If the limit (infinite or not) is higher than you're willing to return,
-     * you should throw a Sabre_DAV_Exception_TooMuchMatches() exception.
+     * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
      *
      * You can ignore the limit if you want.
      *
@@ -76,4 +78,3 @@ interface Sabre_DAV_ISyncCollection extends Sabre_DAV_Collection {
 
 }
 
-?>

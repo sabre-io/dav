@@ -1,14 +1,20 @@
 <?php
 
-abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\PrincipalBackend;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
+abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     abstract function getPDO();
 
     function testConstruct() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
-        $this->assertTrue($backend instanceof Sabre_DAVACL_PrincipalBackend_PDO);
+        $backend = new PDO($pdo);
+        $this->assertTrue($backend instanceof PDO);
 
     }
 
@@ -18,7 +24,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
     function testGetPrincipalsByPrefix() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
 
         $expected = array(
             array(
@@ -44,7 +50,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
     function testGetPrincipalByPath() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
 
         $expected = array(
             'id' => 1,
@@ -61,7 +67,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
     function testGetGroupMemberSet() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
         $expected = array('principals/user');
 
         $this->assertEquals($expected,$backend->getGroupMemberSet('principals/group'));
@@ -71,7 +77,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
     function testGetGroupMembership() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
         $expected = array('principals/group');
 
         $this->assertEquals($expected,$backend->getGroupMembership('principals/user'));
@@ -83,7 +89,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
         $pdo = $this->getPDO();
 
         // Start situation
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
         $this->assertEquals(array('principals/user'), $backend->getGroupMemberSet('principals/group'));
 
         // Removing all principals
@@ -101,7 +107,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
 
         $pdo = $this->getPDO();
 
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
 
         $result = $backend->searchPrincipals('principals', array('{DAV:}blabla' => 'foo'));
         $this->assertEquals(array(), $result);
@@ -120,7 +126,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
     function testUpdatePrincipal() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
 
         $result = $backend->updatePrincipal('principals/user', array(
             '{DAV:}displayname' => 'pietje',
@@ -142,7 +148,7 @@ abstract class Sabre_DAVACL_PrincipalBackend_AbstractPDOTest extends PHPUnit_Fra
     function testUpdatePrincipalUnknownField() {
 
         $pdo = $this->getPDO();
-        $backend = new Sabre_DAVACL_PrincipalBackend_PDO($pdo);
+        $backend = new PDO($pdo);
 
         $result = $backend->updatePrincipal('principals/user', array(
             '{DAV:}displayname' => 'pietje',

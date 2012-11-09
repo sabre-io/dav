@@ -1,6 +1,10 @@
 <?php
 
-use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+namespace Sabre\CalDAV\Property;
+
+use Sabre\CalDAV\SharingPlugin as SharingPlugin;
+use Sabre\DAV;
+use Sabre\CalDAV;
 
 /**
  * Invite property
@@ -9,14 +13,12 @@ use Sabre_CalDAV_SharingPlugin as SharingPlugin;
  * the 'caldav-sharing-02' spec, in the http://calendarserver.org/ns/
  * namespace.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @see https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
+class Invite extends DAV\Property {
 
     /**
      * The list of users a calendar has been shared to.
@@ -24,6 +26,14 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
      * @var array
      */
     protected $users;
+
+    /**
+     * The organizer contains information about the person who shared the
+     * object.
+     *
+     * @var array
+     */
+    protected $organizer;
 
     /**
      * Creates the property.
@@ -37,11 +47,24 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
      *   * readOnly - true or false
      *   * summary - Optional, description of the share
      *
+     * The organizer key is optional to specify. It's only useful when a
+     * 'sharee' requests the sharing information.
+     *
+     * The organizer may have the following properties:
+     *   * href - Often a mailto: address.
+     *   * commonName - Optional human-readable name.
+     *   * firstName - Optional first name.
+     *   * lastName - Optional last name.
+     *
+     * If you wonder why these two structures are so different, I guess a
+     * valid answer is that the current spec is still a draft.
+     *
      * @param array $users
      */
-    public function __construct(array $users) {
+    public function __construct(array $users, array $organizer = null) {
 
         $this->users = $users;
+        $this->organizer = $organizer;
 
     }
 
@@ -59,13 +82,43 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
     /**
      * Serializes the property in a DOMDocument
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
        $doc = $node->ownerDocument;
+
+       if (!is_null($this->organizer)) {
+
+           $xorganizer = $doc->createElement('cs:organizer');
+
+           $href = $doc->createElement('d:href');
+           $href->appendChild($doc->createTextNode($this->organizer['href']));
+           $xorganizer->appendChild($href);
+
+           if (isset($this->organizer['commonName']) && $this->organizer['commonName']) {
+               $commonName = $doc->createElement('cs:common-name');
+               $commonName->appendChild($doc->createTextNode($this->organizer['commonName']));
+               $xorganizer->appendChild($commonName);
+           }
+           if (isset($this->organizer['firstName']) && $this->organizer['firstName']) {
+               $firstName = $doc->createElement('cs:first-name');
+               $firstName->appendChild($doc->createTextNode($this->organizer['firstName']));
+               $xorganizer->appendChild($firstName);
+           }
+           if (isset($this->organizer['lastName']) && $this->organizer['lastName']) {
+               $lastName = $doc->createElement('cs:last-name');
+               $lastName->appendChild($doc->createTextNode($this->organizer['lastName']));
+               $xorganizer->appendChild($lastName);
+           }
+
+           $node->appendChild($xorganizer);
+
+
+       }
+
        foreach($this->users as $user) {
 
            $xuser = $doc->createElement('cs:user');
@@ -124,6 +177,7 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
 
        }
 
+
     }
 
     /**
@@ -131,13 +185,13 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
      *
      * This static method should return a an instance of this object.
      *
-     * @param DOMElement $prop
-     * @return Sabre_DAV_IProperty
+     * @param \DOMElement $prop
+     * @return DAV\IProperty
      */
-    static function unserialize(DOMElement $prop) {
+    static function unserialize(\DOMElement $prop) {
 
         $xpath = new \DOMXPath($prop->ownerDocument);
-        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $xpath->registerNamespace('cs', CalDAV\Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d',  'DAV:');
 
         $users = array();
@@ -154,7 +208,7 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
             } elseif ($xpath->evaluate('boolean(cs:invite-invalid)', $user)) {
                 $status = SharingPlugin::STATUS_INVALID;
             } else {
-                throw new Sabre_DAV_Exception('Every cs:user property must have one of cs:invite-accepted, cs:invite-declined, cs:invite-noresponse or cs:invite-invalid');
+                throw new DAV\Exception('Every cs:user property must have one of cs:invite-accepted, cs:invite-declined, cs:invite-noresponse or cs:invite-invalid');
             }
             $users[] = array(
                 'href' => $xpath->evaluate('string(d:href)', $user),

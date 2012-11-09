@@ -1,13 +1,16 @@
 <?php
 
-class Sabre_CalDAV_Principal_ProxyReadTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Principal;
+use Sabre\DAVACL;
+
+class ProxyReadTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
 
     function getInstance() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_CalDAV_Principal_ProxyRead($backend, array(
+        $backend = new DAVACL\PrincipalBackend\Mock();
+        $principal = new ProxyRead($backend, array(
             'uri' => 'principal/user',
         ));
         $this->backend = $backend;
@@ -36,7 +39,7 @@ class Sabre_CalDAV_Principal_ProxyReadTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testDelete() {
 
@@ -46,7 +49,7 @@ class Sabre_CalDAV_Principal_ProxyReadTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testSetName() {
 

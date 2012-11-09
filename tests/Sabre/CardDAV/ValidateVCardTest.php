@@ -1,10 +1,14 @@
 <?php
 
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+use Sabre\DAVACL;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
+class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     protected $server;
     protected $cardBackend;
@@ -19,25 +23,25 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $this->cardBackend = new Sabre_CardDAV_Backend_Mock($addressbooks,array());
-        $principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+        $this->cardBackend = new Backend\Mock($addressbooks,array());
+        $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = array(
-            new Sabre_CardDAV_AddressBookRoot($principalBackend, $this->cardBackend),
+            new AddressBookRoot($principalBackend, $this->cardBackend),
         );
 
-        $this->server = new Sabre_DAV_Server($tree);
+        $this->server = new DAV\Server($tree);
         $this->server->debugExceptions = true;
 
-        $plugin = new Sabre_CardDAV_Plugin();
+        $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
         $this->server->httpResponse = $response;
 
     }
 
-    function request(Sabre_HTTP_Request $request) {
+    function request(HTTP\Request $request) {
 
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -48,7 +52,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -61,7 +65,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileValid() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -81,7 +85,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileNoUID() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -96,7 +100,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
 
     function testCreateFileVCalendar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -111,7 +115,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
     function testUpdateFile() {
 
         $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -125,7 +129,7 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
     function testUpdateFileParsableBody() {
 
         $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));

@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CardDAV_VCFExportTest extends Sabre_DAVServerTest {
+namespace Sabre\CardDAV;
+
+use Sabre\HTTP;
+
+class VCFExportTest extends \Sabre\DAVServerTest {
 
     protected $setupCardDAV = true;
     protected $autoLogin = 'user1';
@@ -26,20 +30,20 @@ class Sabre_CardDAV_VCFExportTest extends Sabre_DAVServerTest {
 
         parent::setUp();
         $this->server->addPlugin(
-            new Sabre_CardDAV_VCFExportPlugin()
+            new VCFExportPlugin()
         );
 
     }
 
     function testSimple() {
 
-        $this->assertInstanceOf('Sabre_CardDAV_VCFExportPlugin', $this->server->getPlugin('Sabre_CardDAV_VCFExportPlugin'));
+        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $this->server->getPlugin('Sabre\\CardDAV\\VCFExportPlugin'));
 
     }
 
     function testExport() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/addressbooks/user1/book1?export',
             'QUERY_STRING' => 'export',
             'REQUEST_METHOD' => 'GET',

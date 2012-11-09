@@ -1,6 +1,9 @@
 <?php
 
+namespace Sabre\CalDAV\Schedule;
+
 use Sabre\VObject;
+use Sabre\DAV;
 
 /**
  * iMIP handler.
@@ -12,13 +15,11 @@ use Sabre\VObject;
  * If you want to customize the email that gets sent out, you can do so by
  * extending this class and overriding the sendMessage method.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Schedule_IMip {
+class IMip {
 
     /**
      * Email address used in From: header.
@@ -46,7 +47,7 @@ class Sabre_CalDAV_Schedule_IMip {
      *
      * @param string $originator Originator Email
      * @param array $recipients Array of email addresses
-     * @param Sabre\VObject\Component $vObject
+     * @param VObject\Component $vObject
      * @param string $principal Principal Url of the originator
      * @return void
      */
@@ -74,8 +75,8 @@ class Sabre_CalDAV_Schedule_IMip {
             $headers[] = 'Reply-To: ' . $replyTo;
             $headers[] = 'From: ' . $this->senderEmail;
             $headers[] = 'Content-Type: text/calendar; method=' . (string)$vObject->method . '; charset=utf-8';
-            if (Sabre_DAV_Server::$exposeVersion) {
-                $headers[] = 'X-Sabre-Version: ' . Sabre_DAV_Version::VERSION . '-' . Sabre_DAV_Version::STABILITY;
+            if (DAV\Server::$exposeVersion) {
+                $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY;
             }
 
             $vcalBody = $vObject->serialize();

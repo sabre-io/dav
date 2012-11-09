@@ -1,31 +1,35 @@
 <?php
 
+namespace Sabre\CalDAV\Notifications;
+
+use Sabre\DAV;
+use Sabre\CalDAV;
+use Sabre\DAVACL;
+
 /**
  * This node represents a single notification.
  *
- * The signature is mostly identical to that of Sabre_DAV_IFile, but the get() method
+ * The signature is mostly identical to that of Sabre\DAV\IFile, but the get() method
  * MUST return an xml document that matches the requirements of the
  * 'caldav-notifications.txt' spec.
 
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_CalDAV_Notifications_INode, Sabre_DAVACL_IACL {
+class Node extends DAV\File implements INode, DAVACL\IACL {
 
     /**
      * The notification backend
      *
-     * @var Sabre_CalDAV_Backend_NotificationSupport
+     * @var Sabre\CalDAV\Backend\NotificationSupport
      */
     protected $caldavBackend;
 
     /**
      * The actual notification
      *
-     * @var Sabre_CalDAV_Notifications_INotificationType
+     * @var Sabre\CalDAV\Notifications\INotificationType
      */
     protected $notification;
 
@@ -39,11 +43,11 @@ class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_Ca
     /**
      * Constructor
      *
-     * @param Sabre_CalDAV_Backend_NotificationSupport $caldavBackend
+     * @param CalDAV\Backend\NotificationSupport $caldavBackend
      * @param string $principalUri
-     * @param Sabre_CalDAV_Notifications_INotificationType $notification
+     * @param CalDAV\Notifications\INotificationType $notification
      */
-    public function __construct(Sabre_CalDAV_Backend_NotificationSupport $caldavBackend, $principalUri, Sabre_CalDAV_Notifications_INotificationType $notification) {
+    public function __construct(CalDAV\Backend\NotificationSupport $caldavBackend, $principalUri, INotificationType $notification) {
 
         $this->caldavBackend = $caldavBackend;
         $this->principalUri = $principalUri;
@@ -77,9 +81,9 @@ class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_Ca
 
     /**
      * This method must return an xml element, using the
-     * Sabre_CalDAV_Notifications_INotificationType classes.
+     * Sabre\CalDAV\Notifications\INotificationType classes.
      *
-     * @return Sabre_DAVNotification_INotificationType
+     * @return INotificationType
      */
     public function getNotificationType() {
 
@@ -163,7 +167,7 @@ class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_Ca
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_NotImplemented('Updating ACLs is not implemented here');
+        throw new DAV\Exception\NotImplemented('Updating ACLs is not implemented here');
 
     }
 
@@ -171,7 +175,7 @@ class Sabre_CalDAV_Notifications_Node extends Sabre_DAV_File implements Sabre_Ca
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

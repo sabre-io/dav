@@ -1,6 +1,9 @@
 <?php
 
+namespace Sabre\CalDAV;
+
 use Sabre\VObject;
+use DateTime;
 
 /**
  * CalendarQuery Validator
@@ -11,18 +14,16 @@ use Sabre\VObject;
  * This is used to determine which icalendar objects should be returned for a
  * calendar-query REPORT request.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_CalendarQueryValidator {
+class CalendarQueryValidator {
 
     /**
      * Verify if a list of filters applies to the calendar data object
      *
-     * The list of filters must be formatted as parsed by Sabre_CalDAV_CalendarQueryParser
+     * The list of filters must be formatted as parsed by \Sabre\CalDAV\CalendarQueryParser
      *
      * @param VObject\Component $vObject
      * @param array $filters
@@ -253,7 +254,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
         $value = (string)$parent;
 
-        $isMatching = Sabre_DAV_StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
+        $isMatching = \Sabre\DAV\StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
 
         return ($textMatch['negate-condition'] xor $isMatching);
 
@@ -349,7 +350,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
                 }
 
             case 'VFREEBUSY' :
-                throw new Sabre_DAV_Exception_NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
+                throw new \Sabre\DAV\Exception\NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
 
             case 'COMPLETED' :
             case 'CREATED' :
@@ -363,7 +364,7 @@ class Sabre_CalDAV_CalendarQueryValidator {
 
 
             default :
-                throw new Sabre_DAV_Exception_BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');
+                throw new \Sabre\DAV\Exception\BadRequest('You cannot create a time-range filter on a ' . $component->name . ' component');
 
         }
 

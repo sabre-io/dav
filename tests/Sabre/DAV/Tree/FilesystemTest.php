@@ -1,17 +1,21 @@
 <?php
 
+namespace Sabre\DAV\Tree;
+
+use Sabre\DAV;
+
 /**
- * @covers Sabre_DAV_Tree
- * @covers Sabre_DAV_Tree_Filesystem
- * @covers Sabre_DAV_FS_Node
- * @covers Sabre_DAV_FS_File
- * @covers Sabre_DAV_FS_Directory
+ * @covers Sabre\DAV\Tree
+ * @covers Sabre\DAV\Tree\Filesystem
+ * @covers Sabre\DAV\FS\Node
+ * @covers Sabre\DAV\FS\File
+ * @covers Sabre\DAV\FS\Directory
  */
-class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
+class FilesystemTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
         file_put_contents(SABRE_TEMPDIR. '/file.txt','Body');
         mkdir(SABRE_TEMPDIR.'/dir');
         file_put_contents(SABRE_TEMPDIR.'/dir/subfile.txt','Body');
@@ -20,23 +24,33 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
 
     function tearDown() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
 
     }
 
     function testGetNodeForPath_File() {
 
-        $fs = new Sabre_DAV_Tree_Filesystem(SABRE_TEMPDIR);
+        $fs = new Filesystem(SABRE_TEMPDIR);
         $node = $fs->getNodeForPath('file.txt');
-        $this->assertTrue($node instanceof Sabre_DAV_FS_File);
+        $this->assertTrue($node instanceof DAV\FS\File);
+
+    }
+
+    /**
+     * @expectedException \Sabre\DAV\Exception\NotFound
+     */
+    function testGetNodeForPath_DoesntExist() {
+
+        $fs = new Filesystem(SABRE_TEMPDIR);
+        $node = $fs->getNodeForPath('whoop/file.txt');
 
     }
 
     function testGetNodeForPath_Directory() {
 
-        $fs = new Sabre_DAV_Tree_Filesystem(SABRE_TEMPDIR);
+        $fs = new Filesystem(SABRE_TEMPDIR);
         $node = $fs->getNodeForPath('dir');
-        $this->assertTrue($node instanceof Sabre_DAV_FS_Directory);
+        $this->assertTrue($node instanceof DAV\FS\Directory);
         $this->assertEquals('dir', $node->getName());
         $this->assertInternalType('array', $node->getChildren());
 
@@ -44,7 +58,7 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
 
     function testCopy() {
 
-        $fs = new Sabre_DAV_Tree_Filesystem(SABRE_TEMPDIR);
+        $fs = new Filesystem(SABRE_TEMPDIR);
         $fs->copy('file.txt','file2.txt');
         $this->assertTrue(file_exists(SABRE_TEMPDIR . '/file2.txt'));
         $this->assertEquals('Body',file_get_contents(SABRE_TEMPDIR . '/file2.txt'));
@@ -53,7 +67,7 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
 
     function testCopyDir() {
 
-        $fs = new Sabre_DAV_Tree_Filesystem(SABRE_TEMPDIR);
+        $fs = new Filesystem(SABRE_TEMPDIR);
         $fs->copy('dir','dir2');
         $this->assertTrue(file_exists(SABRE_TEMPDIR . '/dir2'));
         $this->assertEquals('Body',file_get_contents(SABRE_TEMPDIR . '/dir2/subfile.txt'));
@@ -62,7 +76,7 @@ class Sabre_DAV_Tree_FilesystemTest extends PHPUnit_Framework_TestCase {
 
     function testMove() {
 
-        $fs = new Sabre_DAV_Tree_Filesystem(SABRE_TEMPDIR);
+        $fs = new Filesystem(SABRE_TEMPDIR);
         $fs->move('file.txt','file2.txt');
         $this->assertTrue(file_exists(SABRE_TEMPDIR . '/file2.txt'));
         $this->assertTrue(!file_exists(SABRE_TEMPDIR . '/file.txt'));

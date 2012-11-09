@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CardDAV_SogoStripContentType extends Sabre_DAVServerTest {
+namespace Sabre\CardDAV;
+
+use Sabre\HTTP;
+
+class SogoStripContentType extends \Sabre\DAVServerTest {
 
     protected $setupCardDAV = true;
     protected $carddavAddressBooks = array(
@@ -26,7 +30,7 @@ class Sabre_CardDAV_SogoStripContentType extends Sabre_DAVServerTest {
     }
     function testStrip() {
 
-        $this->server->httpRequest = new Sabre_HTTP_Request(array(
+        $this->server->httpRequest = new HTTP\Request(array(
             'HTTP_USER_AGENT' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ));
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf',array('{DAV:}getcontenttype'));

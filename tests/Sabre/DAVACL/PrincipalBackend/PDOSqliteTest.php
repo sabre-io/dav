@@ -1,8 +1,14 @@
 <?php
 
+namespace Sabre\DAVACL\PrincipalBackend;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
 require_once 'Sabre/DAV/Auth/Backend/AbstractPDOTest.php';
 
-class Sabre_DAVACL_PrincipalBackend_PDOSQLiteTest extends Sabre_DAVACL_PrincipalBackend_AbstractPDOTest {
+class PDOSQLiteTest extends AbstractPDOTest {
 
     function tearDown() {
 
@@ -14,8 +20,8 @@ class Sabre_DAVACL_PrincipalBackend_PDOSQLiteTest extends Sabre_DAVACL_Principal
     function getPDO() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $pdo = new PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
         $pdo->query('CREATE TABLE principals (id INTEGER PRIMARY KEY ASC, uri TEXT, email VARCHAR(80), displayname VARCHAR(80), vcardurl VARCHAR(80))');
         $pdo->query('INSERT INTO principals VALUES (1, "principals/user","user@example.org","User",null)');
         $pdo->query('INSERT INTO principals VALUES (2, "principals/group","group@example.org","Group",null)');

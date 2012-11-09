@@ -1,16 +1,22 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+
 require_once 'Sabre/DAVACL/MockPrincipal.php';
 
-class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase {
+class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdatePropertiesPassthrough() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('foo'),
+            new DAV\SimpleCollection('foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
-        $server->addPlugin(new Sabre_DAVACL_Plugin());
+        $server = new DAV\Server($tree);
+        $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}foo' => 'bar',
@@ -30,10 +36,10 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
     public function testRemoveGroupMembers() {
 
         $tree = array(
-            new Sabre_DAVACL_MockPrincipal('foo','foo'),
+            new MockPrincipal('foo','foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
-        $server->addPlugin(new Sabre_DAVACL_Plugin());
+        $server = new DAV\Server($tree);
+        $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}group-member-set' => null,
@@ -54,13 +60,13 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
     public function testSetGroupMembers() {
 
         $tree = array(
-            new Sabre_DAVACL_MockPrincipal('foo','foo'),
+            new MockPrincipal('foo','foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
-        $server->addPlugin(new Sabre_DAVACL_Plugin());
+        $server = new DAV\Server($tree);
+        $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array('bar','baz')),
+            '{DAV:}group-member-set' => new DAV\Property\HrefList(array('/bar','/baz'), true),
         ));
 
         $expected = array(
@@ -76,18 +82,18 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     public function testSetBadValue() {
 
         $tree = array(
-            new Sabre_DAVACL_MockPrincipal('foo','foo'),
+            new MockPrincipal('foo','foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
-        $server->addPlugin(new Sabre_DAVACL_Plugin());
+        $server = new DAV\Server($tree);
+        $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new StdClass(),
+            '{DAV:}group-member-set' => new \StdClass(),
         ));
 
     }
@@ -95,13 +101,13 @@ class Sabre_DAVACL_PluginUpdatePropertiesTest extends PHPUnit_Framework_TestCase
     public function testSetBadNode() {
 
         $tree = array(
-            new Sabre_DAV_SimpleCollection('foo'),
+            new DAV\SimpleCollection('foo'),
         );
-        $server = new Sabre_DAV_Server($tree);
-        $server->addPlugin(new Sabre_DAVACL_Plugin());
+        $server = new DAV\Server($tree);
+        $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', array(
-            '{DAV:}group-member-set' => new Sabre_DAV_Property_HrefList(array('bar','baz')),
+            '{DAV:}group-member-set' => new DAV\Property\HrefList(array('/bar','/baz'),false),
             '{DAV:}bar' => 'baz',
         ));
 

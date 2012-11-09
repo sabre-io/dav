@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_CardDAV_Backend_Mock extends Sabre_CardDAV_Backend_Abstract {
+namespace Sabre\CardDAV\Backend;
+
+class Mock extends AbstractBackend {
 
     public $addressBooks;
     public $cards;

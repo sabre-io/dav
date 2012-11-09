@@ -1,12 +1,17 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\HTTP;
+use Sabre\DAV;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_CardDAV_MultiGetTest extends Sabre_CardDAV_AbstractPluginTest {
+class MultiGetTest extends AbstractPluginTest {
 
     function testMultiGet() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
         ));
@@ -22,7 +27,7 @@ class Sabre_CardDAV_MultiGetTest extends Sabre_CardDAV_AbstractPluginTest {
 </c:addressbook-multiget>'
             );
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -32,7 +37,7 @@ class Sabre_CardDAV_MultiGetTest extends Sabre_CardDAV_AbstractPluginTest {
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
-        $client = new Sabre_DAV_Client(array('baseUri'=>'/'));
+        $client = new DAV\Client(array('baseUri'=>'/'));
 
         $result = $client->parseMultiStatus($response->body);
 

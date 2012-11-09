@@ -1,13 +1,15 @@
 <?php
 
-class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
+namespace Sabre\DAV;
+
+class URLUtilTest extends \PHPUnit_Framework_TestCase{
 
     function testEncodePath() {
 
         $str = '';
         for($i=0;$i<128;$i++) $str.=chr($i);
 
-        $newStr = Sabre_DAV_URLUtil::encodePath($str);
+        $newStr = URLUtil::encodePath($str);
 
         $this->assertEquals(
             '%00%01%02%03%04%05%06%07%08%09%0a%0b%0c%0d%0e%0f'.
@@ -20,7 +22,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
             'pqrstuvwxyz%7b%7c%7d~%7f',
             $newStr);
 
-        $this->assertEquals($str,Sabre_DAV_URLUtil::decodePath($newStr));
+        $this->assertEquals($str,URLUtil::decodePath($newStr));
 
     }
 
@@ -29,7 +31,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
         $str = '';
         for($i=0;$i<128;$i++) $str.=chr($i);
 
-        $newStr = Sabre_DAV_URLUtil::encodePathSegment($str);
+        $newStr = URLUtil::encodePathSegment($str);
 
         // Note: almost exactly the same as the last test, with the
         // exception of the encoding of / (ascii code 2f)
@@ -44,14 +46,14 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
             'pqrstuvwxyz%7b%7c%7d~%7f',
             $newStr);
 
-        $this->assertEquals($str,Sabre_DAV_URLUtil::decodePathSegment($newStr));
+        $this->assertEquals($str,URLUtil::decodePathSegment($newStr));
 
     }
 
     function testDecode() {
 
         $str = 'Hello%20Test+Test2.txt';
-        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $newStr = URLUtil::decodePath($str);
         $this->assertEquals('Hello Test+Test2.txt',$newStr);
 
     }
@@ -62,7 +64,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
     function testDecodeUmlaut() {
 
         $str = 'Hello%C3%BC.txt';
-        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $newStr = URLUtil::decodePath($str);
         $this->assertEquals("Hello\xC3\xBC.txt",$newStr);
 
     }
@@ -73,7 +75,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
     function testDecodeUmlautLatin1() {
 
         $str = 'Hello%FC.txt';
-        $newStr = Sabre_DAV_URLUtil::decodePath($str);
+        $newStr = URLUtil::decodePath($str);
         $this->assertEquals("Hello\xC3\xBC.txt",$newStr);
 
     }
@@ -86,8 +88,8 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
     function testDecodeAccentsWindows7() {
 
         $str = '/webdav/%C3%A0fo%C3%B3';
-        $newStr = Sabre_DAV_URLUtil::decodePath($str);
-        $this->assertEquals(strtolower($str),Sabre_DAV_URLUtil::encodePath($newStr));
+        $newStr = URLUtil::decodePath($str);
+        $this->assertEquals(strtolower($str),URLUtil::encodePath($newStr));
 
     }
 
@@ -117,7 +119,7 @@ class Sabre_DAV_URLUtilTest extends PHPUnit_Framework_TestCase{
 
         foreach($strings as $input => $expected) {
 
-            $output = Sabre_DAV_URLUtil::splitPath($input);
+            $output = URLUtil::splitPath($input);
             $this->assertEquals($expected, $output, 'The expected output for \'' . $input . '\' was incorrect');
 
 

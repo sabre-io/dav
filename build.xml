@@ -10,7 +10,7 @@
     <target name="buildzip" depends="init, test, clean">
         <mkdir dir="build" />
         <echo>Running composer</echo>
-        <exec command="composer.phar create-project sabre/dav build/SabreDAV ${sabredav.version}" checkreturn="false" passthru="1" />
+        <exec command="composer create-project sabre/dav build/SabreDAV ${sabredav.version}" checkreturn="false" passthru="1" />
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
     </target>
 
@@ -46,20 +46,9 @@
 
         <echo>Creating api documentation using PHP documentor</echo>
         <echo>Writing to ${sabredav.apidocspath}</echo>
-        <phpdoc title="SabreDAV API documentation"
-            destdir="${sabredav.apidocspath}"
-            sourcecode="false"
-            output="HTML:frames:phphtmllib">
-
-            <fileset dir="./lib">
-                <include name="**/*.php" />
-            </fileset>
-            <projdocfileset dir=".">
-                <include name="ChangeLog" />
-                <include name="LICENSE" />
-            </projdocfileset>
-
-        </phpdoc>
+        <exec command="phpdoc parse -t ${sabredav.apidocspath} -d lib/" passthru="1" />
+        <exec command="bin/phpdocmd ${sabredav.apidocspath}/structure.xml ${sabredav.apidocspath}" passthru="1" />
+        <delete file="${sabredav.apidocspath}/structure.xml" />
 
     </target>
 
@@ -73,9 +62,9 @@
                 public function main() {
 
                     include_once 'lib/Sabre/DAV/Version.php';
-                    $this->getProject()->setNewProperty('sabredav.version',Sabre_DAV_Version::VERSION);
-                    $this->getProject()->setNewProperty('sabredav.stability',Sabre_DAV_Version::STABILITY);
-                    $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre_DAV_Version::STABILITY));
+                    $this->getProject()->setNewProperty('sabredav.version',\Sabre\DAV\Version::VERSION);
+                    $this->getProject()->setNewProperty('sabredav.stability',\Sabre\DAV\Version::STABILITY);
+                    $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre\DAV\Version::STABILITY));
 
                 }
 

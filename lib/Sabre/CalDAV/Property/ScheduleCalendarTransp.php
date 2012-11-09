@@ -1,5 +1,10 @@
 <?php
 
+namespace Sabre\CalDAV\Property;
+
+use Sabre\DAV;
+use Sabre\CalDAV;
+
 /**
  * schedule-calendar-transp property.
  *
@@ -10,13 +15,11 @@
  * means that this calendar will not be taken into consideration when a
  * different user queries for free-busy information. If it's 'opaque', it will.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Property_ScheduleCalendarTransp extends Sabre_DAV_Property {
+class ScheduleCalendarTransp extends DAV\Property {
 
     const TRANSPARENT = 'transparent';
     const OPAQUE = 'opaque';
@@ -51,11 +54,11 @@ class Sabre_CalDAV_Property_ScheduleCalendarTransp extends Sabre_DAV_Property {
     /**
      * Serializes the property in a DOMDocument
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         switch($this->value) {
@@ -74,18 +77,18 @@ class Sabre_CalDAV_Property_ScheduleCalendarTransp extends Sabre_DAV_Property {
     /**
      * Unserializes the DOMElement back into a Property class.
      *
-     * @param DOMElement $node
-     * @return Sabre_CalDAV_Property_ScheduleCalendarTransp
+     * @param \DOMElement $node
+     * @return ScheduleCalendarTransp
      */
-    static function unserialize(DOMElement $node) {
+    static function unserialize(\DOMElement $node) {
 
         $value = null;
         foreach($node->childNodes as $childNode) {
-            switch(Sabre_DAV_XMLUtil::toClarkNotation($childNode)) {
-                case '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}opaque' :
+            switch(DAV\XMLUtil::toClarkNotation($childNode)) {
+                case '{' . CalDAV\Plugin::NS_CALDAV . '}opaque' :
                     $value = self::OPAQUE;
                     break;
-                case '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}transparent' :
+                case '{' . CalDAV\Plugin::NS_CALDAV . '}transparent' :
                     $value = self::TRANSPARENT;
                     break;
             }

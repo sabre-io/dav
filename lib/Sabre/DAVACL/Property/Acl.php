@@ -1,15 +1,17 @@
 <?php
 
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+
 /**
  * This class represents the {DAV:}acl property
  *
- * @package Sabre
- * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
+class Acl extends DAV\Property {
 
     /**
      * List of privileges
@@ -30,7 +32,7 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
      * Constructor
      *
      * This object requires a structure similar to the return value from
-     * Sabre_DAVACL_Plugin::getACL().
+     * Sabre\DAVACL\Plugin::getACL().
      *
      * Each privilege is a an array with at least a 'privilege' property, and a
      * 'principal' property. A privilege may have a 'protected' property as
@@ -64,11 +66,11 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
     /**
      * Serializes the property into a DOMElement
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         foreach($this->privileges as $ace) {
@@ -82,10 +84,10 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
     /**
      * Unserializes the {DAV:}acl xml element.
      *
-     * @param DOMElement $dom
-     * @return Sabre_DAVACL_Property_Acl
+     * @param \DOMElement $dom
+     * @return Acl
      */
-    static public function unserialize(DOMElement $dom) {
+    static public function unserialize(\DOMElement $dom) {
 
         $privileges = array();
         $xaces = $dom->getElementsByTagNameNS('DAV:','ace');
@@ -94,21 +96,21 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
             $xace = $xaces->item($ii);
             $principal = $xace->getElementsByTagNameNS('DAV:','principal');
             if ($principal->length !== 1) {
-                throw new Sabre_DAV_Exception_BadRequest('Each {DAV:}ace element must have one {DAV:}principal element');
+                throw new DAV\Exception\BadRequest('Each {DAV:}ace element must have one {DAV:}principal element');
             }
-            $principal = Sabre_DAVACL_Property_Principal::unserialize($principal->item(0));
+            $principal = Principal::unserialize($principal->item(0));
 
             switch($principal->getType()) {
-                case Sabre_DAVACL_Property_Principal::HREF :
+                case Principal::HREF :
                     $principal = $principal->getHref();
                     break;
-                case Sabre_DAVACL_Property_Principal::AUTHENTICATED :
+                case Principal::AUTHENTICATED :
                     $principal = '{DAV:}authenticated';
                     break;
-                case Sabre_DAVACL_Property_Principal::UNAUTHENTICATED :
+                case Principal::UNAUTHENTICATED :
                     $principal = '{DAV:}unauthenticated';
                     break;
-                case Sabre_DAVACL_Property_Principal::ALL :
+                case Principal::ALL :
                     $principal = '{DAV:}all';
                     break;
 
@@ -122,7 +124,7 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
 
             $grants = $xace->getElementsByTagNameNS('DAV:','grant');
             if ($grants->length < 1) {
-                throw new Sabre_DAV_Exception_NotImplemented('Every {DAV:}ace element must have a {DAV:}grant element. {DAV:}deny is not yet supported');
+                throw new DAV\Exception\NotImplemented('Every {DAV:}ace element must have a {DAV:}grant element. {DAV:}deny is not yet supported');
             }
             $grant = $grants->item(0);
 
@@ -136,13 +138,13 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
                 for ($kk=0;$kk<$xpriv->childNodes->length;$kk++) {
 
                     $childNode = $xpriv->childNodes->item($kk);
-                    if ($t = Sabre_DAV_XMLUtil::toClarkNotation($childNode)) {
+                    if ($t = DAV\XMLUtil::toClarkNotation($childNode)) {
                         $privilegeName = $t;
                         break;
                     }
                 }
                 if (is_null($privilegeName)) {
-                    throw new Sabre_DAV_Exception_BadRequest('{DAV:}privilege elements must have a privilege element contained within them.');
+                    throw new DAV\Exception\BadRequest('{DAV:}privilege elements must have a privilege element contained within them.');
                 }
 
                 $privileges[] = array(
@@ -162,13 +164,13 @@ class Sabre_DAVACL_Property_Acl extends Sabre_DAV_Property {
     /**
      * Serializes a single access control entry.
      *
-     * @param DOMDocument $doc
-     * @param DOMElement $node
+     * @param \DOMDocument $doc
+     * @param \DOMElement $node
      * @param array $ace
-     * @param Sabre_DAV_Server $server
+     * @param DAV\Server $server
      * @return void
      */
-    private function serializeAce($doc,$node,$ace, $server) {
+    private function serializeAce($doc,$node,$ace, DAV\Server $server) {
 
         $xace  = $doc->createElementNS('DAV:','d:ace');
         $node->appendChild($xace);

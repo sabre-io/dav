@@ -1,20 +1,22 @@
 <?php
 
-class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CardDAV;
+
+class CardTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CardDAV_Card
+     * @var Sabre\CardDAV\Card
      */
     protected $card;
     /**
-     * @var Sabre_CardDAV_MockBackend
+     * @var Sabre\CardDAV\MockBackend
      */
     protected $backend;
 
     function setUp() {
 
-        $this->backend = new Sabre_CardDAV_Backend_Mock();
-        $this->card = new Sabre_CardDAV_Card(
+        $this->backend = new Backend\Mock();
+        $this->card = new Card(
             $this->backend,
             array(
                 'uri' => 'book1',
@@ -38,7 +40,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     }
     function testGet2() {
 
-        $this->card = new Sabre_CardDAV_Card(
+        $this->card = new Card(
             $this->backend,
             array(
                 'uri' => 'book1',
@@ -92,7 +94,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
 
     function testGetETag2() {
 
-        $card = new Sabre_CardDAV_Card(
+        $card = new Card(
             $this->backend,
             array(
                 'uri' => 'book1',
@@ -125,7 +127,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
 
     function testGetSize2() {
 
-        $card = new Sabre_CardDAV_Card(
+        $card = new Card(
             $this->backend,
             array(
                 'uri' => 'book1',
@@ -163,7 +165,7 @@ class Sabre_CardDAV_CardTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetACL() {
 

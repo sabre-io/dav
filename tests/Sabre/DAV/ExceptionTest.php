@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_DAV_ExceptionTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV;
+
+class ExceptionTest extends \PHPUnit_Framework_TestCase {
 
     function testStatus() {
 
-        $e = new Sabre_DAV_Exception();
+        $e = new Exception();
         $this->assertEquals(500,$e->getHTTPCode());
 
     }
@@ -12,8 +14,8 @@ class Sabre_DAV_ExceptionTest extends PHPUnit_Framework_TestCase {
     function testExceptionStatuses() {
 
         $c = array(
-            'Sabre_DAV_Exception_NotAuthenticated'    => 401,
-            'Sabre_DAV_Exception_InsufficientStorage' => 507,
+            'Sabre\\DAV\\Exception\\NotAuthenticated'    => 401,
+            'Sabre\\DAV\\Exception\\InsufficientStorage' => 507,
         );
 
         foreach($c as $class=>$status) {

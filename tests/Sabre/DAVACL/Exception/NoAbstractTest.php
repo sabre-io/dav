@@ -1,13 +1,17 @@
 <?php
 
-class Sabre_DAVACL_Exception_NoAbstractTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\Exception;
+
+use Sabre\DAV;
+
+class NoAbstractTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
-        $ex = new Sabre_DAVACL_Exception_NoAbstract('message');
+        $ex = new NoAbstract('message');
 
-        $server = new Sabre_DAV_Server();
-        $dom = new DOMDocument('1.0','utf-8');
+        $server = new DAV\Server();
+        $dom = new \DOMDocument('1.0','utf-8');
         $root = $dom->createElementNS('DAV:','d:root');
         $dom->appendChild($root);
 
@@ -19,10 +23,10 @@ class Sabre_DAVACL_Exception_NoAbstractTest extends PHPUnit_Framework_TestCase {
         );
 
         // Reloading because PHP DOM sucks
-        $dom2 = new DOMDocument('1.0', 'utf-8');
+        $dom2 = new \DOMDocument('1.0', 'utf-8');
         $dom2->loadXML($dom->saveXML());
 
-        $dxpath = new DOMXPath($dom2);
+        $dxpath = new \DOMXPath($dom2);
         $dxpath->registerNamespace('d','DAV:');
         foreach($xpaths as $xpath=>$count) {
 

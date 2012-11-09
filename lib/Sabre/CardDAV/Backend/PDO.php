@@ -1,17 +1,20 @@
 <?php
 
+namespace Sabre\CardDAV\Backend;
+
+use Sabre\CardDAV;
+use Sabre\DAV;
+
 /**
  * PDO CardDAV backend
  *
  * This CardDAV backend uses PDO to store addressbooks
  *
- * @package Sabre
- * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
+class PDO extends AbstractBackend {
 
     /**
      * PDO connection
@@ -33,11 +36,11 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
     /**
      * Sets up the object
      *
-     * @param PDO $pdo
+     * @param \PDO $pdo
      * @param string $addressBooksTableName
      * @param string $cardsTableName
      */
-    public function __construct(PDO $pdo, $addressBooksTableName = 'addressbooks', $cardsTableName = 'cards') {
+    public function __construct(\PDO $pdo, $addressBooksTableName = 'addressbooks', $cardsTableName = 'cards') {
 
         $this->pdo = $pdo;
         $this->addressBooksTableName = $addressBooksTableName;
@@ -65,10 +68,10 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
                 'uri' => $row['uri'],
                 'principaluri' => $row['principaluri'],
                 '{DAV:}displayname' => $row['displayname'],
-                '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' => $row['description'],
+                '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => $row['description'],
                 '{http://calendarserver.org/ns/}getctag' => $row['ctag'],
-                '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}supported-address-data' =>
-                    new Sabre_CardDAV_Property_SupportedAddressData(),
+                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' =>
+                    new CardDAV\Property\SupportedAddressData(),
             );
 
         }
@@ -81,12 +84,12 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
     /**
      * Updates an addressbook's properties
      *
-     * See Sabre_DAV_IProperties for a description of the mutations array, as
+     * See Sabre\DAV\IProperties for a description of the mutations array, as
      * well as the return value.
      *
      * @param mixed $addressBookId
      * @param array $mutations
-     * @see Sabre_DAV_IProperties::updateProperties
+     * @see Sabre\DAV\IProperties::updateProperties
      * @return bool|array
      */
     public function updateAddressBook($addressBookId, array $mutations) {
@@ -99,7 +102,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
                 case '{DAV:}displayname' :
                     $updates['displayname'] = $newValue;
                     break;
-                case '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' :
+                case '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' :
                     $updates['description'] = $newValue;
                     break;
                 default :
@@ -153,11 +156,11 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
                 case '{DAV:}displayname' :
                     $values['displayname'] = $newValue;
                     break;
-                case '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-description' :
+                case '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' :
                     $values['description'] = $newValue;
                     break;
                 default :
-                    throw new Sabre_DAV_Exception_BadRequest('Unknown property: ' . $property);
+                    throw new DAV\Exception\BadRequest('Unknown property: ' . $property);
             }
 
         }
@@ -208,7 +211,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
         $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
         $stmt->execute(array($addressbookId));
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 
     }
@@ -228,7 +231,7 @@ class Sabre_CardDAV_Backend_PDO extends Sabre_CardDAV_Backend_Abstract {
         $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ? LIMIT 1');
         $stmt->execute(array($addressBookId, $cardUri));
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return (count($result)>0?$result[0]:false);
 

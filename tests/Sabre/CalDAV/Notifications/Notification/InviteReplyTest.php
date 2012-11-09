@@ -1,33 +1,38 @@
 <?php
 
-class Sabre_CalDAV_Notifications_Notification_InviteReplyTest extends \PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Notifications\Notification;
+
+use Sabre\CalDAV;
+use Sabre\DAV;
+
+class InviteReplyTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider dataProvider
      */
     function testSerializers($notification, $expected) {
 
-        $notification = new Sabre_CalDAV_Notifications_Notification_InviteReply($notification);
+        $notification = new InviteReply($notification);
 
         $this->assertEquals('foo', $notification->getId());
         $this->assertEquals('"1"', $notification->getETag());
 
         $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>' . "\n";
 
-        $dom = new DOMDocument('1.0','UTF-8');
+        $dom = new \DOMDocument('1.0','UTF-8');
         $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
         $dom->appendChild($elem);
-        $notification->serialize(new Sabre_DAV_Server(), $elem);
+        $notification->serialize(new DAV\Server(), $elem);
         $this->assertEquals($simpleExpected, $dom->saveXML());
 
-        $dom = new DOMDocument('1.0','UTF-8');
+        $dom = new \DOMDocument('1.0','UTF-8');
         $dom->formatOutput = true;
         $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
         $elem->setAttribute('xmlns:d','DAV:');
         $dom->appendChild($elem);
-        $notification->serializeBody(new Sabre_DAV_Server(), $elem);
+        $notification->serializeBody(new DAV\Server(), $elem);
         $this->assertEquals($expected, $dom->saveXML());
 
 
@@ -35,7 +40,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteReplyTest extends \PHPUnit_F
 
     function dataProvider() {
 
-        $dtStamp = new DateTime('2012-01-01 00:00:00 GMT');
+        $dtStamp = new \DateTime('2012-01-01 00:00:00 GMT');
         return array(
             array(
                 array(
@@ -44,7 +49,7 @@ class Sabre_CalDAV_Notifications_Notification_InviteReplyTest extends \PHPUnit_F
                     'etag' => '"1"',
                     'inReplyTo' => 'bar',
                     'href' => 'mailto:foo@example.org',
-                    'type' => Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED,
+                    'type' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
                     'hostUrl' => 'calendar'
                 ),
 <<<FOO
@@ -71,7 +76,7 @@ FOO
                     'etag' => '"1"',
                     'inReplyTo' => 'bar',
                     'href' => 'mailto:foo@example.org',
-                    'type' => Sabre_CalDAV_SharingPlugin::STATUS_DECLINED,
+                    'type' => CalDAV\SharingPlugin::STATUS_DECLINED,
                     'hostUrl' => 'calendar',
                     'summary' => 'Summary!'
                 ),
@@ -103,7 +108,7 @@ FOO
      */
     function testMissingArg() {
 
-        new Sabre_CalDAV_Notifications_Notification_InviteReply(array());
+        new InviteReply(array());
 
     }
 
@@ -112,7 +117,7 @@ FOO
      */
     function testUnknownArg() {
 
-        new Sabre_CalDAV_Notifications_Notification_InviteReply(array(
+        new InviteReply(array(
             'foo-i-will-break' => true,
 
             'id' => 1,

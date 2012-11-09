@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_DAV_Auth_Backend_FileTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV\Auth\Backend;
+
+class FileTest extends \PHPUnit_Framework_TestCase {
 
     function tearDown() {
 
@@ -10,18 +12,18 @@ class Sabre_DAV_Auth_Backend_FileTest extends PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
-        $file = new Sabre_DAV_Auth_Backend_File();
-        $this->assertTrue($file instanceof Sabre_DAV_Auth_Backend_File);
+        $file = new File();
+        $this->assertTrue($file instanceof File);
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     function testLoadFileBroken() {
 
         file_put_contents(SABRE_TEMPDIR . '/backend','user:realm:hash');
-        $file = new Sabre_DAV_Auth_Backend_File();
+        $file = new File();
         $file->loadFile(SABRE_TEMPDIR .'/backend');
 
     }
@@ -29,7 +31,7 @@ class Sabre_DAV_Auth_Backend_FileTest extends PHPUnit_Framework_TestCase {
     function testLoadFile() {
 
         file_put_contents(SABRE_TEMPDIR . '/backend','user:realm:' . md5('user:realm:password'));
-        $file = new Sabre_DAV_Auth_Backend_File();
+        $file = new File();
         $file->loadFile(SABRE_TEMPDIR . '/backend');
 
         $this->assertFalse($file->getDigestHash('realm','blabla'));

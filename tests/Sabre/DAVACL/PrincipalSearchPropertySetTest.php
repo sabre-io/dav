@@ -1,22 +1,26 @@
 <?php
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+namespace Sabre\DAVACL;
 
-class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_TestCase {
+use Sabre\DAV;
+use Sabre\HTTP;
+
+require_once 'Sabre/HTTP/ResponseMock.php';
+
+class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
     function getServer() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
+        $backend = new PrincipalBackend\Mock();
 
-        $dir = new Sabre_DAV_SimpleCollection('root');
-        $principals = new Sabre_DAVACL_PrincipalCollection($backend);
+        $dir = new DAV\SimpleCollection('root');
+        $principals = new PrincipalCollection($backend);
         $dir->addChild($principals);
 
-        $fakeServer = new Sabre_DAV_Server(new Sabre_DAV_ObjectTree($dir));
-        $fakeServer->httpResponse = new Sabre_HTTP_ResponseMock();
-        $plugin = new Sabre_DAVACL_Plugin($backend,'realm');
-        $this->assertTrue($plugin instanceof Sabre_DAVACL_Plugin);
+        $fakeServer = new DAV\Server(new DAV\ObjectTree($dir));
+        $fakeServer->httpResponse = new HTTP\ResponseMock();
+        $plugin = new Plugin($backend,'realm');
+        $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
@@ -35,7 +39,7 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -61,7 +65,7 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -87,7 +91,7 @@ class Sabre_DAVACL_PrincipalSearchPropertySetTest extends PHPUnit_Framework_Test
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();

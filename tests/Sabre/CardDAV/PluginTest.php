@@ -1,14 +1,17 @@
 <?php
 
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+
 require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 
-class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
+class PluginTest extends AbstractPluginTest {
 
     function testConstruct() {
 
-        $this->assertEquals('card', $this->server->xmlNamespaces[Sabre_CardDAV_Plugin::NS_CARDDAV]);
-        $this->assertEquals('{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook', $this->server->resourceTypeMapping['Sabre_CardDAV_IAddressBook']);
+        $this->assertEquals('card', $this->server->xmlNamespaces[Plugin::NS_CARDDAV]);
+        $this->assertEquals('{' . Plugin::NS_CARDDAV . '}addressbook', $this->server->resourceTypeMapping['Sabre\\CardDAV\\IAddressBook']);
 
         $this->assertTrue(in_array('addressbook', $this->plugin->getFeatures()));
 
@@ -17,8 +20,8 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
     function testSupportedReportSet() {
 
         $this->assertEquals(array(
-            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-multiget',
-            '{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-query',
+            '{' . Plugin::NS_CARDDAV . '}addressbook-multiget',
+            '{' . Plugin::NS_CARDDAV . '}addressbook-query',
         ), $this->plugin->getSupportedReportSet('addressbooks/user1/book1'));
 
     }
@@ -32,11 +35,11 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
     function testAddressBookHomeSet() {
 
-        $result = $this->server->getProperties('principals/user1', array('{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set'));
+        $result = $this->server->getProperties('principals/user1', array('{' . Plugin::NS_CARDDAV . '}addressbook-home-set'));
 
         $this->assertEquals(1, count($result));
-        $this->assertTrue(isset($result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set']));
-        $this->assertEquals('addressbooks/user1/', $result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}addressbook-home-set']->getHref());
+        $this->assertTrue(isset($result['{' . Plugin::NS_CARDDAV . '}addressbook-home-set']));
+        $this->assertEquals('addressbooks/user1/', $result['{' . Plugin::NS_CARDDAV . '}addressbook-home-set']->getHref());
 
     }
 
@@ -52,7 +55,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
         $this->assertEquals(
             array(
                 '{http://calendarserver.org/ns/}me-card' =>  
-                    new Sabre_DAV_Property_Href('addressbooks/user1/book1/vcard1.vcf') 
+                    new DAV\Property\Href('addressbooks/user1/book1/vcard1.vcf') 
             ),
             $result
         );
@@ -61,17 +64,17 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
 
     function testDirectoryGateway() {
 
-        $result = $this->server->getProperties('principals/user1', array('{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}directory-gateway'));
+        $result = $this->server->getProperties('principals/user1', array('{' . Plugin::NS_CARDDAV . '}directory-gateway'));
 
         $this->assertEquals(1, count($result));
-        $this->assertTrue(isset($result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}directory-gateway']));
-        $this->assertEquals(array('directory'), $result['{' . Sabre_CardDAV_Plugin::NS_CARDDAV . '}directory-gateway']->getHrefs());
+        $this->assertTrue(isset($result['{' . Plugin::NS_CARDDAV . '}directory-gateway']));
+        $this->assertEquals(array('directory'), $result['{' . Plugin::NS_CARDDAV . '}directory-gateway']->getHrefs());
 
     }
 
     function testReportPassThrough() {
 
-        $this->assertNull($this->plugin->report('{DAV:}foo', new DomDocument()));
+        $this->assertNull($this->plugin->report('{DAV:}foo', new \DomDocument()));
 
     }
 
@@ -111,7 +114,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
     function testUpdatePropertiesMeCard() {
 
         $result = $this->server->updateProperties('addressbooks/user1', array(
-            '{http://calendarserver.org/ns/}me-card' => new Sabre_DAV_Property_Href('/addressbooks/user1/book1/vcard2',true),
+            '{http://calendarserver.org/ns/}me-card' => new DAV\Property\Href('/addressbooks/user1/book1/vcard2',true),
         ));
 
         $this->assertEquals(
@@ -129,7 +132,7 @@ class Sabre_CardDAV_PluginTest extends Sabre_CardDAV_AbstractPluginTest {
     function testUpdatePropertiesMeCardBadValue() {
 
         $result = $this->server->updateProperties('addressbooks/user1', array(
-            '{http://calendarserver.org/ns/}me-card' => new Sabre_DAV_Property_HrefList(array()),
+            '{http://calendarserver.org/ns/}me-card' => new DAV\Property\HrefList(array()),
         ));
 
         $this->assertEquals(

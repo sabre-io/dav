@@ -1,11 +1,14 @@
 <?php
 
-class Sabre_CalDAV_Principal_ProxyWriteTest extends Sabre_CalDAV_Principal_ProxyReadTest {
+namespace Sabre\CalDAV\Principal;
+use Sabre\DAVACL;
+
+class ProxyWriteTest extends ProxyReadTest {
 
     function getInstance() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
-        $principal = new Sabre_CalDAV_Principal_ProxyWrite($backend, array(
+        $backend = new DAVACL\PrincipalBackend\Mock();
+        $principal = new ProxyWrite($backend, array(
             'uri' => 'principal/user',
         ));
         $this->backend = $backend;

@@ -1,18 +1,20 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+
 /**
  * Parses the addressbook-query report request body.
  *
  * Whoever designed this format, and the CalDAV equivalent even more so,
  * has no feel for design.
  *
- * @package Sabre
- * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_AddressBookQueryParser {
+class AddressBookQueryParser {
 
     const TEST_ANYOF = 'anyof';
     const TEST_ALLOF = 'allof';
@@ -64,14 +66,14 @@ class Sabre_CardDAV_AddressBookQueryParser {
     /**
      * Creates the parser
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      */
-    public function __construct(DOMDocument $dom) {
+    public function __construct(\DOMDocument $dom) {
 
         $this->dom = $dom;
 
-        $this->xpath = new DOMXPath($dom);
-        $this->xpath->registerNameSpace('card',Sabre_CardDAV_Plugin::NS_CARDDAV);
+        $this->xpath = new \DOMXPath($dom);
+        $this->xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
 
     }
 
@@ -101,12 +103,12 @@ class Sabre_CardDAV_AddressBookQueryParser {
             $filter = $filter->item(0);
             $test = $this->xpath->evaluate('string(@test)', $filter);
         } else {
-            throw new Sabre_DAV_Exception_BadRequest('Only one filter element is allowed');
+            throw new DAV\Exception\BadRequest('Only one filter element is allowed');
         }
 
         if (!$test) $test = self::TEST_ANYOF;
         if ($test !== self::TEST_ANYOF && $test !== self::TEST_ALLOF) {
-            throw new Sabre_DAV_Exception_BadRequest('The test attribute must either hold "anyof" or "allof"');
+            throw new DAV\Exception\BadRequest('The test attribute must either hold "anyof" or "allof"');
         }
 
         $propFilters = array();
@@ -121,7 +123,7 @@ class Sabre_CardDAV_AddressBookQueryParser {
 
         $this->filters = $propFilters;
         $this->limit = $limit;
-        $this->requestedProperties = array_keys(Sabre_DAV_XMLUtil::parseProperties($this->dom->firstChild));
+        $this->requestedProperties = array_keys(DAV\XMLUtil::parseProperties($this->dom->firstChild));
         $this->test = $test;
 
     }
@@ -129,10 +131,10 @@ class Sabre_CardDAV_AddressBookQueryParser {
     /**
      * Parses the prop-filter xml element
      *
-     * @param DOMElement $propFilterNode
+     * @param \DOMElement $propFilterNode
      * @return array
      */
-    protected function parsePropFilterNode(DOMElement $propFilterNode) {
+    protected function parsePropFilterNode(\DOMElement $propFilterNode) {
 
         $propFilter = array();
         $propFilter['name'] = $propFilterNode->getAttribute('name');
@@ -167,10 +169,10 @@ class Sabre_CardDAV_AddressBookQueryParser {
     /**
      * Parses the param-filter element
      *
-     * @param DOMElement $paramFilterNode
+     * @param \DOMElement $paramFilterNode
      * @return array
      */
-    public function parseParamFilterNode(DOMElement $paramFilterNode) {
+    public function parseParamFilterNode(\DOMElement $paramFilterNode) {
 
         $paramFilter = array();
         $paramFilter['name'] = $paramFilterNode->getAttribute('name');
@@ -189,16 +191,16 @@ class Sabre_CardDAV_AddressBookQueryParser {
     /**
      * Text match
      *
-     * @param DOMElement $textMatchNode
+     * @param \DOMElement $textMatchNode
      * @return array
      */
-    public function parseTextMatchNode(DOMElement $textMatchNode) {
+    public function parseTextMatchNode(\DOMElement $textMatchNode) {
 
         $matchType = $textMatchNode->getAttribute('match-type');
         if (!$matchType) $matchType = 'contains';
 
         if (!in_array($matchType, array('contains', 'equals', 'starts-with', 'ends-with'))) {
-            throw new Sabre_DAV_Exception_BadRequest('Unknown match-type: ' . $matchType);
+            throw new DAV\Exception\BadRequest('Unknown match-type: ' . $matchType);
         }
 
         $negateCondition = $textMatchNode->getAttribute('negate-condition');

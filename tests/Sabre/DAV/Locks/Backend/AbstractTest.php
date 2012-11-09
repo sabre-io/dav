@@ -1,17 +1,21 @@
 <?php
 
-abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV\Locks\Backend;
+
+use Sabre\DAV;
+
+abstract class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @abstract
-     * @return Sabre_DAV_Locks_Backend_Abstract
+     * @return AbstractBackend
      */
     abstract function getBackend();
 
     function testSetup() {
 
        $backend = $this->getBackend();
-       $this->assertInstanceOf('Sabre_DAV_Locks_Backend_Abstract', $backend);
+       $this->assertInstanceOf('Sabre\\DAV\\Locks\\Backend\\AbstractBackend', $backend);
 
     }
 
@@ -22,7 +26,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();
@@ -46,11 +50,11 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();
-        $lock->depth = Sabre_DAV_Server::DEPTH_INFINITY;
+        $lock->depth = DAV\Server::DEPTH_INFINITY;
         $lock->token = 'MY-UNIQUE-TOKEN';
 
         $this->assertTrue($backend->lock('someuri', $lock));
@@ -71,7 +75,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();
@@ -90,7 +94,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();
@@ -117,7 +121,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();
@@ -145,7 +149,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();
@@ -170,7 +174,7 @@ abstract class Sabre_DAV_Locks_Backend_AbstractTest extends PHPUnit_Framework_Te
 
         $backend = $this->getBackend();
 
-        $lock = new Sabre_DAV_Locks_LockInfo();
+        $lock = new DAV\Locks\LockInfo();
         $lock->owner = 'Sinterklaas';
         $lock->timeout = 60;
         $lock->created = time();

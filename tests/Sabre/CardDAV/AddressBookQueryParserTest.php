@@ -1,13 +1,17 @@
 <?php
 
-class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+
+class AddressBookQueryParserTest extends \PHPUnit_Framework_TestCase {
 
     function parse($xml) {
 
         $xml = implode("\n", $xml);
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($xml);
+        $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $q = new Sabre_CardDAV_AddressBookQueryParser($dom);
+        $q = new AddressBookQueryParser($dom);
         $q->parse();
         return $q;
 
@@ -82,7 +86,7 @@ class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCas
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testFilterDoubleFilter() {
 
@@ -105,7 +109,7 @@ class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCas
 
     }
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testFilterCorruptTest() {
 
@@ -301,7 +305,7 @@ class Sabre_CardDAV_AddressBookQueryParserTest extends PHPUnit_Framework_TestCas
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testBadTextMatch() {
 

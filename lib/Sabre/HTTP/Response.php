@@ -1,15 +1,17 @@
 <?php
 
+namespace Sabre\HTTP;
+
 /**
- * Sabre_HTTP_Response
+ * This class represents a HTTP response.
  *
- * @package Sabre
- * @subpackage HTTP
+ * It contains the HTTP status code, response headers and a message body.
+ *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_HTTP_Response {
+class Response {
 
     /**
      * Returns a full HTTP status message for an HTTP status code

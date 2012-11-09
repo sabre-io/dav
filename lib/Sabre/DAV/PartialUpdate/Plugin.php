@@ -1,4 +1,9 @@
 <?php
+
+namespace Sabre\DAV\PartialUpdate;
+
+use Sabre\DAV;
+
 /**
  * Partial update plugin (Patch method)
  *
@@ -6,21 +11,19 @@
  * It may bu used to update a file chunk, upload big a file into smaller
  * chunks or resume an upload.
  *
- * $patchPlugin = new Sabre_DAV_Patch_Plugin();
+ * $patchPlugin = new \Sabre\DAV\PartialUpdate\Plugin();
  * $server->addPlugin($patchPlugin);
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
+class Plugin extends DAV\ServerPlugin {
 
     /**
      * Reference to server
      *
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
 
@@ -29,10 +32,10 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * This method is automatically called by the Server class after addPlugin.
      *
-     * @param Sabre_DAV_Server $server
+     * @param DAV\Server $server
      * @return void
      */
-    public function initialize(Sabre_DAV_Server $server) {
+    public function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
@@ -43,7 +46,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
      * Returns a plugin name.
      *
      * Using this name other plugins will be able to access other plugins
-     * using Sabre_DAV_Server::getPlugin
+     * using DAV\Server::getPlugin
      *
      * @return string
      */
@@ -93,7 +96,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         $tree = $this->server->tree;
         
         if ($tree->nodeExists($uri) && 
-            $tree->getNodeForPath($uri) instanceof Sabre_DAV_PartialUpdate_IFile) {
+            $tree->getNodeForPath($uri) instanceof IFile) {
             return array('PATCH');
          }
          
@@ -126,14 +129,14 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Get the node. Will throw a 404 if not found
         $node = $this->server->tree->getNodeForPath($uri);
-        if (!($node instanceof Sabre_DAV_PartialUpdate_IFile)) {
-            throw new Sabre_DAV_Exception_MethodNotAllowed('The target resource does not support the PATCH method.');
+        if (!($node instanceof IFile)) {
+            throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
 
         $range = $this->getHTTPUpdateRange();
 
         if (!$range) {
-            throw new Sabre_DAV_Exception_BadRequest('No valid "X-Update-Range" found in the headers');
+            throw new DAV\Exception\BadRequest('No valid "X-Update-Range" found in the headers');
         }
         
         $contentType = strtolower(
@@ -141,7 +144,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         );
         
         if ($contentType != 'application/x-sabredav-partialupdate') {
-            throw new Sabre_DAV_Exception_UnsupportedMediaType('Unknown Content-Type header "' . $contentType . '"');
+            throw new DAV\Exception\UnsupportedMediaType('Unknown Content-Type header "' . $contentType . '"');
         }
 
         $len = $this->server->httpRequest->getHeader('Content-Length');
@@ -152,9 +155,9 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Check consistency
         if($end < $start)
-            throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
+            throw new DAV\Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
         if($end - $start + 1 != $len)
-            throw new Sabre_DAV_Exception_RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
+            throw new DAV\Exception\RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
 
         // Checking If-None-Match and related headers.
         if (!$this->server->checkPreconditions()) return;

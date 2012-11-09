@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_DAVACL_Exception_NeedPrivilegesTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAVACL\Exception;
+
+use Sabre\DAV;
+
+class NeedPrivilegesTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
@@ -9,10 +13,10 @@ class Sabre_DAVACL_Exception_NeedPrivilegesTest extends PHPUnit_Framework_TestCa
             '{DAV:}read',
             '{DAV:}write',
         );
-        $ex = new Sabre_DAVACL_Exception_NeedPrivileges($uri, $privileges);
+        $ex = new NeedPrivileges($uri, $privileges);
 
-        $server = new Sabre_DAV_Server();
-        $dom = new DOMDocument('1.0','utf-8');
+        $server = new DAV\Server();
+        $dom = new \DOMDocument('1.0','utf-8');
         $root = $dom->createElementNS('DAV:','d:root');
         $dom->appendChild($root);
 
@@ -29,10 +33,10 @@ class Sabre_DAVACL_Exception_NeedPrivilegesTest extends PHPUnit_Framework_TestCa
         );
 
         // Reloading because PHP DOM sucks
-        $dom2 = new DOMDocument('1.0', 'utf-8');
+        $dom2 = new \DOMDocument('1.0', 'utf-8');
         $dom2->loadXML($dom->saveXML());
 
-        $dxpath = new DOMXPath($dom2);
+        $dxpath = new \DOMXPath($dom2);
         $dxpath->registerNamespace('d','DAV:');
         foreach($xpaths as $xpath=>$count) {
 

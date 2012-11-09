@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV;
+
+use Sabre\DAVACL;
+
+class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
 
@@ -16,7 +20,7 @@ class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
             );
         }
 
-        $this->backend = new Sabre_CalDAV_Backend_Mock(
+        $this->backend = new Backend\Mock(
             array($props),
             array(),
             array()
@@ -27,10 +31,9 @@ class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
                 'commonName' => 'To be removed',
                 'readOnly' => true,
             ),
-        ), array()); 
+        ), array());
 
-        $pBackend = new Sabre_DAVACL_MockPrincipalBackend();
-        return new Sabre_CalDAV_SharedCalendar($pBackend, $this->backend, $props); 
+        return new SharedCalendar($this->backend, $props);
 
     }
 
@@ -38,6 +41,16 @@ class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('calendars/owner/original', $this->getInstance()->getSharedUrl());
     }
 
+    function testGetShares() {
+
+        $this->assertEquals(array(array(
+            'href' => 'mailto:removeme@example.org',
+            'commonName' => 'To be removed',
+            'readOnly' => true,
+            'status' => SharingPlugin::STATUS_NORESPONSE,
+        )), $this->getInstance()->getShares());
+
+    }
 
     function testGetOwner() {
         $this->assertEquals('principals/owner', $this->getInstance()->getOwner());
@@ -72,7 +85,7 @@ class Sabre_CalDAV_SharedCalendarTest extends PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
+                'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ),

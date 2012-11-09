@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\CalDAV\Backend;
+
 /**
  * Adds support for sharing features to a CalDAV server.
  *
@@ -63,12 +65,12 @@
  * change.
  * This notification is always represented by:
  *
- * Sabre_CalDAV_Notifications_Notification_Invite
+ * Sabre\CalDAV\Notifications\Notification\Invite
  *
  * In the case of an invite, the sharee may reply with an 'accept' or
  * 'decline'. These are always represented by:
  *
- * Sabre_CalDAV_Notifications_Notification_Invite
+ * Sabre\CalDAV\Notifications\Notification\Invite
  *
  *
  * Calendar access by sharees
@@ -154,7 +156,7 @@
  * Selectively disabling publish or share feature
  * ==============================================
  *
- * If Sabre_CalDAV_Property_AllowedSharingModes is returned from
+ * If Sabre\CalDAV\Property\AllowedSharingModes is returned from
  * getCalendarsByUser, this allows the server to specify wether either sharing,
  * or publishing is supported.
  *
@@ -163,13 +165,11 @@
  * the backend, the SharingPlugin automatically injects it and assumes both
  * features are available.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_NotificationSupport {
+interface SharingSupport extends NotificationSupport {
 
     /**
      * Updates the list of shares.
@@ -202,9 +202,14 @@ interface Sabre_CalDAV_Backend_SharingSupport extends Sabre_CalDAV_Backend_Notif
      * Every element in this array should have the following properties:
      *   * href - Often a mailto: address
      *   * commonName - Optional, for example a first + last name
-     *   * status - See the Sabre_CalDAV_SharingPlugin::STATUS_ constants.
+     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
+     *
+     * This method may be called by either the original instance of the
+     * calendar, as well as the shared instances. In the case of the shared
+     * instances, it is perfectly acceptable to return an empty array in case
+     * there are privacy concerns.
      *
      * @param mixed $calendarId
      * @return array

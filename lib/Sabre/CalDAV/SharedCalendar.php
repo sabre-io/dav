@@ -1,24 +1,25 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\DAVACL;
+
 /**
  * This object represents a CalDAV calendar that is shared by a different user.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre_CalDAV_ISharedCalendar {
+class SharedCalendar extends Calendar implements ISharedCalendar {
 
     /**
      * Constructor
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
-     * @param Sabre_CalDAV_Backend_BackendInterface $caldavBackend
+     * @param Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, Sabre_CalDAV_Backend_BackendInterface $caldavBackend, $calendarInfo) {
+    public function __construct(Backend\BackendInterface $caldavBackend, $calendarInfo) {
 
         $required = array(
             '{http://calendarserver.org/ns/}shared-url',
@@ -27,11 +28,11 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
         );
         foreach($required as $r) {
             if (!isset($calendarInfo[$r])) {
-                throw new InvalidArgumentException('The ' . $r . ' property must be specified for SharedCalendar(s)');
+                throw new \InvalidArgumentException('The ' . $r . ' property must be specified for SharedCalendar(s)');
             }
         }
 
-        parent::__construct($principalBackend, $caldavBackend, $calendarInfo);
+        parent::__construct($caldavBackend, $calendarInfo);
 
     }
 
@@ -94,5 +95,22 @@ class Sabre_CalDAV_SharedCalendar extends Sabre_CalDAV_Calendar implements Sabre
 
     }
 
+    /**
+     * Returns the list of people whom this calendar is shared with.
+     *
+     * Every element in this array should have the following properties:
+     *   * href - Often a mailto: address
+     *   * commonName - Optional, for example a first + last name
+     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
+     *   * readOnly - boolean
+     *   * summary - Optional, a description for the share
+     *
+     * @return array
+     */
+    public function getShares() {
+
+        return $this->caldavBackend->getShares($this->calendarInfo['id']);
+
+    }
 
 }

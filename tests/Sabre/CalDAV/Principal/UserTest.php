@@ -1,10 +1,13 @@
 <?php
 
-class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Principal;
+use Sabre\DAVACL;
+
+class UserTest extends \PHPUnit_Framework_TestCase {
 
     function getInstance() {
 
-        $backend = new Sabre_DAVACL_MockPrincipalBackend();
+        $backend = new DAVACL\PrincipalBackend\Mock();
         $backend->addPrincipal(array(
             'uri' => 'principals/user/calendar-proxy-read',
         ));
@@ -14,14 +17,14 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
         $backend->addPrincipal(array(
             'uri' => 'principals/user/random',
         ));
-        return new Sabre_CalDAV_Principal_User($backend, array(
+        return new User($backend, array(
             'uri' => 'principals/user',
         ));
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testCreateFile() {
 
@@ -31,7 +34,7 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_Forbidden
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testCreateDirectory() {
 
@@ -44,7 +47,7 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
 
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-read');
-        $this->assertInstanceOf('Sabre_CalDAV_Principal_ProxyRead', $child);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $child);
 
     }
 
@@ -52,12 +55,12 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
 
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-write');
-        $this->assertInstanceOf('Sabre_CalDAV_Principal_ProxyWrite', $child);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $child);
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotFound
+     * @expectedException Sabre\DAV\Exception\NotFound
      */
     function testGetChildNotFound() {
 
@@ -67,7 +70,7 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotFound
+     * @expectedException Sabre\DAV\Exception\NotFound
      */
     function testGetChildNotFound2() {
 
@@ -81,8 +84,8 @@ class Sabre_CalDAV_Principal_UserTest extends PHPUnit_Framework_TestCase {
         $u = $this->getInstance();
         $children = $u->getChildren();
         $this->assertEquals(2, count($children));
-        $this->assertInstanceOf('Sabre_CalDAV_Principal_ProxyRead', $children[0]);
-        $this->assertInstanceOf('Sabre_CalDAV_Principal_ProxyWrite', $children[1]);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $children[0]);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $children[1]);
 
     }
 

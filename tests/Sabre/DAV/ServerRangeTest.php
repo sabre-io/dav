@@ -1,12 +1,15 @@
 <?php
 
+namespace Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
+class ServerRangeTest extends AbstractServer{
 
     protected function getRootNode() {
 
-        return new Sabre_DAV_FSExt_Directory(SABRE_TEMPDIR);
+        return new FSExt\Directory(SABRE_TEMPDIR);
 
     }
 
@@ -18,7 +21,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_RANGE'     => 'bytes=2-5',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -26,7 +29,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"',
             ),
             $this->response->headers
@@ -48,7 +51,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_RANGE'     => 'bytes=2-',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -56,7 +59,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 11,
             'Content-Range' => 'bytes 2-12/13',
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -78,7 +81,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_RANGE'     => 'bytes=-8',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -86,7 +89,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 8,
             'Content-Range' => 'bytes 5-12/13',
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"',
             ),
             $this->response->headers
@@ -108,7 +111,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_RANGE'     => 'bytes=100-200',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -127,7 +130,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_RANGE'     => 'bytes=8-4',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -137,7 +140,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Sabre_DAV_Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeEtag() {
 
@@ -150,7 +153,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_IF_RANGE'  => $node->getETag(),
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -158,7 +161,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -171,7 +174,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Sabre_DAV_Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeEtagIncorrect() {
 
@@ -184,14 +187,14 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_IF_RANGE'  => $node->getETag() . 'blabla',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -204,7 +207,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Sabre_DAV_Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeModificationDate() {
 
@@ -217,7 +220,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_IF_RANGE'  => 'tomorrow',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -225,7 +228,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers
@@ -238,7 +241,7 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
 
     /**
      * @depends testRange
-     * @covers Sabre_DAV_Server::httpGet
+     * @covers \Sabre\DAV\Server::httpGet
      */
     function testIfRangeModificationDateModified() {
 
@@ -251,14 +254,14 @@ class Sabre_DAV_ServerRangeTest extends Sabre_DAV_AbstractServer{
             'HTTP_IF_RANGE'  => '-2 years',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
             $this->response->headers

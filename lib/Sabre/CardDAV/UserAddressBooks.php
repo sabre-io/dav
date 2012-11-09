@@ -1,17 +1,20 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
+
 /**
  * UserAddressBooks class
  *
  * The UserAddressBooks collection contains a list of addressbooks associated with a user
  *
- * @package Sabre
- * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sabre_DAV_IExtendedCollection, Sabre_DAVACL_IACL {
+class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection, DAVACL\IACL {
 
     /**
      * Principal uri
@@ -23,17 +26,17 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
     /**
      * carddavBackend
      *
-     * @var Sabre_CardDAV_Backend_Abstract
+     * @var Backend\BackendInterface
      */
     protected $carddavBackend;
 
     /**
      * Constructor
      *
-     * @param Sabre_CardDAV_Backend_Abstract $carddavBackend
+     * @param Backend\BackendInterface $carddavBackend
      * @param string $principalUri
      */
-    public function __construct(Sabre_CardDAV_Backend_Abstract $carddavBackend, $principalUri) {
+    public function __construct(Backend\BackendInterface $carddavBackend, $principalUri) {
 
         $this->carddavBackend = $carddavBackend;
         $this->principalUri = $principalUri;
@@ -47,7 +50,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function getName() {
 
-        list(,$name) = Sabre_DAV_URLUtil::splitPath($this->principalUri);
+        list(,$name) = DAV\URLUtil::splitPath($this->principalUri);
         return $name;
 
     }
@@ -60,7 +63,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function setName($name) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed();
+        throw new DAV\Exception\MethodNotAllowed();
 
     }
 
@@ -71,7 +74,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function delete() {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed();
+        throw new DAV\Exception\MethodNotAllowed();
 
     }
 
@@ -97,7 +100,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function createFile($filename, $data=null) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Creating new files in this collection is not supported');
+        throw new DAV\Exception\MethodNotAllowed('Creating new files in this collection is not supported');
 
     }
 
@@ -111,16 +114,16 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function createDirectory($filename) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Creating new collections in this collection is not supported');
+        throw new DAV\Exception\MethodNotAllowed('Creating new collections in this collection is not supported');
 
     }
 
     /**
-     * Returns a single calendar, by name
+     * Returns a single addressbook, by name
      *
      * @param string $name
      * @todo needs optimizing
-     * @return Sabre_CardDAV_AddressBook
+     * @return \AddressBook
      */
     public function getChild($name) {
 
@@ -129,7 +132,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
                 return $child;
 
         }
-        throw new Sabre_DAV_Exception_NotFound('Addressbook with name \'' . $name . '\' could not be found');
+        throw new DAV\Exception\NotFound('Addressbook with name \'' . $name . '\' could not be found');
 
     }
 
@@ -143,7 +146,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
         $addressbooks = $this->carddavBackend->getAddressbooksForUser($this->principalUri);
         $objs = array();
         foreach($addressbooks as $addressbook) {
-            $objs[] = new Sabre_CardDAV_AddressBook($this->carddavBackend, $addressbook);
+            $objs[] = new AddressBook($this->carddavBackend, $addressbook);
         }
         return $objs;
 
@@ -159,8 +162,8 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function createExtendedCollection($name, array $resourceType, array $properties) {
 
-        if (!in_array('{'.Sabre_CardDAV_Plugin::NS_CARDDAV.'}addressbook',$resourceType) || count($resourceType)!==2) {
-            throw new Sabre_DAV_Exception_InvalidResourceType('Unknown resourceType for this collection');
+        if (!in_array('{'.Plugin::NS_CARDDAV.'}addressbook',$resourceType) || count($resourceType)!==2) {
+            throw new DAV\Exception\InvalidResourceType('Unknown resourceType for this collection');
         }
         $this->carddavBackend->createAddressBook($this->principalUri, $name, $properties);
 
@@ -232,7 +235,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      */
     public function setACL(array $acl) {
 
-        throw new Sabre_DAV_Exception_MethodNotAllowed('Changing ACL is not yet supported');
+        throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
     }
 
@@ -240,7 +243,7 @@ class Sabre_CardDAV_UserAddressBooks extends Sabre_DAV_Collection implements Sab
      * Returns the list of supported privileges for this node.
      *
      * The returned data structure is a list of nested privileges.
-     * See Sabre_DAVACL_Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
      * standard structure.
      *
      * If null is returned from this method, the default privilege set is used,

@@ -1,18 +1,18 @@
 <?php
 
-require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAV/Auth/MockBackend.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
-require_once 'Sabre/CalDAV/Backend/Mock.php';
+namespace Sabre\CalDAV;
+use Sabre\DAVACL;
 
-class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
+require_once 'Sabre/CalDAV/TestUtil.php';
+
+class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CalDAV_Backend_PDO
+     * @var Sabre\CalDAV\Backend_PDO
      */
     protected $backend;
     /**
-     * @var Sabre_CalDAV_Calendar
+     * @var Sabre\CalDAV\Calendar
      */
     protected $calendar;
     protected $principalBackend;
@@ -20,12 +20,11 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $this->backend = Sabre_CalDAV_TestUtil::getBackend();
-        $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend;
+        $this->backend = TestUtil::getBackend();
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(2,count($calendars));
-        $this->calendar = new Sabre_CalDAV_Calendar($this->principalBackend,$this->backend, $calendars[0]);
+        $this->calendar = new Calendar($this->backend, $calendars[0]);
 
     }
 
@@ -39,7 +38,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testSetup() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $this->assertInternalType('string',$children[0]->getName());
         $this->assertInternalType('string',$children[0]->get());
@@ -53,8 +52,8 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
      */
     function testInvalidArg1() {
 
-        $obj = new Sabre_CalDAV_CalendarObject(
-            new Sabre_CalDAV_Backend_Mock(array(),array()),
+        $obj = new CalendarObject(
+            new Backend\Mock(array(),array()),
             array(),
             array()
         );
@@ -66,8 +65,8 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
      */
     function testInvalidArg2() {
 
-        $obj = new Sabre_CalDAV_CalendarObject(
-            new Sabre_CalDAV_Backend_Mock(array(),array()),
+        $obj = new CalendarObject(
+            new Backend\Mock(array(),array()),
             array(),
             array('calendarid' => '1')
         );
@@ -80,8 +79,8 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testPut() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        $newData = Sabre_CalDAV_TestUtil::getTestCalendarData();
+        $this->assertTrue($children[0] instanceof CalendarObject);
+        $newData = TestUtil::getTestCalendarData();
 
         $children[0]->put($newData);
         $this->assertEquals($newData, $children[0]->get());
@@ -94,8 +93,8 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testPutStream() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
-        $newData = Sabre_CalDAV_TestUtil::getTestCalendarData();
+        $this->assertTrue($children[0] instanceof CalendarObject);
+        $newData = TestUtil::getTestCalendarData();
 
         $stream = fopen('php://temp','r+');
         fwrite($stream, $newData);
@@ -112,7 +111,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testDelete() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $obj->delete();
@@ -128,7 +127,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testGetLastModified() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
 
@@ -143,7 +142,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testGetSize() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
 
@@ -155,7 +154,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testGetOwner() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $this->assertEquals('principals/user1', $obj->getOwner());
@@ -165,7 +164,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testGetGroup() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $this->assertNull($obj->getGroup());
@@ -203,7 +202,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
         );
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $this->assertEquals($expected, $obj->getACL());
@@ -211,12 +210,12 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetACL() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $obj->setACL(array());
@@ -226,7 +225,7 @@ class Sabre_CalDAV_CalendarObjectTest extends PHPUnit_Framework_TestCase {
     function testGet() {
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
 
@@ -271,7 +270,7 @@ END:VCALENDAR";
 
     function testGetRefetch() {
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(), array(
+        $backend = new Backend\Mock(array(), array(
             1 => array(
                 'foo' => array(
                     'calendardata' => 'foo',
@@ -279,7 +278,7 @@ END:VCALENDAR";
                 ),
             )
         ));
-        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), array('calendarid' => 1, 'uri' => 'foo'));
+        $obj = new CalendarObject($backend, array(), array('calendarid' => 1, 'uri' => 'foo'));
 
         $this->assertEquals('foo', $obj->get());
 
@@ -294,8 +293,8 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
-        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $backend = new Backend\Mock(array(), array());
+        $obj = new CalendarObject($backend, array(), $objectInfo);
 
         $this->assertEquals('bar', $obj->getETag());
 
@@ -309,8 +308,8 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
-        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $backend = new Backend\Mock(array(), array());
+        $obj = new CalendarObject($backend, array(), $objectInfo);
 
         $this->assertEquals('"' . md5('foo') . '"', $obj->getETag());
 
@@ -324,8 +323,8 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
-        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $backend = new Backend\Mock(array(), array());
+        $obj = new CalendarObject($backend, array(), $objectInfo);
         $this->assertNull($obj->getSupportedPrivilegeSet());
 
     }
@@ -338,8 +337,8 @@ END:VCALENDAR";
             'calendarid' => 1
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
-        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $backend = new Backend\Mock(array(), array());
+        $obj = new CalendarObject($backend, array(), $objectInfo);
         $this->assertEquals(3, $obj->getSize());
 
     }
@@ -352,8 +351,8 @@ END:VCALENDAR";
             'size' => 4,
         );
 
-        $backend = new Sabre_CalDAV_Backend_Mock(array(), array());
-        $obj = new Sabre_CalDAV_CalendarObject($backend, array(), $objectInfo);
+        $backend = new Backend\Mock(array(), array());
+        $obj = new CalendarObject($backend, array(), $objectInfo);
         $this->assertEquals(4, $obj->getSize());
 
     }

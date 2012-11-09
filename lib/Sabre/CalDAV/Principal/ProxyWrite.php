@@ -1,19 +1,21 @@
 <?php
 
+namespace Sabre\CalDAV\Principal;
+use Sabre\DAVACL;
+use Sabre\DAV;
+
 /**
  * ProxyWrite principal
  *
  * This class represents a principal group, hosted under the main principal.
  * This is needed to implement 'Calendar delegation' support. This class is
- * instantiated by Sabre_CalDAV_Principal_User.
+ * instantiated by User.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
+class ProxyWrite implements IProxyWrite {
 
     /**
      * Parent principal information
@@ -25,7 +27,7 @@ class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
     /**
      * Principal Backend
      *
-     * @var Sabre_DAVACL_IPrincipalBackend
+     * @var DAVACL\PrincipalBackend\BackendInterface
      */
     protected $principalBackend;
 
@@ -34,10 +36,10 @@ class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
      *
      * Note that you MUST supply the parent principal information.
      *
-     * @param Sabre_DAVACL_IPrincipalBackend $principalBackend
+     * @param DAVACL\PrincipalBackend\BackendInterface $principalBackend
      * @param array $principalInfo
      */
-    public function __construct(Sabre_DAVACL_IPrincipalBackend $principalBackend, array $principalInfo) {
+    public function __construct(DAVACL\PrincipalBackend\BackendInterface $principalBackend, array $principalInfo) {
 
         $this->principalInfo = $principalInfo;
         $this->principalBackend = $principalBackend;
@@ -69,25 +71,25 @@ class Sabre_CalDAV_Principal_ProxyWrite implements Sabre_DAVACL_IPrincipal {
     /**
      * Deletes the current node
      *
-     * @throws Sabre_DAV_Exception_Forbidden
+     * @throws DAV\Exception\Forbidden
      * @return void
      */
     public function delete() {
 
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to delete node');
+        throw new DAV\Exception\Forbidden('Permission denied to delete node');
 
     }
 
     /**
      * Renames the node
      *
-     * @throws Sabre_DAV_Exception_Forbidden
+     * @throws DAV\Exception\Forbidden
      * @param string $name The new name
      * @return void
      */
     public function setName($name) {
 
-        throw new Sabre_DAV_Exception_Forbidden('Permission denied to rename file');
+        throw new DAV\Exception\Forbidden('Permission denied to rename file');
 
     }
 

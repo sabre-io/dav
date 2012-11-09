@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\DAV;
+
 /**
  * URL utility class
  *
@@ -12,13 +14,11 @@
  * ). Since these are reserved, but don't have a reserved meaning in url, these characters are
  * kept as-is.
  *
- * @package Sabre
- * @subpackage DAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAV_URLUtil {
+class URLUtil {
 
     /**
      * Encodes the path of a url.

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAVACL\Property;
+
+use Sabre\DAV;
+
 /**
  * SupportedPrivilegeSet property
  *
@@ -7,16 +11,14 @@
  * in rfc3744. Please consult the rfc for details about it's structure.
  *
  * This class expects a structure like the one given from
- * Sabre_DAVACL_Plugin::getSupportedPrivilegeSet as the argument in its
+ * Sabre\DAVACL\Plugin::getSupportedPrivilegeSet as the argument in its
  * constructor.
  *
- * @package Sabre
- * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_DAVACL_Property_SupportedPrivilegeSet extends Sabre_DAV_Property {
+class SupportedPrivilegeSet extends DAV\Property {
 
     /**
      * privileges
@@ -39,11 +41,11 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSet extends Sabre_DAV_Property {
     /**
      * Serializes the property into a domdocument.
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server,DOMElement $node) {
+    public function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         $this->serializePriv($doc, $node, $this->privileges);
@@ -55,8 +57,8 @@ class Sabre_DAVACL_Property_SupportedPrivilegeSet extends Sabre_DAV_Property {
      *
      * This is a recursive function.
      *
-     * @param DOMDocument $doc
-     * @param DOMElement $node
+     * @param \DOMDocument $doc
+     * @param \DOMElement $node
      * @param array $privilege
      * @return void
      */

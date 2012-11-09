@@ -1,6 +1,11 @@
 <?php
 
-class Sabre_DAVACL_MockACLNode extends Sabre_DAV_Node implements Sabre_DAVACL_IACL {
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class MockACLNode extends DAV\Node implements IACL {
 
     public $name;
     public $acl;

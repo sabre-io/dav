@@ -1,9 +1,14 @@
 <?php
 
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer {
+class SupportedReportSetTest extends DAV\AbstractServer {
 
     public function sendPROPFIND($body) {
 
@@ -13,7 +18,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
             'HTTP_DEPTH'          => '0',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody($body);
 
         $this->server->httpRequest = ($request);
@@ -22,7 +27,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
     }
 
     /**
-     * @covers Sabre_DAV_Property_SupportedReportSet
+     * @covers Sabre\DAV\Property\SupportedReportSet
      */
     function testNoReports() {
 
@@ -55,7 +60,7 @@ class Sabre_DAV_Property_SupportedReportSetTest extends Sabre_DAV_AbstractServer
     }
 
     /**
-     * @covers Sabre_DAV_Property_SupportedReportSet
+     * @covers Sabre\DAV\Property\SupportedReportSet
      * @depends testNoReports
      */
     function testCustomReport() {

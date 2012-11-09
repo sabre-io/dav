@@ -1,31 +1,34 @@
 <?php
 
+namespace Sabre\DAV;
+
+use Sabre\HTTP;
+
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_DAV_Issue33Test extends PHPUnit_Framework_TestCase {
+class Issue33Test extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
 
     }
 
     function testCopyMoveInfo() {
 
-        $foo = new Sabre_DAV_SimpleCollection('foo');
-        $root = new Sabre_DAV_SimpleCollection('webdav',array($foo));
+        $bar = new SimpleCollection('bar');
+        $root = new SimpleCollection('webdav',array($bar));
 
-        $tree = new Sabre_DAV_ObjectTree($root);
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($root);
         $server->setBaseUri('/webdav/');
 
         $serverVars = array(
-            'REQUEST_URI' => '/webdav/foo',
+            'REQUEST_URI' => '/webdav/bar',
             'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
             'HTTP_OVERWRITE' => 'F',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
 
         $server->httpRequest = $request;
 
@@ -40,12 +43,12 @@ class Sabre_DAV_Issue33Test extends PHPUnit_Framework_TestCase {
     function testTreeMove() {
 
         mkdir(SABRE_TEMPDIR . '/issue33');
-        $dir = new Sabre_DAV_FS_Directory(SABRE_TEMPDIR . '/issue33');
+        $dir = new FS\Directory(SABRE_TEMPDIR . '/issue33');
 
-        $dir->createDirectory('foo');
+        $dir->createDirectory('bar');
 
-        $tree = new Sabre_DAV_ObjectTree($dir);
-        $tree->move('foo',urldecode('%C3%A0fo%C3%B3'));
+        $tree = new ObjectTree($dir);
+        $tree->move('bar',urldecode('%C3%A0fo%C3%B3'));
 
         $node = $tree->getNodeForPath(urldecode('%C3%A0fo%C3%B3'));
         $this->assertEquals(urldecode('%C3%A0fo%C3%B3'),$node->getName());
@@ -54,7 +57,7 @@ class Sabre_DAV_Issue33Test extends PHPUnit_Framework_TestCase {
 
     function testDirName() {
 
-        $dirname1 = 'foo';
+        $dirname1 = 'bar';
         $dirname2 = urlencode('%C3%A0fo%C3%B3');;
 
         $this->assertTrue(dirname($dirname1)==dirname($dirname2));
@@ -70,25 +73,25 @@ class Sabre_DAV_Issue33Test extends PHPUnit_Framework_TestCase {
         // Request object
         $serverVars = array(
             'REQUEST_METHOD' => 'MOVE',
-            'REQUEST_URI' => '/webdav/foo',
+            'REQUEST_URI' => '/webdav/bar',
             'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
             'HTTP_OVERWRITE' => 'F',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('');
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
 
         // Server setup
         mkdir(SABRE_TEMPDIR . '/issue33');
-        $dir = new Sabre_DAV_FS_Directory(SABRE_TEMPDIR . '/issue33');
+        $dir = new FS\Directory(SABRE_TEMPDIR . '/issue33');
 
-        $dir->createDirectory('foo');
+        $dir->createDirectory('bar');
 
-        $tree = new Sabre_DAV_ObjectTree($dir);
+        $tree = new ObjectTree($dir);
 
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($tree);
         $server->setBaseUri('/webdav/');
 
         $server->httpRequest = $request;

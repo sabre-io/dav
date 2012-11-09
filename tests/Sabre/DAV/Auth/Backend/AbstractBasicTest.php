@@ -1,59 +1,63 @@
 <?php
 
+namespace Sabre\DAV\Auth\Backend;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_DAV_Auth_Backend_AbstractBasicTest extends PHPUnit_Framework_TestCase {
+class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotAuthenticated
+     * @expectedException Sabre\DAV\Exception\NotAuthenticated
      */
     public function testAuthenticateNoHeaders() {
 
-        $response = new Sabre_HTTP_ResponseMock();
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla'));
-        $server = new Sabre_DAV_Server($tree);
+        $response = new HTTP\ResponseMock();
+        $server = new DAV\Server();
         $server->httpResponse = $response;
 
-        $backend = new Sabre_DAV_Auth_Backend_AbstractBasicMock();
+        $backend = new AbstractBasicMock();
         $backend->authenticate($server,'myRealm');
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotAuthenticated
+     * @expectedException Sabre\DAV\Exception\NotAuthenticated
      */
     public function testAuthenticateUnknownUser() {
 
-        $response = new Sabre_HTTP_ResponseMock();
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla'));
-        $server = new Sabre_DAV_Server($tree);
+        $response = new HTTP\ResponseMock();
+        $tree = new DAV\ObjectTree(new DAV\SimpleCollection('bla'));
+        $server = new DAV\Server($tree);
         $server->httpResponse = $response;
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'PHP_AUTH_USER' => 'username',
             'PHP_AUTH_PW' => 'wrongpassword',
         ));
         $server->httpRequest = $request;
 
-        $backend = new Sabre_DAV_Auth_Backend_AbstractBasicMock();
+        $backend = new AbstractBasicMock();
         $backend->authenticate($server,'myRealm');
 
     }
 
     public function testAuthenticate() {
 
-        $response = new Sabre_HTTP_ResponseMock();
-        $tree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('bla'));
-        $server = new Sabre_DAV_Server($tree);
+        $response = new HTTP\ResponseMock();
+        $tree = new DAV\ObjectTree(new DAV\SimpleCollection('bla'));
+        $server = new DAV\Server($tree);
         $server->httpResponse = $response;
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'PHP_AUTH_USER' => 'username',
             'PHP_AUTH_PW' => 'password',
         ));
         $server->httpRequest = $request;
 
-        $backend = new Sabre_DAV_Auth_Backend_AbstractBasicMock();
+        $backend = new AbstractBasicMock();
         $this->assertTrue($backend->authenticate($server,'myRealm'));
 
         $result = $backend->getCurrentUser();
@@ -66,7 +70,7 @@ class Sabre_DAV_Auth_Backend_AbstractBasicTest extends PHPUnit_Framework_TestCas
 }
 
 
-class Sabre_DAV_Auth_Backend_AbstractBasicMock extends Sabre_DAV_Auth_Backend_AbstractBasic {
+class AbstractBasicMock extends AbstractBasic {
 
     /**
      * Validates a username and password

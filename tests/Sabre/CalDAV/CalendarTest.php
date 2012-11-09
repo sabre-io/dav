@@ -1,17 +1,19 @@
 <?php
 
-require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+namespace Sabre\CalDAV;
+use Sabre\DAVACL;
 
-class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
+require_once 'Sabre/CalDAV/TestUtil.php';
+
+class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_CalDAV_Backend_PDO
+     * @var Sabre\CalDAV\Backend_PDO
      */
     protected $backend;
     protected $principalBackend;
     /**
-     * @var Sabre_CalDAV_Calendar
+     * @var Sabre\CalDAV\Calendar
      */
     protected $calendar;
     /**
@@ -22,12 +24,12 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     function setup() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $this->backend = Sabre_CalDAV_TestUtil::getBackend();
-        $this->principalBackend = new Sabre_DAVACL_MockPrincipalBackend();
+
+        $this->backend = TestUtil::getBackend();
 
         $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
         $this->assertEquals(2, count($this->calendars));
-        $this->calendar = new Sabre_CalDAV_Calendar($this->principalBackend, $this->backend, $this->calendars[0]);
+        $this->calendar = new Calendar($this->backend, $this->calendars[0]);
 
 
     }
@@ -69,6 +71,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
             '{urn:ietf:params:xml:ns:caldav}supported-collation-set',
+            '{DAV:}owner',
         );
 
         $result = $this->calendar->getProperties($question);
@@ -77,12 +80,15 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
 
-        $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Sabre_CalDAV_Property_SupportedCollationSet);
+        $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Property\SupportedCollationSet);
+
+        $this->assertTrue($result['{DAV:}owner'] instanceof DAVACL\Property\Principal);
+        $this->assertEquals('principals/user1', $result['{DAV:}owner']->getHref());
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_NotFound
+     * @expectedException Sabre\DAV\Exception\NotFound
      * @depends testSimple
      */
     function testGetChildNotFound() {
@@ -99,7 +105,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $children = $this->calendar->getChildren();
         $this->assertEquals(1,count($children));
 
-        $this->assertTrue($children[0] instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($children[0] instanceof CalendarObject);
 
     }
 
@@ -117,7 +123,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateDirectory() {
 
@@ -126,7 +132,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetName() {
 
@@ -143,27 +149,27 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     function testCreateFile() {
 
         $file = fopen('php://memory','r+');
-        fwrite($file,Sabre_CalDAV_TestUtil::getTestCalendarData());
+        fwrite($file,TestUtil::getTestCalendarData());
         rewind($file);
 
         $this->calendar->createFile('hello',$file);
 
         $file = $this->calendar->getChild('hello');
-        $this->assertTrue($file instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($file instanceof CalendarObject);
 
     }
 
     function testCreateFileNoSupportedComponents() {
 
         $file = fopen('php://memory','r+');
-        fwrite($file,Sabre_CalDAV_TestUtil::getTestCalendarData());
+        fwrite($file,TestUtil::getTestCalendarData());
         rewind($file);
 
-        $calendar = new Sabre_CalDAV_Calendar($this->principalBackend, $this->backend, $this->calendars[1]);
+        $calendar = new Calendar($this->backend, $this->calendars[1]);
         $calendar->createFile('hello',$file);
 
         $file = $calendar->getChild('hello');
-        $this->assertTrue($file instanceof Sabre_CalDAV_CalendarObject);
+        $this->assertTrue($file instanceof CalendarObject);
 
     }
 
@@ -216,7 +222,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
+                'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ),
@@ -226,7 +232,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception_MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetACL() {
 
@@ -239,7 +245,7 @@ class Sabre_CalDAV_CalendarTest extends PHPUnit_Framework_TestCase {
         $result = $this->calendar->getSupportedPrivilegeSet();
 
         $this->assertEquals(
-            '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}read-free-busy',
+            '{' . Plugin::NS_CALDAV . '}read-free-busy',
             $result['aggregates'][0]['aggregates'][2]['privilege']
         );
 

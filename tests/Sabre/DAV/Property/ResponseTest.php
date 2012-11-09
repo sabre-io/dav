@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV\Property;
+
+use Sabre\DAV;
+
+class ResponseTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
@@ -13,7 +17,7 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $property = new Sabre_DAV_Property_Response('uri',$innerProps);
+        $property = new Response('uri',$innerProps);
 
         $this->assertEquals('uri',$property->getHref());
         $this->assertEquals($innerProps,$property->getResponseProperties());
@@ -35,15 +39,14 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $property = new Sabre_DAV_Property_Response('uri',$innerProps);
+        $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -85,15 +88,14 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
             ),
         );
 
-        $property = new Sabre_DAV_Property_Response('uri',$innerProps);
+        $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -129,15 +131,14 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
             ),
         );
 
-        $property = new Sabre_DAV_Property_Response('uri',$innerProps);
+        $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -167,19 +168,18 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 
         $innerProps = array(
             200 => array(
-                '{DAV:}link' => new Sabre_DAV_Property_Href('http://sabredav.org/', false)
+                '{DAV:}link' => new Href('http://sabredav.org/', false)
             ),
         );
 
-        $property = new Sabre_DAV_Property_Response('uri',$innerProps);
+        $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 
@@ -204,25 +204,24 @@ class Sabre_DAV_Property_ResponseTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @depends testSerialize
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     function testSerializeBreak() {
 
         $innerProps = array(
             200 => array(
-                '{DAV:}link' => new STDClass()
+                '{DAV:}link' => new \STDClass()
             ),
         );
 
-        $property = new Sabre_DAV_Property_Response('uri',$innerProps);
+        $property = new Response('uri',$innerProps);
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:root');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new Sabre_DAV_ObjectTree(new Sabre_DAV_SimpleCollection('rootdir'));
-        $server = new Sabre_DAV_Server($objectTree);
+        $server = new DAV\Server();
 
         $property->serialize($server, $root);
 

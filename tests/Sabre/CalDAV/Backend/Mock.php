@@ -1,6 +1,10 @@
 <?php
 
-class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements Sabre_CalDAV_Backend_NotificationSupport, Sabre_CalDAV_Backend_SharingSupport {
+namespace Sabre\CalDAV\Backend;
+use Sabre\DAV;
+use Sabre\CalDAV;
+
+class Mock extends AbstractBackend implements NotificationSupport, SharingSupport {
 
     private $calendarData;
     private $calendars;
@@ -61,12 +65,12 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      */
     function createCalendar($principalUri,$calendarUri,array $properties) {
 
-        $id = Sabre_DAV_UUIDUtil::getUUID();
+        $id = DAV\UUIDUtil::getUUID();
         $this->calendars[] = array_merge(array(
             'id' => $id,
             'principaluri' => $principalUri,
             'uri' => $calendarUri,
-            '{' . Sabre_CalDAV_Plugin::NS_CALDAV . '}supported-calendar-component-set' => new Sabre_CalDAV_Property_SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+            '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
         ), $properties);
 
         return $id;
@@ -184,7 +188,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
     function getCalendarObject($calendarId,$objectUri) {
 
         if (!isset($this->calendarData[$calendarId][$objectUri])) {
-            throw new Sabre_DAV_Exception_NotFound('Object could not be found');
+            throw new DAV\Exception\NotFound('Object could not be found');
         }
         $object = $this->calendarData[$calendarId][$objectUri];
         $object['calendarid'] = $calendarId;
@@ -208,6 +212,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
             'calendarid' => $calendarId,
             'uri' => $objectUri,
         );
+        return '"' . md5($calendarData) . '"';
 
     }
 
@@ -226,6 +231,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
             'calendarid' => $calendarId,
             'uri' => $objectUri,
         );
+        return '"' . md5($calendarData) . '"';
 
     }
 
@@ -247,7 +253,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      * Returns a list of notifications for a given principal url.
      *
      * The returned array should only consist of implementations of
-     * Sabre_CalDAV_Notifications_INotificationType.
+     * Sabre\CalDAV\Notifications\INotificationType.
      *
      * @param string $principalUri
      * @return array
@@ -267,10 +273,10 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      * This may be called by a client once it deems a notification handled.
      *
      * @param string $principalUri
-     * @param Sabre_CalDAV_Notifications_INotificationType $notification
+     * @param Sabre\CalDAV\Notifications\INotificationType $notification
      * @return void
      */
-    public function deleteNotification($principalUri, Sabre_CalDAV_Notifications_INotificationType $notification) {
+    public function deleteNotification($principalUri, CalDAV\Notifications\INotificationType $notification) {
 
         foreach($this->notifications[$principalUri] as $key=>$value) {
             if ($notification === $value) {
@@ -310,7 +316,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
         }
 
         foreach($add as $val) {
-            $val['status'] = Sabre_CalDAV_SharingPlugin::STATUS_NORESPONSE;
+            $val['status'] = CalDAV\SharingPlugin::STATUS_NORESPONSE;
             $this->shares[$calendarId][] = $val;
         }
 
@@ -333,7 +339,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
      * Every element in this array should have the following properties:
      *   * href - Often a mailto: address
      *   * commonName - Optional, for example a first + last name
-     *   * status - See the Sabre_CalDAV_SharingPlugin::STATUS_ constants.
+     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
      *
@@ -363,7 +369,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
     public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
 
         // This operation basically doesn't do anything yet
-        if ($status === Sabre_CalDAV_SharingPlugin::STATUS_ACCEPTED) {
+        if ($status === CalDAV\SharingPlugin::STATUS_ACCEPTED) {
             return 'calendars/blabla/calendar';
         }
 
@@ -389,8 +395,7 @@ class Sabre_CalDAV_Backend_Mock extends Sabre_CalDAV_Backend_Abstract implements
             }
         }
 
-        throw new Sabre_DAV_Exception('Calendar with id "' . $calendarId . '" not found');
-
+        throw new DAV\Exception('Calendar with id "' . $calendarId . '" not found');
 
     }
 

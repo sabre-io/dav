@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\DAV;
+use Sabre\DAVACL;
 use Sabre\VObject;
 
 /**
@@ -7,13 +11,11 @@ use Sabre\VObject;
  *
  * The CardDAV plugin adds CardDAV functionality to the WebDAV server
  *
- * @package Sabre
- * @subpackage CardDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
+class Plugin extends DAV\ServerPlugin {
 
     /**
      * Url to the addressbooks
@@ -36,17 +38,17 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     /**
      * Server class
      *
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
 
     /**
      * Initializes the plugin
      *
-     * @param Sabre_DAV_Server $server
+     * @param DAV\Server $server
      * @return void
      */
-    public function initialize(Sabre_DAV_Server $server) {
+    public function initialize(DAV\Server $server) {
 
         /* Events */
         $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
@@ -62,8 +64,8 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
 
         /* Mapping Interfaces to {DAV:}resourcetype values */
-        $server->resourceTypeMapping['Sabre_CardDAV_IAddressBook'] = '{' . self::NS_CARDDAV . '}addressbook';
-        $server->resourceTypeMapping['Sabre_CardDAV_IDirectory'] = '{' . self::NS_CARDDAV . '}directory';
+        $server->resourceTypeMapping['Sabre\\CardDAV\\IAddressBook'] = '{' . self::NS_CARDDAV . '}addressbook';
+        $server->resourceTypeMapping['Sabre\\CardDAV\\IDirectory'] = '{' . self::NS_CARDDAV . '}directory';
 
         /* Adding properties that may never be changed */
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-address-data';
@@ -71,7 +73,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}addressbook-home-set';
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-collation-set';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre_DAV_Property_Href';
+        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Property\\Href';
 
         $this->server = $server;
 
@@ -103,7 +105,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
-        if ($node instanceof Sabre_CardDAV_IAddressBook || $node instanceof Sabre_CardDAV_ICard) {
+        if ($node instanceof IAddressBook || $node instanceof ICard) {
             return array(
                  '{' . self::NS_CARDDAV . '}addressbook-multiget',
                  '{' . self::NS_CARDDAV . '}addressbook-query',
@@ -118,14 +120,14 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * Adds all CardDAV-specific properties
      *
      * @param string $path
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @return void
      */
-    public function beforeGetProperties($path, Sabre_DAV_INode $node, array &$requestedProperties, array &$returnedProperties) {
+    public function beforeGetProperties($path, DAV\INode $node, array &$requestedProperties, array &$returnedProperties) {
 
-        if ($node instanceof Sabre_DAVACL_IPrincipal) {
+        if ($node instanceof DAVACL\IPrincipal) {
 
             // calendar-home-set property
             $addHome = '{' . self::NS_CARDDAV . '}addressbook-home-set';
@@ -133,18 +135,18 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $addressbookHomePath = self::ADDRESSBOOK_ROOT . '/' . $principalId . '/';
                 unset($requestedProperties[array_search($addHome, $requestedProperties)]);
-                $returnedProperties[200][$addHome] = new Sabre_DAV_Property_Href($addressbookHomePath);
+                $returnedProperties[200][$addHome] = new DAV\Property\Href($addressbookHomePath);
             }
 
             $directories = '{' . self::NS_CARDDAV . '}directory-gateway';
             if ($this->directories && in_array($directories, $requestedProperties)) {
                 unset($requestedProperties[array_search($directories, $requestedProperties)]);
-                $returnedProperties[200][$directories] = new Sabre_DAV_Property_HrefList($this->directories);
+                $returnedProperties[200][$directories] = new DAV\Property\HrefList($this->directories);
             }
 
         }
 
-        if ($node instanceof Sabre_CardDAV_ICard) {
+        if ($node instanceof ICard) {
 
             // The address-data property is not supposed to be a 'real'
             // property, but in large chunks of the spec it does act as such.
@@ -161,7 +163,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
             }
         }
 
-        if ($node instanceof Sabre_CardDAV_UserAddressBooks) {
+        if ($node instanceof UserAddressBooks) {
 
             $meCardProp = '{http://calendarserver.org/ns/}me-card';
             if (in_array($meCardProp, $requestedProperties)) {
@@ -169,7 +171,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $props = $this->server->getProperties($node->getOwner(), array('{http://sabredav.org/ns}vcard-url'));
                 if (isset($props['{http://sabredav.org/ns}vcard-url'])) {
 
-                    $returnedProperties[200][$meCardProp] = new Sabre_DAV_Property_Href(
+                    $returnedProperties[200][$meCardProp] = new DAV\Property\Href(
                         $props['{http://sabredav.org/ns}vcard-url']
                     );
                     $pos = array_search($meCardProp, $requestedProperties);
@@ -188,12 +190,12 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param array $mutations
      * @param array $result
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @return bool
      */
-    public function updateProperties(&$mutations, &$result, $node) {
+    public function updateProperties(&$mutations, &$result, DAV\INode $node) {
 
-        if (!$node instanceof Sabre_CardDAV_UserAddressBooks) {
+        if (!$node instanceof UserAddressBooks) {
             return true;
         }
 
@@ -206,7 +208,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $value = $mutations[$meCard];
         unset($mutations[$meCard]);
 
-        if ($value instanceof Sabre_DAV_Property_IHref) {
+        if ($value instanceof DAV\Property\IHref) {
             $value = $value->getHref();
             $value = $this->server->calculateUri($value);
         } elseif (!is_null($value)) {
@@ -238,7 +240,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * This functions handles REPORT requests specific to CardDAV
      *
      * @param string $reportName
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return bool
      */
     public function report($reportName,$dom) {
@@ -264,12 +266,12 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * This report is used by the client to fetch the content of a series
      * of urls. Effectively avoiding a lot of redundant requests.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     public function addressbookMultiGetReport($dom) {
 
-        $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
+        $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
         $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
         $propertyList = array();
@@ -297,16 +299,18 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * vcard data.
      *
      * @param string $path
-     * @param Sabre_DAV_IFile $node
+     * @param DAV\IFile $node
      * @param resource $data
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    public function beforeWriteContent($path, Sabre_DAV_IFile $node, &$data) {
+    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
-        if (!$node instanceof Sabre_CardDAV_ICard)
+        if (!$node instanceof ICard)
             return;
 
-        $this->validateVCard($data);
+        $this->validateVCard($data, $modified);
 
     }
 
@@ -318,15 +322,17 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $path
      * @param resource $data
-     * @param Sabre_DAV_ICollection $parentNode
+     * @param DAV\ICollection $parentNode
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    public function beforeCreateFile($path, &$data, Sabre_DAV_ICollection $parentNode) {
+    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
-        if (!$parentNode instanceof Sabre_CardDAV_IAddressBook)
+        if (!$parentNode instanceof IAddressBook)
             return;
 
-        $this->validateVCard($data);
+        $this->validateVCard($data, $modified);
 
     }
 
@@ -336,17 +342,23 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * An exception is thrown if it's not.
      *
      * @param resource|string $data
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return void
      */
-    protected function validateVCard(&$data) {
+    protected function validateVCard(&$data, $modified) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
 
+        $before = md5($data);
+
         // Converting the data to unicode, if needed.
-        $data = Sabre_DAV_StringUtil::ensureUTF8($data);
+        $data = DAV\StringUtil::ensureUTF8($data);
+
+        if (md5($data) !== $before) $modified = true;
 
         try {
 
@@ -354,16 +366,16 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         } catch (VObject\ParseException $e) {
 
-            throw new Sabre_DAV_Exception_UnsupportedMediaType('This resource only supports valid vcard data. Parse error: ' . $e->getMessage());
+            throw new DAV\Exception\UnsupportedMediaType('This resource only supports valid vcard data. Parse error: ' . $e->getMessage());
 
         }
 
         if ($vobj->name !== 'VCARD') {
-            throw new Sabre_DAV_Exception_UnsupportedMediaType('This collection can only support vcard objects.');
+            throw new DAV\Exception\UnsupportedMediaType('This collection can only support vcard objects.');
         }
 
         if (!isset($vobj->UID)) {
-            throw new Sabre_DAV_Exception_BadRequest('Every vcard must have an UID.');
+            throw new DAV\Exception\BadRequest('Every vcard must have a UID.');
         }
 
     }
@@ -375,12 +387,12 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
      * This report is used by the client to filter an addressbook based on a
      * complex query.
      *
-     * @param DOMNode $dom
+     * @param \DOMNode $dom
      * @return void
      */
     protected function addressbookQueryReport($dom) {
 
-        $query = new Sabre_CardDAV_AddressBookQueryParser($dom);
+        $query = new AddressBookQueryParser($dom);
         $query->parse();
 
         $depth = $this->server->getHTTPDepth(0);
@@ -396,7 +408,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         $validNodes = array();
         foreach($candidateNodes as $node) {
 
-            if (!$node instanceof Sabre_CardDAV_ICard)
+            if (!$node instanceof ICard)
                 continue;
 
             $blob = $node->get();
@@ -554,7 +566,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 foreach($vProperties as $vProperty) {
                     // If we got all the way here, we'll need to validate the
                     // text-match filter.
-                    $success = Sabre_DAV_StringUtil::textMatch($vProperty[$filter['name']]->value, $filter['text-match']['value'], $filter['text-match']['collation'], $filter['text-match']['match-type']);
+                    $success = DAV\StringUtil::textMatch($vProperty[$filter['name']]->value, $filter['text-match']['value'], $filter['text-match']['collation'], $filter['text-match']['match-type']);
                     if ($success) break;
                 }
                 if ($filter['text-match']['negate-condition']) {
@@ -597,7 +609,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
             $success = false;
             foreach($texts as $haystack) {
-                $success = Sabre_DAV_StringUtil::textMatch($haystack, $filter['value'], $filter['collation'], $filter['match-type']);
+                $success = DAV\StringUtil::textMatch($haystack, $filter['value'], $filter['collation'], $filter['match-type']);
 
                 // Breaking on the first match
                 if ($success) break;
@@ -650,16 +662,16 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
     /**
      * This method is used to generate HTML output for the
-     * Sabre_DAV_Browser_Plugin. This allows us to generate an interface users
-     * can use to create new calendars.
+     * Sabre\DAV\Browser\Plugin. This allows us to generate an interface users
+     * can use to create new addressbooks.
      *
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @param string $output
      * @return bool
      */
-    public function htmlActionsPanel(Sabre_DAV_INode $node, &$output) {
+    public function htmlActionsPanel(DAV\INode $node, &$output) {
 
-        if (!$node instanceof Sabre_CardDAV_UserAddressBooks)
+        if (!$node instanceof UserAddressBooks)
             return;
 
         $output.= '<tr><td colspan="2"><form method="post" action="">
@@ -676,8 +688,8 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
     }
 
     /**
-     * This method allows us to intercept the 'mkcalendar' sabreAction. This
-     * action enables the user to create new calendars from the browser plugin.
+     * This method allows us to intercept the 'mkaddressbook' sabreAction. This
+     * action enables the user to create new addressbooks from the browser plugin.
      *
      * @param string $uri
      * @param string $action

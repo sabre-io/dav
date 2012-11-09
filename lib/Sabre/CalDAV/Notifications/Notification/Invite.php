@@ -1,17 +1,19 @@
 <?php
 
-use Sabre_CalDAV_SharingPlugin as SharingPlugin;
+namespace Sabre\CalDAV\Notifications\Notification;
+
+use Sabre\CalDAV\SharingPlugin as SharingPlugin;
+use Sabre\DAV;
+use Sabre\CalDAV;
 
 /**
  * This class represents the cs:invite-notification notification element.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
+class Invite extends DAV\Property implements CalDAV\Notifications\INotificationType {
 
     /**
      * A unique id for the message
@@ -71,6 +73,20 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     protected $commonName;
 
     /**
+     * The name of the sharer.
+     *
+     * @var string
+     */
+    protected $firstName;
+
+    /**
+     * The name of the sharer.
+     *
+     * @var string
+     */
+    protected $lastName;
+
+    /**
      * A description of the share request
      *
      * @var string
@@ -87,7 +103,7 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
     /**
      * The list of supported components
      *
-     * @var Sabre_CalDAV_Property_SupportedCalendarComponentSet
+     * @var Sabre\CalDAV\Property\SupportedCalendarComponentSet
      */
     protected $supportedComponents;
 
@@ -106,10 +122,12 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      *   * hostUrl      - A url to the shared calendar.
      *   * organizer    - Url to the sharer principal.
      *   * commonName   - The real name of the sharer (optional).
+     *   * firstName    - The first name of the sharer (optional).
+     *   * lastName     - The last name of the sharer (optional).
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
      *   * supportedComponents - An instance of
-     *                    Sabre_CalDAV_Property_SupportedCalendarComponentSet.
+     *                    Sabre\CalDAV\Property\SupportedCalendarComponentSet.
      *                    This allows the client to determine which components
      *                    will be supported in the shared calendar. This is
      *                    also optional.
@@ -130,13 +148,13 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         );
         foreach($required as $item) {
             if (!isset($values[$item])) {
-                throw new InvalidArgumentException($item . ' is a required constructor option');
+                throw new \InvalidArgumentException($item . ' is a required constructor option');
             }
         }
 
         foreach($values as $key=>$value) {
             if (!property_exists($this, $key)) {
-                throw new InvalidArgumentException('Unknown option: ' . $key);
+                throw new \InvalidArgumentException('Unknown option: ' . $key);
             }
             $this->$key = $value;
         }
@@ -149,11 +167,11 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      * You should usually just encode the single top-level element of the
      * notification.
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prop = $node->ownerDocument->createElement('cs:invite-notification');
         $node->appendChild($prop);
@@ -164,11 +182,11 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
 
@@ -221,14 +239,44 @@ class Sabre_CalDAV_Notifications_Notification_Invite extends Sabre_DAV_Property 
         }
         $prop->appendChild($access);
 
-        $organizerHref = $doc->createElement('d:href', $server->getBaseUri() . $this->organizer);
         $organizerUrl  = $doc->createElement('cs:organizer');
+        // If the organizer contains a 'mailto:' part, it means it should be
+        // treated as absolute.
+        if (strtolower(substr($this->organizer,0,7))==='mailto:') {
+            $organizerHref = new DAV\Property\Href($this->organizer, false);
+        } else {
+            $organizerHref = new DAV\Property\Href($this->organizer, true);
+        }
+        $organizerHref->serialize($server, $organizerUrl);
+
         if ($this->commonName) {
             $commonName = $doc->createElement('cs:common-name');
             $commonName->appendChild($doc->createTextNode($this->commonName));
             $organizerUrl->appendChild($commonName);
+
+            $commonNameOld = $doc->createElement('cs:organizer-cn');
+            $commonNameOld->appendChild($doc->createTextNode($this->commonName));
+            $prop->appendChild($commonNameOld);
+
         }
-        $organizerUrl->appendChild($organizerHref);
+        if ($this->firstName) {
+            $firstName = $doc->createElement('cs:first-name');
+            $firstName->appendChild($doc->createTextNode($this->firstName));
+            $organizerUrl->appendChild($firstName);
+
+            $firstNameOld = $doc->createElement('cs:organizer-first');
+            $firstNameOld->appendChild($doc->createTextNode($this->firstName));
+            $prop->appendChild($firstNameOld);
+        }
+        if ($this->lastName) {
+            $lastName = $doc->createElement('cs:last-name');
+            $lastName->appendChild($doc->createTextNode($this->lastName));
+            $organizerUrl->appendChild($lastName);
+
+            $lastNameOld = $doc->createElement('cs:organizer-last');
+            $lastNameOld->appendChild($doc->createTextNode($this->lastName));
+            $prop->appendChild($lastNameOld);
+        }
         $prop->appendChild($organizerUrl);
 
         if ($this->summary) {

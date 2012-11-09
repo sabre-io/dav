@@ -1,30 +1,35 @@
 <?php
 
-class Sabre_DAV_Auth_Backend_ApacheTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV\Auth\Backend;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+
+class ApacheTest extends \PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
-        $backend = new Sabre_DAV_Auth_Backend_Apache();
+        $backend = new Apache();
 
     }
 
     /**
-     * @expectedException Sabre_DAV_Exception
+     * @expectedException Sabre\DAV\Exception
      */
     function testNoHeader() {
 
-        $server = new Sabre_DAV_Server();
-        $backend = new Sabre_DAV_Auth_Backend_Apache();
+        $server = new DAV\Server();
+        $backend = new Apache();
         $backend->authenticate($server,'Realm');
 
     }
 
     function testRemoteUser() {
 
-        $backend = new Sabre_DAV_Auth_Backend_Apache();
+        $backend = new Apache();
 
-        $server = new Sabre_DAV_Server();
-        $request = new Sabre_HTTP_Request(array(
+        $server = new DAV\Server();
+        $request = new HTTP\Request(array(
             'REMOTE_USER' => 'username',
         ));
         $server->httpRequest = $request;

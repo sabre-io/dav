@@ -1,8 +1,10 @@
 <?php
 
+namespace Sabre\CardDAV\Backend;
+
 require_once 'Sabre/TestUtil.php';
 
-class Sabre_CardDAV_Backend_PDOMySQLTest extends Sabre_CardDAV_Backend_AbstractPDOTest {
+class PDOMySQLTest extends AbstractPDOTest {
 
     /**
      * @return PDO
@@ -11,7 +13,7 @@ class Sabre_CardDAV_Backend_PDOMySQLTest extends Sabre_CardDAV_Backend_AbstractP
 
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or not properly configured');
 
-        $pdo = Sabre_TestUtil::getMySQLDB();
+        $pdo = \Sabre\TestUtil::getMySQLDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to MySQL database');
 
         $pdo->query("DROP TABLE IF EXISTS addressbooks");

@@ -1,13 +1,18 @@
 <?php
 
+namespace Sabre\CardDAV;
+
+use Sabre\HTTP;
+use Sabre\DAV;
+
 require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTest {
+class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQuery() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
             'HTTP_DEPTH' => '1',
@@ -25,7 +30,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 </c:addressbook-query>'
             );
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -35,7 +40,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
-        $client = new Sabre_DAV_Client(array('baseUri'=>'/'));
+        $client = new DAV\Client(array('baseUri'=>'/'));
 
         $result = $client->parseMultiStatus($response->body);
 
@@ -57,7 +62,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 
     function testQueryDepth0() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1/card1',
             'HTTP_DEPTH' => '0',
@@ -75,7 +80,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 </c:addressbook-query>'
             );
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -85,7 +90,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
-        $client = new Sabre_DAV_Client(array('baseUri'=>'/'));
+        $client = new DAV\Client(array('baseUri'=>'/'));
 
         $result = $client->parseMultiStatus($response->body);
 
@@ -102,7 +107,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 
     function testQueryNoMatch() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
             'HTTP_DEPTH' => '1',
@@ -120,7 +125,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 </c:addressbook-query>'
             );
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -130,7 +135,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
-        $client = new Sabre_DAV_Client(array('baseUri'=>'/'));
+        $client = new DAV\Client(array('baseUri'=>'/'));
 
         $result = $client->parseMultiStatus($response->body);
 
@@ -140,7 +145,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 
     function testQueryLimit() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
             'HTTP_DEPTH' => '1',
@@ -159,7 +164,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
 </c:addressbook-query>'
             );
 
-        $response = new Sabre_HTTP_ResponseMock();
+        $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -169,7 +174,7 @@ class Sabre_CardDAV_AddressBookQueryTest extends Sabre_CardDAV_AbstractPluginTes
         $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
-        $client = new Sabre_DAV_Client(array('baseUri'=>'/'));
+        $client = new DAV\Client(array('baseUri'=>'/'));
 
         $result = $client->parseMultiStatus($response->body);
 

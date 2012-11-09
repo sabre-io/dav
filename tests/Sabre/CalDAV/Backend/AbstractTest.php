@@ -1,17 +1,19 @@
 <?php
 
-class Sabre_CalDAV_Backend_AbstractTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\CalDAV\Backend;
+
+class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateCalendar() {
 
-        $abstract = new Sabre_CalDAV_Backend_AbstractMock();
+        $abstract = new AbstractMock();
         $this->assertEquals(false, $abstract->updateCalendar('randomid', array('{DAV:}displayname' => 'anything')));
 
     }
 
     function testCalendarQuery() {
 
-        $abstract = new Sabre_CalDAV_Backend_AbstractMock();
+        $abstract = new AbstractMock();
         $filters = array(
             'name' => 'VCALENDAR',
             'comp-filters' => array(
@@ -36,7 +38,7 @@ class Sabre_CalDAV_Backend_AbstractTest extends PHPUnit_Framework_TestCase {
 
 }
 
-class Sabre_CalDAV_Backend_AbstractMock extends Sabre_CalDAV_Backend_Abstract {
+class AbstractMock extends AbstractBackend {
 
     function getCalendarsForUser($principalUri) { }
     function createCalendar($principalUri,$calendarUri,array $properties) { }

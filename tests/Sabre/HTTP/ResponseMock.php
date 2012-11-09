@@ -1,6 +1,8 @@
 <?php
 
-class Sabre_HTTP_ResponseMock extends Sabre_HTTP_Response {
+namespace Sabre\HTTP;
+
+class ResponseMock extends Response {
 
     public $headers = array();
     public $status = '';

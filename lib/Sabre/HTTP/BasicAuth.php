@@ -1,17 +1,17 @@
 <?php
 
+namespace Sabre\HTTP;
+
 /**
  * HTTP Basic Authentication handler
  *
  * Use this class for easy http authentication setup
  *
- * @package Sabre
- * @subpackage HTTP
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_HTTP_BasicAuth extends Sabre_HTTP_AbstractAuth {
+class BasicAuth extends AbstractAuth {
 
     /**
      * Returns the supplied username and password.

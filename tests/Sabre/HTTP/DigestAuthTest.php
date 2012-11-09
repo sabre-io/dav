@@ -1,15 +1,17 @@
 <?php
 
+namespace Sabre\HTTP;
+
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
+class DigestAuthTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre_HTTP_ResponseMock
+     * @var Sabre\HTTP\ResponseMock
      */
     private $response;
     /**
-     * @var Sabre_HTTP_DigestAuth
+     * @var Sabre\HTTP\DigestAuth
      */
     private $auth;
 
@@ -17,8 +19,8 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
 
-        $this->response = new Sabre_HTTP_ResponseMock();
-        $this->auth = new Sabre_HTTP_DigestAuth();
+        $this->response = new ResponseMock();
+        $this->auth = new DigestAuth();
         $this->auth->setRealm(self::REALM);
         $this->auth->setHTTPResponse($this->response);
 
@@ -42,7 +44,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
             md5('GET' . ':' . '/')
         );
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'GET',
             'PHP_AUTH_DIGEST' => 'username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth,nc='.$nc.',cnonce="' . $cnonce . '"',
         ));
@@ -75,7 +77,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
             md5('GET' . ':' . '/')
         );
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'GET',
             'HTTP_AUTHORIZATION' => 'Digest username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth,nc='.$nc.',cnonce="' . $cnonce . '"',
         ));
@@ -106,7 +108,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
             md5('GET' . ':' . '/')
         );
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'GET',
             'REDIRECT_HTTP_AUTHORIZATION' => 'Digest username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth,nc='.$nc.',cnonce="' . $cnonce . '"',
         ));
@@ -137,7 +139,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
             md5('GET' . ':' . '/')
         );
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'GET',
             'PHP_AUTH_DIGEST' => 'username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth,nc='.$nc.',cnonce="' . $cnonce . '"',
         ));
@@ -151,7 +153,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
     public function testInvalidDigest2() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'GET',
             'HTTP_AUTHORIZATION' => 'basic blablabla',
         ));
@@ -166,8 +168,8 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
     public function testDigestAuthInt() {
 
-        $this->auth->setQOP(Sabre_HTTP_DigestAuth::QOP_AUTHINT | Sabre_HTTP_DigestAuth::QOP_AUTH);
-        list($nonce,$opaque) = $this->getServerTokens(Sabre_HTTP_DigestAuth::QOP_AUTHINT| Sabre_HTTP_DigestAuth::QOP_AUTH);
+        $this->auth->setQOP(DigestAuth::QOP_AUTHINT | DigestAuth::QOP_AUTH);
+        list($nonce,$opaque) = $this->getServerTokens(DigestAuth::QOP_AUTHINT| DigestAuth::QOP_AUTH);
 
         $username = 'admin';
         $password = 12345;
@@ -183,7 +185,7 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
             md5('POST' . ':' . '/' . ':' . md5('body'))
         );
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new Request(array(
             'REQUEST_METHOD' => 'POST',
             'PHP_AUTH_DIGEST' => 'username="'.$username.'", realm="' . self::REALM . '", nonce="' . $nonce . '", uri="/", response="' . $digestHash . '", opaque="' . $opaque . '", qop=auth-int,nc='.$nc.',cnonce="' . $cnonce . '"',
         ));
@@ -197,13 +199,13 @@ class Sabre_HTTP_DigestAuthTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    private function getServerTokens($qop = Sabre_HTTP_DigestAuth::QOP_AUTH) {
+    private function getServerTokens($qop = DigestAuth::QOP_AUTH) {
 
         $this->auth->requireLogin();
 
         switch($qop) {
-            case Sabre_HTTP_DigestAuth::QOP_AUTH    : $qopstr='auth'; break;
-            case Sabre_HTTP_DigestAuth::QOP_AUTHINT : $qopstr='auth-int'; break;
+            case DigestAuth::QOP_AUTH    : $qopstr='auth'; break;
+            case DigestAuth::QOP_AUTHINT : $qopstr='auth-int'; break;
             default                                 : $qopstr='auth,auth-int'; break;
         }
 

@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\CalDAV;
+
+use Sabre\DAV;
+
 /**
  * This plugin implements support for caldav sharing.
  *
@@ -7,18 +11,16 @@
  * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-sharing.txt
  *
  * See:
- * Sabre_CalDAV_Backend_SharingSupport for all the documentation.
+ * Sabre\CalDAV\Backend\SharingSupport for all the documentation.
  *
  * Note: This feature is experimental, and may change in between different
  * SabreDAV versions.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
+class SharingPlugin extends DAV\ServerPlugin {
 
     /**
      * These are the various status constants used by sharing-messages.
@@ -32,7 +34,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
     /**
      * Reference to SabreDAV server object.
      *
-     * @var Sabre_DAV_Server
+     * @var Sabre\DAV\Server
      */
     protected $server;
 
@@ -54,7 +56,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      * Returns a plugin name.
      *
      * Using this name other plugins will be able to access other plugins
-     * using Sabre_DAV_Server::getPlugin
+     * using Sabre\DAV\Server::getPlugin
      *
      * @return string
      */
@@ -67,25 +69,24 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
     /**
      * This initializes the plugin.
      *
-     * This function is called by Sabre_DAV_Server, after
+     * This function is called by Sabre\DAV\Server, after
      * addPlugin is called.
      *
      * This method should set up the required event subscriptions.
      *
-     * @param Sabre_DAV_Server $server
+     * @param DAV\Server $server
      * @return void
      */
-    public function initialize(Sabre_DAV_Server $server) {
+    public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        //$server->resourceTypeMapping['Sabre_CalDAV_IShareableCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner';
-        $server->resourceTypeMapping['Sabre_CalDAV_ISharedCalendar'] = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared';
+        $server->resourceTypeMapping['Sabre\\CalDAV\\ISharedCalendar'] = '{' . Plugin::NS_CALENDARSERVER . '}shared';
 
         array_push(
             $this->server->protectedProperties,
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite',
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
-            '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url'
+            '{' . Plugin::NS_CALENDARSERVER . '}invite',
+            '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
+            '{' . Plugin::NS_CALENDARSERVER . '}shared-url'
         );
 
         $this->server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
@@ -102,35 +103,78 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      * This allows us to inject any properties early.
      *
      * @param string $path
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @return void
      */
-    public function beforeGetProperties($path, Sabre_DAV_INode $node, &$requestedProperties, &$returnedProperties) {
+    public function beforeGetProperties($path, DAV\INode $node, &$requestedProperties, &$returnedProperties) {
 
-        if ($node instanceof Sabre_CalDAV_IShareableCalendar) {
-            if (($index = array_search('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
+        if ($node instanceof IShareableCalendar) {
+            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
 
                 unset($requestedProperties[$index]);
-                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}invite'] =
-                    new Sabre_CalDAV_Property_Invite(
+                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}invite'] =
+                    new Property\Invite(
                         $node->getShares()
                     );
 
             }
 
         }
-        if ($node instanceof Sabre_CalDAV_ISharedCalendar) {
-            if (($index = array_search('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url', $requestedProperties))!==false) {
+
+        if ($node instanceof ISharedCalendar) {
+
+            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}shared-url', $requestedProperties))!==false) {
 
                 unset($requestedProperties[$index]);
-                $returnedProperties[200]['{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-url'] =
-                    new Sabre_DAV_Property_Href(
+                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}shared-url'] =
+                    new DAV\Property\Href(
                         $node->getSharedUrl()
                     );
 
             }
+            // The 'invite' property is slightly different for the 'shared'
+            // instance of the calendar, as it also contains the owner
+            // information.
+            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
+
+                unset($requestedProperties[$index]);
+
+                // Fetching owner information
+                $props = $this->server->getPropertiesForPath($node->getOwner(), array(
+                    '{http://sabredav.org/ns}email-address',
+                    '{DAV:}displayname',
+                ), 1);
+
+                $ownerInfo = array(
+                    'href' => $node->getOwner(),
+                );
+
+                if ($props && isset($props[0]) && isset($props[0][200])) {
+
+                    // We're mapping the internal webdav properties to the
+                    // elements caldav-sharing expects.
+                    $mapping = array(
+                        '{http://sabredav.org/ns}email-address' => 'href',
+                        '{DAV:}displayname' => 'commonName',
+                    );
+                    foreach($mapping as $source=>$dest) {
+                        if (isset($props[0][200][$source])) {
+                            $ownerInfo[$dest] = $props[0][200][$source];
+                        }
+                    }
+
+                }
+
+                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}invite'] =
+                    new Property\Invite(
+                        $node->getShares(),
+                        $ownerInfo
+                    );
+
+            }
+
 
         }
 
@@ -143,23 +187,23 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      *
      * @param string $path
      * @param array $properties
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @return void
      */
-    public function afterGetProperties($path, &$properties, Sabre_DAV_INode $node) {
+    public function afterGetProperties($path, &$properties, DAV\INode $node) {
 
-        if ($node instanceof Sabre_CalDAV_IShareableCalendar) {
+        if ($node instanceof IShareableCalendar) {
             if (isset($properties[200]['{DAV:}resourcetype'])) {
                 if (count($node->getShares())>0) {
                     $properties[200]['{DAV:}resourcetype']->add(
-                        '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner'
+                        '{' . Plugin::NS_CALENDARSERVER . '}shared-owner'
                     );
                 }
             }
-            $propName = '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes';
+            $propName = '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes';
             if (array_key_exists($propName, $properties[404])) {
                 unset($properties[404][$propName]);
-                $properties[200][$propName] = new Sabre_CalDAV_Property_AllowedSharingModes(true,false);
+                $properties[200][$propName] = new Property\AllowedSharingModes(true,false);
             }
 
         }
@@ -179,12 +223,12 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      *
      * @param array $mutations
      * @param array $result
-     * @param Sabre_DAV_INode $node
+     * @param DAV\INode $node
      * @return void
      */
-    public function updateProperties(array &$mutations, array &$result, Sabre_DAV_INode $node) {
+    public function updateProperties(array &$mutations, array &$result, DAV\INode $node) {
 
-        if (!$node instanceof Sabre_CalDAV_IShareableCalendar)
+        if (!$node instanceof IShareableCalendar)
             return;
 
         if (!isset($mutations['{DAV:}resourcetype'])) {
@@ -192,7 +236,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         }
 
         // Only doing something if shared-owner is indeed not in the list.
-        if($mutations['{DAV:}resourcetype']->is('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner')) return; 
+        if($mutations['{DAV:}resourcetype']->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return; 
 
         $shares = $node->getShares();
         $remove = array();
@@ -233,23 +277,23 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         // Making sure the node exists
         try {
             $node = $this->server->tree->getNodeForPath($uri);
-        } catch (Sabre_DAV_Exception_NotFound $e) {
+        } catch (DAV\Exception\NotFound $e) {
             return;
         }
 
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($this->server->httpRequest->getBody(true));
+        $dom = DAV\XMLUtil::loadDOMDocument($this->server->httpRequest->getBody(true));
 
-        $documentType = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
+        $documentType = DAV\XMLUtil::toClarkNotation($dom->firstChild);
 
         switch($documentType) {
 
             // Dealing with the 'share' document, which modified invitees on a
             // calendar.
-            case '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}share' :
+            case '{' . Plugin::NS_CALENDARSERVER . '}share' :
 
                 // We can only deal with IShareableCalendar objects
-                if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                if (!$node instanceof IShareableCalendar) {
                     return;
                 }
 
@@ -275,10 +319,10 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
             // The invite-reply document is sent when the user replies to an
             // invitation of a calendar share.
-            case '{'. Sabre_CalDAV_Plugin::NS_CALENDARSERVER.'}invite-reply' :
+            case '{'. Plugin::NS_CALENDARSERVER.'}invite-reply' :
 
                 // This only works on the calendar-home-root node.
-                if (!$node instanceof Sabre_CalDAV_UserCalendars) {
+                if (!$node instanceof UserCalendars) {
                     return;
                 }
 
@@ -306,7 +350,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 if ($url) {
-                    $dom = new DOMDocument('1.0', 'UTF-8');
+                    $dom = new \DOMDocument('1.0', 'UTF-8');
                     $dom->formatOutput = true;
 
                     $root = $dom->createElement('cs:shared-as');
@@ -315,7 +359,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                     }
 
                     $dom->appendChild($root);
-                    $href = new Sabre_DAV_Property_Href($url);
+                    $href = new DAV\Property\Href($url);
 
                     $href->serialize($this->server, $root);
                     $this->server->httpResponse->setHeader('Content-Type','application/xml');
@@ -326,10 +370,10 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 // Breaking the event chain
                 return false;
 
-            case '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}publish-calendar' :
+            case '{' . Plugin::NS_CALENDARSERVER . '}publish-calendar' :
 
                 // We can only deal with IShareableCalendar objects
-                if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                if (!$node instanceof IShareableCalendar) {
                     return;
                 }
 
@@ -353,10 +397,10 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 // Breaking the event chain
                 return false;
 
-            case '{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}unpublish-calendar' :
+            case '{' . Plugin::NS_CALENDARSERVER . '}unpublish-calendar' :
 
                 // We can only deal with IShareableCalendar objects
-                if (!$node instanceof Sabre_CalDAV_IShareableCalendar) {
+                if (!$node instanceof IShareableCalendar) {
                     return;
                 }
 
@@ -399,13 +443,13 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      * The second array is a list of sharees that are to be removed. This is
      * just a simple array with 'hrefs'.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return array
      */
-    protected function parseShareRequest(DOMDocument $dom) {
+    protected function parseShareRequest(\DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
-        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d', 'DAV:');
 
 
@@ -448,18 +492,18 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
      *   * inReplyTo - The unique id of the share invitation.
      *   * summary - Optional description of the reply.
      *
-     * @param DOMDocument $dom
+     * @param \DOMDocument $dom
      * @return array
      */
-    protected function parseInviteReplyRequest(DOMDocument $dom) {
+    protected function parseInviteReplyRequest(\DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
-        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
+        $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d', 'DAV:');
 
         $hostHref = $xpath->evaluate('string(cs:hosturl/d:href)');
         if (!$hostHref) {
-            throw new Sabre_DAV_Exception_BadRequest('The {' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}hosturl/{DAV:}href element is required');
+            throw new DAV\Exception\BadRequest('The {' . Plugin::NS_CALENDARSERVER . '}hosturl/{DAV:}href element is required');
         }
 
         return array(

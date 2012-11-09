@@ -1,17 +1,19 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+
 /**
  * IPrincipal interface
  *
  * Implement this interface to define your own principals
  *
- * @package Sabre
- * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAVACL_IPrincipal extends Sabre_DAV_INode {
+interface IPrincipal extends DAV\INode {
 
     /**
      * Returns a list of alternative urls for a principal

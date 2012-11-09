@@ -1,10 +1,12 @@
 <?php
 
-class Sabre_CalDAV_TestUtil {
+namespace Sabre\CalDAV;
+
+class TestUtil {
 
     static function getBackend() {
 
-        $backend = new Sabre_CalDAV_Backend_PDO(self::getSQLiteDB());
+        $backend = new Backend\PDO(self::getSQLiteDB());
         return $backend;
 
     }
@@ -14,8 +16,8 @@ class Sabre_CalDAV_TestUtil {
         if (file_exists(SABRE_TEMPDIR . '/testdb.sqlite'))
             unlink(SABRE_TEMPDIR . '/testdb.sqlite');
 
-        $pdo = new PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
 
         // Yup this is definitely not 'fool proof', but good enough for now.
         $queries = explode(';', file_get_contents(__DIR__ . '/../../../examples/sql/sqlite.calendars.sql'));
@@ -23,7 +25,7 @@ class Sabre_CalDAV_TestUtil {
             $pdo->exec($query);
         }
         // Inserting events through a backend class.
-        $backend = new Sabre_CalDAV_Backend_PDO($pdo);
+        $backend = new Backend\PDO($pdo);
         $calendarId = $backend->createCalendar(
             'principals/user1',
             'UUID-123467',

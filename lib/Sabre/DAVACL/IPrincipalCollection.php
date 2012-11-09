@@ -1,18 +1,20 @@
 <?php
 
+namespace Sabre\DAVACL;
+
+use Sabre\DAV;
+
 /**
  * Principal Collection interface.
  *
  * Implement this interface to ensure that your principal collection can be
  * searched using the principal-property-search REPORT.
  *
- * @package Sabre
- * @subpackage DAVACL
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface Sabre_DAVACL_IPrincipalCollection extends Sabre_DAV_INode {
+interface IPrincipalCollection extends DAV\INode {
 
     /**
      * This method is used to search for principals matching a set of

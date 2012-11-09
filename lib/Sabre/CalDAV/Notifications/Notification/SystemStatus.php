@@ -1,18 +1,21 @@
 <?php
 
+namespace Sabre\CalDAV\Notifications\Notification;
+
+use Sabre\DAV;
+use Sabre\CalDAV;
+
 /**
  * SystemStatus notification
  *
  * This notification can be used to indicate to the user that the system is
  * down.
  *
- * @package Sabre
- * @subpackage CalDAV
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Property implements Sabre_CalDAV_Notifications_INotificationType {
+class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotificationType {
 
     const TYPE_LOW = 1;
     const TYPE_MEDIUM = 2;
@@ -81,11 +84,11 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
      * You should usually just encode the single top-level element of the
      * notification.
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serialize(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serialize(DAV\Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :
@@ -111,11 +114,11 @@ class Sabre_CalDAV_Notifications_Notification_SystemStatus extends Sabre_DAV_Pro
      * This method serializes the entire notification, as it is used in the
      * response body.
      *
-     * @param Sabre_DAV_Server $server
-     * @param DOMElement $node
+     * @param DAV\Server $server
+     * @param \DOMElement $node
      * @return void
      */
-    public function serializeBody(Sabre_DAV_Server $server, \DOMElement $node) {
+    public function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :

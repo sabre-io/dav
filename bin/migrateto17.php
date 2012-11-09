@@ -210,7 +210,7 @@ echo "Process completed!\n";
  * Parses some information from calendar objects, used for optimized
  * calendar-queries.
  *
- * Blantently copied from Sabre_CalDAV_Backend_PDO
+ * Blantently copied from Sabre\CalDAV\Backend\PDO
  *
  * Returns an array with the following keys:
  *   * etag
@@ -236,7 +236,7 @@ function getDenormalizedData($calendarData) {
         }
     }
     if (!$componentType) {
-        throw new Sabre_DAV_Exception_BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
+        throw new \Sabre\DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
     }
     if ($componentType === 'VEVENT') {
         $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
@@ -257,7 +257,7 @@ function getDenormalizedData($calendarData) {
             }
         } else {
             $it = new \Sabre\VObject\RecurrenceIterator($vObject, (string)$component->UID);
-            $maxDate = new DateTime(Sabre_CalDAV_Backend_PDO::MAX_DATE);
+            $maxDate = new DateTime(\Sabre\CalDAV\Backend_PDO::MAX_DATE);
             if ($it->isInfinite()) {
                 $lastOccurence = $maxDate->getTimeStamp();
             } else {

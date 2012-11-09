@@ -1,10 +1,14 @@
 <?php
 
-class Sabre_CardDAV_TestUtil {
+namespace Sabre\CardDAV;
+
+use PDO;
+
+class TestUtil {
 
     static function getBackend() {
 
-        $backend = new Sabre_CardDAV_Backend_PDO(self::getSQLiteDB());
+        $backend = new Backend\PDO(self::getSQLiteDB());
         return $backend;
 
     }
@@ -23,7 +27,7 @@ class Sabre_CardDAV_TestUtil {
             $pdo->exec($query);
         }
         // Inserting events through a backend class.
-        $backend = new Sabre_CardDAV_Backend_PDO($pdo);
+        $backend = new Backend\PDO($pdo);
         $addressbookId = $backend->createAddressBook(
             'principals/user1',
             'UUID-123467',

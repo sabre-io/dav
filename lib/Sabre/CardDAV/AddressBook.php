@@ -18,14 +18,14 @@ class Sabre_CardDAV_AddressBook extends Sabre_DAV_Collection implements Sabre_Ca
      *
      * @var array
      */
-    private $addressBookInfo;
+    protected $addressBookInfo;
 
     /**
      * CardDAV backend
      *
      * @var Sabre_CardDAV_Backend_Abstract
      */
-    private $carddavBackend;
+    protected $carddavBackend;
 
     /**
      * Constructor

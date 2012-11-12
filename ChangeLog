@@ -1,5 +1,5 @@
-1.8.1-stable (????-??-??)
-	* Includes fixes from 1.7.2.
+1.8.1-stable (2012-??-??)
+	* Includes changes from version 1.7.3.
 
 1.8.0-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.
@@ -21,8 +21,10 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.3-stable (????-??-??)
+1.7.3-stable (2012-??-??)
 	* Fixed: Removing double slashes from getPropertiesForPath.
+	* Change: Marked a few more properties in the CardDAV as protected,
+	  instead of private.
 
 1.7.2-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.

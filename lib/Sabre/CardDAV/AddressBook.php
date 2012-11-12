@@ -21,14 +21,14 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @var array
      */
-    private $addressBookInfo;
+    protected $addressBookInfo;
 
     /**
      * CardDAV backend
      *
      * @var Backend\BackendInterface
      */
-    private $carddavBackend;
+    protected $carddavBackend;
 
     /**
      * Constructor

@@ -20,21 +20,21 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
      *
      * @var Backend\BackendInterface
      */
-    private $carddavBackend;
+    protected $carddavBackend;
 
     /**
      * Array with information about this Card
      *
      * @var array
      */
-    private $cardData;
+    protected $cardData;
 
     /**
      * Array with information about the containing addressbook
      *
      * @var array
      */
-    private $addressBookInfo;
+    protected $addressBookInfo;
 
     /**
      * Constructor

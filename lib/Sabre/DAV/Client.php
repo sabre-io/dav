@@ -504,37 +504,29 @@ class Client {
      */
     public function parseMultiStatus($body) {
 
-        $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
-        if ($responseXML===false) {
-            throw new \InvalidArgumentException('The passed data is not valid XML');
+        try {
+            $dom = XMLUtil::loadDOMDocument($body);
+        } catch (Exception\BadRequest $e) {
+            throw new \InvalidArgumentException('The body passed to parseMultiStatus could not be parsed. Is it really xml?');
         }
+        $xpath = new \DOMXPath($dom);
 
-        $responseXML->registerXPathNamespace('d', 'DAV:');
+        $xpath->registerNamespace('d', 'DAV:');
 
-        $propResult = array();
+        $responses = Property\ResponseList::unserialize(
+            $dom->documentElement,
+            $this->propertyMap
+        );
 
-        foreach($responseXML->xpath('d:response') as $response) {
-            $response->registerXPathNamespace('d', 'DAV:');
-            $href = $response->xpath('d:href');
-            $href = (string)$href[0];
+        $result = array();
 
-            $properties = array();
+        foreach($responses->getResponses() as $response) {
 
-            foreach($response->xpath('d:propstat') as $propStat) {
-
-                $propStat->registerXPathNamespace('d', 'DAV:');
-                $status = $propStat->xpath('d:status');
-                list($httpVersion, $statusCode, $message) = explode(' ', (string)$status[0],3);
-
-                $properties[$statusCode] = XMLUtil::parseProperties(dom_import_simplexml($propStat), $this->propertyMap);
-
-            }
-
-            $propResult[$href] = $properties;
+            $result[$response->getHref()] = $response->getResponseProperties();
 
         }
 
-        return $propResult;
+        return $result;
 
     }
 

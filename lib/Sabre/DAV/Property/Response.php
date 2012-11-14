@@ -154,4 +154,25 @@ class Response extends DAV\Property implements IHref {
 
     }
 
+    /**
+     * Unserializes the property.
+     *
+     * This static method should return a an instance of this object.
+     *
+     * @param \DOMElement $prop
+     * @param array $propertyMap
+     * @return DAV\IProperty
+     */
+    public static function unserialize(\DOMElement $prop, array $propertyMap) {
+
+        // Delegating this to the ResponseList property. It does make more
+        // sense there.
+
+        $result = ResponseList::unserialize($prop, $propertyMap);
+        $result = $result->getResponses();
+
+        return $result[0];
+
+    }
+
 }

@@ -70,7 +70,7 @@ class HrefTest extends \PHPUnit_Framework_TestCase {
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $href = Href::unserialize($dom->firstChild);
+        $href = Href::unserialize($dom->firstChild, array());
         $this->assertEquals('/bla/path',$href->getHref());
 
     }
@@ -84,7 +84,7 @@ class HrefTest extends \PHPUnit_Framework_TestCase {
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $href = Href::unserialize($dom->firstChild);
+        $href = Href::unserialize($dom->firstChild, array());
         $this->assertNull($href);
 
     }

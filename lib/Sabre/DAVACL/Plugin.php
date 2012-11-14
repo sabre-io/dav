@@ -1041,7 +1041,7 @@ class Plugin extends DAV\ServerPlugin {
         $dom = DAV\XMLUtil::loadDOMDocument($body);
 
         $newAcl =
-            Property\Acl::unserialize($dom->firstChild)
+            Property\Acl::unserialize($dom->firstChild, $this->server->propertyMap)
             ->getPrivileges();
 
         // Normalizing urls

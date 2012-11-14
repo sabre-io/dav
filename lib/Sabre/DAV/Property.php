@@ -19,9 +19,10 @@ abstract class Property implements PropertyInterface {
      * This static method should return a an instance of this object.
      *
      * @param \DOMElement $prop
+     * @param array $propertyMap
      * @return DAV\IProperty
      */
-    static function unserialize(\DOMElement $prop) {
+    static function unserialize(\DOMElement $prop, array $propertyMap) {
 
         throw new Exception('Unserialize has not been implemented for this class');
 

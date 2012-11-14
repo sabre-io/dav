@@ -81,9 +81,10 @@ class HrefList extends DAV\Property {
      * It will only decode {DAV:}href values.
      *
      * @param \DOMElement $dom
+     * @param array $propertyMap
      * @return DAV\Property\HrefList
      */
-    static function unserialize(\DOMElement $dom) {
+    static function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $hrefs = array();
         foreach($dom->childNodes as $child) {

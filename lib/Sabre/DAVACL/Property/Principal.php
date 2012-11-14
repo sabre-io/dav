@@ -132,9 +132,10 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      * Deserializes a DOM element into a property object.
      *
      * @param \DOMElement $dom
+     * @param array $propertyMap
      * @return Principal
      */
-    static public function unserialize(\DOMElement $dom) {
+    static public function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $parent = $dom->firstChild;
         while(!DAV\XMLUtil::toClarkNotation($parent)) {

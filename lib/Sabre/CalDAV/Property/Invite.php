@@ -186,9 +186,10 @@ class Invite extends DAV\Property {
      * This static method should return a an instance of this object.
      *
      * @param \DOMElement $prop
+     * @param array $propertyMap
      * @return DAV\IProperty
      */
-    static function unserialize(\DOMElement $prop) {
+    static function unserialize(\DOMElement $prop, array $propertyMap) {
 
         $xpath = new \DOMXPath($prop->ownerDocument);
         $xpath->registerNamespace('cs', CalDAV\Plugin::NS_CALENDARSERVER);

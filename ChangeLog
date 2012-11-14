@@ -1,4 +1,7 @@
 1.9.0-alpha (20??-??-??)
+	* BC Break: XML property classes now receive an extra argument in their
+	  unserialize method ($propertyMap). This allows for recursively parsing
+	  properties, if needed.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
 	* Added: Browser plugin now marks a carddav directory as type Directory.

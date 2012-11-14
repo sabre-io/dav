@@ -85,9 +85,10 @@ class Acl extends DAV\Property {
      * Unserializes the {DAV:}acl xml element.
      *
      * @param \DOMElement $dom
+     * @param array $propertyMap
      * @return Acl
      */
-    static public function unserialize(\DOMElement $dom) {
+    static public function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $privileges = array();
         $xaces = $dom->getElementsByTagNameNS('DAV:','ace');
@@ -98,7 +99,7 @@ class Acl extends DAV\Property {
             if ($principal->length !== 1) {
                 throw new DAV\Exception\BadRequest('Each {DAV:}ace element must have one {DAV:}principal element');
             }
-            $principal = Principal::unserialize($principal->item(0));
+            $principal = Principal::unserialize($principal->item(0), $propertyMap);
 
             switch($principal->getType()) {
                 case Principal::HREF :

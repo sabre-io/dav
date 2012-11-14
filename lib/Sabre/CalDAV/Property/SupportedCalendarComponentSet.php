@@ -71,9 +71,10 @@ class SupportedCalendarComponentSet extends DAV\Property {
      * Unserializes the DOMElement back into a Property class.
      *
      * @param \DOMElement $node
+     * @param array $propertyMap
      * @return Property_SupportedCalendarComponentSet
      */
-    static function unserialize(\DOMElement $node) {
+    static function unserialize(\DOMElement $node, array $propertyMap) {
 
         $components = array();
         foreach($node->childNodes as $childNode) {

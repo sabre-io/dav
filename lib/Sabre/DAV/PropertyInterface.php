@@ -13,9 +13,27 @@ namespace Sabre\DAV;
  */
 interface PropertyInterface {
 
+    /**
+     * Serializes this property into an XML document.
+     *
+     * @param Server $server
+     * @param \DOMElement $prop
+     * @return void
+     */
     public function serialize(Server $server, \DOMElement $prop);
 
-    static function unserialize(\DOMElement $prop);
+    /**
+     * This method unserializes the property FROM an xml document.
+     *
+     * This method (often) must return an instance of itself. It acts therefore
+     * a bit like a constructor. It is also valid to return a different object
+     * or type.
+     *
+     * @param \DOMElement $prop
+     * @param array $propertyMap
+     * @return mixed
+     */
+    static public function unserialize(\DOMElement $prop, array $propertyMap);
 
 }
 

@@ -103,7 +103,7 @@ class ResourceTypeTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $resourceType = ResourceType::unserialize($dom->firstChild);
+        $resourceType = ResourceType::unserialize($dom->firstChild, array());
         $this->assertEquals(array('{DAV:}collection','{DAV:}principal'),$resourceType->getValue());
 
     }

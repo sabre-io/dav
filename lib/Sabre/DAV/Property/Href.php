@@ -80,9 +80,10 @@ class Href extends DAV\Property implements IHref {
      * It will only decode {DAV:}href values. For non-compatible elements null will be returned.
      *
      * @param \DOMElement $dom
+     * @param array $propertyMap
      * @return DAV\Property\Href
      */
-    static function unserialize(\DOMElement $dom) {
+    static function unserialize(\DOMElement $dom, array $propertyMap) {
 
         if ($dom->firstChild && DAV\XMLUtil::toClarkNotation($dom->firstChild)==='{DAV:}href') {
             return new self($dom->firstChild->textContent,false);

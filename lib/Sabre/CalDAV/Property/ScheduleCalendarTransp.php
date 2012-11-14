@@ -78,9 +78,10 @@ class ScheduleCalendarTransp extends DAV\Property {
      * Unserializes the DOMElement back into a Property class.
      *
      * @param \DOMElement $node
+     * @param array $propertyMap
      * @return ScheduleCalendarTransp
      */
-    static function unserialize(\DOMElement $node) {
+    static function unserialize(\DOMElement $node, array $propertyMap) {
 
         $value = null;
         foreach($node->childNodes as $childNode) {

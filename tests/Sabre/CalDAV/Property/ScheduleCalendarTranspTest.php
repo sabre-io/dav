@@ -74,7 +74,7 @@ class ScheduleCalendarTranspTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $property = ScheduleCalendarTransp::unserialize($dom->firstChild);
+        $property = ScheduleCalendarTransp::unserialize($dom->firstChild, array());
 
         $this->assertTrue($property instanceof ScheduleCalendarTransp);
         $this->assertEquals($value, $property->getValue());
@@ -93,7 +93,7 @@ class ScheduleCalendarTranspTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $this->assertNull(ScheduleCalendarTransp::unserialize($dom->firstChild));
+        $this->assertNull(ScheduleCalendarTransp::unserialize($dom->firstChild, array()));
 
     }
 }

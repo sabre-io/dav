@@ -150,7 +150,7 @@ class XMLUtil {
 
                 $propertyName = self::toClarkNotation($propNodeData);
                 if (isset($propertyMap[$propertyName])) {
-                    $propList[$propertyName] = call_user_func(array($propertyMap[$propertyName],'unserialize'),$propNodeData);
+                    $propList[$propertyName] = call_user_func(array($propertyMap[$propertyName],'unserialize'),$propNodeData, $propertyMap);
                 } else {
                     $propList[$propertyName] = $propNodeData->textContent;
                 }

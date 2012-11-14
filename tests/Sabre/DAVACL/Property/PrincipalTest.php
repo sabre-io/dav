@@ -128,7 +128,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $principal = Principal::unserialize($dom->firstChild);
+        $principal = Principal::unserialize($dom->firstChild, array());
         $this->assertEquals(Principal::HREF, $principal->getType());
         $this->assertEquals('/principals/admin', $principal->getHref());
 
@@ -143,7 +143,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $principal = Principal::unserialize($dom->firstChild);
+        $principal = Principal::unserialize($dom->firstChild, array());
         $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
 
     }
@@ -157,7 +157,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $principal = Principal::unserialize($dom->firstChild);
+        $principal = Principal::unserialize($dom->firstChild, array());
         $this->assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
 
     }
@@ -174,7 +174,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $dom = DAV\XMLUtil::loadDOMDocument($xml);
 
-        Principal::unserialize($dom->firstChild);
+        Principal::unserialize($dom->firstChild, array());
 
     }
 

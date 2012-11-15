@@ -180,7 +180,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
      * @param string $uri
      * @param array|string $privileges
      * @param int $recursion
-     * @param bool $throwExceptions if set to false, this method won't through exceptions.
+     * @param bool $throwExceptions if set to false, this method won't throw exceptions.
      * @throws Sabre_DAVACL_Exception_NeedPrivileges
      * @return bool
      */
@@ -1056,7 +1056,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $oldAcl = $this->getACL($node);
 
-        $supportedPrivileges = $this->getFlatPrivilegeSet($node);
+        $supportedPrivileges = $this->etFlatPrivilegeSet($node);
 
         /* Checking if protected principals from the existing principal set are
            not overwritten. */

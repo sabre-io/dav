@@ -1056,7 +1056,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
 
         $oldAcl = $this->getACL($node);
 
-        $supportedPrivileges = $this->etFlatPrivilegeSet($node);
+        $supportedPrivileges = $this->getFlatPrivilegeSet($node);
 
         /* Checking if protected principals from the existing principal set are
            not overwritten. */

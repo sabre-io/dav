@@ -192,7 +192,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
         }
 
         // Only doing something if shared-owner is indeed not in the list.
-        if($mutations['{DAV:}resourcetype']->is('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner')) return; 
+        if($mutations['{DAV:}resourcetype']->is('{' . Sabre_CalDAV_Plugin::NS_CALENDARSERVER . '}shared-owner')) return;
 
         $shares = $node->getShares();
         $remove = array();
@@ -237,8 +237,18 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
             return;
         }
 
+        $requestBody = $this->server->httpRequest->getBody(true);
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($this->server->httpRequest->getBody(true));
+        // If this request handler could not deal with this POST request, it
+        // will return 'null' and other plugins get a chance to handle the
+        // request.
+        //
+        // However, we already requested the full body. This is a problem,
+        // because a body can only be read once. This is why we preemptively
+        // re-populated the request body with the existing data.
+        $this->server->httpRequest->setBody($requestBody);
+
+        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($requestBody);
 
         $documentType = Sabre_DAV_XMLUtil::toClarkNotation($dom->firstChild);
 
@@ -380,6 +390,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
                 return false;
 
         }
+
 
 
     }

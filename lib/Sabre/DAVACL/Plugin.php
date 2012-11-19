@@ -181,7 +181,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @param array|string $privileges
      * @param int $recursion
-     * @param bool $throwExceptions if set to false, this method won't through exceptions.
+     * @param bool $throwExceptions if set to false, this method won't throw exceptions.
      * @throws Sabre\DAVACL\Exception\NeedPrivileges
      * @return bool
      */
@@ -557,7 +557,6 @@ class Plugin extends DAV\ServerPlugin {
                     break;
 
             }
-
 
 
         }

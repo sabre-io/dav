@@ -136,8 +136,7 @@ class Client {
     public function propFind($url, array $properties, $depth = 0) {
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
-        $root = $dom->createElement('d:propfind');
-        $root->setAttribute('xmlns:d', 'DAV:');
+        $root = $dom->createElementNS('DAV:', 'd:propfind');
         $prop = $dom->createElement('d:prop');
 
         foreach($properties as $property) {
@@ -150,8 +149,7 @@ class Client {
             if ($namespace === 'DAV:') {
                 $element = $dom->createElement('d:'.$elementName);
             } else {
-                $element = $dom->createElement('x:'.$elementName);
-                $element->setAttribute('xmlns:x=', $namespace);
+                $element = $dom->createElementNS($namespace, 'x:'.$elementName);
             }
 
             $prop->appendChild( $element );

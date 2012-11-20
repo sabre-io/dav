@@ -10,6 +10,7 @@
 
 1.8.1-stable (2012-??-??)
 	* Includes changes from version 1.7.3.
+	* Fixed: Typo in 1.7 migration script caused it to fail.
 
 1.8.0-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.
@@ -35,6 +36,8 @@
 	* Fixed: Removing double slashes from getPropertiesForPath.
 	* Change: Marked a few more properties in the CardDAV as protected,
 	  instead of private.
+	* Fixed: SharingPlugin now place nicer with other plugins with similar
+	  functionality.
 
 1.7.2-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.

@@ -289,6 +289,10 @@ RRR;
         $response = $this->request($request);
         $this->assertEquals('HTTP/1.1 501 Not Implemented', $response->status, $response->body);
 
+        // If the plugin did not handle this request, it must ensure that the
+        // body is still accessible by other plugins.
+        $this->assertEquals($xml, $request->getBody(true));
+
     }
 
     function testPublish() {

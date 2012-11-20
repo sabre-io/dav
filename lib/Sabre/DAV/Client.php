@@ -135,9 +135,10 @@ class Client {
      */
     public function propFind($url, array $properties, $depth = 0) {
 
-        $body = '<?xml version="1.0"?>' . "\n";
-        $body.= '<d:propfind xmlns:d="DAV:">' . "\n";
-        $body.= '  <d:prop>' . "\n";
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+        $root = $dom->createElementNS('DAV:', 'd:propfind');
+        $prop = $dom->createElement('d:prop');
 
         foreach($properties as $property) {
 
@@ -147,15 +148,16 @@ class Client {
             ) = XMLUtil::parseClarkNotation($property);
 
             if ($namespace === 'DAV:') {
-                $body.='    <d:' . $elementName . ' />' . "\n";
+                $element = $dom->createElement('d:'.$elementName);
             } else {
-                $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\"/>\n";
+                $element = $dom->createElementNS($namespace, 'x:'.$elementName);
             }
 
+            $prop->appendChild( $element );
         }
 
-        $body.= '  </d:prop>' . "\n";
-        $body.= '</d:propfind>';
+        $dom->appendChild($root)->appendChild( $prop );
+        $body = $dom->saveXML();
 
         $response = $this->request('PROPFIND', $url, $body, array(
             'Depth' => $depth,
@@ -189,16 +191,15 @@ class Client {
      * and the actual (string) value for the value. If the value is null, an
      * attempt is made to delete the property.
      *
-     * @todo Must be building the request using the DOM, and does not yet
-     *       support complex properties.
      * @param string $url
      * @param array $properties
      * @return void
      */
     public function propPatch($url, array $properties) {
 
-        $body = '<?xml version="1.0"?>' . "\n";
-        $body.= '<d:propertyupdate xmlns:d="DAV:">' . "\n";
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+        $root = $dom->createElementNS('DAV:', 'd:propertyupdate');
 
         foreach($properties as $propName => $propValue) {
 
@@ -209,38 +210,42 @@ class Client {
 
             if ($propValue === null) {
 
-                $body.="<d:remove><d:prop>\n";
+                $remove = $dom->createElement('d:remove');
+                $prop = $dom->createElement('d:prop');
 
                 if ($namespace === 'DAV:') {
-                    $body.='    <d:' . $elementName . ' />' . "\n";
+                    $element = $dom->createElement('d:'.$elementName);
                 } else {
-                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\"/>\n";
+                    $element = $dom->createElementNS($namespace, 'x:'.$elementName);
                 }
 
-                $body.="</d:prop></d:remove>\n";
+                $root->appendChild( $remove )->appendChild( $prop )->appendChild( $element );
 
             } else {
 
-                $body.="<d:set><d:prop>\n";
+                $set = $dom->createElement('d:set');
+                $prop = $dom->createElement('d:prop');
+
                 if ($namespace === 'DAV:') {
-                    $body.='    <d:' . $elementName . '>';
+                    $element = $dom->createElement('d:'.$elementName);
                 } else {
-                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\">";
+                    $element = $dom->createElementNS($namespace, 'x:'.$elementName);
                 }
-                // Shitty.. i know
-                $body.=htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');
-                if ($namespace === 'DAV:') {
-                    $body.='</d:' . $elementName . '>' . "\n";
+
+                if ( $propValue instanceof Property ) {
+                    $propValue->serialize( new Server, $element );
                 } else {
-                    $body.="</x:" . $elementName . ">\n";
+                    $element->nodeValue = htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');
                 }
-                $body.="</d:prop></d:set>\n";
+
+                $root->appendChild( $set )->appendChild( $prop )->appendChild( $element );
 
             }
 
         }
 
-        $body.= '</d:propertyupdate>';
+        $dom->appendChild($root);
+        $body = $dom->saveXML();
 
         $this->request('PROPPATCH', $url, $body, array(
             'Content-Type' => 'application/xml'

@@ -232,7 +232,7 @@ class Client {
                     $element = $dom->createElementNS($namespace, 'x:'.$elementName);
                 }
 
-                if ( $propValue instanceof \Sabre\DAV\Property ) {
+                if ( $propValue instanceof Property ) {
                     $propValue->serialize( new Server, $element );
                 } else {
                     $element->nodeValue = htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');

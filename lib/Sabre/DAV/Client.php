@@ -136,6 +136,7 @@ class Client {
     public function propFind($url, array $properties, $depth = 0) {
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
         $root = $dom->createElementNS('DAV:', 'd:propfind');
         $prop = $dom->createElement('d:prop');
 
@@ -197,6 +198,7 @@ class Client {
     public function propPatch($url, array $properties) {
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
         $root = $dom->createElementNS('DAV:', 'd:propertyupdate');
 
         foreach($properties as $propName => $propValue) {

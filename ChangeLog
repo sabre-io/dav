@@ -7,10 +7,13 @@
 	* Added: Browser plugin now marks a carddav directory as type Directory.
 	* Added: Generalized the multistatus response parser a bit more, for
 	  better re-use.
+	* Added: Sabre\DAV\Client now has support for complex properties for
+	  PROPPATCH. (Issue #299).
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
 
 1.8.1-stable (2012-??-??)
 	* Includes changes from version 1.7.3.
+	* Fixed: Typo in 1.7 migration script caused it to fail.
 
 1.8.0-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.

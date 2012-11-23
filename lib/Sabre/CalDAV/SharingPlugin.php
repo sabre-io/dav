@@ -457,7 +457,7 @@ class SharingPlugin extends DAV\ServerPlugin {
      * @param \DOMDocument $dom
      * @return array
      */
-    protected function parseShareRequest(\DOMDocument $dom) {
+    public function parseShareRequest(\DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);

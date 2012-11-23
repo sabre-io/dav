@@ -7,6 +7,7 @@
 	* Added: Browser plugin now marks a carddav directory as type Directory.
 	* Added: Generalized the multistatus response parser a bit more, for
 	  better re-use.
+	* Added: Deserializer for {DAV:}current-user-privilege-set.
 
 1.8.1-stable (2012-??-??)
 	* Includes changes from version 1.7.3.

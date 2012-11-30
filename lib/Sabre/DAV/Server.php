@@ -203,6 +203,14 @@ class Server {
 
         try {
 
+            // If nginx (pre-1.2) is used as a proxy server, and SabreDAV as an
+            // origin, we must make sure we send back HTTP/1.0 if this was
+            // requested.
+            // This is mainly because nginx doesn't support Chunked Transfer
+            // Encoding, and this forces the webserver SabreDAV is running on,
+            // to buffer entire responses to calculate Content-Length.
+            $this->httpResponse->defaultHttpVersion = $this->httpRequest->getHTTPVersion();
+
             $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
 
         } catch (Exception $e) {

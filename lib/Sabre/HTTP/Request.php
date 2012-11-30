@@ -264,5 +264,21 @@ class Sabre_HTTP_Request {
 
     }
 
+    /**
+     * Returns the HTTP version specified within the request.
+     *
+     * @return string
+     */
+    public function getHTTPVersion() {
+
+        $protocol = $this->getRawServerValue('SERVER_PROTOCOL');
+        if ($protocol==='HTTP/1.0') {
+            return '1.0';
+        } else {
+            return '1.1';
+        }
+
+    }
+
 }
 

@@ -14,7 +14,7 @@ class Sabre_HTTP_ResponseMock extends Sabre_HTTP_Response {
 
     function sendStatus($code) {
 
-        $this->status = $this->getStatusMessage($code);
+        $this->status = $this->getStatusMessage($code, $this->defaultHttpVersion);
 
     }
 

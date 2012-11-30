@@ -14,12 +14,23 @@ namespace Sabre\HTTP;
 class Response {
 
     /**
+     * The HTTP version to return in the header() line.
+     *
+     * By default you will definitely want this to be HTTP/1.1, but in some
+     * edge cases (most notably pre 1.2 nginx servers acting as a proxy), you
+     * want to force this to 1.0.
+     *
+     * @var string
+     */
+    public $defaultHttpVersion = '1.1';
+
+    /**
      * Returns a full HTTP status message for an HTTP status code
      *
      * @param int $code
      * @return string
      */
-    public function getStatusMessage($code) {
+    public function getStatusMessage($code, $httpVersion = '1.1') {
 
         $msg = array(
             100 => 'Continue',
@@ -83,7 +94,7 @@ class Response {
             511 => 'Network Authentication Required', // draft-nottingham-http-new-status
        );
 
-       return 'HTTP/1.1 ' . $code . ' ' . $msg[$code];
+       return 'HTTP/' . $httpVersion . ' ' . $code . ' ' . $msg[$code];
 
     }
 
@@ -91,7 +102,7 @@ class Response {
     // We cannot reasonably test header() related methods.
 
     /**
-     * Sends an HTTP status header to the client
+     * Sends an HTTP status header to the client.
      *
      * @param int $code HTTP status code
      * @return bool
@@ -99,7 +110,7 @@ class Response {
     public function sendStatus($code) {
 
         if (!headers_sent())
-            return header($this->getStatusMessage($code));
+            return header($this->getStatusMessage($code, $this->defaultHttpVersion));
         else return false;
 
     }

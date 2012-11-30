@@ -39,8 +39,9 @@
 	* Fixed: Removing double slashes from getPropertiesForPath.
 	* Change: Marked a few more properties in the CardDAV as protected,
 	  instead of private.
-	* Fixed: SharingPlugin now place nicer with other plugins with similar
+	* Fixed: SharingPlugin now plays nicer with other plugins with similar
 	  functionality.
+	* Fixed: Issue 174. Sending back HTTP/1.0 for requests with this version.
 
 1.7.2-stable (2012-11-08)
     * The zip release ships with sabre/vobject 2.0.5.

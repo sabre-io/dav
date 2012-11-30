@@ -16,7 +16,7 @@ class ResponseMock extends Response {
 
     function sendStatus($code) {
 
-        $this->status = $this->getStatusMessage($code);
+        $this->status = $this->getStatusMessage($code, $this->defaultHttpVersion);
 
     }
 

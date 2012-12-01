@@ -4,7 +4,8 @@
 	  properties, if needed.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
-	* Added: Browser plugin now marks a carddav directory as type Directory.
+	* Added: Browser plugin now marks a carddav directory as type Directory,
+	  and a shared calendar as 'Shared'.
 	* Added: Generalized the multistatus response parser a bit more, for
 	  better re-use.
 	* Added: Sabre\DAV\Client now has support for complex properties for
@@ -16,7 +17,7 @@
 	* Fixed: Typo in 1.7 migration script caused it to fail.
 
 1.8.0-stable (2012-11-08)
-    * The zip release ships with sabre/vobject 2.0.5.
+	* The zip release ships with sabre/vobject 2.0.5.
 	* BC Break: Moved the entire codebase to PHP namespaces.
 	* BC Break: Every backend package (CalDAV, CardDAV, Auth, Locks,
 	  Principals) now has consistent naming conventions. There's a
@@ -25,7 +26,6 @@
 	  package, to reduce dependencies on the ACL package.
 	* BC Break: Sabre_CalDAV_ISharedCalendar now also has a getShares method,
 	  so sharees can figure out who is also on a shared calendar.
-
 	* Added: Sabre_DAVACL_IPrincipalCollection interface, to advertise support
 	  for principal-property-search on any node.
 	* Added: Simple console script to fire up a fileserver in the current
@@ -44,7 +44,7 @@
 	* Fixed: Issue 174. Sending back HTTP/1.0 for requests with this version.
 
 1.7.2-stable (2012-11-08)
-    * The zip release ships with sabre/vobject 2.0.5.
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
 	  property-search'.
 	* Fixed: [#153] Allowing for relative http principals in iMip requests.

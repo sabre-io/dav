@@ -75,14 +75,14 @@ class ServerSimpleTest extends AbstractServer{
             'SERVER_PROTOCOL' => 'HTTP/1.0',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
-            'Last-Modified' => Sabre_HTTP_Util::toHTTPDate(new DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
             $this->response->headers
          );

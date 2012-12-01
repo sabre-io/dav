@@ -1,4 +1,5 @@
-1.7.3-stable (2012-??-??)
+1.7.3-stable (2012-12-01)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Fixed: Removing double slashes from getPropertiesForPath.
 	* Change: Marked a few more properties in the CardDAV as protected,
 	  instead of private.
@@ -7,7 +8,7 @@
 	* Fixed: Issue 174. Sending back HTTP/1.0 for requests with this version.
 
 1.7.2-stable (2012-11-08)
-    * The zip release ships with sabre/vobject 2.0.5. 
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Added: ACL plugin advertises support for 'calendarserver-principal-
 	  property-search'.
 	* Fixed: [#153] Allowing for relative http principals in iMip requests.

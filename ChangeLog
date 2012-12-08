@@ -12,7 +12,7 @@
 	  PROPPATCH. (Issue #299).
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
 
-1.8.1-stable (2012-??-??)
+1.8.1-stable (2012-12-01)
 	* Includes changes from version 1.7.3.
 	* Fixed: Typo in 1.7 migration script caused it to fail.
 
@@ -35,7 +35,8 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.3-stable (2012-??-??)
+1.7.3-stable (2012-12-01)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Fixed: Removing double slashes from getPropertiesForPath.
 	* Change: Marked a few more properties in the CardDAV as protected,
 	  instead of private.

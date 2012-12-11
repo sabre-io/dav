@@ -6,15 +6,24 @@ class ClientMock extends Client {
 
     public $response;
 
-    public $url;
     public $curlSettings;
-
-    protected function curlRequest($url, $curlSettings) {
-
-        $this->url = $url;
-        $this->curlSettings = $curlSettings;
+	public function __construct(array $settings) {
+		$this->curlSettings=array();
+		$this->curlSettings+=static::$defaultCurlSettings;
+		if(isset($settings["curl"]))$this->curlSettings+=$settings["curl"];
+		parent::__construct($settings);
+    }
+	
+	protected function initCurl(&$settings=null){
+		$this->curlSettings = static::$defaultCurlSettings;
+		if (isset($settings)&&is_array($settings)){
+			$this->curlSettings+=$settings;
+		}
+	}
+	
+    protected function curlRequest($curlSettings) {
+        $this->curlSettings += $curlSettings;
         return $this->response;
-
     }
 
     /**

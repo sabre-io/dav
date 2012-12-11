@@ -11,7 +11,9 @@ namespace Sabre\DAV;
  * NOTE: This class is experimental, it's api will likely change in the future.
  *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) by KOLANICH 2012.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @author KOLANICH
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Client {
@@ -28,13 +30,23 @@ class Client {
      *
      * @var array
      */
+	static $defaultCurlSettings=array(
+		CURLOPT_RETURNTRANSFER => true,
+		// Return headers as part of the response
+		CURLOPT_HEADER => true,
+		// Automatically follow redirects
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_MAXREDIRS => 5,
+		/*CURLOPT_SSL_VERIFYHOST =>0,
+		CURLOPT_SSL_VERIFYPEER =>0,*/
+	);
     public $propertyMap = array();
 
     protected $baseUri;
     protected $userName;
     protected $password;
     protected $proxy;
-    protected $trustedCertificates;
+    protected $ch=null;
 
     /**
      * Basic authentication
@@ -97,8 +109,26 @@ class Client {
         }
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
-
+		
+		static::initCurl($settings['curl']);
     }
+	public function __destruct() {
+		if($this->ch)curl_close($this->ch);
+    }
+	
+	protected function initCurl(&$settings=null){
+		$this->ch=curl_init();
+		if (!$this->ch) {
+            throw new Sabre_DAV_Exception('[CURL] unable to initialize curl handle');
+        }
+		$curlSettings = static::$defaultCurlSettings;
+		if (isset($settings)&&is_array($settings)){
+			$curlSettings+=$settings;
+			unset($settings);
+		}
+		curl_setopt_array($this->ch, $curlSettings);
+		unset($curlSettings);
+	}
 
     /**
      * Add trusted root certificates to the webdav client.
@@ -109,7 +139,12 @@ class Client {
      * @param string $certificates
      */
     public function addTrustedCertificates($certificates) {
-        $this->trustedCertificates = $certificates;
+		if(is_string($certificates)){
+			if(!file_exists($certificates))throw new Exception('certificates path is not valid');
+            curl_setopt($this->ch,CURLOPT_CAINFO,$certificates);
+        }else{
+			throw new Exception('$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
+		}
     }
 
     /**
@@ -298,20 +333,10 @@ class Client {
     public function request($method, $url = '', $body = null, $headers = array()) {
 
         $url = $this->getAbsoluteUrl($url);
-
         $curlSettings = array(
-            CURLOPT_RETURNTRANSFER => true,
-            // Return headers as part of the response
-            CURLOPT_HEADER => true,
+            CURLOPT_URL => $url,
             CURLOPT_POSTFIELDS => $body,
-            // Automatically follow redirects
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
         );
-
-        if($this->trustedCertificates) {
-            $curlSettings[CURLOPT_CAINFO] = $this->trustedCertificates;
-        }
 
         switch ($method) {
             case 'HEAD' :
@@ -361,7 +386,7 @@ class Client {
             $curlInfo,
             $curlErrNo,
             $curlError
-        ) = $this->curlRequest($url, $curlSettings);
+        ) = $this->curlRequest($curlSettings);
 
         $headerBlob = substr($response, 0, $curlInfo['header_size']);
         $response = substr($response, $curlInfo['header_size']);
@@ -429,7 +454,38 @@ class Client {
         return $response;
 
     }
-
+	
+	 /**
+     * Puts a file or buffer to server.
+	 * If you wanna put a file, $mode must be 0 (it is by default), $file should contain filename.
+     * If you wanna put a binary string, you must set $mode into 1 and $remoteName also must be set
+     * @param string $url
+     * @param string $file
+	 * @param string $remoteName
+	 * @param integer $mode
+     * @return array
+     */
+	public function put($file, $url='/', $remoteName='', $mode=0){
+		switch ($mode){
+			case 0:
+				if(!file_exists($file)){
+					throw new Exception('Upload Error : file ' . $file . ' doesnt exist');
+				}
+				if(!$remoteName)$remoteName=basename($file);
+				//new dBug($url.$remoteName);
+				return $this->request('PUT', $url.$remoteName, array("file"=>'@'.$file));
+			break;
+			case 1:
+				if(!$remoteName)throw new Exception('You MUST specify $remoteName if you upload blob');
+				//new dBug($url.$remoteName);
+				return $this->request('PUT', $url.$remoteName, $file);
+			break;
+			default:
+				throw new Exception('Bad mode value');
+			break;
+		}
+	}
+	
     /**
      * Wrapper for all curl functions.
      *
@@ -441,16 +497,15 @@ class Client {
      * @return array
      */
     // @codeCoverageIgnoreStart
-    protected function curlRequest($url, $settings) {
+    protected function curlRequest($settings) {
 
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $settings);
+        curl_setopt_array($this->ch, $settings);
 
         return array(
-            curl_exec($curl),
-            curl_getinfo($curl),
-            curl_errno($curl),
-            curl_error($curl)
+            curl_exec($this->ch),
+            curl_getinfo($this->ch),
+            curl_errno($this->ch),
+            curl_error($this->ch)
         );
 
     }

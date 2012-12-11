@@ -48,8 +48,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -97,8 +98,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -120,11 +122,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     function testRequestCAInfo() {
-
+		
         $client = new ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
-
+		
         $responseBlob = array(
             "HTTP/1.1 200 OK",
             "Content-Type: text/plain",
@@ -141,23 +143,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             0,
             ""
         );
-
-        $client->addTrustedCertificates('bla');
-
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
-        $this->assertEquals(array(
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
-            CURLOPT_HEADER => true,
-            CURLOPT_CAINFO => 'bla',
-            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
-        ), $client->curlSettings);
-
+		
+		$certPath=__DIR__."/SabreDavTest.cer";
+		
+		try{
+			@$client->addTrustedCertificates("ololol");
+			$this->fail();
+		}
+		catch(Exception $ex){
+			$this->assertEquals($ex->getMessage(), 'certificates path is not valid');
+		}
+		
+		try{
+			@$client->addTrustedCertificates(array("ololol"));
+			$this->fail();
+		}
+		catch(Exception $ex){
+			$this->assertEquals($ex->getMessage(),'$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
+		}
+		
+       @$client->addTrustedCertificates($certPath);
+		
     }
 
     function testRequestAuth() {
@@ -187,8 +193,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -238,8 +245,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -289,8 +297,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -865,8 +874,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $result = $client->request('HEAD', 'baz');
 
-        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/baz',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -903,9 +912,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
 
         $result = $client->request('PUT', 'bar','newcontent');
-
-        $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
+		
         $this->assertEquals(array(
+			CURLOPT_URL => 'http://example.org/foo/bar/bar',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
@@ -916,4 +925,27 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         ), $client->curlSettings);
 
     }
+	/*function testPuttingString() {
+		$webdav = new ClientMock(array(
+			'baseUri' => 'http://example.org/foo/',
+		));
+		$str=sha1(rand());
+		$webdav->put($str,'bar/','test.txt',1);
+		$res=$webdav->request('GET', 'bar/test.txt');
+		$this->assertEquals($str, $res['body']);
+		$webdav->request('DELETE', 'bar/test.txt');
+    }
+	function testPuttingFile() {
+		$webdav = new ClientMock(array(
+			'baseUri' => 'http://example.org/foo/',
+		));
+		$str=sha1(rand());
+		$filename=__DIR__.'/'.'test.txt';
+		file_put_contents($filename,$str);
+		$webdav->put($filename,"bar/",'test.txt');
+		unlink($filename);
+		$res=$webdav->request('GET', $dir.'test.txt');
+		$this->assertEquals($str, $res['body']);
+		$webdav->request('DELETE', $dir.'test.txt');
+    }*/
 }

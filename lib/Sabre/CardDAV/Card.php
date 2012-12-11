@@ -209,6 +209,11 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
      */
     public function getACL() {
 
+        // An alternative acl may be specified through the cardData array.
+        if (isset($this->cardData['acl'])) {
+            return $this->cardData['acl'];
+        }
+
         return array(
             array(
                 'privilege' => '{DAV:}read',

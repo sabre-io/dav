@@ -11,6 +11,8 @@
 	* Added: Sabre\DAV\Client now has support for complex properties for
 	  PROPPATCH. (Issue #299).
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
+	* Added: Addressbooks or backends can now specify custom acl rules when
+	  creating cards.
 
 1.8.1-stable (2012-12-01)
 	* Includes changes from version 1.7.3.

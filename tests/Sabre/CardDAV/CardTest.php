@@ -163,6 +163,37 @@ class CardTest extends \PHPUnit_Framework_TestCase {
         ), $this->card->getACL());
 
     }
+    function testOverrideACL() {
+
+        $card = new Card(
+            $this->backend,
+            array(
+                'uri' => 'book1',
+                'id' => 'foo',
+                'principaluri' => 'principals/user1',
+            ),
+            array(
+                'uri' => 'card1',
+                'addressbookid' => 'foo',
+                'carddata' => 'card',
+                'acl' => array(
+                    array(
+                        'privilege' => '{DAV:}read',
+                        'principal' => 'principals/user1',
+                        'protected' => true,
+                    ),
+                ),
+            )
+        );
+        $this->assertEquals(array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+        ), $card->getACL());
+
+    }
 
     /**
      * @expectedException Sabre\DAV\Exception\MethodNotAllowed

@@ -94,6 +94,11 @@ class PDO extends AbstractBackend {
      * Furthermore it can contain webdav properties in clark notation. A very
      * common one is '{DAV:}displayname'.
      *
+     * Many clients also require:
+     * {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set
+     * For this property, you can just return an instance of
+     * Sabre\CalDAV\Property\SupportedCalendarComponentSet.
+     *
      * @param string $principalUri
      * @return array
      */

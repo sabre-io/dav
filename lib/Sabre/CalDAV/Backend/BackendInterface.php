@@ -4,9 +4,9 @@ namespace Sabre\CalDAV\Backend;
 
 /**
  * Every CalDAV backend must at least implement this interface.
- * 
+ *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 interface BackendInterface {
@@ -24,6 +24,11 @@ interface BackendInterface {
      *
      * Furthermore it can contain webdav properties in clark notation. A very
      * common one is '{DAV:}displayname'.
+     *
+     * Many clients also require:
+     * {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set
+     * For this property, you can just return an instance of
+     * Sabre\CalDAV\Property\SupportedCalendarComponentSet.
      *
      * @param string $principalUri
      * @return array
@@ -79,7 +84,7 @@ interface BackendInterface {
      * @param array $mutations
      * @return bool|array
      */
-    public function updateCalendar($calendarId, array $mutations); 
+    public function updateCalendar($calendarId, array $mutations);
 
     /**
      * Delete a calendar and all it's objects
@@ -226,6 +231,6 @@ interface BackendInterface {
      * @param array $filters
      * @return array
      */
-    public function calendarQuery($calendarId, array $filters); 
+    public function calendarQuery($calendarId, array $filters);
 
 }

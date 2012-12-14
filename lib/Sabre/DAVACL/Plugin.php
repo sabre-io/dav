@@ -1229,7 +1229,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
                 $node[200][$propertyName] = new Sabre_DAV_Property_ResponseList($childProps);
 
             }
-            $result[] = new Sabre_DAV_Property_Response($path, $node);
+            $result[] = new Sabre_DAV_Property_Response($node['href'], $node);
 
         }
 

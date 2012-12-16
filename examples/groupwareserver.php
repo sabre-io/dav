@@ -67,14 +67,14 @@ $caldavBackend    = new \Sabre\CalDAV\Backend\PDO($pdo);
  * Basically this is an array which contains the 'top-level' directories in the
  * WebDAV server.
  */
-$nodes = array(
+$nodes = [
     // /principals
     new \Sabre\CalDAV\Principal\Collection($principalBackend),
     // /calendars
     new \Sabre\CalDAV\CalendarRootNode($principalBackend, $caldavBackend),
     // /addressbook
     new \Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend),
-);
+];
 
 // The object tree needs in turn to be passed to the server class
 $server = new \Sabre\DAV\Server($nodes);

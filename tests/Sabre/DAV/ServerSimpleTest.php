@@ -67,6 +67,30 @@ class ServerSimpleTest extends AbstractServer{
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
+    function testGetHttp10() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_METHOD' => 'GET',
+            'SERVER_PROTOCOL' => 'HTTP/1.0',
+        );
+
+        $request = new HTTP\Request($serverVars);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'Content-Type' => 'application/octet-stream',
+            'Content-Length' => 13,
+            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            ),
+            $this->response->headers
+         );
+
+        $this->assertEquals('HTTP/1.0 200 OK',$this->response->status);
+        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
+
+    }
 
     function testGetDoesntExist() {
 

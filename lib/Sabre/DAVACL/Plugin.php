@@ -1229,7 +1229,7 @@ class Plugin extends DAV\ServerPlugin {
                 $node[200][$propertyName] = new DAV\Property\ResponseList($childProps);
 
             }
-            $result[] = new DAV\Property\Response($path, $node);
+            $result[] = new DAV\Property\Response($node['href'], $node);
 
         }
 

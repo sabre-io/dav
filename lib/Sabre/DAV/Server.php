@@ -619,7 +619,16 @@ class Server {
             // New read/write stream
             $newStream = fopen('php://temp','r+');
 
-            stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
+            // stream_copy_to_stream() has a bug/feature: the `whence` argument
+            // is interpreted as SEEK_SET (count from absolute offset 0), while
+            // for a stream it should be SEEK_CUR (count from current offset).
+            // If a stream is nonseekable, the function fails. So we *emulate*
+            // the correct behaviour with fseek():
+            if ($start > 0) {
+                if (($curOffs = ftell($body)) === false) $curOffs = 0;
+                fseek($body, $start - $curOffs, SEEK_CUR);
+            }
+            stream_copy_to_stream($body, $newStream, $end-$start+1);
             rewind($newStream);
 
             $this->httpResponse->setHeader('Content-Length', $end-$start+1);

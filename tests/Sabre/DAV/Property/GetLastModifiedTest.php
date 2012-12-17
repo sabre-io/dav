@@ -43,9 +43,17 @@ class Sabre_DAV_Property_GetLastModifiedTest extends PHPUnit_Framework_TestCase 
 
         $xml = $doc->saveXML();
 
+        /*
         $this->assertEquals(
 '<?xml version="1.0"?>
 <d:getlastmodified xmlns:d="DAV:" xmlns:b="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/" b:dt="dateTime.rfc1123">' .
+Sabre_HTTP_Util::toHTTPDate($dt) .
+'</d:getlastmodified>
+', $xml);
+        */
+        $this->assertEquals(
+'<?xml version="1.0"?>
+<d:getlastmodified xmlns:d="DAV:">' .
 Sabre_HTTP_Util::toHTTPDate($dt) .
 '</d:getlastmodified>
 ', $xml);

@@ -33,11 +33,11 @@ $authBackend = new \Sabre\DAV\Auth\Backend\PDO($pdo);
 $calendarBackend = new \Sabre\CalDAV\Backend\PDO($pdo);
 $principalBackend = new \Sabre\DAVACL\PrincipalBackend\PDO($pdo);
 
-// Directory structure 
-$tree = array(
+// Directory structure
+$tree = [
     new \Sabre\CalDAV\Principal\Collection($principalBackend),
     new \Sabre\CalDAV\CalendarRootNode($principalBackend, $calendarBackend),
-);
+];
 
 $server = new \Sabre\DAV\Server($tree);
 

@@ -35,11 +35,11 @@ $carddavBackend   = new Sabre\CardDAV\Backend\PDO($pdo);
 //$caldavBackend    = new Sabre\CalDAV\Backend\PDO($pdo);
 
 // Setting up the directory tree //
-$nodes = array(
+$nodes = [
     new Sabre\DAVACL\PrincipalCollection($principalBackend),
 //    new Sabre\CalDAV\CalendarRootNode($authBackend, $caldavBackend),
     new Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend),
-);
+];
 
 // The object tree needs in turn to be passed to the server class
 $server = new Sabre\DAV\Server($nodes);

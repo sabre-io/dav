@@ -65,14 +65,14 @@ class Server {
      *
      * @var array
      */
-    protected $plugins = array();
+    protected $plugins = [];
 
     /**
      * This array contains a list of callbacks we should call when certain events are triggered
      *
      * @var array
      */
-    protected $eventSubscriptions = array();
+    protected $eventSubscriptions = [];
 
     /**
      * This is a default list of namespaces.
@@ -82,10 +82,10 @@ class Server {
      *
      * @var array
      */
-    public $xmlNamespaces = array(
+    public $xmlNamespaces = [
         'DAV:' => 'd',
         'http://sabredav.org/ns' => 's',
-    );
+    ];
 
     /**
      * The propertymap can be used to map properties from
@@ -93,11 +93,11 @@ class Server {
      *
      * @var array
      */
-    public $propertyMap = array(
+    public $propertyMap = [
         '{DAV:}resourcetype' => 'Sabre\\DAV\\Property\\ResourceType',
-    );
+    ];
 
-    public $protectedProperties = array(
+    public $protectedProperties = [
         // RFC4918
         '{DAV:}getcontentlength',
         '{DAV:}getetag',
@@ -116,7 +116,7 @@ class Server {
         '{DAV:}acl-restrictions',
         '{DAV:}inherited-acl-set',
 
-    );
+    ];
 
     /**
      * This is a flag that allow or not showing file, line and code
@@ -135,9 +135,9 @@ class Server {
      *
      * @var array
      */
-    public $resourceTypeMapping = array(
+    public $resourceTypeMapping = [
         'Sabre\\DAV\\ICollection' => '{DAV:}collection',
-    );
+    ];
 
     /**
      * If this setting is turned off, SabreDAV's version number will be hidden
@@ -216,7 +216,7 @@ class Server {
         } catch (Exception $e) {
 
             try {
-                $this->broadcastEvent('exception', array($e));
+                $this->broadcastEvent('exception', [$e]);
             } catch (Exception $ignore) {
             }
             $DOM = new \DOMDocument('1.0','utf-8');
@@ -254,7 +254,7 @@ class Server {
             } else {
 
                 $httpCode = 500;
-                $headers = array();
+                $headers = [];
 
             }
             $headers['Content-Type'] = 'application/xml; charset=utf-8';
@@ -405,7 +405,7 @@ class Server {
     public function subscribeEvent($event, $callback, $priority = 100) {
 
         if (!isset($this->eventSubscriptions[$event])) {
-            $this->eventSubscriptions[$event] = array();
+            $this->eventSubscriptions[$event] = [];
         }
         while(isset($this->eventSubscriptions[$event][$priority])) $priority++;
         $this->eventSubscriptions[$event][$priority] = $callback;
@@ -424,7 +424,7 @@ class Server {
      * @param array $arguments
      * @return bool
      */
-    public function broadcastEvent($eventName,$arguments = array()) {
+    public function broadcastEvent($eventName,$arguments = []) {
 
         if (isset($this->eventSubscriptions[$eventName])) {
 
@@ -452,10 +452,10 @@ class Server {
 
         $method = strtoupper($method);
 
-        if (!$this->broadcastEvent('beforeMethod',array($method, $uri))) return;
+        if (!$this->broadcastEvent('beforeMethod',[$method, $uri])) return;
 
         // Make sure this is a HTTP method we support
-        $internalMethods = array(
+        $internalMethods = [
             'OPTIONS',
             'GET',
             'HEAD',
@@ -467,15 +467,15 @@ class Server {
             'COPY',
             'MOVE',
             'REPORT'
-        );
+        ];
 
         if (in_array($method,$internalMethods)) {
 
-            call_user_func(array($this,'http' . $method), $uri);
+            call_user_func([$this, 'http' . $method], $uri);
 
         } else {
 
-            if ($this->broadcastEvent('unknownMethod',array($method, $uri))) {
+            if ($this->broadcastEvent('unknownMethod',[$method, $uri])) {
                 // Unsupported method
                 throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
             }
@@ -497,7 +497,7 @@ class Server {
         $methods = $this->getAllowedMethods($uri);
 
         $this->httpResponse->setHeader('Allow',strtoupper(implode(', ',$methods)));
-        $features = array('1','3', 'extended-mkcol');
+        $features = ['1','3', 'extended-mkcol'];
 
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
 
@@ -619,7 +619,16 @@ class Server {
             // New read/write stream
             $newStream = fopen('php://temp','r+');
 
-            stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
+            // stream_copy_to_stream() has a bug/feature: the `whence` argument
+            // is interpreted as SEEK_SET (count from absolute offset 0), while
+            // for a stream it should be SEEK_CUR (count from current offset).
+            // If a stream is nonseekable, the function fails. So we *emulate*
+            // the correct behaviour with fseek():
+            if ($start > 0) {
+                if (($curOffs = ftell($body)) === false) $curOffs = 0;
+                fseek($body, $start - $curOffs, SEEK_CUR);
+            }
+            stream_copy_to_stream($body, $newStream, $end-$start+1);
             rewind($newStream);
 
             $this->httpResponse->setHeader('Content-Length', $end-$start+1);
@@ -675,9 +684,9 @@ class Server {
      */
     protected function httpDelete($uri) {
 
-        if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
+        if (!$this->broadcastEvent('beforeUnbind',[$uri])) return;
         $this->tree->delete($uri);
-        $this->broadcastEvent('afterUnbind',array($uri));
+        $this->broadcastEvent('afterUnbind',[$uri]);
 
         $this->httpResponse->sendStatus(204);
         $this->httpResponse->setHeader('Content-Length','0');
@@ -718,7 +727,7 @@ class Server {
         // Normally this header is only needed for OPTIONS responses, however..
         // iCal seems to also depend on these being set for PROPFIND. Since
         // this is not harmful, we'll add it.
-        $features = array('1','3', 'extended-mkcol');
+        $features = ['1', '3', 'extended-mkcol'];
         foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
         $this->httpResponse->setHeader('DAV',implode(', ',$features));
 
@@ -773,7 +782,7 @@ class Server {
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
 
         $this->httpResponse->sendBody(
-            $this->generateMultiStatus(array($result))
+            $this->generateMultiStatus([$result])
         );
 
     }
@@ -878,11 +887,11 @@ class Server {
             //
             // If $modified is true, we must not send back an etag.
             $modified = false;
-            if (!$this->broadcastEvent('beforeWriteContent',array($uri, $node, &$body, &$modified))) return false;
+            if (!$this->broadcastEvent('beforeWriteContent',[$uri, $node, &$body, &$modified])) return false;
 
             $etag = $node->put($body);
 
-            $this->broadcastEvent('afterWriteContent',array($uri, $node));
+            $this->broadcastEvent('afterWriteContent',[$uri, $node]);
 
             $this->httpResponse->setHeader('Content-Length','0');
             if ($etag && !$modified) $this->httpResponse->setHeader('ETag',$etag);
@@ -936,7 +945,7 @@ class Server {
 
             }
 
-            $properties = array();
+            $properties = [];
             foreach($dom->firstChild->childNodes as $childNode) {
 
                 if (XMLUtil::toClarkNotation($childNode)!=='{DAV:}set') continue;
@@ -951,8 +960,8 @@ class Server {
 
         } else {
 
-            $properties = array();
-            $resourceType = array('{DAV:}collection');
+            $properties = [];
+            $resourceType = ['{DAV:}collection'];
 
         }
 
@@ -963,7 +972,7 @@ class Server {
             $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
 
             $this->httpResponse->sendBody(
-                $this->generateMultiStatus(array($result))
+                $this->generateMultiStatus([$result])
             );
 
         } else {
@@ -991,17 +1000,17 @@ class Server {
 
         if ($moveInfo['destinationExists']) {
 
-            if (!$this->broadcastEvent('beforeUnbind',array($moveInfo['destination']))) return false;
+            if (!$this->broadcastEvent('beforeUnbind',[$moveInfo['destination']])) return false;
             $this->tree->delete($moveInfo['destination']);
-            $this->broadcastEvent('afterUnbind',array($moveInfo['destination']));
+            $this->broadcastEvent('afterUnbind',[$moveInfo['destination']]);
 
         }
 
-        if (!$this->broadcastEvent('beforeUnbind',array($uri))) return false;
-        if (!$this->broadcastEvent('beforeBind',array($moveInfo['destination']))) return false;
+        if (!$this->broadcastEvent('beforeUnbind',[$uri])) return false;
+        if (!$this->broadcastEvent('beforeBind',[$moveInfo['destination']])) return false;
         $this->tree->move($uri,$moveInfo['destination']);
-        $this->broadcastEvent('afterUnbind',array($uri));
-        $this->broadcastEvent('afterBind',array($moveInfo['destination']));
+        $this->broadcastEvent('afterUnbind',[$uri]);
+        $this->broadcastEvent('afterBind',[$moveInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
         $this->httpResponse->setHeader('Content-Length','0');
@@ -1026,13 +1035,13 @@ class Server {
             throw new Exception\Forbidden('Source and destination uri are identical.');
 
         if ($copyInfo['destinationExists']) {
-            if (!$this->broadcastEvent('beforeUnbind',array($copyInfo['destination']))) return false;
+            if (!$this->broadcastEvent('beforeUnbind',[$copyInfo['destination']])) return false;
             $this->tree->delete($copyInfo['destination']);
 
         }
-        if (!$this->broadcastEvent('beforeBind',array($copyInfo['destination']))) return false;
+        if (!$this->broadcastEvent('beforeBind',[$copyInfo['destination']])) return false;
         $this->tree->copy($uri,$copyInfo['destination']);
-        $this->broadcastEvent('afterBind',array($copyInfo['destination']));
+        $this->broadcastEvent('afterBind',[$copyInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
         $this->httpResponse->setHeader('Content-Length','0');
@@ -1058,7 +1067,7 @@ class Server {
 
         $reportName = XMLUtil::toClarkNotation($dom->firstChild);
 
-        if ($this->broadcastEvent('report',array($reportName,$dom, $uri))) {
+        if ($this->broadcastEvent('report',[$reportName, $dom, $uri])) {
 
             // If broadcastEvent returned true, it means the report was not supported
             throw new Exception\ReportNotSupported();
@@ -1078,7 +1087,7 @@ class Server {
      */
     public function getAllowedMethods($uri) {
 
-        $methods = array(
+        $methods = [
             'OPTIONS',
             'GET',
             'HEAD',
@@ -1089,7 +1098,7 @@ class Server {
             'COPY',
             'MOVE',
             'REPORT'
-        );
+        ];
 
         // The MKCOL is only allowed on an unmapped uri
         try {
@@ -1203,10 +1212,10 @@ class Server {
 
         if ($matches[1]==='' && $matches[2]==='') return null;
 
-        return array(
+        return [
             $matches[1]!==''?$matches[1]:null,
             $matches[2]!==''?$matches[2]:null,
-        );
+        ];
 
     }
 
@@ -1219,14 +1228,14 @@ class Server {
      * This method will return an array with options.
      *
      * Currently, the following options may be returned:
-     *   array(
+     *  [
      *      'return-asynch'         => true,
      *      'return-minimal'        => true,
      *      'return-representation' => true,
      *      'wait'                  => 30,
      *      'strict'                => true,
      *      'lenient'               => true,
-     *   )
+     *  ]
      *
      * This method also supports the Brief header, and will also return
      * 'return-minimal' if the brief header was set to 't'.
@@ -1238,14 +1247,14 @@ class Server {
      */
     public function getHTTPPrefer() {
 
-        $result = array(
+        $result = [
             'return-asynch'         => false,
             'return-minimal'        => false,
             'return-representation' => false,
             'wait'                  => null,
             'strict'                => false,
             'lenient'               => false,
-        );
+        ];
 
         if ($prefer = $this->httpRequest->getHeader('Prefer')) {
 
@@ -1343,11 +1352,11 @@ class Server {
         }
 
         // These are the three relevant properties we need to return
-        return array(
+        return [
             'destination'       => $destination,
             'destinationExists' => $destinationNode==true,
             'destinationNode'   => $destinationNode,
-        );
+        ];
 
     }
 
@@ -1382,7 +1391,7 @@ class Server {
      */
     public function getPropertiesForChildren($path, $propertyNames) {
 
-        $result = array();
+        $result = [];
         foreach($this->getPropertiesForPath($path,$propertyNames,1) as $k=>$row) {
 
             // Skipping the parent path
@@ -1409,16 +1418,16 @@ class Server {
      */
     public function getHTTPHeaders($path) {
 
-        $propertyMap = array(
+        $propertyMap = [
             '{DAV:}getcontenttype'   => 'Content-Type',
             '{DAV:}getcontentlength' => 'Content-Length',
             '{DAV:}getlastmodified'  => 'Last-Modified',
             '{DAV:}getetag'          => 'ETag',
-        );
+        ];
 
         $properties = $this->getProperties($path,array_keys($propertyMap));
 
-        $headers = array();
+        $headers = [];
         foreach($propertyMap as $property=>$header) {
             if (!isset($properties[$property])) continue;
 
@@ -1450,18 +1459,18 @@ class Server {
      * @param int $depth
      * @return array
      */
-    public function getPropertiesForPath($path, $propertyNames = array(), $depth = 0) {
+    public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
         if ($depth!=0) $depth = 1;
 
         $path = rtrim($path,'/');
 
-        $returnPropertyList = array();
+        $returnPropertyList = [];
 
         $parentNode = $this->tree->getNodeForPath($path);
-        $nodes = array(
+        $nodes = [
             $path => $parentNode
-        );
+        ];
         if ($depth==1 && $parentNode instanceof ICollection) {
             foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
@@ -1476,14 +1485,14 @@ class Server {
 
             $currentPropertyNames = $propertyNames;
 
-            $newProperties = array(
-                '200' => array(),
-                '404' => array(),
-            );
+            $newProperties = [
+                '200' => [],
+                '404' => [],
+            ];
 
             if ($allProperties) {
                 // Default list of propertyNames, when all properties were requested.
-                $currentPropertyNames = array(
+                $currentPropertyNames = [
                     '{DAV:}getlastmodified',
                     '{DAV:}getcontentlength',
                     '{DAV:}resourcetype',
@@ -1491,7 +1500,7 @@ class Server {
                     '{DAV:}quota-available-bytes',
                     '{DAV:}getetag',
                     '{DAV:}getcontenttype',
-                );
+                ];
             }
 
             // If the resourceType was not part of the list, we manually add it
@@ -1504,7 +1513,7 @@ class Server {
                 $removeRT = true;
             }
 
-            $result = $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$currentPropertyNames, &$newProperties));
+            $result = $this->broadcastEvent('beforeGetProperties',[$myPath, $node, &$currentPropertyNames, &$newProperties]);
             // If this method explicitly returned false, we must ignore this
             // node as it is inaccessible.
             if ($result===false) continue;
@@ -1560,7 +1569,7 @@ class Server {
                     case '{DAV:}getetag'               : if ($node instanceof IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
                     case '{DAV:}getcontenttype'        : if ($node instanceof IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
                     case '{DAV:}supported-report-set'  :
-                        $reports = array();
+                        $reports = [];
                         foreach($this->plugins as $plugin) {
                             $reports = array_merge($reports, $plugin->getSupportedReportSet($myPath));
                         }
@@ -1580,7 +1589,7 @@ class Server {
 
             }
 
-            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties, $node));
+            $this->broadcastEvent('afterGetProperties',[trim($myPath,'/'),&$newProperties, $node]);
 
             $newProperties['href'] = trim($myPath,'/');
 
@@ -1623,7 +1632,7 @@ class Server {
 
         list($dir,$name) = URLUtil::splitPath($uri);
 
-        if (!$this->broadcastEvent('beforeBind',array($uri))) return false;
+        if (!$this->broadcastEvent('beforeBind',[$uri])) return false;
 
         $parent = $this->tree->getNodeForPath($dir);
         if (!$parent instanceof ICollection) {
@@ -1636,7 +1645,7 @@ class Server {
         //
         // If $modified is true, we must not send back an etag.
         $modified = false;
-        if (!$this->broadcastEvent('beforeCreateFile',array($uri, &$data, $parent, &$modified))) return false;
+        if (!$this->broadcastEvent('beforeCreateFile',[$uri, &$data, $parent, &$modified])) return false;
 
         $etag = $parent->createFile($name,$data);
 
@@ -1644,8 +1653,8 @@ class Server {
 
         $this->tree->markDirty($dir . '/' . $name);
 
-        $this->broadcastEvent('afterBind',array($uri));
-        $this->broadcastEvent('afterCreateFile',array($uri, $parent));
+        $this->broadcastEvent('afterBind',[$uri]);
+        $this->broadcastEvent('afterCreateFile',[$uri, $parent]);
 
         return true;
     }
@@ -1658,7 +1667,7 @@ class Server {
      */
     public function createDirectory($uri) {
 
-        $this->createCollection($uri,array('{DAV:}collection'),array());
+        $this->createCollection($uri,['{DAV:}collection'], []);
 
     }
 
@@ -1715,7 +1724,7 @@ class Server {
         }
 
 
-        if (!$this->broadcastEvent('beforeBind',array($uri))) return;
+        if (!$this->broadcastEvent('beforeBind',[$uri])) return;
 
         // There are 2 modes of operation. The standard collection
         // creates the directory, and then updates properties
@@ -1755,7 +1764,7 @@ class Server {
             }
 
             if ($rollBack) {
-                if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
+                if (!$this->broadcastEvent('beforeUnbind',[$uri])) return;
                 $this->tree->delete($uri);
 
                 // Re-throwing exception
@@ -1766,7 +1775,7 @@ class Server {
 
         }
         $this->tree->markDirty($parentUri);
-        $this->broadcastEvent('afterBind',array($uri));
+        $this->broadcastEvent('afterBind',[$uri]);
 
     }
 
@@ -1794,11 +1803,11 @@ class Server {
         // exceptions if it doesn't.
         $node = $this->tree->getNodeForPath($uri);
 
-        $result = array(
-            200 => array(),
-            403 => array(),
-            424 => array(),
-        );
+        $result = [
+            200 => [],
+            403 => [],
+            424 => [],
+        ];
         $remainingProperties = $properties;
         $hasError = false;
 
@@ -1813,11 +1822,11 @@ class Server {
 
         if (!$hasError) {
             // Allowing plugins to take care of property updating
-            $hasError = !$this->broadcastEvent('updateProperties',array(
+            $hasError = !$this->broadcastEvent('updateProperties', [
                 &$remainingProperties,
                 &$result,
                 $node
-            ));
+            ]);
         }
 
         // If the node is not an instance of Sabre\DAV\IProperties, every
@@ -1827,7 +1836,7 @@ class Server {
             foreach($properties as $propertyName=> $value) {
                 $result[403][$propertyName] = null;
             }
-            $remainingProperties = array();
+            $remainingProperties = [];
         }
 
         // Only if there were no errors we may attempt to update the resource
@@ -1857,7 +1866,7 @@ class Server {
                     foreach($updateResult as $status => $props) {
                         if (is_array($props)) {
                             if (!isset($result[$status]))
-                                $result[$status] = array();
+                                $result[$status] = [];
 
                             $result[$status] = array_merge($result[$status], $updateResult[$status]);
                         }
@@ -1866,7 +1875,7 @@ class Server {
                 } else {
                     throw new Exception('Invalid result from updateProperties');
                 }
-                $remainingProperties = array();
+                $remainingProperties = [];
             }
 
         }
@@ -2121,7 +2130,7 @@ class Server {
         //We'll need to change the DAV namespace declaration to something else in order to make it parsable
         $dom = XMLUtil::loadDOMDocument($body);
 
-        $newProperties = array();
+        $newProperties = [];
 
         foreach($dom->firstChild->childNodes as $child) {
 
@@ -2161,7 +2170,7 @@ class Server {
     public function parsePropFindRequest($body) {
 
         // If the propfind body was empty, it means IE is requesting 'all' properties
-        if (!$body) return array();
+        if (!$body) return [];
 
         $dom = XMLUtil::loadDOMDocument($body);
         $elem = $dom->getElementsByTagNameNS('DAV:','propfind')->item(0);

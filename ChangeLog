@@ -41,10 +41,17 @@
 	  greater flexiblity.
 
 1.7.4-stable (????-??-??)
+	* Changed: To be compatibile with MS Office 2011 for Mac, a workaround was
+	  removed that was added to support old versions of Windows XP (pre-SP3).
+	  Indeed! We needed a crazy workaround to work with one MS product in the
+	  past, and we can't keep that workaround to be compatible with another MS
+	  product.
 	* Fixed: expand-properties REPORT had incorrect values for the href
 	  element.
 	* Fixed: Range requests now work for non-seekable streams. (Thanks Alfred
 	  Klomp).
+	* Fixed: Changed serialization of {DAV:}getlastmodified and
+	  {DAV:}supportedlock to improve compatiblity with MS Office 2011 for Mac.
 
 1.7.3-stable (2012-12-01)
 	* The zip release ships with sabre/vobject 2.0.5.

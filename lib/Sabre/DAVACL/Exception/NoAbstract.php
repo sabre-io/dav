@@ -8,7 +8,7 @@ use Sabre\DAV;
  * This exception is thrown when a user tries to set a privilege that's marked
  * as abstract.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

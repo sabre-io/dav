@@ -11,7 +11,7 @@ use Sabre\CardDAV;
  * This property is a representation of the supported-address-data property
  * in the CardDAV namespace.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

@@ -6,7 +6,7 @@ use Sabre\VObject;
  * This unittest is created to find out why an overwritten DAILY event has wrong DTSTART, DTEND, SUMMARY and RECURRENCEID
  *
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

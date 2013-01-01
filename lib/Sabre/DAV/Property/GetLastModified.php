@@ -14,7 +14,7 @@ use Sabre\HTTP;
  * This class uses unix timestamps internally, and converts them to RFC 1123 times for
  * serialization
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

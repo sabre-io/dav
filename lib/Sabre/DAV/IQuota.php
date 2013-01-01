@@ -9,7 +9,7 @@ namespace Sabre\DAV;
  * will check for quota information on any given node. If the information is not available it will
  * attempt to fetch the information from the root node.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

@@ -514,9 +514,6 @@ class Client {
         } catch (Exception\BadRequest $e) {
             throw new \InvalidArgumentException('The body passed to parseMultiStatus could not be parsed. Is it really xml?');
         }
-        $xpath = new \DOMXPath($dom);
-
-        $xpath->registerNamespace('d', 'DAV:');
 
         $responses = Property\ResponseList::unserialize(
             $dom->documentElement,

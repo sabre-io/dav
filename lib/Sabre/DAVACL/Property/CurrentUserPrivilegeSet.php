@@ -98,7 +98,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
 
         $result = array();
 
-        $xprivs = $node->getElementsByTagNameNS('DAV:','privilege');
+        $xprivs = $node->getElementsByTagNameNS('urn:DAV','privilege');
 
         for($jj=0; $jj<$xprivs->length; $jj++) {
 

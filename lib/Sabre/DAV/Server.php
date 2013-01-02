@@ -2173,8 +2173,9 @@ class Server {
         if (!$body) return [];
 
         $dom = XMLUtil::loadDOMDocument($body);
-        $elem = $dom->getElementsByTagNameNS('DAV:','propfind')->item(0);
+        $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
         if (is_null($elem)) throw new Exception\UnsupportedMediaType('We could not find a {DAV:}propfind element in the xml request body');
+
         return array_keys(XMLUtil::parseProperties($elem));
 
     }

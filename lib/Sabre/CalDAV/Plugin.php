@@ -452,11 +452,11 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
     public function calendarMultiGetReport($dom) {
 
         $properties = array_keys(Sabre_DAV_XMLUtil::parseProperties($dom->firstChild));
-        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
+        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
 
         $xpath = new DOMXPath($dom);
         $xpath->registerNameSpace('cal',Sabre_CalDAV_Plugin::NS_CALDAV);
-        $xpath->registerNameSpace('dav','DAV:');
+        $xpath->registerNameSpace('dav','urn:DAV');
 
         $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
         if ($expand->length>0) {

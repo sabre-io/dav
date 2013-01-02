@@ -49,7 +49,7 @@ github now.
 	* Fixed: include path problem in the migration script.
 
 1.7.0-stable (2012-10-06)
-    * BC Break: The calendarobjects database table has a bunch of new
+	* BC Break: The calendarobjects database table has a bunch of new
 	  fields, and a migration script is required to ensure everything will
 	  keep working. Read the wiki for more details.
 	* BC Break: The ICalendar interface now has a new method: calendarQuery.

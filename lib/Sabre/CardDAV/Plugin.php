@@ -273,7 +273,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
-        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
+        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
         $propertyList = array();
 
         foreach($hrefElems as $elem) {

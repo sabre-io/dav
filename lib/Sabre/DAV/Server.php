@@ -2157,7 +2157,7 @@ class Server {
         if (!$body) return array();
 
         $dom = XMLUtil::loadDOMDocument($body);
-        $elem = $dom->getElementsByTagNameNS('DAV:','propfind')->item(0);
+        $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
         return array_keys(XMLUtil::parseProperties($elem));
 
     }

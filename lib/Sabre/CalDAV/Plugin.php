@@ -458,11 +458,11 @@ class Plugin extends DAV\ServerPlugin {
     public function calendarMultiGetReport($dom) {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
-        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
+        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
-        $xpath->registerNameSpace('dav','DAV:');
+        $xpath->registerNameSpace('dav','urn:DAV');
 
         $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
         if ($expand->length>0) {

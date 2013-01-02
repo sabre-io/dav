@@ -69,7 +69,7 @@ class CalendarQueryParser {
         $this->dom = $dom;
         $this->xpath = new \DOMXPath($dom);
         $this->xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
-        $this->xpath->registerNameSpace('dav','DAV:');
+        $this->xpath->registerNameSpace('dav','urn:DAV');
 
     }
 

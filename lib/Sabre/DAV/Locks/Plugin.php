@@ -619,11 +619,14 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
      */
     protected function parseLockRequest($body) {
 
-        $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
-        $xml->registerXPathNamespace('d','DAV:');
+        $xml = simplexml_load_string(
+            Sabre_DAV_XMLUtil::convertDAVNamespace($body),
+            null,
+            LIBXML_NOWARNING);
+        $xml->registerXPathNamespace('d','urn:DAV');
         $lockInfo = new Sabre_DAV_Locks_LockInfo();
 
-        $children = $xml->children("DAV:");
+        $children = $xml->children("urn:DAV");
         $lockInfo->owner = (string)$children->owner;
 
         $lockInfo->token = Sabre_DAV_UUIDUtil::getUUID();

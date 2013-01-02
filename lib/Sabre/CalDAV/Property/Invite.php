@@ -138,7 +138,7 @@ class Sabre_CalDAV_Property_Invite extends Sabre_DAV_Property {
 
         $xpath = new \DOMXPath($prop->ownerDocument);
         $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d',  'DAV:');
+        $xpath->registerNamespace('d',  'urn:DAV');
 
         $users = array();
 

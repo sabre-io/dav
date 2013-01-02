@@ -417,7 +417,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
+        $xpath->registerNamespace('d', 'urn:DAV');
 
 
         $set = array();
@@ -466,7 +466,7 @@ class Sabre_CalDAV_SharingPlugin extends Sabre_DAV_ServerPlugin {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
+        $xpath->registerNamespace('d', 'urn:DAV');
 
         $hostHref = $xpath->evaluate('string(cs:hosturl/d:href)');
         if (!$hostHref) {

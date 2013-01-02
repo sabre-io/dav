@@ -192,7 +192,7 @@ class Invite extends DAV\Property {
 
         $xpath = new \DOMXPath($prop->ownerDocument);
         $xpath->registerNamespace('cs', CalDAV\Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d',  'DAV:');
+        $xpath->registerNamespace('d',  'urn:DAV');
 
         $users = array();
 

@@ -621,11 +621,14 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function parseLockRequest($body) {
 
-        $xml = simplexml_load_string($body,null,LIBXML_NOWARNING);
-        $xml->registerXPathNamespace('d','DAV:');
+        $xml = simplexml_load_string(
+            DAV\XMLUtil::convertDAVNamespace($body),
+            null,
+            LIBXML_NOWARNING);
+        $xml->registerXPathNamespace('d','urn:DAV');
         $lockInfo = new LockInfo();
 
-        $children = $xml->children("DAV:");
+        $children = $xml->children("urn:DAV");
         $lockInfo->owner = (string)$children->owner;
 
         $lockInfo->token = DAV\UUIDUtil::getUUID();

@@ -508,13 +508,8 @@ class SharingPlugin extends DAV\ServerPlugin {
     public function parseInviteReplyRequest(\DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
-<<<<<<< HEAD
         $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
-=======
-        $xpath->registerNamespace('cs', Sabre_CalDAV_Plugin::NS_CALENDARSERVER);
         $xpath->registerNamespace('d', 'urn:DAV');
->>>>>>> 1.7
 
         $hostHref = $xpath->evaluate('string(cs:hosturl/d:href)');
         if (!$hostHref) {

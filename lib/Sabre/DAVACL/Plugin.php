@@ -353,54 +353,54 @@ class Plugin extends DAV\ServerPlugin {
      */
     static function getDefaultSupportedPrivilegeSet() {
 
-        return array(
+        return [
             'privilege'  => '{DAV:}all',
             'abstract'   => true,
-            'aggregates' => array(
-                array(
+            'aggregates' => [
+                [
                     'privilege'  => '{DAV:}read',
-                    'aggregates' => array(
-                        array(
+                    'aggregates' => [
+                        [
                             'privilege' => '{DAV:}read-acl',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}read-current-user-privilege-set',
-                            'abstract'  => true,
-                        ),
-                    ),
-                ), // {DAV:}read
-                array(
+                            'abstract'  => false,
+                        ],
+                    ],
+                ], // {DAV:}read
+                [
                     'privilege'  => '{DAV:}write',
-                    'aggregates' => array(
-                        array(
+                    'aggregates' => [
+                        [
                             'privilege' => '{DAV:}write-acl',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}write-properties',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}write-content',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}bind',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}unbind',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}unlock',
-                            'abstract'  => true,
-                        ),
-                    ),
-                ), // {DAV:}write
-            ),
-        ); // {DAV:}all
+                            'abstract'  => false,
+                        ],
+                    ],
+                ], // {DAV:}write
+            ],
+        ]; // {DAV:}all
 
     }
 

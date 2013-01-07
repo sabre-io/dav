@@ -6,7 +6,7 @@
 	  ETag is no longer sent back.
 	* Fixed: Read-only access to calendars still allows the sharee to modify
 	  basic calendar properties, such as the displayname and color.
-	* Changed: More elegant ACL management for CalendarObject nodes.
+	* Changed: More elegant ACL management for CalendarObject and Card nodes.
 	* Added: Browser plugin now marks a carddav directory as type Directory,
 	  and a shared calendar as 'Shared'.
 	* Added: Generalized the multistatus response parser a bit more, for

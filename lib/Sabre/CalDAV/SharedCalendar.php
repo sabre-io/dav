@@ -90,6 +90,12 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
                 'principal' => $this->calendarInfo['principaluri'],
                 'protected' => true,
             ];
+        } else {
+            $acl[] = [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->calendarInfo['principaluri'],
+                'protected' => true,
+            ];
         }
         return $acl;
 

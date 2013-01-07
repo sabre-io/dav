@@ -95,7 +95,7 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}write-properties',
                 'principal' => 'principals/sharee',
                 'protected' => true,
             ),

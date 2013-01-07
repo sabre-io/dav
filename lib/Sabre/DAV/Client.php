@@ -10,7 +10,7 @@ namespace Sabre\DAV;
  *
  * NOTE: This class is experimental, it's api will likely change in the future.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @copyright Copyright (C) by KOLANICH 2012.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @author KOLANICH
@@ -569,9 +569,6 @@ class Client {
         } catch (Exception\BadRequest $e) {
             throw new \InvalidArgumentException('The body passed to parseMultiStatus could not be parsed. Is it really xml?');
         }
-        $xpath = new \DOMXPath($dom);
-
-        $xpath->registerNamespace('d', 'DAV:');
 
         $responses = Property\ResponseList::unserialize(
             $dom->documentElement,

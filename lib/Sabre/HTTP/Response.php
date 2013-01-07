@@ -7,7 +7,7 @@ namespace Sabre\HTTP;
  *
  * It contains the HTTP status code, response headers and a message body.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -77,9 +77,9 @@ class Response {
             423 => 'Locked', // RFC 4918
             424 => 'Failed Dependency', // RFC 4918
             426 => 'Upgrade required',
-            428 => 'Precondition required', // draft-nottingham-http-new-status
-            429 => 'Too Many Requests', // draft-nottingham-http-new-status
-            431 => 'Request Header Fields Too Large', // draft-nottingham-http-new-status
+            428 => 'Precondition required', // RFC 6585
+            429 => 'Too Many Requests', // RFC 6585
+            431 => 'Request Header Fields Too Large', // RFC 6585
             500 => 'Internal Server Error',
             501 => 'Not Implemented',
             502 => 'Bad Gateway',
@@ -91,7 +91,7 @@ class Response {
             508 => 'Loop Detected', // RFC 5842
             509 => 'Bandwidth Limit Exceeded', // non-standard
             510 => 'Not extended',
-            511 => 'Network Authentication Required', // draft-nottingham-http-new-status
+            511 => 'Network Authentication Required', // RFC 6585
        );
 
        return 'HTTP/' . $httpVersion . ' ' . $code . ' ' . $msg[$code];

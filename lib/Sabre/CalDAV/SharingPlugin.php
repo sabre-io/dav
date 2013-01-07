@@ -16,7 +16,7 @@ use Sabre\DAV;
  * Note: This feature is experimental, and may change in between different
  * SabreDAV versions.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -461,8 +461,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
-
+        $xpath->registerNamespace('d', 'urn:DAV');
 
         $set = array();
         $elems = $xpath->query('cs:set');
@@ -510,7 +509,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
+        $xpath->registerNamespace('d', 'urn:DAV');
 
         $hostHref = $xpath->evaluate('string(cs:hosturl/d:href)');
         if (!$hostHref) {

@@ -105,6 +105,96 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetChildACL() {
+
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/owner',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/owner',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/owner/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/owner/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/owner/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/sharee',
+                'protected' => true,
+            ),
+        );
+
+        $this->assertEquals($expected, $this->getInstance()->getChildACL());
+
+    }
+
+    function testGetChildACLReadOnly() {
+
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/owner',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/owner',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/owner/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/owner/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/owner/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee',
+                'protected' => true,
+            ),
+        );
+
+        $props = array(
+            'id' => 1,
+            '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
+            '{http://sabredav.org/ns}owner-principal' => 'principals/owner',
+            '{http://sabredav.org/ns}read-only' => true,
+            'principaluri' => 'principals/sharee',
+        );
+        $this->assertEquals($expected, $this->getInstance($props)->getChildACL());
+
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */

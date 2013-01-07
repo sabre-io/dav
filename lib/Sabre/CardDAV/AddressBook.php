@@ -10,7 +10,7 @@ use Sabre\DAVACL;
  *
  * The AddressBook can contain multiple vcards
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -76,8 +76,9 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
     public function getChildren() {
 
         $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
-        $children = array();
+        $children = [];
         foreach($objs as $obj) {
+            $obj['acl'] = $this->getChildACL();
             $children[] = new Card($this->carddavBackend,$this->addressBookInfo,$obj);
         }
         return $children;
@@ -174,14 +175,14 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * failures. In this case an array should be returned with the following
      * structure:
      *
-     * array(
-     *   403 => array(
+     * [
+     *   403 => [
      *      '{DAV:}displayname' => null,
-     *   ),
-     *   424 => array(
+     *   ],
+     *   424 => [
      *      '{DAV:}owner' => null,
-     *   )
-     * )
+     *   ]
+     * ]
      *
      * In this example it was forbidden to update {DAV:}displayname.
      * (403 Forbidden), which in turn also caused {DAV:}owner to fail
@@ -209,7 +210,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      */
     public function getProperties($properties) {
 
-        $response = array();
+        $response = [];
         foreach($properties as $propertyName) {
 
             if (isset($this->addressBookInfo[$propertyName])) {
@@ -264,19 +265,43 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      */
     public function getACL() {
 
-        return array(
-            array(
+        return [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->addressBookInfo['principaluri'],
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->addressBookInfo['principaluri'],
                 'protected' => true,
-            ),
+            ],
 
-        );
+        ];
+
+    }
+
+    /**
+     * This method returns the ACL's for card nodes in this address book.
+     * The result of this method automatically gets passed to the
+     * card nodes in this address book.
+     *
+     * @return array
+     */
+    public function getChildACL() {
+
+        return [
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+        ];
 
     }
 

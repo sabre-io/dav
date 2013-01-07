@@ -12,7 +12,7 @@ use Sabre\VObject;
  * This plugin provides functionality added by CalDAV (RFC 4791)
  * It implements new reports, and the MKCALENDAR method.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -458,11 +458,11 @@ class Plugin extends DAV\ServerPlugin {
     public function calendarMultiGetReport($dom) {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
-        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
+        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
-        $xpath->registerNameSpace('dav','DAV:');
+        $xpath->registerNameSpace('dav','urn:DAV');
 
         $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
         if ($expand->length>0) {

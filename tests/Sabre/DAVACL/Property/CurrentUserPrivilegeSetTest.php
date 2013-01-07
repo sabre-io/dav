@@ -3,6 +3,7 @@
 namespace Sabre\DAVACL\Property;
 
 use Sabre\DAV;
+use Sabre\DAV\XMLUtil;
 use Sabre\HTTP;
 
 
@@ -31,11 +32,10 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
         );
 
         // Reloading because PHP DOM sucks
-        $dom2 = new \DOMDocument('1.0', 'utf-8');
-        $dom2->loadXML($dom->saveXML());
+        $dom2 = XMLUtil::loadDOMDocument($dom->saveXML());
 
         $dxpath = new \DOMXPath($dom2);
-        $dxpath->registerNamespace('d','DAV:');
+        $dxpath->registerNamespace('d','urn:DAV');
         foreach($xpaths as $xpath=>$count) {
 
             $this->assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : ' . $xpath . ', we could only find ' . $dxpath->query($xpath)->length . ' elements, while we expected ' . $count);

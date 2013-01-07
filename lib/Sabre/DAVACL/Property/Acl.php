@@ -7,7 +7,7 @@ use Sabre\DAV;
 /**
  * This class represents the {DAV:}acl property
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -91,11 +91,11 @@ class Acl extends DAV\Property {
     static public function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $privileges = array();
-        $xaces = $dom->getElementsByTagNameNS('DAV:','ace');
+        $xaces = $dom->getElementsByTagNameNS('urn:DAV','ace');
         for($ii=0; $ii < $xaces->length; $ii++) {
 
             $xace = $xaces->item($ii);
-            $principal = $xace->getElementsByTagNameNS('DAV:','principal');
+            $principal = $xace->getElementsByTagNameNS('urn:DAV','principal');
             if ($principal->length !== 1) {
                 throw new DAV\Exception\BadRequest('Each {DAV:}ace element must have one {DAV:}principal element');
             }
@@ -119,17 +119,17 @@ class Acl extends DAV\Property {
 
             $protected = false;
 
-            if ($xace->getElementsByTagNameNS('DAV:','protected')->length > 0) {
+            if ($xace->getElementsByTagNameNS('urn:DAV','protected')->length > 0) {
                 $protected = true;
             }
 
-            $grants = $xace->getElementsByTagNameNS('DAV:','grant');
+            $grants = $xace->getElementsByTagNameNS('urn:DAV','grant');
             if ($grants->length < 1) {
                 throw new DAV\Exception\NotImplemented('Every {DAV:}ace element must have a {DAV:}grant element. {DAV:}deny is not yet supported');
             }
             $grant = $grants->item(0);
 
-            $xprivs = $grant->getElementsByTagNameNS('DAV:','privilege');
+            $xprivs = $grant->getElementsByTagNameNS('urn:DAV','privilege');
             for($jj=0; $jj<$xprivs->length; $jj++) {
 
                 $xpriv = $xprivs->item($jj);

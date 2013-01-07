@@ -5,7 +5,7 @@ namespace Sabre\CalDAV;
 /**
  * The CalendarObject represents a single VEVENT or VTODO within a Calendar.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -34,6 +34,17 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
 
     /**
      * Constructor
+     *
+     * The following properties may be passed within $objectData:
+     *
+     *   * calendarid - This must refer to a calendarid from a caldavBackend
+     *   * uri - A unique uri. Only the 'basename' must be passed.
+     *   * calendardata (optional) - The iCalendar data
+     *   * etag - (optional) The etag for this object, MUST be encloded with
+     *            double-quotes.
+     *   * size - (optional) The size of the data in bytes.
+     *   * lastmodified - (optional) format as a unix timestamp.
+     *   * acl - (optional) Use this to override the default ACL for the node.
      *
      * @param Backend\BackendInterface $caldavBackend
      * @param array $calendarInfo

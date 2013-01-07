@@ -38,7 +38,7 @@ class MyCollection extends Sabre\DAV\Collection {
 
   function getChildren() {
 
-    $children = array();
+    $children = [];
     // Loop through the directory, and create objects for each node
     foreach(scandir($this->myPath) as $node) {
 

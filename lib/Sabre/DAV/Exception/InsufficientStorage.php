@@ -7,7 +7,7 @@ namespace Sabre\DAV\Exception;
  *
  * This Exception can be thrown, when for example a harddisk is full or a quota is exceeded
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

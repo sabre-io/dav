@@ -11,7 +11,7 @@ use Sabre\VObject;
  *
  * The CardDAV plugin adds CardDAV functionality to the WebDAV server
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -273,7 +273,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
-        $hrefElems = $dom->getElementsByTagNameNS('DAV:','href');
+        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
         $propertyList = array();
 
         foreach($hrefElems as $elem) {

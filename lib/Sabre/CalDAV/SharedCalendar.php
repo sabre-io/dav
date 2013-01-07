@@ -84,7 +84,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
             'principal' => $this->calendarInfo['principaluri'],
             'protected' => true,
         ];
-        if (!$this->calendarInfo['{http://sabredav.org/ns}read-only']) {
+        if ($this->calendarInfo['{http://sabredav.org/ns}read-only']) {
             $acl[] = [
                 'privilege' => '{DAV:}write-properties',
                 'principal' => $this->calendarInfo['principaluri'],

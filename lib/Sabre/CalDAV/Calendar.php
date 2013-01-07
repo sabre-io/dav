@@ -75,7 +75,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
      */
     public function getProperties($requestedProperties) {
 
-        $response = array();
+        $response = [];
 
         foreach($requestedProperties as $prop) switch($prop) {
 
@@ -111,13 +111,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
 
         if (!$obj) throw new DAV\Exception\NotFound('Calendar object not found');
 
-        $obj['acl'] = $this->getACL();
-        // Removing the irrelivant
-        foreach($obj['acl'] as $key=>$acl) {
-            if ($acl['privilege'] === '{' . Plugin::NS_CALDAV . '}read-free-busy') {
-                unset($obj['acl'][$key]);
-            }
-        }
+        $obj['acl'] = $this->getChildACL();
 
         return new CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
 
@@ -131,15 +125,9 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
     public function getChildren() {
 
         $objs = $this->caldavBackend->getCalendarObjects($this->calendarInfo['id']);
-        $children = array();
+        $children = [];
         foreach($objs as $obj) {
-            $obj['acl'] = $this->getACL();
-            // Removing the irrelivant
-            foreach($obj['acl'] as $key=>$acl) {
-                if ($acl['privilege'] === '{' . Plugin::NS_CALDAV . '}read-free-busy') {
-                    unset($obj['acl'][$key]);
-                }
-            }
+            $obj['acl'] = $this->getChildACL();
             $children[] = new CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
         }
         return $children;
@@ -269,39 +257,79 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
      */
     public function getACL() {
 
-        return array(
-            array(
+        return [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner(),
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->getOwner(),
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner() . '/calendar-proxy-read',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
-            ),
+            ],
 
-        );
+        ];
+
+    }
+
+    /**
+     * This method returns the ACL's for calendar objects in this calendar.
+     * The result of this method automatically gets passed to the
+     * calendar-object nodes in the calendar.
+     *
+     * @return array
+     */
+    public function getChildACL() {
+
+        return [
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-read',
+                'protected' => true,
+            ],
+
+        ];
 
     }
 
@@ -341,9 +369,9 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
 
             if ($agg['privilege'] !== '{DAV:}read') continue;
 
-            $agg['aggregates'][] = array(
+            $agg['aggregates'][] = [
                 'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
-            );
+            ];
 
         }
         return $default;

@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Exception;
 
+use Sabre\DAV;
+
 /**
  * ServiceUnavailable
  *
@@ -12,8 +14,7 @@ namespace Sabre\DAV\Exception;
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
-class ServiceUnavailable extends \Sabre\DAV\Exception {
+class ServiceUnavailable extends DAV\Exception {
 
 	/**
 	 * Returns the HTTP statuscode for this exception

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ServiceUnavailable
+ * Sabre_DAV_Exception_ServiceUnavailable
  *
  * This exception is thrown in case the service
  * is currently not available (e.g. down for maintenance).

@@ -9,7 +9,7 @@ use Sabre\DAV;
  * The principal property represents a principal from RFC3744 (ACL).
  * The property can be used to specify a principal or pseudo principals.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -132,9 +132,10 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      * Deserializes a DOM element into a property object.
      *
      * @param \DOMElement $dom
+     * @param array $propertyMap
      * @return Principal
      */
-    static public function unserialize(\DOMElement $dom) {
+    static public function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $parent = $dom->firstChild;
         while(!DAV\XMLUtil::toClarkNotation($parent)) {

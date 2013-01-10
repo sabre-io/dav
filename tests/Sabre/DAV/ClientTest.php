@@ -660,13 +660,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         ), $result);
 
         $requestBody = array(
-            '<?xml version="1.0"?>',
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<d:propfind xmlns:d="DAV:">',
             '  <d:prop>',
-            '    <d:foo />',
-            '    <d:bar />',
+            '    <d:foo/>',
+            '    <d:bar/>',
             '  </d:prop>',
-            '</d:propfind>'
+            '</d:propfind>',
+            ''
         );
         $requestBody = implode("\n", $requestBody);
 
@@ -764,13 +765,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         ), $result);
 
         $requestBody = array(
-            '<?xml version="1.0"?>',
+            '<?xml version="1.0" encoding="UTF-8"?>',
             '<d:propfind xmlns:d="DAV:">',
-            '  <d:prop>',
-            '    <d:foo />',
+            '  <d:prop xmlns:x="urn:custom">',
+            '    <d:foo/>',
             '    <x:bar xmlns:x="urn:custom"/>',
             '  </d:prop>',
-            '</d:propfind>'
+            '</d:propfind>',
+            ''
         );
         $requestBody = implode("\n", $requestBody);
 
@@ -807,21 +809,30 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         ));
 
         $requestBody = array(
-            '<?xml version="1.0"?>',
-            '<d:propertyupdate xmlns:d="DAV:">',
-            '<d:set><d:prop>',
-            '    <d:foo>newvalue</d:foo>',
-            '</d:prop></d:set>',
-            '<d:set><d:prop>',
-            '    <x:foo xmlns:x="urn:custom">newvalue2</x:foo>',
-            '</d:prop></d:set>',
-            '<d:remove><d:prop>',
-            '    <d:bar />',
-            '</d:prop></d:remove>',
-            '<d:remove><d:prop>',
-            '    <x:bar xmlns:x="urn:custom"/>',
-            '</d:prop></d:remove>',
-            '</d:propertyupdate>'
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<d:propertyupdate xmlns:d="DAV:" xmlns:x="urn:custom">',
+            '  <d:set>',
+            '    <d:prop>',
+            '      <d:foo>newvalue</d:foo>',
+            '    </d:prop>',
+            '  </d:set>',
+            '  <d:set>',
+            '    <d:prop>',
+            '      <x:foo xmlns:x="urn:custom">newvalue2</x:foo>',
+            '    </d:prop>',
+            '  </d:set>',
+            '  <d:remove>',
+            '    <d:prop>',
+            '      <d:bar/>',
+            '    </d:prop>',
+            '  </d:remove>',
+            '  <d:remove>',
+            '    <d:prop>',
+            '      <x:bar xmlns:x="urn:custom"/>',
+            '    </d:prop>',
+            '  </d:remove>',
+            '</d:propertyupdate>',
+            ''
         );
         $requestBody = implode("\n", $requestBody);
 

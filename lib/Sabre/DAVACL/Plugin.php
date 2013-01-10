@@ -13,7 +13,7 @@ use Sabre\DAV;
  * property, defined in RFC5397 and the {DAV:}expand-property report, as
  * defined in RFC3253.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -181,7 +181,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @param array|string $privileges
      * @param int $recursion
-     * @param bool $throwExceptions if set to false, this method won't through exceptions.
+     * @param bool $throwExceptions if set to false, this method won't throw exceptions.
      * @throws Sabre\DAVACL\Exception\NeedPrivileges
      * @return bool
      */
@@ -353,54 +353,54 @@ class Plugin extends DAV\ServerPlugin {
      */
     static function getDefaultSupportedPrivilegeSet() {
 
-        return array(
+        return [
             'privilege'  => '{DAV:}all',
             'abstract'   => true,
-            'aggregates' => array(
-                array(
+            'aggregates' => [
+                [
                     'privilege'  => '{DAV:}read',
-                    'aggregates' => array(
-                        array(
+                    'aggregates' => [
+                        [
                             'privilege' => '{DAV:}read-acl',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}read-current-user-privilege-set',
-                            'abstract'  => true,
-                        ),
-                    ),
-                ), // {DAV:}read
-                array(
+                            'abstract'  => false,
+                        ],
+                    ],
+                ], // {DAV:}read
+                [
                     'privilege'  => '{DAV:}write',
-                    'aggregates' => array(
-                        array(
+                    'aggregates' => [
+                        [
                             'privilege' => '{DAV:}write-acl',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}write-properties',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}write-content',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}bind',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}unbind',
-                            'abstract'  => true,
-                        ),
-                        array(
+                            'abstract'  => false,
+                        ],
+                        [
                             'privilege' => '{DAV:}unlock',
-                            'abstract'  => true,
-                        ),
-                    ),
-                ), // {DAV:}write
-            ),
-        ); // {DAV:}all
+                            'abstract'  => false,
+                        ],
+                    ],
+                ], // {DAV:}write
+            ],
+        ]; // {DAV:}all
 
     }
 
@@ -557,7 +557,6 @@ class Plugin extends DAV\ServerPlugin {
                     break;
 
             }
-
 
 
         }
@@ -1041,7 +1040,7 @@ class Plugin extends DAV\ServerPlugin {
         $dom = DAV\XMLUtil::loadDOMDocument($body);
 
         $newAcl =
-            Property\Acl::unserialize($dom->firstChild)
+            Property\Acl::unserialize($dom->firstChild, $this->server->propertyMap)
             ->getPrivileges();
 
         // Normalizing urls
@@ -1230,7 +1229,7 @@ class Plugin extends DAV\ServerPlugin {
                 $node[200][$propertyName] = new DAV\Property\ResponseList($childProps);
 
             }
-            $result[] = new DAV\Property\Response($path, $node);
+            $result[] = new DAV\Property\Response($node['href'], $node);
 
         }
 

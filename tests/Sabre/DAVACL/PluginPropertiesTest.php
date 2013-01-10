@@ -147,7 +147,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:bind' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unbind' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unlock' => 1,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:abstract' => 8,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:abstract' => 0,
         );
 
 

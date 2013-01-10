@@ -11,7 +11,7 @@ namespace Sabre\CardDAV\Backend;
  * class. The value of the addressBookId is completely up to you, it can be any
  * arbitrary value you can use as an unique identifier.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

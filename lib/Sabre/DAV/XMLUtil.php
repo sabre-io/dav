@@ -5,7 +5,7 @@ namespace Sabre\DAV;
 /**
  * XML utilities for WebDAV
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -20,6 +20,9 @@ class XMLUtil {
      * {http://www.example.org}myelem
      *
      * This format is used throughout the SabreDAV sourcecode.
+     * Elements encoded with the urn:DAV namespace will
+     * be returned as if they were in the DAV: namespace. This is to avoid
+     * compatibility problems.
      *
      * This function will return null if a nodetype other than an Element is passed.
      *
@@ -30,7 +33,8 @@ class XMLUtil {
 
         if ($dom->nodeType !== XML_ELEMENT_NODE) return null;
 
-        $ns = $dom->namespaceURI;
+        // Mapping back to the real namespace, in case it was dav
+        if ($dom->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $dom->namespaceURI;
 
         // Mapping to clark notation
         return '{' . $ns . '}' . $dom->localName;
@@ -61,10 +65,28 @@ class XMLUtil {
     }
 
     /**
+     * This method takes an XML document (as string) and converts all instances of the
+     * DAV: namespace to urn:DAV
+     *
+     * This is unfortunately needed, because the DAV: namespace violates the xml namespaces
+     * spec, and causes the DOM to throw errors
+     *
+     * @param string $xmlDocument
+     * @return array|string|null
+     */
+    static function convertDAVNamespace($xmlDocument) {
+
+        // This is used to map the DAV: namespace to urn:DAV. This is needed, because the DAV:
+        // namespace is actually a violation of the XML namespaces specification, and will cause errors
+        return preg_replace("/xmlns(:[A-Za-z0-9_]*)?=(\"|\')DAV:(\\2)/","xmlns\\1=\\2urn:DAV\\2",$xmlDocument);
+
+    }
+
+    /**
      * This method provides a generic way to load a DOMDocument for WebDAV use.
      *
      * This method throws a Sabre\DAV\Exception\BadRequest exception for any xml errors.
-     * It does not preserve whitespace.
+     * It does not preserve whitespace, and it converts the DAV: namespace to urn:DAV.
      *
      * @param string $xml
      * @throws Sabre\DAV\Exception\BadRequest
@@ -100,7 +122,7 @@ class XMLUtil {
         // We don't generally care about any whitespace
         $dom->preserveWhiteSpace = false;
         
-        $dom->loadXML($xml,LIBXML_NOWARNING | LIBXML_NOERROR);
+        $dom->loadXML(self::convertDAVNamespace($xml),LIBXML_NOWARNING | LIBXML_NOERROR);
 
         if ($error = libxml_get_last_error()) {
             libxml_clear_errors();
@@ -150,7 +172,7 @@ class XMLUtil {
 
                 $propertyName = self::toClarkNotation($propNodeData);
                 if (isset($propertyMap[$propertyName])) {
-                    $propList[$propertyName] = call_user_func(array($propertyMap[$propertyName],'unserialize'),$propNodeData);
+                    $propList[$propertyName] = call_user_func(array($propertyMap[$propertyName],'unserialize'),$propNodeData, $propertyMap);
                 } else {
                     $propList[$propertyName] = $propNodeData->textContent;
                 }

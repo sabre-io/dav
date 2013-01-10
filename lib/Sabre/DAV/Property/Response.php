@@ -11,7 +11,7 @@ use Sabre\DAV;
  * This is used by the Server class to encode individual items within a multistatus
  * response.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -168,6 +168,27 @@ class Response extends DAV\Property implements IHref {
             $xpropstat->appendChild($document->createElement('d:status',$server->httpResponse->getStatusMessage($httpStatus)));
 
         }
+
+    }
+
+    /**
+     * Unserializes the property.
+     *
+     * This static method should return a an instance of this object.
+     *
+     * @param \DOMElement $prop
+     * @param array $propertyMap
+     * @return DAV\IProperty
+     */
+    public static function unserialize(\DOMElement $prop, array $propertyMap) {
+
+        // Delegating this to the ResponseList property. It does make more
+        // sense there.
+
+        $result = ResponseList::unserialize($prop, $propertyMap);
+        $result = $result->getResponses();
+
+        return $result[0];
 
     }
 

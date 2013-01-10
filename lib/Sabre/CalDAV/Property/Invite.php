@@ -14,7 +14,7 @@ use Sabre\CalDAV;
  * namespace.
  *
  * @see https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -186,13 +186,14 @@ class Invite extends DAV\Property {
      * This static method should return a an instance of this object.
      *
      * @param \DOMElement $prop
+     * @param array $propertyMap
      * @return DAV\IProperty
      */
-    static function unserialize(\DOMElement $prop) {
+    static function unserialize(\DOMElement $prop, array $propertyMap) {
 
         $xpath = new \DOMXPath($prop->ownerDocument);
         $xpath->registerNamespace('cs', CalDAV\Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d',  'DAV:');
+        $xpath->registerNamespace('d',  'urn:DAV');
 
         $users = array();
 

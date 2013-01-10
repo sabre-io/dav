@@ -16,7 +16,7 @@ use Sabre\DAV;
  * Note: This feature is experimental, and may change in between different
  * SabreDAV versions.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -236,7 +236,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         }
 
         // Only doing something if shared-owner is indeed not in the list.
-        if($mutations['{DAV:}resourcetype']->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return; 
+        if($mutations['{DAV:}resourcetype']->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return;
 
         $shares = $node->getShares();
         $remove = array();
@@ -281,8 +281,18 @@ class SharingPlugin extends DAV\ServerPlugin {
             return;
         }
 
+        $requestBody = $this->server->httpRequest->getBody(true);
 
-        $dom = DAV\XMLUtil::loadDOMDocument($this->server->httpRequest->getBody(true));
+        // If this request handler could not deal with this POST request, it
+        // will return 'null' and other plugins get a chance to handle the
+        // request.
+        //
+        // However, we already requested the full body. This is a problem,
+        // because a body can only be read once. This is why we preemptively
+        // re-populated the request body with the existing data.
+        $this->server->httpRequest->setBody($requestBody);
+
+        $dom = DAV\XMLUtil::loadDOMDocument($requestBody);
 
         $documentType = DAV\XMLUtil::toClarkNotation($dom->firstChild);
 
@@ -426,6 +436,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         }
 
 
+
     }
 
     /**
@@ -446,12 +457,11 @@ class SharingPlugin extends DAV\ServerPlugin {
      * @param \DOMDocument $dom
      * @return array
      */
-    protected function parseShareRequest(\DOMDocument $dom) {
+    public function parseShareRequest(\DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
-
+        $xpath->registerNamespace('d', 'urn:DAV');
 
         $set = array();
         $elems = $xpath->query('cs:set');
@@ -495,11 +505,11 @@ class SharingPlugin extends DAV\ServerPlugin {
      * @param \DOMDocument $dom
      * @return array
      */
-    protected function parseInviteReplyRequest(\DOMDocument $dom) {
+    public function parseInviteReplyRequest(\DOMDocument $dom) {
 
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('cs', Plugin::NS_CALENDARSERVER);
-        $xpath->registerNamespace('d', 'DAV:');
+        $xpath->registerNamespace('d', 'urn:DAV');
 
         $hostHref = $xpath->evaluate('string(cs:hosturl/d:href)');
         if (!$hostHref) {

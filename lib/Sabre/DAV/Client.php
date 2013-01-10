@@ -10,7 +10,7 @@ namespace Sabre\DAV;
  *
  * NOTE: This class is experimental, it's api will likely change in the future.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -135,9 +135,10 @@ class Client {
      */
     public function propFind($url, array $properties, $depth = 0) {
 
-        $body = '<?xml version="1.0"?>' . "\n";
-        $body.= '<d:propfind xmlns:d="DAV:">' . "\n";
-        $body.= '  <d:prop>' . "\n";
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+        $root = $dom->createElementNS('DAV:', 'd:propfind');
+        $prop = $dom->createElement('d:prop');
 
         foreach($properties as $property) {
 
@@ -147,15 +148,16 @@ class Client {
             ) = XMLUtil::parseClarkNotation($property);
 
             if ($namespace === 'DAV:') {
-                $body.='    <d:' . $elementName . ' />' . "\n";
+                $element = $dom->createElement('d:'.$elementName);
             } else {
-                $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\"/>\n";
+                $element = $dom->createElementNS($namespace, 'x:'.$elementName);
             }
 
+            $prop->appendChild( $element );
         }
 
-        $body.= '  </d:prop>' . "\n";
-        $body.= '</d:propfind>';
+        $dom->appendChild($root)->appendChild( $prop );
+        $body = $dom->saveXML();
 
         $response = $this->request('PROPFIND', $url, $body, array(
             'Depth' => $depth,
@@ -189,16 +191,15 @@ class Client {
      * and the actual (string) value for the value. If the value is null, an
      * attempt is made to delete the property.
      *
-     * @todo Must be building the request using the DOM, and does not yet
-     *       support complex properties.
      * @param string $url
      * @param array $properties
      * @return void
      */
     public function propPatch($url, array $properties) {
 
-        $body = '<?xml version="1.0"?>' . "\n";
-        $body.= '<d:propertyupdate xmlns:d="DAV:">' . "\n";
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+        $root = $dom->createElementNS('DAV:', 'd:propertyupdate');
 
         foreach($properties as $propName => $propValue) {
 
@@ -209,38 +210,42 @@ class Client {
 
             if ($propValue === null) {
 
-                $body.="<d:remove><d:prop>\n";
+                $remove = $dom->createElement('d:remove');
+                $prop = $dom->createElement('d:prop');
 
                 if ($namespace === 'DAV:') {
-                    $body.='    <d:' . $elementName . ' />' . "\n";
+                    $element = $dom->createElement('d:'.$elementName);
                 } else {
-                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\"/>\n";
+                    $element = $dom->createElementNS($namespace, 'x:'.$elementName);
                 }
 
-                $body.="</d:prop></d:remove>\n";
+                $root->appendChild( $remove )->appendChild( $prop )->appendChild( $element );
 
             } else {
 
-                $body.="<d:set><d:prop>\n";
+                $set = $dom->createElement('d:set');
+                $prop = $dom->createElement('d:prop');
+
                 if ($namespace === 'DAV:') {
-                    $body.='    <d:' . $elementName . '>';
+                    $element = $dom->createElement('d:'.$elementName);
                 } else {
-                    $body.="    <x:" . $elementName . " xmlns:x=\"" . $namespace . "\">";
+                    $element = $dom->createElementNS($namespace, 'x:'.$elementName);
                 }
-                // Shitty.. i know
-                $body.=htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');
-                if ($namespace === 'DAV:') {
-                    $body.='</d:' . $elementName . '>' . "\n";
+
+                if ( $propValue instanceof Property ) {
+                    $propValue->serialize( new Server, $element );
                 } else {
-                    $body.="</x:" . $elementName . ">\n";
+                    $element->nodeValue = htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');
                 }
-                $body.="</d:prop></d:set>\n";
+
+                $root->appendChild( $set )->appendChild( $prop )->appendChild( $element );
 
             }
 
         }
 
-        $body.= '</d:propertyupdate>';
+        $dom->appendChild($root);
+        $body = $dom->saveXML();
 
         $this->request('PROPPATCH', $url, $body, array(
             'Content-Type' => 'application/xml'
@@ -504,37 +509,26 @@ class Client {
      */
     public function parseMultiStatus($body) {
 
-        $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
-        if ($responseXML===false) {
-            throw new \InvalidArgumentException('The passed data is not valid XML');
+        try {
+            $dom = XMLUtil::loadDOMDocument($body);
+        } catch (Exception\BadRequest $e) {
+            throw new \InvalidArgumentException('The body passed to parseMultiStatus could not be parsed. Is it really xml?');
         }
 
-        $responseXML->registerXPathNamespace('d', 'DAV:');
+        $responses = Property\ResponseList::unserialize(
+            $dom->documentElement,
+            $this->propertyMap
+        );
 
-        $propResult = array();
+        $result = array();
 
-        foreach($responseXML->xpath('d:response') as $response) {
-            $response->registerXPathNamespace('d', 'DAV:');
-            $href = $response->xpath('d:href');
-            $href = (string)$href[0];
+        foreach($responses->getResponses() as $response) {
 
-            $properties = array();
-
-            foreach($response->xpath('d:propstat') as $propStat) {
-
-                $propStat->registerXPathNamespace('d', 'DAV:');
-                $status = $propStat->xpath('d:status');
-                list($httpVersion, $statusCode, $message) = explode(' ', (string)$status[0],3);
-
-                $properties[$statusCode] = XMLUtil::parseProperties(dom_import_simplexml($propStat), $this->propertyMap);
-
-            }
-
-            $propResult[$href] = $properties;
+            $result[$response->getHref()] = $response->getResponseProperties();
 
         }
 
-        return $propResult;
+        return $result;
 
     }
 

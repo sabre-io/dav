@@ -7,7 +7,7 @@ use Sabre\DAVACL;
 /**
  * This object represents a CalDAV calendar that is shared by a different user.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -21,11 +21,11 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     public function __construct(Backend\BackendInterface $caldavBackend, $calendarInfo) {
 
-        $required = array(
+        $required = [
             '{http://calendarserver.org/ns/}shared-url',
             '{http://sabredav.org/ns}owner-principal',
             '{http://sabredav.org/ns}read-only',
-        );
+        ];
         foreach($required as $r) {
             if (!isset($calendarInfo[$r])) {
                 throw new \InvalidArgumentException('The ' . $r . ' property must be specified for SharedCalendar(s)');
@@ -79,21 +79,55 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
         // owner of the calendar, so we need to add the information for the
         // sharee.
         $acl = parent::getACL();
-        $acl[] = array(
+        $acl[] = [
             'privilege' => '{DAV:}read',
             'principal' => $this->calendarInfo['principaluri'],
             'protected' => true,
-        );
-        if (!$this->calendarInfo['{http://sabredav.org/ns}read-only']) {
-            $acl[] = array(
+        ];
+        if ($this->calendarInfo['{http://sabredav.org/ns}read-only']) {
+            $acl[] = [
+                'privilege' => '{DAV:}write-properties',
+                'principal' => $this->calendarInfo['principaluri'],
+                'protected' => true,
+            ];
+        } else {
+            $acl[] = [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->calendarInfo['principaluri'],
                 'protected' => true,
-            );
+            ];
         }
         return $acl;
 
     }
+
+    /**
+     * This method returns the ACL's for calendar objects in this calendar.
+     * The result of this method automatically gets passed to the
+     * calendar-object nodes in the calendar.
+     *
+     * @return array
+     */
+    public function getChildACL() {
+
+        $acl = parent::getChildACL();
+        $acl[] = [
+            'privilege' => '{DAV:}read',
+            'principal' => $this->calendarInfo['principaluri'],
+            'protected' => true,
+        ];
+
+        if (!$this->calendarInfo['{http://sabredav.org/ns}read-only']) {
+            $acl[] = [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->calendarInfo['principaluri'],
+                'protected' => true,
+            ];
+        }
+        return $acl;
+
+    }
+
 
     /**
      * Returns the list of people whom this calendar is shared with.

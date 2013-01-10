@@ -166,7 +166,7 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
 
         $doc2 = DAV\XMLUtil::loadDOMDocument($xml);
 
-        $outputProperty = Invite::unserialize($doc2->firstChild);
+        $outputProperty = Invite::unserialize($doc2->firstChild, array());
 
         $this->assertEquals($input, $outputProperty->getValue());
 
@@ -189,7 +189,7 @@ $xml = '<?xml version="1.0"?>
 </d:root>';
 
         $doc2 = DAV\XMLUtil::loadDOMDocument($xml);
-        $outputProperty = Invite::unserialize($doc2->firstChild);
+        $outputProperty = Invite::unserialize($doc2->firstChild, array());
 
     }
 

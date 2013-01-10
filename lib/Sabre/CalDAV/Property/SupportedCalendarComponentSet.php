@@ -12,7 +12,7 @@ use Sabre\CalDAV;
  * property in the CalDAV namespace. It simply requires an array of components,
  * such as VEVENT, VTODO
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -71,9 +71,10 @@ class SupportedCalendarComponentSet extends DAV\Property {
      * Unserializes the DOMElement back into a Property class.
      *
      * @param \DOMElement $node
+     * @param array $propertyMap
      * @return Property_SupportedCalendarComponentSet
      */
-    static function unserialize(\DOMElement $node) {
+    static function unserialize(\DOMElement $node, array $propertyMap) {
 
         $components = array();
         foreach($node->childNodes as $childNode) {

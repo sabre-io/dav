@@ -9,7 +9,7 @@ use Sabre\DAV;
  *
  * This property contains multiple {DAV:}href elements, each containing a url.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -81,9 +81,10 @@ class HrefList extends DAV\Property {
      * It will only decode {DAV:}href values.
      *
      * @param \DOMElement $dom
+     * @param array $propertyMap
      * @return DAV\Property\HrefList
      */
-    static function unserialize(\DOMElement $dom) {
+    static function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $hrefs = array();
         foreach($dom->childNodes as $child) {

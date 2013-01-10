@@ -163,7 +163,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
-        <d:grant><d:privilege><d:read-acl /></d:privilege></d:grant>
+        <d:grant><d:privilege><d:all /></d:privilege></d:grant>
         <d:principal><d:href>/principals/notfound</d:href></d:principal>
     </d:ace>
 </d:acl>';

@@ -63,13 +63,13 @@ class HrefListTest extends \PHPUnit_Framework_TestCase {
     function testUnserialize() {
 
         $xml = '<?xml version="1.0"?>
-<d:anything xmlns:d="DAV:"><d:href>/bla/foo</d:href><d:href>/bla/bar</d:href></d:anything>
+<d:anything xmlns:d="urn:DAV"><d:href>/bla/foo</d:href><d:href>/bla/bar</d:href></d:anything>
 ';
 
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $href = HrefList::unserialize($dom->firstChild);
+        $href = HrefList::unserialize($dom->firstChild, array());
         $this->assertEquals(array('/bla/foo','/bla/bar'),$href->getHrefs());
 
     }
@@ -77,13 +77,13 @@ class HrefListTest extends \PHPUnit_Framework_TestCase {
     function testUnserializeIncompatible() {
 
         $xml = '<?xml version="1.0"?>
-<d:anything xmlns:d="DAV:"><d:href2>/bla/foo</d:href2></d:anything>
+<d:anything xmlns:d="urn:DAV"><d:href2>/bla/foo</d:href2></d:anything>
 ';
 
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $href = HrefList::unserialize($dom->firstChild);
+        $href = HrefList::unserialize($dom->firstChild, array());
         $this->assertEquals(array(), $href->getHrefs());
 
     }

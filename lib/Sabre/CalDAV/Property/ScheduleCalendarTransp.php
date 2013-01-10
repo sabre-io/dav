@@ -15,7 +15,7 @@ use Sabre\CalDAV;
  * means that this calendar will not be taken into consideration when a
  * different user queries for free-busy information. If it's 'opaque', it will.
  *
- * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -78,9 +78,10 @@ class ScheduleCalendarTransp extends DAV\Property {
      * Unserializes the DOMElement back into a Property class.
      *
      * @param \DOMElement $node
+     * @param array $propertyMap
      * @return ScheduleCalendarTransp
      */
-    static function unserialize(\DOMElement $node) {
+    static function unserialize(\DOMElement $node, array $propertyMap) {
 
         $value = null;
         foreach($node->childNodes as $childNode) {

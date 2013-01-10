@@ -14,6 +14,7 @@
 	  'urn:DAV' when parsing files. Issues were reported with libxml 2.6.32,
 	  on a relatively recent debian release, so we'll wait till 2015 to take
 	  this one out again.
+	* Added: Sabre_DAV_Exception_ServiceUnavailable, for emitting 503's.
 
 1.7.3-stable (2012-12-01)
 	* The zip release ships with sabre/vobject 2.0.5.

@@ -14,7 +14,6 @@ use Sabre\DAV;
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-
 class ServiceUnavailable extends DAV\Exception {
 
 	/**

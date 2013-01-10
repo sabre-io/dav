@@ -2082,37 +2082,83 @@ class Server {
      *
      *   * uri   - the uri the condition applies to. If this is returned as an
      *     empty string, this implies it's referring to the request url.
-     *   * tokens - The lock token. another 2 dimensional array containing 2 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token)
-     *   * etag - an etag, if supplied
+     *   * tokens - The lock token. another 2 dimensional array containing 3 elements (0 = true/false.. If this is a negative condition its set to false, 1 = the actual token, 3 = an etag)
+     *
+     * Example 1:
+     *
+     * If: (<opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2>)
+     *
+     * Would result in:
+     *
+     * [
+     *    [
+     *       'uri' => '',
+     *       'tokens' => [
+     *          [
+     *              [ true, opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2, "" ]
+     *          ]
+     *       ],
+     *    ]
+     * ]
+     *
+     * Example 2:
+     *
+     * If: </path/> (Not <opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2> ["Im An ETag"]) (["Another ETag"]) </path2/> (Not ["Path2 ETag"])
+     *
+     * Would result in:
+     *
+     * [
+     *    [
+     *       'uri' => '/path/',
+     *       'tokens' => [
+     *          [
+     *              [ false, opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2, "\"Im An ETag\"" ]
+     *              [ true, "", "\"Another ETag\"" ]
+     *          ]
+     *       ],
+     *    ],
+     *    [
+     *       'uri' => '/path2/',
+     *       'tokens' => [
+     *          [
+     *              [ false, "", "\"Path2 ETag\"" ]
+     *          ]
+     *       ],
+     *    ],
+     * ]
      *
      * @return array
      */
     public function getIfConditions() {
 
         $header = $this->httpRequest->getHeader('If');
-        if (!$header) return array();
+        if (!$header) return [];
 
-        $matches = array();
+        $matches = [];
 
         $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im';
         preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
 
-        $conditions = array();
+        $conditions = [];
 
         foreach($matches as $match) {
 
-            $condition = array(
+            $condition = [
                 'uri'   => $match['uri'],
-                'tokens' => array(
-                    array($match['not']?0:1,$match['token'],isset($match['etag'])?$match['etag']:'')
-                ),
-            );
+                'tokens' => [
+                    [
+                        $match['not']?0:1,
+                        $match['token'],
+                        isset($match['etag'])?$match['etag']:''
+                    ]
+                ],
+            ];
 
-            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = array(
+            if (!$condition['uri'] && count($conditions)) $conditions[count($conditions)-1]['tokens'][] = [
                 $match['not']?0:1,
                 $match['token'],
                 isset($match['etag'])?$match['etag']:''
-            );
+            ];
             else {
                 $conditions[] = $condition;
             }

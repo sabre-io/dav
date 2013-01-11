@@ -296,7 +296,11 @@ class Plugin extends DAV\ServerPlugin {
 
             // If none were found, this request is in error.
             if (is_null($found)) {
-                throw new DAV\Exception\BadRequest('An xml body is required for lock requests');
+                if ($existingLocks) {
+                    throw new DAV\Exception\Locked(reset($existingLocks));
+                } else {
+                    throw new DAV\Exception\BadRequest('An xml body is required for lock requests');
+                }
 
             }
 

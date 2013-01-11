@@ -95,7 +95,7 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
      * @param int $limit
      * @return array
      */
-    function getChanges($syncToken, $syncLevel, $limit = null) {
+    public function getChanges($syncToken, $syncLevel, $limit = null) {
 
         if (!is_int($syncToken) && !ctype_digit($syncToken)) {
 

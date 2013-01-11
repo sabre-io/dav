@@ -57,8 +57,8 @@ interface ISyncCollection extends DAV\Collection {
      *
      * The second argument is basically the 'depth' of the report. If it's 1,
      * you only have to report changes that happened only directly in immediate
-     * descendants. If it's 2, it should also include changes in the direct
-     * child collection.
+     * descendants. If it's 2, it should also include changes from the nodes
+     * below the child collections. (grandchildren)
      *
      * The third (optional) argument allows a client to specify how many
      * results should be returned at most. If the limit is not specified, it
@@ -67,7 +67,7 @@ interface ISyncCollection extends DAV\Collection {
      * If the limit (infinite or not) is higher than you're willing to return,
      * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
      *
-     * You can ignore the limit if you want.
+     * The limit is 'suggestive'. You are free to ignore it.
      *
      * @param string $syncToken
      * @param int $syncLevel

@@ -132,7 +132,7 @@ class Plugin extends DAV\ServerPlugin {
     protected function parseSyncCollectionRequest(DOMDocument $dom, $depth) {
 
         $xpath = new DOMXPath($dom);
-        $xpath->registerXPathNamespace('d','DAV:');
+        $xpath->registerXPathNamespace('d','urn:DAV');
 
         $syncToken = $xpath->query("//d:sync-token");
         if ($syncToken->length !== 1) {

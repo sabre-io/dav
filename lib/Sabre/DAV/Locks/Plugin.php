@@ -57,7 +57,6 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
-        //$server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),50);
         $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
         $server->subscribeEvent('validateTokens', array($this, 'validateTokens'));
 
@@ -131,57 +130,6 @@ class Plugin extends DAV\ServerPlugin {
         return true;
 
     }
-
-
-    /**
-     * This method is called before the logic for any HTTP method is
-     * handled.
-     *
-     * This plugin uses that feature to intercept access to locked resources.
-     *
-     * @param string $method
-     * @param string $uri
-     * @return bool
-     */
-    /*
-    public function beforeMethod($method, $uri) {
-
-        switch($method) {
-
-            case 'DELETE' :
-                $lastLock = null;
-                if (!$this->validateLock($uri,$lastLock, true))
-                    throw new DAV\Exception\Locked($lastLock);
-                break;
-            case 'MKCOL' :
-            case 'PROPPATCH' :
-            case 'PUT' :
-            case 'PATCH' :
-                $lastLock = null;
-                if (!$this->validateLock($uri,$lastLock))
-                    throw new DAV\Exception\Locked($lastLock);
-                break;
-            case 'MOVE' :
-                $lastLock = null;
-                if (!$this->validateLock(array(
-                      $uri,
-                      $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
-                    ),$lastLock, true))
-                        throw new DAV\Exception\Locked($lastLock);
-                break;
-            case 'COPY' :
-                $lastLock = null;
-                if (!$this->validateLock(
-                      $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
-                      $lastLock, true))
-                        throw new DAV\Exception\Locked($lastLock);
-                break;
-        }
-
-        return true;
-
-    }
-     */
 
     /**
      * Use this method to tell the server this plugin defines additional
@@ -610,127 +558,6 @@ class Plugin extends DAV\ServerPlugin {
         }
 
     }
-
-    /**
-     * validateLock should be called when a write operation is about to happen
-     * It will check if the requested url is locked, and see if the correct lock tokens are passed
-     *
-     * @param mixed $urls List of relevant urls. Can be an array, a string or nothing at all for the current request uri
-     * @param mixed $lastLock This variable will be populated with the last checked lock object (Sabre\DAV\Locks\LockInfo)
-     * @param bool $checkChildLocks If set to true, this function will also look for any locks set on child resources of the supplied urls. This is needed for for example deletion of entire trees.
-     * @return bool
-     */
-    /*
-    protected function validateLock($urls = null,&$lastLock = null, $checkChildLocks = false) {
-
-        if (is_null($urls)) {
-            $urls = array($this->server->getRequestUri());
-        } elseif (is_string($urls)) {
-            $urls = array($urls);
-        } elseif (!is_array($urls)) {
-            throw new DAV\Exception('The urls parameter should either be null, a string or an array');
-        }
-
-        $conditions = $this->server->getIfConditions();
-
-        // We're going to loop through the urls and make sure all lock conditions are satisfied
-        foreach($urls as $url) {
-
-            $locks = $this->getLocks($url, $checkChildLocks);
-
-            // If there were no conditions, but there were locks, we fail
-            if (!$conditions && $locks) {
-                reset($locks);
-                $lastLock = current($locks);
-                return false;
-            }
-
-            // If there were no locks or conditions, we go to the next url
-            if (!$locks && !$conditions) continue;
-
-            foreach($conditions as $condition) {
-
-                if (!$condition['uri']) {
-                    $conditionUri = $this->server->getRequestUri();
-                } else {
-                    $conditionUri = $this->server->calculateUri($condition['uri']);
-                }
-
-                // If the condition has a url, and it isn't part of the affected url at all, check the next condition
-                if ($conditionUri && strpos($url,$conditionUri)!==0) continue;
-
-                // The tokens array contians arrays with 2 elements. 0=true/false for normal/not condition, 1=locktoken
-                // At least 1 condition has to be satisfied
-                foreach($condition['tokens'] as $conditionToken) {
-
-                    $etagValid = true;
-                    $lockValid  = true;
-
-                    // key 2 can contain an etag
-                    if ($conditionToken[2]) {
-
-                        $uri = $conditionUri?$conditionUri:$this->server->getRequestUri();
-                        $node = $this->server->tree->getNodeForPath($uri);
-                        $etagValid = $node->getETag()==$conditionToken[2];
-
-                    }
-
-                    // key 1 can contain a lock token
-                    if ($conditionToken[1]) {
-
-                        $lockValid = false;
-                        // Match all the locks
-                        foreach($locks as $lockIndex=>$lock) {
-
-                            $lockToken = 'opaquelocktoken:' . $lock->token;
-
-                            // Checking NOT
-                            if (!$conditionToken[0] && $lockToken != $conditionToken[1]) {
-
-                                // Condition valid, onto the next
-                                $lockValid = true;
-                                break;
-                            }
-                            if ($conditionToken[0] && $lockToken == $conditionToken[1]) {
-
-                                $lastLock = $lock;
-                                // Condition valid and lock matched
-                                unset($locks[$lockIndex]);
-                                $lockValid = true;
-                                break;
-
-                            }
-
-                        }
-
-                    }
-
-                    // If, after checking both etags and locks they are stil valid,
-                    // we can continue with the next condition.
-                    if ($etagValid && $lockValid) continue 2;
-               }
-               // No conditions matched, so we fail
-               throw new DAV\Exception\PreconditionFailed('The tokens provided in the if header did not match','If');
-            }
-
-            // Conditions were met, we'll also need to check if all the locks are gone
-            if (count($locks)) {
-
-                reset($locks);
-
-                // There's still locks, we fail
-                $lastLock = current($locks);
-                return false;
-
-            }
-
-
-        }
-
-        // We got here, this means every condition was satisfied
-        return true;
-
-    }*/
 
     /**
      * Parses a webdav lock xml body, and returns a new Sabre\DAV\Locks\LockInfo object

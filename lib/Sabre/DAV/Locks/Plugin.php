@@ -257,6 +257,7 @@ class Plugin extends DAV\ServerPlugin {
     protected function httpLock($uri) {
 
         $lastLock = null;
+
         /*
         if (!$this->validateLock($uri,$lastLock)) {
 
@@ -275,18 +276,35 @@ class Plugin extends DAV\ServerPlugin {
             $lockInfo->uri = $uri;
             if($lastLock && $lockInfo->scope != LockInfo::SHARED) throw new DAV\Exception\ConflictingLock($lastLock);
 
-        } elseif ($lastLock) {
+        } else {
+
+            // Gonna check if this was a lock refresh.
+            $existingLocks = $this->getLocks($uri);
+            $conditions = $this->server->getIfConditions();
+            $found = null;
+
+
+            foreach($existingLocks as $existingLock) {
+                foreach($conditions as $condition) {
+                    foreach($condition['tokens'] as $token) {
+                        if ($token['token'] === 'opaquelocktoken:' . $existingLock->token) {
+                            $found = $existingLock;
+                        }
+                    }
+                }
+            }
+
+            // If none were found, this request is in error.
+            if (is_null($found)) {
+                throw new DAV\Exception\BadRequest('An xml body is required for lock requests');
+
+            }
 
             // This must have been a lock refresh
-            $lockInfo = $lastLock;
+            $lockInfo = $found;
 
             // The resource could have been locked through another uri.
             if ($uri!=$lockInfo->uri) $uri = $lockInfo->uri;
-
-        } else {
-
-            // There was neither a lock refresh nor a new lock request
-            throw new DAV\Exception\BadRequest('An xml body is required for lock requests');
 
         }
 
@@ -475,7 +493,6 @@ class Plugin extends DAV\ServerPlugin {
                     true
                 ));
                 break;
-            case 'LOCK' :
             case 'MKCOL' :
             case 'MKCALENDAR' :
             case 'PROPPATCH' :
@@ -572,7 +589,9 @@ class Plugin extends DAV\ServerPlugin {
         // If there's any locks left in the 'mustLocks' array, it means that
         // the resource was locked and we must block it.
         if ($mustLocks) {
+
             throw new DAV\Exception\Locked(reset($mustLocks));
+
         }
 
     }

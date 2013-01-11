@@ -1,14 +1,13 @@
 <?php
 
-namespace Sabre\DAV\Locks;
+namespace Sabre\DAV;
 
-use Sabre\DAV;
 use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class GetIfConditionsTest extends DAV\AbstractServer {
+class GetIfConditionsTest extends AbstractServer {
 
     function testNoConditions() {
 
@@ -27,6 +26,7 @@ class GetIfConditionsTest extends DAV\AbstractServer {
 
         $serverVars = array(
             'HTTP_IF' => '(<opaquelocktoken:token1>)',
+            'REQUEST_URI' => '/path/',
         );
 
         $request = new HTTP\Request($serverVars);
@@ -37,12 +37,12 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => '',
+                'uri' => 'path',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token1',
-                        '',
+                        'negate' => false,
+                        'token' => 'opaquelocktoken:token1',
+                        'etag' => '',
                     ),
                 ),
 
@@ -58,6 +58,7 @@ class GetIfConditionsTest extends DAV\AbstractServer {
 
         $serverVars = array(
             'HTTP_IF' => '(Not <opaquelocktoken:token1>)',
+            'REQUEST_URI' => '/bla'
         );
 
         $request = new HTTP\Request($serverVars);
@@ -68,12 +69,12 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => '',
+                'uri' => 'bla',
                 'tokens' => array(
                     array(
-                        0,
-                        'opaquelocktoken:token1',
-                        '',
+                        'negate' => true,
+                        'token'  => 'opaquelocktoken:token1',
+                        'etag'   => '',
                     ),
                 ),
 
@@ -98,12 +99,12 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => 'http://www.example.com/',
+                'uri' => '',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token1',
-                        '',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token1',
+                        'etag'   => '',
                     ),
                 ),
 
@@ -118,6 +119,7 @@ class GetIfConditionsTest extends DAV\AbstractServer {
 
         $serverVars = array(
             'HTTP_IF' => '(<opaquelocktoken:token1>) (Not <opaquelocktoken:token2>)',
+            'REQUEST_URI' => '/bla',
         );
 
         $request = new HTTP\Request($serverVars);
@@ -128,17 +130,17 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => '',
+                'uri' => 'bla',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token1',
-                        '',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token1',
+                        'etag'   => '',
                     ),
                     array(
-                        0,
-                        'opaquelocktoken:token2',
-                        '',
+                        'negate' => true,
+                        'token'  => 'opaquelocktoken:token2',
+                        'etag'   => '',
                     ),
                 ),
 
@@ -163,22 +165,22 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => 'http://www.example.org/node1',
+                'uri' => 'node1',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token1',
-                        '',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token1',
+                        'etag'   => '',
                     ),
                  ),
             ),
             array(
-                'uri' => 'http://www.example.org/node2',
+                'uri' => 'node2',
                 'tokens' => array(
                     array(
-                        0,
-                        'opaquelocktoken:token2',
-                        '',
+                        'negate' => true,
+                        'token'  => 'opaquelocktoken:token2',
+                        'etag'   => '',
                     ),
                 ),
 
@@ -203,27 +205,27 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => 'http://www.example.org/node1',
+                'uri' => 'node1',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token1',
-                        '',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token1',
+                        'etag'   => '',
                     ),
                     array(
-                        1,
-                        'opaquelocktoken:token2',
-                        '',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token2',
+                        'etag'   => '',
                     ),
                  ),
             ),
             array(
-                'uri' => 'http://www.example.org/node2',
+                'uri' => 'node2',
                 'tokens' => array(
                     array(
-                        0,
-                        'opaquelocktoken:token3',
-                        '',
+                        'negate' => true,
+                        'token'  => 'opaquelocktoken:token3',
+                        'etag'   => '',
                     ),
                 ),
 
@@ -237,7 +239,37 @@ class GetIfConditionsTest extends DAV\AbstractServer {
     function testEtag() {
 
         $serverVars = array(
-            'HTTP_IF' => '([etag1])',
+            'HTTP_IF' => '(["etag1"])',
+            'REQUEST_URI' => '/foo',
+        );
+
+        $request = new HTTP\Request($serverVars);
+        $this->server->httpRequest = ($request);
+
+        $conditions = $this->server->getIfConditions();
+
+        $compare = array(
+
+            array(
+                'uri' => 'foo',
+                'tokens' => array(
+                    array(
+                        'negate' => false,
+                        'token'  => '',
+                        'etag'   => '"etag1"',
+                    ),
+                 ),
+            ),
+
+        );
+        $this->assertEquals($compare,$conditions);
+
+    }
+
+    function test2Etags() {
+
+        $serverVars = array(
+            'HTTP_IF' => '<http://www.example.org/> (["etag1"]) (["etag2"])',
         );
 
         $request = new HTTP\Request($serverVars);
@@ -251,43 +283,14 @@ class GetIfConditionsTest extends DAV\AbstractServer {
                 'uri' => '',
                 'tokens' => array(
                     array(
-                        1,
-                        '',
-                        'etag1',
-                    ),
-                 ),
-            ),
-
-        );
-        $this->assertEquals($compare,$conditions);
-
-    }
-
-    function test2Etags() {
-
-        $serverVars = array(
-            'HTTP_IF' => '<http://www.example.org/> ([etag1]) ([etag2])',
-        );
-
-        $request = new HTTP\Request($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
-
-        $compare = array(
-
-            array(
-                'uri' => 'http://www.example.org/',
-                'tokens' => array(
-                    array(
-                        1,
-                        '',
-                        'etag1',
+                        'negate' => false,
+                        'token'  => '',
+                        'etag'   => '"etag1"',
                     ),
                     array(
-                        1,
-                        '',
-                        'etag2',
+                        'negate' => false,
+                        'token'  => '',
+                        'etag'   => '"etag2"',
                     ),
                  ),
             ),
@@ -300,9 +303,9 @@ class GetIfConditionsTest extends DAV\AbstractServer {
     function testComplexIf() {
 
         $serverVars = array(
-            'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1> [etag1]) ' .
-                         '(Not <opaquelocktoken:token2>) ([etag2]) <http://www.example.org/node2> ' .
-                         '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) ([etag3])',
+            'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1> ["etag1"]) ' .
+                         '(Not <opaquelocktoken:token2>) (["etag2"]) <http://www.example.org/node2> ' .
+                         '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) (["etag3"])',
         );
 
         $request = new HTTP\Request($serverVars);
@@ -313,42 +316,42 @@ class GetIfConditionsTest extends DAV\AbstractServer {
         $compare = array(
 
             array(
-                'uri' => 'http://www.example.org/node1',
+                'uri' => 'node1',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token1',
-                        'etag1',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token1',
+                        'etag'   => '"etag1"',
                     ),
                     array(
-                        0,
-                        'opaquelocktoken:token2',
-                        '',
+                        'negate' => true,
+                        'token'  => 'opaquelocktoken:token2',
+                        'etag'   => '',
                     ),
                     array(
-                        1,
-                        '',
-                        'etag2',
+                        'negate' => false,
+                        'token'  => '',
+                        'etag'   => '"etag2"',
                     ),
                  ),
             ),
             array(
-                'uri' => 'http://www.example.org/node2',
+                'uri' => 'node2',
                 'tokens' => array(
                     array(
-                        1,
-                        'opaquelocktoken:token3',
-                        '',
+                        'negate' => false,
+                        'token'  => 'opaquelocktoken:token3',
+                        'etag'   => '',
                     ),
                     array(
-                        0,
-                        'opaquelocktoken:token4',
-                        '',
+                        'negate' => true,
+                        'token'  => 'opaquelocktoken:token4',
+                        'etag'   => '',
                     ),
                     array(
-                        1,
-                        '',
-                        'etag3',
+                        'negate' => false,
+                        'token'  => '',
+                        'etag'   => '"etag3"',
                     ),
                  ),
             ),

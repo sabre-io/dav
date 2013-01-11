@@ -57,8 +57,9 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
         $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
-        $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),50);
+        //$server->subscribeEvent('beforeMethod',array($this,'beforeMethod'),50);
         $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
+        $server->subscribeEvent('validateTokens', array($this, 'validateTokens'));
 
     }
 
@@ -142,6 +143,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @return bool
      */
+    /*
     public function beforeMethod($method, $uri) {
 
         switch($method) {
@@ -179,6 +181,7 @@ class Plugin extends DAV\ServerPlugin {
         return true;
 
     }
+     */
 
     /**
      * Use this method to tell the server this plugin defines additional
@@ -254,6 +257,7 @@ class Plugin extends DAV\ServerPlugin {
     protected function httpLock($uri) {
 
         $lastLock = null;
+        /*
         if (!$this->validateLock($uri,$lastLock)) {
 
             // If the existing lock was an exclusive lock, we need to fail
@@ -262,7 +266,7 @@ class Plugin extends DAV\ServerPlugin {
                 throw new DAV\Exception\ConflictingLock($lastLock);
             }
 
-        }
+        }*/
 
         if ($body = $this->server->httpRequest->getBody(true)) {
             // This is a new lock request
@@ -445,6 +449,135 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
+     * The validateTokens event is triggered before every request.
+     *
+     * It's a moment where this plugin can check all the supplied lock tokens
+     * in the If: header, and check if they are valid.
+     *
+     * In addition, it will also ensure that it checks any missing lokens that
+     * must be present in the request, and reject requests without the proper
+     * tokens.
+     *
+     * @param mixed $conditions
+     * @return void
+     */
+    public function validateTokens( &$conditions ) {
+
+        // First we need to gather a list of locks that must be satisfied.
+        $mustLocks = [];
+        $method = $this->server->httpRequest->getMethod();
+
+        switch($method) {
+
+            case 'DELETE' :
+                $mustLocks = array_merge($mustLocks, $this->getLocks(
+                    $this->server->getRequestUri(),
+                    true
+                ));
+                break;
+            case 'LOCK' :
+            case 'MKCOL' :
+            case 'MKCALENDAR' :
+            case 'PROPPATCH' :
+            case 'PUT' :
+            case 'PATCH' :
+                $mustLocks = array_merge($mustLocks, $this->getLocks(
+                    $this->server->getRequestUri(),
+                    false
+                ));
+                break;
+            case 'MOVE' :
+                $mustLocks = array_merge($mustLocks, $this->getLocks(
+                    $this->server->getRequestUri(),
+                    true
+                ));
+                $mustLocks = array_merge($mustLocks, $this->getLocks(
+                    $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
+                    false
+                ));
+                break;
+            case 'COPY' :
+                $mustLocks = array_merge($mustLocks, $this->getLocks(
+                    $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
+                    false
+                ));
+                break;
+        }
+
+        // It's possible that there's identical locks, because of shared 
+        // parents. We're removing the duplicates here.
+        $tmp = [];
+        foreach($mustLocks as $lock) $tmp[$lock->token] = $lock;
+        $mustLocks = array_values($tmp);
+
+        foreach($conditions as $kk=>$condition) {
+
+            foreach($condition['tokens'] as $ii=>$token) {
+
+                // Lock tokens always start with opaquelocktoken:
+                if (substr($token['token'], 0, 16) !== 'opaquelocktoken:') {
+                    continue;
+                }
+
+                $checkToken = substr($token['token'],16);
+                // Looping through our list with locks.
+                foreach($mustLocks as $jj => $mustLock) {
+
+                    if ($mustLock->token == $checkToken) {
+
+                        // We have a match!
+                        // Removing this one from mustlocks
+                        unset($mustLocks[$jj]);
+
+                        // Marking the condition as valid.
+                        $conditions[$kk]['tokens'][$ii]['validToken'] = true;
+
+                        // Advancing to the next token
+                        continue 2;
+
+                    }
+
+                    // If we got here, it means that there was a
+                    // lock-token, but it was not in 'mustLocks'.
+                    //
+                    // This is an edge-case, as it could mean that token
+                    // was specified with a url that was not 'required' to
+                    // check. So we're doing one extra lookup to make sure
+                    // we really don't know this token.
+                    //
+                    // This also gets triggered when the user specified a
+                    // lock-token that was expired.
+                    $oddLocks = $this->getLocks($condition['uri']);
+                    foreach($oddLocks as $oddLock) {
+
+                        if ($oddLock->token === $checkToken) {
+
+                            // We have a hit!
+                            $conditions[$kk]['tokens'][$ii]['validToken'] = true;
+                            continue 2;
+
+                        }
+                    }
+
+                    // If we get all the way here, the lock-token was
+                    // really unknown.
+
+                }
+
+
+            }
+
+        }
+
+        // If there's any locks left in the 'mustLocks' array, it means that
+        // the resource was locked and we must block it.
+        if ($mustLocks) {
+            throw new DAV\Exception\Locked(reset($mustLocks));
+        }
+
+    }
+
+    /**
      * validateLock should be called when a write operation is about to happen
      * It will check if the requested url is locked, and see if the correct lock tokens are passed
      *
@@ -453,6 +586,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param bool $checkChildLocks If set to true, this function will also look for any locks set on child resources of the supplied urls. This is needed for for example deletion of entire trees.
      * @return bool
      */
+    /*
     protected function validateLock($urls = null,&$lastLock = null, $checkChildLocks = false) {
 
         if (is_null($urls)) {
@@ -562,7 +696,7 @@ class Plugin extends DAV\ServerPlugin {
         // We got here, this means every condition was satisfied
         return true;
 
-    }
+    }*/
 
     /**
      * Parses a webdav lock xml body, and returns a new Sabre\DAV\Locks\LockInfo object

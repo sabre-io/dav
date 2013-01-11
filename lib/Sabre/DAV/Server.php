@@ -751,6 +751,8 @@ class Server {
      */
     protected function httpPropPatch($uri) {
 
+        $this->checkPreconditions();
+
         $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
         $result = $this->updateProperties($uri, $newProperties);

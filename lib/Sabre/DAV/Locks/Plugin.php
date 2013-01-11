@@ -258,6 +258,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $lastLock = null;
 
+        $existingLocks = $this->getLocks($uri);
         /*
         if (!$this->validateLock($uri,$lastLock)) {
 
@@ -271,10 +272,20 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($body = $this->server->httpRequest->getBody(true)) {
             // This is a new lock request
+
+            $existingLock = null;
+            // Checking if there's already non-shared locks on the uri.
+            foreach($existingLocks as $existingLock) {
+                if ($existingLock->scope === LockInfo::EXCLUSIVE) {
+                    throw new DAV\Exception\ConflictingLock($existingLock);
+                }
+            }
+
             $lockInfo = $this->parseLockRequest($body);
             $lockInfo->depth = $this->server->getHTTPDepth();
             $lockInfo->uri = $uri;
-            if($lastLock && $lockInfo->scope != LockInfo::SHARED) throw new DAV\Exception\ConflictingLock($lastLock);
+            if($existingLock && $lockInfo->scope != LockInfo::SHARED)
+                throw new DAV\Exception\ConflictingLock($existingLock);
 
         } else {
 
@@ -525,7 +536,7 @@ class Plugin extends DAV\ServerPlugin {
                 break;
         }
 
-        // It's possible that there's identical locks, because of shared 
+        // It's possible that there's identical locks, because of shared
         // parents. We're removing the duplicates here.
         $tmp = [];
         foreach($mustLocks as $lock) $tmp[$lock->token] = $lock;

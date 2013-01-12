@@ -207,16 +207,6 @@ class Plugin extends DAV\ServerPlugin {
         $lastLock = null;
 
         $existingLocks = $this->getLocks($uri);
-        /*
-        if (!$this->validateLock($uri,$lastLock)) {
-
-            // If the existing lock was an exclusive lock, we need to fail
-            if (!$lastLock || $lastLock->scope == LockInfo::EXCLUSIVE) {
-                //var_dump($lastLock);
-                throw new DAV\Exception\ConflictingLock($lastLock);
-            }
-
-        }*/
 
         if ($body = $this->server->httpRequest->getBody(true)) {
             // This is a new lock request

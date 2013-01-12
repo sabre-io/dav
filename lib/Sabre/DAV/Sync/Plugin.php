@@ -23,6 +23,8 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected $server;
 
+    const SYNCTOKEN_PREFIX = 'http://sabredav.org/ns/sync/';
+
     /**
      * Initializes the plugin.
      *
@@ -47,6 +49,7 @@ class Plugin extends DAV\ServerPlugin {
         });
 
         $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
+        $server->subscribeEvent('validateTokens',      array($this, 'validateTokens'));
 
     }
 
@@ -103,6 +106,15 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\ReportNotSupported('No sync information is available at this node');
         }
 
+        if (!is_null($syncToken)) {
+            // Sync-token must start with our prefix
+            if (substr($syncToken, 0, strlen(self::SYNCTOKEN_PREFIX)) !== self::SYNCTOKEN_PREFIX) {
+                throw new DAV\Exception\InvalidSyncToken('Invalid or unknown sync token');
+            }
+
+            $syncToken = substr($syncToken, strlen(self::SYNCTOKEN_PREFIX));
+
+        }
         $changeInfo = $node->getChanges($syncToken, $syncLevel, $limit);
 
         if (is_null($changeInfo)) {
@@ -240,7 +252,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $syncToken = $dom->createElement('d:sync-token', 'http://sabredav.org/ns/sync/' . $syncToken);
+        $syncToken = $dom->createElement('d:sync-token', self::SYNCTOKEN_PREFIX . $syncToken);
         $multiStatus->appendChild($syncToken);
 
         $this->server->httpResponse->sendStatus(207);
@@ -278,7 +290,43 @@ class Plugin extends DAV\ServerPlugin {
         $index = array_search('{DAV:}sync-token', $requestedProperties);
         unset($requestedProperties[$index]);
 
-        $returnedProperties[200]['{DAV:}sync-token'] = 'http://sabredav.org/ns/sync/' . $token;
+        $returnedProperties[200]['{DAV:}sync-token'] = self::SYNCTOKEN_PREFIX . $token;
+
+    }
+
+    /**
+     * The validateTokens event is triggered before every request.
+     *
+     * It's a moment where this plugin can check all the supplied lock tokens
+     * in the If: header, and check if they are valid.
+     *
+     * @param mixed $conditions
+     * @return void
+     */
+    public function validateTokens( &$conditions ) {
+
+        foreach($conditions as $kk=>$condition) {
+
+            foreach($condition['tokens'] as $ii=>$token) {
+
+                // Sync-tokens must always start with our designated prefix.
+                if (substr($token['token'], 0, strlen(self::SYNCTOKEN_PREFIX)) !== self::SYNCTOKEN_PREFIX) {
+                    continue;
+                }
+
+                // Checking if the token is a match.
+                $node = $this->server->tree->getNodeForPath($condition['uri']);
+
+                if (
+                    $node instanceof ISyncCollection &&
+                    $node->getSyncToken() === substr($token['token'], strlen(self::SYNCTOKEN_PREFIX))
+                ) {
+                    $conditions[$kk]['tokens'][$ii]['validToken'] = true;
+                }
+
+            }
+
+        }
 
     }
 

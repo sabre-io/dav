@@ -148,7 +148,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-     <D:sync-token>1</D:sync-token>
+     <D:sync-token>http://sabredav.org/ns/sync/1</D:sync-token>
      <D:sync-level>infinite</D:sync-level>
       <D:prop>
         <D:getcontentlength/>
@@ -214,7 +214,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-    <D:sync-token>1</D:sync-token>
+    <D:sync-token>http://sabredav.org/ns/sync/1</D:sync-token>
     <D:sync-level>infinite</D:sync-level>
     <D:prop>
         <D:getcontentlength/>
@@ -272,7 +272,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-     <D:sync-token>1</D:sync-token>
+     <D:sync-token>http://sabredav.org/ns/sync/1</D:sync-token>
       <D:prop>
         <D:getcontentlength/>
       </D:prop>
@@ -380,6 +380,35 @@ BLA;
     }
 
     public function testSyncInvalidToken() {
+
+        $this->collection->addChange(['file1.txt'], []);
+        $request = new HTTP\Request([
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'    => 'application/xml',
+        ]);
+
+        $body = <<<BLA
+<?xml version="1.0" encoding="utf-8" ?>
+<D:sync-collection xmlns:D="DAV:">
+     <D:sync-token>http://sabredav.org/ns/sync/invalid</D:sync-token>
+     <D:sync-level>1</D:sync-level>
+      <D:prop>
+        <D:getcontentlength/>
+      </D:prop>
+</D:sync-collection>
+BLA;
+
+        $request->setBody($body);
+
+        $response = $this->request($request);
+
+        // The default state has no sync-token, so this report should not yet
+        // be supported.
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full response body:' . $response->body);
+
+    }
+    public function testSyncInvalidTokenNoPrefix() {
 
         $this->collection->addChange(['file1.txt'], []);
         $request = new HTTP\Request([

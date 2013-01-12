@@ -33,6 +33,19 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     }
 
+    public function testSupportedReportSet() {
+
+        $result = $this->server->getProperties('/coll', ['{DAV:}supported-report-set']);
+        $this->assertFalse($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
+
+        // Making a change
+        $this->collection->addChange(['file1.txt'], []);
+
+        $result = $this->server->getProperties('/coll', ['{DAV:}supported-report-set']);
+        $this->assertTrue($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
+
+    }
+
     public function testSyncInitialSyncCollection() {
 
         // Making a change

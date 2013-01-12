@@ -62,7 +62,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function getSupportedReportSet($uri) {
 
-        $node = $this->tree->getNodeForPath($uri);
+        $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof ISyncCollection && $node->getSyncToken()) {
             return array(
                 '{DAV:}sync-collection',

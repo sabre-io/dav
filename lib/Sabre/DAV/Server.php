@@ -684,6 +684,7 @@ class Server {
      */
     protected function httpDelete($uri) {
 
+        $this->checkPreconditions();
         if (!$this->broadcastEvent('beforeUnbind',[$uri])) return;
         $this->tree->delete($uri);
         $this->broadcastEvent('afterUnbind',[$uri]);
@@ -749,6 +750,8 @@ class Server {
      * @return void
      */
     protected function httpPropPatch($uri) {
+
+        $this->checkPreconditions();
 
         $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
 
@@ -992,6 +995,7 @@ class Server {
      */
     protected function httpMove($uri) {
 
+        $this->checkPreconditions();
         $moveInfo = $this->getCopyAndMoveInfo();
 
         // If the destination is part of the source tree, we must fail
@@ -1029,6 +1033,7 @@ class Server {
      */
     protected function httpCopy($uri) {
 
+        $this->checkPreconditions();
         $copyInfo = $this->getCopyAndMoveInfo();
         // If the destination is part of the source tree, we must fail
         if ($copyInfo['destination']==$uri)
@@ -2063,7 +2068,193 @@ class Server {
             }
 
         }
+
+        // Now the hardest, the If: header. The If: header can contain multiple
+        // urls, etags and so-called 'state tokens'.
+        //
+        // Examples of state tokens include lock-tokens (as defined in rfc4918)
+        // and sync-tokens (as defined in rfc6578).
+        //
+        // The only proper way to deal with these, is to emit events, that a
+        // Sync and Lock plugin can pick up.
+        $ifConditions = $this->getIfConditions();
+
+        foreach($ifConditions as $kk => $ifCondition) {
+            foreach($ifCondition['tokens'] as $ii => $token) {
+                $ifConditions[$kk]['tokens'][$ii]['validToken'] = false;
+            }
+        }
+
+        // Plugins are responsible for validating all the tokens.
+        // If a plugin deemed a token 'valid', it will set 'validToken' to
+        // true.
+        $this->broadcastEvent('validateTokens', [ &$ifConditions ]);
+
+        // Now we're going to analyze the result.
+
+        // Every ifCondition needs to validate to true, so we exit as soon as
+        // we have an invalid condition.
+        foreach($ifConditions as $ifCondition) {
+
+            $uri = $ifCondition['uri'];
+            $tokens = $ifCondition['tokens'];
+
+            // We only need 1 valid token for the condition to succeed.
+            foreach($tokens as $token) {
+
+                $tokenValid = $token['validToken'] || !$token['token'];
+
+                $etagValid = false;
+                if (!$token['etag']) {
+                    $etagValid = true;
+                }
+                // Checking the etag, only if the token was already deamed
+                // valid and there is one.
+                if ($token['etag'] && $tokenValid) {
+
+                    // The token was valid, and there was an etag.. We must
+                    // grab the current etag and check it.
+                    $node = $this->tree->getNodeForPath($uri);
+                    $etagValid = $node->getETag() == $token['etag'];
+
+                }
+
+
+                if (($tokenValid && $etagValid) ^ $token['negate']) {
+                    // Both were valid, so we can go to the next condition.
+                    continue 2;
+                }
+
+
+            }
+
+            // If we ended here, it means there was no valid etag + token
+            // combination found for the current condition. This means we fail!
+            throw new Exception\PreconditionFailed('Failed to find a valid token/etag combination for ' . $uri, 'If');
+
+        }
+
         return true;
+
+    }
+
+    /**
+     * This method is created to extract information from the WebDAV HTTP 'If:' header
+     *
+     * The If header can be quite complex, and has a bunch of features. We're using a regex to extract all relevant information
+     * The function will return an array, containing structs with the following keys
+     *
+     *   * uri   - the uri the condition applies to.
+     *   * tokens - The lock token. another 2 dimensional array containing 3 elements
+     *
+     * Example 1:
+     *
+     * If: (<opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2>)
+     *
+     * Would result in:
+     *
+     * [
+     *    [
+     *       'uri' => '/request/uri',
+     *       'tokens' => [
+     *          [
+     *              [
+     *                  'negate' => false,
+     *                  'token'  => 'opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2',
+     *                  'etag'   => ""
+     *              ]
+     *          ]
+     *       ],
+     *    ]
+     * ]
+     *
+     * Example 2:
+     *
+     * If: </path/> (Not <opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2> ["Im An ETag"]) (["Another ETag"]) </path2/> (Not ["Path2 ETag"])
+     *
+     * Would result in:
+     *
+     * [
+     *    [
+     *       'uri' => 'path',
+     *       'tokens' => [
+     *          [
+     *              [
+     *                  'negate' => true,
+     *                  'token'  => 'opaquelocktoken:181d4fae-7d8c-11d0-a765-00a0c91e6bf2',
+     *                  'etag'   => '"Im An ETag"'
+     *              ],
+     *              [
+     *                  'negate' => false,
+     *                  'token'  => '',
+     *                  'etag'   => '"Another ETag"'
+     *              ]
+     *          ]
+     *       ],
+     *    ],
+     *    [
+     *       'uri' => 'path2',
+     *       'tokens' => [
+     *          [
+     *              [
+     *                  'negate' => true,
+     *                  'token'  => '',
+     *                  'etag'   => '"Path2 ETag"'
+     *              ]
+     *          ]
+     *       ],
+     *    ],
+     * ]
+     *
+     * @return array
+     */
+    public function getIfConditions() {
+
+        $header = $this->httpRequest->getHeader('If');
+        if (!$header) return [];
+
+        $matches = [];
+
+        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im';
+        preg_match_all($regex,$header,$matches,PREG_SET_ORDER);
+
+        $conditions = [];
+
+        foreach($matches as $match) {
+
+            // If there was no uri specified in this match, and there were
+            // already conditions parsed, we add the condition to the list of
+            // conditions for the previous uri.
+            if (!$match['uri'] && count($conditions)) {
+                $conditions[count($conditions)-1]['tokens'][] = [
+                    'negate' => $match['not']?true:false,
+                    'token'  => $match['token'],
+                    'etag'   => isset($match['etag'])?$match['etag']:''
+                ];
+            } else {
+
+                if (!$match['uri']) {
+                    $realUri = $this->getRequestUri();
+                } else {
+                    $realUri = $this->calculateUri($match['uri']);
+                }
+
+                $conditions[] = [
+                    'uri'   => $realUri,
+                    'tokens' => [
+                        [
+                            'negate' => $match['not']?true:false,
+                            'token'  => $match['token'],
+                            'etag'   => isset($match['etag'])?$match['etag']:''
+                        ]
+                    ],
+
+                ];
+            }
+
+        }
+
+        return $conditions;
 
     }
 

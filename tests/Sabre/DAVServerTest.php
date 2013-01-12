@@ -131,6 +131,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * Override this to provide your own Tree for your test-case.
+     */
     function setUpTree() {
 
         if ($this->setupCalDAV) {

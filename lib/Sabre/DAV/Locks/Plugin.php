@@ -438,6 +438,8 @@ class Plugin extends DAV\ServerPlugin {
         $mustLocks = [];
         $method = $this->server->httpRequest->getMethod();
 
+        // Methods not in that list are operations that doesn't alter any
+        // resources, and we don't need to check the lock-states for.
         switch($method) {
 
             case 'DELETE' :

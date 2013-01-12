@@ -7,6 +7,8 @@ use Sabre\DAV;
 /**
  * This plugin all WebDAV-sync capabilities to the Server.
  *
+ * WebDAV-sync is defined by rfc6578
+ *
  * The sync capabilities only work with collections that implement
  * Sabreu\DAV\Sync\ISyncCollection.
  *

@@ -19,7 +19,7 @@ use Sabre\DAV;
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class InvalidSyncToken extends DAV\Forbidden {
+class InvalidSyncToken extends Forbidden {
 
     /**
      * This method allows the exception to include additional information into the WebDAV error response

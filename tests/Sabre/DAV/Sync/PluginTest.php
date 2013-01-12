@@ -12,11 +12,19 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     protected $collection;
 
+    public function setUp() {
+
+        parent::setUp();
+        $this->server->addPlugin(new Plugin());
+
+    }
+
     public function setUpTree() {
 
         $this->collection =
             new MockSyncCollection('coll', [
-                new DAV\SimpleFile('file1.txt','foobar'),
+                new DAV\SimpleFile('file1.txt','foo'),
+                new DAV\SimpleFile('file2.txt','bar'),
             ]);
         $this->tree = [
             $this->collection,
@@ -25,7 +33,10 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     }
 
-    public function testSyncCollection() {
+    public function testSyncInitialSyncCollection() {
+
+        // Making a change
+        $this->collection->addChange(['file1.txt'], []);
 
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
@@ -34,12 +45,125 @@ class PluginTest extends \Sabre\DAVServerTest {
         ]);
 
         $body = <<<BLA
-
-
+<?xml version="1.0" encoding="utf-8" ?>
+<D:sync-collection xmlns:D="DAV:">
+     <D:sync-token/>
+     <D:sync-level>1</D:sync-level>
+      <D:prop>
+        <D:getcontentlength/>
+      </D:prop>
+</D:sync-collection>
 BLA;
 
-        $this->markTestIncomplete('Not done yet');
+        $request->setBody($body);
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Full response body:' . $response->body);
+
+        $dom = DAV\XMLUtil::loadDOMDocument(
+            $response->body
+        );
+
+        // Checking the sync-token
+        $this->assertEquals(
+            'http://sabredav.org/ns/sync/1',
+            $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
+        );
+
+        $responses = DAV\Property\ResponseList::unserialize(
+            $dom->documentElement,
+            []
+        );
+
+        $responses = $responses->getResponses();
+        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
+
+        $response = $responses[0];
+
+        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertEquals('/coll/file1.txt', $response->getHref());
+        $this->assertEquals([
+            200 => [
+                '{DAV:}getcontentlength' => 3,
+            ]
+        ], $response->getResponseProperties());
+
+        $response = $responses[1];
+
+        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertEquals('/coll/file2.txt', $response->getHref());
+        $this->assertEquals([
+            200 => [
+                '{DAV:}getcontentlength' => 3,
+            ]
+        ], $response->getResponseProperties());
 
     }
 
+    public function testSubsequentSyncSyncCollection() {
+
+        // Making a change
+        $this->collection->addChange(['file1.txt'], []);
+        // Making another change
+        $this->collection->addChange(['file2.txt'], ['file3.txt']);
+
+        $request = new HTTP\Request([
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'    => 'application/xml',
+        ]);
+
+        $body = <<<BLA
+<?xml version="1.0" encoding="utf-8" ?>
+<D:sync-collection xmlns:D="DAV:">
+     <D:sync-token>1</D:sync-token>
+     <D:sync-level>1</D:sync-level>
+      <D:prop>
+        <D:getcontentlength/>
+      </D:prop>
+</D:sync-collection>
+BLA;
+
+        $request->setBody($body);
+
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Full response body:' . $response->body);
+
+        $dom = DAV\XMLUtil::loadDOMDocument(
+            $response->body
+        );
+
+        // Checking the sync-token
+        $this->assertEquals(
+            'http://sabredav.org/ns/sync/2',
+            $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
+        );
+
+        $responses = DAV\Property\ResponseList::unserialize(
+            $dom->documentElement,
+            []
+        );
+
+        $responses = $responses->getResponses();
+        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
+
+        $response = $responses[0];
+
+        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertEquals('/coll/file2.txt', $response->getHref());
+        $this->assertEquals([
+            200 => [
+                '{DAV:}getcontentlength' => 3,
+            ]
+        ], $response->getResponseProperties());
+
+        $response = $responses[1];
+
+        $this->assertEquals('404', $response->getHttpStatus());
+        $this->assertEquals('/coll/file3.txt', $response->getHref());
+        $this->assertEquals([], $response->getResponseProperties());
+
+    }
 }

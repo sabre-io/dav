@@ -69,6 +69,17 @@ class Response extends DAV\Property implements IHref {
     }
 
     /**
+     * Returns the httpStatus value
+     *
+     * @return string
+     */
+    public function getHttpStatus() {
+
+        return $this->httpStatus;
+
+    }
+
+    /**
      * Returns the property list
      *
      * @return array

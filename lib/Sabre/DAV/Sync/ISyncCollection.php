@@ -49,6 +49,9 @@ interface ISyncCollection extends DAV\ICollection {
      * collection, as reported getSyncToken(). This is needed here too, to
      * ensure the operation is atomic.
      *
+     * If the syncToken is specified as null, this is an initial sync, and all
+     * members should be reported.
+     *
      * The modified property is an array of nodenames that have changed since
      * the last token.
      *
@@ -66,6 +69,9 @@ interface ISyncCollection extends DAV\ICollection {
      *
      * If the limit (infinite or not) is higher than you're willing to return,
      * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
+     *
+     * If the syncToken is expired (due to data cleanup) or unknown, you must
+     * return null.
      *
      * The limit is 'suggestive'. You are free to ignore it.
      *

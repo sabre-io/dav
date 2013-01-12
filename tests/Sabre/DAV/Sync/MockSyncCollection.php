@@ -7,11 +7,11 @@ use Sabre\DAV;
 /**
  * This mocks a ISyncCollection, for unittesting.
  *
- * This object behaves the same as SimpleCollection. Call addChange to update 
- * the 'changelog' that this class uses for the collection. 
- * 
+ * This object behaves the same as SimpleCollection. Call addChange to update
+ * the 'changelog' that this class uses for the collection.
+ *
  * @copyright Copyright (C) 2007-2012 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection {
@@ -67,6 +67,9 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
      * collection, as reported getSyncToken(). This is needed here too, to
      * ensure the operation is atomic.
      *
+     * If the syncToken is specified as null, this is an initial sync, and all
+     * members should be reported.
+     *
      * The modified property is an array of nodenames that have changed since
      * the last token.
      *
@@ -85,8 +88,8 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
      * If the limit (infinite or not) is higher than you're willing to return,
      * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
      *
-     * If the syncToken is expired (due to data cleanup) or unknown, you must 
-     * emit: Sabre\DAV\Exception\InvalidSyncToken. 
+     * If the syncToken is expired (due to data cleanup) or unknown, you must
+     * return null.
      *
      * The limit is 'suggestive'. You are free to ignore it.
      *
@@ -97,23 +100,35 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
      */
     public function getChanges($syncToken, $syncLevel, $limit = null) {
 
+        // This is an initial sync
+        if (is_null($syncToken)) {
+            return [
+               'modified' => array_map(
+                    function($item) {
+                        return $item->getName();
+                    }, $this->getChildren()
+                ),
+                'deleted' => [],
+                'syncToken' => $this->getSyncToken(),
+            ];
+        }
+
         if (!is_int($syncToken) && !ctype_digit($syncToken)) {
 
             return null;
 
         }
         if (is_null($this->token)) return null;
-            
+
         $modified = [];
         $deleted  = [];
 
         foreach($this->changeLog as $token=>$change) {
 
-            if ($syncToken < $token) {
-                continue;
+            if ($token > $syncToken) {
+                $modified = array_merge($modified, $change['modified']);
+                $deleted = array_merge($deleted, $change['deleted']);
             }
-            $modified = array_merge($modified, $change['modified']);
-            $deleted = array_merge($deleted, $change['deleted']);
 
         }
 

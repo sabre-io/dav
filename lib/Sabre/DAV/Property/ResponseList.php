@@ -96,7 +96,14 @@ class ResponseList extends DAV\Property {
             // Parsing 'href'
             $href = Href::unserialize($xResponse, $propertyMap);
 
-            $properties = array();
+            $properties = [];
+
+            // Parsing 'status' in 'd:response'
+            $responseStatus = $xpath->evaluate('string(d:status)', $xResponse);
+            if ($responseStatus) {
+                list(, $responseStatus,) = explode(' ', $responseStatus, 3);
+            }
+
 
             // Parsing 'propstat'
             $xPropstat = $xpath->query('d:propstat', $xResponse);
@@ -106,14 +113,14 @@ class ResponseList extends DAV\Property {
                 // Parsing 'status'
                 $status = $xpath->evaluate('string(d:status)', $xPropstat->item($ii));
 
-                list($httpVersion, $statusCode, $statusText) = explode(' ', $status, 3);
+                list(,$statusCode,) = explode(' ', $status, 3);
 
                 // Parsing 'prop'
                 $properties[$statusCode] = DAV\XMLUtil::parseProperties($xPropstat->item($ii), $propertyMap);
 
             }
 
-            $result[] = new Response($href->getHref(), $properties);
+            $result[] = new Response($href->getHref(), $properties, $responseStatus);
 
         }
 

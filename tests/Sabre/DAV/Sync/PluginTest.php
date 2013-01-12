@@ -523,4 +523,52 @@ BLA;
         $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Full response body:' . $response->body);
 
     }
+
+    public function testIfConditions() {
+
+        $this->collection->addChange(['file1.txt'], []);
+        $request = new HTTP\Request([
+            'REQUEST_METHOD' => 'DELETE',
+            'REQUEST_URI'    => '/coll/file1.txt',
+            'HTTP_IF'        => '</coll> (<http://sabredav.org/ns/sync/1>)',
+        ]);
+        $response = $this->request($request);
+
+        // If a 403 is thrown this works correctly. The file in questions
+        // doesn't allow itself to be deleted.
+        // If the If conditions failed, it would have been a 412 instead.
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status);
+
+    }
+
+    public function testIfConditionsNot() {
+
+        $this->collection->addChange(['file1.txt'], []);
+        $request = new HTTP\Request([
+            'REQUEST_METHOD' => 'DELETE',
+            'REQUEST_URI'    => '/coll/file1.txt',
+            'HTTP_IF'        => '</coll> (Not <http://sabredav.org/ns/sync/2>)',
+        ]);
+        $response = $this->request($request);
+
+        // If a 403 is thrown this works correctly. The file in questions
+        // doesn't allow itself to be deleted.
+        // If the If conditions failed, it would have been a 412 instead.
+        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status);
+
+    }
+
+    public function testIfConditionsNoSyncToken() {
+
+        $this->collection->addChange(['file1.txt'], []);
+        $request = new HTTP\Request([
+            'REQUEST_METHOD' => 'DELETE',
+            'REQUEST_URI'    => '/coll/file1.txt',
+            'HTTP_IF'        => '</coll> (<opaquelocktoken:foo>)',
+        ]);
+        $response = $this->request($request);
+
+        $this->assertEquals('HTTP/1.1 412 Precondition failed', $response->status);
+
+    }
 }

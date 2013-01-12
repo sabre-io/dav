@@ -2120,7 +2120,7 @@ class Server {
                 }
 
 
-                if ($tokenValid && $etagValid) {
+                if (($tokenValid && $etagValid) ^ $token['negate']) {
                     // Both were valid, so we can go to the next condition.
                     continue 2;
                 }

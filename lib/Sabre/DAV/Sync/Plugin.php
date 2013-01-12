@@ -319,7 +319,7 @@ class Plugin extends DAV\ServerPlugin {
 
                 if (
                     $node instanceof ISyncCollection &&
-                    $node->getSyncToken() === substr($token['token'], strlen(self::SYNCTOKEN_PREFIX))
+                    $node->getSyncToken() == substr($token['token'], strlen(self::SYNCTOKEN_PREFIX))
                 ) {
                     $conditions[$kk]['tokens'][$ii]['validToken'] = true;
                 }

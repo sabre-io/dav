@@ -2,6 +2,7 @@
 	* BC Break: XML property classes now receive an extra argument in their
 	  unserialize method ($propertyMap). This allows for recursively parsing
 	  properties, if needed.
+	* Added: Support for WebDAV-sync (rfc6578).
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
 	* Fixed: Read-only access to calendars still allows the sharee to modify
@@ -18,6 +19,13 @@
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
 	* Added: Addressbooks or backends can now specify custom acl rules when
 	  creating cards.
+	* Added: The ability for plugins to validate custom tokens in If: headers.
+	* Changed: Completely refactored the Lock plugin to deal with the new If:
+	  header system.
+	* Added: Checking preconditions for MOVE, COPY, DELETE and PROPPATCH methods.
+	* Added: has() method on DAV\Property\SupportedReportSet.
+	* Added: If header now gets checked (with ETag) all the time. Before the
+	  dealing with the If-header was a responsibility of the Locking plugin.
 
 1.8.2-stable (????-??-??)
 	* Includes changes from version 1.7.4.

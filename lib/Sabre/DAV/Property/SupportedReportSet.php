@@ -76,6 +76,21 @@ class SupportedReportSet extends DAV\Property {
     }
 
     /**
+     * Returns true or false if the property contains a specific report.
+     *
+     * @param string $reportName
+     * @return bool
+     */
+    public function has($reportName) {
+
+        return in_array(
+            $reportName,
+            $this->reports
+        );
+
+    }
+
+    /**
      * Serializes the node
      *
      * @param DAV\Server $server

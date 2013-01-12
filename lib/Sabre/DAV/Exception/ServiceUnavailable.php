@@ -16,15 +16,15 @@ use Sabre\DAV;
  */
 class ServiceUnavailable extends DAV\Exception {
 
-	/**
-	 * Returns the HTTP statuscode for this exception
-	 *
-	 * @return int
-	 */
-	public function getHTTPCode() {
+    /**
+     * Returns the HTTP statuscode for this exception
+     *
+     * @return int
+     */
+    public function getHTTPCode() {
 
-		return 503;
+        return 503;
 
-	}
+    }
 
 }

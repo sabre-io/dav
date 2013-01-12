@@ -126,8 +126,28 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         foreach($this->changeLog as $token=>$change) {
 
             if ($token > $syncToken) {
+
                 $modified = array_merge($modified, $change['modified']);
                 $deleted = array_merge($deleted, $change['deleted']);
+
+                if ($limit) {
+                    // If there's a limit, we may need to cut things off.
+                    // This alghorithm is weird and stupid, but it works.
+                    $left = $limit - (count($modified) + count($deleted));
+                    if ($left>0) continue;
+                    if ($left===0) break;
+                    if ($left<0) {
+                        $modified = array_slice($modified, 0, $left);
+                    }
+                    $left = $limit - (count($modified) + count($deleted));
+                    if ($left===0) break;
+                    if ($left<0) {
+                        $deleted = array_slice($deleted, 0, $left);
+                    }
+                    break;
+
+                }
+
             }
 
         }

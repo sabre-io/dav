@@ -96,11 +96,11 @@ class Plugin extends DAV\ServerPlugin {
         // Getting the data
         $node = $this->server->tree->getNodeForPath($uri);
         if (!$node instanceof ISyncCollection) {
-            throw new DAV\Exception\ReportNotImplemented('The {DAV:}sync-collection REPORT is not implemented on this url.');
+            throw new DAV\Exception\ReportNotSupported('The {DAV:}sync-collection REPORT is not supported on this url.');
         }
         $token = $node->getSyncToken();
         if (!$token) {
-            throw new DAV\Exception\ReportNotImplemented('No sync information is available at this node');
+            throw new DAV\Exception\ReportNotSupported('No sync information is available at this node');
         }
 
         $changeInfo = $node->getChanges($syncToken, $syncLevel, $limit);
@@ -157,7 +157,7 @@ class Plugin extends DAV\ServerPlugin {
         } else {
             $syncLevel = $syncLevel->item(0)->nodeValue;
             if ($syncLevel === 'infinite') {
-                $syncLevel = DAV\Server::DEPTH_INFINITE;
+                $syncLevel = DAV\Server::DEPTH_INFINITY;
             }
 
             // If the syncLevel was set, and depth is something other than 0..

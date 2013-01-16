@@ -1,5 +1,7 @@
 <?php
 
+namespace Sabre\CalDAV\Backend;
+
 /**
  * WebDAV-sync support for CalDAV backends.
  *
@@ -20,7 +22,7 @@ interface SyncSupport extends BackendInterface {
 
     /**
      * The getChanges method returns all the changes that have happened, since
-     * the specified syncToken in the specified calendar. 
+     * the specified syncToken in the specified calendar.
      *
      * This function should return an array, such as the following:
      *
@@ -53,8 +55,8 @@ interface SyncSupport extends BackendInterface {
      * immediate descendants. If it's 2, it should also include changes from
      * the nodes below the child collections. (grandchildren)
      *
-     * The $limit argument allows a client to specify how many results should 
-     * be returned at most. If the limit is not specified, it should be treated 
+     * The $limit argument allows a client to specify how many results should
+     * be returned at most. If the limit is not specified, it should be treated
      * as infinite.
      *
      * If the limit (infinite or not) is higher than you're willing to return,
@@ -71,6 +73,6 @@ interface SyncSupport extends BackendInterface {
      * @param int $limit
      * @return array
      */
-    function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null); 
+    function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null);
 
 }

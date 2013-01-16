@@ -238,6 +238,7 @@ class Plugin extends DAV\ServerPlugin {
                     foreach($condition['tokens'] as $token) {
                         if ($token['token'] === 'opaquelocktoken:' . $existingLock->token) {
                             $found = $existingLock;
+                            break 3;
                         }
                     }
                 }

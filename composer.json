@@ -28,7 +28,8 @@
     },
     "require-dev" : {
         "phpunit/phpunit" : "3.7.*",
-        "evert/phpdoc-md" : "0.0.*"
+        "evert/phpdoc-md" : "0.0.*",
+        "phing/phing" : "2.4.14"
     },
     "provide" : {
         "evert/sabredav" : "1.7.*"
@@ -37,7 +38,7 @@
         "ext-apc" : "*",
         "ext-curl" : "*",
         "ext-pdo" : "*"
-    }, 
+    },
     "autoload": {
         "psr-0" : {
             "Sabre\\DAV"     : "lib/",
@@ -56,6 +57,6 @@
         "bin/naturalselection"
     ],
     "config" : {
-        "bin-dir" : "bin"
+        "bin-dir" : "./bin"
     }
 }

@@ -16,3 +16,5 @@ tests/.sabredav
 composer.lock
 vendor
 bin/phing
+bin/phpunit
+bin/vobjectvalidate.php

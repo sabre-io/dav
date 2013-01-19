@@ -1,4 +1,4 @@
-1.6.6-stable (2013-??-??)
+1.6.6-stable (2013-01-19)
 	* Fixed: Backported a fix for broken XML serialization in error responses.
 	 (Thanks @DeepDiver1975!)
 

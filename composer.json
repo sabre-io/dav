@@ -15,7 +15,13 @@
     "require": {
         "php": ">=5.3.1"
     },
+    "require-dev" : {
+        "phing/phing" : "2.4.14"
+    },
     "autoload": {
         "psr-0": { "Sabre": "lib/" }
+    },
+    "config" : {
+        "bin-dir" : "./bin"
     }
 }

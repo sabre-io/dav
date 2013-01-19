@@ -12,3 +12,6 @@ package.xml
 tmpdata
 tests/temp
 *.swp
+composer.lock
+vendor
+bin/phing

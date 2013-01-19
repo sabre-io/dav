@@ -1,4 +1,4 @@
-1.7.4-stable (????-??-??)
+1.7.4-stable (2013-01-19)
 	* Changed: To be compatibile with MS Office 2011 for Mac, a workaround was
 	  removed that was added to support old versions of Windows XP (pre-SP3).
 	  Indeed! We needed a crazy workaround to work with one MS product in the

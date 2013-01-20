@@ -480,7 +480,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyn
             return null;
         }
 
-        return $this->getChangesForCalendar(
+        return $this->caldavBackend->getChangesForCalendar(
             $this->calendarInfo['id'],
             $syncToken,
             $syncLevel,

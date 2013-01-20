@@ -757,38 +757,50 @@ class PDO extends AbstractBackend implements SyncSupport {
     public function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
 
         // Current synctoken
-        $stmt = $this->pdo->prepare('SELECT calendarid FROM calendars WHERE id = ?');
+        $stmt = $this->pdo->prepare('SELECT synctoken FROM calendars WHERE id = ?');
         $stmt->execute([ $calendarId ]);
         $currentToken = $stmt->fetchColumn(0);
-
-        $query = "SELECT uri, isdelete FROM " . $this->calendarChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND calendarid = ? ORDER BY synctoken";
-        if ($limit>0) $query.= " LIMIT " . (int)$limit;
-
-        // Fetching all changes
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute([$syncToken, $currentToken, $calendarId]);
-
-        $changes = [];
-
-        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-
-            $changes[$row['uri']] = $row['isdelete'];
-
-        }
 
         $result = [
             'syncToken' => $currentToken,
             'modified'  => [],
             'deleted'   => [],
         ];
-        foreach($changes as $uri => $isDelete) {
 
-            if ($isDelete) {
-                $result['deleted'][] = $uri;
-            } else {
-                $result['modified'][] = $uri;
+        if ($syncToken) {
+
+            $query = "SELECT uri, isdelete FROM " . $this->calendarChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND calendarid = ? ORDER BY synctoken";
+            if ($limit>0) $query.= " LIMIT " . (int)$limit;
+
+            // Fetching all changes
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$syncToken, $currentToken, $calendarId]);
+
+            $changes = [];
+
+            while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+                $changes[$row['uri']] = $row['isdelete'];
+
             }
 
+
+            foreach($changes as $uri => $isDelete) {
+
+                if ($isDelete) {
+                    $result['deleted'][] = $uri;
+                } else {
+                    $result['modified'][] = $uri;
+                }
+
+            }
+        } else {
+            // No synctoken supplied, this is the initial sync.
+            $query = "SELECT uri FROM calendarobjects WHERE calendarid = ?";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$calendarId]);
+
+            $result['modified'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }
         return $result;
 

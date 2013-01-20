@@ -23,6 +23,7 @@ class PDOSqliteTest extends AbstractPDOTest {
         $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
 
         $pdo->query("DROP TABLE IF EXISTS addressbooks");
+        $pdo->query("DROP TABLE IF EXISTS addressbookchanges");
         $pdo->query("DROP TABLE IF EXISTS cards");
         $pdo->query("
 CREATE TABLE addressbooks (

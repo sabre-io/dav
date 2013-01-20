@@ -71,131 +71,172 @@ switch($driver) {
         die(-1);
 }
 
-echo "Upgrading 'calendars'\n";
+foreach(['calendar', 'addressbook'] as $itemType) {
 
-// The only cross-db way to do this, is to just fetch a single record.
-$row = $pdo->query("SELECT * FROM calendars LIMIT 1")->fetch();
+    $tableName = $itemType . 's'; 
+    $tableNameOld = $tableName . '_old';
+    $changesTable = $itemType . 'changes';
 
-if (!$row) {
+    echo "Upgrading '$tableName'\n";
 
-    echo "No records were found in the 'calendars' table.\n";
-    echo "\n";
-    echo "We're going to rename the old table to calendars_old (just in case).\n";
-    echo "and re-create the new table.\n";
+    // The only cross-db way to do this, is to just fetch a single record.
+    $row = $pdo->query("SELECT * FROM $tableName LIMIT 1")->fetch();
 
-    switch($driver) {
+    if (!$row) {
 
-        case 'mysql' :
-            $pdo->exec("RENAME TABLE calendars TO calendars_old");
-            $pdo->exec("
-CREATE TABLE calendars (
-    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    principaluri VARCHAR(100),
-    displayname VARCHAR(100),
-    uri VARCHAR(200),
-    synctoken INT(11) UNSIGNED NOT NULL DEFAULT '0',
-    description TEXT,
-    calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
-    calendarcolor VARCHAR(10),
-    timezone TEXT,
-    components VARCHAR(20),
-    transparent TINYINT(1) NOT NULL DEFAULT '0',
-    UNIQUE(principaluri, uri)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-            ");
-            break;
-        case 'sqlite' :
+        echo "No records were found in the '$tableName' table.\n";
+        echo "\n";
+        echo "We're going to rename the old table to $tableNameOld (just in case).\n";
+        echo "and re-create the new table.\n";
 
-            $pdo->exec("ALTER TABLE calendars RENAME TO calendars_old");
-            $pdo->exec("
-CREATE TABLE calendars (
-    id integer primary key asc,
-    principaluri text,
-    displayname text,
-    uri text,
-    synctoken integer,
-    description text,
-    calendarorder integer,
-    calendarcolor text,
-    timezone text,
-    components text,
-    transparent bool
-);
-            ");
-            break;
-
-    }
-    echo "Creation of 1.9 calendars table is complete\n";
-
-} else {
-
-    // Checking if there's a synctoken field already.
-    if (array_key_exists('synctoken', $row)) {
-        echo "The 'synctoken' field already exists in the calendars table.\n";
-        echo "It's likely you already upgraded, so we're simply leaving\n";
-        echo "the calendars table alone\n";
-    } else {
-
-        echo "1.8 table schema detected\n";
         switch($driver) {
 
             case 'mysql' :
-                $pdo->exec("ALTER TABLE calendars ADD synctoken INT(11) UNSIGNED NOT NULL DEFAULT '0'");
-                $pdo->exec("ALTER TABLE calendars DROP ctag");
-                break;
+                $pdo->exec("RENAME TABLE $tableName TO $tableNameOld");
+                switch($itemType) {
+                    case 'calendar' :
+                        $pdo->exec("
+            CREATE TABLE calendars (
+                id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                principaluri VARCHAR(100),
+                displayname VARCHAR(100),
+                uri VARCHAR(200),
+                synctoken INT(11) UNSIGNED NOT NULL DEFAULT '0',
+                description TEXT,
+                calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
+                calendarcolor VARCHAR(10),
+                timezone TEXT,
+                components VARCHAR(20),
+                transparent TINYINT(1) NOT NULL DEFAULT '0',
+                UNIQUE(principaluri, uri)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+                        ");
+                        break;
+                    case 'addressbook' :
+                        $pdo->exec("
+            CREATE TABLE addressbooks (
+                id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                principaluri VARCHAR(255),
+                displayname VARCHAR(255),
+                uri VARCHAR(200),
+                description TEXT,
+                synctoken INT(11) UNSIGNED NOT NULL DEFAULT '1',
+                UNIQUE(principaluri, uri)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+                        ");
+                        break;
+                }
+
             case 'sqlite' :
-                $pdo->exec("ALTER TABLE calendars ADD synctoken integer");
-                echo "Note: there's no easy way to remove fields in sqlite.\n";
-                echo "The ctag field is no longer used, but it's no longer\n";
-                echo "used.\n";
-                break;
+
+                $pdo->exec("ALTER TABLE $tableName RENAME TO $tableNameOld");
+
+                switch($itemType) {
+                    case 'calendar' :
+                        $pdo->exec("
+            CREATE TABLE calendars (
+                id integer primary key asc,
+                principaluri text,
+                displayname text,
+                uri text,
+                synctoken integer,
+                description text,
+                calendarorder integer,
+                calendarcolor text,
+                timezone text,
+                components text,
+                transparent bool
+            );
+                        ");
+                        break;
+                    case 'addressbook' :
+                        $pdo->exec("
+            CREATE TABLE addressbooks (
+                id integer primary key asc,
+                principaluri text,
+                displayname text,
+                uri text,
+                description text,
+                synctoken integer
+            );
+                        ");
+
+                        break;
+                }
+
+        }
+        echo "Creation of 1.9 $tableName table is complete\n";
+
+    } else {
+
+        // Checking if there's a synctoken field already.
+        if (array_key_exists('synctoken', $row)) {
+            echo "The 'synctoken' field already exists in the $tableName table.\n";
+            echo "It's likely you already upgraded, so we're simply leaving\n";
+            echo "the $tableName table alone\n";
+        } else {
+
+            echo "1.8 table schema detected\n";
+            switch($driver) {
+
+                case 'mysql' :
+                    $pdo->exec("ALTER TABLE $tableName ADD synctoken INT(11) UNSIGNED NOT NULL DEFAULT '0'");
+                    $pdo->exec("ALTER TABLE $tableName DROP ctag");
+                    break;
+                case 'sqlite' :
+                    $pdo->exec("ALTER TABLE $tableName ADD synctoken integer");
+                    echo "Note: there's no easy way to remove fields in sqlite.\n";
+                    echo "The ctag field is no longer used, but it's kept in place\n";
+                    break;
+
+            }
+
+            echo "Upgraded '$tableName' to 1.9 schema.\n";
 
         }
 
-        echo "Upgraded 'calendars' to 1.9 schema.\n";
-
     }
 
-}
+    try {
+        $pdo->query("SELECT * FROM $changesTable LIMIT 1");
 
-try {
-    $pdo->query("SELECT * FROM calendarchanges LIMIT 1");
+        echo "'$changesTable' already exists. Assuming that this part of the\n";
+        echo "upgrade was already completed.\n";
 
-    echo "'calendarchanges' already exists. Assuming that this part of the\n";
-    echo "upgrade was already completed.\n";
+    } catch (Exception $e) {
+        echo "Creating '$changesTable' table.\n";
 
-} catch (Exception $e) {
-    echo "Creating 'calendarchanges' table.\n";
+        switch($driver) {
 
-    switch($driver) {
+            case 'mysql' :
+                $pdo->exec("
+    CREATE TABLE $changesTable (
+        id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        uri VARCHAR(200) NOT NULL,
+        synctoken INT(11) UNSIGNED NOT NULL,
+        {$itemType}id INT(11) UNSIGNED NOT NULL,
+        isdelete TINYINT(1) NOT NULL,
+        INDEX {$itemType}id_synctoken ({$itemType}id, synctoken)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-        case 'mysql' :
-            $pdo->exec("
-CREATE TABLE calendarchanges (
-    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    uri VARCHAR(200) NOT NULL,
-    synctoken INT(11) UNSIGNED NOT NULL,
-    calendarid INT(11) UNSIGNED NOT NULL,
-    isdelete TINYINT(1) NOT NULL,
-    INDEX calendarid_synctoken (calendarid, synctoken)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+                ");
+                break;
+            case 'sqlite' :
+                $pdo->exec("
 
-            ");
-            break;
-        case 'sqlite' :
-            $pdo->exec("
+    CREATE TABLE $changesTable (
+        id integer primary key asc,
+        uri text,
+        synctoken integer,
+        {$itemType}id integer,
+        isdelete bool
+    );
 
-CREATE TABLE calendarchanges (
-    id integer primary key asc,
-    uri text,
-    synctoken integer,
-    calendarid integer,
-    isdelete bool
-);
+                ");
+                $pdo->exec("CREATE INDEX {$itemType}id_synctoken ON $changesTable ({$itemType}id, synctoken);");
+                break;
 
-            ");
-            $pdo->exec("CREATE INDEX calendarid_synctoken ON calendarchanges (calendarid, synctoken);");
-            break;
+        }
 
     }
 

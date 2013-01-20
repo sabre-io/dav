@@ -16,8 +16,7 @@ class PDOMySQLTest extends AbstractPDOTest {
         $pdo = \Sabre\TestUtil::getMySQLDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to MySQL database');
 
-        $pdo->query("DROP TABLE IF EXISTS addressbooks");
-        $pdo->query("DROP TABLE IF EXISTS cards");
+        $pdo->query("DROP TABLE IF EXISTS addressbooks, cards, addressbookchanges");
         $pdo->query("
 CREATE TABLE addressbooks (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,

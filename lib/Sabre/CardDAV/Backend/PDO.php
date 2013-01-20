@@ -80,7 +80,7 @@ class PDO extends AbstractBackend implements SyncSupport {
                 '{http://calendarserver.org/ns/}getctag' => $row['synctoken'],
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' =>
                     new CardDAV\Property\SupportedAddressData(),
-                '{DAV:}sync-token' => $row['synctoken']?$row['synctoken']:'1',
+                '{DAV:}sync-token' => $row['synctoken']?$row['synctoken']:'0',
             );
 
         }
@@ -182,7 +182,7 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         }
 
-        $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, synctoken) VALUES (:uri, :displayname, :description, :principaluri, 0)';
+        $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, synctoken) VALUES (:uri, :displayname, :description, :principaluri, 1)';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
 

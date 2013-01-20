@@ -27,10 +27,12 @@
 	* Added: If header now gets checked (with ETag) all the time. Before the
 	  dealing with the If-header was a responsibility of the Locking plugin.
 
-1.8.2-stable (????-??-??)
+1.8.2-stable (2013-01-19)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Includes changes from version 1.7.4.
 
 1.8.1-stable (2012-12-01)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Includes changes from version 1.7.3.
 	* Fixed: Typo in 1.7 migration script caused it to fail.
 
@@ -53,7 +55,8 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.4-stable (????-??-??)
+1.7.4-stable (2013-01-19)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Changed: To be compatibile with MS Office 2011 for Mac, a workaround was
 	  removed that was added to support old versions of Windows XP (pre-SP3).
 	  Indeed! We needed a crazy workaround to work with one MS product in the
@@ -176,6 +179,10 @@ github now.
 	  requested.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
+
+1.6.6-stable (2013-01-19)
+	* Fixed: Backported a fix for broken XML serialization in error responses.
+	 (Thanks @DeepDiver1975!)
 
 1.6.5-stable (2012-10-04)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.

@@ -14,7 +14,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PDO extends AbstractBackend {
+class PDO extends AbstractBackend implements SyncSupport {
 
     /**
      * PDO connection
@@ -34,17 +34,25 @@ class PDO extends AbstractBackend {
     protected $cardsTableName;
 
     /**
+     * The table name that will be used for tracking changes in address books.
+     *
+     * @var string
+     */
+    protected $addressBookChangesTableName;
+
+    /**
      * Sets up the object
      *
      * @param \PDO $pdo
      * @param string $addressBooksTableName
      * @param string $cardsTableName
      */
-    public function __construct(\PDO $pdo, $addressBooksTableName = 'addressbooks', $cardsTableName = 'cards') {
+    public function __construct(\PDO $pdo, $addressBooksTableName = 'addressbooks', $cardsTableName = 'cards', $addressBookChangesTableName = 'addressbookchanges') {
 
         $this->pdo = $pdo;
         $this->addressBooksTableName = $addressBooksTableName;
         $this->cardsTableName = $cardsTableName;
+        $this->addressBookChangesTableName = $addressBookChangesTableName;
 
     }
 
@@ -56,7 +64,7 @@ class PDO extends AbstractBackend {
      */
     public function getAddressBooksForUser($principalUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, uri, displayname, principaluri, description, ctag FROM '.$this->addressBooksTableName.' WHERE principaluri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, displayname, principaluri, description, synctoken FROM '.$this->addressBooksTableName.' WHERE principaluri = ?');
         $stmt->execute(array($principalUri));
 
         $addressBooks = array();
@@ -69,9 +77,10 @@ class PDO extends AbstractBackend {
                 'principaluri' => $row['principaluri'],
                 '{DAV:}displayname' => $row['displayname'],
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => $row['description'],
-                '{http://calendarserver.org/ns/}getctag' => $row['ctag'],
+                '{http://calendarserver.org/ns/}getctag' => $row['synctoken'],
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' =>
                     new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => $row['synctoken']?$row['synctoken']:'1',
             );
 
         }
@@ -118,9 +127,15 @@ class PDO extends AbstractBackend {
             return false;
         }
 
-        $query = 'UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 ';
+        $query = 'UPDATE ' . $this->addressBooksTableName . ' SET ';
+        $first = true;
         foreach($updates as $key=>$value) {
-            $query.=', `' . $key . '` = :' . $key . ' ';
+            if ($first) {
+                $first = false;
+            } else {
+                $query.=', ';
+            }
+            $query.=' `' . $key . '` = :' . $key . ' ';
         }
         $query.=' WHERE id = :addressbookid';
 
@@ -128,6 +143,8 @@ class PDO extends AbstractBackend {
         $updates['addressbookid'] = $addressBookId;
 
         $stmt->execute($updates);
+
+        $this->addChange($addressBookId, "");
 
         return true;
 
@@ -165,7 +182,7 @@ class PDO extends AbstractBackend {
 
         }
 
-        $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, ctag) VALUES (:uri, :displayname, :description, :principaluri, 1)';
+        $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, synctoken) VALUES (:uri, :displayname, :description, :principaluri, 0)';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
 
@@ -180,10 +197,13 @@ class PDO extends AbstractBackend {
     public function deleteAddressBook($addressBookId) {
 
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
-        $stmt->execute(array($addressBookId));
+        $stmt->execute([$addressBookId]);
 
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
-        $stmt->execute(array($addressBookId));
+        $stmt->execute([$addressBookId]);
+
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->addressBookChangesTableName.' WHERE id = ?');
+        $stmt->execute([$addressBookId]);
 
     }
 
@@ -268,8 +288,7 @@ class PDO extends AbstractBackend {
 
         $result = $stmt->execute(array($cardData, $cardUri, time(), $addressBookId));
 
-        $stmt2 = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 WHERE id = ?');
-        $stmt2->execute(array($addressBookId));
+        $this->addChange($addressBookId, $cardUri);
 
         return '"' . md5($cardData) . '"';
 
@@ -305,8 +324,7 @@ class PDO extends AbstractBackend {
         $stmt = $this->pdo->prepare('UPDATE ' . $this->cardsTableName . ' SET carddata = ?, lastmodified = ? WHERE uri = ? AND addressbookid =?');
         $stmt->execute(array($cardData, time(), $cardUri, $addressBookId));
 
-        $stmt2 = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 WHERE id = ?');
-        $stmt2->execute(array($addressBookId));
+        $this->addChange($addressBookId, $cardUri);
 
         return '"' . md5($cardData) . '"';
 
@@ -324,10 +342,138 @@ class PDO extends AbstractBackend {
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ?');
         $stmt->execute(array($addressBookId, $cardUri));
 
-        $stmt2 = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET ctag = ctag + 1 WHERE id = ?');
-        $stmt2->execute(array($addressBookId));
+        $this->addChange($addressBookId, $cardUri, true);
 
         return $stmt->rowCount()===1;
+
+    }
+
+    /**
+     * The getChanges method returns all the changes that have happened, since
+     * the specified syncToken in the specified address book.
+     *
+     * This function should return an array, such as the following:
+     *
+     * [
+     *   'syncToken' => 'The current synctoken',
+     *   'modified'   => [
+     *      'new.txt',
+     *   ],
+     *   'deleted' => [
+     *      'foo.php.bak',
+     *      'old.txt'
+     *   ]
+     * ];
+     *
+     * The returned syncToken property should reflect the *current* syncToken
+     * of the addressbook, as reported in the {DAV:}sync-token property This is
+     * needed here too, to ensure the operation is atomic.
+     *
+     * If the $syncToken argument is specified as null, this is an initial
+     * sync, and all members should be reported.
+     *
+     * The modified property is an array of nodenames that have changed since
+     * the last token.
+     *
+     * The deleted property is an array with nodenames, that have been deleted
+     * from collection.
+     *
+     * The $syncLevel argument is basically the 'depth' of the report. If it's
+     * 1, you only have to report changes that happened only directly in
+     * immediate descendants. If it's 2, it should also include changes from
+     * the nodes below the child collections. (grandchildren)
+     *
+     * The $limit argument allows a client to specify how many results should
+     * be returned at most. If the limit is not specified, it should be treated
+     * as infinite.
+     *
+     * If the limit (infinite or not) is higher than you're willing to return,
+     * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
+     *
+     * If the syncToken is expired (due to data cleanup) or unknown, you must
+     * return null.
+     *
+     * The limit is 'suggestive'. You are free to ignore it.
+     *
+     * @param string $addressBookId
+     * @param string $syncToken
+     * @param int $syncLevel
+     * @param int $limit
+     * @return array
+     */
+    public function getChangesForAddressBook($addressBookId, $syncToken, $syncLevel, $limit = null) {
+
+        // Current synctoken
+        $stmt = $this->pdo->prepare('SELECT synctoken FROM addressbooks WHERE id = ?');
+        $stmt->execute([ $addressBookId ]);
+        $currentToken = $stmt->fetchColumn(0);
+
+        $result = [
+            'syncToken' => $currentToken,
+            'modified'  => [],
+            'deleted'   => [],
+        ];
+
+        if ($syncToken) {
+
+            $query = "SELECT uri, isdelete FROM " . $this->addressBookChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND addressbookid = ? ORDER BY synctoken";
+            if ($limit>0) $query.= " LIMIT " . (int)$limit;
+
+            // Fetching all changes
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$syncToken, $currentToken, $addressBookId]);
+
+            $changes = [];
+
+            while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+                $changes[$row['uri']] = $row['isdelete'];
+
+            }
+
+
+            foreach($changes as $uri => $isDelete) {
+
+                if ($isDelete) {
+                    $result['deleted'][] = $uri;
+                } else {
+                    $result['modified'][] = $uri;
+                }
+
+            }
+        } else {
+            // No synctoken supplied, this is the initial sync.
+            $query = "SELECT uri FROM cards WHERE addressbookid = ?";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$addressBookId]);
+
+            $result['modified'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        return $result;
+
+    }
+
+    /**
+     * Adds a change record to the addressbookchanges table.
+     *
+     * @param mixed $addressBookId
+     * @param string $objectUri
+     * @param bool $isDelete
+     * @return void
+     */
+    protected function addChange($addressBookId, $objectUri, $isDelete = false) {
+
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->addressBookChangesTableName .' (uri, synctoken, addressbookid, isdelete) SELECT ?, synctoken, ?, ? FROM addressbooks WHERE id = ?');
+        $stmt->execute([
+            $objectUri,
+            $addressBookId,
+            $isDelete,
+            $addressBookId
+        ]);
+        $stmt = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET synctoken = synctoken + 1 WHERE id = ?');
+        $stmt->execute([
+            $addressBookId
+        ]);
 
     }
 }

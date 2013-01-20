@@ -52,7 +52,7 @@ class PDO extends AbstractBackend implements SyncSupport {
     /**
      * The table name that will be used for tracking changes in calendars.
      *
-     * @var mixed
+     * @var string
      */
     protected $calendarChangesTableName;
 
@@ -329,6 +329,9 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt->execute([$calendarId]);
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarTableName.' WHERE id = ?');
+        $stmt->execute([$calendarId]);
+
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarChangesTableName.' WHERE id = ?');
         $stmt->execute([$calendarId]);
 
     }

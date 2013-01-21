@@ -174,12 +174,6 @@ class Plugin extends DAV\ServerPlugin {
                 $syncLevel = DAV\Server::DEPTH_INFINITY;
             }
 
-            // If the syncLevel was set, and depth is something other than 0..
-            // we must fail.
-            if ($depth != 0) {
-                throw new DAV\Exception\Forbidden('The sync-collection report is only implemented on depth: 0');
-            }
-
         }
         $limit = $xpath->query("//d:limit/d:nresults");
         if ($limit->length === 0) {

@@ -16,7 +16,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PDO extends AbstractBackend {
+class PDO extends AbstractBackend implements SyncSupport {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -50,6 +50,13 @@ class PDO extends AbstractBackend {
     protected $calendarObjectTableName;
 
     /**
+     * The table name that will be used for tracking changes in calendars.
+     *
+     * @var string
+     */
+    protected $calendarChangesTableName;
+
+    /**
      * List of CalDAV properties, and how they map to database fieldnames
      * Add your own properties by simply adding on to this array.
      *
@@ -57,13 +64,13 @@ class PDO extends AbstractBackend {
      *
      * @var array
      */
-    public $propertyMap = array(
+    public $propertyMap = [
         '{DAV:}displayname'                          => 'displayname',
         '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'description',
         '{urn:ietf:params:xml:ns:caldav}calendar-timezone'    => 'timezone',
         '{http://apple.com/ns/ical/}calendar-order'  => 'calendarorder',
         '{http://apple.com/ns/ical/}calendar-color'  => 'calendarcolor',
-    );
+    ];
 
     /**
      * Creates the backend
@@ -72,11 +79,12 @@ class PDO extends AbstractBackend {
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
      */
-    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects') {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges') {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
         $this->calendarObjectTableName = $calendarObjectTableName;
+        $this->calendarChangesTableName = $calendarChangesTableName;
 
     }
 
@@ -107,7 +115,7 @@ class PDO extends AbstractBackend {
         $fields = array_values($this->propertyMap);
         $fields[] = 'id';
         $fields[] = 'uri';
-        $fields[] = 'ctag';
+        $fields[] = 'synctoken';
         $fields[] = 'components';
         $fields[] = 'principaluri';
         $fields[] = 'transparent';
@@ -115,24 +123,25 @@ class PDO extends AbstractBackend {
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
         $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM ".$this->calendarTableName." WHERE principaluri = ? ORDER BY calendarorder ASC");
-        $stmt->execute(array($principalUri));
+        $stmt->execute([$principalUri]);
 
-        $calendars = array();
+        $calendars = [];
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
-            $components = array();
+            $components = [];
             if ($row['components']) {
                 $components = explode(',',$row['components']);
             }
 
-            $calendar = array(
+            $calendar = [
                 'id' => $row['id'],
                 'uri' => $row['uri'],
                 'principaluri' => $row['principaluri'],
-                '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => $row['ctag']?$row['ctag']:'0',
+                '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => 'http://sabredav.org/ns/sync/' . ($row['synctoken']?$row['synctoken']:'0'),
+                '{DAV:}sync-token' => $row['synctoken']?$row['synctoken']:'0',
                 '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet($components),
                 '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
-            );
+            ];
 
 
             foreach($this->propertyMap as $xmlName=>$dbName) {
@@ -160,18 +169,18 @@ class PDO extends AbstractBackend {
      */
     public function createCalendar($principalUri, $calendarUri, array $properties) {
 
-        $fieldNames = array(
+        $fieldNames = [
             'principaluri',
             'uri',
-            'ctag',
+            'synctoken',
             'transparent',
-        );
-        $values = array(
+        ];
+        $values = [
             ':principaluri' => $principalUri,
             ':uri'          => $calendarUri,
-            ':ctag'         => 1,
+            ':synctoken'    => 1,
             ':transparent'  => 0,
-        );
+        ];
 
         // Default value
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
@@ -223,14 +232,14 @@ class PDO extends AbstractBackend {
      * failures. In this case an array should be returned with the following
      * structure:
      *
-     * array(
-     *   403 => array(
+     * [
+     *   403 => [
      *      '{DAV:}displayname' => null,
-     *   ),
-     *   424 => array(
+     *   ],
+     *   424 => [
      *      '{DAV:}owner' => null,
-     *   )
-     * )
+     *   ]
+     * ]
      *
      * In this example it was forbidden to update {DAV:}displayname.
      * (403 Forbidden), which in turn also caused {DAV:}owner to fail
@@ -242,12 +251,12 @@ class PDO extends AbstractBackend {
      */
     public function updateCalendar($calendarId, array $mutations) {
 
-        $newValues = array();
-        $result = array(
-            200 => array(), // Ok
-            403 => array(), // Forbidden
-            424 => array(), // Failed Dependency
-        );
+        $newValues = [];
+        $result = [
+            200 => [], // Ok
+            403 => [], // Forbidden
+            424 => [], // Failed Dependency
+        ];
 
         $hasError = false;
 
@@ -293,15 +302,16 @@ class PDO extends AbstractBackend {
         // Success
 
         // Now we're generating the sql query.
-        $valuesSql = array();
+        $valuesSql = [];
         foreach($newValues as $fieldName=>$value) {
             $valuesSql[] = $fieldName . ' = ?';
         }
-        $valuesSql[] = 'ctag = ctag + 1';
 
         $stmt = $this->pdo->prepare("UPDATE " . $this->calendarTableName . " SET " . implode(', ',$valuesSql) . " WHERE id = ?");
         $newValues['id'] = $calendarId;
         $stmt->execute(array_values($newValues));
+
+        $this->addChange($calendarId, "");
 
         return true;
 
@@ -316,10 +326,13 @@ class PDO extends AbstractBackend {
     public function deleteCalendar($calendarId) {
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
-        $stmt->execute(array($calendarId));
+        $stmt->execute([$calendarId]);
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarTableName.' WHERE id = ?');
-        $stmt->execute(array($calendarId));
+        $stmt->execute([$calendarId]);
+
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarChangesTableName.' WHERE id = ?');
+        $stmt->execute([$calendarId]);
 
     }
 
@@ -353,18 +366,18 @@ class PDO extends AbstractBackend {
     public function getCalendarObjects($calendarId) {
 
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
-        $stmt->execute(array($calendarId));
+        $stmt->execute([$calendarId]);
 
-        $result = array();
+        $result = [];
         foreach($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            $result[] = array(
+            $result[] = [
                 'id'           => $row['id'],
                 'uri'          => $row['uri'],
                 'lastmodified' => $row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
                 'calendarid'   => $row['calendarid'],
                 'size'         => (int)$row['size'],
-            );
+            ];
         }
 
         return $result;
@@ -386,12 +399,12 @@ class PDO extends AbstractBackend {
     public function getCalendarObject($calendarId,$objectUri) {
 
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, calendardata FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
-        $stmt->execute(array($calendarId, $objectUri));
+        $stmt->execute([$calendarId, $objectUri]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if(!$row) return null;
 
-        return array(
+        return [
             'id'           => $row['id'],
             'uri'          => $row['uri'],
             'lastmodified' => $row['lastmodified'],
@@ -399,7 +412,7 @@ class PDO extends AbstractBackend {
             'calendarid'   => $row['calendarid'],
             'size'         => (int)$row['size'],
             'calendardata' => $row['calendardata'],
-         );
+         ];
 
     }
 
@@ -425,7 +438,7 @@ class PDO extends AbstractBackend {
         $extraData = $this->getDenormalizedData($calendarData);
 
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence) VALUES (?,?,?,?,?,?,?,?,?)');
-        $stmt->execute(array(
+        $stmt->execute([
             $calendarId,
             $objectUri,
             $calendarData,
@@ -435,9 +448,8 @@ class PDO extends AbstractBackend {
             $extraData['componentType'],
             $extraData['firstOccurence'],
             $extraData['lastOccurence'],
-        ));
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarTableName.' SET ctag = ctag + 1 WHERE id = ?');
-        $stmt->execute(array($calendarId));
+        ]);
+        $this->addChange($calendarId, $objectUri);
 
         return '"' . $extraData['etag'] . '"';
 
@@ -464,9 +476,9 @@ class PDO extends AbstractBackend {
         $extraData = $this->getDenormalizedData($calendarData);
 
         $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE calendarid = ? AND uri = ?');
-        $stmt->execute(array($calendarData,time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'] ,$calendarId,$objectUri));
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarTableName.' SET ctag = ctag + 1 WHERE id = ?');
-        $stmt->execute(array($calendarId));
+        $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $calendarId, $objectUri]);
+
+        $this->addChange($calendarId, $objectUri);
 
         return '"' . $extraData['etag'] . '"';
 
@@ -537,13 +549,13 @@ class PDO extends AbstractBackend {
             }
         }
 
-        return array(
+        return [
             'etag' => md5($calendarData),
             'size' => strlen($calendarData),
             'componentType' => $componentType,
             'firstOccurence' => $firstOccurence,
             'lastOccurence'  => $lastOccurence,
-        );
+        ];
 
     }
 
@@ -557,9 +569,9 @@ class PDO extends AbstractBackend {
     public function deleteCalendarObject($calendarId,$objectUri) {
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
-        $stmt->execute(array($calendarId,$objectUri));
-        $stmt = $this->pdo->prepare('UPDATE '. $this->calendarTableName .' SET ctag = ctag + 1 WHERE id = ?');
-        $stmt->execute(array($calendarId));
+        $stmt->execute([$calendarId, $objectUri]);
+
+        $this->addChange($calendarId, $objectUri, true);
 
     }
 
@@ -617,7 +629,7 @@ class PDO extends AbstractBackend {
      */
     public function calendarQuery($calendarId, array $filters) {
 
-        $result = array();
+        $result = [];
         $validator = new \Sabre\CalDAV\CalendarQueryValidator();
 
         $componentType = null;
@@ -656,9 +668,9 @@ class PDO extends AbstractBackend {
             $query = "SELECT uri FROM ".$this->calendarObjectTableName." WHERE calendarid = :calendarid";
         }
 
-        $values = array(
+        $values = [
             'calendarid' => $calendarId,
-        );
+        ];
 
         if ($componentType) {
             $query.=" AND componenttype = :componenttype";
@@ -677,7 +689,7 @@ class PDO extends AbstractBackend {
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
 
-        $result = array();
+        $result = [];
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             if ($requirePostFilter) {
                 if (!$this->validateFilterForObject($row, $filters)) {
@@ -691,4 +703,135 @@ class PDO extends AbstractBackend {
         return $result;
 
     }
+
+    /**
+     * The getChanges method returns all the changes that have happened, since
+     * the specified syncToken in the specified calendar.
+     *
+     * This function should return an array, such as the following:
+     *
+     * [
+     *   'syncToken' => 'The current synctoken',
+     *   'modified'   => [
+     *      'new.txt',
+     *   ],
+     *   'deleted' => [
+     *      'foo.php.bak',
+     *      'old.txt'
+     *   ]
+     * ];
+     *
+     * The returned syncToken property should reflect the *current* syncToken
+     * of the calendar, as reported in the {DAV:}sync-token property This is
+     * needed here too, to ensure the operation is atomic.
+     *
+     * If the $syncToken argument is specified as null, this is an initial
+     * sync, and all members should be reported.
+     *
+     * The modified property is an array of nodenames that have changed since
+     * the last token.
+     *
+     * The deleted property is an array with nodenames, that have been deleted
+     * from collection.
+     *
+     * The $syncLevel argument is basically the 'depth' of the report. If it's
+     * 1, you only have to report changes that happened only directly in
+     * immediate descendants. If it's 2, it should also include changes from
+     * the nodes below the child collections. (grandchildren)
+     *
+     * The $limit argument allows a client to specify how many results should
+     * be returned at most. If the limit is not specified, it should be treated
+     * as infinite.
+     *
+     * If the limit (infinite or not) is higher than you're willing to return,
+     * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
+     *
+     * If the syncToken is expired (due to data cleanup) or unknown, you must
+     * return null.
+     *
+     * The limit is 'suggestive'. You are free to ignore it.
+     *
+     * @param string $calendarId
+     * @param string $syncToken
+     * @param int $syncLevel
+     * @param int $limit
+     * @return array
+     */
+    public function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
+
+        // Current synctoken
+        $stmt = $this->pdo->prepare('SELECT synctoken FROM calendars WHERE id = ?');
+        $stmt->execute([ $calendarId ]);
+        $currentToken = $stmt->fetchColumn(0);
+
+        if (is_null($currentToken)) return null;
+
+        $result = [
+            'syncToken' => $currentToken,
+            'modified'  => [],
+            'deleted'   => [],
+        ];
+
+        if ($syncToken) {
+
+            $query = "SELECT uri, isdelete FROM " . $this->calendarChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND calendarid = ? ORDER BY synctoken";
+            if ($limit>0) $query.= " LIMIT " . (int)$limit;
+
+            // Fetching all changes
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$syncToken, $currentToken, $calendarId]);
+
+            $changes = [];
+
+            while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+                $changes[$row['uri']] = $row['isdelete'];
+
+            }
+
+            foreach($changes as $uri => $isDelete) {
+
+                if ($isDelete) {
+                    $result['deleted'][] = $uri;
+                } else {
+                    $result['modified'][] = $uri;
+                }
+
+            }
+        } else {
+            // No synctoken supplied, this is the initial sync.
+            $query = "SELECT uri FROM calendarobjects WHERE calendarid = ?";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$calendarId]);
+
+            $result['modified'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        return $result;
+
+    }
+
+    /**
+     * Adds a change record to the calendarchanges table.
+     *
+     * @param mixed $calendarId
+     * @param string $objectUri
+     * @param bool $isDelete
+     * @return void
+     */
+    protected function addChange($calendarId, $objectUri, $isDelete = false) {
+
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, isdelete) SELECT ?, synctoken, ?, ? FROM calendars WHERE id = ?');
+        $stmt->execute([
+            $objectUri,
+            $calendarId,
+            $isDelete,
+            $calendarId
+        ]);
+        $stmt = $this->pdo->prepare('UPDATE ' . $this->calendarTableName . ' SET synctoken = synctoken + 1 WHERE id = ?');
+        $stmt->execute([
+            $calendarId
+        ]);
+
+    }
+
 }

@@ -19,7 +19,10 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
 
-        $this->backend = new PDO($this->getPDO());
+        $pdo = $this->getPDO();
+        $this->backend = new PDO($pdo);
+        $pdo->exec('INSERT INTO addressbooks (principaluri, displayname, uri, description, synctoken) VALUES ("principals/user1", "book1", "book1", "addressbook 1", 1)');
+        $pdo->exec('INSERT INTO cards (addressbookid, carddata, uri, lastmodified) VALUES (1, "card1", "card1", 0)');
 
     }
 
@@ -36,6 +39,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => 1
             )
         );
 
@@ -64,6 +68,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => 1
             )
         );
 
@@ -88,6 +93,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => 1
             )
         );
 
@@ -116,6 +122,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
                 '{http://calendarserver.org/ns/}getctag' => 2,
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => 2
             )
         );
 
@@ -159,6 +166,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => 1,
             ),
             array(
                 'id' => 2,
@@ -168,6 +176,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 2',
                 '{http://calendarserver.org/ns/}getctag' => 1,
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
+                '{DAV:}sync-token' => 1,
             )
         );
         $result = $this->backend->getAddressBooksForUser('principals/user1');
@@ -243,6 +252,42 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->backend->deleteCard(1, 'card1');
         $result = $this->backend->getCard(1,'card1');
         $this->assertFalse($result);
+
+    }
+
+    function testGetChanges() {
+
+        $backend = $this->backend;
+        $id = $backend->createAddressBook(
+            'principals/user1',
+            'bla',
+            []
+        );
+        $result = $backend->getChangesForAddressBook($id, null, 1);
+
+        $this->assertEquals([
+            'syncToken' => 1,
+            'modified' => [],
+            'deleted' => [],
+        ], $result);
+
+        $currentToken = $result['syncToken'];
+
+        $dummyCard = "BEGIN:VCARD\r\nEND:VCARD\r\n";
+
+        $backend->createCard($id, "card1.ics", $dummyCard);
+        $backend->createCard($id, "card2.ics", $dummyCard);
+        $backend->createCard($id, "card3.ics", $dummyCard);
+        $backend->updateCard($id, "card1.ics", $dummyCard);
+        $backend->deleteCard($id, "card2.ics");
+
+        $result = $backend->getChangesForAddressBook($id, $currentToken, 1);
+
+        $this->assertEquals([
+            'syncToken' => 6,
+            'modified' => ["card1.ics", "card3.ics"],
+            'deleted' => ["card2.ics"],
+        ], $result);
 
     }
 }

@@ -158,5 +158,36 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetSyncTokenNoSyncSupport() {
+
+        $this->assertNull(null, $this->ab->getSyncToken());
+
+
+    }
+    function testGetChangesNoSyncSupport() {
+
+        $this->assertNull($this->ab->getChanges(1,null));
+
+    }
+
+    function testGetSyncToken() {
+
+        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
+        $this->assertEquals(2, $ab->getSyncToken());
+    }
+
+
+    function testGetChanges() {
+
+        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
+
+        $this->assertEquals([
+            'syncToken' => 2,
+            'modified' => ['UUID-2345'],
+            'deleted' => [],
+        ], $ab->getChanges(1, 1));
+
+    }
+
 
 }

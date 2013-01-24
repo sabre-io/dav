@@ -4,14 +4,23 @@ CREATE TABLE addressbooks (
     displayname text,
     uri text,
     description text,
-	ctag integer
+    synctoken integer
 );
 
 CREATE TABLE cards (
-	id integer primary key asc,
+    id integer primary key asc,
     addressbookid integer,
     carddata blob,
     uri text,
     lastmodified integer
 );
 
+CREATE TABLE addressbookchanges (
+    id integer primary key asc,
+    uri text,
+    synctoken integer,
+    addressbookid integer,
+    isdelete bool
+);
+
+CREATE INDEX addressbookid_synctoken ON addressbookchanges (addressbookid, synctoken);

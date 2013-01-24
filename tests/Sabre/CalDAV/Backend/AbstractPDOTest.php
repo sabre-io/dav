@@ -88,7 +88,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}displayname' => 'myCalendar',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
-            '{http://calendarserver.org/ns/}getctag' => '2',
+            '{http://calendarserver.org/ns/}getctag' => 'http://sabredav.org/ns/sync/2',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp('transparent'),
         );
 

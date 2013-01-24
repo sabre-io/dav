@@ -88,7 +88,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}displayname' => 'myCalendar',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
-            '{http://calendarserver.org/ns/}getctag' => '2',
+            '{http://calendarserver.org/ns/}getctag' => 'http://sabredav.org/ns/sync/2',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp('transparent'),
         );
 
@@ -240,6 +240,30 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'calendardata' => $object,
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
             'lastoccurence' => strtotime('2012-01-01 10:00:00'),
+            'componenttype' => 'VEVENT',
+        ), $result->fetch(\PDO::FETCH_ASSOC));
+
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testCreateCalendarObjectWithDTEND() {
+
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND:20120101T110000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $this->assertEquals(array(
+            'etag' => md5($object),
+            'size' => strlen($object),
+            'calendardata' => $object,
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime('2012-01-01 11:00:00'),
             'componenttype' => 'VEVENT',
         ), $result->fetch(\PDO::FETCH_ASSOC));
 
@@ -547,4 +571,41 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         ), $backend->calendarQuery(1, $filters));
 
     }
+
+    function testGetChanges() {
+
+        $backend = new PDO($this->pdo);
+        $id = $backend->createCalendar(
+            'principals/user1',
+            'bla',
+            []
+        );
+        $result = $backend->getChangesForCalendar($id, null, 1);
+
+        $this->assertEquals([
+            'syncToken' => 1,
+            'modified' => [],
+            'deleted' => [],
+        ], $result);
+
+        $currentToken = $result['syncToken'];
+
+        $dummyTodo = "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($id, "todo1.ics", $dummyTodo);
+        $backend->createCalendarObject($id, "todo2.ics", $dummyTodo);
+        $backend->createCalendarObject($id, "todo3.ics", $dummyTodo);
+        $backend->updateCalendarObject($id, "todo1.ics", $dummyTodo);
+        $backend->deleteCalendarObject($id, "todo2.ics");
+
+        $result = $backend->getChangesForCalendar($id, $currentToken, 1);
+
+        $this->assertEquals([
+            'syncToken' => 6,
+            'modified' => ["todo1.ics", "todo3.ics"],
+            'deleted' => ["todo2.ics"],
+        ], $result);
+
+    }
+
 }

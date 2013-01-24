@@ -363,16 +363,16 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * This function should return an array, such as the following:
      *
-     * array(
+     * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => array(
+     *   'modified'   => [
      *      'new.txt',
-     *   ),
-     *   'deleted' => array(
+     *   ],
+     *   'deleted' => [
      *      'foo.php.bak',
      *      'old.txt'
-     *   )
-     * );
+     *   ]
+     * ];
      *
      * The syncToken property should reflect the *current* syncToken of the
      * collection, as reported getSyncToken(). This is needed here too, to

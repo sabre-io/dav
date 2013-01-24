@@ -26,15 +26,15 @@ interface SyncSupport extends BackendInterface {
      *
      * This function should return an array, such as the following:
      *
-     * array(
+     * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => array(
+     *   'modified'   => [
      *      'new.txt',
-     *   ),
-     *   'deleted' => array(
+     *   ],
+     *   'deleted' => [
      *      'foo.php.bak',
      *      'old.txt'
-     *   )
+     *   ]
      * );
      *
      * The returned syncToken property should reflect the *current* syncToken

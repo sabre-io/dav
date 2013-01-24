@@ -434,7 +434,6 @@ class PDO extends AbstractBackend implements SyncSupport {
 
             }
 
-
             foreach($changes as $uri => $isDelete) {
 
                 if ($isDelete) {

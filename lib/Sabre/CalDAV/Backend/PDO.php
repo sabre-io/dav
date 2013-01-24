@@ -789,7 +789,6 @@ class PDO extends AbstractBackend implements SyncSupport {
 
             }
 
-
             foreach($changes as $uri => $isDelete) {
 
                 if ($isDelete) {
@@ -820,9 +819,6 @@ class PDO extends AbstractBackend implements SyncSupport {
      * @return void
      */
     protected function addChange($calendarId, $objectUri, $isDelete = false) {
-
-        //$q = 'INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, isdelete) SELECT ?, synctoken, ?, ? FROM calendars WHERE id = ?' ;
-        //die($q);
 
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, isdelete) SELECT ?, synctoken, ?, ? FROM calendars WHERE id = ?');
         $stmt->execute([

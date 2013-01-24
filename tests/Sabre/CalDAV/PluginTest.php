@@ -529,6 +529,31 @@ END:VCALENDAR';
 
     }
 
+    function testSupportedReportSetUserCalendars() {
+
+        $this->server->addPlugin(new \Sabre\DAV\Sync\Plugin());
+
+        $props = $this->server->getPropertiesForPath('/calendars/user1',array(
+            '{DAV:}supported-report-set',
+        ));
+
+        $this->assertArrayHasKey(0,$props);
+        $this->assertArrayHasKey(200,$props[0]);
+        $this->assertArrayHasKey('{DAV:}supported-report-set',$props[0][200]);
+
+        $prop = $props[0][200]['{DAV:}supported-report-set'];
+
+        $this->assertTrue($prop instanceof \Sabre\DAV\Property\SupportedReportSet);
+        $value = array(
+            '{DAV:}sync-collection',
+            '{DAV:}expand-property',
+            '{DAV:}principal-property-search',
+            '{DAV:}principal-search-property-set',
+        );
+        $this->assertEquals($value,$prop->getValue());
+
+    }
+
     /**
      * @depends testSupportedReportSetProperty
      */

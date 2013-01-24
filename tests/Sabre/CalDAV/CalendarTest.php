@@ -251,5 +251,33 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetSyncToken() {
 
+        $this->assertEquals(2, $this->calendar->getSyncToken());
+
+    }
+
+    function testGetSyncTokenNoSyncSupport() {
+
+        $calendar = new Calendar(new Backend\Mock([],[]), []);
+        $this->assertNull($calendar->getSyncToken());
+
+    }
+
+    function testGetChanges() {
+
+        $this->assertEquals([
+            'syncToken' => 2,
+            'modified' => ['UUID-2345'],
+            'deleted' => [],
+        ], $this->calendar->getChanges(1, 1));
+
+    }
+
+    function testGetChangesNoSyncSupport() {
+
+        $calendar = new Calendar(new Backend\Mock([],[]), []);
+        $this->assertNull($calendar->getChanges(1,null));
+
+    }
 }

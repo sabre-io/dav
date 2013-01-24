@@ -28,6 +28,20 @@ class Plugin extends DAV\ServerPlugin {
     const SYNCTOKEN_PREFIX = 'http://sabredav.org/ns/sync/';
 
     /**
+     * Returns a plugin name.
+     *
+     * Using this name other plugins will be able to access other plugins
+     * using \Sabre\DAV\Server::getPlugin
+     *
+     * @return string
+     */
+    public function getPluginName() {
+
+        return 'sync';
+
+    }
+
+    /**
      * Initializes the plugin.
      *
      * This is when the plugin registers it's hooks.
@@ -273,20 +287,12 @@ class Plugin extends DAV\ServerPlugin {
             return;
         }
 
-        if (!$node instanceof ISyncCollection) {
-            return;
+        if ($node instanceof ISyncCollection && $token = $node->getSyncToken()) {
+            // Unsetting the property from requested properties.
+            $index = array_search('{DAV:}sync-token', $requestedProperties);
+            unset($requestedProperties[$index]);
+            $returnedProperties[200]['{DAV:}sync-token'] = self::SYNCTOKEN_PREFIX . $token;
         }
-
-        $token = $node->getSyncToken();
-        if (!$token) {
-            return;
-        }
-
-        // Unsetting the property from requested properties.
-        $index = array_search('{DAV:}sync-token', $requestedProperties);
-        unset($requestedProperties[$index]);
-
-        $returnedProperties[200]['{DAV:}sync-token'] = self::SYNCTOKEN_PREFIX . $token;
 
     }
 

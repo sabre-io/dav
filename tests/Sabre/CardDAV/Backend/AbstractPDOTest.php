@@ -254,5 +254,41 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($result);
 
     }
+
+    function testGetChanges() {
+
+        $backend = $this->backend;
+        $id = $backend->createAddressBook(
+            'principals/user1',
+            'bla',
+            []
+        );
+        $result = $backend->getChangesForAddressBook($id, null, 1);
+
+        $this->assertEquals([
+            'syncToken' => 1,
+            'modified' => [],
+            'deleted' => [],
+        ], $result);
+
+        $currentToken = $result['syncToken'];
+
+        $dummyCard = "BEGIN:VCARD\r\nEND:VCARD\r\n";
+
+        $backend->createCard($id, "card1.ics", $dummyCard);
+        $backend->createCard($id, "card2.ics", $dummyCard);
+        $backend->createCard($id, "card3.ics", $dummyCard);
+        $backend->updateCard($id, "card1.ics", $dummyCard);
+        $backend->deleteCard($id, "card2.ics");
+
+        $result = $backend->getChangesForAddressBook($id, $currentToken, 1);
+
+        $this->assertEquals([
+            'syncToken' => 6,
+            'modified' => ["card1.ics", "card3.ics"],
+            'deleted' => ["card2.ics"],
+        ], $result);
+
+    }
 }
 

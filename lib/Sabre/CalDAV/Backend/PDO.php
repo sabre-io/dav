@@ -764,6 +764,8 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt->execute([ $calendarId ]);
         $currentToken = $stmt->fetchColumn(0);
 
+        if (is_null($currentToken)) return null;
+
         $result = [
             'syncToken' => $currentToken,
             'modified'  => [],

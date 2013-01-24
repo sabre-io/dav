@@ -185,6 +185,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, synctoken) VALUES (:uri, :displayname, :description, :principaluri, 1)';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
+        return $this->pdo->lastInsertId();
 
     }
 
@@ -407,6 +408,8 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt = $this->pdo->prepare('SELECT synctoken FROM addressbooks WHERE id = ?');
         $stmt->execute([ $addressBookId ]);
         $currentToken = $stmt->fetchColumn(0);
+
+        if (is_null($currentToken)) return null;
 
         $result = [
             'syncToken' => $currentToken,

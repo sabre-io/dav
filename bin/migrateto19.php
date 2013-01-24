@@ -7,15 +7,19 @@ if ($argc<2) {
 
     echo <<<HELLO
 
-This script help you migrate from a pre-1.9 database to 1.9 and later\n
-The 'calendars' tables will be upgraded, and a new table: calendar_changes
-will be added.
+This script help you migrate from a pre-1.9 database to 1.9 and later
 
-If you don't use the default PDO CalDAV backend, it's pointless to run this
-script.
+The 'calendars' and 'addressbooks' tables will be upgraded, and new tables
+(calendarchanges, addressbookchanges) will be added.
+
+If you don't use the default PDO CalDAV or CardDAV backend, it's pointless to
+run this script.
 
 Keep in mind that ALTER TABLE commands will be executed. If you have a large
-calendars table, this may mean that this process takes a while.
+dataset this may mean that this process takes a while.
+
+Lastly: Make a back-up first. If this was not obvious to you, you have some
+soul-searching to do.
 
 Usage:
 

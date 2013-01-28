@@ -3,6 +3,8 @@
 	  unserialize method ($propertyMap). This allows for recursively parsing
 	  properties, if needed.
 	* Added: Support for WebDAV-sync (rfc6578).
+	* Added: BasicCallback authenticaton backend, for creating simple
+	  authentication systems without having to define any classes.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
 	* Fixed: Read-only access to calendars still allows the sharee to modify

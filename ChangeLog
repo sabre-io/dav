@@ -1,3 +1,7 @@
+1.8.3-stable (2013-??-??)
+	* Fixed: organizer email-address for shared calendars is now prefixed with
+	  mailto:, as it should.
+
 1.8.2-stable (2013-01-19)
 	* The zip release ships with sabre/vobject 2.0.5.
 	* Includes changes from version 1.7.4.

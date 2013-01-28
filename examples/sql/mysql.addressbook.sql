@@ -4,7 +4,7 @@ CREATE TABLE addressbooks (
     displayname VARCHAR(255),
     uri VARCHAR(200),
     description TEXT,
-    ctag INT(11) UNSIGNED NOT NULL DEFAULT '1',
+    synctoken INT(11) UNSIGNED NOT NULL DEFAULT '1',
     UNIQUE(principaluri, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -16,3 +16,11 @@ CREATE TABLE cards (
     lastmodified INT(11) UNSIGNED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE addressbookchanges (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    uri VARCHAR(200) NOT NULL,
+    synctoken INT(11) UNSIGNED NOT NULL,
+    addressbookid INT(11) UNSIGNED NOT NULL,
+    isdelete TINYINT(1) NOT NULL,
+    INDEX addressbookid_synctoken (addressbookid, synctoken)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

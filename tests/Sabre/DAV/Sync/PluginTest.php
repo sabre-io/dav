@@ -466,37 +466,6 @@ BLA;
 
     }
 
-    public function testSyncInvalidDepthValue() {
-
-        $this->collection->addChange(['file1.txt'], []);
-        $request = new HTTP\Request([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-            'HTTP_DEPTH'     => "1",
-        ]);
-
-        $body = <<<BLA
-<?xml version="1.0" encoding="utf-8" ?>
-<D:sync-collection xmlns:D="DAV:">
-     <D:sync-token />
-     <D:sync-level>1</D:sync-level>
-      <D:prop>
-        <D:getcontentlength/>
-      </D:prop>
-</D:sync-collection>
-BLA;
-
-        $request->setBody($body);
-
-        $response = $this->request($request);
-
-        // The default state has no sync-token, so this report should not yet
-        // be supported.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full response body:' . $response->body);
-
-    }
-
     public function testSyncNoProp() {
 
         $this->collection->addChange(['file1.txt'], []);

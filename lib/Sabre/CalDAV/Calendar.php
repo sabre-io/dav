@@ -2,8 +2,9 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
+use
+    Sabre\DAV,
+    Sabre\DAVACL;
 
 /**
  * This object represents a CalDAV calendar.
@@ -15,7 +16,7 @@ use Sabre\DAVACL;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
+class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection {
 
     /**
      * This is an array with calendar information
@@ -398,6 +399,93 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL {
     public function calendarQuery(array $filters) {
 
         return $this->caldavBackend->calendarQuery($this->calendarInfo['id'], $filters);
+
+    }
+
+    /**
+     * This method returns the current sync-token for this collection.
+     * This can be any string.
+     *
+     * If null is returned from this function, the plugin assumes there's no
+     * sync information available.
+     *
+     * @return string|null
+     */
+    public function getSyncToken() {
+
+        if (
+            $this->caldavBackend instanceof Backend\SyncSupport &&
+            isset($this->calendarInfo['{DAV:}sync-token'])
+        ) {
+            return $this->calendarInfo['{DAV:}sync-token'];
+        }
+
+    }
+
+    /**
+     * The getChanges method returns all the changes that have happened, since
+     * the specified syncToken and the current collection.
+     *
+     * This function should return an array, such as the following:
+     *
+     * array(
+     *   'syncToken' => 'The current synctoken',
+     *   'modified'   => array(
+     *      'new.txt',
+     *   ),
+     *   'deleted' => array(
+     *      'foo.php.bak',
+     *      'old.txt'
+     *   )
+     * );
+     *
+     * The syncToken property should reflect the *current* syncToken of the
+     * collection, as reported getSyncToken(). This is needed here too, to
+     * ensure the operation is atomic.
+     *
+     * If the syncToken is specified as null, this is an initial sync, and all
+     * members should be reported.
+     *
+     * The modified property is an array of nodenames that have changed since
+     * the last token.
+     *
+     * The deleted property is an array with nodenames, that have been deleted
+     * from collection.
+     *
+     * The second argument is basically the 'depth' of the report. If it's 1,
+     * you only have to report changes that happened only directly in immediate
+     * descendants. If it's 2, it should also include changes from the nodes
+     * below the child collections. (grandchildren)
+     *
+     * The third (optional) argument allows a client to specify how many
+     * results should be returned at most. If the limit is not specified, it
+     * should be treated as infinite.
+     *
+     * If the limit (infinite or not) is higher than you're willing to return,
+     * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
+     *
+     * If the syncToken is expired (due to data cleanup) or unknown, you must
+     * return null.
+     *
+     * The limit is 'suggestive'. You are free to ignore it.
+     *
+     * @param string $syncToken
+     * @param int $syncLevel
+     * @param int $limit
+     * @return array
+     */
+    public function getChanges($syncToken, $syncLevel, $limit = null) {
+
+        if (!$this->caldavBackend instanceof Backend\SyncSupport) {
+            return null;
+        }
+
+        return $this->caldavBackend->getChangesForCalendar(
+            $this->calendarInfo['id'],
+            $syncToken,
+            $syncLevel,
+            $limit
+        );
 
     }
 

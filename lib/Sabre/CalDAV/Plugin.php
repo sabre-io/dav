@@ -144,6 +144,12 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof ICalendar) {
             $reports[] = '{' . self::NS_CALDAV . '}free-busy-query';
         }
+        // iCal has a bug where it assumes that sync support is enabled, only
+        // if we say we support it on the calendar-home, even though this is
+        // not actually the case.
+        if ($node instanceof UserCalendars && $this->server->getPlugin('sync')) {
+            $reports[] = '{DAV:}sync-collection';
+        }
         return $reports;
 
     }

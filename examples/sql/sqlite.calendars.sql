@@ -16,7 +16,7 @@ CREATE TABLE calendars (
     principaluri text,
     displayname text,
     uri text,
-    ctag integer,
+    synctoken integer,
     description text,
     calendarorder integer,
     calendarcolor text,
@@ -24,3 +24,13 @@ CREATE TABLE calendars (
     components text,
     transparent bool
 );
+
+CREATE TABLE calendarchanges (
+    id integer primary key asc,
+    uri text,
+    synctoken integer,
+    calendarid integer,
+    isdelete bool
+);
+
+CREATE INDEX calendarid_synctoken ON calendarchanges (calendarid, synctoken);

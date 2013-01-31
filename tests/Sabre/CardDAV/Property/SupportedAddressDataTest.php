@@ -35,7 +35,7 @@ class SupportedAddressDataDataTest extends \PHPUnit_Framework_TestCase {
 '<?xml version="1.0"?>
 <card:root xmlns:card="' . CardDAV\Plugin::NS_CARDDAV . '" xmlns:d="DAV:">' .
 '<card:address-data-type content-type="text/vcard" version="3.0"/>' .
-'<card:address-data-type content-type="text/vcard" version="4.0"/>' .
+//'<card:address-data-type content-type="text/vcard" version="4.0"/>' .
 '</card:root>
 ', $xml);
 

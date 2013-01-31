@@ -34,7 +34,7 @@ class SupportedAddressData extends DAV\Property {
         if (is_null($supportedData)) {
             $supportedData = array(
                 array('contentType' => 'text/vcard', 'version' => '3.0'),
-                array('contentType' => 'text/vcard', 'version' => '4.0'),
+                // array('contentType' => 'text/vcard', 'version' => '4.0'),
             );
         }
 

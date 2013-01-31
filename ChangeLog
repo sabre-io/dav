@@ -1,4 +1,5 @@
 1.8.3-stable (2013-??-??)
+	* Includes changes from version 1.7.5.
 	* Fixed: organizer email-address for shared calendars is now prefixed with
 	  mailto:, as it should.
 
@@ -30,6 +31,11 @@
 	  calendar.
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
+
+1.7.5-stable (2013-??-??)
+	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
+	  address book don't handle this well, and just advertising 3.0 support
+	  seems like the most logical course of action.
 
 1.7.4-stable (2013-01-19)
 	* The zip release ships with sabre/vobject 2.0.5.
@@ -155,6 +161,11 @@ github now.
 	  requested.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
+
+1.6.7-stable (2013-??-??)
+	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
+	  address book don't handle this well, and just advertising 3.0 support
+	  seems like the most logical course of action.
 
 1.6.6-stable (2013-01-19)
 	* Fixed: Backported a fix for broken XML serialization in error responses.

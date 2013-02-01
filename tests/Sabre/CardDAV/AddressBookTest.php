@@ -158,5 +158,41 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetSyncTokenNoSyncSupport() {
+
+        $this->assertNull(null, $this->ab->getSyncToken());
+
+
+    }
+    function testGetChangesNoSyncSupport() {
+
+        $this->assertNull($this->ab->getChanges(1,null));
+
+    }
+
+    function testGetSyncToken() {
+
+        if (!SABRE_HASSQLITE) {
+            $this->markTestSkipped('Sqlite is required for this test to run');
+        }
+        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
+        $this->assertEquals(2, $ab->getSyncToken());
+    }
+
+
+    function testGetChanges() {
+
+        if (!SABRE_HASSQLITE) {
+            $this->markTestSkipped('Sqlite is required for this test to run');
+        }
+        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
+        $this->assertEquals([
+            'syncToken' => 2,
+            'modified' => ['UUID-2345'],
+            'deleted' => [],
+        ], $ab->getChanges(1, 1));
+
+    }
+
 
 }

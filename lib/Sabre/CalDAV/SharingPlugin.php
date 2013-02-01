@@ -151,18 +151,15 @@ class SharingPlugin extends DAV\ServerPlugin {
                     'href' => $node->getOwner(),
                 );
 
-                if ($props && isset($props[0]) && isset($props[0][200])) {
+                if (isset($props[0][200])) {
 
                     // We're mapping the internal webdav properties to the
                     // elements caldav-sharing expects.
-                    $mapping = array(
-                        '{http://sabredav.org/ns}email-address' => 'href',
-                        '{DAV:}displayname' => 'commonName',
-                    );
-                    foreach($mapping as $source=>$dest) {
-                        if (isset($props[0][200][$source])) {
-                            $ownerInfo[$dest] = $props[0][200][$source];
-                        }
+                    if (isset($props[0][200]['{http://sabredav.org/ns}email-address'])) {
+                        $ownerInfo['href'] = 'mailto:' . $props[0][200]['{http://sabredav.org/ns}email-address'];
+                    }
+                    if (isset($props[0][200]['{DAV:}displayname'])) {
+                        $ownerInfo['commonName'] = $props[0][200]['{DAV:}displayname'];
                     }
 
                 }

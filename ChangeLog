@@ -2,6 +2,9 @@
 	* BC Break: XML property classes now receive an extra argument in their
 	  unserialize method ($propertyMap). This allows for recursively parsing
 	  properties, if needed.
+	* Added: Support for WebDAV-sync (rfc6578).
+	* Added: BasicCallback authenticaton backend, for creating simple
+	  authentication systems without having to define any classes.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
 	* Fixed: Read-only access to calendars still allows the sharee to modify
@@ -18,11 +21,25 @@
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
 	* Added: Addressbooks or backends can now specify custom acl rules when
 	  creating cards.
+	* Added: The ability for plugins to validate custom tokens in If: headers.
+	* Changed: Completely refactored the Lock plugin to deal with the new If:
+	  header system.
+	* Added: Checking preconditions for MOVE, COPY, DELETE and PROPPATCH methods.
+	* Added: has() method on DAV\Property\SupportedReportSet.
+	* Added: If header now gets checked (with ETag) all the time. Before the
+	  dealing with the If-header was a responsibility of the Locking plugin.
 
-1.8.2-stable (????-??-??)
+1.8.3-stable (2013-??-??)
+	* Includes changes from version 1.7.5.
+	* Fixed: organizer email-address for shared calendars is now prefixed with
+	  mailto:, as it should.
+
+1.8.2-stable (2013-01-19)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Includes changes from version 1.7.4.
 
 1.8.1-stable (2012-12-01)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Includes changes from version 1.7.3.
 	* Fixed: Typo in 1.7 migration script caused it to fail.
 
@@ -45,7 +62,13 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.4-stable (????-??-??)
+1.7.5-stable (2013-??-??)
+	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
+	  address book don't handle this well, and just advertising 3.0 support
+	  seems like the most logical course of action.
+
+1.7.4-stable (2013-01-19)
+	* The zip release ships with sabre/vobject 2.0.5.
 	* Changed: To be compatibile with MS Office 2011 for Mac, a workaround was
 	  removed that was added to support old versions of Windows XP (pre-SP3).
 	  Indeed! We needed a crazy workaround to work with one MS product in the
@@ -61,6 +84,7 @@
 	  'urn:DAV' when parsing files. Issues were reported with libxml 2.6.32,
 	  on a relatively recent debian release, so we'll wait till 2015 to take
 	  this one out again.
+	* Added: Sabre_DAV_Exception_ServiceUnavailable, for emitting 503's.
 
 1.7.3-stable (2012-12-01)
 	* The zip release ships with sabre/vobject 2.0.5.
@@ -167,6 +191,15 @@ github now.
 	  requested.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
+
+1.6.7-stable (2013-??-??)
+	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
+	  address book don't handle this well, and just advertising 3.0 support
+	  seems like the most logical course of action.
+
+1.6.6-stable (2013-01-19)
+	* Fixed: Backported a fix for broken XML serialization in error responses.
+	 (Thanks @DeepDiver1975!)
 
 1.6.5-stable (2012-10-04)
 	* Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.

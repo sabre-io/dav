@@ -32,16 +32,28 @@ class Response extends DAV\Property implements IHref {
     private $responseProperties;
 
     /**
+     * The href argument is a url relative to the root of the server. This
+     * class will calculate the full path.
+     *
      * The responseProperties argument is a list of properties
      * within an array with keys representing HTTP status codes
      *
+     * Besides specific properties, the entire {DAV:}response element may also
+     * have a http status code.
+     * In most cases you don't need it.
+     *
+     * This is currently used by the Sync extension to indicate that a node is
+     * deleted.
+     *
      * @param string $href
      * @param array $responseProperties
+     * @param string $httpStatus
      */
-    public function __construct($href, array $responseProperties) {
+    public function __construct($href, array $responseProperties, $httpStatus = null) {
 
         $this->href = $href;
         $this->responseProperties = $responseProperties;
+        $this->httpStatus = $httpStatus;
 
     }
 
@@ -53,6 +65,17 @@ class Response extends DAV\Property implements IHref {
     public function getHref() {
 
         return $this->href;
+
+    }
+
+    /**
+     * Returns the httpStatus value
+     *
+     * @return string
+     */
+    public function getHttpStatus() {
+
+        return $this->httpStatus;
 
     }
 
@@ -88,6 +111,11 @@ class Response extends DAV\Property implements IHref {
         $uri = $server->getBaseUri() . $uri;
 
         $xresponse->appendChild($document->createElement('d:href',$uri));
+
+        if ($this->httpStatus) {
+            $statusString = $server->httpResponse->getStatusMessage($this->httpStatus);
+            $xresponse->appendChild($document->createElement('d:status', $statusString));
+        }
 
         // The properties variable is an array containing properties, grouped by
         // HTTP status

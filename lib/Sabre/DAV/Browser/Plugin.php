@@ -316,6 +316,7 @@ class Plugin extends DAV\ServerPlugin {
                             break;
                         case '{http://calendarserver.org/ns/}calendar-proxy-write' :
                             $type[$k] = 'Proxy-Write';
+                            break;
                         case '{http://calendarserver.org/ns/}shared-owner' :
                             $type[$k] = 'Shared';
                             break;

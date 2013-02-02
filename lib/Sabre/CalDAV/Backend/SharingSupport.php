@@ -41,8 +41,8 @@ namespace Sabre\CalDAV\Backend;
  * How it works
  * ============
  *
- * When a user shares a calendar, the addShare() method will be called with a
- * list of sharees that are now added, and a list of sharees that have been
+ * When a user shares a calendar, the updateShares() method will be called with
+ * a list of sharees that are now added, and a list of sharees that have been
  * removed.
  * Removal is instant, but when a sharee is added the sharee first gets a
  * chance to accept or reject the invitation for a share.

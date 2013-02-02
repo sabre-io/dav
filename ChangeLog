@@ -14,6 +14,9 @@
 	* Changed: More elegant ACL management for CalendarObject and Card nodes.
 	* Added: Browser plugin now marks a carddav directory as type Directory,
 	  and a shared calendar as 'Shared'.
+	* Removed: Got rid of the Version classes for CalDAV, CardDAV, HTTP, and
+	  DAVACL. Now that there's no separate packages anymore, this makes a bit
+	  more sense.
 	* Added: Generalized the multistatus response parser a bit more, for
 	  better re-use.
 	* Added: Sabre\DAV\Client now has support for complex properties for

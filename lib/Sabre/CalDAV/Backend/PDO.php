@@ -814,7 +814,7 @@ class PDO extends AbstractBackend implements SyncSupport {
             $stmt = $this->pdo->prepare($query);
             $stmt->execute([$calendarId]);
 
-            $result['modified'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            $result['added'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }
         return $result;
 

@@ -144,7 +144,7 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         $stmt->execute($updates);
 
-        $this->addChange($addressBookId, "");
+        $this->addChange($addressBookId, "", 2);
 
         return true;
 
@@ -289,7 +289,7 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         $result = $stmt->execute(array($cardData, $cardUri, time(), $addressBookId));
 
-        $this->addChange($addressBookId, $cardUri);
+        $this->addChange($addressBookId, $cardUri, 1);
 
         return '"' . md5($cardData) . '"';
 
@@ -325,7 +325,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt = $this->pdo->prepare('UPDATE ' . $this->cardsTableName . ' SET carddata = ?, lastmodified = ? WHERE uri = ? AND addressbookid =?');
         $stmt->execute(array($cardData, time(), $cardUri, $addressBookId));
 
-        $this->addChange($addressBookId, $cardUri);
+        $this->addChange($addressBookId, $cardUri, 2);
 
         return '"' . md5($cardData) . '"';
 
@@ -343,7 +343,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ?');
         $stmt->execute(array($addressBookId, $cardUri));
 
-        $this->addChange($addressBookId, $cardUri, true);
+        $this->addChange($addressBookId, $cardUri, 3);
 
         return $stmt->rowCount()===1;
 
@@ -357,8 +357,11 @@ class PDO extends AbstractBackend implements SyncSupport {
      *
      * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => [
+     *   'added'   => [
      *      'new.txt',
+     *   ],
+     *   'modified'   => [
+     *      'updated.txt',
      *   ],
      *   'deleted' => [
      *      'foo.php.bak',
@@ -413,13 +416,14 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         $result = [
             'syncToken' => $currentToken,
+            'added'     => [],
             'modified'  => [],
             'deleted'   => [],
         ];
 
         if ($syncToken) {
 
-            $query = "SELECT uri, isdelete FROM " . $this->addressBookChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND addressbookid = ? ORDER BY synctoken";
+            $query = "SELECT uri, operation FROM " . $this->addressBookChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND addressbookid = ? ORDER BY synctoken";
             if ($limit>0) $query.= " LIMIT " . (int)$limit;
 
             // Fetching all changes
@@ -430,16 +434,22 @@ class PDO extends AbstractBackend implements SyncSupport {
 
             while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
-                $changes[$row['uri']] = $row['isdelete'];
+                $changes[$row['uri']] = $row['operation'];
 
             }
 
-            foreach($changes as $uri => $isDelete) {
+            foreach($changes as $uri => $operation) {
 
-                if ($isDelete) {
-                    $result['deleted'][] = $uri;
-                } else {
-                    $result['modified'][] = $uri;
+                switch($operation) {
+                    case 1:
+                        $result['added'][] = $uri;
+                        break;
+                    case 2:
+                        $result['modified'][] = $uri;
+                        break;
+                    case 3:
+                        $result['deleted'][] = $uri;
+                        break;
                 }
 
             }
@@ -460,16 +470,16 @@ class PDO extends AbstractBackend implements SyncSupport {
      *
      * @param mixed $addressBookId
      * @param string $objectUri
-     * @param bool $isDelete
+     * @param int $operation 1 = add, 2 = modify, 3 = delete/
      * @return void
      */
-    protected function addChange($addressBookId, $objectUri, $isDelete = false) {
+    protected function addChange($addressBookId, $objectUri, $operation) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->addressBookChangesTableName .' (uri, synctoken, addressbookid, isdelete) SELECT ?, synctoken, ?, ? FROM addressbooks WHERE id = ?');
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->addressBookChangesTableName .' (uri, synctoken, addressbookid, operation) SELECT ?, synctoken, ?, ? FROM addressbooks WHERE id = ?');
         $stmt->execute([
             $objectUri,
             $addressBookId,
-            $isDelete,
+            $operation,
             $addressBookId
         ]);
         $stmt = $this->pdo->prepare('UPDATE ' . $this->addressBooksTableName . ' SET synctoken = synctoken + 1 WHERE id = ?');

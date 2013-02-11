@@ -39,7 +39,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         $this->assertFalse($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
 
         // Making a change
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
 
         $result = $this->server->getProperties('/coll', ['{DAV:}supported-report-set']);
         $this->assertTrue($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
@@ -52,13 +52,13 @@ class PluginTest extends \Sabre\DAVServerTest {
         $this->assertFalse(isset($result['{DAV:}sync-token']));
 
         // Making a change
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
 
         $result = $this->server->getProperties('/coll', ['{DAV:}sync-token']);
         $this->assertTrue(isset($result['{DAV:}sync-token']));
 
         // non-sync-enabled collection
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
 
         $result = $this->server->getProperties('/normalcoll', ['{DAV:}sync-token']);
         $this->assertFalse(isset($result['{DAV:}sync-token']));
@@ -67,7 +67,7 @@ class PluginTest extends \Sabre\DAVServerTest {
     public function testSyncInitialSyncCollection() {
 
         // Making a change
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
 
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
@@ -135,9 +135,9 @@ BLA;
     public function testSubsequentSyncSyncCollection() {
 
         // Making a change
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         // Making another change
-        $this->collection->addChange(['file2.txt'], ['file3.txt']);
+        $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
@@ -201,9 +201,9 @@ BLA;
     public function testSubsequentSyncSyncCollectionLimit() {
 
         // Making a change
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         // Making another change
-        $this->collection->addChange(['file2.txt'], ['file3.txt']);
+        $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
@@ -258,9 +258,9 @@ BLA;
     public function testSubsequentSyncSyncCollectionDepthFallBack() {
 
         // Making a change
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         // Making another change
-        $this->collection->addChange(['file2.txt'], ['file3.txt']);
+        $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
@@ -381,7 +381,7 @@ BLA;
 
     public function testSyncInvalidToken() {
 
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
@@ -410,7 +410,7 @@ BLA;
     }
     public function testSyncInvalidTokenNoPrefix() {
 
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
@@ -468,7 +468,7 @@ BLA;
 
     public function testSyncNoProp() {
 
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
@@ -495,7 +495,7 @@ BLA;
 
     public function testIfConditions() {
 
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
@@ -512,7 +512,7 @@ BLA;
 
     public function testIfConditionsNot() {
 
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
@@ -529,7 +529,7 @@ BLA;
 
     public function testIfConditionsNoSyncToken() {
 
-        $this->collection->addChange(['file1.txt'], []);
+        $this->collection->addChange(['file1.txt'], [], []);
         $request = new HTTP\Request([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',

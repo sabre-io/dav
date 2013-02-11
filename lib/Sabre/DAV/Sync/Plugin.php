@@ -143,6 +143,7 @@ class Plugin extends DAV\ServerPlugin {
         $this->sendSyncCollectionResponse(
             $changeInfo['syncToken'],
             $uri,
+            $changeInfo['added'],
             $changeInfo['modified'],
             $changeInfo['deleted'],
             $properties
@@ -219,12 +220,13 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $syncToken
      * @param string $collectionUrl
+     * @param array $added
      * @param array $modified
      * @param array $deleted
      * @param array $properties
      * @return void
      */
-    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $modified, array $deleted, array $properties) {
+    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $added, array $modified, array $deleted, array $properties) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
@@ -238,7 +240,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        foreach($modified as $item) {
+        foreach(array_merge($added, $modified) as $item) {
             $fullPath = $collectionUrl . '/' . $item;
 
             // We must still fetch the requested properties from the server

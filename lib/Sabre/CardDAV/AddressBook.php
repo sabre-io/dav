@@ -365,8 +365,11 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => [
+     *   'added'   => [
      *      'new.txt',
+     *   ],
+     *   'modified'   => [
+     *      'modified.txt',
      *   ],
      *   'deleted' => [
      *      'foo.php.bak',

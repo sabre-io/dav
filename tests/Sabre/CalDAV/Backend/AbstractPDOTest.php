@@ -586,6 +586,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'syncToken' => 1,
             'modified' => [],
             'deleted' => [],
+            'added' => [],
         ], $result);
 
         $currentToken = $result['syncToken'];
@@ -602,8 +603,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
             'syncToken' => 6,
-            'modified' => ["todo1.ics", "todo3.ics"],
-            'deleted' => ["todo2.ics"],
+            'modified'  => ["todo1.ics"],
+            'deleted'   => ["todo2.ics"],
+            'added'     => ["todo3.ics"],
         ], $result);
 
     }

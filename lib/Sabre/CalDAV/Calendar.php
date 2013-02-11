@@ -430,9 +430,12 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyn
      *
      * array(
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => array(
+     *   'added'   => [
      *      'new.txt',
-     *   ),
+     *   ],
+     *   'modified'   => [
+     *      'modified.txt',
+     *   ],
      *   'deleted' => array(
      *      'foo.php.bak',
      *      'old.txt'

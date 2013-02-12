@@ -249,7 +249,7 @@ class Plugin extends DAV\ServerPlugin {
 
             // The 'Property_Response' class is responsible for generating a
             // single {DAV:}response xml element.
-            $response = new DAV\Property\Response($fullPath, reset($propertyList), 200);
+            $response = new DAV\Property\Response($fullPath, reset($propertyList));
             $response->serialize($this->server, $multiStatus);
 
         }

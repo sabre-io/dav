@@ -112,7 +112,7 @@ BLA;
 
         $response = $responses[0];
 
-        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertNull($response->getHttpStatus());
         $this->assertEquals('/coll/file1.txt', $response->getHref());
         $this->assertEquals([
             200 => [
@@ -122,7 +122,7 @@ BLA;
 
         $response = $responses[1];
 
-        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertNull($response->getHttpStatus());
         $this->assertEquals('/coll/file2.txt', $response->getHref());
         $this->assertEquals([
             200 => [
@@ -182,7 +182,7 @@ BLA;
 
         $response = $responses[0];
 
-        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertNull($response->getHttpStatus());
         $this->assertEquals('/coll/file2.txt', $response->getHref());
         $this->assertEquals([
             200 => [
@@ -305,7 +305,7 @@ BLA;
 
         $response = $responses[0];
 
-        $this->assertEquals('200', $response->getHttpStatus());
+        $this->assertNull($response->getHttpStatus());
         $this->assertEquals('/coll/file2.txt', $response->getHref());
         $this->assertEquals([
             200 => [

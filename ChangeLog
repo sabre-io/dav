@@ -31,6 +31,7 @@
 	* Added: has() method on DAV\Property\SupportedReportSet.
 	* Added: If header now gets checked (with ETag) all the time. Before the
 	  dealing with the If-header was a responsibility of the Locking plugin.
+	* Fixed: Outbox access for delegates.
 
 1.8.3-stable (2013-??-??)
 	* Includes changes from version 1.7.5.

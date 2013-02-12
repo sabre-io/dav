@@ -2,9 +2,10 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
-use Sabre\VObject;
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\VObject;
 
 /**
  * CalDAV plugin
@@ -590,6 +591,7 @@ class Plugin extends DAV\ServerPlugin {
             }
 
         }
+
         // If we're dealing with a calendar, the calendar itself is responsible
         // for the calendar-query.
         if ($node instanceof ICalendar && $depth = 1) {
@@ -975,9 +977,12 @@ class Plugin extends DAV\ServerPlugin {
             $recipients[$k] = $recipient;
         }
 
-        // We need to make sure that 'originator' matches one of the email
-        // addresses of the selected principal.
-        $principal = $outboxNode->getOwner();
+        // We need to make sure that 'originator' matches the currently
+        // authenticated user.
+        $aclPlugin = $this->server->getPlugin('acl');
+        if (is_null($aclPlugin)) throw new DAV\Exception('The ACL plugin must be loaded for scheduling to work');
+        $principal = $aclPlugin->getCurrentUserPrincipal();
+
         $props = $this->server->getProperties($principal,array(
             '{' . self::NS_CALDAV . '}calendar-user-address-set',
         ));

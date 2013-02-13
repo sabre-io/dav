@@ -41,6 +41,20 @@ class BasicAuth extends AbstractAuth {
         if (!$auth) {
             $auth = $this->httpRequest->getRawServerValue('REDIRECT_HTTP_AUTHORIZATION');
         }
+        
+        
+        //if Apache dont route the HTTP_AUTHORIZATION to the php code, so change the 
+        //rewrite rule from (sample)
+        // RewriteRule .* - [env=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+        //to
+        // RewriteRule .* - [env=REMOTE_USER:%{HTTP:Authorization},L]
+        //so the php code can reach the basic auth value
+        if (!$auth) {
+            $auth = $this->httpRequest->getRawServerValue('REMOTE_USER');
+        }
+        if (!$auth) {
+            $auth = $this->httpRequest->getRawServerValue('REDIRECT_REMOTE_USER');
+        }
 
         if (!$auth) return false;
 

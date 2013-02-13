@@ -112,6 +112,28 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
     }
 
+    function testBadOriginator2() {
+
+        $req = new HTTP\Request(array(
+            'REQUEST_METHOD'  => 'POST',
+            'REQUEST_URI'     => '/calendars/user1/outbox',
+            'HTTP_ORIGINATOR' => 'mailto:orig@example.org',
+            'HTTP_RECIPIENT'  => 'mailto:user1@example.org',
+            'HTTP_CONTENT_TYPE' => 'text/calendar',
+        ));
+        $body = array(
+            'BEGIN:VCALENDAR',
+            'METHOD:REQUEST',
+            'BEGIN:VEVENT',
+            'END:VEVENT',
+            'END:VCALENDAR',
+        );
+        $req->setBody(implode("\r\n",$body));
+
+        $this->assertHTTPStatus(403, $req);
+
+    }
+
     function testBadRecipient() {
 
         $req = new HTTP\Request(array(

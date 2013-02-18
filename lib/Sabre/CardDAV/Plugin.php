@@ -346,7 +346,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    protected function validateVCard(&$data, $modified) {
+    protected function validateVCard(&$data, &$modified) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {

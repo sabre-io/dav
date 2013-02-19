@@ -63,6 +63,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             $aclPlugin->checkPrivileges($uri, '{DAV:}read');
         }
 
+        $this->server->transactionType = 'get-calendar-export';
         $this->server->httpResponse->setHeader('Content-Type','text/calendar');
         $this->server->httpResponse->sendStatus(200);
 

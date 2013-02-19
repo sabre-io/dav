@@ -75,6 +75,19 @@ class Server {
     protected $eventSubscriptions = [];
 
     /**
+     * This property will be filled with a unique string that describes the
+     * transaction. This is useful for performance measuring and logging
+     * purposes.
+     *
+     * By default it will just fill it with a lowercased HTTP method name, but
+     * plugins override this. For example, the WebDAV-Sync sync-collection
+     * report will set this to 'report-sync-collection'.
+     *
+     * @var string
+     */
+    public $transactionType;
+
+    /**
      * This is a default list of namespaces.
      *
      * If you are defining your own custom namespace, add it here to reduce
@@ -469,7 +482,10 @@ class Server {
             'REPORT'
         ];
 
+        $this->transactionType = strtolower($method);
+
         if (in_array($method,$internalMethods)) {
+
 
             call_user_func([$this, 'http' . $method], $uri);
 

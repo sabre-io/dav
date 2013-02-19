@@ -59,6 +59,8 @@ class VCFExportPlugin extends DAV\ServerPlugin {
 
         if (!($node instanceof IAddressBook)) return;
 
+        $this->server->transactionType = 'get-addressbook-export';
+
         // Checking ACL, if available.
         if ($aclPlugin = $this->server->getPlugin('acl')) {
             $aclPlugin->checkPrivileges($uri, '{DAV:}read');

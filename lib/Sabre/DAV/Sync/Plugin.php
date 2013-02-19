@@ -58,6 +58,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->subscribeEvent('report', function($reportName, $dom, $uri) use ($self) {
 
             if ($reportName === '{DAV:}sync-collection') {
+                $this->server->transactionType = 'report-sync-collection';
                 $self->syncCollection($uri, $dom);
                 return false;
             }

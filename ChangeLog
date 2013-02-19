@@ -5,6 +5,8 @@
 	* Added: Support for WebDAV-sync (rfc6578).
 	* Added: BasicCallback authenticaton backend, for creating simple
 	  authentication systems without having to define any classes.
+	* Added: A $transactionType property on the server class. This can be used
+	  for logging and performance measuring purposes.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
 	* Fixed: Read-only access to calendars still allows the sharee to modify

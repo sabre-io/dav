@@ -304,6 +304,8 @@ class SharingPlugin extends DAV\ServerPlugin {
                     return;
                 }
 
+                $this->server->transactionType = 'post-calendar-share';
+
                 // Getting ACL info
                 $acl = $this->server->getPlugin('acl');
 
@@ -332,6 +334,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 if (!$node instanceof UserCalendars) {
                     return;
                 }
+                $this->server->transactionType = 'post-invite-reply';
 
                 // Getting ACL info
                 $acl = $this->server->getPlugin('acl');
@@ -383,6 +386,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 if (!$node instanceof IShareableCalendar) {
                     return;
                 }
+                $this->server->transactionType = 'post-publish-calendar';
 
                 // Getting ACL info
                 $acl = $this->server->getPlugin('acl');
@@ -410,6 +414,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 if (!$node instanceof IShareableCalendar) {
                     return;
                 }
+                $this->server->transactionType = 'post-unpublish-calendar';
 
                 // Getting ACL info
                 $acl = $this->server->getPlugin('acl');

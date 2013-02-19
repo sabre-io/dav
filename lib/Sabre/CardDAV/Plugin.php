@@ -247,9 +247,11 @@ class Plugin extends DAV\ServerPlugin {
 
         switch($reportName) {
             case '{'.self::NS_CARDDAV.'}addressbook-multiget' :
+                $this->server->transactionType = 'report-addressbook-multiget';
                 $this->addressbookMultiGetReport($dom);
                 return false;
             case '{'.self::NS_CARDDAV.'}addressbook-query' :
+                $this->server->transactionType = 'report-addressbook-query';
                 $this->addressBookQueryReport($dom);
                 return false;
             default :

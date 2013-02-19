@@ -248,6 +248,7 @@ class Plugin extends DAV\ServerPlugin {
                 if (!$node instanceof Schedule\IOutbox)
                     return;
 
+                $this->server->transactionType = 'post-caldav-outbox';
                 $this->outboxRequest($node, $uri);
                 return false;
 
@@ -266,12 +267,15 @@ class Plugin extends DAV\ServerPlugin {
 
         switch($reportName) {
             case '{'.self::NS_CALDAV.'}calendar-multiget' :
+                $this->server->transactionType = 'report-calendar-multiget';
                 $this->calendarMultiGetReport($dom);
                 return false;
             case '{'.self::NS_CALDAV.'}calendar-query' :
+                $this->server->transactionType = 'report-calendar-query';
                 $this->calendarQueryReport($dom);
                 return false;
             case '{'.self::NS_CALDAV.'}free-busy-query' :
+                $this->server->transactionType = 'report-free-busy-query';
                 $this->freeBusyQueryReport($dom);
                 return false;
 

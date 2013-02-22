@@ -22,7 +22,7 @@ SabreDAV allows you to easily add WebDAV support to a PHP application. SabreDAV 
 * [RFC4709](http://www.ietf.org/rfc/rfc4709.txt): [DavMount](http://code.google.com/p/sabredav/wiki/DavMount).
 * [RFC4791](http://www.ietf.org/rfc/rfc4791.txt): CalDAV.
 * [RFC4918](http://www.ietf.org/rfc/rfc4918.txt): WebDAV revision.
-* [RFC5397](http://www.ietf.org/rfc/rfc5689.txt): current-user-principal.
+* [RFC5397](http://www.ietf.org/rfc/rfc5397.txt): current-user-principal.
 * [RFC5689](http://www.ietf.org/rfc/rfc5689.txt): Extended MKCOL.
 * [RFC5789](http://tools.ietf.org/html/rfc5789): PATCH method for HTTP.
 * [RFC6352](http://www.ietf.org/rfc/rfc6352.txt): CardDAV

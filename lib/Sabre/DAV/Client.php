@@ -63,7 +63,7 @@ class Sabre_DAV_Client {
      *
      * @var boolean
      */
-    private $verityPeer;
+    private $verifyPeer;
 
     /**
      * Constructor
@@ -125,7 +125,7 @@ class Sabre_DAV_Client {
      * @param boolean $value
      */
     public function setVerifyPeer($value) {
-        $this->verityPeer = $value;
+        $this->verifyPeer = $value;
 
     }
 
@@ -321,8 +321,8 @@ class Sabre_DAV_Client {
             CURLOPT_MAXREDIRS => 5,
         );
 
-        if($this->verityPeer !== null) {
-            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verityPeer;
+        if($this->verifyPeer !== null) {
+            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verifyPeer;
 
         }
 

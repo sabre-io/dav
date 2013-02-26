@@ -193,7 +193,6 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
-            CURLOPT_CAINFO => 'bla',
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_SSL_VERIFYPEER => true
         ), $client->curlSettings);

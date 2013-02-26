@@ -160,6 +160,47 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testRequestSslPeer() {
+
+        $client = new ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $client->setVerifyPeer(true);
+
+        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+
+        $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'sillybody',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_SSL_VERIFYPEER => true
+        ), $client->curlSettings);
+
+    }
+
     function testRequestAuth() {
 
         $client = new ClientMock(array(

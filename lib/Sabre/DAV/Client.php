@@ -126,7 +126,6 @@ class Client {
      */
     public function setVerifyPeer($value) {
         $this->verifyPeer = $value;
-
     }
 
     /**
@@ -328,7 +327,6 @@ class Client {
 
         if($this->verifyPeer !== null) {
             $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verifyPeer;
-
         }
 
         if($this->trustedCertificates) {

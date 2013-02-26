@@ -20,7 +20,7 @@ class Client {
      * The propertyMap is a key-value array.
      *
      * If you use the propertyMap, any {DAV:}multistatus responses with the
-     * proeprties listed in this array, will automatically be mapped to a
+     * properties listed in this array, will automatically be mapped to a
      * respective class.
      *
      * The {DAV:}resourcetype property is automatically added. This maps to
@@ -57,6 +57,13 @@ class Client {
      * @var int
      */
     protected $authType;
+
+    /**
+     * Indicates if SSL verification is enabled or not.
+     *
+     * @var boolean
+     */
+    private $verityPeer;
 
     /**
      * Constructor
@@ -103,13 +110,23 @@ class Client {
     /**
      * Add trusted root certificates to the webdav client.
      *
-     * The parameter certificates should be a absulute path to a file
+     * The parameter certificates should be a absolute path to a file
      * which contains all trusted certificates
      *
      * @param string $certificates
      */
     public function addTrustedCertificates($certificates) {
         $this->trustedCertificates = $certificates;
+    }
+
+    /**
+     * Enables/disables SSL peer verification
+     *
+     * @param boolean $value
+     */
+    public function setVerifyPeer($value) {
+        $this->verityPeer = $value;
+
     }
 
     /**
@@ -309,6 +326,11 @@ class Client {
             CURLOPT_MAXREDIRS => 5,
         );
 
+        if($this->verityPeer !== null) {
+            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verityPeer;
+
+        }
+
         if($this->trustedCertificates) {
             $curlSettings[CURLOPT_CAINFO] = $this->trustedCertificates;
         }
@@ -316,7 +338,7 @@ class Client {
         switch ($method) {
             case 'HEAD' :
 
-                // do not read body with HEAD requests (this is neccessary because cURL does not ignore the body with HEAD
+                // do not read body with HEAD requests (this is necessary because cURL does not ignore the body with HEAD
                 // requests when the Content-Length header is given - which in turn is perfectly valid according to HTTP
                 // specs...) cURL does unfortunately return an error in this case ("transfer closed transfer closed with
                 // ... bytes remaining to read") this can be circumvented by explicitly telling cURL to ignore the

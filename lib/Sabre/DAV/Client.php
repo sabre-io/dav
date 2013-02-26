@@ -63,7 +63,7 @@ class Client {
      *
      * @var boolean
      */
-    private $verityPeer;
+    private $verifyPeer;
 
     /**
      * Constructor
@@ -125,7 +125,7 @@ class Client {
      * @param boolean $value
      */
     public function setVerifyPeer($value) {
-        $this->verityPeer = $value;
+        $this->verifyPeer = $value;
 
     }
 
@@ -326,8 +326,8 @@ class Client {
             CURLOPT_MAXREDIRS => 5,
         );
 
-        if($this->verityPeer !== null) {
-            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verityPeer;
+        if($this->verifyPeer !== null) {
+            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verifyPeer;
 
         }
 

@@ -126,7 +126,6 @@ class Sabre_DAV_Client {
      */
     public function setVerifyPeer($value) {
         $this->verifyPeer = $value;
-
     }
 
     /**
@@ -323,7 +322,6 @@ class Sabre_DAV_Client {
 
         if($this->verifyPeer !== null) {
             $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verifyPeer;
-
         }
 
         if($this->trustedCertificates) {

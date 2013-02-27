@@ -160,7 +160,7 @@ class Sabre_DAV_ClientTest extends PHPUnit_Framework_TestCase {
 
     function testRequestSslPeer() {
 
-        $client = new ClientMock(array(
+        $client = new Sabre_DAV_ClientMock(array(
             'baseUri' => 'http://example.org/foo/bar/',
         ));
 

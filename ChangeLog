@@ -36,6 +36,8 @@
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.
+	* Added: ->setVerifyPeers to Sabre_DAV_Client (greatly resisting against
+	  it, don't use this..).
 
 1.7.4-stable (2013-01-19)
 	* The zip release ships with sabre/vobject 2.0.5.
@@ -166,6 +168,8 @@ github now.
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.
+	* Added: ->setVerifyPeers to Sabre_DAV_Client (greatly resisting against
+	  it, don't use this..).
 
 1.6.6-stable (2013-01-19)
 	* Fixed: Backported a fix for broken XML serialization in error responses.

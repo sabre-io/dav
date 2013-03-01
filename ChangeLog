@@ -130,7 +130,7 @@ github now.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
-1.6.7-stable (2013-??-??)
+1.6.7-stable (2013-03-13)
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.

@@ -35,7 +35,8 @@
 	  dealing with the If-header was a responsibility of the Locking plugin.
 	* Fixed: Outbox access for delegates.
 
-1.8.3-stable (2013-??-??)
+1.8.3-stable (2013-03-01)
+	* The zip release ships with sabre/vobject 2.0.6.
 	* Includes changes from version 1.7.5.
 	* Fixed: organizer email-address for shared calendars is now prefixed with
 	  mailto:, as it should.
@@ -68,7 +69,8 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.5-stable (2013-??-??)
+1.7.5-stable (2013-03-01)
+	* The zip release ships with sabre/vobject 2.0.6.
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.
@@ -200,7 +202,7 @@ github now.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
-1.6.7-stable (2013-??-??)
+1.6.7-stable (2013-03-01)
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.

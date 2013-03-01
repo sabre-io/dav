@@ -1,5 +1,5 @@
 {
-    "name": "evert/sabredav",
+    "name": "sabre/dav",
     "type": "library",
     "description": "WebDAV Framework for PHP",
     "keywords": ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],

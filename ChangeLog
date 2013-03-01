@@ -1,4 +1,5 @@
-1.7.5-stable (2013-??-??)
+1.7.5-stable (2013-03-01)
+	* The zip release ships with sabre/vobject 2.0.6.
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.

@@ -75,6 +75,12 @@ class Client {
      *   * userName (optional)
      *   * password (optional)
      *   * proxy (optional)
+     *   * authType (optional)
+     *
+     *  authType must be a bitmap, using self::AUTH_BASIC and
+     *  self::AUTH_DIGEST. If you know which authentication method will be
+     *  used, it's recommended to set it, as it will save a great deal of
+     *  requests to 'discover' this information.
      *
      * @param array $settings
      */

@@ -245,29 +245,33 @@ class Server {
 
             };
 
-            $exceptions = [$e];
-            if ($this->debugExceptions) {
-                $current = $e;
-                while ($current = $current->getPrevious()) {
-                    $exceptions[] = $current;
-                }
-            }
-
-            foreach($exceptions as $ex) {
-
-                $error->appendChild($DOM->createElement('s:exception',$h(get_class($ex))));
-                $error->appendChild($DOM->createElement('s:message',$h($ex->getMessage())));
-                if ($this->debugExceptions) {
-                    $error->appendChild($DOM->createElement('s:file',$h($ex->getFile())));
-                    $error->appendChild($DOM->createElement('s:line',$h($ex->getLine())));
-                    $error->appendChild($DOM->createElement('s:code',$h($ex->getCode())));
-                    $error->appendChild($DOM->createElement('s:stacktrace',$h($ex->getTraceAsString())));
-                }
-
-            }
             if (self::$exposeVersion) {
                 $error->appendChild($DOM->createElement('s:sabredav-version',$h(Version::VERSION)));
             }
+
+            $error->appendChild($DOM->createElement('s:exception',$h(get_class($e))));
+            $error->appendChild($DOM->createElement('s:message',$h($e->getMessage())));
+            if ($this->debugExceptions) {
+                $error->appendChild($DOM->createElement('s:file',$h($e->getFile())));
+                $error->appendChild($DOM->createElement('s:line',$h($e->getLine())));
+                $error->appendChild($DOM->createElement('s:code',$h($e->getCode())));
+                $error->appendChild($DOM->createElement('s:stacktrace',$h($e->getTraceAsString())));
+            }
+
+            if ($this->debugExceptions) {
+                $previous = $e;
+                while ($previous = $previous->getPrevious()) {
+                    $xPrevious = $DOM->createElement('s:previous-exception');
+                    $xPrevious->appendChild($DOM->createElement('s:exception',$h(get_class($previous))));
+                    $xPrevious->appendChild($DOM->createElement('s:message',$h($previous->getMessage())));
+                    $xPrevious->appendChild($DOM->createElement('s:file',$h($previous->getFile())));
+                    $xPrevious->appendChild($DOM->createElement('s:line',$h($previous->getLine())));
+                    $xPrevious->appendChild($DOM->createElement('s:code',$h($previous->getCode())));
+                    $xPrevious->appendChild($DOM->createElement('s:stacktrace',$h($previous->getTraceAsString())));
+                    $error->appendChild($xPrevious);
+                }
+            }
+
 
             if($e instanceof Exception) {
 

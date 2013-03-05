@@ -245,13 +245,24 @@ class Server {
 
             };
 
-            $error->appendChild($DOM->createElement('s:exception',$h(get_class($e))));
-            $error->appendChild($DOM->createElement('s:message',$h($e->getMessage())));
+            $exceptions = [$e];
             if ($this->debugExceptions) {
-                $error->appendChild($DOM->createElement('s:file',$h($e->getFile())));
-                $error->appendChild($DOM->createElement('s:line',$h($e->getLine())));
-                $error->appendChild($DOM->createElement('s:code',$h($e->getCode())));
-                $error->appendChild($DOM->createElement('s:stacktrace',$h($e->getTraceAsString())));
+                $current = $e;
+                while ($current = $current->getPrevious()) {
+                    $exceptions[] = $current;
+                }
+            }
+
+            foreach($exceptions as $ex) {
+
+                $error->appendChild($DOM->createElement('s:exception',$h(get_class($ex))));
+                $error->appendChild($DOM->createElement('s:message',$h($ex->getMessage())));
+                if ($this->debugExceptions) {
+                    $error->appendChild($DOM->createElement('s:file',$h($ex->getFile())));
+                    $error->appendChild($DOM->createElement('s:line',$h($ex->getLine())));
+                    $error->appendChild($DOM->createElement('s:code',$h($ex->getCode())));
+                    $error->appendChild($DOM->createElement('s:stacktrace',$h($ex->getTraceAsString())));
+                }
 
             }
             if (self::$exposeVersion) {

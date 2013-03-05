@@ -16,6 +16,8 @@
 	* Changed: More elegant ACL management for CalendarObject and Card nodes.
 	* Added: Browser plugin now marks a carddav directory as type Directory,
 	  and a shared calendar as 'Shared'.
+	* Added: When debugExceptions is turned on, all previous exceptions are
+	  also traversed.
 	* Removed: Got rid of the Version classes for CalDAV, CardDAV, HTTP, and
 	  DAVACL. Now that there's no separate packages anymore, this makes a bit
 	  more sense.

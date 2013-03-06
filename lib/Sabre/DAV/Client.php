@@ -47,6 +47,27 @@ class Client {
     const AUTH_DIGEST = 2;
 
     /**
+     * Identity encoding, which basically does not nothing.
+     */
+    const ENCODING_IDENTITY = 1;
+
+    /**
+     * Deflate encoding
+     */
+    const ENCODING_DEFLATE = 2;
+
+    /**
+     * Gzip encoding
+     */
+    const ENCODING_GZIP = 4;
+
+    /**
+     * Sends all encoding headers.
+     */
+    const ENCODING_ALL = 7;
+
+
+    /**
      * The authentication type we're using.
      *
      * This is a bitmask of AUTH_BASIC and AUTH_DIGEST.
@@ -59,11 +80,18 @@ class Client {
     protected $authType;
 
     /**
+     * Content-encoding
+     *
+     * @var int
+     */
+    protected $encoding = self::ENCODING_IDENTITY;
+
+    /**
      * Indicates if SSL verification is enabled or not.
      *
      * @var boolean
      */
-    private $verifyPeer;
+    protected $verifyPeer;
 
     /**
      * Constructor
@@ -76,11 +104,14 @@ class Client {
      *   * password (optional)
      *   * proxy (optional)
      *   * authType (optional)
+     *   * encoding (optional)
      *
      *  authType must be a bitmap, using self::AUTH_BASIC and
      *  self::AUTH_DIGEST. If you know which authentication method will be
      *  used, it's recommended to set it, as it will save a great deal of
      *  requests to 'discover' this information.
+     *
+     *  Encoding is a bitmap with one of the ENCODING constants.
      *
      * @param array $settings
      */
@@ -107,6 +138,10 @@ class Client {
             $this->authType = $settings['authType'];
         } else {
             $this->authType = self::AUTH_BASIC | self::AUTH_DIGEST;
+        }
+
+        if (isset($settings['encoding'])) {
+            $this->encoding = $settings['encoding'];
         }
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
@@ -380,6 +415,22 @@ class Client {
             }
             $curlSettings[CURLOPT_HTTPAUTH] = $curlType;
             $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
+        }
+
+        if ($this->encoding) {
+
+            $encodings = [];
+            if ($this->encoding & self::ENCODING_IDENTITY) {
+                $encodings[] = 'identity';
+            }
+            if ($this->encoding & self::ENCODING_DEFLATE) {
+                $encodings[] = 'deflate';
+            }
+            if ($this->encoding & self::ENCODING_GZIP) {
+                $encodings[] = 'gzip';
+            }
+            $curlSettings[CURLOPT_ENCODING] = implode(',', $encodings);
+
         }
 
         list(

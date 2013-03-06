@@ -57,6 +57,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -107,6 +108,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PROXY => 'http://localhost:8000/',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -156,6 +158,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_CAINFO => 'bla',
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
     }
@@ -196,7 +199,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
-            CURLOPT_SSL_VERIFYPEER => true
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
     }
@@ -238,7 +242,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC | CURLAUTH_DIGEST,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -289,7 +294,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -340,7 +346,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -916,6 +923,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
             CURLOPT_POSTFIELDS => null,
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
     }
@@ -954,6 +962,47 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
+            CURLOPT_ENCODING => 'identity',
+        ), $client->curlSettings);
+
+    }
+
+    function testEncoding() {
+
+        $client = new ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+            'encoding' => Client::ENCODING_ALL,
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->request('PUT', 'bar','newcontent');
+
+        $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => "PUT",
+            CURLOPT_POSTFIELDS => 'newcontent',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array(),
+            CURLOPT_ENCODING => 'identity,deflate,gzip',
         ), $client->curlSettings);
 
     }

@@ -25,6 +25,7 @@
 	  better re-use.
 	* Added: Sabre\DAV\Client now has support for complex properties for
 	  PROPPATCH. (Issue #299).
+	* Added: Sabre\DAV\Client has support for gzip and deflate encoding.
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
 	* Added: Addressbooks or backends can now specify custom acl rules when
 	  creating cards.

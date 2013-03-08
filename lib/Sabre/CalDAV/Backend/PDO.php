@@ -311,7 +311,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $newValues['id'] = $calendarId;
         $stmt->execute(array_values($newValues));
 
-        $this->addChange($calendarId, "");
+        $this->addChange($calendarId, "", 2);
 
         return true;
 
@@ -449,7 +449,7 @@ class PDO extends AbstractBackend implements SyncSupport {
             $extraData['firstOccurence'],
             $extraData['lastOccurence'],
         ]);
-        $this->addChange($calendarId, $objectUri);
+        $this->addChange($calendarId, $objectUri, 1);
 
         return '"' . $extraData['etag'] . '"';
 
@@ -478,7 +478,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $calendarId, $objectUri]);
 
-        $this->addChange($calendarId, $objectUri);
+        $this->addChange($calendarId, $objectUri, 2);
 
         return '"' . $extraData['etag'] . '"';
 
@@ -571,7 +571,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarId, $objectUri]);
 
-        $this->addChange($calendarId, $objectUri, true);
+        $this->addChange($calendarId, $objectUri, 3);
 
     }
 
@@ -712,8 +712,11 @@ class PDO extends AbstractBackend implements SyncSupport {
      *
      * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => [
+     *   'added'   => [
      *      'new.txt',
+     *   ],
+     *   'modified'   => [
+     *      'modified.txt',
      *   ],
      *   'deleted' => [
      *      'foo.php.bak',
@@ -768,13 +771,14 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         $result = [
             'syncToken' => $currentToken,
+            'added'     => [],
             'modified'  => [],
             'deleted'   => [],
         ];
 
         if ($syncToken) {
 
-            $query = "SELECT uri, isdelete FROM " . $this->calendarChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND calendarid = ? ORDER BY synctoken";
+            $query = "SELECT uri, operation FROM " . $this->calendarChangesTableName . " WHERE synctoken >= ? AND synctoken < ? AND calendarid = ? ORDER BY synctoken";
             if ($limit>0) $query.= " LIMIT " . (int)$limit;
 
             // Fetching all changes
@@ -785,16 +789,22 @@ class PDO extends AbstractBackend implements SyncSupport {
 
             while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
-                $changes[$row['uri']] = $row['isdelete'];
+                $changes[$row['uri']] = $row['operation'];
 
             }
 
-            foreach($changes as $uri => $isDelete) {
+            foreach($changes as $uri => $operation) {
 
-                if ($isDelete) {
-                    $result['deleted'][] = $uri;
-                } else {
-                    $result['modified'][] = $uri;
+                switch($operation) {
+                    case 1 :
+                        $result['added'][] = $uri;
+                        break;
+                    case 2 :
+                        $result['modified'][] = $uri;
+                        break;
+                    case 3 :
+                        $result['deleted'][] = $uri;
+                        break;
                 }
 
             }
@@ -804,7 +814,7 @@ class PDO extends AbstractBackend implements SyncSupport {
             $stmt = $this->pdo->prepare($query);
             $stmt->execute([$calendarId]);
 
-            $result['modified'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            $result['added'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }
         return $result;
 
@@ -815,16 +825,16 @@ class PDO extends AbstractBackend implements SyncSupport {
      *
      * @param mixed $calendarId
      * @param string $objectUri
-     * @param bool $isDelete
+     * @param int $operation 1 = add, 2 = modify, 3 = delete.
      * @return void
      */
-    protected function addChange($calendarId, $objectUri, $isDelete = false) {
+    protected function addChange($calendarId, $objectUri, $operation) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, isdelete) SELECT ?, synctoken, ?, ? FROM calendars WHERE id = ?');
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, operation) SELECT ?, synctoken, ?, ? FROM calendars WHERE id = ?');
         $stmt->execute([
             $objectUri,
             $calendarId,
-            $isDelete,
+            $operation,
             $calendarId
         ]);
         $stmt = $this->pdo->prepare('UPDATE ' . $this->calendarTableName . ' SET synctoken = synctoken + 1 WHERE id = ?');

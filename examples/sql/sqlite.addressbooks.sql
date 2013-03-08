@@ -20,7 +20,7 @@ CREATE TABLE addressbookchanges (
     uri text,
     synctoken integer,
     addressbookid integer,
-    isdelete bool
+    operation integer
 );
 
 CREATE INDEX addressbookid_synctoken ON addressbookchanges (addressbookid, synctoken);

@@ -22,14 +22,23 @@ class Response extends DAV\Property implements IHref {
      *
      * @var string
      */
-    private $href;
+    protected $href;
 
     /**
      * Propertylist, ordered by HTTP status code
      *
      * @var array
      */
-    private $responseProperties;
+    protected $responseProperties;
+
+    /**
+     * The HTTP status for an entire response.
+     *
+     * This is currently only used in WebDAV-Sync
+     *
+     * @var string
+     */
+    protected $httpStatus;
 
     /**
      * The href argument is a url relative to the root of the server. This

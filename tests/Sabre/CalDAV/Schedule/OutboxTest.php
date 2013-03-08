@@ -20,6 +20,7 @@ class OutboxTest extends \PHPUnit_Framework_TestCase {
                 'principal' => 'principals/user1',
                 'protected' => true,
             ),
+
             array(
                 'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
                 'principal' => 'principals/user1',
@@ -28,6 +29,26 @@ class OutboxTest extends \PHPUnit_Framework_TestCase {
             array(
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ),
         ), $outbox->getACL());

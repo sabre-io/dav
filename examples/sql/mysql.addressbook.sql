@@ -21,6 +21,6 @@ CREATE TABLE addressbookchanges (
     uri VARCHAR(200) NOT NULL,
     synctoken INT(11) UNSIGNED NOT NULL,
     addressbookid INT(11) UNSIGNED NOT NULL,
-    isdelete TINYINT(1) NOT NULL,
+    operation TINYINT(1) NOT NULL,
     INDEX addressbookid_synctoken (addressbookid, synctoken)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

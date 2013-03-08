@@ -247,9 +247,11 @@ class Plugin extends DAV\ServerPlugin {
 
         switch($reportName) {
             case '{'.self::NS_CARDDAV.'}addressbook-multiget' :
+                $this->server->transactionType = 'report-addressbook-multiget';
                 $this->addressbookMultiGetReport($dom);
                 return false;
             case '{'.self::NS_CARDDAV.'}addressbook-query' :
+                $this->server->transactionType = 'report-addressbook-query';
                 $this->addressBookQueryReport($dom);
                 return false;
             default :
@@ -346,7 +348,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    protected function validateVCard(&$data, $modified) {
+    protected function validateVCard(&$data, &$modified) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {

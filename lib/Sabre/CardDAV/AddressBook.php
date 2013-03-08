@@ -268,12 +268,12 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
         return [
             [
                 'privilege' => '{DAV:}read',
-                'principal' => $this->addressBookInfo['principaluri'],
+                'principal' => $this->getOwner(),
                 'protected' => true,
             ],
             [
                 'privilege' => '{DAV:}write',
-                'principal' => $this->addressBookInfo['principaluri'],
+                'principal' => $this->getOwner(),
                 'protected' => true,
             ],
 
@@ -365,8 +365,11 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => [
+     *   'added'   => [
      *      'new.txt',
+     *   ],
+     *   'modified'   => [
+     *      'modified.txt',
      *   ],
      *   'deleted' => [
      *      'foo.php.bak',

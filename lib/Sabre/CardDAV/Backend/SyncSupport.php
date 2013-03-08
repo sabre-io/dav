@@ -28,8 +28,11 @@ interface SyncSupport extends BackendInterface {
      *
      * [
      *   'syncToken' => 'The current synctoken',
-     *   'modified'   => [
+     *   'added'   => [
      *      'new.txt',
+     *   ],
+     *   'modified'   => [
+     *      'modified.txt',
      *   ],
      *   'deleted' => [
      *      'foo.php.bak',

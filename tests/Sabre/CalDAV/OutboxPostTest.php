@@ -11,6 +11,8 @@ require_once 'Sabre/CalDAV/Schedule/IMip/Mock.php';
 class OutboxPostTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
+    protected $setupACL = true;
+    protected $autoLogin = 'user1';
 
     function testPostPassThruNotFound() {
 
@@ -28,7 +30,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
         $req = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/admin/outbox',
+            'REQUEST_URI' => '/calendars/user1/outbox',
         ));
 
         $this->assertHTTPStatus(501, $req);
@@ -51,7 +53,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
         $req = new HTTP\Request(array(
             'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/admin/outbox',
+            'REQUEST_URI' => '/calendars/user1/outbox',
             'HTTP_CONTENT_TYPE' => 'text/calendar',
         ));
         $body = array(
@@ -71,8 +73,8 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
         $req = new HTTP\Request(array(
             'REQUEST_METHOD'  => 'POST',
-            'REQUEST_URI'     => '/calendars/admin/outbox',
-            'HTTP_ORIGINATOR' => 'mailto:orig@example.org',
+            'REQUEST_URI'     => '/calendars/user1/outbox',
+            'HTTP_ORIGINATOR' => 'mailto:user1@example.org',
             'HTTP_CONTENT_TYPE' => 'text/calendar',
         ));
         $body = array(
@@ -110,12 +112,34 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
 
     }
 
+    function testBadOriginator2() {
+
+        $req = new HTTP\Request(array(
+            'REQUEST_METHOD'  => 'POST',
+            'REQUEST_URI'     => '/calendars/user1/outbox',
+            'HTTP_ORIGINATOR' => 'mailto:orig@example.org',
+            'HTTP_RECIPIENT'  => 'mailto:user1@example.org',
+            'HTTP_CONTENT_TYPE' => 'text/calendar',
+        ));
+        $body = array(
+            'BEGIN:VCALENDAR',
+            'METHOD:REQUEST',
+            'BEGIN:VEVENT',
+            'END:VEVENT',
+            'END:VCALENDAR',
+        );
+        $req->setBody(implode("\r\n",$body));
+
+        $this->assertHTTPStatus(403, $req);
+
+    }
+
     function testBadRecipient() {
 
         $req = new HTTP\Request(array(
             'REQUEST_METHOD'  => 'POST',
-            'REQUEST_URI'     => '/calendars/admin/outbox',
-            'HTTP_ORIGINATOR' => 'mailto:orig@example.org',
+            'REQUEST_URI'     => '/calendars/user1/outbox',
+            'HTTP_ORIGINATOR' => 'mailto:user1@example.org',
             'HTTP_RECIPIENT'  => 'http://user1@example.org, mailto:user2@example.org',
             'HTTP_CONTENT_TYPE' => 'text/calendar',
         ));

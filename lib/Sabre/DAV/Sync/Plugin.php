@@ -58,6 +58,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->subscribeEvent('report', function($reportName, $dom, $uri) use ($self) {
 
             if ($reportName === '{DAV:}sync-collection') {
+                $this->server->transactionType = 'report-sync-collection';
                 $self->syncCollection($uri, $dom);
                 return false;
             }
@@ -143,6 +144,7 @@ class Plugin extends DAV\ServerPlugin {
         $this->sendSyncCollectionResponse(
             $changeInfo['syncToken'],
             $uri,
+            $changeInfo['added'],
             $changeInfo['modified'],
             $changeInfo['deleted'],
             $properties
@@ -219,12 +221,13 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $syncToken
      * @param string $collectionUrl
+     * @param array $added
      * @param array $modified
      * @param array $deleted
      * @param array $properties
      * @return void
      */
-    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $modified, array $deleted, array $properties) {
+    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $added, array $modified, array $deleted, array $properties) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
@@ -238,7 +241,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        foreach($modified as $item) {
+        foreach(array_merge($added, $modified) as $item) {
             $fullPath = $collectionUrl . '/' . $item;
 
             // We must still fetch the requested properties from the server
@@ -247,7 +250,7 @@ class Plugin extends DAV\ServerPlugin {
 
             // The 'Property_Response' class is responsible for generating a
             // single {DAV:}response xml element.
-            $response = new DAV\Property\Response($fullPath, reset($propertyList), 200);
+            $response = new DAV\Property\Response($fullPath, reset($propertyList));
             $response->serialize($this->server, $multiStatus);
 
         }

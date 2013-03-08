@@ -75,6 +75,19 @@ class Server {
     protected $eventSubscriptions = [];
 
     /**
+     * This property will be filled with a unique string that describes the
+     * transaction. This is useful for performance measuring and logging
+     * purposes.
+     *
+     * By default it will just fill it with a lowercased HTTP method name, but
+     * plugins override this. For example, the WebDAV-Sync sync-collection
+     * report will set this to 'report-sync-collection'.
+     *
+     * @var string
+     */
+    public $transactionType;
+
+    /**
      * This is a default list of namespaces.
      *
      * If you are defining your own custom namespace, add it here to reduce
@@ -232,6 +245,10 @@ class Server {
 
             };
 
+            if (self::$exposeVersion) {
+                $error->appendChild($DOM->createElement('s:sabredav-version',$h(Version::VERSION)));
+            }
+
             $error->appendChild($DOM->createElement('s:exception',$h(get_class($e))));
             $error->appendChild($DOM->createElement('s:message',$h($e->getMessage())));
             if ($this->debugExceptions) {
@@ -239,11 +256,22 @@ class Server {
                 $error->appendChild($DOM->createElement('s:line',$h($e->getLine())));
                 $error->appendChild($DOM->createElement('s:code',$h($e->getCode())));
                 $error->appendChild($DOM->createElement('s:stacktrace',$h($e->getTraceAsString())));
+            }
 
+            if ($this->debugExceptions) {
+                $previous = $e;
+                while ($previous = $previous->getPrevious()) {
+                    $xPrevious = $DOM->createElement('s:previous-exception');
+                    $xPrevious->appendChild($DOM->createElement('s:exception',$h(get_class($previous))));
+                    $xPrevious->appendChild($DOM->createElement('s:message',$h($previous->getMessage())));
+                    $xPrevious->appendChild($DOM->createElement('s:file',$h($previous->getFile())));
+                    $xPrevious->appendChild($DOM->createElement('s:line',$h($previous->getLine())));
+                    $xPrevious->appendChild($DOM->createElement('s:code',$h($previous->getCode())));
+                    $xPrevious->appendChild($DOM->createElement('s:stacktrace',$h($previous->getTraceAsString())));
+                    $error->appendChild($xPrevious);
+                }
             }
-            if (self::$exposeVersion) {
-                $error->appendChild($DOM->createElement('s:sabredav-version',$h(Version::VERSION)));
-            }
+
 
             if($e instanceof Exception) {
 
@@ -469,7 +497,10 @@ class Server {
             'REPORT'
         ];
 
+        $this->transactionType = strtolower($method);
+
         if (in_array($method,$internalMethods)) {
+
 
             call_user_func([$this, 'http' . $method], $uri);
 

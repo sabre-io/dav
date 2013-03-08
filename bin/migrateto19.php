@@ -219,7 +219,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
         uri VARCHAR(200) NOT NULL,
         synctoken INT(11) UNSIGNED NOT NULL,
         {$itemType}id INT(11) UNSIGNED NOT NULL,
-        isdelete TINYINT(1) NOT NULL,
+        operation TINYINT(1) NOT NULL,
         INDEX {$itemType}id_synctoken ({$itemType}id, synctoken)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -233,7 +233,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
         uri text,
         synctoken integer,
         {$itemType}id integer,
-        isdelete bool
+        operation bool
     );
 
                 ");

@@ -5,6 +5,8 @@
 	* Added: Support for WebDAV-sync (rfc6578).
 	* Added: BasicCallback authenticaton backend, for creating simple
 	  authentication systems without having to define any classes.
+	* Added: A $transactionType property on the server class. This can be used
+	  for logging and performance measuring purposes.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
 	* Fixed: Read-only access to calendars still allows the sharee to modify
@@ -14,6 +16,8 @@
 	* Changed: More elegant ACL management for CalendarObject and Card nodes.
 	* Added: Browser plugin now marks a carddav directory as type Directory,
 	  and a shared calendar as 'Shared'.
+	* Added: When debugExceptions is turned on, all previous exceptions are
+	  also traversed.
 	* Removed: Got rid of the Version classes for CalDAV, CardDAV, HTTP, and
 	  DAVACL. Now that there's no separate packages anymore, this makes a bit
 	  more sense.
@@ -21,6 +25,7 @@
 	  better re-use.
 	* Added: Sabre\DAV\Client now has support for complex properties for
 	  PROPPATCH. (Issue #299).
+	* Added: Sabre\DAV\Client has support for gzip and deflate encoding.
 	* Added: Deserializer for {DAV:}current-user-privilege-set.
 	* Added: Addressbooks or backends can now specify custom acl rules when
 	  creating cards.
@@ -31,8 +36,10 @@
 	* Added: has() method on DAV\Property\SupportedReportSet.
 	* Added: If header now gets checked (with ETag) all the time. Before the
 	  dealing with the If-header was a responsibility of the Locking plugin.
+	* Fixed: Outbox access for delegates.
 
-1.8.3-stable (2013-??-??)
+1.8.3-stable (2013-03-01)
+	* The zip release ships with sabre/vobject 2.0.6.
 	* Includes changes from version 1.7.5.
 	* Fixed: organizer email-address for shared calendars is now prefixed with
 	  mailto:, as it should.
@@ -65,10 +72,13 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.5-stable (2013-??-??)
+1.7.5-stable (2013-03-01)
+	* The zip release ships with sabre/vobject 2.0.6.
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.
+	* Added: ->setVerifyPeers to Sabre_DAV_Client (greatly resisting against
+	  it, don't use this..).
 
 1.7.4-stable (2013-01-19)
 	* The zip release ships with sabre/vobject 2.0.5.
@@ -195,10 +205,12 @@ github now.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
-1.6.7-stable (2013-??-??)
+1.6.7-stable (2013-03-01)
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support
 	  seems like the most logical course of action.
+	* Added: ->setVerifyPeers to Sabre_DAV_Client (greatly resisting against
+	  it, don't use this..).
 
 1.6.6-stable (2013-01-19)
 	* Fixed: Backported a fix for broken XML serialization in error responses.

@@ -188,8 +188,9 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
         $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
         $this->assertEquals([
             'syncToken' => 2,
-            'modified' => ['UUID-2345'],
+            'modified' => [],
             'deleted' => [],
+            'added' => ['UUID-2345'],
         ], $ab->getChanges(1, 1));
 
     }

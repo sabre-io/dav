@@ -30,7 +30,7 @@ CREATE TABLE calendarchanges (
     uri text,
     synctoken integer,
     calendarid integer,
-    isdelete bool
+    operation integer
 );
 
 CREATE INDEX calendarid_synctoken ON calendarchanges (calendarid, synctoken);

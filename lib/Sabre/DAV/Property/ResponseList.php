@@ -120,7 +120,7 @@ class ResponseList extends DAV\Property {
 
             }
 
-            $result[] = new Response($href->getHref(), $properties, $responseStatus);
+            $result[] = new Response($href->getHref(), $properties, $responseStatus?$responseStatus:null);
 
         }
 

@@ -58,6 +58,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -109,6 +110,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PROXY => 'http://localhost:8000/',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -144,26 +146,74 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 		
-		$certPath=__DIR__."/SabreDavTest.cer";
-		
 		try{
-			@$client->addTrustedCertificates("ololol");
-			$this->fail();
+			$client->addTrustedCertificates('bla');
+			$this->fail('Exception of invalid file was not triggered');
 		}
-		catch(Exception $ex){
-			$this->assertEquals($ex->getMessage(), 'certificates path is not valid');
+		catch(Exception $e){
+			$this->assertEquals($e->getMessage(),"certificates path is not valid");
 		}
+		$certPath=__DIR__.'/SabreDavTest.cer';
+		$client->addTrustedCertificates($certPath);
 		
-		try{
-			@$client->addTrustedCertificates(array("ololol"));
-			$this->fail();
-		}
-		catch(Exception $ex){
-			$this->assertEquals($ex->getMessage(),'$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
-		}
 		
-       @$client->addTrustedCertificates($certPath);
-		
+        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'sillybody',
+            CURLOPT_HEADER => true,
+            CURLOPT_CAINFO => $certPath,
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_ENCODING => 'identity',
+			CURLOPT_URL=> 'http://example.org/foo/bar/baz'
+        ), $client->curlSettings);
+
+		}
+
+    function testRequestSslPeer() {
+
+        $client = new ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $client->setVerifyPeer(true);
+
+        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'sillybody',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_ENCODING => 'identity',
+			CURLOPT_URL=> 'http://example.org/foo/bar/baz'
+        ), $client->curlSettings);
+
     }
 
     function testRequestAuth() {
@@ -204,7 +254,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC | CURLAUTH_DIGEST,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -256,7 +307,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -308,7 +360,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -884,6 +937,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
             CURLOPT_POSTFIELDS => null,
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
     }
@@ -922,30 +976,48 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
+            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
     }
-	/*function testPuttingString() {
-		$webdav = new ClientMock(array(
-			'baseUri' => 'http://example.org/foo/',
-		));
-		$str=sha1(rand());
-		$webdav->put($str,'bar/','test.txt',1);
-		$res=$webdav->request('GET', 'bar/test.txt');
-		$this->assertEquals($str, $res['body']);
-		$webdav->request('DELETE', 'bar/test.txt');
+
+    function testEncoding() {
+
+        $client = new ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+            'encoding' => Client::ENCODING_ALL,
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $result = $client->request('PUT', 'bar','newcontent');
+
+        $this->assertEquals(array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => "PUT",
+            CURLOPT_POSTFIELDS => 'newcontent',
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array(),
+            CURLOPT_ENCODING => 'identity,deflate,gzip',
+			CURLOPT_URL => 'http://example.org/foo/bar/bar'
+        ), $client->curlSettings);
+
     }
-	function testPuttingFile() {
-		$webdav = new ClientMock(array(
-			'baseUri' => 'http://example.org/foo/',
-		));
-		$str=sha1(rand());
-		$filename=__DIR__.'/'.'test.txt';
-		file_put_contents($filename,$str);
-		$webdav->put($filename,"bar/",'test.txt');
-		unlink($filename);
-		$res=$webdav->request('GET', $dir.'test.txt');
-		$this->assertEquals($str, $res['body']);
-		$webdav->request('DELETE', $dir.'test.txt');
-    }*/
 }

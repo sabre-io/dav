@@ -22,7 +22,7 @@ class Client {
      * The propertyMap is a key-value array.
      *
      * If you use the propertyMap, any {DAV:}multistatus responses with the
-     * proeprties listed in this array, will automatically be mapped to a
+     * properties listed in this array, will automatically be mapped to a
      * respective class.
      *
      * The {DAV:}resourcetype property is automatically added. This maps to
@@ -59,6 +59,32 @@ class Client {
     const AUTH_DIGEST = 2;
 
     /**
+     * Identity encoding, which basically does not nothing.
+     */
+    const ENCODING_IDENTITY = 0b001;
+
+    /**
+     * Deflate encoding
+     */
+    const ENCODING_DEFLATE = 0b010;
+
+    /**
+     * Gzip encoding
+     */
+    const ENCODING_GZIP = 0b100;
+
+    /**
+     * Sends all encoding headers.
+     */
+    const ENCODING_ALL = 0b111;
+	
+	 /**
+	 * Default encoding.
+	 */
+    const ENCODING_DEFAULT = self::ENCODING_IDENTITY;
+
+
+    /**
      * The authentication type we're using.
      *
      * This is a bitmask of AUTH_BASIC and AUTH_DIGEST.
@@ -70,6 +96,14 @@ class Client {
      */
     protected $authType;
 
+
+    /**
+     * Indicates if SSL verification is enabled or not.
+     *
+     * @var boolean
+     */
+    protected $verifyPeer;
+
     /**
      * Constructor
      *
@@ -80,6 +114,15 @@ class Client {
      *   * userName (optional)
      *   * password (optional)
      *   * proxy (optional)
+     *   * authType (optional)
+     *   * encoding (optional)
+     *
+     *  authType must be a bitmap, using self::AUTH_BASIC and
+     *  self::AUTH_DIGEST. If you know which authentication method will be
+     *  used, it's recommended to set it, as it will save a great deal of
+     *  requests to 'discover' this information.
+     *
+     *  Encoding is a bitmap with one of the ENCODING constants.
      *
      * @param array $settings
      */
@@ -108,9 +151,21 @@ class Client {
             $this->authType = self::AUTH_BASIC | self::AUTH_DIGEST;
         }
 
+        
+
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
 		
 		static::initCurl($settings['curl']);
+		
+		if (isset($settings['encoding'])) {
+			static::setEncodings($settings['encoding']);
+        }else{
+			static::setEncodings(self::ENCODING_DEFAULT);
+		}
+		
+		if (isset($settings['proxy'])) {
+			static::setProxy($settings['proxy']);
+        }
     }
 	public function __destruct() {
 		if($this->ch)curl_close($this->ch);
@@ -133,7 +188,7 @@ class Client {
     /**
      * Add trusted root certificates to the webdav client.
      *
-     * The parameter certificates should be a absulute path to a file
+     * The parameter certificates should be a absolute path to a file
      * which contains all trusted certificates
      *
      * @param string $certificates
@@ -141,12 +196,69 @@ class Client {
     public function addTrustedCertificates($certificates) {
 		if(is_string($certificates)){
 			if(!file_exists($certificates))throw new Exception('certificates path is not valid');
-            curl_setopt($this->ch,CURLOPT_CAINFO,$certificates);
+            static::setCertificates($certificates);
         }else{
 			throw new Exception('$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
 		}
     }
+	
+	 /**
+     * Used to set certificates file.
+	 * Not for direct usage because addTrustedCertificates checks wheither file exist in call time but
+     * this function will make this check this requirement during executing curl request
+	 *
+     * @param string $certificates
+     */
+	protected function setCertificates($certificates){
+		curl_setopt($this->ch,CURLOPT_CAINFO,$certificates);
+	}
 
+    /**
+     * Enables/disables SSL peer verification
+     *
+     * @param boolean $value
+     */
+    public function setVerifyPeer($value) {
+        curl_setopt($this->ch,CURLOPT_SSL_VERIFYPEER,$value);
+    }
+	
+	/**
+	 * Used to set proxy
+	 *	
+	 * @param string $proxyAddr address of proxy in format host:port
+	 */
+	public function setProxy($proxyAddr) {
+        curl_setopt($this->ch,CURLOPT_PROXY,$proxyAddr);
+    }
+	
+	/** converts
+	 * @param number $encodings bitwise OR of needed ENCODING_* constants of this class
+	 * to format, suitable for CURL
+	 */
+	protected function convertEncodingsToInnerFormat(&$encodings){
+		$encodingsList = [];
+		if ($encodings & self::ENCODING_IDENTITY) {
+			$encodingsList[] = 'identity';
+		}
+		if ($encodings & self::ENCODING_DEFLATE) {
+			$encodingsList[] = 'deflate';
+		}
+		if ($encodings & self::ENCODING_GZIP) {
+			$encodingsList[] = 'gzip';
+		}
+		return implode(',', $encodingsList);
+	}
+	
+	
+	/**
+	 * Used to set enconings
+	 *	
+	 * @param integer $encodings  bitwise OR of needed ENCODING_* constants of this class
+	 */
+	public function setEncodings($encodings=self::ENCODING_DEFAULT){
+		curl_setopt($this->ch,CURLOPT_ENCODING,static::convertEncodingsToInnerFormat($encodings));
+	}
+	
     /**
      * Does a PROPFIND request
      *
@@ -341,7 +453,7 @@ class Client {
         switch ($method) {
             case 'HEAD' :
 
-                // do not read body with HEAD requests (this is neccessary because cURL does not ignore the body with HEAD
+                // do not read body with HEAD requests (this is necessary because cURL does not ignore the body with HEAD
                 // requests when the Content-Length header is given - which in turn is perfectly valid according to HTTP
                 // specs...) cURL does unfortunately return an error in this case ("transfer closed transfer closed with
                 // ... bytes remaining to read") this can be circumvented by explicitly telling cURL to ignore the
@@ -365,10 +477,6 @@ class Client {
         }
         $curlSettings[CURLOPT_HTTPHEADER] = $nHeaders;
 
-        if ($this->proxy) {
-            $curlSettings[CURLOPT_PROXY] = $this->proxy;
-        }
-
         if ($this->userName && $this->authType) {
             $curlType = 0;
             if ($this->authType & self::AUTH_BASIC) {
@@ -380,6 +488,8 @@ class Client {
             $curlSettings[CURLOPT_HTTPAUTH] = $curlType;
             $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
         }
+
+        
 
         list(
             $response,

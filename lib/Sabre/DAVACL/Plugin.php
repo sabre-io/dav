@@ -998,12 +998,15 @@ class Plugin extends DAV\ServerPlugin {
         switch($reportName) {
 
             case '{DAV:}principal-property-search' :
+                $this->server->transactionType = 'report-principal-property-search';
                 $this->principalPropertySearchReport($dom);
                 return false;
             case '{DAV:}principal-search-property-set' :
+                $this->server->transactionType = 'report-principal-search-property-set';
                 $this->principalSearchPropertySetReport($dom);
                 return false;
             case '{DAV:}expand-property' :
+                $this->server->transactionType = 'report-expand-property';
                 $this->expandPropertyReport($dom);
                 return false;
 

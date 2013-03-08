@@ -36,10 +36,11 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
 
     }
 
-    public function addChange(array $modified, array $deleted) {
+    public function addChange(array $added, array $modified, array $deleted) {
 
         $this->token++;
         $this->changeLog[$this->token] = [
+            'added'     => $added,
             'modified'  => $modified,
             'deleted'   => $deleted,
         ];
@@ -103,11 +104,12 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         // This is an initial sync
         if (is_null($syncToken)) {
             return [
-               'modified' => array_map(
+               'added' => array_map(
                     function($item) {
                         return $item->getName();
                     }, $this->getChildren()
                 ),
+                'modified' => [],
                 'deleted' => [],
                 'syncToken' => $this->getSyncToken(),
             ];
@@ -120,6 +122,7 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         }
         if (is_null($this->token)) return null;
 
+        $added    = [];
         $modified = [];
         $deleted  = [];
 
@@ -127,6 +130,7 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
 
             if ($token > $syncToken) {
 
+                $added = array_merge($added, $change['added']);
                 $modified = array_merge($modified, $change['modified']);
                 $deleted = array_merge($deleted, $change['deleted']);
 
@@ -154,6 +158,7 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
 
         return array(
             'syncToken' => $this->token,
+            'added'     => $added,
             'modified'  => $modified,
             'deleted'   => $deleted,
         );

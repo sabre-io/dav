@@ -268,8 +268,9 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
             'syncToken' => 2,
-            'modified' => ['UUID-2345'],
-            'deleted' => [],
+            'modified'  => [],
+            'deleted'   => [],
+            'added'     => ['UUID-2345'],
         ], $this->calendar->getChanges(1, 1));
 
     }

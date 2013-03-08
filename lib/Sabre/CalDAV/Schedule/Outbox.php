@@ -100,23 +100,43 @@ class Outbox extends DAV\Collection implements IOutbox {
      */
     public function getACL() {
 
-        return array(
-            array(
+        return [
+            [
                 'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
                 'principal' => $this->getOwner(),
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
                 'principal' => $this->getOwner(),
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner(),
                 'protected' => true,
-            ),
-        );
+            ],
+            [
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-read',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+        ];
 
     }
 

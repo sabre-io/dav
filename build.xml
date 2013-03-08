@@ -47,8 +47,8 @@
         <echo>Creating api documentation using PHP documentor</echo>
         <echo>Writing to ${sabredav.apidocspath}</echo>
         <exec command="phpdoc parse -t ${sabredav.apidocspath} -d lib/" passthru="1" />
-        <exec command="bin/phpdocmd ${sabredav.apidocspath}/structure.xml ${sabredav.apidocspath}" passthru="1" />
-        <delete file="${sabredav.apidocspath}/structure.xml" />
+        <exec command="bin/phpdocmd ${sabredav.apidocspath}/structure.xml ${sabredav.apidocspath} --lt %c" passthru="1" />
+        <!--<delete file="${sabredav.apidocspath}/structure.xml" />-->
 
     </target>
 

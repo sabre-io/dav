@@ -44,8 +44,6 @@ class Client {
     public $propertyMap = array();
 
     protected $baseUri;
-    protected $userName;
-    protected $password;
     
     protected $ch=null;
 
@@ -93,26 +91,6 @@ class Client {
 
 
     /**
-     * The authentication type we're using.
-     *
-     * This is a bitmask of AUTH_BASIC and AUTH_DIGEST.
-     *
-     * If DIGEST is used, the client makes 1 extra request per request, to get
-     * the authentication tokens.
-     *
-     * @var int
-     */
-    protected $authType;
-
-
-    /**
-     * Indicates if SSL verification is enabled or not.
-     *
-     * @var boolean
-     */
-    protected $verifyPeer;
-
-    /**
      * Constructor
      *
      * Settings are provided through the 'settings' argument. The following
@@ -142,9 +120,6 @@ class Client {
 
         $validSettings = array(
             'baseUri',
-            'userName',
-            'password',
-            'proxy',
         );
 
         foreach($validSettings as $validSetting) {
@@ -152,8 +127,6 @@ class Client {
                 $this->$validSetting = $settings[$validSetting];
             }
         }
-
-        
 
         
 
@@ -175,6 +148,14 @@ class Client {
         
         if (isset($settings['userName'])) {
             static::setAuth($settings['userName'],$settings['password'],$authType);
+        }
+        
+        if (isset($settings['verifyPeer'])) {
+            $this->setVerifyPeer($settings['verifyPeer']);
+        }
+        
+        if (isset($settings['cert'])) {
+            $this->addTrustedCertificates($settings['cert']);
         }
     }
     public function __destruct() {
@@ -263,10 +244,10 @@ class Client {
     
      /**
      * Used to set auth type
-     *
-     * @param integer $authType 
-     * @param string $authType 
-     * @param integer $authType 
+     *  
+     * @param string $userName 
+     * @param string $password 
+     * @param integer $authType  If DIGEST is used, the client makes 1 extra request per request, to get the authentication tokens.
      */
     public function setAuth($userName='',$password='',$authType=self::AUTH_DEFAULT) {
         if ($userName && $authType) {

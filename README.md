@@ -28,6 +28,3 @@ SabreDAV allows you to easily add WebDAV support to a PHP application. SabreDAV 
 * [RFC6352](http://www.ietf.org/rfc/rfc6352.txt): CardDAV
 * [draft-daboo-carddav-directory-gateway](http://tools.ietf.org/html/draft-daboo-carddav-directory-gateway): CardDAV directory gateway
 * CalDAV ctag, CalDAV-proxy.
-
-
-[![Build Status](https://secure.travis-ci.org/KOLANICH/SabreDAV.png)](https://travis-ci.org/KOLANICH/SabreDAV)

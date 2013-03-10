@@ -27,8 +27,8 @@ class ClientMock extends Client {
         return $this->response;
     }
 	
-	public function setVerifyPeer($val){
-		$this->curlSettings[CURLOPT_SSL_VERIFYPEER]=$val;
+	public function setVerifyPeer($shouldVerifyPeer){
+		$this->curlSettings[CURLOPT_SSL_VERIFYPEER]=$shouldVerifyPeer;
 	}
 	
 	public function setEncodings($encodings=self::ENCODING_DEFAULT){
@@ -39,8 +39,8 @@ class ClientMock extends Client {
         $this->curlSettings[CURLOPT_PROXY]=$proxyAddr;
     }
 	
-	public function setCertificates($certificates){
-		$this->curlSettings[CURLOPT_CAINFO]=$certificates;
+	public function setCertificates($certificatesPath){
+		$this->curlSettings[CURLOPT_CAINFO]=$certificatesPath;
 	}
 
     /**

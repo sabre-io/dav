@@ -11,7 +11,6 @@ namespace Sabre\DAV;
  * NOTE: This class is experimental, it's api will likely change in the future.
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @copyright Copyright (C) by KOLANICH 2012.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @author KOLANICH
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -188,15 +187,12 @@ class Client {
     /**
      * Add trusted root certificates to the webdav client.
      *
-     * The parameter certificates should be a absolute path to a file
-     * which contains all trusted certificates
-     *
-     * @param string $certificates
+     * @param string $certificatesPath absolute path to a file which contains all trusted certificates
      */
-    public function addTrustedCertificates($certificates) {
-		if(is_string($certificates)){
-			if(!file_exists($certificates))throw new Exception('certificates path is not valid');
-            static::setCertificates($certificates);
+    public function addTrustedCertificates($certificatesPath) {
+		if(is_string($certificatesPath)){
+			if(!file_exists($certificatesPath))throw new Exception('certificates path is not valid');
+            static::setCertificates($certificatesPath);
         }else{
 			throw new Exception('$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
 		}
@@ -207,19 +203,19 @@ class Client {
 	 * Not for direct usage because addTrustedCertificates checks wheither file exist in call time but
      * this function will make this check this requirement during executing curl request
 	 *
-     * @param string $certificates
+     * @param string $certificatesPath
      */
-	protected function setCertificates($certificates){
-		curl_setopt($this->ch,CURLOPT_CAINFO,$certificates);
+	protected function setCertificates($certificatesPath){
+		curl_setopt($this->ch,CURLOPT_CAINFO,$certificatesPath);
 	}
 
     /**
      * Enables/disables SSL peer verification
      *
-     * @param boolean $value
+     * @param boolean $shouldVerifyPeer
      */
-    public function setVerifyPeer($value) {
-        curl_setopt($this->ch,CURLOPT_SSL_VERIFYPEER,$value);
+    public function setVerifyPeer($shouldVerifyPeer){
+        curl_setopt($this->ch,CURLOPT_SSL_VERIFYPEER,$shouldVerifyPeer);
     }
 	
 	/**

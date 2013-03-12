@@ -241,8 +241,17 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
+        $fullPaths = [];
+
+        // Pre-fetching children, if this is possible.
         foreach(array_merge($added, $modified) as $item) {
             $fullPath = $collectionUrl . '/' . $item;
+            $fullPaths[] = $fullPath;
+        }
+
+        $this->server->tree->multiGetPreFetch($fullPaths);
+
+        foreach($fullPaths as $fullPath) {
 
             // We must still fetch the requested properties from the server
             // class.

@@ -154,11 +154,10 @@ abstract class Tree {
      * being used  after this. It really just 'warms' the cache for what's
      * about to happen.
      *
-     * @param string $parentPath Path to the parent node
-     * @param array $paths List of child nodes that must be fetched.
+     * @param array $paths List of nodes that must be fetched.
      * @return void
      */
-    public function multiGetPreFetch($parentPath, array $paths) {
+    public function multiGetPreFetch($paths) {
 
 
     }

@@ -167,22 +167,37 @@ class ObjectTree extends Tree {
      * being used  after this. It really just 'warms' the cache for what's
      * about to happen.
      *
-     * @param string $parentPath Path to the parent node
-     * @param array $paths List of child nodes that must be fetched.
+     * @param array $paths List of nodes that must be fetched.
      * @return void
      */
-    public function multiGetPreFetch($parentPath, array $paths) {
+    public function multiGetPreFetch($paths) {
 
-        $parentNode = $this->getNodeForPath($parentPath);
+        // Going through the items to find common parents.
+        $parents = [];
 
-        if ($parentNode instanceof IMultiGet) {
-            foreach($parentNode->getMultipleChildren($paths) as $child) {
-                $this->cache[$parentPath . '/' . $child->getName()] = $child;
+        foreach($paths as $path) {
+
+            list($parent, $childPath) = URLUtil::splitPath($path);
+            if (!isset($parents[$parent])) {
+                $parents[$parent] = [$childPath];
+            } else {
+                $parents[$parent][] = $childPath;
             }
         }
-        // We are not doing anything in the 'else' case. We could in theory
-        // also fetch the children one by one, but in reality this would have
-        // the same effect as not doing anything.
+
+        foreach($parents as $parentPath => $childNames) {
+
+            $parentNode = $this->getNodeForPath($parentPath);
+
+            if ($parentNode instanceof IMultiGet) {
+                foreach($parentNode->getMultipleChildren($childNames) as $child) {
+                    $this->cache[$parentPath . '/' . $child->getName()] = $child;
+                }
+            }
+            // We are not doing anything in the 'else' case. We could in theory
+            // also fetch the children one by one, but in reality this would have
+            // the same effect as not doing anything.
+        }
 
     }
 

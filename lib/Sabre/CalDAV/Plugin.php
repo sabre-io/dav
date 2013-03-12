@@ -498,8 +498,15 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
+        $uris = [];
         foreach($hrefElems as $elem) {
-            $uri = $this->server->calculateUri($elem->nodeValue);
+            $uris[] = $this->server->calculateUri($elem->nodeValue);
+        }
+
+        // Pre-fetching
+        $this->server->tree->multiGetPreFetch($uris);
+
+        foreach($uris as $uri) {
             list($objProps) = $this->server->getPropertiesForPath($uri,$properties);
 
             if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {

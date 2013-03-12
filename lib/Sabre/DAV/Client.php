@@ -479,9 +479,13 @@ class Client {
      *   * headers - a list of response http headers. The header names have
      *     been lowercased.
      *
+     * For large uploads, it's highly recommended to specify body as a stream
+     * resource. You can easily do this by simply passing the result of
+     * fopen(..., 'r').
+     *
      * @param string $method
      * @param string $url
-     * @param string $body
+     * @param string|resource|null $body
      * @param array $headers
      * @return array
      */
@@ -490,9 +494,17 @@ class Client {
         $url = $this->getAbsoluteUrl($url);
         $curlSettings = array(
             CURLOPT_URL => $url,
-            CURLOPT_POSTFIELDS => $body,
         );
 
+        if (is_null($body)) {
+            $curlSettings[CURLOPT_POSTFIELDS] = '';
+        } elseif (is_string($body)) {
+            $curlSettings[CURLOPT_POSTFIELDS] = $body;
+        } elseif (is_resource($body)) {
+            // This needs to be set to PUT, regardless of the actual method.
+            $curlSettings[CURLOPT_PUT] = true;
+            $curlSettings[CURLOPT_INFILE] = $body;
+        }
         switch ($method) {
             case 'HEAD' :
 

@@ -72,6 +72,57 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testStreamRequest() {
+
+        $client = new ClientMock(array(
+            'baseUri' => 'http://example.org/foo/bar/',
+        ));
+
+        $responseBlob = array(
+            "HTTP/1.1 200 OK",
+            "Content-Type: text/plain",
+            "",
+            "Hello there!"
+        );
+
+        $client->response = array(
+            implode("\r\n", $responseBlob),
+            array(
+                'header_size' => 45,
+                'http_code' => 200,
+            ),
+            0,
+            ""
+        );
+
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'testing streams');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
+
+        $this->assertEquals(array(
+            CURLOPT_URL => 'http://example.org/foo/bar/baz',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_INFILE => $body,
+            CURLOPT_HEADER => true,
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+        ), $client->curlSettings);
+
+        $this->assertEquals(array(
+            'statusCode' => 200,
+            'headers' => array(
+                'content-type' => 'text/plain',
+            ),
+            'body' => 'Hello there!'
+        ), $result);
+
+    }
 
     function testRequestProxy() {
 

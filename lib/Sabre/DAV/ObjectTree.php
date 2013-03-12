@@ -155,5 +155,36 @@ class ObjectTree extends Tree {
 
     }
 
+    /**
+     * This method tells the tree system to pre-fetch and cache a list of
+     * children of a single parent.
+     *
+     * There are a bunch of operations in the WebDAV stack that request many
+     * children (based on uris), and sometimes fetching many at once can
+     * optimize this.
+     *
+     * This method does not return anything, the standard operations are still
+     * being used  after this. It really just 'warms' the cache for what's
+     * about to happen.
+     *
+     * @param string $parentPath Path to the parent node
+     * @param array $paths List of child nodes that must be fetched.
+     * @return void
+     */
+    public function multiGetPreFetch($parentPath, array $paths) {
+
+        $parentNode = $this->getNodeForPath($parentPath);
+
+        if ($parentNode instanceof IMultiGet) {
+            foreach($parentNode->getMultipleChildren($paths) as $child) {
+                $this->cache[$parentPath . '/' . $child->getName()] = $child;
+            }
+        }
+        // We are not doing anything in the 'else' case. We could in theory
+        // also fetch the children one by one, but in reality this would have
+        // the same effect as not doing anything.
+
+    }
+
 }
 

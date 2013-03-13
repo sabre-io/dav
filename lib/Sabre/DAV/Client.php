@@ -498,7 +498,7 @@ class Client {
 
         if (is_null($body)) {
             $curlSettings[CURLOPT_POSTFIELDS] = '';
-        } elseif (is_string($body)) {
+        } elseif (is_string($body)||is_array($body)) {
             $curlSettings[CURLOPT_POSTFIELDS] = $body;
         } elseif (is_resource($body)) {
             // This needs to be set to PUT, regardless of the actual method.

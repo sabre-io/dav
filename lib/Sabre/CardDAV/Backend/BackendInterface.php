@@ -94,6 +94,8 @@ interface BackendInterface {
      * The same set of properties must be returned as with getCards. The only
      * exception is that 'carddata' is absolutely required.
      *
+     * If the card does not exist, you must return false.
+     *
      * @param mixed $addressBookId
      * @param string $cardUri
      * @return array

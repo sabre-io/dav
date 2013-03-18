@@ -1,4 +1,8 @@
 1.9.0-alpha (20??-??-??)
+	* BC Break: The CardDAV and CalDAV BackendInterface each have a new
+	  method: getMultipleCards and getMultipleCalendarObjects. The Abstract
+	  and PDO backends have default implementations, but if you implement that
+	  interface directly, this method is now required.
 	* BC Break: XML property classes now receive an extra argument in their
 	  unserialize method ($propertyMap). This allows for recursively parsing
 	  properties, if needed.
@@ -9,6 +13,10 @@
 	  for logging and performance measuring purposes.
 	* Fixed: If event handlers modify the request body from a PUT request, an
 	  ETag is no longer sent back.
+	* Added: Sabre\DAV\IMultiGet to optimize requests that retrieve
+	  information about lists of resources.
+	* Added: MultiGet support to default CalDAV and CardDAV backends, speeding
+	  speeding up the multiget and sync reports quite a bit!
 	* Fixed: Read-only access to calendars still allows the sharee to modify
 	  basic calendar properties, such as the displayname and color.
 	* Changed: The default supportedPrivilegeSet has changed. Most privileges

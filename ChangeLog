@@ -16,7 +16,7 @@
 	* Added: Sabre\DAV\IMultiGet to optimize requests that retrieve
 	  information about lists of resources.
 	* Added: MultiGet support to default CalDAV and CardDAV backends, speeding
-	  speeding up the multiget and sync reports quite a bit!
+	  up the multiget and sync reports quite a bit!
 	* Fixed: Read-only access to calendars still allows the sharee to modify
 	  basic calendar properties, such as the displayname and color.
 	* Changed: The default supportedPrivilegeSet has changed. Most privileges

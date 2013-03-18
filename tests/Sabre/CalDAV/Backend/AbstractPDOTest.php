@@ -181,6 +181,39 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         ), $result->fetch(\PDO::FETCH_ASSOC));
 
     }
+    function testGetMultipleObjects() {
+
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'id-1', $object);
+        $backend->createCalendarObject($returnedId, 'id-2', $object);
+
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'etag' => '"' . md5($object) . '"',
+                'uri' => 'id-1',
+                'size' => strlen($object),
+                'calendardata' => $object,
+                'lastmodified' => time(),
+                'calendarid' => $returnedId,
+            ],
+            [
+                'id' => 2,
+                'etag' => '"' . md5($object) . '"',
+                'uri' => 'id-2',
+                'size' => strlen($object),
+                'calendardata' => $object,
+                'lastmodified' => time(),
+                'calendarid' => $returnedId,
+            ],
+        ], $backend->getMultipleCalendarObjects($returnedId, [ 'id-1', 'id-2' ]));
+
+
+    }
 
     /**
      * @expectedException Sabre\DAV\Exception\BadRequest

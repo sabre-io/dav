@@ -416,6 +416,46 @@ class PDO extends AbstractBackend implements SyncSupport {
 
     }
 
+    /**
+     * Returns a list of calendar objects.
+     *
+     * This method should work identical to getCalendarObject, but instead
+     * return all the calendar objects in the list as an array.
+     *
+     * If the backend supports this, it may allow for some speed-ups.
+     *
+     * @param mixed $calendarId
+     * @param array $uris
+     * @return array
+     */
+    public function getMultipleCalendarObjects($calendarId, array $uris) {
+
+        $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri IN (';
+        // Inserting a whole bunch of question marks
+        $query.=implode(',', array_fill(0, count($uris), '?'));
+        $query.=')';
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(array_merge([$calendarId], $uris));
+
+        $result = [];
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+            $result[] = [
+                'id'           => $row['id'],
+                'uri'          => $row['uri'],
+                'lastmodified' => $row['lastmodified'],
+                'etag'         => '"' . $row['etag'] . '"',
+                'calendarid'   => $row['calendarid'],
+                'size'         => (int)$row['size'],
+                'calendardata' => $row['calendardata'],
+            ];
+
+        }
+        return $result;
+
+    }
+
 
     /**
      * Creates a new calendar object.

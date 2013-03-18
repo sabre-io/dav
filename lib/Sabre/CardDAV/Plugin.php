@@ -285,14 +285,9 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        // Pre-fetching
-        $this->server->tree->multiGetPreFetch($uris);
-
-        foreach($uris as $uri) {
-
-            list($propertyList[]) = $this->server->getPropertiesForPath($uri,$properties);
-
-        }
+        $propertyList = array_values(
+            $this->server->getPropertiesForMultiplePaths($uris, $properties)
+        );
 
         $prefer = $this->server->getHTTPPRefer();
 

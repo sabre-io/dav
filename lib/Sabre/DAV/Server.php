@@ -1536,7 +1536,7 @@ class Server {
      * @param array $propertyNames
      * @return array
      */
-    public function getPropertiesForPath(array $paths, array $propertyNames = []) {
+    public function getPropertiesForMultiplePaths(array $paths, array $propertyNames = []) {
 
         $result = [
         ];
@@ -1545,7 +1545,7 @@ class Server {
 
         foreach($nodes as $path=>$node) {
 
-            $result[$path] = getPropertiesByNode($path, $node, $propertyNames);
+            $result[$path] = $this->getPropertiesByNode($path, $node, $propertyNames);
 
         }
 

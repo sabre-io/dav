@@ -249,17 +249,11 @@ class Plugin extends DAV\ServerPlugin {
             $fullPaths[] = $fullPath;
         }
 
-        $this->server->tree->multiGetPreFetch($fullPaths);
-
-        foreach($fullPaths as $fullPath) {
-
-            // We must still fetch the requested properties from the server
-            // class.
-            $propertyList = $this->server->getPropertiesForPath($fullPath, $properties);
+        foreach($this->server->getPropertiesForMultiplePaths($fullPaths, $properties) as $fullPath => $props) {
 
             // The 'Property_Response' class is responsible for generating a
             // single {DAV:}response xml element.
-            $response = new DAV\Property\Response($fullPath, reset($propertyList));
+            $response = new DAV\Property\Response($fullPath, $props);
             $response->serialize($this->server, $multiStatus);
 
         }

@@ -195,7 +195,7 @@ class ObjectTree extends Tree {
                 }
             } else {
                 foreach($children as $child) {
-                    $fullPath = $parent . '/' . $childNode->getName();
+                    $fullPath = $parent . '/' . $child;
                     $result[$fullPath] = $this->getNodeForPath($fullPath);
                 }
             }

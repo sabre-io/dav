@@ -254,9 +254,38 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ? LIMIT 1');
         $stmt->execute(array($addressBookId, $cardUri));
 
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        return (count($result)>0?$result[0]:false);
+        return $result?$result:false;
+
+    }
+
+    /**
+     * Returns a list of cards.
+     *
+     * This method should work identical to getCard, but instead return all the
+     * cards in the list as an array.
+     *
+     * If the backend supports this, it may allow for some speed-ups.
+     *
+     * @param mixed $addressBookId
+     * @param array $uris
+     * @return array
+     */
+    public function getMultipleCards($addressBookId, array $uris) {
+
+        return array_map(function($uri) use ($addressBookId) {
+            return $this->getCard($addressBookId, $uri);
+        }, $uris);
+
+        $query = 'SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = IN (';
+        // Inserting a whole bunch of question marks
+        $query.=implode(',', array_fill(0, count($uris), '?'));
+        $query.=')';
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(array_merge([$addressBookId], $uris));
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     }
 

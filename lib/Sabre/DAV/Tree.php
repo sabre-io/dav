@@ -150,17 +150,22 @@ abstract class Tree {
      * children (based on uris), and sometimes fetching many at once can
      * optimize this.
      *
-     * This method does not return anything, the standard operations are still
-     * being used  after this. It really just 'warms' the cache for what's
-     * about to happen.
+     * This method returns an array with the found nodes. It's keys are the
+     * original paths. The result may be out of order.
      *
      * @param array $paths List of nodes that must be fetched.
-     * @return void
+     * @return array
      */
-    public function multiGetPreFetch($paths) {
+    public function getMultipleNodes($paths) {
 
+        $result = [];
+        foreach($paths as $path) {
+            $result[$path] = $this->getNodeForPath($path);
+        }
+        return $result;
 
     }
+
 
     /**
      * copyNode

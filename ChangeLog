@@ -1,3 +1,7 @@
+1.6.8-stable (????-??-??)
+	* Fixed: vcardurl in database schema can now hold 255 characters instead
+	  of 80 (which is often way to small).
+
 1.6.7-stable (2013-03-01)
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
 	  address book don't handle this well, and just advertising 3.0 support

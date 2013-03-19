@@ -16,7 +16,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection {
+class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection, DAV\IMultiGet {
 
     /**
      * This is an array with calendar information
@@ -126,6 +126,26 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyn
     public function getChildren() {
 
         $objs = $this->caldavBackend->getCalendarObjects($this->calendarInfo['id']);
+        $children = [];
+        foreach($objs as $obj) {
+            $obj['acl'] = $this->getChildACL();
+            $children[] = new CalendarObject($this->caldavBackend,$this->calendarInfo,$obj);
+        }
+        return $children;
+
+    }
+
+    /**
+     * This method receives a list of paths in it's first argument.
+     * It must return an array with Node objects.
+     *
+     * If any children are not found, you do not have to return them.
+     *
+     * @return array
+     */
+    public function getMultipleChildren(array $paths) {
+
+        $objs = $this->caldavBackend->getMultipleCalendarObjects($this->calendarInfo['id'], $paths);
         $children = [];
         foreach($objs as $obj) {
             $obj['acl'] = $this->getChildACL();

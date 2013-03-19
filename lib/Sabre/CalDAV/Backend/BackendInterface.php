@@ -4,7 +4,7 @@ namespace Sabre\CalDAV\Backend;
 
 /**
  * Every CalDAV backend must at least implement this interface.
- * 
+ *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -136,6 +136,20 @@ interface BackendInterface {
      * @return array
      */
     public function getCalendarObject($calendarId,$objectUri);
+
+    /**
+     * Returns a list of calendar objects.
+     *
+     * This method should work identical to getCalendarObject, but instead
+     * return all the calendar objects in the list as an array.
+     *
+     * If the backend supports this, it may allow for some speed-ups.
+     *
+     * @param mixed $calendarId
+     * @param array $uris
+     * @return array
+     */
+    public function getMultipleCalendarObjects($calendarId, array $uris);
 
     /**
      * Creates a new calendar object.

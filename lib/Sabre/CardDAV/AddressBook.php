@@ -2,8 +2,9 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
+use
+    Sabre\DAV,
+    Sabre\DAVACL;
 
 /**
  * The AddressBook class represents a CardDAV addressbook, owned by a specific user
@@ -14,7 +15,7 @@ use Sabre\DAVACL;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class AddressBook extends DAV\Collection implements IAddressBook, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection {
+class AddressBook extends DAV\Collection implements IAddressBook, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection, DAV\IMultiGet {
 
     /**
      * This is an array with addressbook information
@@ -76,6 +77,26 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
     public function getChildren() {
 
         $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
+        $children = [];
+        foreach($objs as $obj) {
+            $obj['acl'] = $this->getChildACL();
+            $children[] = new Card($this->carddavBackend,$this->addressBookInfo,$obj);
+        }
+        return $children;
+
+    }
+
+    /**
+     * This method receives a list of paths in it's first argument.
+     * It must return an array with Node objects.
+     *
+     * If any children are not found, you do not have to return them.
+     *
+     * @return array
+     */
+    public function getMultipleChildren(array $paths) {
+
+        $objs = $this->carddavBackend->getMultipleCards($this->addressBookInfo['id'], $paths);
         $children = [];
         foreach($objs as $obj) {
             $obj['acl'] = $this->getChildACL();

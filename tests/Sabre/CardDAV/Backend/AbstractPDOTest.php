@@ -231,6 +231,37 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testCreateCard
+     */
+    public function testGetMultiple() {
+
+        $result = $this->backend->createCard(1, 'card2', 'data2');
+        $result = $this->backend->createCard(1, 'card3', 'data3');
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'uri' => 'card1',
+                'carddata' => 'card1',
+                'lastmodified' => 0,
+            ],
+            [
+                'id' => 2,
+                'uri' => 'card2',
+                'carddata' => 'data2',
+                'lastmodified' => time(),
+            ],
+            [
+                'id' => 3,
+                'uri' => 'card3',
+                'carddata' => 'data3',
+                'lastmodified' => time(),
+            ],
+        ], $this->backend->getMultipleCards(1, ['card1','card2','card3']));
+
+
+    }
+
+    /**
      * @depends testGetCard
      */
     public function testUpdateCard() {

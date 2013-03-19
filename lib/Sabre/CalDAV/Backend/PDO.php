@@ -827,6 +827,8 @@ class PDO extends AbstractBackend implements SyncSupport {
 
             $changes = [];
 
+            // This loop ensures that any duplicates are overwritten, only the
+            // last change on a node is relevant.
             while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
                 $changes[$row['uri']] = $row['operation'];

@@ -1,3 +1,8 @@
+1.7.6-stable (????-??-??)
+	* Fixed: vcardurl in database schema can now hold 255 characters instead
+	  of 80 (which is often way to small).
+
+
 1.7.5-stable (2013-03-01)
 	* The zip release ships with sabre/vobject 2.0.6.
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X
@@ -130,6 +135,10 @@ github now.
 	  requested.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
+
+1.6.8-stable (????-??-??)
+	* Fixed: vcardurl in database schema can now hold 255 characters instead
+	  of 80 (which is often way to small).
 
 1.6.7-stable (2013-03-01)
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X

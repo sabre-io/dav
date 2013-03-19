@@ -278,12 +278,16 @@ class Plugin extends DAV\ServerPlugin {
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
         $propertyList = array();
 
+        $uris = [];
         foreach($hrefElems as $elem) {
 
-            $uri = $this->server->calculateUri($elem->nodeValue);
-            list($propertyList[]) = $this->server->getPropertiesForPath($uri,$properties);
+            $uris[] = $this->server->calculateUri($elem->nodeValue);
 
         }
+
+        $propertyList = array_values(
+            $this->server->getPropertiesForMultiplePaths($uris, $properties)
+        );
 
         $prefer = $this->server->getHTTPPRefer();
 

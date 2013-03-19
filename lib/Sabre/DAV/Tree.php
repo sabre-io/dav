@@ -143,6 +143,31 @@ abstract class Tree {
     }
 
     /**
+     * This method tells the tree system to pre-fetch and cache a list of
+     * children of a single parent.
+     *
+     * There are a bunch of operations in the WebDAV stack that request many
+     * children (based on uris), and sometimes fetching many at once can
+     * optimize this.
+     *
+     * This method returns an array with the found nodes. It's keys are the
+     * original paths. The result may be out of order.
+     *
+     * @param array $paths List of nodes that must be fetched.
+     * @return array
+     */
+    public function getMultipleNodes($paths) {
+
+        $result = [];
+        foreach($paths as $path) {
+            $result[$path] = $this->getNodeForPath($path);
+        }
+        return $result;
+
+    }
+
+
+    /**
      * copyNode
      *
      * @param INode $source

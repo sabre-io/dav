@@ -59,6 +59,26 @@ abstract class AbstractBackend implements BackendInterface {
     }
 
     /**
+     * Returns a list of calendar objects.
+     *
+     * This method should work identical to getCalendarObject, but instead
+     * return all the calendar objects in the list as an array.
+     *
+     * If the backend supports this, it may allow for some speed-ups.
+     *
+     * @param mixed $calendarId
+     * @param array $uris
+     * @return array
+     */
+    public function getMultipleCalendarObjects($calendarId, array $uris) {
+
+        return array_map(function($uri) use ($calendarId) {
+            return $this->getCalendarObject($calendarId, $uri);
+        }, $uris);
+
+    }
+
+    /**
      * Performs a calendar-query on the contents of this calendar.
      *
      * The calendar-query is defined in RFC4791 : CalDAV. Using the

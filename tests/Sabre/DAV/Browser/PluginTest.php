@@ -30,6 +30,7 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'text/html; charset=utf-8',
+            'Content-Security-Policy' => "img-src 'self'; style-src 'unsafe-inline';")
             ),
             $this->response->headers
         );

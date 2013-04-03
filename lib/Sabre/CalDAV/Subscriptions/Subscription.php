@@ -5,7 +5,9 @@ namespace Sabre\CalDAV\Subscriptions;
 use
     Sabre\DAV\Collection,
     Sabre\CalDAV\Backend\SubscriptionSupport,
-    Sabre\DAV\Property\Href;
+    Sabre\DAV\Property\Href,
+    Sabre\DAVACL\IACL,
+    Sabre\DAV\Exception\MethodNotAllowed;
 
 /**
  * Subscription Node
@@ -16,7 +18,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Subscription extends Collection implements ISubscription {
+class Subscription extends Collection implements ISubscription, IACL {
 
     /**
      * caldavBackend
@@ -78,8 +80,8 @@ class Subscription extends Collection implements ISubscription {
      */
     public function getLastModified() {
 
-        if (isset($this->subscriptionInfo['modified'])) {
-            return $this->subscriptionInfo['modified'];
+        if (isset($this->subscriptionInfo['lastmodified'])) {
+            return $this->subscriptionInfo['lastmodified'];
         }
 
     }
@@ -184,6 +186,108 @@ class Subscription extends Collection implements ISubscription {
         }
 
         return $r;
+
+    }
+
+    /**
+     * Returns the owner principal
+     *
+     * This must be a url to a principal, or null if there's no owner
+     *
+     * @return string|null
+     */
+    public function getOwner() {
+
+        return $this->subscriptionInfo['principaluri'];
+
+    }
+
+    /**
+     * Returns a group principal
+     *
+     * This must be a url to a principal, or null if there's no owner
+     *
+     * @return string|null
+     */
+    public function getGroup() {
+
+        return null;
+
+    }
+
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to
+     *      be updated.
+     *
+     * @return array
+     */
+    public function getACL() {
+
+        return [
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-read',
+                'protected' => true,
+            ]
+        ];
+
+    }
+
+    /**
+     * Updates the ACL
+     *
+     * This method will receive a list of new ACE's.
+     *
+     * @param array $acl
+     * @return void
+     */
+    public function setACL(array $acl) {
+
+        throw new MethodNotAllowed('Changing ACL is not yet supported');
+
+    }
+
+    /**
+     * Returns the list of supported privileges for this node.
+     *
+     * The returned data structure is a list of nested privileges.
+     * See \Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * standard structure.
+     *
+     * If null is returned from this method, the default privilege set is used,
+     * which is fine for most common usecases.
+     *
+     * @return array|null
+     */
+    public function getSupportedPrivilegeSet() {
+
+        return null;
 
     }
 

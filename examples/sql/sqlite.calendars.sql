@@ -38,7 +38,7 @@ CREATE INDEX calendarid_synctoken ON calendarchanges (calendarid, synctoken);
 CREATE TABLE calendarsubscriptions (
     id integer primary key asc,
     uri text,
-    principaluri text
+    principaluri text,
     source text,
     displayname text,
     refreshrate text,
@@ -50,4 +50,4 @@ CREATE TABLE calendarsubscriptions (
     lastmodified int
 );
 
-CREATE INDEX principalid_uri ON calendarsubscriptions (principalid, uri);
+CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);

@@ -937,6 +937,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
         $fields[] = 'uri';
         $fields[] = 'source';
         $fields[] = 'principaluri';
+        $fields[] = 'lastmodified';
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
@@ -951,9 +952,10 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                 'uri'          => $row['uri'],
                 'principaluri' => $row['principaluri'],
                 'source'       => $row['source'],
+                'lastmodified' => $row['lastmodified'],
             ];
 
-            foreach($this->propertyMap as $xmlName=>$dbName) {
+            foreach($this->subscriptionPropertyMap as $xmlName=>$dbName) {
                 if (!is_null($row[$dbName])) {
                     $subscription[$xmlName] = $row[$dbName];
                 }
@@ -984,14 +986,16 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             'principaluri',
             'uri',
             'source',
+            'lastmodified',
         ];
         $values = [
             ':principaluri' => $principalUri,
-            ':uri'          => $calendarUri,
-            ':source'       => $mutations['{http://calendarserver.org/ns/}source']->getHref(),
+            ':uri'          => $uri,
+            ':source'       => $properties['{http://calendarserver.org/ns/}source']->getHref(),
+            ':lastmodified' => time(),
         ];
 
-        foreach($this->propertyMap as $xmlName=>$dbName) {
+        foreach($this->subscriptionPropertyMap as $xmlName=>$dbName) {
             if (isset($properties[$xmlName])) {
 
                 $values[':' . $dbName] = $properties[$xmlName];
@@ -1059,7 +1063,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                 $newValues['source'] = $propertyValue->getHref();
             } else {
                 // Checking the property map
-                if (!isset($this->propertyMap[$propertyName])) {
+                if (!isset($this->subscriptionPropertyMap[$propertyName])) {
                     // We don't know about this property.
                     $hasError = true;
                     $result[403][$propertyName] = null;
@@ -1067,7 +1071,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                     continue;
                 }
 
-                $fieldName = $this->propertyMap[$propertyName];
+                $fieldName = $this->subscriptionPropertyMap[$propertyName];
                 $newValues[$fieldName] = $propertyValue;
             }
 
@@ -1097,7 +1101,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             $valuesSql[] = $fieldName . ' = ?';
         }
 
-        $stmt = $this->pdo->prepare("UPDATE calendarsubscriptions SET " . implode(', ',$valuesSql) . " WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE calendarsubscriptions SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
+        $newValues['lastmodified'] = time();
         $newValues['id'] = $subscriptionId;
         $stmt->execute(array_values($newValues));
 

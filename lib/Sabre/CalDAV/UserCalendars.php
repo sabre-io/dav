@@ -182,7 +182,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
         // If the backend supports subscriptions, we'll add those as well,
         if ($this->caldavBackend instanceof Backend\SubscriptionSupport) {
             foreach($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
-                $objs[] = new Subscriptions\Subscription($subscription);
+                $objs[] = new Subscriptions\Subscription($this->caldavBackend, $subscription);
             }
         }
 

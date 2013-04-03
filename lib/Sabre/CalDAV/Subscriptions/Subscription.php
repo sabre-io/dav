@@ -4,7 +4,8 @@ namespace Sabre\CalDAV\Subscriptions;
 
 use
     Sabre\DAV\Collection,
-    Sabre\CalDAV\Backend\SupportsSubscriptions;
+    Sabre\CalDAV\Backend\SubscriptionSupport,
+    Sabre\DAV\Property\Href;
 
 /**
  * Subscription Node
@@ -34,10 +35,10 @@ class Subscription extends Collection implements ISubscription {
     /**
      * Constructor
      *
-     * @param SupportsSubscriptions $caldavBackend
+     * @param SubscriptionSupport $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(SupportsSubscriptions $caldavBackend, array $subscriptionInfo) {
+    public function __construct(SubscriptionSupport $caldavBackend, array $subscriptionInfo) {
 
         $this->caldavBackend = $caldavBackend;
         $this->subscriptionInfo = $subscriptionInfo;
@@ -50,7 +51,7 @@ class Subscription extends Collection implements ISubscription {
             ];
 
         foreach($required as $r) {
-            if (!isset($subscriptionInfo[$required])) {
+            if (!isset($subscriptionInfo[$r])) {
                 throw new \InvalidArgumentException('The ' . $r . ' field is required when creating a subscription node');
             }
         }
@@ -144,7 +145,7 @@ class Subscription extends Collection implements ISubscription {
      */
     public function updateProperties($mutations) {
 
-        $this->caldavBackend->updateSubscription(
+        return $this->caldavBackend->updateSubscription(
             $this->subscriptionInfo['id'],
             $mutations
         );
@@ -172,8 +173,12 @@ class Subscription extends Collection implements ISubscription {
 
         foreach($properties as $prop) {
 
-            if (isset($this->subscriptionInfo[$prop])) {
-                $r[$prop] = $this->subscriptionInfo[$prop];
+            if ($prop==='{http://calendarserver.org/ns/}source') {
+                $r[$prop] = new Href($this->subscriptionInfo['source'], false);
+            } else {
+                if (isset($this->subscriptionInfo[$prop])) {
+                    $r[$prop] = $this->subscriptionInfo[$prop];
+                }
             }
 
         }

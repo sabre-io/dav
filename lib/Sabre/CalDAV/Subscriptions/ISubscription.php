@@ -3,8 +3,8 @@
 namespace Sabre\CalDAV\Subscriptions;
 
 use
-    Sabre\CalDAV\ICollection,
-    Sabre\CalDAV\IProperties;
+    Sabre\DAV\ICollection,
+    Sabre\DAV\IProperties;
 
 /**
  * ISubscription

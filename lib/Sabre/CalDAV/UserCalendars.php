@@ -178,6 +178,14 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
         if ($this->caldavBackend instanceof Backend\NotificationSupport) {
             $objs[] = new Notifications\Collection($this->caldavBackend, $this->principalInfo['uri']);
         }
+
+        // If the backend supports subscriptions, we'll add those as well,
+        if ($this->caldavBackend instanceof Backend\SubscriptionSupport) {
+            foreach($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
+                $objs[] = new Subscriptions\Subscription($subscription);
+            }
+        }
+
         return $objs;
 
     }
@@ -193,6 +201,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
     public function createExtendedCollection($name, array $resourceType, array $properties) {
 
         $isCalendar = false;
+        $isSubscription = false;
         foreach($resourceType as $rt) {
             switch ($rt) {
                 case '{DAV:}collection' :
@@ -202,14 +211,26 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
                 case '{urn:ietf:params:xml:ns:caldav}calendar' :
                     $isCalendar = true;
                     break;
+                case '{http://calendarserver.org/ns/}subscribed' :
+                    $isSubscription = true;
+                    break;
                 default :
                     throw new DAV\Exception\InvalidResourceType('Unknown resourceType: ' . $rt);
             }
         }
-        if (!$isCalendar) {
+        if ($isSubscription) {
+            if (!$this->caldavBackend instanceof Backend\SubscriptionSupport) {
+                throw new DAV\Exception\InvalidResourceType('This backend does not support subscriptions');
+            }
+            $this->caldavBackend->createSubscription($this->principalInfo['uri'], $name, $properties);
+
+        } elseif ($isCalendar) {
+            $this->caldavBackend->createCalendar($this->principalInfo['uri'], $name, $properties);
+
+        } else {
             throw new DAV\Exception\InvalidResourceType('You can only create calendars in this collection');
+
         }
-        $this->caldavBackend->createCalendar($this->principalInfo['uri'], $name, $properties);
 
     }
 

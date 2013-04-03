@@ -94,11 +94,27 @@ interface BackendInterface {
      * The same set of properties must be returned as with getCards. The only
      * exception is that 'carddata' is absolutely required.
      *
+     * If the card does not exist, you must return false.
+     *
      * @param mixed $addressBookId
      * @param string $cardUri
      * @return array
      */
     public function getCard($addressBookId, $cardUri);
+
+    /**
+     * Returns a list of cards.
+     *
+     * This method should work identical to getCard, but instead return all the
+     * cards in the list as an array.
+     *
+     * If the backend supports this, it may allow for some speed-ups.
+     *
+     * @param mixed $addressBookId
+     * @param array $uris
+     * @return array
+     */
+    public function getMultipleCards($addressBookId, array $uris);
 
     /**
      * Creates a new card.

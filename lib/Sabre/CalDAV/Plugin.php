@@ -498,9 +498,12 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
+        $uris = [];
         foreach($hrefElems as $elem) {
-            $uri = $this->server->calculateUri($elem->nodeValue);
-            list($objProps) = $this->server->getPropertiesForPath($uri,$properties);
+            $uris[] = $this->server->calculateUri($elem->nodeValue);
+        }
+
+        foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $uri=>$objProps) {
 
             if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
                 $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);

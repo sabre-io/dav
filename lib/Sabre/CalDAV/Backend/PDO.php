@@ -1119,7 +1119,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     public function deleteSubscription($subscriptionId) {
 
         $stmt = $this->pdo->prepare('DELETE FROM calendarsubscriptions WHERE id = ?');
-        $stmt->execute([$subscription]);
+        $stmt->execute([$subscriptionId]);
 
     }
 

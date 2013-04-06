@@ -643,4 +643,137 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testCreateSubscriptions() {
+
+        $props = [
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname' => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
+            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
+        ];
+
+        $backend = new PDO($this->pdo);
+        $backend->createSubscription('principals/user1', 'sub1', $props);
+
+        $subs = $backend->getSubscriptionsForUser('principals/user1');
+
+        $expected = $props;
+        $expected['id'] = 1;
+        $expected['uri'] = 'sub1';
+        $expected['principaluri'] = 'principals/user1';
+
+        unset($expected['{http://calendarserver.org/ns/}source']);
+        $expected['source'] = 'http://example.org/cal.ics';
+
+        $this->assertEquals(1, count($subs));
+        foreach($expected as $k=>$v) {
+            $this->assertEquals($subs[0][$k], $expected[$k]);
+        }
+
+    }
+
+    function testUpdateSubscriptions() {
+
+        $props = [
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname' => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
+            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
+        ];
+
+        $backend = new PDO($this->pdo);
+        $backend->createSubscription('principals/user1', 'sub1', $props);
+
+        $newProps = [
+            '{DAV:}displayname' => 'new displayname',
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
+        ];
+
+        $result = $backend->updateSubscription(1, $newProps);
+
+        $this->assertTrue($result);
+
+        $subs = $backend->getSubscriptionsForUser('principals/user1');
+
+        $expected = array_merge($props, $newProps);
+        $expected['id'] = 1;
+        $expected['uri'] = 'sub1';
+        $expected['principaluri'] = 'principals/user1';
+
+        unset($expected['{http://calendarserver.org/ns/}source']);
+        $expected['source'] = 'http://example.org/cal2.ics';
+
+        $this->assertEquals(1, count($subs));
+        foreach($expected as $k=>$v) {
+            $this->assertEquals($subs[0][$k], $expected[$k]);
+        }
+
+    }
+
+    function testUpdateSubscriptionsFail() {
+
+        $props = [
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname' => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
+            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
+        ];
+
+        $backend = new PDO($this->pdo);
+        $backend->createSubscription('principals/user1', 'sub1', $props);
+
+        $newProps = [
+            '{DAV:}displayname' => 'new displayname',
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
+            '{DAV:}unknown' => 'foo',
+        ];
+
+        $result = $backend->updateSubscription(1, $newProps);
+
+        $this->assertEquals([
+            403 => [
+                '{DAV:}unknown' => null,
+            ],
+            424 => [
+                '{DAV:}displayname' => null,
+                '{http://calendarserver.org/ns/}source' => null,
+            ],
+        ], $result);
+
+    }
+
+    function testDeleteSubscriptions() {
+
+        $props = [
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname' => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
+            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
+        ];
+
+        $backend = new PDO($this->pdo);
+        $backend->createSubscription('principals/user1', 'sub1', $props);
+
+        $newProps = [
+            '{DAV:}displayname' => 'new displayname',
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
+        ];
+
+        $backend->deleteSubscription(1);
+
+        $subs = $backend->getSubscriptionsForUser('principals/user1');
+        $this->assertEquals(0, count($subs));
+    }
 }

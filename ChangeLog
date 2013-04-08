@@ -39,6 +39,8 @@
 1.7.6-stable (????-??-??)
 	* Fixed: vcardurl in database schema can now hold 255 characters instead
 	  of 80 (which is often way to small).
+	* Fixed: The browser plugin potentially allowed people to open any
+	  arbitrary file on windows servers.
 
 1.7.5-stable (2013-03-01)
 	* The zip release ships with sabre/vobject 2.0.6.
@@ -176,6 +178,8 @@ github now.
 1.6.8-stable (????-??-??)
 	* Fixed: vcardurl in database schema can now hold 255 characters instead
 	  of 80 (which is often way to small).
+	* Fixed: The browser plugin potentially allowed people to open any
+	  arbitrary file on windows servers.
 
 1.6.7-stable (2013-03-01)
 	* Change: No longer advertising support for 4.0 vcards. iOS and OS X

@@ -13,7 +13,7 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
         $caldavBackend = new \Sabre\CalDAV\Backend\MockSubscriptionSupport([],[]);
 
         $info = [
-            'source' => 'http://example.org/src',
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src', false),
             'lastmodified' => date('2013-04-06 11:40:00'), // tomorrow is my birthday!
             '{DAV:}displayname' => 'displayname',
         ];

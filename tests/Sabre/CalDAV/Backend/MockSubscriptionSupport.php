@@ -60,6 +60,7 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
 
         $properties['uri'] = $uri;
         $properties['principaluri'] = $principalUri;
+        $properties['source'] = $properties['{http://calendarserver.org/ns/}source']->getHref();
 
         if (!isset($this->subs[$principalUri])) {
             $this->subs[$principalUri] = [];

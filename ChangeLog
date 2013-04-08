@@ -1,4 +1,4 @@
-1.6.8-stable (????-??-??)
+1.6.8-stable (2013-04-13)
 	* Fixed: vcardurl in database schema can now hold 255 characters instead
 	  of 80 (which is often way to small).
 	* Fixed: The browser plugin potentially allowed people to open any

@@ -40,7 +40,7 @@ interface SubscriptionSupport extends BackendInterface {
      * @param string $principalUri
      * @return array
      */
-    public function getSubscriptionsForUser($principalUri); 
+    public function getSubscriptionsForUser($principalUri);
 
     /**
      * Creates a new subscription for a principal.
@@ -51,7 +51,7 @@ interface SubscriptionSupport extends BackendInterface {
      * @param string $principalUri
      * @param string $uri
      * @param array $properties
-     * @return void
+     * @return mixed
      */
     public function createSubscription($principalUri, $uri, array $properties);
 

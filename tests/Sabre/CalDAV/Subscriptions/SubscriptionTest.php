@@ -22,6 +22,7 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
         $id = $caldavBackend->createSubscription('principals/user1', 'uri', array_merge($info, $override));
         $subInfo = $caldavBackend->getSubscriptionsForUser('principals/user1'); 
 
+        $this->assertEquals(1, count($subInfo));
         $subscription = new Subscription($caldavBackend, $subInfo[0]);
 
         $this->backend = $caldavBackend;

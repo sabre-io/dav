@@ -54,7 +54,7 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
      * @param string $principalUri
      * @param string $uri
      * @param array $properties
-     * @return void
+     * @return mixed
      */
     public function createSubscription($principalUri, $uri, array $properties) {
 
@@ -65,13 +65,13 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
             $this->subs[$principalUri] = [];
         }
 
-        $id = [$principalUri, count($this->subs[$principalUri])+1]; 
+        $id = [$principalUri, count($this->subs[$principalUri])+1];
 
         $properties['id'] = $id;
 
         $this->subs[$principalUri][] = array_merge($properties, [
             'id' => $id,
-        ]); 
+        ]);
 
         return $id;
 

@@ -978,7 +978,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * @param string $principalUri
      * @param string $uri
      * @param array $properties
-     * @return void
+     * @return mixed
      */
     public function createSubscription($principalUri, $uri, array $properties) {
 

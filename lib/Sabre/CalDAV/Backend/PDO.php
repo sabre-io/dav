@@ -5,7 +5,8 @@ namespace Sabre\CalDAV\Backend;
 use
     Sabre\VObject,
     Sabre\CalDAV,
-    Sabre\DAV;
+    Sabre\DAV,
+    Sabre\DAV\Exception\Forbidden;
 
 /**
  * PDO CalDAV backend
@@ -74,7 +75,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     ];
 
     /**
-     * List of subscription roperties, and how they map to database fieldnames
+     * List of subscription properties, and how they map to database fieldnames.
      *
      * @var array
      */
@@ -110,8 +111,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * Every project is an array with the following keys:
      *  * id, a unique id that will be used by other functions to modify the
      *    calendar. This can be the same as the uri or a database key.
-     *  * uri, which the basename of the uri with which the calendar is
-     *    accessed.
+     *  * uri. This is just the 'base uri' or 'filename' of the calendar.
      *  * principaluri. The owner of the calendar. Almost always the same as
      *    principalUri passed to this method.
      *
@@ -908,8 +908,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * Every subscription is an array with the following keys:
      *  * id, a unique id that will be used by other functions to modify the
      *    subscription. This can be the same as the uri or a database key.
-     *  * uri, which the basename of the uri with which the subscription is
-     *    accessed.
+     *  * uri. This is just the 'base uri' or 'filename' of the subscription.
      *  * principaluri. The owner of the subscription. Almost always the same as
      *    principalUri passed to this method.
      *  * source. Url to the actual feed
@@ -988,6 +987,11 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             'source',
             'lastmodified',
         ];
+
+        if (!isset($properties['{http://calendarserver.org/ns/}source'])) {
+            throw new Forbidden('The {http://calendarserver.org/ns/}source property is required when creating subscriptions');
+        }
+
         $values = [
             ':principaluri' => $principalUri,
             ':uri'          => $uri,
@@ -1020,8 +1024,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * This method must be atomic. If one property cannot be changed, the
      * entire operation must fail.
      *
-     * If the operation was successful, true can be returned.
-     * If the operation failed, false can be returned.
+     * If the operation was successful, you can just return true.
+     * If the operation failed, you may just return false.
      *
      * Deletion of a non-existent property is always successful.
      *

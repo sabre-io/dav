@@ -228,7 +228,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
             $this->caldavBackend->createCalendar($this->principalInfo['uri'], $name, $properties);
 
         } else {
-            throw new DAV\Exception\InvalidResourceType('You can only create calendars in this collection');
+            throw new DAV\Exception\InvalidResourceType('You can only create calendars and subscriptions in this collection');
 
         }
 

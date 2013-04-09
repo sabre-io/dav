@@ -4,8 +4,23 @@ namespace Sabre\CalDAV\Backend;
 use Sabre\DAV;
 use Sabre\CalDAV;
 
+/**
+ * This is a mock CalDAV backend that supports subscriptions.
+ *
+ * All data is retained in memory temporarily. It's primary purpose is
+ * unit-tests.
+ *
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
 
+    /**
+     * Subscription list
+     *
+     * @var array
+     */
     protected $subs = [];
 
     /**
@@ -14,8 +29,7 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
      * Every subscription is an array with the following keys:
      *  * id, a unique id that will be used by other functions to modify the
      *    subscription. This can be the same as the uri or a database key.
-     *  * uri, which the basename of the uri with which the subscription is
-     *    accessed.
+     *  * uri. This is just the 'base uri' or 'filename' of the subscription.
      *  * principaluri. The owner of the subscription. Almost always the same as
      *    principalUri passed to this method.
      *  * source. Url to the actual feed

@@ -675,6 +675,19 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception\Forbidden
+     */
+    function testCreateSubscriptionFail() {
+
+        $props = [
+        ];
+
+        $backend = new PDO($this->pdo);
+        $backend->createSubscription('principals/user1', 'sub1', $props);
+
+    }
+
     function testUpdateSubscriptions() {
 
         $props = [

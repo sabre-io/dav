@@ -111,7 +111,7 @@ class Subscription extends Collection implements ISubscription, IACL {
     }
 
     /**
-     * Updates properties on this node,
+     * Updates properties on this node.
      *
      * The properties array uses the propertyName in clark-notation as key,
      * and the array value for the property value. In the case a property
@@ -158,7 +158,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * Returns a list of properties for this nodes.
      *
      * The properties list is a list of propertynames the client requested,
-     * encoded in clark-notation {xmlnamespace}tagname
+     * encoded in clark-notation {xmlnamespace}tagname.
      *
      * If the array is empty, it means 'all properties' were requested.
      *
@@ -190,7 +190,7 @@ class Subscription extends Collection implements ISubscription, IACL {
     }
 
     /**
-     * Returns the owner principal
+     * Returns the owner principal.
      *
      * This must be a url to a principal, or null if there's no owner
      *
@@ -203,7 +203,7 @@ class Subscription extends Collection implements ISubscription, IACL {
     }
 
     /**
-     * Returns a group principal
+     * Returns a group principal.
      *
      * This must be a url to a principal, or null if there's no owner
      *
@@ -260,7 +260,7 @@ class Subscription extends Collection implements ISubscription, IACL {
     }
 
     /**
-     * Updates the ACL
+     * Updates the ACL.
      *
      * This method will receive a list of new ACE's.
      *

@@ -11,8 +11,8 @@ use
  *
  * Nodes implementing this interface represent calendar subscriptions.
  *
- * The calenar subscription node doesn't do much, other than returning and
- * updating subscription-related properties.
+ * The subscription node doesn't do much, other than returning and updating
+ * subscription-related properties.
  *
  * The following properties should be supported:
  *

@@ -246,4 +246,60 @@ foreach(['calendar', 'addressbook'] as $itemType) {
 
 }
 
+try {
+    $pdo->query("SELECT * FROM calendarsubscriptions LIMIT 1");
+
+    echo "'calendarsubscriptions' already exists. Assuming that this part of the\n";
+    echo "upgrade was already completed.\n";
+
+} catch (Exception $e) {
+    echo "Creating calendarsubscriptions table.\n";
+
+    switch($driver) {
+
+        case 'mysql' :
+            $pdo->exec("
+CREATE TABLE calendarsubscriptions (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    uri VARCHAR(200) NOT NULL,
+    principaluri VARCHAR(100) NOT NULL,
+    source TEXT,
+    displayname VARCHAR(100),
+    refreshrate VARCHAR(10),
+    calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
+    calendarcolor VARCHAR(10),
+    striptodos TINYINT(1) NULL,
+    stripalarms TINYINT(1) NULL,
+    stripattachments TINYINT(1) NULL,
+    lastmodified INT(11) UNSIGNED,
+    UNIQUE(principaluri, uri)
+);
+            ");
+            break;
+        case 'sqlite' :
+            $pdo->exec("
+
+CREATE TABLE calendarsubscriptions (
+    id integer primary key asc,
+    uri text,
+    principaluri text,
+    source text,
+    displayname text,
+    refreshrate text,
+    calendarorder integer,
+    calendarcolor text,
+    striptodos bool,
+    stripalarms bool,
+    stripattachments bool,
+    lastmodified int
+);
+            ");
+
+            $pdo->exec("CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);");
+            break;
+
+    }
+
+}
+
 echo "Upgrade to 1.9 schema completed.\n";

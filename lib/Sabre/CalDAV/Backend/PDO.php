@@ -2,9 +2,11 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\VObject;
-use Sabre\CalDAV;
-use Sabre\DAV;
+use
+    Sabre\VObject,
+    Sabre\CalDAV,
+    Sabre\DAV,
+    Sabre\DAV\Exception\Forbidden;
 
 /**
  * PDO CalDAV backend
@@ -16,7 +18,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PDO extends AbstractBackend implements SyncSupport {
+class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -73,6 +75,21 @@ class PDO extends AbstractBackend implements SyncSupport {
     ];
 
     /**
+     * List of subscription properties, and how they map to database fieldnames.
+     *
+     * @var array
+     */
+    public $subscriptionPropertyMap = [
+        '{DAV:}displayname'                                           => 'displayname',
+        '{http://apple.com/ns/ical/}refreshrate'                      => 'refreshrate',
+        '{http://apple.com/ns/ical/}calendar-order'                   => 'calendarorder',
+        '{http://apple.com/ns/ical/}calendar-color'                   => 'calendarcolor',
+        '{http://calendarserver.org/ns/}subscribed-strip-todos'       => 'striptodos',
+        '{http://calendarserver.org/ns/}subscribed-strip-alarms'      => 'stripalarms',
+        '{http://calendarserver.org/ns/}subscribed-strip-attachments' => 'stripattachments',
+    ];
+
+    /**
      * Creates the backend
      *
      * @param \PDO $pdo
@@ -94,8 +111,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      * Every project is an array with the following keys:
      *  * id, a unique id that will be used by other functions to modify the
      *    calendar. This can be the same as the uri or a database key.
-     *  * uri, which the basename of the uri with which the calendar is
-     *    accessed.
+     *  * uri. This is just the 'base uri' or 'filename' of the calendar.
      *  * principaluri. The owner of the calendar. Almost always the same as
      *    principalUri passed to this method.
      *
@@ -883,6 +899,231 @@ class PDO extends AbstractBackend implements SyncSupport {
         $stmt->execute([
             $calendarId
         ]);
+
+    }
+
+    /**
+     * Returns a list of subscriptions for a principal.
+     *
+     * Every subscription is an array with the following keys:
+     *  * id, a unique id that will be used by other functions to modify the
+     *    subscription. This can be the same as the uri or a database key.
+     *  * uri. This is just the 'base uri' or 'filename' of the subscription.
+     *  * principaluri. The owner of the subscription. Almost always the same as
+     *    principalUri passed to this method.
+     *  * source. Url to the actual feed
+     *
+     * Furthermore, all the subscription info must be returned too:
+     *
+     * 1. {DAV:}displayname
+     * 2. {http://apple.com/ns/ical/}refreshrate
+     * 3. {http://calendarserver.org/ns/}subscribed-strip-todos (omit if todos
+     *    should not be stripped).
+     * 4. {http://calendarserver.org/ns/}subscribed-strip-alarms (omit if alarms
+     *    should not be stripped).
+     * 5. {http://calendarserver.org/ns/}subscribed-strip-attachments (omit if
+     *    attachments should not be stripped).
+     * 7. {http://apple.com/ns/ical/}calendar-color
+     * 8. {http://apple.com/ns/ical/}calendar-order
+     *
+     * @param string $principalUri
+     * @return array
+     */
+    public function getSubscriptionsForUser($principalUri) {
+
+        $fields = array_values($this->subscriptionPropertyMap);
+        $fields[] = 'id';
+        $fields[] = 'uri';
+        $fields[] = 'source';
+        $fields[] = 'principaluri';
+        $fields[] = 'lastmodified';
+
+        // Making fields a comma-delimited list
+        $fields = implode(', ', $fields);
+        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM calendarsubscriptions WHERE principaluri = ? ORDER BY calendarorder ASC");
+        $stmt->execute([$principalUri]);
+
+        $subscriptions = [];
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+            $subscription = [
+                'id'           => $row['id'],
+                'uri'          => $row['uri'],
+                'principaluri' => $row['principaluri'],
+                'source'       => $row['source'],
+                'lastmodified' => $row['lastmodified'],
+            ];
+
+            foreach($this->subscriptionPropertyMap as $xmlName=>$dbName) {
+                if (!is_null($row[$dbName])) {
+                    $subscription[$xmlName] = $row[$dbName];
+                }
+            }
+
+            $subscriptions[] = $subscription;
+
+        }
+
+        return $subscriptions;
+
+    }
+
+    /**
+     * Creates a new subscription for a principal.
+     *
+     * If the creation was a success, an id must be returned that can be used to reference
+     * this subscription in other methods, such as updateSubscription.
+     *
+     * @param string $principalUri
+     * @param string $uri
+     * @param array $properties
+     * @return mixed
+     */
+    public function createSubscription($principalUri, $uri, array $properties) {
+
+        $fieldNames = [
+            'principaluri',
+            'uri',
+            'source',
+            'lastmodified',
+        ];
+
+        if (!isset($properties['{http://calendarserver.org/ns/}source'])) {
+            throw new Forbidden('The {http://calendarserver.org/ns/}source property is required when creating subscriptions');
+        }
+
+        $values = [
+            ':principaluri' => $principalUri,
+            ':uri'          => $uri,
+            ':source'       => $properties['{http://calendarserver.org/ns/}source']->getHref(),
+            ':lastmodified' => time(),
+        ];
+
+        foreach($this->subscriptionPropertyMap as $xmlName=>$dbName) {
+            if (isset($properties[$xmlName])) {
+
+                $values[':' . $dbName] = $properties[$xmlName];
+                $fieldNames[] = $dbName;
+            }
+        }
+
+        $stmt = $this->pdo->prepare("INSERT INTO calendarsubscriptions (".implode(', ', $fieldNames).") VALUES (".implode(', ',array_keys($values)).")");
+        $stmt->execute($values);
+
+        return $this->pdo->lastInsertId();
+
+    }
+
+    /**
+     * Updates a subscription
+     *
+     * The mutations array uses the propertyName in clark-notation as key,
+     * and the array value for the property value. In the case a property
+     * should be deleted, the property value will be null.
+     *
+     * This method must be atomic. If one property cannot be changed, the
+     * entire operation must fail.
+     *
+     * If the operation was successful, you can just return true.
+     * If the operation failed, you may just return false.
+     *
+     * Deletion of a non-existent property is always successful.
+     *
+     * Lastly, it is optional to return detailed information about any
+     * failures. In this case an array should be returned with the following
+     * structure:
+     *
+     * array(
+     *   403 => array(
+     *      '{DAV:}displayname' => null,
+     *   ),
+     *   424 => array(
+     *      '{DAV:}owner' => null,
+     *   )
+     * )
+     *
+     * In this example it was forbidden to update {DAV:}displayname.
+     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
+     * (424 Failed Dependency) because the request needs to be atomic.
+     *
+     * @param mixed $subscriptionId
+     * @param array $mutations
+     * @return bool|array
+     */
+    public function updateSubscription($subscriptionId, array $mutations) {
+
+        $newValues = [];
+        $result = [
+            200 => [], // Ok
+            403 => [], // Forbidden
+            424 => [], // Failed Dependency
+        ];
+
+        $hasError = false;
+
+        foreach($mutations as $propertyName=>$propertyValue) {
+
+            if ($propertyName === '{http://calendarserver.org/ns/}source') {
+                $newValues['source'] = $propertyValue->getHref();
+            } else {
+                // Checking the property map
+                if (!isset($this->subscriptionPropertyMap[$propertyName])) {
+                    // We don't know about this property.
+                    $hasError = true;
+                    $result[403][$propertyName] = null;
+                    unset($mutations[$propertyName]);
+                    continue;
+                }
+
+                $fieldName = $this->subscriptionPropertyMap[$propertyName];
+                $newValues[$fieldName] = $propertyValue;
+            }
+
+        }
+
+        // If there were any errors we need to fail the request
+        if ($hasError) {
+            // Properties has the remaining properties
+            foreach($mutations as $propertyName=>$propertyValue) {
+                $result[424][$propertyName] = null;
+            }
+
+            // Removing unused statuscodes for cleanliness
+            foreach($result as $status=>$properties) {
+                if (is_array($properties) && count($properties)===0) unset($result[$status]);
+            }
+
+            return $result;
+
+        }
+
+        // Success
+
+        // Now we're generating the sql query.
+        $valuesSql = [];
+        foreach($newValues as $fieldName=>$value) {
+            $valuesSql[] = $fieldName . ' = ?';
+        }
+
+        $stmt = $this->pdo->prepare("UPDATE calendarsubscriptions SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
+        $newValues['lastmodified'] = time();
+        $newValues['id'] = $subscriptionId;
+        $stmt->execute(array_values($newValues));
+
+        return true;
+
+    }
+
+    /**
+     * Deletes a subscription
+     *
+     * @param mixed $subscriptionId
+     * @return void
+     */
+    public function deleteSubscription($subscriptionId) {
+
+        $stmt = $this->pdo->prepare('DELETE FROM calendarsubscriptions WHERE id = ?');
+        $stmt->execute([$subscriptionId]);
 
     }
 

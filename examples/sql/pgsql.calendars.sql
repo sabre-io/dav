@@ -40,3 +40,24 @@ CREATE UNIQUE INDEX calendarobjects_ukey
 ALTER TABLE ONLY calendarobjects
     ADD CONSTRAINT calendarobjects_calendarid_fkey FOREIGN KEY (calendarid) REFERENCES calendars(id)
         ON DELETE CASCADE;
+
+CREATE TABLE calendarsubscriptions (
+    id SERIAL NOT NULL,
+    uri VARCHAR(200) NOT NULL,
+    principaluri VARCHAR(100) NOT NULL,
+    source TEXT,
+    displayname VARCHAR(100),
+    refreshrate VARCHAR(10),
+    calendarorder INTEGER NOT NULL DEFAULT 0,
+    calendarcolor VARCHAR(10),
+    striptodos SMALLINT NULL,
+    stripalarms SMALLINT NULL,
+    stripattachments SMALLINT NULL,
+    lastmodified INTEGER,
+);
+
+ALTER TABLE ONLY calendarsubscriptions
+    ADD CONSTRAINT calendarsubscriptions_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX calendarsubscriptions_ukey
+    ON calendarsubscriptions USING btree (principaluri, uri);

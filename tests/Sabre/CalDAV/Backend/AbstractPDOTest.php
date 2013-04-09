@@ -191,14 +191,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createCalendarObject($returnedId, 'id-1', $object);
         $backend->createCalendarObject($returnedId, 'id-2', $object);
 
-        $this->assertEquals([
+        $check = [
             [
                 'id' => 1,
                 'etag' => '"' . md5($object) . '"',
                 'uri' => 'id-1',
                 'size' => strlen($object),
                 'calendardata' => $object,
-                'lastmodified' => time(),
+                'lastmodified' => null,
                 'calendarid' => $returnedId,
             ],
             [
@@ -207,11 +207,26 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 'uri' => 'id-2',
                 'size' => strlen($object),
                 'calendardata' => $object,
-                'lastmodified' => time(),
+                'lastmodified' => null,
                 'calendarid' => $returnedId,
             ],
-        ], $backend->getMultipleCalendarObjects($returnedId, [ 'id-1', 'id-2' ]));
+        ];
 
+        $result = $backend->getMultipleCalendarObjects($returnedId, [ 'id-1', 'id-2' ]);
+
+        foreach($check as $index => $props) {
+
+            foreach($props as $key=>$value) {
+
+                if ($key!=='lastmodified') {
+                    $this->assertEquals($value, $result[$index][$key]);
+                } else {
+                    $this->assertTrue(isset($result[$index][$key]));
+                }
+
+            }
+
+        }
 
     }
 

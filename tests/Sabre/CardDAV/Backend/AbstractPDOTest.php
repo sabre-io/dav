@@ -237,7 +237,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $result = $this->backend->createCard(1, 'card2', 'data2');
         $result = $this->backend->createCard(1, 'card3', 'data3');
-        $this->assertEquals([
+        $check = [
             [
                 'id' => 1,
                 'uri' => 'card1',
@@ -256,7 +256,23 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 'carddata' => 'data3',
                 'lastmodified' => time(),
             ],
-        ], $this->backend->getMultipleCards(1, ['card1','card2','card3']));
+        ];
+
+        $result = $this->backend->getMultipleCards(1, ['card1','card2','card3']));
+
+        foreach($check as $index=>$node) {
+
+            foreach($node as $k=>$v) {
+
+                if ($k!=='lastmodified') {
+                    $this->assertEquals($result[$index][$k] === $v);
+                } else {
+                    $this->assertTrue(isset($result[$index][$k]));
+                }
+
+            }
+
+        }
 
 
     }

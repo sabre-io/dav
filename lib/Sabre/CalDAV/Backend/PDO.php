@@ -358,7 +358,10 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * Every item contains an array with the following keys:
      *   * id - unique identifier which will be used for subsequent updates
      *   * calendardata - The iCalendar-compatible calendar data
-     *   * uri - a unique key which will be used to construct the uri. This can be any arbitrary string.
+     *   * uri - a unique key which will be used to construct the uri. This can
+     *     be any arbitrary string, but making sure it ends with '.ics' is a
+     *     good idea. This is only the basename, or filename, not the full
+     *     path.
      *   * lastmodified - a timestamp of the last modification time
      *   * etag - An arbitrary string, surrounded by double-quotes. (e.g.:
      *   '  "abcdef"')
@@ -403,6 +406,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     /**
      * Returns information from a single calendar object, based on it's object
      * uri.
+     *
+     * The object uri is only the basename, or filename and not a full path.
      *
      * The returned array must have the same keys as getCalendarObjects. The
      * 'calendardata' object is required here though, while it's not required
@@ -476,6 +481,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     /**
      * Creates a new calendar object.
      *
+     * The object uri is only the basename, or filename and not a full path.
+     *
      * It is possible return an etag from this function, which will be used in
      * the response to this PUT request. Note that the ETag must be surrounded
      * by double-quotes.
@@ -513,6 +520,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
     /**
      * Updates an existing calendarobject, based on it's uri.
+     *
+     * The object uri is only the basename, or filename and not a full path.
      *
      * It is possible return an etag from this function, which will be used in
      * the response to this PUT request. Note that the ETag must be surrounded
@@ -617,6 +626,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
     /**
      * Deletes an existing calendar object.
+     *
+     * The object uri is only the basename, or filename and not a full path.
      *
      * @param string $calendarId
      * @param string $objectUri

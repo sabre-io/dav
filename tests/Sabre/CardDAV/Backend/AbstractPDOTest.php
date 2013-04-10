@@ -258,14 +258,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             ],
         ];
 
-        $result = $this->backend->getMultipleCards(1, ['card1','card2','card3']));
+        $result = $this->backend->getMultipleCards(1, ['card1','card2','card3']);
 
         foreach($check as $index=>$node) {
 
             foreach($node as $k=>$v) {
 
                 if ($k!=='lastmodified') {
-                    $this->assertEquals($result[$index][$k] === $v);
+                    $this->assertEquals($v, $result[$index][$k]);
                 } else {
                     $this->assertTrue(isset($result[$index][$k]));
                 }

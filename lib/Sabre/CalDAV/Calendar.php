@@ -108,7 +108,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyn
      */
     public function getChild($name) {
 
-        $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$name);
+        $obj = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'],$this->calendarInfo['uri'] . '/' . $name);
 
         if (!$obj) throw new DAV\Exception\NotFound('Calendar object not found');
 

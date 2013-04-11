@@ -449,18 +449,14 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function getLocalAssetPath($assetName) {
 
-        $assetDir = realpath(__DIR__ . '/assets') . PATH_SEPARATOR;
+        $assetDir = __DIR__ . '/assets/';
         $path = $assetDir . $assetName;
 
         // Making sure people aren't trying to escape from the base path.
-        $path = realpath($path);
-
-        if ($path === false || substr($path, 0, strlen($assetDir))!==$assetDir) {
-            throw new DAV\Exception\Forbidden('Path does not exist, or escaping from the base path was detected');
+        if (strpos(realpath($path), realpath($assetDir)) === 0) {
+            return $path;
         }
-
-        return $path;
-
+        throw new Sabre_DAV_Exception_Forbidden('Path does not exist, or escaping from the base path was detected');
     }
 
     /**

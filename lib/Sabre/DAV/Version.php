@@ -14,7 +14,7 @@ class Version {
     /**
      * Full version number
      */
-    const VERSION = '1.8.4';
+    const VERSION = '1.8.5';
 
     /**
      * Stability : alpha, beta, stable

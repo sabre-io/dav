@@ -449,7 +449,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function getLocalAssetPath($assetName) {
 
-        $assetDir = realpath(__DIR__ . '/assets') . '/';
+        $assetDir = realpath(__DIR__ . '/assets') . PATH_SEPARATOR;
         $path = $assetDir . $assetName;
 
         // Making sure people aren't trying to escape from the base path.

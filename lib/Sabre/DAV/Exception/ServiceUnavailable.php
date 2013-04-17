@@ -9,7 +9,7 @@
  * @package Sabre
  * @subpackage DAV
  * @author Thomas Müller <thomas.mueller@tmit.eu>
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 

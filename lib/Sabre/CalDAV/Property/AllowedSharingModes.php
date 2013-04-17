@@ -14,8 +14,8 @@
  * @package Sabre
  * @subpackage CalDAV
  * @see https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Sabre_CalDAV_Property_AllowedSharingModes extends Sabre_DAV_Property {

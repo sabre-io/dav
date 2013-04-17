@@ -14,7 +14,7 @@ use Sabre\DAV;
  * $patchPlugin = new \Sabre\DAV\PartialUpdate\Plugin();
  * $server->addPlugin($patchPlugin);
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

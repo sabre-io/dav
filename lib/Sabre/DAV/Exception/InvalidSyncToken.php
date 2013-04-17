@@ -15,8 +15,8 @@ use Sabre\DAV;
  * This is emitted in cases where the the sync-token, supplied by a client is 
  * either completely unknown, or has expired.
  *
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://evertpot.com/)
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class InvalidSyncToken extends Forbidden {

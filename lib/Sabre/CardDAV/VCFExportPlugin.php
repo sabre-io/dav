@@ -12,8 +12,8 @@ use Sabre\VObject;
  * This is useful for clients that don't support CardDAV yet. They often do
  * support vcf files.
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @author Thomas Tanghus (http://tanghus.net/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

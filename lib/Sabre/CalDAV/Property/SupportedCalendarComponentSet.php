@@ -12,8 +12,8 @@ use Sabre\CalDAV;
  * property in the CalDAV namespace. It simply requires an array of components,
  * such as VEVENT, VTODO
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class SupportedCalendarComponentSet extends DAV\Property {

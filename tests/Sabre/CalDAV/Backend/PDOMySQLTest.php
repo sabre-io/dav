@@ -14,7 +14,7 @@ class PDOMySQLTest extends AbstractPDOTest {
         $pdo = \Sabre\TestUtil::getMySQLDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to mysql database');
 
-        $pdo->query('DROP TABLE IF EXISTS calendarobjects, calendars, calendarchanges');
+        $pdo->query('DROP TABLE IF EXISTS calendarobjects, calendars, calendarchanges, calendarsubscriptions');
 
         $queries = explode(
             ';',

@@ -34,3 +34,20 @@ CREATE TABLE calendarchanges (
 );
 
 CREATE INDEX calendarid_synctoken ON calendarchanges (calendarid, synctoken);
+
+CREATE TABLE calendarsubscriptions (
+    id integer primary key asc,
+    uri text,
+    principaluri text,
+    source text,
+    displayname text,
+    refreshrate text,
+    calendarorder integer,
+    calendarcolor text,
+    striptodos bool,
+    stripalarms bool,
+    stripattachments bool,
+    lastmodified int
+);
+
+CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);

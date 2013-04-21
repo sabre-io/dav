@@ -5,8 +5,8 @@ namespace Sabre\CalDAV\Backend;
 /**
  * Every CalDAV backend must at least implement this interface.
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 interface BackendInterface {
@@ -100,10 +100,13 @@ interface BackendInterface {
      * Every item contains an array with the following keys:
      *   * id - unique identifier which will be used for subsequent updates
      *   * calendardata - The iCalendar-compatible calendar data
-     *   * uri - a unique key which will be used to construct the uri. This can be any arbitrary string.
+     *   * uri - a unique key which will be used to construct the uri. This can
+     *     be any arbitrary string, but making sure it ends with '.ics' is a
+     *     good idea. This is only the basename, or filename, not the full
+     *     path.
      *   * lastmodified - a timestamp of the last modification time
      *   * etag - An arbitrary string, surrounded by double-quotes. (e.g.:
-     *   '  "abcdef"')
+     *   '"abcdef"')
      *   * calendarid - The calendarid as it was passed to this function.
      *   * size - The size of the calendar objects, in bytes.
      *
@@ -126,6 +129,8 @@ interface BackendInterface {
     /**
      * Returns information from a single calendar object, based on it's object
      * uri.
+     *
+     * The object uri is only the basename, or filename and not a full path.
      *
      * The returned array must have the same keys as getCalendarObjects. The
      * 'calendardata' object is required here though, while it's not required
@@ -154,6 +159,8 @@ interface BackendInterface {
     /**
      * Creates a new calendar object.
      *
+     * The object uri is only the basename, or filename and not a full path.
+     *
      * It is possible return an etag from this function, which will be used in
      * the response to this PUT request. Note that the ETag must be surrounded
      * by double-quotes.
@@ -172,6 +179,8 @@ interface BackendInterface {
     /**
      * Updates an existing calendarobject, based on it's uri.
      *
+     * The object uri is only the basename, or filename and not a full path.
+     *
      * It is possible return an etag from this function, which will be used in
      * the response to this PUT request. Note that the ETag must be surrounded
      * by double-quotes.
@@ -189,6 +198,8 @@ interface BackendInterface {
 
     /**
      * Deletes an existing calendar object.
+     *
+     * The object uri is only the basename, or filename and not a full path.
      *
      * @param mixed $calendarId
      * @param string $objectUri

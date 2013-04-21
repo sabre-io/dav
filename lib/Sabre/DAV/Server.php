@@ -6,8 +6,8 @@ use Sabre\HTTP;
 /**
  * Main DAV server class
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class Server {
@@ -1514,7 +1514,10 @@ class Server {
 
         foreach($nodes as $myPath=>$node) {
 
-            $returnPropertyList[] = $this->getPropertiesByNode($myPath, $node, $propertyNames);
+            $r = $this->getPropertiesByNode($myPath, $node, $propertyNames);
+            if ($r) {
+                $returnPropertyList[] = $r;
+            }
 
         }
 
@@ -1602,7 +1605,7 @@ class Server {
         $result = $this->broadcastEvent('beforeGetProperties',[$path, $node, &$propertyNames, &$newProperties]);
         // If this method explicitly returned false, we must ignore this
         // node as it is inaccessible.
-        if ($result===false) continue;
+        if ($result===false) return;
 
         if (count($propertyNames) > 0) {
 

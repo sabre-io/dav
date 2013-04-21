@@ -11,7 +11,7 @@ use Sabre\DAV;
  * is currently not available (e.g. down for maintenance).
  *
  * @author Thomas Müller <thomas.mueller@tmit.eu>
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class ServiceUnavailable extends DAV\Exception {

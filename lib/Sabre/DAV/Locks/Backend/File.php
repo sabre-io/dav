@@ -12,8 +12,8 @@ use Sabre\DAV\Locks\LockInfo;
  * Note that this is not nearly as robust as a database, you are encouraged
  * to use the PDO backend instead.
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class File extends AbstractBackend {

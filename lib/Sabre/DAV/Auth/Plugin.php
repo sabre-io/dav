@@ -42,7 +42,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * @return string
      */
-    protected function getRealm() {
+    public function getRealm() {
         return $this->realm;
     }
 

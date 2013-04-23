@@ -80,5 +80,14 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testInit
+     */
+    function testPlugin() {
+        $myRealmName = 'some_realm';
+        $plugin = new Plugin(new Backend\Mock(),$myRealmName);
+        $this->assertEquals($myRealmName, $plugin->getRealm());
+    }
+
 }
 

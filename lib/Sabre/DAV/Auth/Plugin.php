@@ -40,6 +40,13 @@ class Plugin extends DAV\ServerPlugin {
     private $realm;
 
     /**
+     * @return string
+     */
+    public function getRealm() {
+        return $this->realm;
+    }
+
+    /**
      * __construct
      *
      * @param Backend\BackendInterface $authBackend
@@ -105,7 +112,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function beforeMethod($method, $uri) {
 
-        $this->authBackend->authenticate($this->server,$this->realm);
+        $this->authBackend->authenticate($this->server,$this->getRealm());
 
     }
 

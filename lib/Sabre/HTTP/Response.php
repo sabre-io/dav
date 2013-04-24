@@ -158,6 +158,8 @@ class Response {
      * @return void
      */
     public function sendBody($body) {
+        
+        if (ob_get_level() > 0) ob_end_flush();
 
         if (is_resource($body)) {
 

@@ -63,7 +63,7 @@ class Sabre_DAV_Client {
      *
      * @var boolean
      */
-    private $verifyPeer;
+    protected $verifyPeer;
 
     /**
      * Constructor

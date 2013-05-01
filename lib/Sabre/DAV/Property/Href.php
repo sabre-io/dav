@@ -66,7 +66,9 @@ class Sabre_DAV_Property_Href extends Sabre_DAV_Property implements Sabre_DAV_Pr
         $prefix = $server->xmlNamespaces['DAV:'];
 
         $elem = $dom->ownerDocument->createElement($prefix . ':href');
-        $elem->nodeValue = ($this->autoPrefix?$server->getBaseUri():'') . $this->href;
+        $value = ($this->autoPrefix?$server->getBaseUri():'') . $this->href;
+        $elem->appendChild($dom->ownerDocument->createTextNode($value));
+
         $dom->appendChild($elem);
 
     }

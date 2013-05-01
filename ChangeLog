@@ -1,3 +1,7 @@
+1.6.10-stable (2013-??-??)
+	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,
+	  disallowing urls with ampersands (&) in them.
+
 1.6.9-stable (2013-04-11)
 	* Fixed: Assets in the browser plugins were not being served on windows
 	  machines.

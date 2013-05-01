@@ -94,15 +94,15 @@ class HrefTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerializeEntity() {
 
-        $href = new Sabre_DAV_Property_Href('http://example.org/?a&b', false);
+        $href = new Href('http://example.org/?a&b', false);
         $this->assertEquals('http://example.org/?a&b',$href->getHref());
 
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $root = $doc->createElement('d:anything');
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $server = new Sabre_DAV_Server();
+        $server = new DAV\Server();
         $server->setBaseUri('/bla/');
 
         $href->serialize($server, $root);

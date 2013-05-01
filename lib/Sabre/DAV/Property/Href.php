@@ -68,7 +68,9 @@ class Href extends DAV\Property implements IHref {
         $prefix = $server->xmlNamespaces['DAV:'];
 
         $elem = $dom->ownerDocument->createElement($prefix . ':href');
-        $elem->nodeValue = ($this->autoPrefix?$server->getBaseUri():'') . $this->href;
+        $value = ($this->autoPrefix?$server->getBaseUri():'') . $this->href;
+        $elem->appendChild($dom->ownerDocument->createTextNode($value));
+
         $dom->appendChild($elem);
 
     }

@@ -90,10 +90,9 @@ class CurrentUserPrivilegeSet extends DAV\Property {
      * Unserializes the {DAV:}current-user-privilege-set element.
      *
      * @param DOMElement $node
-     * @param array $propertyMap
      * @return CurrentUserPrivilegeSet
      */
-    static public function unserialize(DOMElement $node) {
+    static public function unserialize(\DOMElement $node) {
 
         $result = array();
 
@@ -108,7 +107,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
             for ($kk=0;$kk<$xpriv->childNodes->length;$kk++) {
 
                 $childNode = $xpriv->childNodes->item($kk);
-                if ($t = Sabre_DAV_XMLUtil::toClarkNotation($childNode)) {
+                if ($t = DAV\XMLUtil::toClarkNotation($childNode)) {
                     $privilegeName = $t;
                     break;
                 }

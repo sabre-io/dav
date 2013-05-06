@@ -57,8 +57,8 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = Sabre_DAV_XMLUtil::loadDOMDocument($source);
-        $result = Sabre_DAVACL_Property_CurrentUserPrivilegeSet::unserialize($dom->firstChild, array());
+        $dom = DAV\XMLUtil::loadDOMDocument($source);
+        $result = CurrentUserPrivilegeSet::unserialize($dom->firstChild, array());
         $this->assertTrue($result->has('{DAV:}read'));
         $this->assertTrue($result->has('{DAV:}write-properties'));
         $this->assertFalse($result->has('{DAV:}bind'));

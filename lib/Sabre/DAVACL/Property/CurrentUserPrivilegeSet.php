@@ -66,7 +66,6 @@ class CurrentUserPrivilegeSet extends DAV\Property {
 
     }
 
-
     /**
      * Serializes one privilege
      *
@@ -122,4 +121,5 @@ class CurrentUserPrivilegeSet extends DAV\Property {
         return new self($result);
 
     }
+
 }

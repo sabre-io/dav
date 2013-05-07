@@ -55,7 +55,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
     }
 
     /**
-     * Returns true or false, wether the specified principal appears in the
+     * Returns true or false, whether the specified principal appears in the
      * list.
      *
      * @return bool

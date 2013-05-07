@@ -99,6 +99,23 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
+     * Returns the path to a principal's calendar home.
+     *
+     * The return url must not end with a slash.
+     *
+     * @param string $principalUrl
+     * @return string
+     */
+    public function getCalendarHomeForPrincipal($principalUrl) {
+
+        // The default is a bit naive, but it can be overwritten.
+        list(, $nodeName) = DAV\URLUtil::splitPath($principalUrl);
+
+        return self::CALENDAR_ROOT . '/' . $nodeName;
+
+    }
+
+    /**
      * Returns a list of features for the DAV: HTTP header.
      *
      * @return array
@@ -342,11 +359,13 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($node instanceof DAVACL\IPrincipal) {
 
+            $principalUrl = $node->getPrincipalUrl();
+
             // calendar-home-set property
             $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
             if (in_array($calHome,$requestedProperties)) {
-                $principalId = $node->getName();
-                $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
+
+                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl) . '/';
 
                 unset($requestedProperties[array_search($calHome, $requestedProperties)]);
                 $returnedProperties[200][$calHome] = new DAV\Property\Href($calendarHomePath);
@@ -356,8 +375,9 @@ class Plugin extends DAV\ServerPlugin {
             // schedule-outbox-URL property
             $scheduleProp = '{' . self::NS_CALDAV . '}schedule-outbox-URL';
             if (in_array($scheduleProp,$requestedProperties)) {
-                $principalId = $node->getName();
-                $outboxPath = self::CALENDAR_ROOT . '/' . $principalId . '/outbox';
+
+                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl);
+                $outboxPath = $calendarHomePath . '/outbox';
 
                 unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
                 $returnedProperties[200][$scheduleProp] = new DAV\Property\Href($outboxPath);
@@ -416,9 +436,10 @@ class Plugin extends DAV\ServerPlugin {
             $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
             if (($index = array_search($notificationUrl, $requestedProperties)) !== false) {
                 $principalId = $node->getName();
-                $calendarHomePath = 'calendars/' . $principalId . '/notifications/';
+
+                $notificationPath = $this->getCalendarHomeForPrincipal($principalUrl) . '/notifications/';
                 unset($requestedProperties[$index]);
-                $returnedProperties[200][$notificationUrl] = new DAV\Property\Href($calendarHomePath);
+                $returnedProperties[200][$notificationUrl] = new DAV\Property\Href($notificationPath);
             }
 
         } // instanceof IPrincipal

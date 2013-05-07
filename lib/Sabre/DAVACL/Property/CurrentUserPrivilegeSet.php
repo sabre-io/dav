@@ -53,7 +53,7 @@ class Sabre_DAVACL_Property_CurrentUserPrivilegeSet extends Sabre_DAV_Property {
     }
 
     /**
-     * Returns true or false, wether the specified principal appears in the
+     * Returns true or false, whether the specified principal appears in the
      * list.
      *
      * @return bool
@@ -88,7 +88,6 @@ class Sabre_DAVACL_Property_CurrentUserPrivilegeSet extends Sabre_DAV_Property {
      * Unserializes the {DAV:}current-user-privilege-set element.
      *
      * @param DOMElement $node
-     * @param array $propertyMap
      * @return CurrentUserPrivilegeSet
      */
     static public function unserialize(DOMElement $node) {

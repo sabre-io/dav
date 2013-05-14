@@ -374,9 +374,11 @@ class PDO extends AbstractBackend {
      * 'calendardata' object is required here though, while it's not required
      * for getCalendarObjects.
      *
+     * This method must return null if the object did not exist.
+     *
      * @param string $calendarId
      * @param string $objectUri
-     * @return array
+     * @return array|null
      */
     public function getCalendarObject($calendarId,$objectUri) {
 

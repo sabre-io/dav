@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.4.1",
-        "sabre/vobject" : "dev-master",
+        "sabre/vobject" : "2.0.*@dev",
         "ext-dom": "*",
         "ext-pcre": "*",
         "ext-spl": "*",

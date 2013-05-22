@@ -1260,7 +1260,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $vcalendar = new Sabre\VObject\Component\VCalendar();
+        $vcalendar = new VObject\Component\VCalendar();
         $vcalendar->VERSION = '2.0';
         $vcalendar->METHOD = 'REPLY';
         $vcalendar->CALSCALE = 'GREGORIAN';

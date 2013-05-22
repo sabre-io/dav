@@ -1309,7 +1309,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $vcalendar = VObject\Component::create('VCALENDAR');
+        $vcalendar = new VObject\Component\VCalendar();
         $vcalendar->VERSION = '2.0';
         $vcalendar->METHOD = 'REPLY';
         $vcalendar->CALSCALE = 'GREGORIAN';

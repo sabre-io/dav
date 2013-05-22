@@ -123,7 +123,7 @@ END:VCALENDAR
                     /** @var $child Sabre\VObject\Property */
 
                     if (isset($expectedEvent[$child->name])) {
-                        if ($expectedEvent[$child->name] != $child->value) {
+                        if ($expectedEvent[$child->name] != $child->getValue()) {
                             continue 2;
                         }
                     }

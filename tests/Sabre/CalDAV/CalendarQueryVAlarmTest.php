@@ -12,16 +12,18 @@ class CalendarQueryVAlarmTest extends \PHPUnit_Framework_TestCase {
      */
     function testValarm() {
 
-        $vevent = VObject\Component::create('VEVENT');
+        $vcalendar = new VObject\Component\VCalendar();
+
+        $vevent = $vcalendar->createComponent('VEVENT');
         $vevent->RRULE = 'FREQ=MONTHLY';
         $vevent->DTSTART = '20120101T120000Z';
         $vevent->UID = 'bla';
 
-        $valarm = VObject\Component::create('VALARM');
+        $valarm = $vcalendar->createComponent('VALARM');
         $valarm->TRIGGER = '-P15D';
         $vevent->add($valarm);
 
-        $vcalendar = VObject\Component::create('VCALENDAR');
+
         $vcalendar->add($vevent);
 
         $filter = array(
@@ -54,18 +56,18 @@ class CalendarQueryVAlarmTest extends \PHPUnit_Framework_TestCase {
         $validator = new CalendarQueryValidator();
         $this->assertTrue($validator->validate($vcalendar, $filter));
 
+        $vcalendar = new VObject\Component\VCalendar();
 
         // A limited recurrence rule, should return false
-        $vevent = VObject\Component::create('VEVENT');
+        $vevent = $vcalendar->createComponent('VEVENT');
         $vevent->RRULE = 'FREQ=MONTHLY;COUNT=1';
         $vevent->DTSTART = '20120101T120000Z';
         $vevent->UID = 'bla';
 
-        $valarm = VObject\Component::create('VALARM');
+        $valarm = $vcalendar->createComponent('VALARM');
         $valarm->TRIGGER = '-P15D';
         $vevent->add($valarm);
 
-        $vcalendar = VObject\Component::create('VCALENDAR');
         $vcalendar->add($vevent);
 
         $this->assertFalse($validator->validate($vcalendar, $filter));
@@ -73,15 +75,16 @@ class CalendarQueryVAlarmTest extends \PHPUnit_Framework_TestCase {
 
     function testAlarmWayBefore() {
 
-        $vevent = VObject\Component::create('VEVENT');
+        $vcalendar = new VObject\Component\VCalendar();
+
+        $vevent = $vcalendar->createComponent('VEVENT');
         $vevent->DTSTART = '20120101T120000Z';
         $vevent->UID = 'bla';
 
-        $valarm = VObject\Component::create('VALARM');
+        $valarm = $vcalendar->createComponent('VALARM');
         $valarm->TRIGGER = '-P2W1D';
         $vevent->add($valarm);
 
-        $vcalendar = VObject\Component::create('VCALENDAR');
         $vcalendar->add($vevent);
 
         $filter = array(

@@ -91,10 +91,10 @@ END:VCALENDAR
 
                 if ($child->name == 'DTSTART') {
                     // DTSTART has to be one of two valid values
-                    $this->assertContains($child->value, array('20120214T171500Z', '20120216T171500Z'), 'DTSTART is not a valid value: '.$child->value);
+                    $this->assertContains($child->getValue(), array('20120214T171500Z', '20120216T171500Z'), 'DTSTART is not a valid value: '.$child->getValue());
                 } elseif ($child->name == 'DTEND') {
                     // DTEND has to be one of two valid values
-                    $this->assertContains($child->value, array('20120214T181500Z', '20120216T181500Z'), 'DTEND is not a valid value: '.$child->value);
+                    $this->assertContains($child->getValue(), array('20120214T181500Z', '20120216T181500Z'), 'DTEND is not a valid value: '.$child->getValue());
                 }
             }
         }

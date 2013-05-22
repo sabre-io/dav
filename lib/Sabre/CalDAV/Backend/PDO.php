@@ -507,9 +507,9 @@ class PDO extends AbstractBackend {
                     $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
                 } elseif (isset($component->DURATION)) {
                     $endDate = clone $component->DTSTART->getDateTime();
-                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->value));
+                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->getValue()));
                     $lastOccurence = $endDate->getTimeStamp();
-                } elseif ($component->DTSTART->getDateType()===VObject\Property\DateTime::DATE) {
+                } elseif (!$component->DTSTART->hasTime()) {
                     $endDate = clone $component->DTSTART->getDateTime();
                     $endDate->modify('+1 day');
                     $lastOccurence = $endDate->getTimeStamp();

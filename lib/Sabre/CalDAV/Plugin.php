@@ -1252,7 +1252,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
         }
 
-        $vcalendar = VObject\Component::create('VCALENDAR');
+        $vcalendar = new Sabre\VObject\Component\VCalendar();
         $vcalendar->VERSION = '2.0';
         $vcalendar->METHOD = 'REPLY';
         $vcalendar->CALSCALE = 'GREGORIAN';

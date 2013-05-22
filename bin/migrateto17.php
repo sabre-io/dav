@@ -248,7 +248,7 @@ function getDenormalizedData($calendarData) {
                 $endDate = clone $component->DTSTART->getDateTime();
                 $endDate->add(\Sabre\VObject\DateTimeParser::parse($component->DURATION->value));
                 $lastOccurence = $endDate->getTimeStamp();
-            } elseif ($component->DTSTART->getDateType()===\Sabre\VObject\Property\DateTime::DATE) {
+            } elseif (!$component->DTSTART->hasTime()) {
                 $endDate = clone $component->DTSTART->getDateTime();
                 $endDate->modify('+1 day');
                 $lastOccurence = $endDate->getTimeStamp();

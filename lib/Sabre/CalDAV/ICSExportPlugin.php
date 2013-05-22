@@ -84,7 +84,7 @@ class Sabre_CalDAV_ICSExportPlugin extends Sabre_DAV_ServerPlugin {
      */
     public function generateICS(array $nodes) {
 
-        $calendar = new VObject\Component('vcalendar');
+        $calendar = new VObject\Component\VCalendar();
         $calendar->version = '2.0';
         if (Sabre_DAV_Server::$exposeVersion) {
             $calendar->prodid = '-//SabreDAV//SabreDAV ' . Sabre_DAV_Version::VERSION . '//EN';

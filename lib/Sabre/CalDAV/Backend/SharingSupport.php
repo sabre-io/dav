@@ -157,7 +157,7 @@ namespace Sabre\CalDAV\Backend;
  * ==============================================
  *
  * If Sabre\CalDAV\Property\AllowedSharingModes is returned from
- * getCalendarsByUser, this allows the server to specify wether either sharing,
+ * getCalendarsByUser, this allows the server to specify whether either sharing,
  * or publishing is supported.
  *
  * This allows a client to determine in advance which features are available,

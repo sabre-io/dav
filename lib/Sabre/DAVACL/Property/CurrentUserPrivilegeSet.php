@@ -55,7 +55,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
     }
 
     /**
-     * Returns true or false, wether the specified principal appears in the
+     * Returns true or false, whether the specified principal appears in the
      * list.
      *
      * @return bool
@@ -65,7 +65,6 @@ class CurrentUserPrivilegeSet extends DAV\Property {
         return in_array($privilegeName, $this->privileges);
 
     }
-
 
     /**
      * Serializes one privilege
@@ -122,4 +121,5 @@ class CurrentUserPrivilegeSet extends DAV\Property {
         return new self($result);
 
     }
+
 }

@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.4.1",
-        "sabre/vobject" : "dev-master",
+        "sabre/vobject" : "3.0.*@dev",
         "ext-dom": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
@@ -50,7 +50,7 @@
     },
     "support" : {
         "forum" : "https://groups.google.com/group/sabredav-discuss",
-        "source" : "https://github.com/evert/sabredav"
+        "source" : "https://github.com/fruux/sabre-dav"
     },
     "bin" : [
         "bin/sabredav",

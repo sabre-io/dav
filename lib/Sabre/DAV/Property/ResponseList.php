@@ -115,8 +115,10 @@ class ResponseList extends DAV\Property {
 
                 list(,$statusCode,) = explode(' ', $status, 3);
 
+                $usedPropertyMap = $statusCode == '200' ? $propertyMap : [];
+
                 // Parsing 'prop'
-                $properties[$statusCode] = DAV\XMLUtil::parseProperties($xPropstat->item($ii), $propertyMap);
+                $properties[$statusCode] = DAV\XMLUtil::parseProperties($xPropstat->item($ii), $usedPropertyMap);
 
             }
 

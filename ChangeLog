@@ -48,6 +48,11 @@
 	* Added: If header now gets checked (with ETag) all the time. Before the
 	  dealing with the If-header was a responsibility of the Locking plugin.
 	* Fixed: Outbox access for delegates.
+	* Added: Issue 333: It's now possible to override the calendar-home in the
+	  CalDAV plugin.
+
+1.8.6-stable (2013-??-??)
+	* Includes changes from version 1.7.8.
 
 1.8.5-stable (2013-04-11)
 	* The zip release ships with sabre/vobject 2.0.7.
@@ -90,6 +95,14 @@
 	  calendar.
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
+
+1.7.8-stable (2013-??-??)
+	* Changed: Sabre\DAV\Client::verifyPeer is now a protected property
+	 (instead of private).
+	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,
+	  disallowing urls with ampersands (&) in them.
+	* Added: deserializer for Sabre\DAVACL\Property\CurrentUserPrivilegeSet.
+	* Fixed: Issue 335: Client only deserializes properties with status 200.
 
 1.7.7-stable (2013-04-11)
 	* The zip release ships with sabre/vobject 2.0.7.
@@ -235,6 +248,10 @@ github now.
 	  requested.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
+
+1.6.10-stable (2013-??-??)
+	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,
+	  disallowing urls with ampersands (&) in them.
 
 1.6.9-stable (2013-04-11)
 	* Fixed: Assets in the browser plugins were not being served on windows

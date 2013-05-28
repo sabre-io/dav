@@ -413,9 +413,11 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * 'calendardata' object is required here though, while it's not required
      * for getCalendarObjects.
      *
+     * This method must return null if the object did not exist.
+     *
      * @param string $calendarId
      * @param string $objectUri
-     * @return array
+     * @return array|null
      */
     public function getCalendarObject($calendarId,$objectUri) {
 
@@ -587,9 +589,9 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                     $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
                 } elseif (isset($component->DURATION)) {
                     $endDate = clone $component->DTSTART->getDateTime();
-                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->value));
+                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->getValue()));
                     $lastOccurence = $endDate->getTimeStamp();
-                } elseif ($component->DTSTART->getDateType()===VObject\Property\DateTime::DATE) {
+                } elseif (!$component->DTSTART->hasTime()) {
                     $endDate = clone $component->DTSTART->getDateTime();
                     $endDate->modify('+1 day');
                     $lastOccurence = $endDate->getTimeStamp();

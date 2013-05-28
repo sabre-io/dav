@@ -89,4 +89,31 @@ class HrefTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * This method tests if hrefs containing & are correctly encoded.
+     */
+    function testSerializeEntity() {
+
+        $href = new Href('http://example.org/?a&b', false);
+        $this->assertEquals('http://example.org/?a&b',$href->getHref());
+
+        $doc = new \DOMDocument();
+        $root = $doc->createElement('d:anything');
+        $root->setAttribute('xmlns:d','DAV:');
+
+        $doc->appendChild($root);
+        $server = new DAV\Server();
+        $server->setBaseUri('/bla/');
+
+        $href->serialize($server, $root);
+
+        $xml = $doc->saveXML();
+
+        $this->assertEquals(
+'<?xml version="1.0"?>
+<d:anything xmlns:d="DAV:"><d:href>http://example.org/?a&amp;b</d:href></d:anything>
+', $xml);
+
+    }
+
 }

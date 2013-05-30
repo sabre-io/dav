@@ -250,7 +250,7 @@ github now.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
-1.6.10-stable (2013-??-??)
+1.6.10-stable (2013-06-??)
 	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,
 	  disallowing urls with ampersands (&) in them.
 	* Fixed: Issue 341: Escaping xml in 423 Locked error responses.

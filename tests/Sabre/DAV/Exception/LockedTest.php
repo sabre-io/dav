@@ -1,6 +1,12 @@
 <?php
 
-class Sabre_DAV_Exception_LockedTest extends PHPUnit_Framework_TestCase {
+namespace Sabre\DAV\Exception;
+
+use
+    Sabre\DAV,
+    DOMDocument;
+
+class LockedTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
@@ -11,11 +17,11 @@ class Sabre_DAV_Exception_LockedTest extends PHPUnit_Framework_TestCase {
         $dom->appendChild($root);
         $root->setAttribute('xmlns:d','DAV:');
 
-        $lockInfo = new Sabre_DAV_Locks_LockInfo();
+        $lockInfo = new DAV\Locks\LockInfo();
         $lockInfo->uri = '/foo';
-        $locked = new Sabre_DAV_Exception_Locked($lockInfo);
+        $locked = new Locked($lockInfo);
 
-        $locked->serialize(new Sabre_DAV_Server(), $root);
+        $locked->serialize(new DAV\Server(), $root);
 
         $output = $dom->saveXML();
 
@@ -40,11 +46,11 @@ class Sabre_DAV_Exception_LockedTest extends PHPUnit_Framework_TestCase {
         $dom->appendChild($root);
         $root->setAttribute('xmlns:d','DAV:');
 
-        $lockInfo = new Sabre_DAV_Locks_LockInfo();
+        $lockInfo = new DAV\Locks\LockInfo();
         $lockInfo->uri = '/foo&bar';
-        $locked = new Sabre_DAV_Exception_Locked($lockInfo);
+        $locked = new Locked($lockInfo);
 
-        $locked->serialize(new Sabre_DAV_Server(), $root);
+        $locked->serialize(new DAV\Server(), $root);
 
         $output = $dom->saveXML();
 

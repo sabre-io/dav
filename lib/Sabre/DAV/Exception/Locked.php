@@ -59,8 +59,12 @@ class Locked extends DAV\Exception {
         if ($this->lock) {
             $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');
             $errorNode->appendChild($error);
-            if (!is_object($this->lock)) var_dump($this->lock);
-            $error->appendChild($errorNode->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));
+
+            $href = $errorNode->ownerDocument->createElementNS('DAV:','d:href');
+            $href->appendChild($errorNode->ownerDocument->createTextNode($this->lock->uri));
+            $error->appendChild(
+                $href
+            );
         }
 
     }

@@ -426,11 +426,11 @@ class Server {
      * number, it is recommended to ommit.
      *
      * @param string $event
-     * @param callback $callback
+     * @param callable $callback
      * @param int $priority
      * @return void
      */
-    public function subscribeEvent($event, $callback, $priority = 100) {
+    public function subscribeEvent($event, callable $callback, $priority = 100) {
 
         if (!isset($this->eventSubscriptions[$event])) {
             $this->eventSubscriptions[$event] = [];

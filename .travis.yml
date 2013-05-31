@@ -6,4 +6,3 @@ php:
   - 5.5
 
 script: phpunit --configuration tests/phpunit.xml
-

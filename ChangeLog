@@ -104,6 +104,7 @@
 	* Added: deserializer for Sabre\DAVACL\Property\CurrentUserPrivilegeSet.
 	* Fixed: Issue 335: Client only deserializes properties with status 200.
 	* Fixed: Issue 341: Escaping xml in 423 Locked error responses.
+	* Added: Issue 339: beforeGetPropertiesForPath event.
 
 1.7.7-stable (2013-04-11)
 	* The zip release ships with sabre/vobject 2.0.7.

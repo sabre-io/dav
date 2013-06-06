@@ -1458,6 +1458,13 @@ class Sabre_DAV_Server {
 
         $path = rtrim($path,'/');
 
+        // This event allows people to intercept these requests early on in the
+        // process.
+        //
+        // We're not doing anything with the result, but this can be helpful to
+        // pre-fetch certain expensive live properties.
+        $this->broadCastEvent('beforeGetPropertiesForPath', array($path, $propertyNames, $depth));
+
         $returnPropertyList = array();
 
         $parentNode = $this->tree->getNodeForPath($path);

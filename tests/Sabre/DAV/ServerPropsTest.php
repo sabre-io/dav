@@ -57,9 +57,9 @@ class ServerPropsTest extends AbstractServer {
         $this->server->subscribeEvent('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
 
             $hasFired = true;
-            $this->assertEquals('', $path);
-            $this->assertEquals(array(), $properties);
-            $this->assertEquals(0, $depth);
+            $self->assertEquals('', $path);
+            $self->assertEquals(array(), $properties);
+            $self->assertEquals(0, $depth);
 
         });
 

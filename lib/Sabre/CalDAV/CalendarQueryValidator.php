@@ -219,9 +219,9 @@ class CalendarQueryValidator {
 
             // If there are sub-filters, we need to find at least one parameter
             // for which the subfilters hold true.
-            foreach($parent[$filter['name']] as $subParam) {
+            foreach($parent[$filter['name']]->getParts() as $paramPart) {
 
-                if($this->validateTextMatch($subParam,$filter['text-match'])) {
+                if($this->validateTextMatch($paramPart,$filter['text-match'])) {
                     // We had a match, so this param-filter succeeds
                     continue 2;
                 }
@@ -246,15 +246,17 @@ class CalendarQueryValidator {
      * A single text-match should be specified as well as the specific property
      * or parameter we need to validate.
      *
-     * @param VObject\Node $parent
+     * @param VObject\Node|string $check Value to check against.
      * @param array $textMatch
      * @return bool
      */
-    protected function validateTextMatch(VObject\Node $parent, array $textMatch) {
+    protected function validateTextMatch($check, array $textMatch) {
 
-        $value = (string)$parent;
+        if ($check instanceof VObject\Node) {
+            $check = $check->getValue();
+        }
 
-        $isMatching = \Sabre\DAV\StringUtil::textMatch($value, $textMatch['value'], $textMatch['collation']);
+        $isMatching = \Sabre\DAV\StringUtil::textMatch($check, $textMatch['value'], $textMatch['collation']);
 
         return ($textMatch['negate-condition'] xor $isMatching);
 

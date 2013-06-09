@@ -687,7 +687,7 @@ yow;
             array($blob3, $filter14, 1),
 
             // Param + text
-            array($blob3, $filter15, 1),
+            array($blob3, $filter15, 1), // data set #15
             array($blob3, $filter16, 0),
             array($blob3, $filter17, 0),
             array($blob3, $filter18, 1),

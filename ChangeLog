@@ -1,4 +1,5 @@
-1.7.8-stable (2013-??-??)
+1.7.8-stable (2013-06-17)
+	* The zip release ships with sabre/vobject 2.1.0.
 	* Changed: Sabre\DAV\Client::verifyPeer is now a protected property
 	 (instead of private).
 	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,

@@ -18,4 +18,4 @@ script:
   - phpunit --debug --configuration tests/phpunit.xml
   - cp tests/composer.vobject3.json composer.json
   - composer update --no-dev
-  - phpunit --configuration tests/phpunit.xml
+  - phpunit --debug --configuration tests/phpunit.xml

@@ -11,6 +11,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         $client = new ClientMock(array(
             'baseUri' => '/',
         ));
+        $this->assertInstanceOf('Sabre\DAV\ClientMock', $client);
 
     }
 
@@ -410,6 +411,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         ), $result);
 
     }
+
+    /**
+     * @expectedException \Sabre\DAV\Exception
+     */
     function testRequestError() {
 
         $client = new ClientMock(array(
@@ -433,18 +438,13 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             "Could not connect, or something"
         );
 
-        $caught = false;
-        try {
-            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Exception $e) {
-            $caught = true;
-        }
-        if (!$caught) {
-            $this->markTestFailed('Exception was not thrown');
-        }
+        $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception
+     */
     function testRequestHTTPError() {
 
         $client = new ClientMock(array(
@@ -468,18 +468,13 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $caught = false;
-        try {
-            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Exception $e) {
-            $caught = true;
-        }
-        if (!$caught) {
-            $this->fail('Exception was not thrown');
-        }
+        $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception\NotFound
+     */
     function testRequestHTTP404() {
 
         $client = new ClientMock(array(
@@ -503,15 +498,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $caught = false;
-        try {
-            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-        } catch (Exception\NotFound $e) {
-            $caught = true;
-        }
-        if (!$caught) {
-            $this->fail('Exception was not thrown');
-        }
+        $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
 
     }
 

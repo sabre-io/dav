@@ -10,6 +10,7 @@ class SupportedAddressDataDataTest extends \PHPUnit_Framework_TestCase {
     function testSimple() {
 
         $property = new SupportedAddressData();
+        $this->assertInstanceOf('Sabre\CardDAV\Property\SupportedAddressData', $property);
 
     }
 

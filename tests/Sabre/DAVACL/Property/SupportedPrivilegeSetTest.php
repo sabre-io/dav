@@ -14,6 +14,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
         $prop = new SupportedPrivilegeSet(array(
             'privilege' => '{DAV:}all',
         ));
+        $this->assertInstanceOf('Sabre\DAVACL\Property\SupportedPrivilegeSet', $prop);
 
     }
 

@@ -10,6 +10,7 @@ class SupportedCalendarDataTest extends \PHPUnit_Framework_TestCase {
     function testSimple() {
 
         $sccs = new SupportedCalendarData();
+        $this->assertInstanceOf('Sabre\CalDAV\Property\SupportedCalendarData', $sccs);
 
     }
 

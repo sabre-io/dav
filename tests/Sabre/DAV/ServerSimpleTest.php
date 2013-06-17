@@ -503,6 +503,9 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception\Forbidden
+     */
     function testBaseUriCheck() {
 
         $uris = array(
@@ -511,18 +514,10 @@ class ServerSimpleTest extends AbstractServer{
             '/root/somepath/'
         );
 
-        try {
+        $this->server->setBaseUri('root/');
+        $this->server->calculateUri('/root/testuri');
 
-            $this->server->setBaseUri('root/');
-            $this->server->calculateUri('/root/testuri');
-
-            $this->fail('Expected an exception');
-
-        } catch (Exception\Forbidden $e) {
-
-            // This was expected
-
-        }
+        $this->fail('Expected an exception');
 
     }
 

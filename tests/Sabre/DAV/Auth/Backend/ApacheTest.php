@@ -10,6 +10,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
     function testConstruct() {
 
         $backend = new Apache();
+        $this->assertInstanceOf('Sabre\DAV\Auth\Backend\Apache', $backend);
 
     }
 

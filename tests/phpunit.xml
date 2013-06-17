@@ -4,6 +4,7 @@
   convertErrorsToExceptions="true"
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
+  strict="true"
   >
   <testsuite name="sabre-dav">
       <directory>Sabre/</directory>

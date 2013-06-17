@@ -27,11 +27,11 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
         $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
-        $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
+        $this->assertTrue(
+            $fakeServer->broadCastEvent('beforeMethod',array('GET','/'))
+        );
 
     }
-
-
 
     /**
      * @depends testInit

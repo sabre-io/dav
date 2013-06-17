@@ -55,8 +55,8 @@ class ShareableCalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testPublish() {
 
-        $this->instance->setPublishStatus(true);
-        $this->instance->setPublishStatus(false);
+        $this->assertNull($this->instance->setPublishStatus(true));
+        $this->assertNull($this->instance->setPublishStatus(false));
 
     }
 }

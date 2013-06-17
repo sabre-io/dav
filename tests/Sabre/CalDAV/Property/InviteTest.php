@@ -10,6 +10,7 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
     function testSimple() {
 
         $sccs = new Invite(array());
+        $this->assertInstanceOf('Sabre\CalDAV\Property\Invite', $sccs);
 
     }
 

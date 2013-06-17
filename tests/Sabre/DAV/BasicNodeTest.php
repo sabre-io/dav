@@ -131,6 +131,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     public function testSimpleDirectoryConstruct() {
 
         $dir = new SimpleCollection('simpledir',array());
+        $this->assertInstanceOf('Sabre\DAV\SimpleCollection', $dir);
 
     }
 

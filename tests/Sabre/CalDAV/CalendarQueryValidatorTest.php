@@ -35,10 +35,11 @@ class CalendarQueryValidatorTest extends \PHPUnit_Framework_TestCase {
             case -1 :
                 try {
                     $validator->validate($vObject, $filters);
-                } catch (DAV\Exception $e) {
-                    // Success
-                } catch (\LogicException $e) {
-                    // Success
+                    $this->fail('This test was supposed to fail');
+                } catch (\Exception $e) {
+                    // We need to test something to be valid for phpunit strict
+                    // mode.
+                    $this->assertTrue(true);
                 }
                 break;
 
@@ -696,7 +697,7 @@ yow;
             array($blob2, $filter19, 1),
 
             // Incorrect object (vcard)
-            array($blob4, $filter1, -1),
+            array($blob4, $filter1, -1), // data set #20
 
             // Time-range for event
             array($blob5, $filter20, 1),

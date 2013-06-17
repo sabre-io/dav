@@ -86,7 +86,8 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
     function testShareReply() {
 
         $instance = $this->getInstance();
-        $instance->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $result = $instance->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $this->assertNull($result);
 
     }
 

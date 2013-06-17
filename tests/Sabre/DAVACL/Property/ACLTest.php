@@ -11,6 +11,7 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
     function testConstruct() {
 
         $acl = new Acl(array());
+        $this->assertInstanceOf('Sabre\DAVACL\Property\ACL', $acl);
 
     }
 

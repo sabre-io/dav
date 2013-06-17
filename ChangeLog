@@ -1,4 +1,5 @@
-1.8.6-stable (2013-??-??)
+1.8.6-stable (2013-06-18)
+	* The zip release ships with sabre/vobject 2.1.0.
 	* Includes changes from version 1.7.8.
 
 1.8.5-stable (2013-04-11)

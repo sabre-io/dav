@@ -1570,12 +1570,16 @@ class Server {
      * This method tries to grab all properties for a node. This method is used
      * internally getPropertiesForPath and a few others.
      *
+     * It could be useful to call this, if you already have an instance of your
+     * target node and simply want to run through the system to get a correct
+     * list of properties.
+     *
      * @param string $path The path we're properties for fetching.
      * @param INode $node
      * @param array $propertyNames list of properties to fetch.
      * @return array
      */
-    protected function getPropertiesByNode($path, INode $node, array $propertyNames) {
+    public function getPropertiesByNode($path, INode $node, array $propertyNames) {
 
         $newProperties = [
             '200' => [],

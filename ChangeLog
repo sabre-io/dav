@@ -51,7 +51,8 @@
 	* Added: Issue 333: It's now possible to override the calendar-home in the
 	  CalDAV plugin.
 
-1.8.6-stable (2013-??-??)
+1.8.6-stable (2013-06-18)
+	* The zip release ships with sabre/vobject 2.1.0.
 	* Includes changes from version 1.7.8.
 
 1.8.5-stable (2013-04-11)
@@ -96,7 +97,8 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.8-stable (2013-??-??)
+1.7.8-stable (2013-06-17)
+	* The zip release ships with sabre/vobject 2.1.0.
 	* Changed: Sabre\DAV\Client::verifyPeer is now a protected property
 	 (instead of private).
 	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,
@@ -251,7 +253,7 @@ github now.
 	* Fixed: Postfixing slash on {DAV:}owner properties.
 	* Fixed: Several embarrassing spelling mistakes in docblocks.
 
-1.6.10-stable (2013-06-??)
+1.6.10-stable (2013-06-17)
 	* Fixed: Text was incorrectly escaped in the Href and HrefList properties,
 	  disallowing urls with ampersands (&) in them.
 	* Fixed: Issue 341: Escaping xml in 423 Locked error responses.

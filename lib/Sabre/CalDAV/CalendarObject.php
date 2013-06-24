@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\DAV\Request;
+
 /**
  * The CalendarObject represents a single VEVENT or VTODO within a Calendar.
  *
@@ -80,9 +82,10 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     /**
      * Returns the ICalendar-formatted object
      *
+     * @param Request\Get $request
      * @return string
      */
-    public function get() {
+    public function get(Request\Get $request) {
 
         // Pre-populating the 'calendardata' is optional, if we don't have it
         // already we fetch it from the backend.
@@ -146,7 +149,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
         if (isset($this->objectData['etag'])) {
             return $this->objectData['etag'];
         } else {
-            return '"' . md5($this->get()). '"';
+            return '"' . md5($this->get(new Request\Get())). '"';
         }
 
     }
@@ -172,7 +175,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
         if (array_key_exists('size',$this->objectData)) {
             return $this->objectData['size'];
         } else {
-            return strlen($this->get());
+            return strlen($this->get(new Request\Get()));
         }
 
     }

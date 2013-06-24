@@ -72,9 +72,10 @@ class SimpleFile extends File {
      *
      * This method may either return a string or a readable stream resource
      *
-     * @return mixed
+     * @param Request\Get $request
+     * @return string|resource
      */
-    public function get() {
+    public function get(Request\Get $request) {
 
         return $this->contents;
 

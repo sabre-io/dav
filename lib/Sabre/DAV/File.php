@@ -33,9 +33,10 @@ abstract class File extends Node implements IFile {
      *
      * This method may either return a string or a readable stream resource
      *
+     * @param Request\Get $request
      * @return mixed
      */
-    public function get() {
+    public function get(Request\Get $request) {
 
         throw new Exception\Forbidden('Permission denied to read this file');
 

@@ -181,7 +181,7 @@ abstract class Tree {
 
         if ($source instanceof IFile) {
 
-            $data = $source->get();
+            $data = $source->get(new Request\Get());
 
             // If the body was a string, we need to convert it to a stream
             if (is_string($data)) {

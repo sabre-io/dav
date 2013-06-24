@@ -3,8 +3,7 @@
 namespace Sabre\DAV\FSExt;
 
 use Sabre\DAV;
-
-require_once 'Sabre/TestUtil.php';
+use Sabre\DAV\Request;
 
 class FileTest extends \PHPUnit_Framework_TestCase {
 
@@ -58,7 +57,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
     function testGet() {
 
        $file = new File(SABRE_TEMPDIR . '/file.txt');
-       $this->assertEquals('Contents',stream_get_contents($file->get()));
+       $this->assertEquals('Contents',stream_get_contents($file->get(new Request\Get())));
 
     }
 

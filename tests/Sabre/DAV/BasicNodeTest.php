@@ -20,7 +20,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     public function testGet() {
 
         $file = new FileMock();
-        $file->get();
+        $file->get(new Request\Get());
 
     }
 

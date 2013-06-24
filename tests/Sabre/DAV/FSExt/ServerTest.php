@@ -2,10 +2,10 @@
 
 namespace Sabre\DAV\FSExt;
 
-use Sabre\DAV;
-use Sabre\HTTP;
-
-require_once 'Sabre/DAV/AbstractServer.php';
+use
+    Sabre\DAV,
+    Sabre\HTTP,
+    Sabre\DAV\Request;
 
 class ServerTest extends DAV\AbstractServer{
 

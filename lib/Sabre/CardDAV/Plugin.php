@@ -2,9 +2,11 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
-use Sabre\VObject;
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\VObject,
+    Sabre\DAV\Request;
 
 /**
  * CardDAV plugin
@@ -154,7 +156,7 @@ class Plugin extends DAV\ServerPlugin {
             $addressDataProp = '{' . self::NS_CARDDAV . '}address-data';
             if (in_array($addressDataProp, $requestedProperties)) {
                 unset($requestedProperties[$addressDataProp]);
-                $val = $node->get();
+                $val = $node->get(new Request\Get());
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
@@ -417,7 +419,7 @@ class Plugin extends DAV\ServerPlugin {
             if (!$node instanceof ICard)
                 continue;
 
-            $blob = $node->get();
+            $blob = $node->get(new Request\Get());
             if (is_resource($blob)) {
                 $blob = stream_get_contents($blob);
             }

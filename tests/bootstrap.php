@@ -10,6 +10,7 @@ include __DIR__ . '/../vendor/autoload.php';
 include 'Sabre/DAVServerTest.php';
 include 'Sabre/CardDAV/Backend/AbstractPDOTest.php';
 include 'Sabre/CardDAV/TestUtil.php';
+include 'Sabre/DAV/PartialUpdate/FileMock.php';
 
 date_default_timezone_set('GMT');
 

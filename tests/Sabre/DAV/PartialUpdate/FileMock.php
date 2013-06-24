@@ -1,7 +1,10 @@
 <?php
 
 namespace Sabre\DAV\PartialUpdate;
-use Sabre\DAV;
+
+use
+    Sabre\DAV,
+    Sabre\DAV\Request;
 
 class FileMock implements IFile {
 
@@ -27,7 +30,15 @@ class FileMock implements IFile {
 
     }
 
-    function get() {
+    /**
+     * Returns the data
+     *
+     * This method may either return a string or a readable stream resource
+     *
+     * @param Request\Get $request
+     * @return mixed
+     */
+    public function get(Request\Get $request) {
 
         return $this->data;
 

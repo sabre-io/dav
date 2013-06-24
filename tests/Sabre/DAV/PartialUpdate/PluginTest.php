@@ -2,10 +2,10 @@
 
 namespace Sabre\DAV\PartialUpdate;
 
-use Sabre\DAV;
-use Sabre\HTTP;
-
-require_once 'Sabre/DAV/PartialUpdate/FileMock.php';
+use
+    Sabre\DAV,
+    Sabre\HTTP,
+    Sabre\DAV\Request;
 
 class PluginTest extends \Sabre\DAVServerTest {
 
@@ -123,7 +123,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals('HTTP/1.1 204 No Content', $response->status, 'Full response body:' . $response->body);
-        $this->assertEquals('00111000', $this->node->get());
+        $this->assertEquals('00111000', $this->node->get(new Request\Get()));
 
     }
 

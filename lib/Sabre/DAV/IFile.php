@@ -42,9 +42,10 @@ interface IFile extends INode {
      *
      * This method may either return a string or a readable stream resource
      *
+     * @param Request\Get $request
      * @return mixed
      */
-    function get();
+    function get(Request\Get $request);
 
     /**
      * Returns the mime-type for a file

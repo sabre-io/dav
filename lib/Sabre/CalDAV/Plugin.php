@@ -5,7 +5,8 @@ namespace Sabre\CalDAV;
 use
     Sabre\DAV,
     Sabre\DAVACL,
-    Sabre\VObject;
+    Sabre\VObject,
+    Sabre\DAV\Request;
 
 /**
  * CalDAV plugin
@@ -466,7 +467,7 @@ class Plugin extends DAV\ServerPlugin {
             $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
             if (in_array($calDataProp, $requestedProperties)) {
                 unset($requestedProperties[$calDataProp]);
-                $val = $node->get();
+                $val = $node->get(new Request\Get());
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
@@ -720,7 +721,7 @@ class Plugin extends DAV\ServerPlugin {
         ));
 
         $objects = array_map(function($url) use ($calendar) {
-            $obj = $calendar->getChild($url)->get();
+            $obj = $calendar->getChild($url)->get(new Request\Get());
             return $obj;
         }, $urls);
 
@@ -1301,7 +1302,7 @@ class Plugin extends DAV\ServerPlugin {
             ));
 
             $calObjects = array_map(function($url) use ($node) {
-                $obj = $node->getChild($url)->get();
+                $obj = $node->getChild($url)->get(new Request\Get());
                 return $obj;
             }, $urls);
 

@@ -6,6 +6,8 @@
 	* BC Break: XML property classes now receive an extra argument in their
 	  unserialize method ($propertyMap). This allows for recursively parsing
 	  properties, if needed.
+	* BC Break: get() method on every node now has a Sabre\DAV\Request\Get
+	  argument.
 	* Added: Support for WebDAV-sync (rfc6578).
 	* Added: Support for caldav-subscriptions, which is an easy way for caldav
 	  clients to manage a list of subscriptions on the server.
@@ -19,6 +21,8 @@
 	  information about lists of resources.
 	* Added: MultiGet support to default CalDAV and CardDAV backends, speeding
 	  up the multiget and sync reports quite a bit!
+	* Added: get() methods now receive more information about the HTTP
+	  request, allowing them to do things like content-negotiation.
 	* Fixed: Read-only access to calendars still allows the sharee to modify
 	  basic calendar properties, such as the displayname and color.
 	* Changed: The default supportedPrivilegeSet has changed. Most privileges

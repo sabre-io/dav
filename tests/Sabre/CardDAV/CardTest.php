@@ -2,6 +2,9 @@
 
 namespace Sabre\CardDAV;
 
+use
+    Sabre\DAV\Request;
+
 class CardTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -34,7 +37,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
     function testGet() {
 
-        $result = $this->card->get();
+        $result = $this->card->get(new Request\Get());
         $this->assertEquals('card', $result);
 
     }
@@ -52,7 +55,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
                 'addressbookid' => 'foo',
             )
         );
-        $result = $this->card->get();
+        $result = $this->card->get(new Request\Get());
         $this->assertEquals("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD", $result);
 
     }
@@ -67,7 +70,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
         fwrite($file, 'newdata');
         rewind($file);
         $this->card->put($file);
-        $result = $this->card->get();
+        $result = $this->card->get(new Request\Get());
         $this->assertEquals('newdata', $result);
 
     }

@@ -2,8 +2,10 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAVACL;
-use Sabre\DAV;
+use
+    Sabre\DAVACL,
+    Sabre\DAV,
+    Sabre\DAV\Request;
 
 
 /**
@@ -63,11 +65,12 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
     }
 
     /**
-     * Returns the VCard-formatted object
+     * Returns the vCard-formatted object
      *
+     * @param Request\Get $request
      * @return string
      */
-    public function get() {
+    public function get(Request\Get $request) {
 
         // Pre-populating 'carddata' is optional. If we don't yet have it
         // already, we fetch it from the backend.
@@ -132,7 +135,7 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
         if (isset($this->cardData['etag'])) {
             return $this->cardData['etag'];
         } else {
-            $data = $this->get();
+            $data = $this->get(new Request\Get());
             if (is_string($data)) {
                 return '"' . md5($data) . '"';
             } else {
@@ -164,7 +167,7 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
         if (array_key_exists('size', $this->cardData)) {
             return $this->cardData['size'];
         } else {
-            return strlen($this->get());
+            return strlen($this->get(new Request\Get()));
         }
 
     }

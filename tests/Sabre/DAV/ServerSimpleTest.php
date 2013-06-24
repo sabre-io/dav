@@ -328,6 +328,7 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
+        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals(array(
             'DAV'            => '1, 3, extended-mkcol',
             'MS-Author-Via'  => 'DAV',
@@ -337,7 +338,6 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => Version::VERSION,
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
         $this->assertEquals('', $this->response->body);
 
 

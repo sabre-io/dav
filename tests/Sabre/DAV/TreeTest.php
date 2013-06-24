@@ -22,7 +22,7 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
         $tree->copy('hi','hi2');
 
         $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
-        $this->assertEquals('foobar', $tree->getNodeForPath('hi/file')->get());
+        $this->assertEquals('foobar', $tree->getNodeForPath('hi/file')->get(new Request\Get()));
         $this->assertEquals(array('test1'=>'value'), $tree->getNodeForPath('hi/file')->getProperties(array()));
 
     }
@@ -152,7 +152,15 @@ class TreeFileTester extends File implements IProperties {
 
     }
 
-    function get() {
+    /**
+     * Returns the data
+     *
+     * This method may either return a string or a readable stream resource
+     *
+     * @param Request\Get $request
+     * @return mixed
+     */
+    public function get(Request\Get $request) {
 
         return $this->data;
 

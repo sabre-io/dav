@@ -1,7 +1,10 @@
 <?php
 
 namespace Sabre\DAV\FSExt;
-use Sabre\DAV;
+
+use
+    Sabre\DAV,
+    Sabre\DAV\Request;
 
 /**
  * File class
@@ -54,9 +57,10 @@ class File extends Node implements DAV\PartialUpdate\IFile {
     /**
      * Returns the data
      *
-     * @return resource
+     * @param Request\Get $request
+     * @return string|resource
      */
-    public function get() {
+    public function get(Request\Get $request) {
 
         return fopen($this->path,'r');
 

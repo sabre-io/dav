@@ -41,7 +41,6 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($children[0] instanceof CalendarObject);
 
         $this->assertInternalType('string',$children[0]->getName());
-        $this->assertInternalType('string',$children[0]->get());
         $this->assertInternalType('string',$children[0]->getETag());
         $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
 
@@ -83,7 +82,8 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         $newData = TestUtil::getTestCalendarData();
 
         $children[0]->put($newData);
-        $this->assertEquals($newData, $children[0]->get());
+        $request = new \Sabre\DAV\Request\Get();
+        $this->assertEquals($newData, $children[0]->get($request));
 
     }
 
@@ -100,7 +100,8 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         fwrite($stream, $newData);
         rewind($stream);
         $children[0]->put($stream);
-        $this->assertEquals($newData, $children[0]->get());
+        $request = new \Sabre\DAV\Request\Get();
+        $this->assertEquals($newData, $children[0]->get($request));
 
     }
 
@@ -264,7 +265,10 @@ END:VCALENDAR";
 
 
 
-        $this->assertEquals($expected, $obj->get());
+        $obj = $this->calendar->getChildren()[0];
+        $request = new \Sabre\DAV\Request\Get();
+
+        $this->assertEquals($expected, $obj->get($request));
 
     }
 
@@ -280,7 +284,8 @@ END:VCALENDAR";
         ));
         $obj = new CalendarObject($backend, array(), array('calendarid' => 1, 'uri' => 'foo'));
 
-        $this->assertEquals('foo', $obj->get());
+        $request = new \Sabre\DAV\Request\Get();
+        $this->assertEquals('foo', $obj->get($request));
 
     }
 

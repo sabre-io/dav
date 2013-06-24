@@ -554,11 +554,12 @@ class Server {
     protected function httpGet($uri) {
 
         $node = $this->tree->getNodeForPath($uri,0);
+        $request = new Request\Get($this->httpRequest->getHeaders());
 
-        if (!$this->checkPreconditions(true)) return false;
+        if (!$this->checkPreconditions($request)) return false;
         if (!$node instanceof IFile) throw new Exception\NotImplemented('GET is only implemented on File objects');
 
-        $body = $node->get();
+        $body = $node->get($request);
 
         // Converting string into stream, if needed.
         if (is_string($body)) {
@@ -595,8 +596,8 @@ class Server {
 
         $this->httpResponse->setHeaders($httpHeaders);
 
-        $range = $this->getHTTPRange();
-        $ifRange = $this->httpRequest->getHeader('If-Range');
+        $range = $request->getRange();
+        $ifRange = $request->getHeader('If-Range');
         $ignoreRangeHeader = false;
 
         // If ifRange is set, and range is specified, we first need to check
@@ -1220,38 +1221,6 @@ class Server {
         if (!ctype_digit($depth)) return $default;
 
         return (int)$depth;
-
-    }
-
-    /**
-     * Returns the HTTP range header
-     *
-     * This method returns null if there is no well-formed HTTP range request
-     * header or array($start, $end).
-     *
-     * The first number is the offset of the first byte in the range.
-     * The second number is the offset of the last byte in the range.
-     *
-     * If the second offset is null, it should be treated as the offset of the last byte of the entity
-     * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
-     *
-     * @return array|null
-     */
-    public function getHTTPRange() {
-
-        $range = $this->httpRequest->getHeader('range');
-        if (is_null($range)) return null;
-
-        // Matching "Range: bytes=1234-5678: both numbers are optional
-
-        if (!preg_match('/^bytes=([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
-
-        if ($matches[1]==='' && $matches[2]==='') return null;
-
-        return [
-            $matches[1]!==''?$matches[1]:null,
-            $matches[2]!==''?$matches[2]:null,
-        ];
 
     }
 

@@ -15,8 +15,9 @@ tests/.sabredav
 *.swp
 composer.lock
 vendor
+
 bin/phing
 bin/phpunit
-bin/vobjectvalidate.php
+bin/vobject
 bin/phpdocmd
 bin/phpunit

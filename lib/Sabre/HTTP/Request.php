@@ -280,5 +280,90 @@ class Request {
 
     }
 
+    /**
+     * This method looks at the HTTP Accept: header, and which formats are
+     * available, and then elects the most suitable format for a response.
+     *
+     * If no matching mimetype was found, null is returned.
+     *
+     * @param string[] $options an array of mimetypes.
+     * @return string
+     */
+    public function negotiateContentType(array $available) {
+
+        $acceptHeader = $this->getHeader('Accept');
+        if (!$acceptHeader) {
+            // Grabbing the first in the list.
+            return reset($available);
+        }
+
+        $proposals = explode(',' , $acceptHeader);
+
+        /**
+         * This function loops through every element, and creates a new array
+         * with 3 elements per item:
+         * 1. mimeType
+         * 2. quality (contents of q= parameter)
+         * 3. index (the original order in the array)
+         */
+        array_walk(
+            $proposals,
+
+            function(&$value, $key) {
+
+                $parts = explode(';', $value);
+                $mimeType = trim($parts[0]);
+                if (isset($parts[1]) && substr(trim($parts[1]),0,2)==='q=') {
+                    $quality = substr(trim($parts[1]),2);
+                } else {
+                    $quality = 1;
+                }
+
+                $value = [$mimeType, $quality, $key];
+
+            }
+        );
+
+        /**
+         * This sorts the array based on quality first, and key-index second.
+         */
+        usort(
+            $proposals,
+
+            function($a, $b) {
+
+                // Comparing quality
+                $result = $a[1] - $b[1];
+                if ($result === 0) {
+                    // Comparing original index
+                    $result = $a[2] - $b[2];
+                }
+
+                return $result;
+
+            }
+
+        );
+
+        // Now we're left with a correctly ordered Accept: header, so we can
+        // compare it to the available mimetypes.
+        foreach($proposals as $proposal) {
+
+            // If it's */* it means 'anything will wdo'
+            if ($proposal[0] === '*/*') {
+                return reset($available);
+            }
+
+            foreach($available as $availableItem) {
+                if ($availableItem===$proposal[0]) {
+                    return $availableItem;
+                }
+            }
+
+        }
+
+
+    }
+
 }
 

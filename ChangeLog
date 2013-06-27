@@ -50,6 +50,7 @@
 	* Fixed: Outbox access for delegates.
 	* Added: Issue 333: It's now possible to override the calendar-home in the
 	  CalDAV plugin.
+	* Added: A negotiateContentType to HTTP\Request. A convenience method.
 
 1.8.6-stable (2013-06-18)
 	* The zip release ships with sabre/vobject 2.1.0.

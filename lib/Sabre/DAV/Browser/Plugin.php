@@ -94,9 +94,9 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->subscribeEvent('beforeMethod',array($this,'httpGetInterceptor'));
-        $this->server->subscribeEvent('onHTMLActionsPanel', array($this, 'htmlActionsPanel'),200);
-        if ($this->enablePost) $this->server->subscribeEvent('unknownMethod',array($this,'httpPOSTHandler'));
+        $this->server->on('beforeMethod',array($this,'httpGetInterceptor'));
+        $this->server->on('onHTMLActionsPanel', array($this, 'htmlActionsPanel'),200);
+        if ($this->enablePost) $this->server->on('unknownMethod',array($this,'httpPOSTHandler'));
     }
 
     /**
@@ -162,7 +162,7 @@ class Plugin extends DAV\ServerPlugin {
         if (!isset($postVars['sabreAction']))
             return;
 
-        if ($this->server->broadcastEvent('onBrowserPostAction', array($uri, $postVars['sabreAction'], $postVars))) {
+        if ($this->server->emit('onBrowserPostAction', [$uri, $postVars['sabreAction'], $postVars])) {
 
             switch($postVars['sabreAction']) {
 
@@ -374,7 +374,7 @@ class Plugin extends DAV\ServerPlugin {
         $output = '';
 
         if ($this->enablePost) {
-            $this->server->broadcastEvent('onHTMLActionsPanel',array($parent, &$output));
+            $this->server->emit('onHTMLActionsPanel', [$parent, &$output]);
         }
 
         $html.=$output;

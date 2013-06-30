@@ -155,7 +155,7 @@ BLA
 BLA
         );
 
-        $this->server->subscribeEvent('updateProperties', function(&$props, &$result) {
+        $this->server->on('updateProperties', function(&$props, &$result) {
 
             if (isset($props['{DAV:}something'])) {
                 unset($props['{DAV:}something']);

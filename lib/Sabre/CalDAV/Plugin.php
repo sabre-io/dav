@@ -182,15 +182,14 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
 
-        $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
-        //$server->subscribeEvent('unknownMethod',array($this,'unknownMethod2'),1000);
-        $server->subscribeEvent('report',array($this,'report'));
-        $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
-        $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
-        $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
-        $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
-        $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
-        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'));
+        $server->on('unknownMethod',       [$this,'unknownMethod']);
+        $server->on('report',              [$this,'report']);
+        $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
+        $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
+        $server->on('onBrowserPostAction', [$this,'browserPostAction']);
+        $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
+        $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
+        $server->on('beforeMethod',        [$this,'beforeMethod']);
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';

@@ -8,19 +8,19 @@ class TestPlugin extends ServerPlugin {
 
     function getFeatures() {
 
-        return array('drinking');
+        return ['drinking'];
 
     }
 
     function getHTTPMethods($uri) {
 
-        return array('BEER','WINE');
+        return ['BEER','WINE'];
 
     }
 
     function initialize(Server $server) {
 
-        $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
+        $server->on('beforeMethod', [$this,'beforeMethod']);
 
     }
 

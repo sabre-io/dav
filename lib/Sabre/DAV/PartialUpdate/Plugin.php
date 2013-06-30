@@ -38,7 +38,7 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
+        $server->on('unknownMethod',array($this,'unknownMethod'));
 
     }
 
@@ -162,13 +162,13 @@ class Plugin extends DAV\ServerPlugin {
         // Checking If-None-Match and related headers.
         if (!$this->server->checkPreconditions()) return;
 
-        if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, null)))
+        if (!$this->server->emit('beforeWriteContent', [$uri, $node, null]))
             return;
 
         $body = $this->server->httpRequest->getBody();
         $etag = $node->putRange($body, $start-1);
 
-        $this->server->broadcastEvent('afterWriteContent',array($uri, $node));
+        $this->server->emit('afterWriteContent', [$uri, $node]);
 
         $this->server->httpResponse->setHeader('Content-Length','0');
         if ($etag) $this->server->httpResponse->setHeader('ETag',$etag);

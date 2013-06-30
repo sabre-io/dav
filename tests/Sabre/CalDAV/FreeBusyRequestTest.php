@@ -260,14 +260,14 @@ ICS;
         $this->assertFalse($this->plugin->unknownMethod('POST','calendars/user1/outbox'));
 
         $this->assertEquals('HTTP/1.1 200 OK' , $this->response->status);
-        $this->assertEquals(array(
+        $this->assertEquals([
             'Content-Type' => 'application/xml',
-        ), $this->response->headers);
+        ], $this->response->headers);
 
-        $strings = array(
+        $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
             '<cal:request-status>3.7;No calendar-home-set property found</cal:request-status>',
-        );
+        ];
 
         foreach($strings as $string) {
             $this->assertTrue(

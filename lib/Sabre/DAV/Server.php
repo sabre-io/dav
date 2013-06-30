@@ -1,7 +1,10 @@
 <?php
 
 namespace Sabre\DAV;
-use Sabre\HTTP;
+
+use
+    Sabre\HTTP,
+    Sabre\Event\EventEmitter;
 
 /**
  * Main DAV server class
@@ -10,7 +13,7 @@ use Sabre\HTTP;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Server {
+class Server extends EventEmitter {
 
     /**
      * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree
@@ -229,7 +232,7 @@ class Server {
         } catch (Exception $e) {
 
             try {
-                $this->broadcastEvent('exception', [$e]);
+                $this->emit('exception', [$e]);
             } catch (Exception $ignore) {
             }
             $DOM = new \DOMDocument('1.0','utf-8');
@@ -413,62 +416,6 @@ class Server {
 
     }
 
-
-    /**
-     * Subscribe to an event.
-     *
-     * When the event is triggered, we'll call all the specified callbacks.
-     * It is possible to control the order of the callbacks through the
-     * priority argument.
-     *
-     * This is for example used to make sure that the authentication plugin
-     * is triggered before anything else. If it's not needed to change this
-     * number, it is recommended to ommit.
-     *
-     * @param string $event
-     * @param callable $callback
-     * @param int $priority
-     * @return void
-     */
-    public function subscribeEvent($event, callable $callback, $priority = 100) {
-
-        if (!isset($this->eventSubscriptions[$event])) {
-            $this->eventSubscriptions[$event] = [];
-        }
-        while(isset($this->eventSubscriptions[$event][$priority])) $priority++;
-        $this->eventSubscriptions[$event][$priority] = $callback;
-        ksort($this->eventSubscriptions[$event]);
-
-    }
-
-    /**
-     * Broadcasts an event
-     *
-     * This method will call all subscribers. If one of the subscribers returns false, the process stops.
-     *
-     * The arguments parameter will be sent to all subscribers
-     *
-     * @param string $eventName
-     * @param array $arguments
-     * @return bool
-     */
-    public function broadcastEvent($eventName,$arguments = []) {
-
-        if (isset($this->eventSubscriptions[$eventName])) {
-
-            foreach($this->eventSubscriptions[$eventName] as $subscriber) {
-
-                $result = call_user_func_array($subscriber,$arguments);
-                if ($result===false) return false;
-
-            }
-
-        }
-
-        return true;
-
-    }
-
     /**
      * Handles a http request, and execute a method based on its name
      *
@@ -480,7 +427,7 @@ class Server {
 
         $method = strtoupper($method);
 
-        if (!$this->broadcastEvent('beforeMethod',[$method, $uri])) return;
+        if (!$this->emit('beforeMethod',[$method, $uri])) return;
 
         // Make sure this is a HTTP method we support
         $internalMethods = [
@@ -506,7 +453,7 @@ class Server {
 
         } else {
 
-            if ($this->broadcastEvent('unknownMethod',[$method, $uri])) {
+            if ($this->emit('unknownMethod',[$method, $uri])) {
                 // Unsupported method
                 throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
             }
@@ -716,9 +663,9 @@ class Server {
     protected function httpDelete($uri) {
 
         $this->checkPreconditions();
-        if (!$this->broadcastEvent('beforeUnbind',[$uri])) return;
+        if (!$this->emit('beforeUnbind',[$uri])) return;
         $this->tree->delete($uri);
-        $this->broadcastEvent('afterUnbind',[$uri]);
+        $this->emit('afterUnbind',[$uri]);
 
         $this->httpResponse->sendStatus(204);
         $this->httpResponse->setHeader('Content-Length','0');
@@ -921,11 +868,11 @@ class Server {
             //
             // If $modified is true, we must not send back an etag.
             $modified = false;
-            if (!$this->broadcastEvent('beforeWriteContent',[$uri, $node, &$body, &$modified])) return false;
+            if (!$this->emit('beforeWriteContent',[$uri, $node, &$body, &$modified])) return false;
 
             $etag = $node->put($body);
 
-            $this->broadcastEvent('afterWriteContent',[$uri, $node]);
+            $this->emit('afterWriteContent',[$uri, $node]);
 
             $this->httpResponse->setHeader('Content-Length','0');
             if ($etag && !$modified) $this->httpResponse->setHeader('ETag',$etag);
@@ -1035,17 +982,17 @@ class Server {
 
         if ($moveInfo['destinationExists']) {
 
-            if (!$this->broadcastEvent('beforeUnbind',[$moveInfo['destination']])) return false;
+            if (!$this->emit('beforeUnbind',[$moveInfo['destination']])) return false;
             $this->tree->delete($moveInfo['destination']);
-            $this->broadcastEvent('afterUnbind',[$moveInfo['destination']]);
+            $this->emit('afterUnbind',[$moveInfo['destination']]);
 
         }
 
-        if (!$this->broadcastEvent('beforeUnbind',[$uri])) return false;
-        if (!$this->broadcastEvent('beforeBind',[$moveInfo['destination']])) return false;
+        if (!$this->emit('beforeUnbind',[$uri])) return false;
+        if (!$this->emit('beforeBind',[$moveInfo['destination']])) return false;
         $this->tree->move($uri,$moveInfo['destination']);
-        $this->broadcastEvent('afterUnbind',[$uri]);
-        $this->broadcastEvent('afterBind',[$moveInfo['destination']]);
+        $this->emit('afterUnbind',[$uri]);
+        $this->emit('afterBind',[$moveInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
         $this->httpResponse->setHeader('Content-Length','0');
@@ -1071,13 +1018,13 @@ class Server {
             throw new Exception\Forbidden('Source and destination uri are identical.');
 
         if ($copyInfo['destinationExists']) {
-            if (!$this->broadcastEvent('beforeUnbind',[$copyInfo['destination']])) return false;
+            if (!$this->emit('beforeUnbind',[$copyInfo['destination']])) return false;
             $this->tree->delete($copyInfo['destination']);
 
         }
-        if (!$this->broadcastEvent('beforeBind',[$copyInfo['destination']])) return false;
+        if (!$this->emit('beforeBind',[$copyInfo['destination']])) return false;
         $this->tree->copy($uri,$copyInfo['destination']);
-        $this->broadcastEvent('afterBind',[$copyInfo['destination']]);
+        $this->emit('afterBind',[$copyInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
         $this->httpResponse->setHeader('Content-Length','0');
@@ -1103,9 +1050,9 @@ class Server {
 
         $reportName = XMLUtil::toClarkNotation($dom->firstChild);
 
-        if ($this->broadcastEvent('report',[$reportName, $dom, $uri])) {
+        if ($this->emit('report',[$reportName, $dom, $uri])) {
 
-            // If broadcastEvent returned true, it means the report was not supported
+            // If emit returned true, it means the report was not supported
             throw new Exception\ReportNotSupported();
 
         }
@@ -1506,7 +1453,7 @@ class Server {
         //
         // We're not doing anything with the result, but this can be helpful to
         // pre-fetch certain expensive live properties.
-        $this->broadCastEvent('beforeGetPropertiesForPath', array($path, $propertyNames, $depth));
+        $this->emit('beforeGetPropertiesForPath', [$path, $propertyNames, $depth]);
 
         $returnPropertyList = [];
 
@@ -1613,7 +1560,7 @@ class Server {
             $removeRT = true;
         }
 
-        $result = $this->broadcastEvent('beforeGetProperties',[$path, $node, &$propertyNames, &$newProperties]);
+        $result = $this->emit('beforeGetProperties',[$path, $node, &$propertyNames, &$newProperties]);
         // If this method explicitly returned false, we must ignore this
         // node as it is inaccessible.
         if ($result===false) return;
@@ -1689,7 +1636,7 @@ class Server {
 
         }
 
-        $this->broadcastEvent('afterGetProperties',[trim($path,'/'),&$newProperties, $node]);
+        $this->emit('afterGetProperties',[trim($path,'/'),&$newProperties, $node]);
 
         $newProperties['href'] = trim($path,'/');
 
@@ -1728,7 +1675,7 @@ class Server {
 
         list($dir,$name) = URLUtil::splitPath($uri);
 
-        if (!$this->broadcastEvent('beforeBind',[$uri])) return false;
+        if (!$this->emit('beforeBind',[$uri])) return false;
 
         $parent = $this->tree->getNodeForPath($dir);
         if (!$parent instanceof ICollection) {
@@ -1741,7 +1688,7 @@ class Server {
         //
         // If $modified is true, we must not send back an etag.
         $modified = false;
-        if (!$this->broadcastEvent('beforeCreateFile',[$uri, &$data, $parent, &$modified])) return false;
+        if (!$this->emit('beforeCreateFile',[$uri, &$data, $parent, &$modified])) return false;
 
         $etag = $parent->createFile($name,$data);
 
@@ -1749,8 +1696,8 @@ class Server {
 
         $this->tree->markDirty($dir . '/' . $name);
 
-        $this->broadcastEvent('afterBind',[$uri]);
-        $this->broadcastEvent('afterCreateFile',[$uri, $parent]);
+        $this->emit('afterBind',[$uri]);
+        $this->emit('afterCreateFile',[$uri, $parent]);
 
         return true;
     }
@@ -1820,7 +1767,7 @@ class Server {
         }
 
 
-        if (!$this->broadcastEvent('beforeBind',[$uri])) return;
+        if (!$this->emit('beforeBind',[$uri])) return;
 
         // There are 2 modes of operation. The standard collection
         // creates the directory, and then updates properties
@@ -1860,7 +1807,7 @@ class Server {
             }
 
             if ($rollBack) {
-                if (!$this->broadcastEvent('beforeUnbind',[$uri])) return;
+                if (!$this->emit('beforeUnbind',[$uri])) return;
                 $this->tree->delete($uri);
 
                 // Re-throwing exception
@@ -1871,7 +1818,7 @@ class Server {
 
         }
         $this->tree->markDirty($parentUri);
-        $this->broadcastEvent('afterBind',[$uri]);
+        $this->emit('afterBind',[$uri]);
 
     }
 
@@ -1918,7 +1865,7 @@ class Server {
 
         if (!$hasError) {
             // Allowing plugins to take care of property updating
-            $hasError = !$this->broadcastEvent('updateProperties', [
+            $hasError = !$this->emit('updateProperties', [
                 &$remainingProperties,
                 &$result,
                 $node
@@ -2179,7 +2126,7 @@ class Server {
         // Plugins are responsible for validating all the tokens.
         // If a plugin deemed a token 'valid', it will set 'validToken' to
         // true.
-        $this->broadcastEvent('validateTokens', [ &$ifConditions ]);
+        $this->emit('validateTokens', [ &$ifConditions ]);
 
         // Now we're going to analyze the result.
 

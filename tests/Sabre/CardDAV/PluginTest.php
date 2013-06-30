@@ -54,8 +54,8 @@ class PluginTest extends AbstractPluginTest {
 
         $this->assertEquals(
             array(
-                '{http://calendarserver.org/ns/}me-card' =>  
-                    new DAV\Property\Href('addressbooks/user1/book1/vcard1.vcf') 
+                '{http://calendarserver.org/ns/}me-card' =>
+                    new DAV\Property\Href('addressbooks/user1/book1/vcard1.vcf')
             ),
             $result
         );
@@ -81,7 +81,7 @@ class PluginTest extends AbstractPluginTest {
     function testHTMLActionsPanel() {
 
         $output = '';
-        $r = $this->server->broadcastEvent('onHTMLActionsPanel', array($this->server->tree->getNodeForPath('addressbooks/user1'), &$output));
+        $r = $this->server->emit('onHTMLActionsPanel', [$this->server->tree->getNodeForPath('addressbooks/user1'), &$output]);
         $this->assertFalse($r);
 
         $this->assertTrue(!!strpos($output,'Display name'));
@@ -90,10 +90,10 @@ class PluginTest extends AbstractPluginTest {
 
     function testBrowserPostAction() {
 
-        $r = $this->server->broadcastEvent('onBrowserPostAction', array('addressbooks/user1', 'mkaddressbook', array(
+        $r = $this->server->emit('onBrowserPostAction', ['addressbooks/user1', 'mkaddressbook', [
             'name' => 'NEWADDRESSBOOK',
             '{DAV:}displayname' => 'foo',
-        )));
+        ]]);
         $this->assertFalse($r);
 
         $addressbooks = $this->backend->getAddressBooksforUser('principals/user1');

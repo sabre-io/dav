@@ -54,7 +54,7 @@ class GuessContentType extends DAV\ServerPlugin {
 
         // Using a relatively low priority (200) to allow other extensions
         // to set the content-type first.
-        $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'),200);
+        $server->on('afterGetProperties',array($this,'afterGetProperties'),200);
 
     }
 

@@ -57,7 +57,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new SimpleCollection('foo'),
         );
         $server = new Server($tree);
-        $server->subscribeEvent('updateProperties', array($this,'updatepropfail'));
+        $server->on('updateProperties', [$this,'updatepropfail']);
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}foo' => 'bar',
@@ -94,7 +94,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new SimpleCollection('foo'),
         );
         $server = new Server($tree);
-        $server->subscribeEvent('updateProperties', array($this,'updatepropsuccess'));
+        $server->on('updateProperties', [$this,'updatepropsuccess']);
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}foo' => 'bar',

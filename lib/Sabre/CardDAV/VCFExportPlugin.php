@@ -35,7 +35,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->subscribeEvent('beforeMethod',array($this,'beforeMethod'), 90);
+        $this->server->on('beforeMethod',array($this,'beforeMethod'), 90);
 
     }
 

@@ -651,15 +651,15 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->subscribeEvent('beforeGetProperties',array($this,'beforeGetProperties'));
+        $server->on('beforeGetProperties',[$this,'beforeGetProperties'], 20);
 
-        $server->subscribeEvent('beforeMethod', array($this,'beforeMethod'),20);
-        $server->subscribeEvent('beforeBind', array($this,'beforeBind'),20);
-        $server->subscribeEvent('beforeUnbind', array($this,'beforeUnbind'),20);
-        $server->subscribeEvent('updateProperties',array($this,'updateProperties'));
-        $server->subscribeEvent('beforeUnlock', array($this,'beforeUnlock'),20);
-        $server->subscribeEvent('report',array($this,'report'));
-        $server->subscribeEvent('unknownMethod', array($this, 'unknownMethod'));
+        $server->on('beforeMethod', [$this,'beforeMethod'],20);
+        $server->on('beforeBind', [$this,'beforeBind'],20);
+        $server->on('beforeUnbind', [$this,'beforeUnbind'],20);
+        $server->on('updateProperties',[$this,'updateProperties']);
+        $server->on('beforeUnlock', [$this,'beforeUnlock'],20);
+        $server->on('report',[$this,'report']);
+        $server->on('unknownMethod', [$this, 'unknownMethod']);
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',

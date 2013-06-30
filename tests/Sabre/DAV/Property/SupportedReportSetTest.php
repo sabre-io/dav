@@ -66,7 +66,7 @@ class SupportedReportSetTest extends DAV\AbstractServer {
     function testCustomReport() {
 
         // Intercepting the report property
-        $this->server->subscribeEvent('afterGetProperties',array($this,'addProp'));
+        $this->server->on('afterGetProperties', [$this,'addProp']);
 
         $xml = '<?xml version="1.0"?>
 <d:propfind xmlns:d="DAV:">

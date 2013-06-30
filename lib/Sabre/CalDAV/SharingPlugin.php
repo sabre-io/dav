@@ -89,10 +89,10 @@ class SharingPlugin extends DAV\ServerPlugin {
             '{' . Plugin::NS_CALENDARSERVER . '}shared-url'
         );
 
-        $this->server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
-        $this->server->subscribeEvent('afterGetProperties', array($this, 'afterGetProperties'));
-        $this->server->subscribeEvent('updateProperties', array($this, 'updateProperties'));
-        $this->server->subscribeEvent('unknownMethod', array($this,'unknownMethod'));
+        $this->server->on('beforeGetProperties', array($this, 'beforeGetProperties'));
+        $this->server->on('afterGetProperties', array($this, 'afterGetProperties'));
+        $this->server->on('updateProperties', array($this, 'updateProperties'));
+        $this->server->on('unknownMethod', array($this,'unknownMethod'));
 
     }
 

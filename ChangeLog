@@ -6,6 +6,9 @@
 	* BC Break: XML property classes now receive an extra argument in their
 	  unserialize method ($propertyMap). This allows for recursively parsing
 	  properties, if needed.
+	* BC Break: Now using sabre/event for event emitting/subscription. For
+	  plugin authors this means Server::subscribeEvent is now Server::on, and
+	  Server::broadcastEvent is now Server::emit.
 	* Added: Support for WebDAV-sync (rfc6578).
 	* Added: Support for caldav-subscriptions, which is an easy way for caldav
 	  clients to manage a list of subscriptions on the server.

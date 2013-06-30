@@ -54,14 +54,14 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->addPlugin($plugin);
 
 
-        $requestedProperties = array(
+        $requestedProperties = [
             '{DAV:}current-user-principal',
-        );
+        ];
 
-        $returnedProperties = array(
-            200 => array(),
-            404 => array(),
-        );
+        $returnedProperties = [
+            200 => [],
+            404 => [],
+        ];
 
         $this->assertNull($plugin->beforeGetProperties('', new DAV\SimpleCollection('root'), $requestedProperties, $returnedProperties));
 
@@ -71,17 +71,17 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Property\Principal::UNAUTHENTICATED, $returnedProperties[200]['{DAV:}current-user-principal']->getType());
 
         // This will force the login
-        $fakeServer->broadCastEvent('beforeMethod',array('GET',''));
+        $fakeServer->emit('beforeMethod', ['GET', '']);
 
 
-        $requestedProperties = array(
+        $requestedProperties = [
             '{DAV:}current-user-principal',
-        );
+        ];
 
-        $returnedProperties = array(
-            200 => array(),
-            404 => array(),
-        );
+        $returnedProperties = [
+            200 => [],
+            404 => [],
+        ];
 
 
         $this->assertNull($plugin->beforeGetProperties('', new DAV\SimpleCollection('root'), $requestedProperties, $returnedProperties));

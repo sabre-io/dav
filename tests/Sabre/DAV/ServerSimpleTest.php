@@ -671,7 +671,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $httpRequest = new HTTP\Request($serverVars);
         $this->server->httpRequest = $httpRequest;
-        $this->server->subscribeEvent('beforeMethod',array($this,'exceptionTrigger'));
+        $this->server->on('beforeMethod', [$this,'exceptionTrigger']);
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -720,7 +720,7 @@ class ServerSimpleTest extends AbstractServer{
         $request = new HTTP\Request($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
-        $this->server->subscribeEvent('report',array($this,'reportHandler'));
+        $this->server->on('report', [$this,'reportHandler']);
         $this->server->exec();
 
         $this->assertEquals(array(

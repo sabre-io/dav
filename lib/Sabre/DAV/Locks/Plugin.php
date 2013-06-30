@@ -56,9 +56,9 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->subscribeEvent('unknownMethod',array($this,'unknownMethod'));
-        $server->subscribeEvent('afterGetProperties',array($this,'afterGetProperties'));
-        $server->subscribeEvent('validateTokens', array($this, 'validateTokens'));
+        $server->on('unknownMethod',array($this,'unknownMethod'));
+        $server->on('afterGetProperties',array($this,'afterGetProperties'));
+        $server->on('validateTokens', array($this, 'validateTokens'));
 
     }
 
@@ -274,7 +274,7 @@ class Plugin extends DAV\ServerPlugin {
             // Edit: looks like this is not used, and causing problems now.
             //
             // See Issue 222
-            // $this->server->broadcastEvent('beforeWriteContent',array($uri));
+            // $this->server->emit('beforeWriteContent',array($uri));
 
         } catch (DAV\Exception\NotFound $e) {
 
@@ -345,7 +345,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function lockNode($uri,LockInfo $lockInfo) {
 
-        if (!$this->server->broadcastEvent('beforeLock',array($uri,$lockInfo))) return;
+        if (!$this->server->emit('beforeLock', [$uri,$lockInfo])) return;
 
         if ($this->locksBackend) return $this->locksBackend->lock($uri,$lockInfo);
         throw new DAV\Exception\MethodNotAllowed('Locking support is not enabled for this resource. No Locking backend was found so if you didn\'t expect this error, please check your configuration.');
@@ -363,7 +363,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function unlockNode($uri, LockInfo $lockInfo) {
 
-        if (!$this->server->broadcastEvent('beforeUnlock',array($uri,$lockInfo))) return;
+        if (!$this->server->emit('beforeUnlock', [$uri,$lockInfo])) return;
         if ($this->locksBackend) return $this->locksBackend->unlock($uri,$lockInfo);
 
     }

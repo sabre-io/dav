@@ -32,7 +32,7 @@ class MapGetToPropFind extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->subscribeEvent('beforeMethod',array($this,'httpGetInterceptor'));
+        $this->server->on('beforeMethod',array($this,'httpGetInterceptor'));
     }
 
     /**

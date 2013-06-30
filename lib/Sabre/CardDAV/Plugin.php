@@ -51,14 +51,14 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         /* Events */
-        $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
-        $server->subscribeEvent('afterGetProperties',  array($this, 'afterGetProperties'));
-        $server->subscribeEvent('updateProperties', array($this, 'updateProperties'));
-        $server->subscribeEvent('report', array($this,'report'));
-        $server->subscribeEvent('onHTMLActionsPanel', array($this,'htmlActionsPanel'));
-        $server->subscribeEvent('onBrowserPostAction', array($this,'browserPostAction'));
-        $server->subscribeEvent('beforeWriteContent', array($this, 'beforeWriteContent'));
-        $server->subscribeEvent('beforeCreateFile', array($this, 'beforeCreateFile'));
+        $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
+        $server->on('afterGetProperties',  [$this, 'afterGetProperties']);
+        $server->on('updateProperties',    [$this, 'updateProperties']);
+        $server->on('report',              [$this,'report']);
+        $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
+        $server->on('onBrowserPostAction', [$this,'browserPostAction']);
+        $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
+        $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
 
         /* Namespaces */
         $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
@@ -88,7 +88,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('addressbook');
+        return ['addressbook'];
 
     }
 

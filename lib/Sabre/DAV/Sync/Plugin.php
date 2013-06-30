@@ -55,7 +55,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $self = $this;
 
-        $server->subscribeEvent('report', function($reportName, $dom, $uri) use ($self) {
+        $server->on('report', function($reportName, $dom, $uri) use ($self) {
 
             if ($reportName === '{DAV:}sync-collection') {
                 $this->server->transactionType = 'report-sync-collection';
@@ -65,8 +65,8 @@ class Plugin extends DAV\ServerPlugin {
 
         });
 
-        $server->subscribeEvent('beforeGetProperties', array($this, 'beforeGetProperties'));
-        $server->subscribeEvent('validateTokens',      array($this, 'validateTokens'));
+        $server->on('beforeGetProperties', array($this, 'beforeGetProperties'));
+        $server->on('validateTokens',      array($this, 'validateTokens'));
 
     }
 

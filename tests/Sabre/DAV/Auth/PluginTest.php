@@ -28,7 +28,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $this->assertTrue(
-            $fakeServer->broadCastEvent('beforeMethod',array('GET','/'))
+            $fakeServer->emit('beforeMethod', ['GET','/'])
         );
 
     }
@@ -42,7 +42,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
         $plugin = new Plugin(new Backend\Mock(),'failme');
         $fakeServer->addPlugin($plugin);
-        $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
+        $fakeServer->emit('beforeMethod', ['GET','/']);
 
     }
 
@@ -75,7 +75,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
         $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
-        $fakeServer->broadCastEvent('beforeMethod',array('GET','/'));
+        $fakeServer->emit('beforeMethod', ['GET','/']);
         $this->assertEquals('admin', $plugin->getCurrentUser());
 
     }

@@ -88,8 +88,8 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
     public function initialize(Server $server) {
 
         $this->server = $server;
-        $server->subscribeEvent('beforeMethod',array($this,'beforeMethod'));
-        $server->subscribeEvent('beforeCreateFile',array($this,'beforeCreateFile'));
+        $server->on('beforeMethod',array($this,'beforeMethod'));
+        $server->on('beforeCreateFile',array($this,'beforeCreateFile'));
 
     }
 

@@ -947,7 +947,7 @@ END:VCALENDAR';
     function testHTMLActionsPanel() {
 
         $output = '';
-        $r = $this->server->broadcastEvent('onHTMLActionsPanel', array($this->server->tree->getNodeForPath('calendars/user1'), &$output));
+        $r = $this->server->emit('onHTMLActionsPanel', [$this->server->tree->getNodeForPath('calendars/user1'), &$output]);
         $this->assertFalse($r);
 
         $this->assertTrue(!!strpos($output,'Display name'));
@@ -956,10 +956,10 @@ END:VCALENDAR';
 
     function testBrowserPostAction() {
 
-        $r = $this->server->broadcastEvent('onBrowserPostAction', array('calendars/user1', 'mkcalendar', array(
+        $r = $this->server->emit('onBrowserPostAction', ['calendars/user1', 'mkcalendar', [
             'name' => 'NEWCALENDAR',
             '{DAV:}displayname' => 'foo',
-        )));
+        ]]);
         $this->assertFalse($r);
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');

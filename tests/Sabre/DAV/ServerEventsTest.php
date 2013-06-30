@@ -13,7 +13,7 @@ class ServerEventsTest extends AbstractServer {
 
     function testAfterBind() {
 
-        $this->server->subscribeEvent('afterBind',array($this,'afterBindHandler'));
+        $this->server->on('afterBind', [$this,'afterBindHandler']);
         $newPath = 'afterBind';
 
         $this->tempPath = '';
@@ -30,7 +30,7 @@ class ServerEventsTest extends AbstractServer {
 
     function testBeforeBindCancel() {
 
-        $this->server->subscribeEvent('beforeBind', array($this,'beforeBindCancelHandler'));
+        $this->server->on('beforeBind', [$this,'beforeBindCancelHandler']);
         $this->assertFalse($this->server->createFile('bla','body'));
 
         // Also testing put()
@@ -54,7 +54,7 @@ class ServerEventsTest extends AbstractServer {
 
     function testException() {
 
-        $this->server->subscribeEvent('exception', array($this, 'exceptionHandler'));
+        $this->server->on('exception', [$this, 'exceptionHandler']);
 
         $req = new HTTP\Request(array(
             'REQUEST_METHOD' => 'GET',

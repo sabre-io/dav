@@ -12,17 +12,15 @@
   <testsuite name="sabre-vobject">
       <directory>../vendor/sabre/vobject/tests/Sabre/VObject</directory>
   </testsuite>
+  <testsuite name="sabre-event">
+      <directory>../vendor/sabre/event/tests/Sabre/Event</directory>
+  </testsuite>
 
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">
        <directory suffix=".php">../lib/</directory>
        <exclude>
          <file>../lib/Sabre/autoload.php</file>
-         <file>../lib/Sabre/CalDAV/includes.php</file>
-         <file>../lib/Sabre/CardDAV/includes.php</file>
-         <file>../lib/Sabre/DAVACL/includes.php</file>
-         <file>../lib/Sabre/HTTP/includes.php</file>
-         <file>../lib/Sabre/DAV/includes.php</file>
          <file>../lib/Sabre/VObject/includes.php</file>
        </exclude>
     </whitelist>

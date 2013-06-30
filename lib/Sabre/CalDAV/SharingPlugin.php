@@ -318,7 +318,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 $node->updateShares($mutations[0], $mutations[1]);
 
-                $this->server->httpResponse->sendStatus(200);
+                $this->server->httpResponse->setStatus(200);
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
                 $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
@@ -354,7 +354,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                     $message['summary']
                 );
 
-                $this->server->httpResponse->sendStatus(200);
+                $this->server->httpResponse->setStatus(200);
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
                 $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
@@ -399,7 +399,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 $node->setPublishStatus(true);
 
                 // iCloud sends back the 202, so we will too.
-                $this->server->httpResponse->sendStatus(202);
+                $this->server->httpResponse->setStatus(202);
 
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
@@ -426,7 +426,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 $node->setPublishStatus(false);
 
-                $this->server->httpResponse->sendStatus(200);
+                $this->server->httpResponse->setStatus(200);
 
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.

@@ -271,7 +271,7 @@ class Plugin extends DAV\ServerPlugin {
         $syncToken = $dom->createElement('d:sync-token', self::SYNCTOKEN_PREFIX . $syncToken);
         $multiStatus->appendChild($syncToken);
 
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->sendBody($dom->saveXML());
 

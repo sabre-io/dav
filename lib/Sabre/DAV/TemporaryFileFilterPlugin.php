@@ -187,7 +187,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         $hR->setHeader('Content-Type','application/octet-stream');
         $hR->setHeader('Content-Length',filesize($tempLocation));
         $hR->setHeader('X-Sabre-Temp','true');
-        $hR->sendStatus(200);
+        $hR->setStatus(200);
         $hR->sendBody(fopen($tempLocation,'r'));
         return false;
 
@@ -211,7 +211,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         }
 
         file_put_contents($tempLocation,$this->server->httpRequest->getBody());
-        $hR->sendStatus($newFile?201:200);
+        $hR->setStatus($newFile?201:200);
         return false;
 
     }
@@ -232,7 +232,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         unlink($tempLocation);
         $hR = $this->server->httpResponse;
         $hR->setHeader('X-Sabre-Temp','true');
-        $hR->sendStatus(204);
+        $hR->setStatus(204);
         return false;
 
     }
@@ -254,7 +254,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
 
         $hR = $this->server->httpResponse;
         $hR->setHeader('X-Sabre-Temp','true');
-        $hR->sendStatus(207);
+        $hR->setStatus(207);
         $hR->setHeader('Content-Type','application/xml; charset=utf-8');
 
         $this->server->parsePropFindRequest($this->server->httpRequest->getBody(true));

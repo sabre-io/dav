@@ -288,7 +288,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Lock-Token','<opaquelocktoken:' . $lockInfo->token . '>');
-        $this->server->httpResponse->sendStatus($newFile?201:200);
+        $this->server->httpResponse->setStatus($newFile?201:200);
         $this->server->httpResponse->sendBody($this->generateLockResponse($lockInfo));
 
     }
@@ -321,7 +321,7 @@ class Plugin extends DAV\ServerPlugin {
 
                 $this->unlockNode($uri,$lock);
                 $this->server->httpResponse->setHeader('Content-Length','0');
-                $this->server->httpResponse->sendStatus(204);
+                $this->server->httpResponse->setStatus(204);
                 return;
 
             }

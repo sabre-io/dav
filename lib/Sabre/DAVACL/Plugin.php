@@ -1152,7 +1152,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $xml = $dom->saveXML();
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->sendBody($xml);
 
     }
@@ -1297,7 +1297,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->sendBody($dom->saveXML());
 
     }
@@ -1325,7 +1325,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $prefer = $this->server->getHTTPPRefer();
 
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
         $this->server->httpResponse->sendBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));

@@ -45,7 +45,7 @@ END:VCALENDAR
 
     function testExpandRecurringByDayEvent() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',

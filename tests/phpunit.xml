@@ -6,14 +6,26 @@
   convertWarningsToExceptions="true"
   strict="true"
   >
-  <testsuite name="sabre-dav">
-      <directory>Sabre/</directory>
-  </testsuite>
   <testsuite name="sabre-vobject">
       <directory>../vendor/sabre/vobject/tests/Sabre/VObject</directory>
   </testsuite>
   <testsuite name="sabre-event">
       <directory>../vendor/sabre/event/tests/Sabre/Event</directory>
+  </testsuite>
+  <testsuite name="sabre-http">
+      <directory>../vendor/sabre/http/tests/Sabre/HTTP</directory>
+  </testsuite>
+  <testsuite name="sabre-dav">
+      <directory>Sabre/CalDAV</directory>
+  </testsuite>
+  <testsuite name="sabre-davacl">
+      <directory>Sabre/CalDAV</directory>
+  </testsuite>
+  <testsuite name="sabre-caldav">
+      <directory>Sabre/CalDAV</directory>
+  </testsuite>
+  <testsuite name="sabre-carddav">
+      <directory>Sabre/CalDAV</directory>
   </testsuite>
 
   <filter>

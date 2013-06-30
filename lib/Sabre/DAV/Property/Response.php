@@ -2,7 +2,9 @@
 
 namespace Sabre\DAV\Property;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP;
 
 /**
  * Response property
@@ -122,7 +124,7 @@ class Response extends DAV\Property implements IHref {
         $xresponse->appendChild($document->createElement('d:href',$uri));
 
         if ($this->httpStatus) {
-            $statusString = $server->httpResponse->getStatusMessage($this->httpStatus);
+            $statusString = HTTP\Response::$statusCodes[$this->httpStatus];
             $xresponse->appendChild($document->createElement('d:status', $statusString));
         }
 
@@ -185,7 +187,7 @@ class Response extends DAV\Property implements IHref {
 
             }
 
-            $xpropstat->appendChild($document->createElement('d:status',$server->httpResponse->getStatusMessage($httpStatus)));
+            $xpropstat->appendChild($document->createElement('d:status',HTTP\Response::$statusCodes[$httpStatus]));
 
         }
 

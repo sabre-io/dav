@@ -112,8 +112,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // We're not using straight-up $_GET, because we want everything to be
         // unit testable.
-        $getVars = array();
-        parse_str($this->server->httpRequest->getQueryString(), $getVars);
+        $getVars = $this->server->httpRequest->getQueryParameters();
 
         if (isset($getVars['sabreAction']) && $getVars['sabreAction'] === 'asset' && isset($getVars['assetName'])) {
             $this->serveAsset($getVars['assetName']);
@@ -130,7 +129,7 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof DAV\IFile)
             return;
 
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
 
         $this->server->httpResponse->sendBody(
@@ -193,7 +192,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
         $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUri());
-        $this->server->httpResponse->sendStatus(302);
+        $this->server->httpResponse->setStatus(302);
         return false;
 
     }
@@ -491,7 +490,7 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setHeader('Content-Type', $mime);
         $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->sendBody(fopen($assetPath,'r'));
 
     }

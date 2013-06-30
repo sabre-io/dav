@@ -172,7 +172,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server->httpResponse->setHeader('Content-Length','0');
         if ($etag) $this->server->httpResponse->setHeader('ETag',$etag);
-        $this->server->httpResponse->sendStatus(204);
+        $this->server->httpResponse->setStatus(204);
 
         return false;
 

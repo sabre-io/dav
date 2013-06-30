@@ -337,7 +337,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server->createCollection($uri,$resourceType,$properties);
 
-        $this->server->httpResponse->sendStatus(201);
+        $this->server->httpResponse->setStatus(201);
         $this->server->httpResponse->setHeader('Content-Length',0);
     }
 
@@ -537,10 +537,11 @@ class Plugin extends DAV\ServerPlugin {
 
         $prefer = $this->server->getHTTPPRefer();
 
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal']));
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal']));
+        $this->server->httpResponse->send();
 
     }
 
@@ -645,10 +646,11 @@ class Plugin extends DAV\ServerPlugin {
 
         $prefer = $this->server->getHTTPPRefer();
 
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
+        $this->server->httpResponse->send();
 
     }
 
@@ -729,10 +731,11 @@ class Plugin extends DAV\ServerPlugin {
         $result = $generator->getResult();
         $result = $result->serialize();
 
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type', 'text/calendar');
         $this->server->httpResponse->setHeader('Content-Length', strlen($result));
-        $this->server->httpResponse->sendBody($result);
+        $this->server->httpResponse->setBody($result);
+        $this->server->httpResponse->send();
 
     }
 
@@ -818,8 +821,9 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
         $this->server->httpResponse->setHeader('ETag',$node->getETag());
-        $this->server->httpResponse->sendStatus(200);
-        $this->server->httpResponse->sendBody($dom->saveXML());
+        $this->server->httpResponse->setStatus(200);
+        $this->server->httpResponse->setBody($dom->saveXML());
+        $this->server->httpResponse->send();
 
         return false;
 
@@ -1046,9 +1050,10 @@ class Plugin extends DAV\ServerPlugin {
         $originator = substr($originator,7);
 
         $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->sendBody($this->generateScheduleResponse($result));
+        $this->server->httpResponse->setBody($this->generateScheduleResponse($result));
+        $this->server->httpResponse->send();
 
     }
 
@@ -1217,9 +1222,10 @@ class Plugin extends DAV\ServerPlugin {
             $scheduleResponse->appendChild($response);
         }
 
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->sendBody($dom->saveXML());
+        $this->server->httpResponse->setBody($dom->saveXML());
+        $this->server->httpResponse->send();
 
     }
 

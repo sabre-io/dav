@@ -206,7 +206,7 @@ class Server extends EventEmitter {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
         $this->httpResponse = new HTTP\Response();
-        $this->httpRequest = new HTTP\Request();
+        $this->httpRequest = HTTP\Request::createFromPHPRequest();
 
     }
 
@@ -290,7 +290,7 @@ class Server extends EventEmitter {
             }
             $headers['Content-Type'] = 'application/xml; charset=utf-8';
 
-            $this->httpResponse->sendStatus($httpCode);
+            $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->setHeaders($headers);
             $this->httpResponse->sendBody($DOM->saveXML());
 
@@ -486,7 +486,7 @@ class Server extends EventEmitter {
             $this->httpResponse->setHeader('X-Sabre-Version',Version::VERSION);
         }
         $this->httpResponse->setHeader('Content-Length',0);
-        $this->httpResponse->sendStatus(200);
+        $this->httpResponse->setStatus(200);
 
     }
 
@@ -611,14 +611,14 @@ class Server extends EventEmitter {
 
             $this->httpResponse->setHeader('Content-Length', $end-$start+1);
             $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
-            $this->httpResponse->sendStatus(206);
+            $this->httpResponse->setStatus(206);
             $this->httpResponse->sendBody($newStream);
 
 
         } else {
 
             if ($nodeSize) $this->httpResponse->setHeader('Content-Length',$nodeSize);
-            $this->httpResponse->sendStatus(200);
+            $this->httpResponse->setStatus(200);
             $this->httpResponse->sendBody($body);
 
         }
@@ -648,7 +648,7 @@ class Server extends EventEmitter {
             }
             $this->httpResponse->setHeaders($headers);
         }
-        $this->httpResponse->sendStatus(200);
+        $this->httpResponse->setStatus(200);
 
     }
 
@@ -667,7 +667,7 @@ class Server extends EventEmitter {
         $this->tree->delete($uri);
         $this->emit('afterUnbind',[$uri]);
 
-        $this->httpResponse->sendStatus(204);
+        $this->httpResponse->setStatus(204);
         $this->httpResponse->setHeader('Content-Length','0');
 
     }
@@ -699,7 +699,7 @@ class Server extends EventEmitter {
         $newProperties = $this->getPropertiesForPath($uri,$requestedProperties,$depth);
 
         // This is a multi-status response
-        $this->httpResponse->sendStatus(207);
+        $this->httpResponse->setStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->httpResponse->setHeader('Vary','Brief,Prefer');
 
@@ -752,14 +752,14 @@ class Server extends EventEmitter {
 
             if ($ok) {
 
-                $this->httpResponse->sendStatus(204);
+                $this->httpResponse->setStatus(204);
                 return;
 
             }
 
         }
 
-        $this->httpResponse->sendStatus(207);
+        $this->httpResponse->setStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
 
         $this->httpResponse->sendBody(
@@ -876,7 +876,7 @@ class Server extends EventEmitter {
 
             $this->httpResponse->setHeader('Content-Length','0');
             if ($etag && !$modified) $this->httpResponse->setHeader('ETag',$etag);
-            $this->httpResponse->sendStatus(204);
+            $this->httpResponse->setStatus(204);
 
         } else {
 
@@ -889,7 +889,7 @@ class Server extends EventEmitter {
 
             $this->httpResponse->setHeader('Content-Length','0');
             if ($etag) $this->httpResponse->setHeader('ETag', $etag);
-            $this->httpResponse->sendStatus(201);
+            $this->httpResponse->setStatus(201);
 
         }
 
@@ -949,7 +949,7 @@ class Server extends EventEmitter {
         $result = $this->createCollection($uri, $resourceType, $properties);
 
         if (is_array($result)) {
-            $this->httpResponse->sendStatus(207);
+            $this->httpResponse->setStatus(207);
             $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
 
             $this->httpResponse->sendBody(
@@ -958,7 +958,7 @@ class Server extends EventEmitter {
 
         } else {
             $this->httpResponse->setHeader('Content-Length','0');
-            $this->httpResponse->sendStatus(201);
+            $this->httpResponse->setStatus(201);
         }
 
     }
@@ -996,7 +996,7 @@ class Server extends EventEmitter {
 
         // If a resource was overwritten we should send a 204, otherwise a 201
         $this->httpResponse->setHeader('Content-Length','0');
-        $this->httpResponse->sendStatus($moveInfo['destinationExists']?204:201);
+        $this->httpResponse->setStatus($moveInfo['destinationExists']?204:201);
 
     }
 
@@ -1028,7 +1028,7 @@ class Server extends EventEmitter {
 
         // If a resource was overwritten we should send a 204, otherwise a 201
         $this->httpResponse->setHeader('Content-Length','0');
-        $this->httpResponse->sendStatus($copyInfo['destinationExists']?204:201);
+        $this->httpResponse->setStatus($copyInfo['destinationExists']?204:201);
 
     }
 
@@ -1105,7 +1105,7 @@ class Server extends EventEmitter {
      */
     public function getRequestUri() {
 
-        return $this->calculateUri($this->httpRequest->getUri());
+        return $this->calculateUri($this->httpRequest->getUrl());
 
     }
 
@@ -2049,7 +2049,7 @@ class Server extends EventEmitter {
 
                 if ($haveMatch) {
                     if ($handleAsGET) {
-                        $this->httpResponse->sendStatus(304);
+                        $this->httpResponse->setStatus(304);
                         return false;
                     } else {
                         throw new Exception\PreconditionFailed('An If-None-Match header was specified, but the ETag matched (or * was specified).','If-None-Match');
@@ -2077,7 +2077,7 @@ class Server extends EventEmitter {
                 if ($lastMod) {
                     $lastMod = new \DateTime('@' . $lastMod);
                     if ($lastMod <= $date) {
-                        $this->httpResponse->sendStatus(304);
+                        $this->httpResponse->setStatus(304);
                         $this->httpResponse->setHeader('Last-Modified', HTTP\Util::toHTTPDate($lastMod));
                         return false;
                     }

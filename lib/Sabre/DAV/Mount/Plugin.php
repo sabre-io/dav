@@ -46,7 +46,9 @@ class Plugin extends DAV\ServerPlugin {
     public function beforeMethod($method, $uri) {
 
         if ($method!='GET') return;
-        if ($this->server->httpRequest->getQueryString()!='mount') return;
+
+        $queryParams = $this->server->httpRequest->getQueryParameters();
+        if (!array_key_exists('mount', $queryParams)) return;
 
         $currentUri = $this->server->httpRequest->getAbsoluteUri();
 
@@ -68,7 +70,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function davMount($uri) {
 
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','application/davmount+xml');
         ob_start();
         echo '<?xml version="1.0"?>', "\n";

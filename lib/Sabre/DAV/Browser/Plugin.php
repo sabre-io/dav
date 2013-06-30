@@ -132,9 +132,10 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
 
-        $this->server->httpResponse->sendBody(
+        $this->server->httpResponse->setBody(
             $this->generateDirectoryIndex($uri)
         );
+        $this->server->httpResponse->send();
 
         return false;
 
@@ -491,7 +492,8 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
         $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->sendBody(fopen($assetPath,'r'));
+        $this->server->httpResponse->setBody(fopen($assetPath,'r'));
+        $this->server->httpResponse->send();
 
     }
 

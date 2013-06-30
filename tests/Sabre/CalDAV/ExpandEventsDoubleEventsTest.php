@@ -56,12 +56,12 @@ END:VCALENDAR
 
     function testExpand() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',
             'HTTP_DEPTH' => '1',
-        ));
+        ]);
 
         $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
 <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">

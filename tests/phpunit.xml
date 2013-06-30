@@ -16,16 +16,16 @@
       <directory>../vendor/sabre/http/tests/Sabre/HTTP</directory>
   </testsuite>
   <testsuite name="sabre-dav">
-      <directory>Sabre/CalDAV</directory>
+      <directory>Sabre/DAV</directory>
   </testsuite>
   <testsuite name="sabre-davacl">
-      <directory>Sabre/CalDAV</directory>
+      <directory>Sabre/DAVACL</directory>
   </testsuite>
   <testsuite name="sabre-caldav">
       <directory>Sabre/CalDAV</directory>
   </testsuite>
   <testsuite name="sabre-carddav">
-      <directory>Sabre/CalDAV</directory>
+      <directory>Sabre/CardDAV</directory>
   </testsuite>
 
   <filter>

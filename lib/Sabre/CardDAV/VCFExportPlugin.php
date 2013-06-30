@@ -75,7 +75,8 @@ class VCFExportPlugin extends DAV\ServerPlugin {
             '{' . Plugin::NS_CARDDAV . '}address-data',
         ),1);
 
-        $this->server->httpResponse->sendBody($this->generateVCF($nodes));
+        $this->server->httpResponse->setBody($this->generateVCF($nodes));
+        $this->server->httpResponse->send();
 
         // Returning false to break the event chain
         return false;

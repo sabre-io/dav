@@ -373,7 +373,8 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                     $href->serialize($this->server, $root);
                     $this->server->httpResponse->setHeader('Content-Type','application/xml');
-                    $this->server->httpResponse->sendBody($dom->saveXML());
+                    $this->server->httpResponse->setBody($dom->saveXML());
+                    $this->server->httpResponse->send();
 
                 }
 

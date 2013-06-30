@@ -17,7 +17,7 @@ class ServerMKCOLTest extends AbstractServer {
             'REQUEST_METHOD' => 'MKCOL',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody("");
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -26,7 +26,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Length' => '0',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertTrue(is_dir($this->tempDir . '/testcol'));
 
@@ -42,7 +42,7 @@ class ServerMKCOLTest extends AbstractServer {
             'REQUEST_METHOD' => 'MKCOL',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody("Hello");
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -51,7 +51,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type',$this->response->status);
+        $this->assertEquals('415 Unsupported Media Type',$this->response->status);
 
     }
 
@@ -66,7 +66,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody("Hello");
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -75,7 +75,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 400 Bad request',$this->response->status);
+        $this->assertEquals('400 Bad request',$this->response->status);
 
     }
 
@@ -90,7 +90,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?><html></html>');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -99,7 +99,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type',$this->response->status);
+        $this->assertEquals('415 Unsupported Media Type',$this->response->status);
 
     }
 
@@ -114,7 +114,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -130,7 +130,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 400 Bad request',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('400 Bad request',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -145,7 +145,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -161,7 +161,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 403 Forbidden',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('403 Forbidden',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -176,7 +176,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -192,7 +192,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 403 Forbidden',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('403 Forbidden',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -207,7 +207,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -223,7 +223,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Length' => '0',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -238,7 +238,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -256,7 +256,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Length' => '0',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('201 Created',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -270,7 +270,7 @@ class ServerMKCOLTest extends AbstractServer {
             'REQUEST_METHOD' => 'MKCOL',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
 
         $this->server->httpRequest = ($request);
@@ -280,7 +280,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('409 Conflict',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -294,7 +294,7 @@ class ServerMKCOLTest extends AbstractServer {
             'REQUEST_METHOD' => 'MKCOL',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
 
         $this->server->httpRequest = ($request);
@@ -304,7 +304,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('409 Conflict',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -318,7 +318,7 @@ class ServerMKCOLTest extends AbstractServer {
             'REQUEST_METHOD' => 'MKCOL',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
 
         $this->server->httpRequest = ($request);
@@ -329,7 +329,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Allow'        => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT',
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 405 Method Not Allowed',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('405 Method Not Allowed',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
     }
 
@@ -345,7 +345,7 @@ class ServerMKCOLTest extends AbstractServer {
             'HTTP_CONTENT_TYPE' => 'application/xml',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -358,7 +358,7 @@ class ServerMKCOLTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
+        $this->assertEquals('207 Multi-Status',$this->response->status,'Wrong statuscode received. Full response body: ' .$this->response->body);
 
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',

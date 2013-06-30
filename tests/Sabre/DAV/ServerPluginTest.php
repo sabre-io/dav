@@ -41,7 +41,7 @@ class ServerPluginTest extends AbstractServer {
             'REQUEST_METHOD' => 'OPTIONS',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -54,7 +54,7 @@ class ServerPluginTest extends AbstractServer {
             'X-Sabre-Version' => Version::VERSION,
         ),$this->response->headers);
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('OPTIONS',$this->testPlugin->beforeMethod);
 

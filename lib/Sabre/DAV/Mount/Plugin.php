@@ -77,7 +77,8 @@ class Plugin extends DAV\ServerPlugin {
         echo "<dm:mount xmlns:dm=\"http://purl.org/NET/webdav/mount\">\n";
         echo "  <dm:url>", htmlspecialchars($uri, ENT_NOQUOTES, 'UTF-8'), "</dm:url>\n";
         echo "</dm:mount>";
-        $this->server->httpResponse->sendBody(ob_get_clean());
+        $this->server->httpResponse->setBody(ob_get_clean());
+        $this->server->httpResponse->send();
 
     }
 

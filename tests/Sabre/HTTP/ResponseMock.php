@@ -14,8 +14,19 @@ namespace Sabre\HTTP;
 class ResponseMock extends Response {
 
     /**
-     * Making this one public.
+     * Making these public.
      */
     public $body;
+    public $status;
+    public $headers = [];
+
+    /**
+     * Overriding this so nothing is ever echo'd.
+     *
+     * @return void
+     */
+    public function send() {
+
+    }
 
 }

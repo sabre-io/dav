@@ -188,7 +188,8 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         $hR->setHeader('Content-Length',filesize($tempLocation));
         $hR->setHeader('X-Sabre-Temp','true');
         $hR->setStatus(200);
-        $hR->sendBody(fopen($tempLocation,'r'));
+        $hR->setBody(fopen($tempLocation,'r'));
+        $hR->send();
         return false;
 
     }
@@ -271,7 +272,8 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
          );
 
         $data = $this->server->generateMultiStatus(array($properties));
-        $hR->sendBody($data);
+        $hR->setBody($data);
+        $hR->send();
         return false;
 
     }

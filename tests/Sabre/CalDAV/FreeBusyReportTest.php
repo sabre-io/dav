@@ -42,35 +42,35 @@ ics
         );
         rewind($obj2);
 
-        $calendarData = array(
-            1 => array(
-                'obj1' => array(
+        $calendarData = [
+            1 => [ 
+                'obj1' => [
                     'calendarid' => 1,
                     'uri' => 'event1.ics',
                     'calendardata' => $obj1,
-                 ),
-                'obj2' => array(
+                ],
+                'obj2' => [ 
                     'calendarid' => 1,
                     'uri' => 'event2.ics',
                     'calendardata' => $obj2
-                )
-            ),
-        );
+                ] 
+            ],
+        ];
 
 
-        $caldavBackend = new Backend\Mock(array(), $calendarData);
+        $caldavBackend = new Backend\Mock([], $calendarData);
 
-        $calendar = new Calendar($caldavBackend, array(
+        $calendar = new Calendar($caldavBackend, [ 
             'id' => 1,
             'uri' => 'calendar',
             'principaluri' => 'principals/user1',
-        ));
+        ]);
 
-        $this->server = new DAV\Server(array($calendar));
+        $this->server = new DAV\Server([$calendar]);
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_URI' => '/calendar',
-        ));
+        ]);
         $this->server->httpRequest = $request;
         $this->server->httpResponse = new HTTP\ResponseMock();
 
@@ -92,7 +92,7 @@ XML;
         $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
-        $this->assertEquals('HTTP/1.1 200 OK', $this->server->httpResponse->status);
+        $this->assertEquals('200 OK', $this->server->httpResponse->status);
         $this->assertEquals('text/calendar', $this->server->httpResponse->headers['Content-Type']);
         $this->assertTrue(strpos($this->server->httpResponse->body,'BEGIN:VFREEBUSY')!==false);
 
@@ -119,7 +119,7 @@ XML;
      */
     function testFreeBusyReportWrongNode() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_URI' => '/',
         ));
         $this->server->httpRequest = $request;

@@ -47,9 +47,9 @@ END:VCALENDAR',
             new CalendarRootNode($principalBackend, $caldavBackend),
         );
 
-        $this->request = new HTTP\Request(array(
+        $this->request = HTTP\Request::createFromServerArray([
             'CONTENT_TYPE' => 'text/calendar',
-        ));
+        ]);
         $this->response = new HTTP\ResponseMock();
 
         $this->server = new DAV\Server($tree);
@@ -79,7 +79,7 @@ END:VCALENDAR',
 
     function testWrongContentType() {
 
-        $this->server->httpRequest = new HTTP\Request(array(
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/plain',
         ));
 
@@ -219,7 +219,7 @@ ICS;
         $this->request->setBody($body);
         $this->assertFalse($this->plugin->unknownMethod('POST','calendars/user1/outbox'));
 
-        $this->assertEquals('HTTP/1.1 200 OK' , $this->response->status);
+        $this->assertEquals('200 OK' , $this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml',
         ), $this->response->headers);
@@ -259,7 +259,7 @@ ICS;
         $this->request->setBody($body);
         $this->assertFalse($this->plugin->unknownMethod('POST','calendars/user1/outbox'));
 
-        $this->assertEquals('HTTP/1.1 200 OK' , $this->response->status);
+        $this->assertEquals('200 OK' , $this->response->status);
         $this->assertEquals([
             'Content-Type' => 'application/xml',
         ], $this->response->headers);

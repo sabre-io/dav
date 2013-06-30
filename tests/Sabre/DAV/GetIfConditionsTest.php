@@ -14,7 +14,7 @@ class GetIfConditionsTest extends AbstractServer {
         $serverVars = array(
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -29,7 +29,7 @@ class GetIfConditionsTest extends AbstractServer {
             'REQUEST_URI' => '/path/',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -61,7 +61,7 @@ class GetIfConditionsTest extends AbstractServer {
             'REQUEST_URI' => '/bla'
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -91,7 +91,7 @@ class GetIfConditionsTest extends AbstractServer {
             'HTTP_IF' => '<http://www.example.com/> (<opaquelocktoken:token1>)',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -122,7 +122,7 @@ class GetIfConditionsTest extends AbstractServer {
             'REQUEST_URI' => '/bla',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -157,7 +157,7 @@ class GetIfConditionsTest extends AbstractServer {
             'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) <http://www.example.org/node2> (Not <opaquelocktoken:token2>)',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -197,7 +197,7 @@ class GetIfConditionsTest extends AbstractServer {
             'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) (<opaquelocktoken:token2>) <http://www.example.org/node2> (Not <opaquelocktoken:token3>)',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -243,7 +243,7 @@ class GetIfConditionsTest extends AbstractServer {
             'REQUEST_URI' => '/foo',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -272,7 +272,7 @@ class GetIfConditionsTest extends AbstractServer {
             'HTTP_IF' => '<http://www.example.org/> (["etag1"]) (["etag2"])',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();
@@ -308,7 +308,7 @@ class GetIfConditionsTest extends AbstractServer {
                          '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) (["etag3"])',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
 
         $conditions = $this->server->getIfConditions();

@@ -57,7 +57,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -68,7 +68,7 @@ class PluginTest extends DAV\AbstractServer {
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 400 Bad request',$this->response->status);
+        $this->assertEquals('400 Bad request',$this->response->status);
 
     }
 
@@ -79,7 +79,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -95,7 +95,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
+        $this->assertEquals('200 OK',$this->response->status,'Got an incorrect status back. Response body: ' . $this->response->body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);
@@ -141,7 +141,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -161,7 +161,7 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status, 'Full response: ' . $this->response->body);
+        $this->assertEquals('423 Locked',$this->response->status, 'Full response: ' . $this->response->body);
 
     }
 
@@ -175,7 +175,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -198,7 +198,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
             'HTTP_IF' => '(' . $lockToken . ')',
         );
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
         $this->server->httpRequest = $request;
 
@@ -206,7 +206,7 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals('200 OK',$this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 
@@ -220,7 +220,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -236,7 +236,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
 
     }
 
@@ -250,7 +250,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'UNLOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -260,7 +260,7 @@ class PluginTest extends DAV\AbstractServer {
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 400 Bad request',$this->response->status);
+        $this->assertEquals('400 Bad request',$this->response->status);
 
     }
 
@@ -275,7 +275,7 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_LOCK_TOKEN' => '<opaquelocktoken:blablabla>',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -285,7 +285,7 @@ class PluginTest extends DAV\AbstractServer {
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 409 Conflict',$this->response->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals('409 Conflict',$this->response->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 
@@ -299,7 +299,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -315,14 +315,14 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -330,7 +330,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status);
+        $this->assertEquals('423 Locked',$this->response->status);
 
     }
 
@@ -339,7 +339,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testUnlock() {
 
-        $request = new HTTP\Request(array());
+        $request = HTTP\Request::createFromServerArray(array());
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -358,12 +358,12 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_LOCK_TOKEN' => $lockToken,
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->httpResponse = new HTTP\ResponseMock();
         $this->server->invokeMethod('UNLOCK', 'test.txt');
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals('204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
             'Content-Length' => '0',
             ),
@@ -378,7 +378,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testUnlockWindowsBug() {
 
-        $request = new HTTP\Request(array());
+        $request = HTTP\Request::createFromServerArray(array());
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -400,12 +400,12 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_LOCK_TOKEN' => $lockToken,
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->httpResponse = new HTTP\ResponseMock();
         $this->server->invokeMethod('UNLOCK', 'test.txt');
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals('204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
             'Content-Length' => '0',
             ),
@@ -420,7 +420,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockRetainOwner() {
 
-        $request = new HTTP\Request(array());
+        $request = HTTP\Request::createFromServerArray(array());
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -450,7 +450,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -466,7 +466,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
@@ -474,7 +474,7 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '(<opaquelocktoken:token1>)',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -482,8 +482,8 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        // $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status);
+        // $this->assertEquals('412 Precondition failed',$this->response->status);
+        $this->assertEquals('423 Locked',$this->response->status);
 
     }
 
@@ -497,7 +497,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -513,18 +513,18 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir',
             'REQUEST_METHOD' => 'DELETE',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status);
+        $this->assertEquals('423 Locked',$this->response->status);
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -538,7 +538,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -554,7 +554,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -562,11 +562,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '(' . $this->response->headers['Lock-Token'] . ')',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
+        $this->assertEquals('204 No Content',$this->response->status);
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -581,7 +581,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -597,7 +597,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -605,11 +605,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('201 Created',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -623,7 +623,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -639,7 +639,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -647,11 +647,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -666,7 +666,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -682,7 +682,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -690,11 +690,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -709,7 +709,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -725,7 +725,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -734,11 +734,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '(' . $this->response->headers['Lock-Token'] . ')',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'A valid lock-token was provided for the source, so this MOVE operation must succeed. Full response body: ' . $this->response->body);
+        $this->assertEquals('201 Created',$this->response->status,'A valid lock-token was provided for the source, so this MOVE operation must succeed. Full response body: ' . $this->response->body);
 
     }
 
@@ -752,7 +752,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -768,7 +768,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -776,11 +776,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_DESTINATION' => '/dir/child2.txt',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
+        $this->assertEquals('423 Locked',$this->response->status,'Copy must succeed if only the source is locked, but not the destination');
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -795,7 +795,7 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_DEPTH' => 'infinite',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -811,7 +811,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/dir/child.txt',
@@ -820,11 +820,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '</dir> (' . $this->response->headers['Lock-Token'] . ')',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status,'We locked the parent of both the source and destination, but the move didn\'t succeed.');
+        $this->assertEquals('201 Created',$this->response->status,'We locked the parent of both the source and destination, but the move didn\'t succeed.');
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
 
     }
@@ -839,7 +839,7 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -855,7 +855,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
 
         $serverVars = array(
             'REQUEST_URI'    => '/test.txt',
@@ -863,7 +863,7 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '('.$this->response->headers['Lock-Token'].')',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -871,7 +871,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status);
+        $this->assertEquals('204 No Content',$this->response->status);
 
     }
 
@@ -883,11 +883,11 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '(["etag1"])',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
-        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+        $this->assertEquals('412 Precondition failed',$this->response->status);
 
     }
 
@@ -907,17 +907,17 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '(["'.$etag.'"])',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status, 'Incorrect status received. Full response body:' . $this->response->body);
+        $this->assertEquals('204 No Content',$this->response->status, 'Incorrect status received. Full response body:' . $this->response->body);
 
     }
 
     function testGetTimeoutHeader() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'HTTP_TIMEOUT' => 'second-100',
         ));
 
@@ -929,7 +929,7 @@ class PluginTest extends DAV\AbstractServer {
 
     function testGetTimeoutHeaderNotSet() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
         ));
 
         $this->server->httpRequest = $request;
@@ -940,7 +940,7 @@ class PluginTest extends DAV\AbstractServer {
 
     function testGetTimeoutHeaderInfinite() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'HTTP_TIMEOUT' => 'infinite',
         ));
 
@@ -954,7 +954,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testGetTimeoutHeaderInvalid() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'HTTP_TIMEOUT' => 'yourmom',
         ));
 

@@ -292,7 +292,8 @@ class Server extends EventEmitter {
 
             $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->setHeaders($headers);
-            $this->httpResponse->sendBody($DOM->saveXML());
+            $this->httpResponse->setBody($DOM->saveXML());
+            $this->httpResponse->send();
 
         }
 
@@ -612,14 +613,16 @@ class Server extends EventEmitter {
             $this->httpResponse->setHeader('Content-Length', $end-$start+1);
             $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
             $this->httpResponse->setStatus(206);
-            $this->httpResponse->sendBody($newStream);
+            $this->httpResponse->setBody($newStream);
+            $this->httpResponse->send();
 
 
         } else {
 
             if ($nodeSize) $this->httpResponse->setHeader('Content-Length',$nodeSize);
             $this->httpResponse->setStatus(200);
-            $this->httpResponse->sendBody($body);
+            $this->httpResponse->setBody($body);
+            $this->httpResponse->send();
 
         }
 
@@ -714,7 +717,8 @@ class Server extends EventEmitter {
         $minimal = $prefer['return-minimal'];
 
         $data = $this->generateMultiStatus($newProperties, $minimal);
-        $this->httpResponse->sendBody($data);
+        $this->httpResponse->setBody($data);
+        $this->httpResponse->send();
 
     }
 
@@ -762,9 +766,10 @@ class Server extends EventEmitter {
         $this->httpResponse->setStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
 
-        $this->httpResponse->sendBody(
+        $this->httpResponse->setBody(
             $this->generateMultiStatus([$result])
         );
+        $this->httpResponse->send();
 
     }
 
@@ -952,9 +957,10 @@ class Server extends EventEmitter {
             $this->httpResponse->setStatus(207);
             $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
 
-            $this->httpResponse->sendBody(
+            $this->httpResponse->setBody(
                 $this->generateMultiStatus([$result])
             );
+            $this->httpResponse->send();
 
         } else {
             $this->httpResponse->setHeader('Content-Length','0');

@@ -21,13 +21,13 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals('0', $this->response->headers['Content-Length']);
 
         $this->assertEquals('Testing new file',file_get_contents(SABRE_TEMPDIR . '/testput.txt'));
@@ -42,13 +42,13 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
@@ -66,13 +66,13 @@ class TemporaryFileFilterTest extends AbstractServer {
             'HTTP_IF_NONE_MATCH' => '*',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
@@ -82,7 +82,7 @@ class TemporaryFileFilterTest extends AbstractServer {
 
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+        $this->assertEquals('412 Precondition failed',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
             'Content-Type' => 'application/xml; charset=utf-8',
@@ -98,13 +98,13 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
@@ -114,11 +114,11 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
             'Content-Length' => 16,
@@ -142,7 +142,7 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'LOCK',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
 
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
@@ -156,7 +156,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
         $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
         $this->assertEquals('true',$this->response->headers['X-Sabre-Temp']);
@@ -173,13 +173,13 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
@@ -189,11 +189,11 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'DELETE',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 204 No Content',$this->response->status, "Incorrect status code received. Full body:\n". $this->response->body);
+        $this->assertEquals('204 No Content',$this->response->status, "Incorrect status code received. Full body:\n". $this->response->body);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
@@ -210,13 +210,13 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'PUT',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('HTTP/1.1 201 Created',$this->response->status);
+        $this->assertEquals('201 Created',$this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
         ),$this->response->headers);
@@ -226,12 +226,12 @@ class TemporaryFileFilterTest extends AbstractServer {
             'REQUEST_METHOD' => 'PROPFIND',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Incorrect status code returned. Body: ' . $this->response->body);
+        $this->assertEquals('207 Multi-Status',$this->response->status,'Incorrect status code returned. Body: ' . $this->response->body);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
             'Content-Type' => 'application/xml; charset=utf-8',

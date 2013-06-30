@@ -63,19 +63,16 @@ abstract class AbstractBasic implements BackendInterface {
      */
     public function authenticate(DAV\Server $server, $realm) {
 
-        $auth = new HTTP\BasicAuth();
-        $auth->setHTTPRequest($server->httpRequest);
-        $auth->setHTTPResponse($server->httpResponse);
-        $auth->setRealm($realm);
-        $userpass = $auth->getUserPass();
+        $auth = new HTTP\Auth\Basic($realm);
+        $userpass = $auth->getCredentials($server->httpRequest);
         if (!$userpass) {
-            $auth->requireLogin();
+            $auth->requireLogin($server->httpResponse);
             throw new DAV\Exception\NotAuthenticated('No basic authentication headers were found');
         }
 
         // Authenticates the user
         if (!$this->validateUserPass($userpass[0],$userpass[1])) {
-            $auth->requireLogin();
+            $auth->requireLogin($server->httpResponse);
             throw new DAV\Exception\NotAuthenticated('Username or password does not match');
         }
         $this->currentUser = $userpass[0];

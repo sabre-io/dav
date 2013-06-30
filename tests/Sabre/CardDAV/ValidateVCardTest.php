@@ -52,20 +52,20 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type', $response->status);
+        $this->assertEquals('415 Unsupported Media Type', $response->status);
 
     }
 
     function testCreateFileValid() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -73,7 +73,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals('201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $expected = array(
             'uri'          => 'blabla.vcf',
             'carddata' => "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n",
@@ -85,7 +85,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileNoUID() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -93,14 +93,14 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals('400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
 
     function testCreateFileVCalendar() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -108,28 +108,28 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals('415 Unsupported Media Type', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
     function testUpdateFile() {
 
         $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type', $response->status);
+        $this->assertEquals('415 Unsupported Media Type', $response->status);
 
     }
 
     function testUpdateFileParsableBody() {
 
         $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
         ));
@@ -138,7 +138,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 204 No Content', $response->status);
+        $this->assertEquals('204 No Content', $response->status);
 
         $expected = array(
             'uri'          => 'blabla.vcf',

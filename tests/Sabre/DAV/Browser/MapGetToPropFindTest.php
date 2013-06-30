@@ -23,7 +23,7 @@ class MapGetToPropFindTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();
@@ -36,7 +36,7 @@ class MapGetToPropFindTest extends DAV\AbstractServer {
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status',$this->response->status,'Incorrect status response received. Full response body: ' . $this->response->body);
+        $this->assertEquals('207 Multi-Status',$this->response->status,'Incorrect status response received. Full response body: ' . $this->response->body);
 
     }
 

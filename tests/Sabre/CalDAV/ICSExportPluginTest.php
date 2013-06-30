@@ -26,14 +26,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
 
-        $props = array(
+        $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
             'id' => 1,
-        );
-        $tree = array(
+        ];
+        $tree = [
             new Calendar($cbackend,$props),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -41,19 +41,19 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = new HTTP\Request(array(
-            'QUERY_STRING' => 'export',
-        ));
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/?export',
+        ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
 
         $this->assertFalse($p->beforeMethod('GET','UUID-123467?export'));
 
-        $this->assertEquals('HTTP/1.1 200 OK',$s->httpResponse->status);
-        $this->assertEquals(array(
+        $this->assertEquals('200 OK',$s->httpResponse->status);
+        $this->assertEquals([
             'Content-Type' => 'text/calendar',
-        ), $s->httpResponse->headers);
+        ], $s->httpResponse->headers);
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
@@ -71,14 +71,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
 
-        $props = array(
+        $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
             'id' => 1,
-        );
-        $tree = array(
+        ];
+        $tree = [
             new Calendar($cbackend,$props),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -87,9 +87,9 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = new HTTP\Request(array(
-            'QUERY_STRING' => 'export',
-        ));
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/?export',
+        ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
@@ -98,10 +98,10 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($p->beforeMethod('GET','UUID-123467?export'));
         DAV\Server::$exposeVersion = true;
 
-        $this->assertEquals('HTTP/1.1 200 OK',$s->httpResponse->status);
-        $this->assertEquals(array(
+        $this->assertEquals('200 OK',$s->httpResponse->status);
+        $this->assertEquals([
             'Content-Type' => 'text/calendar',
-        ), $s->httpResponse->headers);
+        ], $s->httpResponse->headers);
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
@@ -161,9 +161,9 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
 
-        $h = new HTTP\Request(array(
-            'QUERY_STRING' => 'export',
-        ));
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/?export',
+        ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
@@ -199,18 +199,18 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         // Forcing login
         $s->getPlugin('acl')->adminPrincipals = array('principals/admin');
 
-        $h = new HTTP\Request(array(
-            'QUERY_STRING' => 'export',
-            'REQUEST_URI' => '/UUID-123467',
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
-        ));
+        ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
 
         $s->exec();
 
-        $this->assertEquals('HTTP/1.1 200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);

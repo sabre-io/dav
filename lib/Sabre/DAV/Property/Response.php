@@ -187,7 +187,7 @@ class Response extends DAV\Property implements IHref {
 
             }
 
-            $xpropstat->appendChild($document->createElement('d:status',HTTP\Response::$statusCodes[$httpStatus]));
+            $xpropstat->appendChild($document->createElement('d:status','HTTP/1.1 ' . $httpStatus . ' ' . HTTP\Response::$statusCodes[$httpStatus]));
 
         }
 

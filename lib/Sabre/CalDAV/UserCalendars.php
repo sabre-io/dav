@@ -2,8 +2,10 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\HTTP\URLUtil;
 
 /**
  * The UserCalenders class contains all calendars associated to one user
@@ -48,7 +50,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
      */
     public function getName() {
 
-        list(,$name) = DAV\URLUtil::splitPath($this->principalInfo['uri']);
+        list(,$name) = URLUtil::splitPath($this->principalInfo['uri']);
         return $name;
 
     }

@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV;
 
+use Sabre\HTTP\URLUtil;
+
 /**
  * ObjectTree class
  *

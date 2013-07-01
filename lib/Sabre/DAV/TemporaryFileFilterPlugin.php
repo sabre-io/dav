@@ -2,6 +2,9 @@
 
 namespace Sabre\DAV;
 
+use
+    Sabre\HTTP\URLUtil;
+
 /**
  * Temporary File Filter Plugin
  *

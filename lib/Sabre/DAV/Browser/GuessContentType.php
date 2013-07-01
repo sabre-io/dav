@@ -2,7 +2,9 @@
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\DAV;
+use
+    Sabre\HTTP\URLUtil,
+    Sabre\DAV;
 
 /**
  * GuessContentType plugin
@@ -69,7 +71,7 @@ class GuessContentType extends DAV\ServerPlugin {
 
         if (array_key_exists('{DAV:}getcontenttype', $properties[404])) {
 
-            list(, $fileName) = DAV\URLUtil::splitPath($path);
+            list(, $fileName) = URLUtil::splitPath($path);
             $contentType = $this->getContentType($fileName);
 
             if ($contentType) {

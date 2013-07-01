@@ -2,7 +2,9 @@
 
 namespace Sabre\DAV\FS;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Base node-class
@@ -42,7 +44,7 @@ abstract class Node implements DAV\INode {
      */
     public function getName() {
 
-        list(, $name)  = DAV\URLUtil::splitPath($this->path);
+        list(, $name)  = URLUtil::splitPath($this->path);
         return $name;
 
     }
@@ -55,8 +57,8 @@ abstract class Node implements DAV\INode {
      */
     public function setName($name) {
 
-        list($parentPath, ) = DAV\URLUtil::splitPath($this->path);
-        list(, $newName) = DAV\URLUtil::splitPath($name);
+        list($parentPath, ) = URLUtil::splitPath($this->path);
+        list(, $newName) = URLUtil::splitPath($name);
 
         $newPath = $parentPath . '/' . $newName;
         rename($this->path,$newPath);

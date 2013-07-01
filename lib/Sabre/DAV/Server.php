@@ -4,6 +4,7 @@ namespace Sabre\DAV;
 
 use
     Sabre\HTTP,
+    Sabre\HTTP\URLUtil,
     Sabre\Event\EventEmitter;
 
 /**
@@ -207,6 +208,7 @@ class Server extends EventEmitter {
         }
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = HTTP\Request::createFromPHPRequest();
+        //$this->addPlugin(new CorePlugin());
 
     }
 
@@ -429,6 +431,7 @@ class Server extends EventEmitter {
         $method = strtoupper($method);
 
         if (!$this->emit('beforeMethod',[$method, $uri])) return;
+
 
         // Make sure this is a HTTP method we support
         $internalMethods = [

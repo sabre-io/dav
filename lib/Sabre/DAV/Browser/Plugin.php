@@ -2,7 +2,9 @@
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Browser Plugin
@@ -169,7 +171,7 @@ class Plugin extends DAV\ServerPlugin {
                 case 'mkcol' :
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         // Using basename() because we won't allow slashes
-                        list(, $folderName) = DAV\URLUtil::splitPath(trim($postVars['name']));
+                        list(, $folderName) = URLUtil::splitPath(trim($postVars['name']));
                         $this->server->createDirectory($uri . '/' . $folderName);
                     }
                     break;
@@ -177,12 +179,12 @@ class Plugin extends DAV\ServerPlugin {
                     if ($_FILES) $file = current($_FILES);
                     else break;
 
-                    list(, $newName) = DAV\URLUtil::splitPath(trim($file['name']));
+                    list(, $newName) = URLUtil::splitPath(trim($file['name']));
                     if (isset($postVars['name']) && trim($postVars['name']))
                         $newName = trim($postVars['name']);
 
                     // Making sure we only have a 'basename' component
-                    list(, $newName) = DAV\URLUtil::splitPath($newName);
+                    list(, $newName) = URLUtil::splitPath($newName);
 
                     if (is_uploaded_file($file['tmp_name'])) {
                         $this->server->createFile($uri . '/' . $newName, fopen($file['tmp_name'],'r'));
@@ -257,8 +259,8 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($path) {
 
-            list($parentUri) = DAV\URLUtil::splitPath($path);
-            $fullPath = DAV\URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+            list($parentUri) = URLUtil::splitPath($path);
+            $fullPath = URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
 
             $icon = $this->enableAssets?'<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl('icons/parent' . $this->iconExtension) . '" width="24" alt="Parent" /></a>':'';
             $html.= "<tr>
@@ -276,7 +278,7 @@ class Plugin extends DAV\ServerPlugin {
             // This is the current directory, we can skip it
             if (rtrim($file['href'],'/')==$path) continue;
 
-            list(, $name) = DAV\URLUtil::splitPath($file['href']);
+            list(, $name) = URLUtil::splitPath($file['href']);
 
             $type = null;
 
@@ -337,7 +339,7 @@ class Plugin extends DAV\ServerPlugin {
             $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
             $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(\DateTime::ATOM):'';
 
-            $fullPath = DAV\URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
+            $fullPath = URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
 
             $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
 

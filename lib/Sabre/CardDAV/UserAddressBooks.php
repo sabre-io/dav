@@ -2,8 +2,10 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\HTTP\URLUtil;
 
 /**
  * UserAddressBooks class
@@ -50,7 +52,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      */
     public function getName() {
 
-        list(,$name) = DAV\URLUtil::splitPath($this->principalUri);
+        list(,$name) = URLUtil::splitPath($this->principalUri);
         return $name;
 
     }

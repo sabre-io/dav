@@ -5,7 +5,8 @@ namespace Sabre\CalDAV;
 use
     Sabre\DAV,
     Sabre\DAVACL,
-    Sabre\VObject;
+    Sabre\VObject,
+    Sabre\HTTP\URLUtil;
 
 /**
  * CalDAV plugin
@@ -83,7 +84,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // The MKCALENDAR is only available on unmapped uri's, whose
         // parents extend IExtendedCollection
-        list($parent, $name) = DAV\URLUtil::splitPath($uri);
+        list($parent, $name) = URLUtil::splitPath($uri);
 
         $node = $this->server->tree->getNodeForPath($parent);
 
@@ -109,7 +110,7 @@ class Plugin extends DAV\ServerPlugin {
     public function getCalendarHomeForPrincipal($principalUrl) {
 
         // The default is a bit naive, but it can be overwritten.
-        list(, $nodeName) = DAV\URLUtil::splitPath($principalUrl);
+        list(, $nodeName) = URLUtil::splitPath($principalUrl);
 
         return self::CALENDAR_ROOT . '/' . $nodeName;
 
@@ -413,10 +414,10 @@ class Plugin extends DAV\ServerPlugin {
                     // group, we grab the parent principal and add it to the
                     // list.
                     if ($groupNode instanceof Principal\IProxyRead) {
-                        list($readList[]) = DAV\URLUtil::splitPath($group);
+                        list($readList[]) = URLUtil::splitPath($group);
                     }
                     if ($groupNode instanceof Principal\IProxyWrite) {
-                        list($writeList[]) = DAV\URLUtil::splitPath($group);
+                        list($writeList[]) = URLUtil::splitPath($group);
                     }
 
                 }
@@ -869,7 +870,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         // Get the Supported Components for the target calendar
-        list($parentPath,$object) = DAV\URLUtil::splitPath($path);
+        list($parentPath,$object) = URLUtil::splitPath($path);
         $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
         $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
 

@@ -4,7 +4,8 @@ namespace Sabre\DAV\Property;
 
 use
     Sabre\DAV,
-    Sabre\HTTP;
+    Sabre\HTTP,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Response property
@@ -116,7 +117,7 @@ class Response extends DAV\Property implements IHref {
         $xresponse = $document->createElement('d:response');
         $dom->appendChild($xresponse);
 
-        $uri = DAV\URLUtil::encodePath($this->href);
+        $uri = URLUtil::encodePath($this->href);
 
         // Adding the baseurl to the beginning of the url
         $uri = $server->getBaseUri() . $uri;

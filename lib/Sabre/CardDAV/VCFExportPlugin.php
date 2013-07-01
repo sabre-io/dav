@@ -2,8 +2,11 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
-use Sabre\VObject;
+use
+    Sabre\DAV,
+    Sabre\VObject,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * VCF Exporter
@@ -35,29 +38,28 @@ class VCFExportPlugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'beforeMethod'), 90);
+        $this->server->on('method:GET', [$this,'httpGet'], 90);
 
     }
 
     /**
-     * 'beforeMethod' event handles. This event handles intercepts GET requests ending
-     * with ?export
+     * Intercepts GET requests on addressbook urls ending with ?export.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod($method, $uri) {
-
-        if ($method!='GET') return;
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $queryParams = $this->server->httpRequest->getQueryParameters();
         if (!array_key_exists('export', $queryParams)) return;
 
-        // splitting uri
-        list($uri) = explode('?',$uri,2);
+        $path = $request->getPath();
 
-        $node = $this->server->tree->getNodeForPath($uri);
+        // splitting uri
+        list($path) = explode('?',$path,2);
+
+        $node = $this->server->tree->getNodeForPath($path);
 
         if (!($node instanceof IAddressBook)) return;
 
@@ -65,18 +67,18 @@ class VCFExportPlugin extends DAV\ServerPlugin {
 
         // Checking ACL, if available.
         if ($aclPlugin = $this->server->getPlugin('acl')) {
-            $aclPlugin->checkPrivileges($uri, '{DAV:}read');
+            $aclPlugin->checkPrivileges($path, '{DAV:}read');
         }
 
-        $this->server->httpResponse->setHeader('Content-Type','text/directory');
-        $this->server->httpResponse->setStatus(200);
+        $response->setHeader('Content-Type','text/directory');
+        $response->setStatus(200);
 
-        $nodes = $this->server->getPropertiesForPath($uri, array(
+        $nodes = $this->server->getPropertiesForPath($path, array(
             '{' . Plugin::NS_CARDDAV . '}address-data',
         ),1);
 
-        $this->server->httpResponse->setBody($this->generateVCF($nodes));
-        $this->server->httpResponse->send();
+        $response->setBody($this->generateVCF($nodes));
+        $response->send();
 
         // Returning false to break the event chain
         return false;

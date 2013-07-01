@@ -1027,8 +1027,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param string $uri
-     * @return void
+     * @return bool
      */
     public function httpAcl(RequestInterface $request, ResponseInterface $response) {
 

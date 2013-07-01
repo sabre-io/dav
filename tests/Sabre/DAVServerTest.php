@@ -122,7 +122,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function request($request) {
 
         if (is_array($request)) {
-            $request = new HTTP\Request($request);
+            $request = HTTP\Request::createFromServerArray($request);
         }
         $this->server->httpRequest = $request;
         $this->server->httpResponse = new HTTP\ResponseMock();
@@ -176,7 +176,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function assertHTTPStatus($expectedStatus, HTTP\Request $req) {
 
         $resp = $this->request($req);
-        $this->assertEquals($resp->getStatusMessage($expectedStatus), $resp->status,'Incorrect HTTP status received: ' . $resp->body);
+        $this->assertEquals($resp->getStatus(), $resp->status,'Incorrect HTTP status received: ' . $resp->body);
 
     }
 

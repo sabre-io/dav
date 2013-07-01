@@ -58,7 +58,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node1',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -66,7 +66,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status,'Incorrect status code received. Full body: ' . $server->httpResponse->body);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status,'Incorrect status code received. Full body: ' . $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
@@ -120,7 +120,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node1',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -128,7 +128,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status, 'Incorrect response status received. Full response body: ' . $server->httpResponse->body);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status, 'Incorrect response status received. Full response body: ' . $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
@@ -184,7 +184,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node2',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -192,7 +192,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
@@ -251,7 +251,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/node2',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -259,7 +259,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);

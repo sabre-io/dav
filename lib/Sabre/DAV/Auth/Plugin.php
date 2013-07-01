@@ -105,12 +105,9 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * This method is called before any HTTP method and forces users to be authenticated
      *
-     * @param string $method
-     * @param string $uri
-     * @throws Sabre\DAV\Exception\NotAuthenticated
      * @return bool
      */
-    public function beforeMethod($method, $uri) {
+    public function beforeMethod() {
 
         $this->authBackend->authenticate($this->server,$this->getRealm());
 

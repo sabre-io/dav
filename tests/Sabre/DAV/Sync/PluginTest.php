@@ -69,7 +69,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         // Making a change
         $this->collection->addChange(['file1.txt'], [], []);
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -90,7 +90,7 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('207 Multi-Status', $response->status, 'Full response body:' . $response->body);
 
         $dom = DAV\XMLUtil::loadDOMDocument(
             $response->body
@@ -139,7 +139,7 @@ BLA;
         // Making another change
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -160,7 +160,7 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('207 Multi-Status', $response->status, 'Full response body:' . $response->body);
 
         $dom = DAV\XMLUtil::loadDOMDocument(
             $response->body
@@ -205,7 +205,7 @@ BLA;
         // Making another change
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -227,7 +227,7 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('207 Multi-Status', $response->status, 'Full response body:' . $response->body);
 
         $dom = DAV\XMLUtil::loadDOMDocument(
             $response->body
@@ -262,7 +262,7 @@ BLA;
         // Making another change
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'   => 'application/xml',
@@ -283,7 +283,7 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('207 Multi-Status', $response->status, 'Full response body:' . $response->body);
 
         $dom = DAV\XMLUtil::loadDOMDocument(
             $response->body
@@ -323,7 +323,7 @@ BLA;
 
     public function testSyncNoSyncInfo() {
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -346,13 +346,13 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('403 Forbidden', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testSyncNoSyncCollection() {
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/normalcoll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -375,14 +375,14 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('403 Forbidden', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testSyncInvalidToken() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -405,13 +405,13 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('403 Forbidden', $response->status, 'Full response body:' . $response->body);
 
     }
     public function testSyncInvalidTokenNoPrefix() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -434,13 +434,13 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('403 Forbidden', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testSyncNoSyncToken() {
 
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'    => 'application/xml',
@@ -462,14 +462,14 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('400 Bad request', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testSyncNoProp() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI'    => '/coll/',
             'CONTENT_TYPE'   => 'application/xml',
@@ -489,14 +489,14 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('400 Bad request', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testIfConditions() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
             'HTTP_IF'        => '</coll> (<http://sabredav.org/ns/sync/1>)',
@@ -506,14 +506,14 @@ BLA;
         // If a 403 is thrown this works correctly. The file in questions
         // doesn't allow itself to be deleted.
         // If the If conditions failed, it would have been a 412 instead.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status);
+        $this->assertEquals('403 Forbidden', $response->status);
 
     }
 
     public function testIfConditionsNot() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
             'HTTP_IF'        => '</coll> (Not <http://sabredav.org/ns/sync/2>)',
@@ -523,21 +523,21 @@ BLA;
         // If a 403 is thrown this works correctly. The file in questions
         // doesn't allow itself to be deleted.
         // If the If conditions failed, it would have been a 412 instead.
-        $this->assertEquals('HTTP/1.1 403 Forbidden', $response->status);
+        $this->assertEquals('403 Forbidden', $response->status);
 
     }
 
     public function testIfConditionsNoSyncToken() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = new HTTP\Request([
+        $request = HTTP\Request::createFromServerArray([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
             'HTTP_IF'        => '</coll> (<opaquelocktoken:foo>)',
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 412 Precondition failed', $response->status);
+        $this->assertEquals('412 Precondition failed', $response->status);
 
     }
 }

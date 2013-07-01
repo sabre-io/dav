@@ -2,6 +2,10 @@
 
 namespace Sabre\DAV;
 
+use
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
+
 class TestPlugin extends ServerPlugin {
 
     public $beforeMethod;
@@ -24,9 +28,9 @@ class TestPlugin extends ServerPlugin {
 
     }
 
-    function beforeMethod($method) {
+    function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $this->beforeMethod = $method;
+        $this->beforeMethod = $request->getMethod();
         return true;
 
     }

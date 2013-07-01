@@ -2,7 +2,9 @@
 
 namespace Sabre\DAVACL;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Principal class
@@ -141,7 +143,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
     public function getName() {
 
         $uri = $this->principalProperties['uri'];
-        list(, $name) = DAV\URLUtil::splitPath($uri);
+        list(, $name) = URLUtil::splitPath($uri);
         return $name;
 
     }

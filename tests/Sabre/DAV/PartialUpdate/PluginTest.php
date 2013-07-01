@@ -36,27 +36,25 @@ class PluginTest extends \Sabre\DAVServerTest {
         $this->assertEquals(array(
         ), $this->plugin->getHTTPMethods(''));
 
-        $this->assertNull($this->plugin->unknownMethod('FOO','partial'));
-
     }
 
     public function testPatchNoRange() {
 
         $this->node->put('00000000');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/partial',
         ));
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('400 Bad request', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchNotSupported() {
 
         $this->node->put('00000000');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/',
             'X_UPDATE_RANGE' => '3-4',
@@ -67,14 +65,14 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 405 Method Not Allowed', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('405 Method Not Allowed', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchNoContentType() {
 
         $this->node->put('00000000');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-4',
@@ -85,14 +83,14 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 415 Unsupported Media Type', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('415 Unsupported Media Type', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchBadRange() {
 
         $this->node->put('00000000');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-4',
@@ -103,14 +101,14 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 416 Requested Range Not Satisfiable', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('416 Requested Range Not Satisfiable', $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchSuccess() {
 
         $this->node->put('00000000');
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-5',
@@ -122,7 +120,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 204 No Content', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('204 No Content', $response->status, 'Full response body:' . $response->body);
         $this->assertEquals('00111000', $this->node->get());
 
     }

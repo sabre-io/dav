@@ -2,7 +2,10 @@
 
 namespace Sabre\DAV\Mount;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * This plugin provides support for RFC4709: Mounting WebDAV servers
@@ -31,7 +34,7 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'beforeMethod'), 90);
+        $this->server->on('method:GET', [$this,'httpGet'], 90);
 
     }
 
@@ -39,21 +42,21 @@ class Plugin extends DAV\ServerPlugin {
      * 'beforeMethod' event handles. This event handles intercepts GET requests ending
      * with ?mount
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod($method, $uri) {
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!='GET') return;
-        if ($this->server->httpRequest->getQueryString()!='mount') return;
+        $queryParams = $request->getQueryParameters();
+        if (!array_key_exists('mount', $queryParams)) return;
 
-        $currentUri = $this->server->httpRequest->getAbsoluteUri();
+        $currentUri = $request->getAbsoluteUrl();
 
         // Stripping off everything after the ?
         list($currentUri) = explode('?',$currentUri);
 
-        $this->davMount($currentUri);
+        $this->davMount($response, $currentUri);
 
         // Returning false to break the event chain
         return false;
@@ -66,16 +69,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri absolute uri
      * @return void
      */
-    public function davMount($uri) {
+    public function davMount(ResponseInterface $response, $uri) {
 
-        $this->server->httpResponse->sendStatus(200);
-        $this->server->httpResponse->setHeader('Content-Type','application/davmount+xml');
+        $response->setStatus(200);
+        $response->setHeader('Content-Type','application/davmount+xml');
         ob_start();
         echo '<?xml version="1.0"?>', "\n";
         echo "<dm:mount xmlns:dm=\"http://purl.org/NET/webdav/mount\">\n";
         echo "  <dm:url>", htmlspecialchars($uri, ENT_NOQUOTES, 'UTF-8'), "</dm:url>\n";
         echo "</dm:mount>";
-        $this->server->httpResponse->sendBody(ob_get_clean());
+        $response->setBody(ob_get_clean());
 
     }
 

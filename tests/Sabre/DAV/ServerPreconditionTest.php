@@ -16,7 +16,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MATCH' => '*',
             'REQUEST_URI'   => '/bar'
         ));
@@ -33,7 +33,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MATCH' => '*',
             'REQUEST_URI'   => '/foo'
         ));
@@ -51,7 +51,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MATCH' => '1234',
             'REQUEST_URI'   => '/foo'
         ));
@@ -68,7 +68,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -88,7 +88,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MATCH' => '\\"abc123\\"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -105,7 +105,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MATCH' => '"hellothere", "abc123"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -122,7 +122,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '*',
             'REQUEST_URI'   => '/bar'
         ));
@@ -140,7 +140,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '*',
             'REQUEST_URI'   => '/foo'
         ));
@@ -157,7 +157,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '"1234"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -174,7 +174,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '"1234", "5678"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -192,7 +192,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -210,7 +210,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '"1234", "abc123"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -227,7 +227,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_NONE_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
@@ -235,7 +235,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $server->httpResponse = new HTTP\ResponseMock();
 
         $this->assertFalse($server->checkPreconditions(true));
-        $this->assertEquals('HTTP/1.1 304 Not Modified',$server->httpResponse->status);
+        $this->assertEquals('304 Not Modified',$server->httpResponse->status);
 
     }
 
@@ -246,7 +246,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
@@ -254,7 +254,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $server->httpResponse = new HTTP\ResponseMock();
         $this->assertFalse($server->checkPreconditions());
 
-        $this->assertEquals('HTTP/1.1 304 Not Modified',$server->httpResponse->status);
+        $this->assertEquals('304 Not Modified',$server->httpResponse->status);
         $this->assertEquals(array(
             'Last-Modified' => 'Sat, 06 Apr 1985 23:30:00 GMT',
         ), $server->httpResponse->headers);
@@ -269,7 +269,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
@@ -286,7 +286,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
             'REQUEST_URI'   => '/foo'
         ));
@@ -305,7 +305,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
             'REQUEST_URI'   => '/foo'
         ));
@@ -323,7 +323,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
@@ -341,7 +341,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
@@ -358,7 +358,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = new HTTP\Request(array(
+        $httpRequest = HTTP\Request::createFromServerArray(array(
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',
             'REQUEST_URI'   => '/foo'
         ));

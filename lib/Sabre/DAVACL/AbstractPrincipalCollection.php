@@ -1,7 +1,10 @@
 <?php
 
 namespace Sabre\DAVACL;
-use Sabre\DAV;
+
+use
+    Sabre\DAV,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Principals Collection
@@ -77,7 +80,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      */
     public function getName() {
 
-        list(,$name) = DAV\URLUtil::splitPath($this->principalPrefix);
+        list(,$name) = URLUtil::splitPath($this->principalPrefix);
         return $name;
 
     }
@@ -145,7 +148,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
         $r = array();
 
         foreach($result as $row) {
-            list(, $r[]) = DAV\URLUtil::splitPath($row);
+            list(, $r[]) = URLUtil::splitPath($row);
         }
 
         return $r;

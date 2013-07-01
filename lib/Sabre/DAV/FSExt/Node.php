@@ -2,7 +2,9 @@
 
 namespace Sabre\DAV\FSExt;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Base node-class
@@ -75,7 +77,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      */
     protected function getResourceInfoPath() {
 
-        list($parentDir) = DAV\URLUtil::splitPath($this->path);
+        list($parentDir) = URLUtil::splitPath($this->path);
         return $parentDir . '/.sabredav';
 
     }
@@ -156,8 +158,8 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      */
     public function setName($name) {
 
-        list($parentPath, ) = DAV\URLUtil::splitPath($this->path);
-        list(, $newName) = DAV\URLUtil::splitPath($name);
+        list($parentPath, ) = URLUtil::splitPath($this->path);
+        list(, $newName) = URLUtil::splitPath($name);
         $newPath = $parentPath . '/' . $newName;
 
         // We're deleting the existing resourcedata, and recreating it

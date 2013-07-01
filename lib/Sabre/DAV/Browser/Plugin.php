@@ -157,7 +157,7 @@ class Plugin extends DAV\ServerPlugin {
             $contentType !== 'multipart/form-data') {
                 return;
         }
-        $postVars = $this->server->httpRequest->getPostVars();
+        $postVars = $this->server->httpRequest->getPostData();
 
         if (!isset($postVars['sabreAction']))
             return;

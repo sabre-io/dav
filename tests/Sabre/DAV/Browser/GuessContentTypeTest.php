@@ -18,7 +18,7 @@ class GuessContentTypeTest extends DAV\AbstractServer {
 
     function tearDown() {
 
-        unlink(SABRE_TEMPDIR . '/somefile.jpg');
+        \Sabre\TestUtil::clearTempDir();
         parent::tearDown();
     }
 

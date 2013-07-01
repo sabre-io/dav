@@ -200,7 +200,7 @@ class ServerRangeTest extends AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals(' 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }

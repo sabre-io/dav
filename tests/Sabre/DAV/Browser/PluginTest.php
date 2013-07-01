@@ -99,7 +99,8 @@ class PluginTest extends DAV\AbstractServer{
             'name' => 'new_collection',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars,$postVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request->setPostData($postVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 

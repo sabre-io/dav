@@ -42,7 +42,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
 </d:acl>';
@@ -60,7 +60,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
 </d:acl>';
@@ -81,7 +81,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -109,7 +109,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -134,7 +134,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -159,7 +159,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -192,7 +192,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -225,7 +225,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -258,7 +258,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
@@ -273,7 +273,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testSuccessComplex () {
+    function testSuccessComplex() {
 
         $oldACL = array(
             array(
@@ -296,7 +296,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         );
         $acl = new Plugin();
         $server = new DAV\Server($tree);
-        $server->httpRequest = HTTP\Request::createFromServerArray();
+        $server->httpRequest = new HTTP\Request();
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>

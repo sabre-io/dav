@@ -50,7 +50,7 @@ class Plugin extends DAV\ServerPlugin {
         $queryParams = $this->server->httpRequest->getQueryParameters();
         if (!array_key_exists('mount', $queryParams)) return;
 
-        $currentUri = $this->server->httpRequest->getAbsoluteUri();
+        $currentUri = $this->server->httpRequest->getAbsoluteUrl();
 
         // Stripping off everything after the ?
         list($currentUri) = explode('?',$currentUri);

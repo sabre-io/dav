@@ -192,7 +192,7 @@ class Plugin extends DAV\ServerPlugin {
             }
 
         }
-        $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUri());
+        $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUrl());
         $this->server->httpResponse->setStatus(302);
         return false;
 

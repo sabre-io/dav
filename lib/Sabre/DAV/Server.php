@@ -225,7 +225,7 @@ class Server extends EventEmitter {
             // This is mainly because nginx doesn't support Chunked Transfer
             // Encoding, and this forces the webserver SabreDAV is running on,
             // to buffer entire responses to calculate Content-Length.
-            $this->httpResponse->defaultHttpVersion = $this->httpRequest->getHTTPVersion();
+            $this->httpResponse->setHTTPVersion($this->httpRequest->getHTTPVersion());
 
             $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
 

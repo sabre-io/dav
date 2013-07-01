@@ -87,7 +87,8 @@ class ServerSimpleTest extends AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals('HTTP/1.0 200 OK',$this->response->status);
+        $this->assertEquals('200 OK',$this->response->status);
+        $this->assertEquals('1.0', $this->response->getHttpVersion());
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }
@@ -736,7 +737,7 @@ class ServerSimpleTest extends AbstractServer{
     function reportHandler($reportName) {
 
         if ($reportName=='{http://www.rooftopsolutions.nl/NS}myreport') {
-            $this->server->httpResponse->sendStatus(418);
+            $this->server->httpResponse->setStatus(418);
             $this->server->httpResponse->setHeader('testheader','testvalue');
             return false;
         }

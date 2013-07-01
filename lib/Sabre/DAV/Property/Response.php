@@ -124,7 +124,7 @@ class Response extends DAV\Property implements IHref {
         $xresponse->appendChild($document->createElement('d:href',$uri));
 
         if ($this->httpStatus) {
-            $statusString = HTTP\Response::$statusCodes[$this->httpStatus];
+            $statusString = "HTTP/1.1 " . $this->httpStatus . " " . HTTP\Response::$statusCodes[$this->httpStatus];
             $xresponse->appendChild($document->createElement('d:status', $statusString));
         }
 

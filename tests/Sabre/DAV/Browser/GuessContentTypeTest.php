@@ -10,6 +10,7 @@ class GuessContentTypeTest extends DAV\AbstractServer {
     function setUp() {
 
         parent::setUp();
+        \Sabre\TestUtil::clearTempDir();
         file_put_contents(SABRE_TEMPDIR . '/somefile.jpg','blabla');
         file_put_contents(SABRE_TEMPDIR . '/somefile.hoi','blabla');
 

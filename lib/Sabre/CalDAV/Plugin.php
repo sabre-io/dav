@@ -6,7 +6,9 @@ use
     Sabre\DAV,
     Sabre\DAVACL,
     Sabre\VObject,
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * CalDAV plugin
@@ -183,7 +185,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
 
-        $server->on('unknownMethod',       [$this,'unknownMethod']);
+        $server->on('method:MKCALENDAR',   [$this,'httpMkcalendar']);
+        $server->on('method:POST',         [$this,'httpPost']);
         $server->on('report',              [$this,'report']);
         $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
@@ -234,42 +237,34 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This function handles support for the MKCALENDAR method
+     * This method handles POST request for the outbox.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function unknownMethod($method, $uri) {
+    public function httpPost(RequestInterface $request, ResponseInterface $response) {
 
-        switch ($method) {
-            case 'MKCALENDAR' :
-                $this->httpMkCalendar($uri);
-                // false is returned to stop the propagation of the
-                // unknownMethod event.
-                return false;
-            case 'POST' :
-
-                // Checking if this is a text/calendar content type
-                $contentType = $this->server->httpRequest->getHeader('Content-Type');
-                if (strpos($contentType, 'text/calendar')!==0) {
-                    return;
-                }
-
-                // Checking if we're talking to an outbox
-                try {
-                    $node = $this->server->tree->getNodeForPath($uri);
-                } catch (DAV\Exception\NotFound $e) {
-                    return;
-                }
-                if (!$node instanceof Schedule\IOutbox)
-                    return;
-
-                $this->server->transactionType = 'post-caldav-outbox';
-                $this->outboxRequest($node, $uri);
-                return false;
-
+        // Checking if this is a text/calendar content type
+        $contentType = $request->getHeader('Content-Type');
+        if (strpos($contentType, 'text/calendar')!==0) {
+            return;
         }
+
+        $path = $request->getPath();
+
+        // Checking if we're talking to an outbox
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (DAV\Exception\NotFound $e) {
+            return;
+        }
+        if (!$node instanceof Schedule\IOutbox)
+            return;
+
+        $this->server->transactionType = 'post-caldav-outbox';
+        $this->outboxRequest($node, $path);
+        return false;
 
     }
 
@@ -305,10 +300,11 @@ class Plugin extends DAV\ServerPlugin {
      * This function handles the MKCALENDAR HTTP method, which creates
      * a new calendar.
      *
-     * @param string $uri
-     * @return void
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return bool
      */
-    public function httpMkCalendar($uri) {
+    public function httpMkCalendar(RequestInterface $request, ResponseInterface $response) {
 
         // Due to unforgivable bugs in iCal, we're completely disabling MKCALENDAR support
         // for clients matching iCal in the user agent
@@ -317,7 +313,9 @@ class Plugin extends DAV\ServerPlugin {
         //    throw new \Sabre\DAV\Exception\Forbidden('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
         //}
 
-        $body = $this->server->httpRequest->getBody(true);
+        $body = $request->getBody($asString = true);
+        $path = $request->getPath();
+
         $properties = array();
 
         if ($body) {
@@ -336,10 +334,13 @@ class Plugin extends DAV\ServerPlugin {
 
         $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
 
-        $this->server->createCollection($uri,$resourceType,$properties);
+        $this->server->createCollection($path,$resourceType,$properties);
 
         $this->server->httpResponse->setStatus(201);
         $this->server->httpResponse->setHeader('Content-Length',0);
+
+        // This breaks the method chain.
+        return false;
     }
 
     /**

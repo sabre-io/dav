@@ -2,7 +2,10 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * This plugin implements support for caldav sharing.
@@ -89,10 +92,10 @@ class SharingPlugin extends DAV\ServerPlugin {
             '{' . Plugin::NS_CALENDARSERVER . '}shared-url'
         );
 
-        $this->server->on('beforeGetProperties', array($this, 'beforeGetProperties'));
-        $this->server->on('afterGetProperties', array($this, 'afterGetProperties'));
-        $this->server->on('updateProperties', array($this, 'updateProperties'));
-        $this->server->on('unknownMethod', array($this,'unknownMethod'));
+        $this->server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
+        $this->server->on('afterGetProperties',  [$this, 'afterGetProperties']);
+        $this->server->on('updateProperties',    [$this, 'updateProperties']);
+        $this->server->on('method:POST',         [$this, 'httpPost']);
 
     }
 
@@ -251,34 +254,29 @@ class SharingPlugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This event is triggered when the server didn't know how to handle a
-     * certain request.
-     *
      * We intercept this to handle POST requests on calendars.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return null|bool
      */
-    public function unknownMethod($method, $uri) {
+    public function httpPost(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!=='POST') {
-            return;
-        }
+        $path = $request->getPath();
 
         // Only handling xml
-        $contentType = $this->server->httpRequest->getHeader('Content-Type');
+        $contentType = $request->getHeader('Content-Type');
         if (strpos($contentType,'application/xml')===false && strpos($contentType,'text/xml')===false)
             return;
 
         // Making sure the node exists
         try {
-            $node = $this->server->tree->getNodeForPath($uri);
+            $node = $this->server->tree->getNodeForPath($path);
         } catch (DAV\Exception\NotFound $e) {
             return;
         }
 
-        $requestBody = $this->server->httpRequest->getBody(true);
+        $requestBody = $request->getBody($asString = true);
 
         // If this request handler could not deal with this POST request, it
         // will return 'null' and other plugins get a chance to handle the
@@ -287,7 +285,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         // However, we already requested the full body. This is a problem,
         // because a body can only be read once. This is why we preemptively
         // re-populated the request body with the existing data.
-        $this->server->httpRequest->setBody($requestBody);
+        $request->setBody($requestBody);
 
         $dom = DAV\XMLUtil::loadDOMDocument($requestBody);
 
@@ -311,17 +309,17 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($uri, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}write');
                 }
 
                 $mutations = $this->parseShareRequest($dom);
 
                 $node->updateShares($mutations[0], $mutations[1]);
 
-                $this->server->httpResponse->setStatus(200);
+                $response->setStatus(200);
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
-                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                $response->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 // Breaking the event chain
                 return false;
@@ -341,7 +339,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($uri, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}write');
                 }
 
                 $message = $this->parseInviteReplyRequest($dom);
@@ -354,10 +352,10 @@ class SharingPlugin extends DAV\ServerPlugin {
                     $message['summary']
                 );
 
-                $this->server->httpResponse->setStatus(200);
+                $response->setStatus(200);
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
-                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                $response->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 if ($url) {
                     $dom = new \DOMDocument('1.0', 'UTF-8');
@@ -372,9 +370,8 @@ class SharingPlugin extends DAV\ServerPlugin {
                     $href = new DAV\Property\Href($url);
 
                     $href->serialize($this->server, $root);
-                    $this->server->httpResponse->setHeader('Content-Type','application/xml');
-                    $this->server->httpResponse->setBody($dom->saveXML());
-                    $this->server->httpResponse->send();
+                    $response->setHeader('Content-Type','application/xml');
+                    $response->setBody($dom->saveXML());
 
                 }
 
@@ -394,17 +391,17 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($uri, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}write');
                 }
 
                 $node->setPublishStatus(true);
 
                 // iCloud sends back the 202, so we will too.
-                $this->server->httpResponse->setStatus(202);
+                $response->setStatus(202);
 
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
-                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                $response->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 // Breaking the event chain
                 return false;
@@ -422,16 +419,16 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($uri, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}write');
                 }
 
                 $node->setPublishStatus(false);
 
-                $this->server->httpResponse->setStatus(200);
+                $response->setStatus(200);
 
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.
-                $this->server->httpResponse->setHeader('X-Sabre-Status', 'everything-went-well');
+                $response->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 // Breaking the event chain
                 return false;

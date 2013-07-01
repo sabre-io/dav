@@ -2,8 +2,11 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAV;
-use Sabre\VObject;
+use
+    Sabre\DAV,
+    Sabre\VObject,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * ICS Exporter
@@ -34,47 +37,45 @@ class ICSExportPlugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'beforeMethod'), 90);
+        $this->server->on('method:GET', [$this,'httpGet'], 90);
 
     }
 
     /**
-     * 'beforeMethod' event handles. This event handles intercepts GET requests ending
-     * with ?export
+     * Intercepts GET requests on calendar urls ending with ?export.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod($method, $uri) {
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!='GET') return;
-
-        $queryParams = $this->server->httpRequest->getQueryParameters();
+        $queryParams = $request->getQueryParameters();
         if (!array_key_exists('export', $queryParams)) return;
 
-        // splitting uri
-        list($uri) = explode('?',$uri,2);
+        $path = $request->getPath();
 
-        $node = $this->server->tree->getNodeForPath($uri);
+        // splitting uri
+        list($path) = explode('?',$path,2);
+
+        $node = $this->server->tree->getNodeForPath($path);
 
         if (!($node instanceof Calendar)) return;
 
         // Checking ACL, if available.
         if ($aclPlugin = $this->server->getPlugin('acl')) {
-            $aclPlugin->checkPrivileges($uri, '{DAV:}read');
+            $aclPlugin->checkPrivileges($path, '{DAV:}read');
         }
 
         $this->server->transactionType = 'get-calendar-export';
-        $this->server->httpResponse->setHeader('Content-Type','text/calendar');
-        $this->server->httpResponse->setStatus(200);
+        $response->setHeader('Content-Type','text/calendar');
+        $response->setStatus(200);
 
-        $nodes = $this->server->getPropertiesForPath($uri, [
+        $nodes = $this->server->getPropertiesForPath($path, [
             '{' . Plugin::NS_CALDAV . '}calendar-data',
         ],1);
 
-        $this->server->httpResponse->setBody($this->generateICS($nodes));
-        $this->server->httpResponse->send();
+        $response->setBody($this->generateICS($nodes));
 
         // Returning false to break the event chain
         return false;

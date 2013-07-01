@@ -69,38 +69,44 @@ END:VCALENDAR',
 
     }
 
-    function testWrongMethod() {
-
-        $this->assertNull(
-            $this->plugin->unknownMethod('PUT','calendars/user1/outbox')
-        );
-
-    }
-
     function testWrongContentType() {
 
         $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/plain',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
         ));
 
         $this->assertNull(
-            $this->plugin->unknownMethod('POST','calendars/user1/outbox')
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
     }
 
     function testNotFound() {
 
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/blabla',
+        ));
+
         $this->assertNull(
-            $this->plugin->unknownMethod('POST','calendars/user1/blabla')
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
     }
 
     function testNotOutbox() {
 
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/inbox',
+        ));
+
         $this->assertNull(
-            $this->plugin->unknownMethod('POST','calendars/user1/inbox')
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
     }
@@ -110,6 +116,12 @@ END:VCALENDAR',
      */
     function testNoItipMethod() {
 
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
+
         $body = <<<ICS
 BEGIN:VCALENDAR
 BEGIN:VFREEBUSY
@@ -117,8 +129,8 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
-        $this->request->setBody($body);
-        $this->plugin->unknownMethod('POST','calendars/user1/outbox');
+        $this->server->httpRequest->setBody($body);
+        $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
 
     }
 
@@ -126,6 +138,12 @@ ICS;
      * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoVFreeBusy() {
+
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -135,8 +153,8 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->request->setBody($body);
-        $this->plugin->unknownMethod('POST','calendars/user1/outbox');
+        $this->server->httpRequest->setBody($body);
+        $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
 
     }
 
@@ -144,6 +162,12 @@ ICS;
      * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testIncorrectOrganizer() {
+
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -154,8 +178,8 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
-        $this->request->setBody($body);
-        $this->plugin->unknownMethod('POST','calendars/user1/outbox');
+        $this->server->httpRequest->setBody($body);
+        $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
 
     }
 
@@ -163,6 +187,12 @@ ICS;
      * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoAttendees() {
+
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -173,8 +203,8 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
-        $this->request->setBody($body);
-        $this->plugin->unknownMethod('POST','calendars/user1/outbox');
+        $this->server->httpRequest->setBody($body);
+        $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
 
     }
 
@@ -182,6 +212,12 @@ ICS;
      * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testNoDTStart() {
+
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -193,12 +229,18 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
-        $this->request->setBody($body);
-        $this->plugin->unknownMethod('POST','calendars/user1/outbox');
+        $this->server->httpRequest->setBody($body);
+        $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
 
     }
 
     function testSucceed() {
+
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -213,11 +255,14 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
+        $this->server->httpRequest->setBody($body);
+
         // Lazily making the current principal an admin.
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
-        $this->request->setBody($body);
-        $this->assertFalse($this->plugin->unknownMethod('POST','calendars/user1/outbox'));
+        $this->assertFalse(
+            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+        );
 
         $this->assertEquals('200 OK' , $this->response->status);
         $this->assertEquals(array(
@@ -244,6 +289,12 @@ ICS;
 
     function testNoPrivilege() {
 
+        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+            'CONTENT_TYPE' => 'text/calendar',
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/calendars/user1/outbox',
+        ));
+
         $body = <<<ICS
 BEGIN:VCALENDAR
 METHOD:REQUEST
@@ -256,8 +307,11 @@ END:VFREEBUSY
 END:VCALENDAR
 ICS;
 
-        $this->request->setBody($body);
-        $this->assertFalse($this->plugin->unknownMethod('POST','calendars/user1/outbox'));
+        $this->server->httpRequest->setBody($body);
+
+        $this->assertFalse(
+            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+        );
 
         $this->assertEquals('200 OK' , $this->response->status);
         $this->assertEquals([

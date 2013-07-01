@@ -42,13 +42,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Request::createFromServerArray([
-            'REQUEST_URI' => '/?export',
+            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_METHOD' => 'GET',
         ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
 
-        $this->assertFalse($p->beforeMethod('GET','UUID-123467?export'));
+        $this->assertFalse($p->httpGet($h, $s->httpResponse));
 
         $this->assertEquals('200 OK',$s->httpResponse->status);
         $this->assertEquals([
@@ -88,14 +89,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Request::createFromServerArray([
-            'REQUEST_URI' => '/?export',
+            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_METHOD' => 'GET',
         ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
 
         DAV\Server::$exposeVersion = false;
-        $this->assertFalse($p->beforeMethod('GET','UUID-123467?export'));
+        $this->assertFalse($p->httpGet($h, $s->httpResponse));
         DAV\Server::$exposeVersion = true;
 
         $this->assertEquals('200 OK',$s->httpResponse->status);
@@ -115,17 +117,6 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testBeforeMethodNoGET() {
-
-        $p = new ICSExportPlugin();
-
-        $s = new DAV\Server();
-        $s->addPlugin($p);
-
-        $this->assertNull($p->beforeMethod('POST','UUID-123467?export'));
-
-    }
-
     function testBeforeMethodNoExport() {
 
         $p = new ICSExportPlugin();
@@ -133,7 +124,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s = new DAV\Server();
         $s->addPlugin($p);
 
-        $this->assertNull($p->beforeMethod('GET','UUID-123467'));
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+        $this->assertNull($p->httpGet($h, $s->httpResponse));
 
     }
 
@@ -162,13 +157,13 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new DAVACL\Plugin());
 
         $h = HTTP\Request::createFromServerArray([
-            'REQUEST_URI' => '/?export',
+            'REQUEST_URI' => '/UUID-123467?export',
         ]);
 
         $s->httpRequest = $h;
         $s->httpResponse = new HTTP\ResponseMock();
 
-        $p->beforeMethod('GET','UUID-123467?export');
+        $p->httpGet($h, $s->httpResponse);
 
     }
 

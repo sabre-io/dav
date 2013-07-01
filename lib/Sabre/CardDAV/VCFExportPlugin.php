@@ -51,7 +51,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
      */
     public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
-        $queryParams = $this->server->httpRequest->getQueryParameters();
+        $queryParams = $request->getQueryParameters();
         if (!array_key_exists('export', $queryParams)) return;
 
         $path = $request->getPath();

@@ -2,7 +2,10 @@
 
 namespace Sabre\DAV\Locks;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Locking plugin
@@ -56,7 +59,8 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->on('unknownMethod',array($this,'unknownMethod'));
+        $server->on('method:LOCK',   [$this, 'httpLock']);
+        $server->on('method:UNLOCK', [$this, 'httpUnlock']);
         $server->on('afterGetProperties',array($this,'afterGetProperties'));
         $server->on('validateTokens', array($this, 'validateTokens'));
 
@@ -73,27 +77,6 @@ class Plugin extends DAV\ServerPlugin {
     public function getPluginName() {
 
         return 'locks';
-
-    }
-
-    /**
-     * This method is called by the Server if the user used an HTTP method
-     * the server didn't recognize.
-     *
-     * This plugin intercepts the LOCK and UNLOCK methods.
-     *
-     * @param string $method
-     * @param string $uri
-     * @return bool
-     */
-    public function unknownMethod($method, $uri) {
-
-        switch($method) {
-
-            case 'LOCK'   : $this->httpLock($uri); return false;
-            case 'UNLOCK' : $this->httpUnlock($uri); return false;
-
-        }
 
     }
 
@@ -199,16 +182,19 @@ class Plugin extends DAV\ServerPlugin {
      *
      * Additionally, a lock can be requested for a non-existent file. In these case we're obligated to create an empty file as per RFC4918:S7.3
      *
-     * @param string $uri
-     * @return void
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return bool
      */
-    protected function httpLock($uri) {
+    public function httpLock(RequestInterface $request, ResponseInterface $response) {
 
         $lastLock = null;
 
+        $uri = $request->getPath();
+
         $existingLocks = $this->getLocks($uri);
 
-        if ($body = $this->server->httpRequest->getBody(true)) {
+        if ($body = $request->getBody($asStrign = true)) {
             // This is a new lock request
 
             $existingLock = null;
@@ -286,11 +272,14 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->lockNode($uri,$lockInfo);
 
-        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->setHeader('Lock-Token','<opaquelocktoken:' . $lockInfo->token . '>');
-        $this->server->httpResponse->setStatus($newFile?201:200);
-        $this->server->httpResponse->setBody($this->generateLockResponse($lockInfo));
-        $this->server->httpResponse->send();
+        $response->setHeader('Content-Type','application/xml; charset=utf-8');
+        $response->setHeader('Lock-Token','<opaquelocktoken:' . $lockInfo->token . '>');
+        $response->setStatus($newFile?201:200);
+        $response->setBody($this->generateLockResponse($lockInfo));
+
+        // Returning false will interupt the event chain and mark this method
+        // as 'handled'.
+        return false;
 
     }
 
@@ -300,17 +289,19 @@ class Plugin extends DAV\ServerPlugin {
      * This WebDAV method allows you to remove a lock from a node. The client should provide a valid locktoken through the Lock-token http header
      * The server should return 204 (No content) on success
      *
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
-    protected function httpUnlock($uri) {
+    public function httpUnlock(RequestInterface $request, ResponseInterface $response) {
 
-        $lockToken = $this->server->httpRequest->getHeader('Lock-Token');
+        $lockToken = $request->getHeader('Lock-Token');
 
         // If the locktoken header is not supplied, we need to throw a bad request exception
         if (!$lockToken) throw new DAV\Exception\BadRequest('No lock token was supplied');
 
-        $locks = $this->getLocks($uri);
+        $path = $request->getPath();
+        $locks = $this->getLocks($path);
 
         // Windows sometimes forgets to include < and > in the Lock-Token
         // header
@@ -320,10 +311,13 @@ class Plugin extends DAV\ServerPlugin {
 
             if ('<opaquelocktoken:' . $lock->token . '>' == $lockToken) {
 
-                $this->unlockNode($uri,$lock);
-                $this->server->httpResponse->setHeader('Content-Length','0');
-                $this->server->httpResponse->setStatus(204);
-                return;
+                $this->unlockNode($path,$lock);
+                $response->setHeader('Content-Length','0');
+                $response->setStatus(204);
+
+                // Returning false will break the method chain, and mark the
+                // method as 'handled'.
+                return false;
 
             }
 

@@ -82,7 +82,10 @@ class ServerPluginTest extends AbstractServer {
     function testGetPlugins() {
 
         $this->assertEquals(
-            array(get_class($this->testPlugin) => $this->testPlugin),
+            array(
+                get_class($this->testPlugin) => $this->testPlugin,
+                'core' => $this->server->getPlugin('core'),
+            ),
             $this->server->getPlugins()
         );
 

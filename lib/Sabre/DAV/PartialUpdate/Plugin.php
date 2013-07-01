@@ -2,7 +2,10 @@
 
 namespace Sabre\DAV\PartialUpdate;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Partial update plugin (Patch method)
@@ -38,7 +41,7 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->on('unknownMethod',array($this,'unknownMethod'));
+        $server->on('method:PATCH', [$this,'httpPatch']);
 
     }
 
@@ -57,33 +60,12 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This method is called by the Server if the user used an HTTP method
-     * the server didn't recognize.
-     *
-     * This plugin intercepts the PATCH methods.
-     *
-     * @param string $method
-     * @param string $uri
-     * @return bool|null
-     */
-    public function unknownMethod($method, $uri) {
-
-        switch($method) {
-            
-            case 'PATCH':
-                return $this->httpPatch($uri);
-
-        }
-
-    }
-
-    /**
      * Use this method to tell the server this plugin defines additional
      * HTTP methods.
      *
      * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
-     * 
+     *
      * We claim to support PATCH method (partial update) if and only if
      *     - the node exist
      *     - the node implements our partial update interface
@@ -92,14 +74,14 @@ class Plugin extends DAV\ServerPlugin {
      * @return array
      */
     public function getHTTPMethods($uri) {
-        
+
         $tree = $this->server->tree;
-        
-        if ($tree->nodeExists($uri) && 
+
+        if ($tree->nodeExists($uri) &&
             $tree->getNodeForPath($uri) instanceof IFile) {
             return array('PATCH');
          }
-         
+
          return array();
 
     }
@@ -118,17 +100,20 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Patch an uri
      *
-     * The WebDAV patch request can be used to modify only a part of an 
+     * The WebDAV patch request can be used to modify only a part of an
      * existing resource. If the resource does not exist yet and the first
      * offset is not 0, the request fails
      *
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
-    protected function httpPatch($uri) {
+    public function httpPatch(RequestInterface $request, ResponseInterface $response) {
+
+        $path = $request->getPath();
 
         // Get the node. Will throw a 404 if not found
-        $node = $this->server->tree->getNodeForPath($uri);
+        $node = $this->server->tree->getNodeForPath($path);
         if (!($node instanceof IFile)) {
             throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
@@ -138,16 +123,16 @@ class Plugin extends DAV\ServerPlugin {
         if (!$range) {
             throw new DAV\Exception\BadRequest('No valid "X-Update-Range" found in the headers');
         }
-        
+
         $contentType = strtolower(
-            $this->server->httpRequest->getHeader('Content-Type')
+            $request->getHeader('Content-Type')
         );
-        
+
         if ($contentType != 'application/x-sabredav-partialupdate') {
             throw new DAV\Exception\UnsupportedMediaType('Unknown Content-Type header "' . $contentType . '"');
         }
 
-        $len = $this->server->httpRequest->getHeader('Content-Length');
+        $len = $request->getHeader('Content-Length');
 
         // Load the begin and end data
         $start = ($range[0])?$range[0]:0;
@@ -162,22 +147,23 @@ class Plugin extends DAV\ServerPlugin {
         // Checking If-None-Match and related headers.
         if (!$this->server->checkPreconditions()) return;
 
-        if (!$this->server->emit('beforeWriteContent', [$uri, $node, null]))
+        if (!$this->server->emit('beforeWriteContent', [$path, $node, null]))
             return;
 
-        $body = $this->server->httpRequest->getBody();
+        $body = $request->getBody();
         $etag = $node->putRange($body, $start-1);
 
-        $this->server->emit('afterWriteContent', [$uri, $node]);
+        $this->server->emit('afterWriteContent', [$path, $node]);
 
-        $this->server->httpResponse->setHeader('Content-Length','0');
-        if ($etag) $this->server->httpResponse->setHeader('ETag',$etag);
-        $this->server->httpResponse->setStatus(204);
+        $response->setHeader('Content-Length','0');
+        if ($etag) $response->setHeader('ETag',$etag);
+        $response->setStatus(204);
 
+        // Breaks the event chain
         return false;
 
     }
-    
+
    /**
      * Returns the HTTP custom range update header
      *

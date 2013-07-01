@@ -36,8 +36,6 @@ class PluginTest extends \Sabre\DAVServerTest {
         $this->assertEquals(array(
         ), $this->plugin->getHTTPMethods(''));
 
-        $this->assertNull($this->plugin->unknownMethod('FOO','partial'));
-
     }
 
     public function testPatchNoRange() {

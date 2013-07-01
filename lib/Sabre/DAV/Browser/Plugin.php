@@ -4,7 +4,9 @@ namespace Sabre\DAV\Browser;
 
 use
     Sabre\DAV,
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Browser Plugin
@@ -96,25 +98,23 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'httpGetInterceptor'));
-        $this->server->on('onHTMLActionsPanel', array($this, 'htmlActionsPanel'),200);
-        if ($this->enablePost) $this->server->on('unknownMethod',array($this,'httpPOSTHandler'));
+        $this->server->on('method:GET',[$this,'httpGet']);
+        $this->server->on('onHTMLActionsPanel', [$this, 'htmlActionsPanel'],200);
+        if ($this->enablePost) $this->server->on('method:POST', [$this,'httpPOST']);
     }
 
     /**
      * This method intercepts GET requests to collections and returns the html
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGetInterceptor($method, $uri) {
-
-        if ($method !== 'GET') return true;
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         // We're not using straight-up $_GET, because we want everything to be
         // unit testable.
-        $getVars = $this->server->httpRequest->getQueryParameters();
+        $getVars = $request->getQueryParameters();
 
         if (isset($getVars['sabreAction']) && $getVars['sabreAction'] === 'asset' && isset($getVars['assetName'])) {
             $this->serveAsset($getVars['assetName']);
@@ -122,7 +122,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         try {
-            $node = $this->server->tree->getNodeForPath($uri);
+            $node = $this->server->tree->getNodeForPath($request->getPath());
         } catch (DAV\Exception\NotFound $e) {
             // We're simply stopping when the file isn't found to not interfere
             // with other plugins.
@@ -131,13 +131,12 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof DAV\IFile)
             return;
 
-        $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
+        $response->setStatus(200);
+        $response->setHeader('Content-Type','text/html; charset=utf-8');
 
-        $this->server->httpResponse->setBody(
-            $this->generateDirectoryIndex($uri)
+        $response->setBody(
+            $this->generateDirectoryIndex($request->getPath())
         );
-        $this->server->httpResponse->send();
 
         return false;
 
@@ -146,23 +145,24 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Handles POST requests for tree operations.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function httpPOSTHandler($method, $uri) {
+    public function httpPOST(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!='POST') return;
-        $contentType = $this->server->httpRequest->getHeader('Content-Type');
+        $contentType = $request->getHeader('Content-Type');
         list($contentType) = explode(';', $contentType);
         if ($contentType !== 'application/x-www-form-urlencoded' &&
             $contentType !== 'multipart/form-data') {
                 return;
         }
-        $postVars = $this->server->httpRequest->getPostData();
+        $postVars = $request->getPostData();
 
         if (!isset($postVars['sabreAction']))
             return;
+
+        $uri = $request->getPath();
 
         if ($this->server->emit('onBrowserPostAction', [$uri, $postVars['sabreAction'], $postVars])) {
 
@@ -194,9 +194,8 @@ class Plugin extends DAV\ServerPlugin {
             }
 
         }
-        $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUrl());
-        $this->server->httpResponse->setStatus(302);
-        $this->server->httpResponse->send();
+        $response->setHeader('Location', $request->getUrl());
+        $response->setStatus(302);
         return false;
 
     }

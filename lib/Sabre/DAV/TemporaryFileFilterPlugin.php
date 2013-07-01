@@ -3,7 +3,9 @@
 namespace Sabre\DAV;
 
 use
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Temporary File Filter Plugin
@@ -91,8 +93,8 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
     public function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('beforeMethod',array($this,'beforeMethod'));
-        $server->on('beforeCreateFile',array($this,'beforeCreateFile'));
+        $server->on('beforeMethod',    [$this,'beforeMethod']);
+        $server->on('beforeCreateFile',[$this,'beforeCreateFile']);
 
     }
 
@@ -102,24 +104,24 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * This method intercepts any GET, DELETE, PUT and PROPFIND calls to
      * filenames that are known to match the 'temporary file' regex.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod($method, $uri) {
+    public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        if (!$tempLocation = $this->isTempFile($uri))
+        if (!$tempLocation = $this->isTempFile($request->getPath()))
             return true;
 
-        switch($method) {
+        switch($request->getMethod()) {
             case 'GET' :
-                return $this->httpGet($tempLocation);
+                return $this->httpGet($request, $response, $tempLocation);
             case 'PUT' :
-                return $this->httpPut($tempLocation);
+                return $this->httpPut($request, $response, $tempLocation);
             case 'PROPFIND' :
-                return $this->httpPropfind($tempLocation, $uri);
+                return $this->httpPropfind($request, $response, $tempLocation);
             case 'DELETE' :
-                return $this->httpDelete($tempLocation);
+                return $this->httpDelete($request, $response, $tempLocation);
          }
          return true;
 
@@ -179,20 +181,20 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * If the file doesn't exist, it will return false which will kick in
      * the regular system for the GET method.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $hR
      * @param string $tempLocation
      * @return bool
      */
-    public function httpGet($tempLocation) {
+    public function httpGet(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         if (!file_exists($tempLocation)) return true;
 
-        $hR = $this->server->httpResponse;
         $hR->setHeader('Content-Type','application/octet-stream');
         $hR->setHeader('Content-Length',filesize($tempLocation));
         $hR->setHeader('X-Sabre-Temp','true');
         $hR->setStatus(200);
         $hR->setBody(fopen($tempLocation,'r'));
-        $hR->send();
         return false;
 
     }
@@ -200,12 +202,13 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
     /**
      * This method handles the PUT method.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $hR
      * @param string $tempLocation
      * @return bool
      */
-    public function httpPut($tempLocation) {
+    public function httpPut(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
-        $hR = $this->server->httpResponse;
         $hR->setHeader('X-Sabre-Temp','true');
 
         $newFile = !file_exists($tempLocation);
@@ -226,15 +229,16 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * If the file didn't exist, it will return false, which will make the
      * standard HTTP DELETE handler kick in.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $hR
      * @param string $tempLocation
      * @return bool
      */
-    public function httpDelete($tempLocation) {
+    public function httpDelete(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         if (!file_exists($tempLocation)) return true;
 
         unlink($tempLocation);
-        $hR = $this->server->httpResponse;
         $hR->setHeader('X-Sabre-Temp','true');
         $hR->setStatus(204);
         return false;
@@ -248,33 +252,33 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * for which properties were requested, and just sends back a default
      * set of properties.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $hR
      * @param string $tempLocation
-     * @param string $uri
      * @return bool
      */
-    public function httpPropfind($tempLocation, $uri) {
+    public function httpPropfind(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         if (!file_exists($tempLocation)) return true;
 
-        $hR = $this->server->httpResponse;
         $hR->setHeader('X-Sabre-Temp','true');
         $hR->setStatus(207);
         $hR->setHeader('Content-Type','application/xml; charset=utf-8');
 
-        $this->server->parsePropFindRequest($this->server->httpRequest->getBody(true));
+        $this->server->parsePropFindRequest($request->getBody($asString = true));
 
-        $properties = array(
-            'href' => $uri,
-            200 => array(
+        $properties = [
+            'href' => $request->getPath(),
+            200 => [
                 '{DAV:}getlastmodified' => new Property\GetLastModified(filemtime($tempLocation)),
                 '{DAV:}getcontentlength' => filesize($tempLocation),
                 '{DAV:}resourcetype' => new Property\ResourceType(null),
                 '{'.Server::NS_SABREDAV.'}tempFile' => true,
 
-            ),
-         );
+            ],
+        ];
 
-        $data = $this->server->generateMultiStatus(array($properties));
+        $data = $this->server->generateMultiStatus([$properties]);
         $hR->setBody($data);
         $hR->send();
         return false;

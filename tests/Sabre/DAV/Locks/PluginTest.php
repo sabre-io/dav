@@ -44,12 +44,6 @@ class PluginTest extends DAV\AbstractServer {
 
     }
 
-    function testUnknownMethodPassthough() {
-
-        $this->assertNull($this->locksPlugin->unknownMethod('BLA','/'));
-
-    }
-
     function testLockNoBody() {
 
         $serverVars = array(
@@ -339,7 +333,10 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testUnlock() {
 
-        $request = HTTP\Request::createFromServerArray(array());
+        $request = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/test.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        ]);
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -351,17 +348,19 @@ class PluginTest extends DAV\AbstractServer {
     </D:owner>
 </D:lockinfo>');
 
-        $this->server->invokeMethod('LOCK','test.txt');
+        $this->server->invokeMethod($request, $this->server->httpResponse);
         $lockToken = $this->server->httpResponse->headers['Lock-Token'];
 
         $serverVars = array(
             'HTTP_LOCK_TOKEN' => $lockToken,
+            'REQUEST_URI' => '/test.txt',
+            'REQUEST_METHOD' => 'UNLOCK',
         );
 
         $request = HTTP\Request::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->httpResponse = new HTTP\ResponseMock();
-        $this->server->invokeMethod('UNLOCK', 'test.txt');
+        $this->server->invokeMethod($request, $this->server->httpResponse);
 
         $this->assertEquals('204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
@@ -378,7 +377,10 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testUnlockWindowsBug() {
 
-        $request = HTTP\Request::createFromServerArray(array());
+        $request = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/test.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        ]);
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -390,7 +392,7 @@ class PluginTest extends DAV\AbstractServer {
     </D:owner>
 </D:lockinfo>');
 
-        $this->server->invokeMethod('LOCK','test.txt');
+        $this->server->invokeMethod($request, $this->server->httpResponse);
         $lockToken = $this->server->httpResponse->headers['Lock-Token'];
 
         // See Issue 123
@@ -398,12 +400,14 @@ class PluginTest extends DAV\AbstractServer {
 
         $serverVars = array(
             'HTTP_LOCK_TOKEN' => $lockToken,
+            'REQUEST_URI' => '/test.txt',
+            'REQUEST_METHOD' => 'UNLOCK',
         );
 
         $request = HTTP\Request::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->httpResponse = new HTTP\ResponseMock();
-        $this->server->invokeMethod('UNLOCK', 'test.txt');
+        $this->server->invokeMethod($request, $this->server->httpResponse);
 
         $this->assertEquals('204 No Content',$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
@@ -420,7 +424,10 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockRetainOwner() {
 
-        $request = HTTP\Request::createFromServerArray(array());
+        $request = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/test.txt',
+            'REQUEST_METHOD' => 'LOCK',
+        ]);
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -430,7 +437,7 @@ class PluginTest extends DAV\AbstractServer {
     <D:owner>Evert</D:owner>
 </D:lockinfo>');
 
-        $this->server->invokeMethod('LOCK','test.txt');
+        $this->server->invokeMethod($request, $this->server->httpResponse);
         $lockToken = $this->server->httpResponse->headers['Lock-Token'];
 
         $locks = $this->locksPlugin->getLocks('test.txt');

@@ -3,9 +3,11 @@
 namespace Sabre\DAV;
 
 use
+    Sabre\Event\EventEmitter,
     Sabre\HTTP,
-    Sabre\HTTP\URLUtil,
-    Sabre\Event\EventEmitter;
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Main DAV server class
@@ -208,7 +210,7 @@ class Server extends EventEmitter {
         }
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = HTTP\Request::createFromPHPRequest();
-        //$this->addPlugin(new CorePlugin());
+        $this->addPlugin(new CorePlugin());
 
     }
 
@@ -229,7 +231,9 @@ class Server extends EventEmitter {
             // to buffer entire responses to calculate Content-Length.
             $this->httpResponse->setHTTPVersion($this->httpRequest->getHTTPVersion());
 
-            $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
+            // Setting the base url
+            $this->httpRequest->setBaseUrl($this->getBaseUri());
+            $this->invokeMethod($this->httpRequest, $this->httpResponse);
 
         } catch (Exception $e) {
 
@@ -422,21 +426,21 @@ class Server extends EventEmitter {
     /**
      * Handles a http request, and execute a method based on its name
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
-    public function invokeMethod($method, $uri) {
+    public function invokeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $method = strtoupper($method);
+        $method = $request->getMethod();
 
-        if (!$this->emit('beforeMethod',[$method, $uri])) return;
+        if (!$this->emit('beforeMethod:' . $method,[$request, $response])) return;
+        if (!$this->emit('beforeMethod',[$request, $response])) return;
 
 
         // Make sure this is a HTTP method we support
         $internalMethods = [
             'OPTIONS',
-            'GET',
             'HEAD',
             'DELETE',
             'PROPFIND',
@@ -452,17 +456,22 @@ class Server extends EventEmitter {
 
         if (in_array($method,$internalMethods)) {
 
-
-            call_user_func([$this, 'http' . $method], $uri);
+            call_user_func([$this, 'http' . $method], $request->getPath());
 
         } else {
 
-            if ($this->emit('unknownMethod',[$method, $uri])) {
-                // Unsupported method
-                throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
+            if ($this->emit('method:' . $method, [$request, $response])) {
+                if ($this->emit('method',[$request, $response])) {
+                    // Unsupported method
+                    throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
+                }
             }
 
         }
+        if (!$this->emit('afterMethod:' . $method,[$request, $response])) return;
+        if (!$this->emit('afterMethod', [$request, $response])) return;
+
+        $response->send();
 
     }
 
@@ -491,143 +500,6 @@ class Server extends EventEmitter {
         }
         $this->httpResponse->setHeader('Content-Length',0);
         $this->httpResponse->setStatus(200);
-
-    }
-
-    /**
-     * HTTP GET
-     *
-     * This method simply fetches the contents of a uri, like normal
-     *
-     * @param string $uri
-     * @return bool
-     */
-    protected function httpGet($uri) {
-
-        $node = $this->tree->getNodeForPath($uri,0);
-
-        if (!$this->checkPreconditions(true)) return false;
-        if (!$node instanceof IFile) throw new Exception\NotImplemented('GET is only implemented on File objects');
-
-        $body = $node->get();
-
-        // Converting string into stream, if needed.
-        if (is_string($body)) {
-            $stream = fopen('php://temp','r+');
-            fwrite($stream,$body);
-            rewind($stream);
-            $body = $stream;
-        }
-
-        /*
-         * TODO: getetag, getlastmodified, getsize should also be used using
-         * this method
-         */
-        $httpHeaders = $this->getHTTPHeaders($uri);
-
-        /* ContentType needs to get a default, because many webservers will otherwise
-         * default to text/html, and we don't want this for security reasons.
-         */
-        if (!isset($httpHeaders['Content-Type'])) {
-            $httpHeaders['Content-Type'] = 'application/octet-stream';
-        }
-
-
-        if (isset($httpHeaders['Content-Length'])) {
-
-            $nodeSize = $httpHeaders['Content-Length'];
-
-            // Need to unset Content-Length, because we'll handle that during figuring out the range
-            unset($httpHeaders['Content-Length']);
-
-        } else {
-            $nodeSize = null;
-        }
-
-        $this->httpResponse->setHeaders($httpHeaders);
-
-        $range = $this->getHTTPRange();
-        $ifRange = $this->httpRequest->getHeader('If-Range');
-        $ignoreRangeHeader = false;
-
-        // If ifRange is set, and range is specified, we first need to check
-        // the precondition.
-        if ($nodeSize && $range && $ifRange) {
-
-            // if IfRange is parsable as a date we'll treat it as a DateTime
-            // otherwise, we must treat it as an etag.
-            try {
-                $ifRangeDate = new \DateTime($ifRange);
-
-                // It's a date. We must check if the entity is modified since
-                // the specified date.
-                if (!isset($httpHeaders['Last-Modified'])) $ignoreRangeHeader = true;
-                else {
-                    $modified = new \DateTime($httpHeaders['Last-Modified']);
-                    if($modified > $ifRangeDate) $ignoreRangeHeader = true;
-                }
-
-            } catch (\Exception $e) {
-
-                // It's an entity. We can do a simple comparison.
-                if (!isset($httpHeaders['ETag'])) $ignoreRangeHeader = true;
-                elseif ($httpHeaders['ETag']!==$ifRange) $ignoreRangeHeader = true;
-            }
-        }
-
-        // We're only going to support HTTP ranges if the backend provided a filesize
-        if (!$ignoreRangeHeader && $nodeSize && $range) {
-
-            // Determining the exact byte offsets
-            if (!is_null($range[0])) {
-
-                $start = $range[0];
-                $end = $range[1]?$range[1]:$nodeSize-1;
-                if($start >= $nodeSize)
-                    throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeSize . ')');
-
-                if($end < $start) throw new Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end >= $nodeSize) $end = $nodeSize-1;
-
-            } else {
-
-                $start = $nodeSize-$range[1];
-                $end  = $nodeSize-1;
-
-                if ($start<0) $start = 0;
-
-            }
-
-            // New read/write stream
-            $newStream = fopen('php://temp','r+');
-
-            // stream_copy_to_stream() has a bug/feature: the `whence` argument
-            // is interpreted as SEEK_SET (count from absolute offset 0), while
-            // for a stream it should be SEEK_CUR (count from current offset).
-            // If a stream is nonseekable, the function fails. So we *emulate*
-            // the correct behaviour with fseek():
-            if ($start > 0) {
-                if (($curOffs = ftell($body)) === false) $curOffs = 0;
-                fseek($body, $start - $curOffs, SEEK_CUR);
-            }
-            stream_copy_to_stream($body, $newStream, $end-$start+1);
-            rewind($newStream);
-
-            $this->httpResponse->setHeader('Content-Length', $end-$start+1);
-            $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
-            $this->httpResponse->setStatus(206);
-            $this->httpResponse->setBody($newStream);
-            $this->httpResponse->send();
-
-
-        } else {
-
-            if ($nodeSize) $this->httpResponse->setHeader('Content-Length',$nodeSize);
-            $this->httpResponse->setStatus(200);
-            $this->httpResponse->setBody($body);
-            $this->httpResponse->send();
-
-        }
 
     }
 

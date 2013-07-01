@@ -31,13 +31,19 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testGet() {
 
-        $this->server->emit('beforeMethod', ['GET','testdir']);
+        $this->server->httpRequest->setMethod('GET');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
     function testGetDoesntExist() {
 
-        $r = $this->server->emit('beforeMethod', ['GET','foo']);
+        $this->server->httpRequest->setMethod('GET');
+        $this->server->httpRequest->setUrl('/foo');
+
+        $r = $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
         $this->assertTrue($r);
 
     }
@@ -47,7 +53,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testHEAD() {
 
-        $this->server->emit('beforeMethod', ['HEAD','testdir']);
+        $this->server->httpRequest->setMethod('HEAD');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -56,7 +65,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testOPTIONS() {
 
-        $this->server->emit('beforeMethod', ['OPTIONS','testdir']);
+        $this->server->httpRequest->setMethod('OPTIONS');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -65,7 +77,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testPUT() {
 
-        $this->server->emit('beforeMethod', ['PUT','testdir']);
+        $this->server->httpRequest->setMethod('PUT');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -74,7 +89,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testPROPPATCH() {
 
-        $this->server->emit('beforeMethod', ['PROPPATCH','testdir']);
+        $this->server->httpRequest->setMethod('PROPPATCH');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -83,7 +101,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testCOPY() {
 
-        $this->server->emit('beforeMethod', ['COPY','testdir']);
+        $this->server->httpRequest->setMethod('COPY');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -92,7 +113,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testMOVE() {
 
-        $this->server->emit('beforeMethod', ['MOVE','testdir']);
+        $this->server->httpRequest->setMethod('MOVE');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -101,7 +125,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testACL() {
 
-        $this->server->emit('beforeMethod', ['ACL','testdir']);
+        $this->server->httpRequest->setMethod('ACL');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -110,7 +137,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
      */
     function testLOCK() {
 
-        $this->server->emit('beforeMethod', ['LOCK','testdir']);
+        $this->server->httpRequest->setMethod('LOCK');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 

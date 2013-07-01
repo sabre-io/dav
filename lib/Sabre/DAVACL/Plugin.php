@@ -4,7 +4,9 @@ namespace Sabre\DAVACL;
 
 use
     Sabre\DAV,
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * SabreDAV ACL Plugin
@@ -656,13 +658,13 @@ class Plugin extends DAV\ServerPlugin {
         $this->server = $server;
         $server->on('beforeGetProperties',[$this,'beforeGetProperties'], 20);
 
-        $server->on('beforeMethod', [$this,'beforeMethod'],20);
-        $server->on('beforeBind', [$this,'beforeBind'],20);
-        $server->on('beforeUnbind', [$this,'beforeUnbind'],20);
+        $server->on('beforeMethod',    [$this,'beforeMethod'],20);
+        $server->on('beforeBind',      [$this,'beforeBind'],20);
+        $server->on('beforeUnbind',    [$this,'beforeUnbind'],20);
         $server->on('updateProperties',[$this,'updateProperties']);
-        $server->on('beforeUnlock', [$this,'beforeUnlock'],20);
-        $server->on('report',[$this,'report']);
-        $server->on('unknownMethod', [$this, 'unknownMethod']);
+        $server->on('beforeUnlock',    [$this,'beforeUnlock'],20);
+        $server->on('report',          [$this,'report']);
+        $server->on('method:ACL',      [$this,'httpAcl']);
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',
@@ -695,13 +697,16 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Triggered before any method is handled
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
-    public function beforeMethod($method, $uri) {
+    public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $exists = $this->server->tree->nodeExists($uri);
+        $method = $request->getMethod();
+        $path = $request->getPath();
+
+        $exists = $this->server->tree->nodeExists($path);
 
         // If the node doesn't exists, none of these checks apply
         if (!$exists) return;
@@ -712,7 +717,7 @@ class Plugin extends DAV\ServerPlugin {
             case 'HEAD' :
             case 'OPTIONS' :
                 // For these 3 we only need to know if the node is readable.
-                $this->checkPrivileges($uri,'{DAV:}read');
+                $this->checkPrivileges($path,'{DAV:}read');
                 break;
 
             case 'PUT' :
@@ -722,16 +727,16 @@ class Plugin extends DAV\ServerPlugin {
                 // already exists, and bind on the parent if the node is being
                 // created.
                 // The bind privilege is handled in the beforeBind event.
-                $this->checkPrivileges($uri,'{DAV:}write-content');
+                $this->checkPrivileges($path,'{DAV:}write-content');
                 break;
 
 
             case 'PROPPATCH' :
-                $this->checkPrivileges($uri,'{DAV:}write-properties');
+                $this->checkPrivileges($path,'{DAV:}write-properties');
                 break;
 
             case 'ACL' :
-                $this->checkPrivileges($uri,'{DAV:}write-acl');
+                $this->checkPrivileges($path,'{DAV:}write-acl');
                 break;
 
             case 'COPY' :
@@ -747,7 +752,7 @@ class Plugin extends DAV\ServerPlugin {
                 //
                 // If MOVE is used beforeUnbind will also be used to check if
                 // the sourcenode can be deleted.
-                $this->checkPrivileges($uri,'{DAV:}read',self::R_RECURSIVE);
+                $this->checkPrivileges($path,'{DAV:}read',self::R_RECURSIVE);
 
                 break;
 
@@ -1018,31 +1023,17 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This event is triggered for any HTTP method that is not known by the
-     * webserver.
-     *
-     * @param string $method
-     * @param string $uri
-     * @return bool
-     */
-    public function unknownMethod($method, $uri) {
-
-        if ($method!=='ACL') return;
-
-        $this->httpACL($uri);
-        return false;
-
-    }
-
-    /**
      * This method is responsible for handling the 'ACL' event.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param string $uri
      * @return void
      */
-    public function httpACL($uri) {
+    public function httpAcl(RequestInterface $request, ResponseInterface $response) {
 
-        $body = $this->server->httpRequest->getBody(true);
+        $path = $request->getPath();
+        $body = $request->getBody($asString = true);
         $dom = DAV\XMLUtil::loadDOMDocument($body);
 
         $newAcl =
@@ -1053,8 +1044,7 @@ class Plugin extends DAV\ServerPlugin {
         foreach($newAcl as $k=>$newAce) {
             $newAcl[$k]['principal'] = $this->server->calculateUri($newAce['principal']);
         }
-
-        $node = $this->server->tree->getNodeForPath($uri);
+        $node = $this->server->tree->getNodeForPath($path);
 
         if (!($node instanceof IACL)) {
             throw new DAV\Exception\MethodNotAllowed('This node does not support the ACL method');
@@ -1108,6 +1098,11 @@ class Plugin extends DAV\ServerPlugin {
 
         }
         $node->setACL($newAcl);
+
+        $response->setStatus(200);
+
+        // Breaking the event chain, because we handled this method.
+        return false;
 
     }
 

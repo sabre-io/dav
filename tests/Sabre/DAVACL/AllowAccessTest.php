@@ -27,62 +27,91 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
 
     function testGet() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['GET','testdir']));
+        $this->server->httpRequest->setMethod('GET');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testGetDoesntExist() {
 
-        $r = $this->server->emit('beforeMethod', ['GET','foo']);
-        $this->assertTrue($r);
+        $this->server->httpRequest->setMethod('GET');
+        $this->server->httpRequest->setUrl('/foo');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testHEAD() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['HEAD','testdir']));
+        $this->server->httpRequest->setMethod('HEAD');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testOPTIONS() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['OPTIONS','testdir']));
+        $this->server->httpRequest->setMethod('OPTIONS');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testPUT() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['PUT','testdir']));
+        $this->server->httpRequest->setMethod('PUT');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testACL() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['ACL','testdir']));
+        $this->server->httpRequest->setMethod('ACL');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testPROPPATCH() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['PROPPATCH','testdir']));
+        $this->server->httpRequest->setMethod('PROPPATCH');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testCOPY() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['COPY','testdir']));
+        $this->server->httpRequest->setMethod('COPY');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testMOVE() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['MOVE','testdir']));
+        $this->server->httpRequest->setMethod('MOVE');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
     function testLOCK() {
 
-        $this->assertTrue($this->server->emit('beforeMethod', ['LOCK','testdir']));
+        $this->server->httpRequest->setMethod('LOCK');
+        $this->server->httpRequest->setUrl('/testdir');
+
+        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 

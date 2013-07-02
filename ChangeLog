@@ -9,6 +9,9 @@
 	* BC Break: Now using sabre/event for event emitting/subscription. For
 	  plugin authors this means Server::subscribeEvent is now Server::on, and
 	  Server::broadcastEvent is now Server::emit.
+	* BC Break: Almost all core functionality moved into a CorePlugin.
+	* BC Break: Most events triggered by the server got an overhaul.
+	* Changed: Sabre\HTTP now moved into a dedicated sabre/http package.
 	* Added: Support for WebDAV-sync (rfc6578).
 	* Added: Support for caldav-subscriptions, which is an easy way for caldav
 	  clients to manage a list of subscriptions on the server.

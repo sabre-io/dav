@@ -66,7 +66,7 @@ END:VCALENDAR
 
     function testIssue220() {
 
-        $request = new HTTP\Request(array(
+        $request = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',
@@ -95,6 +95,6 @@ END:VCALENDAR
         $this->assertFalse(strpos($response->body, '<s:exception>PHPUnit_Framework_Error_Warning</s:exception>'), 'Error Warning occurred: ' . $response->body);
         $this->assertFalse(strpos($response->body, 'Invalid argument supplied for foreach()'), 'Invalid argument supplied for foreach(): ' . $response->body);
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $response->status);
+        $this->assertEquals('207 Multi-Status', $response->status);
     }
 }

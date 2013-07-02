@@ -2,8 +2,10 @@
 
 namespace Sabre\DAVACL\PrincipalBackend;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\HTTP\URLUtil;
 
 /**
  * PDO principal backend
@@ -120,7 +122,7 @@ class PDO extends AbstractBackend {
         while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
 
             // Checking if the principal is in the prefix
-            list($rowPrefix) = DAV\URLUtil::splitPath($row['uri']);
+            list($rowPrefix) = URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
             $principal = array(
@@ -330,7 +332,7 @@ class PDO extends AbstractBackend {
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             // Checking if the principal is in the prefix
-            list($rowPrefix) = DAV\URLUtil::splitPath($row['uri']);
+            list($rowPrefix) = URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
             $principals[] = $row['uri'];

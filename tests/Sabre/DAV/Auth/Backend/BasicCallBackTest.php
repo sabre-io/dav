@@ -21,7 +21,7 @@ class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
         $backend = new BasicCallBack($callBack);
 
         $server = new Server();
-        $server->httpRequest = new Request([
+        $server->httpRequest = Request::createFromServerArray([
             'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode('foo:bar'),
         ]);
 

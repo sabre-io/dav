@@ -53,7 +53,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -61,7 +61,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 400 Bad request', $server->httpResponse->status);
+        $this->assertEquals('400 Bad request', $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
@@ -91,7 +91,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -99,7 +99,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
             'Vary'         => 'Brief,Prefer',
@@ -130,7 +130,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -138,7 +138,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
             'Vary'         => 'Brief,Prefer',
@@ -194,7 +194,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/',
         );
 
-        $request = new HTTP\Request($serverVars);
+        $request = HTTP\Request::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -202,7 +202,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('HTTP/1.1 207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals('207 Multi-Status', $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
             'Vary'         => 'Brief,Prefer',

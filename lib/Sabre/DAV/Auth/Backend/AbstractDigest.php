@@ -2,8 +2,9 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\HTTP;
-use Sabre\DAV;
+use
+    Sabre\HTTP,
+    Sabre\DAV;
 
 /**
  * HTTP Digest authentication backend class
@@ -49,13 +50,7 @@ abstract class AbstractDigest implements BackendInterface {
      */
     public function authenticate(DAV\Server $server, $realm) {
 
-        $digest = new HTTP\DigestAuth();
-
-        // Hooking up request and response objects
-        $digest->setHTTPRequest($server->httpRequest);
-        $digest->setHTTPResponse($server->httpResponse);
-
-        $digest->setRealm($realm);
+        $digest = new HTTP\Auth\Digest($realm, $server->httpRequest, $server->httpResponse);
         $digest->init();
 
         $username = $digest->getUsername();

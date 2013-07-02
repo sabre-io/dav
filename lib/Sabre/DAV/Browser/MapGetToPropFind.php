@@ -2,7 +2,10 @@
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * This is a simple plugin that will map any GET request for non-files to
@@ -32,24 +35,25 @@ class MapGetToPropFind extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'httpGetInterceptor'));
+        $this->server->on('method:GET', [$this,'httpGet'], 90);
     }
 
     /**
      * This method intercepts GET requests to non-files, and changes it into an HTTP PROPFIND request
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGetInterceptor($method, $uri) {
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!='GET') return true;
-
-        $node = $this->server->tree->getNodeForPath($uri);
+        $node = $this->server->tree->getNodeForPath($request->getPath());
         if ($node instanceof DAV\IFile) return;
 
-        $this->server->invokeMethod('PROPFIND',$uri);
+        $subRequest = clone $request;
+        $subRequest->setMethod('PROPFIND');
+
+        $this->server->invokeMethod($subRequest,$response);
         return false;
 
     }

@@ -3,8 +3,11 @@
 namespace Sabre\DAV;
 
 use
+    Sabre\Event\EventEmitter,
     Sabre\HTTP,
-    Sabre\Event\EventEmitter;
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface,
+    Sabre\HTTP\URLUtil;
 
 /**
  * Main DAV server class
@@ -206,7 +209,8 @@ class Server extends EventEmitter {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
         $this->httpResponse = new HTTP\Response();
-        $this->httpRequest = new HTTP\Request();
+        $this->httpRequest = HTTP\Request::createFromPHPRequest();
+        $this->addPlugin(new CorePlugin());
 
     }
 
@@ -225,9 +229,11 @@ class Server extends EventEmitter {
             // This is mainly because nginx doesn't support Chunked Transfer
             // Encoding, and this forces the webserver SabreDAV is running on,
             // to buffer entire responses to calculate Content-Length.
-            $this->httpResponse->defaultHttpVersion = $this->httpRequest->getHTTPVersion();
+            $this->httpResponse->setHTTPVersion($this->httpRequest->getHTTPVersion());
 
-            $this->invokeMethod($this->httpRequest->getMethod(), $this->getRequestUri());
+            // Setting the base url
+            $this->httpRequest->setBaseUrl($this->getBaseUri());
+            $this->invokeMethod($this->httpRequest, $this->httpResponse);
 
         } catch (Exception $e) {
 
@@ -290,9 +296,10 @@ class Server extends EventEmitter {
             }
             $headers['Content-Type'] = 'application/xml; charset=utf-8';
 
-            $this->httpResponse->sendStatus($httpCode);
+            $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->setHeaders($headers);
-            $this->httpResponse->sendBody($DOM->saveXML());
+            $this->httpResponse->setBody($DOM->saveXML());
+            $this->httpResponse->send();
 
         }
 
@@ -419,645 +426,36 @@ class Server extends EventEmitter {
     /**
      * Handles a http request, and execute a method based on its name
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
-    public function invokeMethod($method, $uri) {
+    public function invokeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $method = strtoupper($method);
+        $method = $request->getMethod();
 
-        if (!$this->emit('beforeMethod',[$method, $uri])) return;
-
-        // Make sure this is a HTTP method we support
-        $internalMethods = [
-            'OPTIONS',
-            'GET',
-            'HEAD',
-            'DELETE',
-            'PROPFIND',
-            'MKCOL',
-            'PUT',
-            'PROPPATCH',
-            'COPY',
-            'MOVE',
-            'REPORT'
-        ];
+        if (!$this->emit('beforeMethod:' . $method,[$request, $response])) return;
+        if (!$this->emit('beforeMethod',[$request, $response])) return;
 
         $this->transactionType = strtolower($method);
 
-        if (in_array($method,$internalMethods)) {
-
-
-            call_user_func([$this, 'http' . $method], $uri);
-
-        } else {
-
-            if ($this->emit('unknownMethod',[$method, $uri])) {
+        if ($this->emit('method:' . $method, [$request, $response])) {
+            if ($this->emit('method',[$request, $response])) {
                 // Unsupported method
                 throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
             }
-
         }
+
+        if (!$this->emit('afterMethod:' . $method,[$request, $response])) return;
+        if (!$this->emit('afterMethod', [$request, $response])) return;
+
+        $response->send();
 
     }
 
     // {{{ HTTP Method implementations
 
-    /**
-     * HTTP OPTIONS
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpOptions($uri) {
 
-        $methods = $this->getAllowedMethods($uri);
-
-        $this->httpResponse->setHeader('Allow',strtoupper(implode(', ',$methods)));
-        $features = ['1','3', 'extended-mkcol'];
-
-        foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
-
-        $this->httpResponse->setHeader('DAV',implode(', ',$features));
-        $this->httpResponse->setHeader('MS-Author-Via','DAV');
-        $this->httpResponse->setHeader('Accept-Ranges','bytes');
-        if (self::$exposeVersion) {
-            $this->httpResponse->setHeader('X-Sabre-Version',Version::VERSION);
-        }
-        $this->httpResponse->setHeader('Content-Length',0);
-        $this->httpResponse->sendStatus(200);
-
-    }
-
-    /**
-     * HTTP GET
-     *
-     * This method simply fetches the contents of a uri, like normal
-     *
-     * @param string $uri
-     * @return bool
-     */
-    protected function httpGet($uri) {
-
-        $node = $this->tree->getNodeForPath($uri,0);
-
-        if (!$this->checkPreconditions(true)) return false;
-        if (!$node instanceof IFile) throw new Exception\NotImplemented('GET is only implemented on File objects');
-
-        $body = $node->get();
-
-        // Converting string into stream, if needed.
-        if (is_string($body)) {
-            $stream = fopen('php://temp','r+');
-            fwrite($stream,$body);
-            rewind($stream);
-            $body = $stream;
-        }
-
-        /*
-         * TODO: getetag, getlastmodified, getsize should also be used using
-         * this method
-         */
-        $httpHeaders = $this->getHTTPHeaders($uri);
-
-        /* ContentType needs to get a default, because many webservers will otherwise
-         * default to text/html, and we don't want this for security reasons.
-         */
-        if (!isset($httpHeaders['Content-Type'])) {
-            $httpHeaders['Content-Type'] = 'application/octet-stream';
-        }
-
-
-        if (isset($httpHeaders['Content-Length'])) {
-
-            $nodeSize = $httpHeaders['Content-Length'];
-
-            // Need to unset Content-Length, because we'll handle that during figuring out the range
-            unset($httpHeaders['Content-Length']);
-
-        } else {
-            $nodeSize = null;
-        }
-
-        $this->httpResponse->setHeaders($httpHeaders);
-
-        $range = $this->getHTTPRange();
-        $ifRange = $this->httpRequest->getHeader('If-Range');
-        $ignoreRangeHeader = false;
-
-        // If ifRange is set, and range is specified, we first need to check
-        // the precondition.
-        if ($nodeSize && $range && $ifRange) {
-
-            // if IfRange is parsable as a date we'll treat it as a DateTime
-            // otherwise, we must treat it as an etag.
-            try {
-                $ifRangeDate = new \DateTime($ifRange);
-
-                // It's a date. We must check if the entity is modified since
-                // the specified date.
-                if (!isset($httpHeaders['Last-Modified'])) $ignoreRangeHeader = true;
-                else {
-                    $modified = new \DateTime($httpHeaders['Last-Modified']);
-                    if($modified > $ifRangeDate) $ignoreRangeHeader = true;
-                }
-
-            } catch (\Exception $e) {
-
-                // It's an entity. We can do a simple comparison.
-                if (!isset($httpHeaders['ETag'])) $ignoreRangeHeader = true;
-                elseif ($httpHeaders['ETag']!==$ifRange) $ignoreRangeHeader = true;
-            }
-        }
-
-        // We're only going to support HTTP ranges if the backend provided a filesize
-        if (!$ignoreRangeHeader && $nodeSize && $range) {
-
-            // Determining the exact byte offsets
-            if (!is_null($range[0])) {
-
-                $start = $range[0];
-                $end = $range[1]?$range[1]:$nodeSize-1;
-                if($start >= $nodeSize)
-                    throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeSize . ')');
-
-                if($end < $start) throw new Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end >= $nodeSize) $end = $nodeSize-1;
-
-            } else {
-
-                $start = $nodeSize-$range[1];
-                $end  = $nodeSize-1;
-
-                if ($start<0) $start = 0;
-
-            }
-
-            // New read/write stream
-            $newStream = fopen('php://temp','r+');
-
-            // stream_copy_to_stream() has a bug/feature: the `whence` argument
-            // is interpreted as SEEK_SET (count from absolute offset 0), while
-            // for a stream it should be SEEK_CUR (count from current offset).
-            // If a stream is nonseekable, the function fails. So we *emulate*
-            // the correct behaviour with fseek():
-            if ($start > 0) {
-                if (($curOffs = ftell($body)) === false) $curOffs = 0;
-                fseek($body, $start - $curOffs, SEEK_CUR);
-            }
-            stream_copy_to_stream($body, $newStream, $end-$start+1);
-            rewind($newStream);
-
-            $this->httpResponse->setHeader('Content-Length', $end-$start+1);
-            $this->httpResponse->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
-            $this->httpResponse->sendStatus(206);
-            $this->httpResponse->sendBody($newStream);
-
-
-        } else {
-
-            if ($nodeSize) $this->httpResponse->setHeader('Content-Length',$nodeSize);
-            $this->httpResponse->sendStatus(200);
-            $this->httpResponse->sendBody($body);
-
-        }
-
-    }
-
-    /**
-     * HTTP HEAD
-     *
-     * This method is normally used to take a peak at a url, and only get the HTTP response headers, without the body
-     * This is used by clients to determine if a remote file was changed, so they can use a local cached version, instead of downloading it again
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpHead($uri) {
-
-        $node = $this->tree->getNodeForPath($uri);
-        /* This information is only collection for File objects.
-         * Ideally we want to throw 405 Method Not Allowed for every
-         * non-file, but MS Office does not like this
-         */
-        if ($node instanceof IFile) {
-            $headers = $this->getHTTPHeaders($this->getRequestUri());
-            if (!isset($headers['Content-Type'])) {
-                $headers['Content-Type'] = 'application/octet-stream';
-            }
-            $this->httpResponse->setHeaders($headers);
-        }
-        $this->httpResponse->sendStatus(200);
-
-    }
-
-    /**
-     * HTTP Delete
-     *
-     * The HTTP delete method, deletes a given uri
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpDelete($uri) {
-
-        $this->checkPreconditions();
-        if (!$this->emit('beforeUnbind',[$uri])) return;
-        $this->tree->delete($uri);
-        $this->emit('afterUnbind',[$uri]);
-
-        $this->httpResponse->sendStatus(204);
-        $this->httpResponse->setHeader('Content-Length','0');
-
-    }
-
-
-    /**
-     * WebDAV PROPFIND
-     *
-     * This WebDAV method requests information about an uri resource, or a list of resources
-     * If a client wants to receive the properties for a single resource it will add an HTTP Depth: header with a 0 value
-     * If the value is 1, it means that it also expects a list of sub-resources (e.g.: files in a directory)
-     *
-     * The request body contains an XML data structure that has a list of properties the client understands
-     * The response body is also an xml document, containing information about every uri resource and the requested properties
-     *
-     * It has to return a HTTP 207 Multi-status status code
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpPropfind($uri) {
-
-        $requestedProperties = $this->parsePropFindRequest($this->httpRequest->getBody(true));
-
-        $depth = $this->getHTTPDepth(1);
-        // The only two options for the depth of a propfind is 0 or 1
-        if ($depth!=0) $depth = 1;
-
-        $newProperties = $this->getPropertiesForPath($uri,$requestedProperties,$depth);
-
-        // This is a multi-status response
-        $this->httpResponse->sendStatus(207);
-        $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->httpResponse->setHeader('Vary','Brief,Prefer');
-
-        // Normally this header is only needed for OPTIONS responses, however..
-        // iCal seems to also depend on these being set for PROPFIND. Since
-        // this is not harmful, we'll add it.
-        $features = ['1', '3', 'extended-mkcol'];
-        foreach($this->plugins as $plugin) $features = array_merge($features,$plugin->getFeatures());
-        $this->httpResponse->setHeader('DAV',implode(', ',$features));
-
-        $prefer = $this->getHTTPPrefer();
-        $minimal = $prefer['return-minimal'];
-
-        $data = $this->generateMultiStatus($newProperties, $minimal);
-        $this->httpResponse->sendBody($data);
-
-    }
-
-    /**
-     * WebDAV PROPPATCH
-     *
-     * This method is called to update properties on a Node. The request is an XML body with all the mutations.
-     * In this XML body it is specified which properties should be set/updated and/or deleted
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpPropPatch($uri) {
-
-        $this->checkPreconditions();
-
-        $newProperties = $this->parsePropPatchRequest($this->httpRequest->getBody(true));
-
-        $result = $this->updateProperties($uri, $newProperties);
-
-        $prefer = $this->getHTTPPrefer();
-        $this->httpResponse->setHeader('Vary','Brief,Prefer');
-
-        if ($prefer['return-minimal']) {
-
-            // If return-minimal is specified, we only have to check if the
-            // request was succesful, and don't need to return the
-            // multi-status.
-            $ok = true;
-            foreach($result as $code=>$prop) {
-                if ((int)$code > 299) {
-                    $ok = false;
-                }
-            }
-
-            if ($ok) {
-
-                $this->httpResponse->sendStatus(204);
-                return;
-
-            }
-
-        }
-
-        $this->httpResponse->sendStatus(207);
-        $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-
-        $this->httpResponse->sendBody(
-            $this->generateMultiStatus([$result])
-        );
-
-    }
-
-    /**
-     * HTTP PUT method
-     *
-     * This HTTP method updates a file, or creates a new one.
-     *
-     * If a new resource was created, a 201 Created status code should be returned. If an existing resource is updated, it's a 204 No Content
-     *
-     * @param string $uri
-     * @return bool
-     */
-    protected function httpPut($uri) {
-
-        $body = $this->httpRequest->getBody();
-
-        // Intercepting Content-Range
-        if ($this->httpRequest->getHeader('Content-Range')) {
-            /**
-            Content-Range is dangerous for PUT requests:  PUT per definition
-            stores a full resource.  draft-ietf-httpbis-p2-semantics-15 says
-            in section 7.6:
-              An origin server SHOULD reject any PUT request that contains a
-              Content-Range header field, since it might be misinterpreted as
-              partial content (or might be partial content that is being mistakenly
-              PUT as a full representation).  Partial content updates are possible
-              by targeting a separately identified resource with state that
-              overlaps a portion of the larger resource, or by using a different
-              method that has been specifically defined for partial updates (for
-              example, the PATCH method defined in [RFC5789]).
-            This clarifies RFC2616 section 9.6:
-              The recipient of the entity MUST NOT ignore any Content-*
-              (e.g. Content-Range) headers that it does not understand or implement
-              and MUST return a 501 (Not Implemented) response in such cases.
-            OTOH is a PUT request with a Content-Range currently the only way to
-            continue an aborted upload request and is supported by curl, mod_dav,
-            Tomcat and others.  Since some clients do use this feature which results
-            in unexpected behaviour (cf PEAR::HTTP_WebDAV_Client 1.0.1), we reject
-            all PUT requests with a Content-Range for now.
-            */
-
-            throw new Exception\NotImplemented('PUT with Content-Range is not allowed.');
-        }
-
-        // Intercepting the Finder problem
-        if (($expected = $this->httpRequest->getHeader('X-Expected-Entity-Length')) && $expected > 0) {
-
-            /**
-            Many webservers will not cooperate well with Finder PUT requests,
-            because it uses 'Chunked' transfer encoding for the request body.
-
-            The symptom of this problem is that Finder sends files to the
-            server, but they arrive as 0-length files in PHP.
-
-            If we don't do anything, the user might think they are uploading
-            files successfully, but they end up empty on the server. Instead,
-            we throw back an error if we detect this.
-
-            The reason Finder uses Chunked, is because it thinks the files
-            might change as it's being uploaded, and therefore the
-            Content-Length can vary.
-
-            Instead it sends the X-Expected-Entity-Length header with the size
-            of the file at the very start of the request. If this header is set,
-            but we don't get a request body we will fail the request to
-            protect the end-user.
-            */
-
-            // Only reading first byte
-            $firstByte = fread($body,1);
-            if (strlen($firstByte)!==1) {
-                throw new Exception\Forbidden('This server is not compatible with OS/X finder. Consider using a different WebDAV client or webserver.');
-            }
-
-            // The body needs to stay intact, so we copy everything to a
-            // temporary stream.
-
-            $newBody = fopen('php://temp','r+');
-            fwrite($newBody,$firstByte);
-            stream_copy_to_stream($body, $newBody);
-            rewind($newBody);
-
-            $body = $newBody;
-
-        }
-
-        if ($this->tree->nodeExists($uri)) {
-
-            $node = $this->tree->getNodeForPath($uri);
-
-            // Checking If-None-Match and related headers.
-            if (!$this->checkPreconditions()) return;
-
-            // If the node is a collection, we'll deny it
-            if (!($node instanceof IFile)) throw new Exception\Conflict('PUT is not allowed on non-files.');
-
-            // It is possible for an event handler to modify the content of the
-            // body, before it gets written. If this is the case, $modified
-            // should be set to true.
-            //
-            // If $modified is true, we must not send back an etag.
-            $modified = false;
-            if (!$this->emit('beforeWriteContent',[$uri, $node, &$body, &$modified])) return false;
-
-            $etag = $node->put($body);
-
-            $this->emit('afterWriteContent',[$uri, $node]);
-
-            $this->httpResponse->setHeader('Content-Length','0');
-            if ($etag && !$modified) $this->httpResponse->setHeader('ETag',$etag);
-            $this->httpResponse->sendStatus(204);
-
-        } else {
-
-            $etag = null;
-            // If we got here, the resource didn't exist yet.
-            if (!$this->createFile($this->getRequestUri(),$body,$etag)) {
-                // For one reason or another the file was not created.
-                return;
-            }
-
-            $this->httpResponse->setHeader('Content-Length','0');
-            if ($etag) $this->httpResponse->setHeader('ETag', $etag);
-            $this->httpResponse->sendStatus(201);
-
-        }
-
-    }
-
-
-    /**
-     * WebDAV MKCOL
-     *
-     * The MKCOL method is used to create a new collection (directory) on the server
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpMkcol($uri) {
-
-        $requestBody = $this->httpRequest->getBody(true);
-
-        if ($requestBody) {
-
-            $contentType = $this->httpRequest->getHeader('Content-Type');
-            if (strpos($contentType,'application/xml')!==0 && strpos($contentType,'text/xml')!==0) {
-
-                // We must throw 415 for unsupported mkcol bodies
-                throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must have an xml Content-Type');
-
-            }
-
-            $dom = XMLUtil::loadDOMDocument($requestBody);
-            if (XMLUtil::toClarkNotation($dom->firstChild)!=='{DAV:}mkcol') {
-
-                // We must throw 415 for unsupported mkcol bodies
-                throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must be a {DAV:}mkcol request construct.');
-
-            }
-
-            $properties = [];
-            foreach($dom->firstChild->childNodes as $childNode) {
-
-                if (XMLUtil::toClarkNotation($childNode)!=='{DAV:}set') continue;
-                $properties = array_merge($properties, XMLUtil::parseProperties($childNode, $this->propertyMap));
-
-            }
-            if (!isset($properties['{DAV:}resourcetype']))
-                throw new Exception\BadRequest('The mkcol request must include a {DAV:}resourcetype property');
-
-            $resourceType = $properties['{DAV:}resourcetype']->getValue();
-            unset($properties['{DAV:}resourcetype']);
-
-        } else {
-
-            $properties = [];
-            $resourceType = ['{DAV:}collection'];
-
-        }
-
-        $result = $this->createCollection($uri, $resourceType, $properties);
-
-        if (is_array($result)) {
-            $this->httpResponse->sendStatus(207);
-            $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-
-            $this->httpResponse->sendBody(
-                $this->generateMultiStatus([$result])
-            );
-
-        } else {
-            $this->httpResponse->setHeader('Content-Length','0');
-            $this->httpResponse->sendStatus(201);
-        }
-
-    }
-
-    /**
-     * WebDAV HTTP MOVE method
-     *
-     * This method moves one uri to a different uri. A lot of the actual request processing is done in getCopyMoveInfo
-     *
-     * @param string $uri
-     * @return bool
-     */
-    protected function httpMove($uri) {
-
-        $this->checkPreconditions();
-        $moveInfo = $this->getCopyAndMoveInfo();
-
-        // If the destination is part of the source tree, we must fail
-        if ($moveInfo['destination']==$uri)
-            throw new Exception\Forbidden('Source and destination uri are identical.');
-
-        if ($moveInfo['destinationExists']) {
-
-            if (!$this->emit('beforeUnbind',[$moveInfo['destination']])) return false;
-            $this->tree->delete($moveInfo['destination']);
-            $this->emit('afterUnbind',[$moveInfo['destination']]);
-
-        }
-
-        if (!$this->emit('beforeUnbind',[$uri])) return false;
-        if (!$this->emit('beforeBind',[$moveInfo['destination']])) return false;
-        $this->tree->move($uri,$moveInfo['destination']);
-        $this->emit('afterUnbind',[$uri]);
-        $this->emit('afterBind',[$moveInfo['destination']]);
-
-        // If a resource was overwritten we should send a 204, otherwise a 201
-        $this->httpResponse->setHeader('Content-Length','0');
-        $this->httpResponse->sendStatus($moveInfo['destinationExists']?204:201);
-
-    }
-
-    /**
-     * WebDAV HTTP COPY method
-     *
-     * This method copies one uri to a different uri, and works much like the MOVE request
-     * A lot of the actual request processing is done in getCopyMoveInfo
-     *
-     * @param string $uri
-     * @return bool
-     */
-    protected function httpCopy($uri) {
-
-        $this->checkPreconditions();
-        $copyInfo = $this->getCopyAndMoveInfo();
-        // If the destination is part of the source tree, we must fail
-        if ($copyInfo['destination']==$uri)
-            throw new Exception\Forbidden('Source and destination uri are identical.');
-
-        if ($copyInfo['destinationExists']) {
-            if (!$this->emit('beforeUnbind',[$copyInfo['destination']])) return false;
-            $this->tree->delete($copyInfo['destination']);
-
-        }
-        if (!$this->emit('beforeBind',[$copyInfo['destination']])) return false;
-        $this->tree->copy($uri,$copyInfo['destination']);
-        $this->emit('afterBind',[$copyInfo['destination']]);
-
-        // If a resource was overwritten we should send a 204, otherwise a 201
-        $this->httpResponse->setHeader('Content-Length','0');
-        $this->httpResponse->sendStatus($copyInfo['destinationExists']?204:201);
-
-    }
-
-
-
-    /**
-     * HTTP REPORT method implementation
-     *
-     * Although the REPORT method is not part of the standard WebDAV spec (it's from rfc3253)
-     * It's used in a lot of extensions, so it made sense to implement it into the core.
-     *
-     * @param string $uri
-     * @return void
-     */
-    protected function httpReport($uri) {
-
-        $body = $this->httpRequest->getBody(true);
-        $dom = XMLUtil::loadDOMDocument($body);
-
-        $reportName = XMLUtil::toClarkNotation($dom->firstChild);
-
-        if ($this->emit('report',[$reportName, $dom, $uri])) {
-
-            // If emit returned true, it means the report was not supported
-            throw new Exception\ReportNotSupported();
-
-        }
-
-    }
 
     // }}}
     // {{{ HTTP/WebDAV protocol helpers
@@ -1105,7 +503,7 @@ class Server extends EventEmitter {
      */
     public function getRequestUri() {
 
-        return $this->calculateUri($this->httpRequest->getUri());
+        return $this->calculateUri($this->httpRequest->getUrl());
 
     }
 
@@ -2049,7 +1447,7 @@ class Server extends EventEmitter {
 
                 if ($haveMatch) {
                     if ($handleAsGET) {
-                        $this->httpResponse->sendStatus(304);
+                        $this->httpResponse->setStatus(304);
                         return false;
                     } else {
                         throw new Exception\PreconditionFailed('An If-None-Match header was specified, but the ETag matched (or * was specified).','If-None-Match');
@@ -2077,7 +1475,7 @@ class Server extends EventEmitter {
                 if ($lastMod) {
                     $lastMod = new \DateTime('@' . $lastMod);
                     if ($lastMod <= $date) {
-                        $this->httpResponse->sendStatus(304);
+                        $this->httpResponse->setStatus(304);
                         $this->httpResponse->setHeader('Last-Modified', HTTP\Util::toHTTPDate($lastMod));
                         return false;
                     }

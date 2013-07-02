@@ -2,7 +2,11 @@
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\DAV;
+use
+    Sabre\DAV,
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Browser Plugin
@@ -94,26 +98,23 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'httpGetInterceptor'));
-        $this->server->on('onHTMLActionsPanel', array($this, 'htmlActionsPanel'),200);
-        if ($this->enablePost) $this->server->on('unknownMethod',array($this,'httpPOSTHandler'));
+        $this->server->on('method:GET',[$this,'httpGet']);
+        $this->server->on('onHTMLActionsPanel', [$this, 'htmlActionsPanel'],200);
+        if ($this->enablePost) $this->server->on('method:POST', [$this,'httpPOST']);
     }
 
     /**
      * This method intercepts GET requests to collections and returns the html
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGetInterceptor($method, $uri) {
-
-        if ($method !== 'GET') return true;
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         // We're not using straight-up $_GET, because we want everything to be
         // unit testable.
-        $getVars = array();
-        parse_str($this->server->httpRequest->getQueryString(), $getVars);
+        $getVars = $request->getQueryParameters();
 
         if (isset($getVars['sabreAction']) && $getVars['sabreAction'] === 'asset' && isset($getVars['assetName'])) {
             $this->serveAsset($getVars['assetName']);
@@ -121,7 +122,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         try {
-            $node = $this->server->tree->getNodeForPath($uri);
+            $node = $this->server->tree->getNodeForPath($request->getPath());
         } catch (DAV\Exception\NotFound $e) {
             // We're simply stopping when the file isn't found to not interfere
             // with other plugins.
@@ -130,11 +131,11 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof DAV\IFile)
             return;
 
-        $this->server->httpResponse->sendStatus(200);
-        $this->server->httpResponse->setHeader('Content-Type','text/html; charset=utf-8');
+        $response->setStatus(200);
+        $response->setHeader('Content-Type','text/html; charset=utf-8');
 
-        $this->server->httpResponse->sendBody(
-            $this->generateDirectoryIndex($uri)
+        $response->setBody(
+            $this->generateDirectoryIndex($request->getPath())
         );
 
         return false;
@@ -144,23 +145,24 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Handles POST requests for tree operations.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function httpPOSTHandler($method, $uri) {
+    public function httpPOST(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!='POST') return;
-        $contentType = $this->server->httpRequest->getHeader('Content-Type');
+        $contentType = $request->getHeader('Content-Type');
         list($contentType) = explode(';', $contentType);
         if ($contentType !== 'application/x-www-form-urlencoded' &&
             $contentType !== 'multipart/form-data') {
                 return;
         }
-        $postVars = $this->server->httpRequest->getPostVars();
+        $postVars = $request->getPostData();
 
         if (!isset($postVars['sabreAction']))
             return;
+
+        $uri = $request->getPath();
 
         if ($this->server->emit('onBrowserPostAction', [$uri, $postVars['sabreAction'], $postVars])) {
 
@@ -169,7 +171,7 @@ class Plugin extends DAV\ServerPlugin {
                 case 'mkcol' :
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         // Using basename() because we won't allow slashes
-                        list(, $folderName) = DAV\URLUtil::splitPath(trim($postVars['name']));
+                        list(, $folderName) = URLUtil::splitPath(trim($postVars['name']));
                         $this->server->createDirectory($uri . '/' . $folderName);
                     }
                     break;
@@ -177,12 +179,12 @@ class Plugin extends DAV\ServerPlugin {
                     if ($_FILES) $file = current($_FILES);
                     else break;
 
-                    list(, $newName) = DAV\URLUtil::splitPath(trim($file['name']));
+                    list(, $newName) = URLUtil::splitPath(trim($file['name']));
                     if (isset($postVars['name']) && trim($postVars['name']))
                         $newName = trim($postVars['name']);
 
                     // Making sure we only have a 'basename' component
-                    list(, $newName) = DAV\URLUtil::splitPath($newName);
+                    list(, $newName) = URLUtil::splitPath($newName);
 
                     if (is_uploaded_file($file['tmp_name'])) {
                         $this->server->createFile($uri . '/' . $newName, fopen($file['tmp_name'],'r'));
@@ -192,8 +194,8 @@ class Plugin extends DAV\ServerPlugin {
             }
 
         }
-        $this->server->httpResponse->setHeader('Location',$this->server->httpRequest->getUri());
-        $this->server->httpResponse->sendStatus(302);
+        $response->setHeader('Location', $request->getUrl());
+        $response->setStatus(302);
         return false;
 
     }
@@ -256,8 +258,8 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($path) {
 
-            list($parentUri) = DAV\URLUtil::splitPath($path);
-            $fullPath = DAV\URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+            list($parentUri) = URLUtil::splitPath($path);
+            $fullPath = URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
 
             $icon = $this->enableAssets?'<a href="' . $fullPath . '"><img src="' . $this->getAssetUrl('icons/parent' . $this->iconExtension) . '" width="24" alt="Parent" /></a>':'';
             $html.= "<tr>
@@ -275,7 +277,7 @@ class Plugin extends DAV\ServerPlugin {
             // This is the current directory, we can skip it
             if (rtrim($file['href'],'/')==$path) continue;
 
-            list(, $name) = DAV\URLUtil::splitPath($file['href']);
+            list(, $name) = URLUtil::splitPath($file['href']);
 
             $type = null;
 
@@ -336,7 +338,7 @@ class Plugin extends DAV\ServerPlugin {
             $size = isset($file[200]['{DAV:}getcontentlength'])?(int)$file[200]['{DAV:}getcontentlength']:'';
             $lastmodified = isset($file[200]['{DAV:}getlastmodified'])?$file[200]['{DAV:}getlastmodified']->getTime()->format(\DateTime::ATOM):'';
 
-            $fullPath = DAV\URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
+            $fullPath = URLUtil::encodePath('/' . trim($this->server->getBaseUri() . ($path?$path . '/':'') . $name,'/'));
 
             $displayName = isset($file[200]['{DAV:}displayname'])?$file[200]['{DAV:}displayname']:$name;
 
@@ -491,8 +493,9 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setHeader('Content-Type', $mime);
         $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
-        $this->server->httpResponse->sendStatus(200);
-        $this->server->httpResponse->sendBody(fopen($assetPath,'r'));
+        $this->server->httpResponse->setStatus(200);
+        $this->server->httpResponse->setBody(fopen($assetPath,'r'));
+        $this->server->httpResponse->send();
 
     }
 

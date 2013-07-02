@@ -2,27 +2,30 @@
 
 namespace Sabre\HTTP;
 
+/**
+ * HTTP Response Mock object
+ *
+ * This class exists to make the transition to sabre/http easier.
+ *
+ * @copyright Copyright (C) 2007-2013 fruux GmbH. All rights reserved.
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class ResponseMock extends Response {
 
-    public $headers = array();
-    public $status = '';
-    public $body = '';
+    /**
+     * Making these public.
+     */
+    public $body;
+    public $status;
+    public $headers = [];
 
-    function setHeader($name,$value,$overwrite = true) {
-
-        $this->headers[$name] = $value;
-
-    }
-
-    function sendStatus($code) {
-
-        $this->status = $this->getStatusMessage($code, $this->defaultHttpVersion);
-
-    }
-
-    function sendBody($body) {
-
-        $this->body = $body;
+    /**
+     * Overriding this so nothing is ever echo'd.
+     *
+     * @return void
+     */
+    public function send() {
 
     }
 

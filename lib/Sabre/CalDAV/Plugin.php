@@ -5,7 +5,10 @@ namespace Sabre\CalDAV;
 use
     Sabre\DAV,
     Sabre\DAVACL,
-    Sabre\VObject;
+    Sabre\VObject,
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * CalDAV plugin
@@ -83,7 +86,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // The MKCALENDAR is only available on unmapped uri's, whose
         // parents extend IExtendedCollection
-        list($parent, $name) = DAV\URLUtil::splitPath($uri);
+        list($parent, $name) = URLUtil::splitPath($uri);
 
         $node = $this->server->tree->getNodeForPath($parent);
 
@@ -109,7 +112,7 @@ class Plugin extends DAV\ServerPlugin {
     public function getCalendarHomeForPrincipal($principalUrl) {
 
         // The default is a bit naive, but it can be overwritten.
-        list(, $nodeName) = DAV\URLUtil::splitPath($principalUrl);
+        list(, $nodeName) = URLUtil::splitPath($principalUrl);
 
         return self::CALENDAR_ROOT . '/' . $nodeName;
 
@@ -182,7 +185,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
 
-        $server->on('unknownMethod',       [$this,'unknownMethod']);
+        $server->on('method:MKCALENDAR',   [$this,'httpMkcalendar']);
+        $server->on('method:POST',         [$this,'httpPost']);
         $server->on('report',              [$this,'report']);
         $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
@@ -233,42 +237,34 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This function handles support for the MKCALENDAR method
+     * This method handles POST request for the outbox.
      *
-     * @param string $method
-     * @param string $uri
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function unknownMethod($method, $uri) {
+    public function httpPost(RequestInterface $request, ResponseInterface $response) {
 
-        switch ($method) {
-            case 'MKCALENDAR' :
-                $this->httpMkCalendar($uri);
-                // false is returned to stop the propagation of the
-                // unknownMethod event.
-                return false;
-            case 'POST' :
-
-                // Checking if this is a text/calendar content type
-                $contentType = $this->server->httpRequest->getHeader('Content-Type');
-                if (strpos($contentType, 'text/calendar')!==0) {
-                    return;
-                }
-
-                // Checking if we're talking to an outbox
-                try {
-                    $node = $this->server->tree->getNodeForPath($uri);
-                } catch (DAV\Exception\NotFound $e) {
-                    return;
-                }
-                if (!$node instanceof Schedule\IOutbox)
-                    return;
-
-                $this->server->transactionType = 'post-caldav-outbox';
-                $this->outboxRequest($node, $uri);
-                return false;
-
+        // Checking if this is a text/calendar content type
+        $contentType = $request->getHeader('Content-Type');
+        if (strpos($contentType, 'text/calendar')!==0) {
+            return;
         }
+
+        $path = $request->getPath();
+
+        // Checking if we're talking to an outbox
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (DAV\Exception\NotFound $e) {
+            return;
+        }
+        if (!$node instanceof Schedule\IOutbox)
+            return;
+
+        $this->server->transactionType = 'post-caldav-outbox';
+        $this->outboxRequest($node, $path);
+        return false;
 
     }
 
@@ -304,10 +300,11 @@ class Plugin extends DAV\ServerPlugin {
      * This function handles the MKCALENDAR HTTP method, which creates
      * a new calendar.
      *
-     * @param string $uri
-     * @return void
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return bool
      */
-    public function httpMkCalendar($uri) {
+    public function httpMkCalendar(RequestInterface $request, ResponseInterface $response) {
 
         // Due to unforgivable bugs in iCal, we're completely disabling MKCALENDAR support
         // for clients matching iCal in the user agent
@@ -316,7 +313,9 @@ class Plugin extends DAV\ServerPlugin {
         //    throw new \Sabre\DAV\Exception\Forbidden('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
         //}
 
-        $body = $this->server->httpRequest->getBody(true);
+        $body = $request->getBody($asString = true);
+        $path = $request->getPath();
+
         $properties = array();
 
         if ($body) {
@@ -335,10 +334,13 @@ class Plugin extends DAV\ServerPlugin {
 
         $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
 
-        $this->server->createCollection($uri,$resourceType,$properties);
+        $this->server->createCollection($path,$resourceType,$properties);
 
-        $this->server->httpResponse->sendStatus(201);
+        $this->server->httpResponse->setStatus(201);
         $this->server->httpResponse->setHeader('Content-Length',0);
+
+        // This breaks the method chain.
+        return false;
     }
 
     /**
@@ -413,10 +415,10 @@ class Plugin extends DAV\ServerPlugin {
                     // group, we grab the parent principal and add it to the
                     // list.
                     if ($groupNode instanceof Principal\IProxyRead) {
-                        list($readList[]) = DAV\URLUtil::splitPath($group);
+                        list($readList[]) = URLUtil::splitPath($group);
                     }
                     if ($groupNode instanceof Principal\IProxyWrite) {
-                        list($writeList[]) = DAV\URLUtil::splitPath($group);
+                        list($writeList[]) = URLUtil::splitPath($group);
                     }
 
                 }
@@ -537,10 +539,11 @@ class Plugin extends DAV\ServerPlugin {
 
         $prefer = $this->server->getHTTPPRefer();
 
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal']));
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal']));
+        $this->server->httpResponse->send();
 
     }
 
@@ -645,10 +648,11 @@ class Plugin extends DAV\ServerPlugin {
 
         $prefer = $this->server->getHTTPPRefer();
 
-        $this->server->httpResponse->sendStatus(207);
+        $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->sendBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
+        $this->server->httpResponse->send();
 
     }
 
@@ -729,10 +733,11 @@ class Plugin extends DAV\ServerPlugin {
         $result = $generator->getResult();
         $result = $result->serialize();
 
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type', 'text/calendar');
         $this->server->httpResponse->setHeader('Content-Length', strlen($result));
-        $this->server->httpResponse->sendBody($result);
+        $this->server->httpResponse->setBody($result);
+        $this->server->httpResponse->send();
 
     }
 
@@ -818,8 +823,9 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
         $this->server->httpResponse->setHeader('ETag',$node->getETag());
-        $this->server->httpResponse->sendStatus(200);
-        $this->server->httpResponse->sendBody($dom->saveXML());
+        $this->server->httpResponse->setStatus(200);
+        $this->server->httpResponse->setBody($dom->saveXML());
+        $this->server->httpResponse->send();
 
         return false;
 
@@ -865,7 +871,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         // Get the Supported Components for the target calendar
-        list($parentPath,$object) = DAV\URLUtil::splitPath($path);
+        list($parentPath,$object) = URLUtil::splitPath($path);
         $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
         $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
 
@@ -1046,9 +1052,10 @@ class Plugin extends DAV\ServerPlugin {
         $originator = substr($originator,7);
 
         $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->sendBody($this->generateScheduleResponse($result));
+        $this->server->httpResponse->setBody($this->generateScheduleResponse($result));
+        $this->server->httpResponse->send();
 
     }
 
@@ -1217,9 +1224,10 @@ class Plugin extends DAV\ServerPlugin {
             $scheduleResponse->appendChild($response);
         }
 
-        $this->server->httpResponse->sendStatus(200);
+        $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->sendBody($dom->saveXML());
+        $this->server->httpResponse->setBody($dom->saveXML());
+        $this->server->httpResponse->send();
 
     }
 

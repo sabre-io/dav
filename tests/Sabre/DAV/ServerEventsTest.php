@@ -34,7 +34,7 @@ class ServerEventsTest extends AbstractServer {
         $this->assertFalse($this->server->createFile('bla','body'));
 
         // Also testing put()
-        $req = new HTTP\Request(array(
+        $req = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/barbar',
         ));
@@ -56,7 +56,7 @@ class ServerEventsTest extends AbstractServer {
 
         $this->server->on('exception', [$this, 'exceptionHandler']);
 
-        $req = new HTTP\Request(array(
+        $req = HTTP\Request::createFromServerArray(array(
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/not/exisitng',
         ));

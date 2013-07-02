@@ -152,7 +152,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($auth);
 
         //forcing login
-        $auth->beforeMethod('GET','/');
+        $auth->beforeMethod(new HTTP\Request(), new HTTP\Response());
 
         $this->assertEquals(array('principals/admin'),$acl->getCurrentUserPrincipals());
 
@@ -179,7 +179,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($auth);
 
         //forcing login
-        $auth->beforeMethod('GET','/');
+        $auth->beforeMethod(new HTTP\Request(), new HTTP\Response());
 
         $expected = array(
             'principals/admin',
@@ -256,7 +256,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($auth);
 
         //forcing login
-        $auth->beforeMethod('GET','/');
+        $auth->beforeMethod(new HTTP\Request(), new HTTP\Response());
 
         $expected = array(
             '{DAV:}write',

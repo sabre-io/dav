@@ -188,7 +188,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($authPlugin);
 
         // Force login
-        $authPlugin->beforeMethod('BLA','foo');
+        $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
 
         $requestedProperties = array(
             '{DAV:}acl',
@@ -231,7 +231,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($authPlugin);
 
         // Force login
-        $authPlugin->beforeMethod('BLA','foo');
+        $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
 
         $requestedProperties = array(
             '{DAV:}acl-restrictions',

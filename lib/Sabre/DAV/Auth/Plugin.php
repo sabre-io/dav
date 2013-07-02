@@ -1,7 +1,11 @@
 <?php
 
 namespace Sabre\DAV\Auth;
-use Sabre\DAV;
+
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * This plugin provides Authentication for a WebDAV server.
@@ -105,9 +109,11 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * This method is called before any HTTP method and forces users to be authenticated
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod() {
+    public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
         $this->authBackend->authenticate($this->server,$this->getRealm());
 

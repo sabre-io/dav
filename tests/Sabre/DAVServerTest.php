@@ -9,6 +9,10 @@ require_once 'Sabre/CardDAV/Backend/Mock.php';
 require_once 'Sabre/DAVACL/PrincipalBackend/Mock.php';
 require_once 'Sabre/DAV/Auth/Backend/Mock.php';
 
+use
+    Sabre\HTTP\Request,
+    Sabre\HTTP\Response;
+
 /**
  * This class may be used as a basis for other webdav-related unittests.
  *
@@ -105,7 +109,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->server->addPlugin($this->authPlugin);
 
             // This will trigger the actual login procedure
-            $this->authPlugin->beforeMethod('OPTIONS','/');
+            $this->authPlugin->beforeMethod(new Request(), new Response());
         }
 
     }

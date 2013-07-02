@@ -58,7 +58,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
     function testBeforeGetShareableCalendar() {
 
         // Forcing the server to authenticate:
-        $this->authPlugin->beforeMethod('GET','');
+        $this->authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
         $props = $this->server->getProperties('calendars/user1/cal1', array(
             '{' . Plugin::NS_CALENDARSERVER . '}invite',
             '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',

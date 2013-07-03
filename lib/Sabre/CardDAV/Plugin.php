@@ -54,9 +54,9 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
         $server->on('afterGetProperties',  [$this, 'afterGetProperties']);
         $server->on('updateProperties',    [$this, 'updateProperties']);
-        $server->on('report',              [$this,'report']);
-        $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
-        $server->on('onBrowserPostAction', [$this,'browserPostAction']);
+        $server->on('report',              [$this, 'report']);
+        $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
+        $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
 
@@ -649,7 +649,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return bool
      */
-    public function afterGetProperties($uri, &$properties) {
+    public function afterGetProperties($uri, &$properties, DAV\INode $node) {
 
         // If the request was made using the SOGO connector, we must rewrite
         // the content-type property. By default SabreDAV will send back

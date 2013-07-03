@@ -299,6 +299,7 @@ class Server extends EventEmitter {
             $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->setHeaders($headers);
             $this->httpResponse->setBody($DOM->saveXML());
+            $this->httpResponse->send();
 
         }
 

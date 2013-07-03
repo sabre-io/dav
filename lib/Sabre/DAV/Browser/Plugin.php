@@ -495,7 +495,6 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
         $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setBody(fopen($assetPath,'r'));
-        $this->server->httpResponse->send();
 
     }
 

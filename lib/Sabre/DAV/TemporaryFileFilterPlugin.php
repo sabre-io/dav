@@ -280,7 +280,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
 
         $data = $this->server->generateMultiStatus([$properties]);
         $hR->setBody($data);
-        $hR->send();
         return false;
 
     }

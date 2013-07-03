@@ -78,7 +78,6 @@ class VCFExportPlugin extends DAV\ServerPlugin {
         ),1);
 
         $response->setBody($this->generateVCF($nodes));
-        $response->send();
 
         // Returning false to break the event chain
         return false;

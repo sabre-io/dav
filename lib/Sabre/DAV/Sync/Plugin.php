@@ -274,7 +274,6 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setBody($dom->saveXML());
-        $this->server->httpResponse->send();
 
     }
 

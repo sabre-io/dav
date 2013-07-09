@@ -717,8 +717,6 @@ class Server {
         // The only two options for the depth of a propfind is 0 or 1
         if ($depth!=0) $depth = 1;
 
-        $newProperties = $this->getPropertiesForPath($uri,$requestedProperties,$depth);
-
         // This is a multi-status response
         $this->httpResponse->sendStatus(207);
         $this->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
@@ -733,8 +731,7 @@ class Server {
 
         $prefer = $this->getHTTPPrefer();
         $minimal = $prefer['return-minimal'];
-
-        $data = $this->generateMultiStatus($newProperties, $minimal);
+        $data = $this->generateMultiStatus($this->getNodesForPath($uri,$depth), $minimal, $requestedProperties);
         $this->httpResponse->sendBody($data);
 
     }
@@ -1364,9 +1361,8 @@ class Server {
      * @param array $propertyNames
      */
     public function getProperties($path, $propertyNames) {
-
-        $result = $this->getPropertiesForPath($path,$propertyNames,0);
-        return $result[0][200];
+        $result = $this->getPathProperties($path, $propertyNames);
+        return $result[200];
 
     }
 
@@ -1385,13 +1381,18 @@ class Server {
     public function getPropertiesForChildren($path, $propertyNames) {
 
         $result = array();
-        foreach($this->getPropertiesForPath($path,$propertyNames,1) as $k=>$row) {
+        $i = 0;
+        foreach($this->getNodesForPath($path,1) as $path => $node) {
 
             // Skipping the parent path
-            if ($k === 0) continue;
+            if ($i === 0) continue;
+
+            if(($row = $this->getPathProperties($path, $propertyNames, $node)) === false) {
+                continue;
+            }
 
             $result[$row['href']] = $row[200];
-
+            $i++;
         }
         return $result;
 
@@ -1439,7 +1440,7 @@ class Server {
     }
 
     /**
-     * Returns a list of properties for a given path
+     * Returns an array of paths and nodes for a given path
      *
      * The path that should be supplied should have the baseUrl stripped out
      * The list of properties should be supplied in Clark notation. If the list is empty
@@ -1448,11 +1449,10 @@ class Server {
      * If a depth of 1 is requested child elements will also be returned.
      *
      * @param string $path
-     * @param array $propertyNames
      * @param int $depth
      * @return array
      */
-    public function getPropertiesForPath($path, $propertyNames = array(), $depth = 0) {
+    public function getNodesForPath($path, $depth = 0) {
 
         if ($depth!=0) $depth = 1;
 
@@ -1463,156 +1463,163 @@ class Server {
         //
         // We're not doing anything with the result, but this can be helpful to
         // pre-fetch certain expensive live properties.
-        $this->broadCastEvent('beforeGetPropertiesForPath', array($path, $propertyNames, $depth));
-
-        $returnPropertyList = array();
+        $this->broadCastEvent('beforeGetPropertiesForPath', array($path, $depth));
 
         $parentNode = $this->tree->getNodeForPath($path);
-        $nodes = array(
+
+	    $nodes = array(
             $path => $parentNode
         );
         if ($depth==1 && $parentNode instanceof ICollection) {
             foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }
-
-        // If the propertyNames array is empty, it means all properties are requested.
-        // We shouldn't actually return everything we know though, and only return a
-        // sensible list.
-        $allProperties = count($propertyNames)==0;
-
-        foreach($nodes as $myPath=>$node) {
-
-            $currentPropertyNames = $propertyNames;
-
-            $newProperties = array(
-                '200' => array(),
-                '404' => array(),
-            );
-
-            if ($allProperties) {
-                // Default list of propertyNames, when all properties were requested.
-                $currentPropertyNames = array(
-                    '{DAV:}getlastmodified',
-                    '{DAV:}getcontentlength',
-                    '{DAV:}resourcetype',
-                    '{DAV:}quota-used-bytes',
-                    '{DAV:}quota-available-bytes',
-                    '{DAV:}getetag',
-                    '{DAV:}getcontenttype',
-                );
-            }
-
-            // If the resourceType was not part of the list, we manually add it
-            // and mark it for removal. We need to know the resourcetype in order
-            // to make certain decisions about the entry.
-            // WebDAV dictates we should add a / and the end of href's for collections
-            $removeRT = false;
-            if (!in_array('{DAV:}resourcetype',$currentPropertyNames)) {
-                $currentPropertyNames[] = '{DAV:}resourcetype';
-                $removeRT = true;
-            }
-
-            $result = $this->broadcastEvent('beforeGetProperties',array($myPath, $node, &$currentPropertyNames, &$newProperties));
-            // If this method explicitly returned false, we must ignore this
-            // node as it is inaccessible.
-            if ($result===false) continue;
-
-            if (count($currentPropertyNames) > 0) {
-
-                if ($node instanceof IProperties) {
-                    $nodeProperties = $node->getProperties($currentPropertyNames);
-
-                    // The getProperties method may give us too much,
-                    // properties, in case the implementor was lazy.
-                    //
-                    // So as we loop through this list, we will only take the
-                    // properties that were actually requested and discard the
-                    // rest.
-                    foreach($currentPropertyNames as $k=>$currentPropertyName) {
-                        if (isset($nodeProperties[$currentPropertyName])) {
-                            unset($currentPropertyNames[$k]);
-                            $newProperties[200][$currentPropertyName] = $nodeProperties[$currentPropertyName];
-                        }
-                    }
-
-                }
-
-            }
-
-            foreach($currentPropertyNames as $prop) {
-
-                if (isset($newProperties[200][$prop])) continue;
-
-                switch($prop) {
-                    case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Property\GetLastModified($node->getLastModified()); break;
-                    case '{DAV:}getcontentlength'      :
-                        if ($node instanceof IFile) {
-                            $size = $node->getSize();
-                            if (!is_null($size)) {
-                                $newProperties[200][$prop] = (int)$node->getSize();
-                            }
-                        }
-                        break;
-                    case '{DAV:}quota-used-bytes'      :
-                        if ($node instanceof IQuota) {
-                            $quotaInfo = $node->getQuotaInfo();
-                            $newProperties[200][$prop] = $quotaInfo[0];
-                        }
-                        break;
-                    case '{DAV:}quota-available-bytes' :
-                        if ($node instanceof IQuota) {
-                            $quotaInfo = $node->getQuotaInfo();
-                            $newProperties[200][$prop] = $quotaInfo[1];
-                        }
-                        break;
-                    case '{DAV:}getetag'               : if ($node instanceof IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
-                    case '{DAV:}getcontenttype'        : if ($node instanceof IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
-                    case '{DAV:}supported-report-set'  :
-                        $reports = array();
-                        foreach($this->plugins as $plugin) {
-                            $reports = array_merge($reports, $plugin->getSupportedReportSet($myPath));
-                        }
-                        $newProperties[200][$prop] = new Property\SupportedReportSet($reports);
-                        break;
-                    case '{DAV:}resourcetype' :
-                        $newProperties[200]['{DAV:}resourcetype'] = new Property\ResourceType();
-                        foreach($this->resourceTypeMapping as $className => $resourceType) {
-                            if ($node instanceof $className) $newProperties[200]['{DAV:}resourcetype']->add($resourceType);
-                        }
-                        break;
-
-                }
-
-                // If we were unable to find the property, we will list it as 404.
-                if (!$allProperties && !isset($newProperties[200][$prop])) $newProperties[404][$prop] = null;
-
-            }
-
-            $this->broadcastEvent('afterGetProperties',array(trim($myPath,'/'),&$newProperties, $node));
-
-            $newProperties['href'] = trim($myPath,'/');
-
-            // Its is a WebDAV recommendation to add a trailing slash to collectionnames.
-            // Apple's iCal also requires a trailing slash for principals (rfc 3744), though this is non-standard.
-            if ($myPath!='' && isset($newProperties[200]['{DAV:}resourcetype'])) {
-                $rt = $newProperties[200]['{DAV:}resourcetype'];
-                if ($rt->is('{DAV:}collection') || $rt->is('{DAV:}principal')) {
-                    $newProperties['href'] .='/';
-                }
-            }
-
-            // If the resourcetype property was manually added to the requested property list,
-            // we will remove it again.
-            if ($removeRT) unset($newProperties[200]['{DAV:}resourcetype']);
-
-            $returnPropertyList[] = $newProperties;
-
-        }
-
-        return $returnPropertyList;
-
+        return $nodes;
     }
+
+	/**
+	 * Returns a list of properties for a single path
+	 *
+	 * @param $path
+	 * @param array $propertyNames
+	 * @param null $node
+	 * @return array|bool
+	 */
+	public function getPathProperties($path, $propertyNames = array(), $node = null)
+	{
+		$newProperties = array(
+			'200' => array(),
+			'404' => array(),
+		);
+
+		if($node === null) {
+			$this->tree->getNodeForPath($path);
+		}
+
+		$allProperties = empty($propertyNames);
+		if ($allProperties) {
+			// Default list of propertyNames, when all properties were requested.
+			$currentPropertyNames = array(
+				'{DAV:}getlastmodified',
+				'{DAV:}getcontentlength',
+				'{DAV:}resourcetype',
+				'{DAV:}quota-used-bytes',
+				'{DAV:}quota-available-bytes',
+				'{DAV:}getetag',
+				'{DAV:}getcontenttype',
+			);
+		} else {
+			$currentPropertyNames = $propertyNames;
+		}
+
+		// If the resourceType was not part of the list, we manually add it
+		// and mark it for removal. We need to know the resourcetype in order
+		// to make certain decisions about the entry.
+		// WebDAV dictates we should add a / and the end of href's for collections
+		$removeRT = false;
+		if (!in_array('{DAV:}resourcetype',$currentPropertyNames)) {
+			$currentPropertyNames[] = '{DAV:}resourcetype';
+			$removeRT = true;
+		}
+
+		$result = $this->broadcastEvent('beforeGetProperties',array($path, $node, &$currentPropertyNames, &$newProperties));
+		// If this method explicitly returned false, we must ignore this
+		// node as it is inaccessible.
+		if ($result===false) {
+			return false;
+		}
+
+		if (count($currentPropertyNames) > 0) {
+
+			if ($node instanceof IProperties) {
+				$nodeProperties = $node->getProperties($currentPropertyNames);
+
+				// The getProperties method may give us too much,
+				// properties, in case the implementor was lazy.
+				//
+				// So as we loop through this list, we will only take the
+				// properties that were actually requested and discard the
+				// rest.
+				foreach($currentPropertyNames as $k=>$currentPropertyName) {
+					if (isset($nodeProperties[$currentPropertyName])) {
+						unset($currentPropertyNames[$k]);
+						$newProperties[200][$currentPropertyName] = $nodeProperties[$currentPropertyName];
+					}
+				}
+
+			}
+
+		}
+
+		foreach($currentPropertyNames as $prop) {
+			if (isset($newProperties[200][$prop])) {
+				return false;
+			}
+
+			switch($prop) {
+				case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Property\GetLastModified($node->getLastModified()); break;
+				case '{DAV:}getcontentlength'      :
+					if ($node instanceof IFile) {
+						$size = $node->getSize();
+						if (!is_null($size)) {
+							$newProperties[200][$prop] = (int)$node->getSize();
+						}
+					}
+					break;
+				case '{DAV:}quota-used-bytes'      :
+					if ($node instanceof IQuota) {
+						$quotaInfo = $node->getQuotaInfo();
+						$newProperties[200][$prop] = $quotaInfo[0];
+					}
+					break;
+				case '{DAV:}quota-available-bytes' :
+					if ($node instanceof IQuota) {
+						$quotaInfo = $node->getQuotaInfo();
+						$newProperties[200][$prop] = $quotaInfo[1];
+					}
+					break;
+				case '{DAV:}getetag'               : if ($node instanceof IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
+				case '{DAV:}getcontenttype'        : if ($node instanceof IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
+				case '{DAV:}supported-report-set'  :
+					$reports = array();
+					foreach($this->plugins as $plugin) {
+						$reports = array_merge($reports, $plugin->getSupportedReportSet($path));
+					}
+					$newProperties[200][$prop] = new Property\SupportedReportSet($reports);
+					break;
+				case '{DAV:}resourcetype' :
+					$newProperties[200]['{DAV:}resourcetype'] = new Property\ResourceType();
+					foreach($this->resourceTypeMapping as $className => $resourceType) {
+						if ($node instanceof $className) $newProperties[200]['{DAV:}resourcetype']->add($resourceType);
+					}
+					break;
+
+			}
+
+			// If we were unable to find the property, we will list it as 404.
+			if (!$allProperties && !isset($newProperties[200][$prop])) $newProperties[404][$prop] = null;
+
+		}
+
+		$this->broadcastEvent('afterGetProperties',array(trim($path,'/'),&$newProperties, $node));
+
+		$newProperties['href'] = trim($path,'/');
+
+		// Its is a WebDAV recommendation to add a trailing slash to collectionnames.
+		// Apple's iCal also requires a trailing slash for principals (rfc 3744), though this is non-standard.
+		if ($path!='' && isset($newProperties[200]['{DAV:}resourcetype'])) {
+			$rt = $newProperties[200]['{DAV:}resourcetype'];
+			if ($rt->is('{DAV:}collection') || $rt->is('{DAV:}principal')) {
+				$newProperties['href'] .='/';
+			}
+		}
+
+		// If the resourcetype property was manually added to the requested property list,
+		// we will remove it again.
+		if ($removeRT) unset($newProperties[200]['{DAV:}resourcetype']);
+
+		return $newProperties;
+	}
 
     /**
      * This method is invoked by sub-systems creating a new file.
@@ -2067,11 +2074,11 @@ class Server {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array $fileProperties The list with nodes
+     * @param array|\SplFixedArray $fileProperties Can either be a list of path properties or an array paths with their nodes
      * @param bool strip404s
      * @return string
      */
-    public function generateMultiStatus(array $fileProperties, $strip404s = false) {
+    public function generateMultiStatus($fileProperties, $strip404s = false, $propertyNames = array()) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -2084,9 +2091,11 @@ class Server {
             $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
 
         }
-
-        foreach($fileProperties as $entry) {
-
+        foreach($fileProperties as $key => $entry) {
+            // Retrieve path properties in case where we have an array of paths => node
+            if (!is_int($key) && ($entry = $this->getPathProperties($key, $propertyNames, $entry)) === false) {
+                continue;
+            }
             $href = $entry['href'];
             unset($entry['href']);
 

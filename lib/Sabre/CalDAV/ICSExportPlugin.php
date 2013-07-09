@@ -66,7 +66,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setHeader('Content-Type','text/calendar');
         $this->server->httpResponse->sendStatus(200);
 
-        $nodes = $this->server->getPropertiesForPath($uri, array(
+        $nodes = $this->server->getNodesForPath($uri, array(
             '{' . Plugin::NS_CALDAV . '}calendar-data',
         ),1);
 

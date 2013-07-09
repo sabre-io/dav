@@ -489,7 +489,7 @@ class Plugin extends DAV\ServerPlugin {
 
         foreach($hrefElems as $elem) {
             $uri = $this->server->calculateUri($elem->nodeValue);
-            list($objProps) = $this->server->getNodesForPath($uri,$properties);
+            $objProps = $this->server->getPathProperties($uri,$properties);
 
             if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
                 $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
@@ -547,15 +547,10 @@ class Plugin extends DAV\ServerPlugin {
                 $requestedCalendarData = false;
             }
 
-            $properties = $this->server->getNodesForPath(
+            $properties = $this->server->getPathProperties(
                 $this->server->getRequestUri(),
-                $requestedProperties,
-                0
+                $requestedProperties
             );
-
-            // This array should have only 1 element, the first calendar
-            // object.
-            $properties = current($properties);
 
             // If there wasn't any calendar-data returned somehow, we ignore
             // this.
@@ -592,8 +587,7 @@ class Plugin extends DAV\ServerPlugin {
 
             foreach($nodePaths as $path) {
 
-                list($properties) =
-                    $this->server->getNodesForPath($this->server->getRequestUri() . '/' . $path, $parser->requestedProperties);
+                $properties = $this->server->getPathProperties($this->server->getRequestUri() . '/' . $path, $parser->requestedProperties);
 
                 if ($parser->expand) {
                     // We need to do some post-processing

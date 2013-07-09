@@ -245,16 +245,9 @@ class Plugin extends DAV\ServerPlugin {
     <tr><th width=\"24\"></th><th>Name</th><th>Type</th><th>Size</th><th>Last modified</th></tr>
     <tr><td colspan=\"5\"><hr /></td></tr>";
 
-        $files = $this->server->getPropertiesForPath($path,array(
-            '{DAV:}displayname',
-            '{DAV:}resourcetype',
-            '{DAV:}getcontenttype',
-            '{DAV:}getcontentlength',
-            '{DAV:}getlastmodified',
-        ),1);
+        $nodes = $this->server->getNodesForPath($path,1);
 
-        $parent = $this->server->tree->getNodeForPath($path);
-
+        $parent = $nodes[$path];
 
         if ($path) {
 
@@ -272,10 +265,18 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        foreach($files as $file) {
+        foreach($nodes as $nodePath => $node) {
+
+            $file = $this->server->getPathProperties($nodePath, [
+                '{DAV:}displayname',
+                '{DAV:}resourcetype',
+                '{DAV:}getcontenttype',
+                '{DAV:}getcontentlength',
+                '{DAV:}getlastmodified',
+            ], $node);
 
             // This is the current directory, we can skip it
-            if (rtrim($file['href'],'/')==$path) continue;
+            if ($file === false || rtrim($file['href'],'/')==$path) continue;
 
             list(, $name) = URLUtil::splitPath($file['href']);
 

@@ -279,7 +279,10 @@ class Plugin extends DAV\ServerPlugin {
         foreach($hrefElems as $elem) {
 
             $uri = $this->server->calculateUri($elem->nodeValue);
-            list($propertyList[]) = $this->server->getPropertiesForPath($uri,$properties);
+
+            if(($pathProps = $this->server->getPathProperties($uri,$properties)) !== false) {
+                $propertyList[] = $pathProps;
+            }
 
         }
 
@@ -428,7 +431,10 @@ class Plugin extends DAV\ServerPlugin {
                 $href = $this->server->getRequestUri() . '/' . $validNode->getName();
             }
 
-            list($result[]) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+
+            if(($pathProps = $this->server->getPathProperties($href, $query->requestedProperties, 0)) !== false) {
+                $result[] = $pathProps;
+            }
 
         }
 

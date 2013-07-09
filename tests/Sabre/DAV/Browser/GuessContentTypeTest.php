@@ -26,10 +26,9 @@ class GuessContentTypeTest extends DAV\AbstractServer {
         $properties = array(
             '{DAV:}getcontenttype',
         );
-        $result = $this->server->getPropertiesForPath('/somefile.jpg',$properties);
-        $this->assertArrayHasKey(0,$result);
-        $this->assertArrayHasKey(404,$result[0]);
-        $this->assertArrayHasKey('{DAV:}getcontenttype',$result[0][404]);
+        $result = $this->server->getPathProperties('/somefile.jpg',$properties);
+        $this->assertArrayHasKey(404,$result);
+        $this->assertArrayHasKey('{DAV:}getcontenttype',$result[404]);
 
     }
 
@@ -42,11 +41,10 @@ class GuessContentTypeTest extends DAV\AbstractServer {
         $properties = array(
             '{DAV:}getcontenttype',
         );
-        $result = $this->server->getPropertiesForPath('/somefile.jpg',$properties);
-        $this->assertArrayHasKey(0,$result);
-        $this->assertArrayHasKey(200,$result[0]);
-        $this->assertArrayHasKey('{DAV:}getcontenttype',$result[0][200]);
-        $this->assertEquals('image/jpeg',$result[0][200]['{DAV:}getcontenttype']);
+        $result = $this->server->getPathProperties('/somefile.jpg',$properties);
+        $this->assertArrayHasKey(200,$result);
+        $this->assertArrayHasKey('{DAV:}getcontenttype',$result[200]);
+        $this->assertEquals('image/jpeg',$result[200]['{DAV:}getcontenttype']);
 
     }
 
@@ -59,10 +57,9 @@ class GuessContentTypeTest extends DAV\AbstractServer {
         $properties = array(
             '{DAV:}getcontenttype',
         );
-        $result = $this->server->getPropertiesForPath('/somefile.hoi',$properties);
-        $this->assertArrayHasKey(0,$result);
-        $this->assertArrayHasKey(404,$result[0]);
-        $this->assertArrayHasKey('{DAV:}getcontenttype',$result[0][404]);
+        $result = $this->server->getPathProperties('/somefile.hoi',$properties);
+        $this->assertArrayHasKey(404,$result);
+        $this->assertArrayHasKey('{DAV:}getcontenttype',$result[404]);
 
     }
 }

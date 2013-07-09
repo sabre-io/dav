@@ -1493,7 +1493,7 @@ class Server {
         );
 
         if ($node === null) {
-            $this->tree->getNodeForPath($path);
+            $node = $this->tree->getNodeForPath($path);
         }
 
         $allProperties = empty($propertyNames);

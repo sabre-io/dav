@@ -265,13 +265,13 @@ class Plugin extends DAV\ServerPlugin {
 
         foreach($nodes as $nodePath => $node) {
 
-	        $file = $this->server->getPathProperties($nodePath, array(
-				'{DAV:}displayname',
-				'{DAV:}resourcetype',
-				'{DAV:}getcontenttype',
-				'{DAV:}getcontentlength',
-				'{DAV:}getlastmodified',
-			), $node);
+            $file = $this->server->getPathProperties($nodePath, array(
+                '{DAV:}displayname',
+                '{DAV:}resourcetype',
+                '{DAV:}getcontenttype',
+                '{DAV:}getcontentlength',
+                '{DAV:}getlastmodified',
+            ), $node);
 
             // This is the current directory, we can skip it
             if ($file === false || rtrim($file['href'],'/')==$path) continue;

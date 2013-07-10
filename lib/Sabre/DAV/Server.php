@@ -1551,7 +1551,7 @@ class Server {
 
         foreach ($currentPropertyNames as $prop) {
             if (isset($newProperties[200][$prop])) {
-                return false;
+                continue;
             }
 
             switch ($prop) {

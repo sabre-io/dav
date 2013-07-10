@@ -1383,16 +1383,14 @@ class Server {
         $result = array();
         $i = 0;
         foreach($this->getNodesForPath($path,1) as $path => $node) {
-
             // Skipping the parent path
-            if ($i === 0) continue;
+            if ($i++ == 0) continue;
 
             if(($row = $this->getPathProperties($path, $propertyNames, $node)) === false) {
                 continue;
             }
 
             $result[$row['href']] = $row[200];
-            $i++;
         }
         return $result;
 

@@ -892,7 +892,7 @@ class Server extends EventEmitter {
      * @param INode|null $node
      * @return array|bool
      */
-    public function getPathProperties($path, array $propertyNames, $node = null) {
+    public function getPathProperties($path, array $propertyNames, INode $node = null) {
         $newProperties = [
             '200' => [],
             '404' => [],
@@ -1675,7 +1675,8 @@ class Server extends EventEmitter {
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
      * @param array $fileProperties Can either be a list of path properties or an array paths with their nodes
-     * @param bool strip404s
+     * @param bool $strip404s
+     * @param array $propertyNames
      * @return string
      */
     public function generateMultiStatus(array $fileProperties, $strip404s = false, $propertyNames = array()) {

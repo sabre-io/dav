@@ -1478,7 +1478,7 @@ class Server {
 	/**
 	 * Returns a list of properties for a single path
 	 *
-	 * @param $path
+	 * @param string $path
 	 * @param array $propertyNames
 	 * @param null $node
 	 * @return array|bool
@@ -2078,11 +2078,11 @@ class Server {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array|\SplFixedArray $fileProperties Can either be a list of path properties or an array paths with their nodes
+     * @param array $fileProperties Can either be a list of path properties or an array paths with their nodes
      * @param bool strip404s
      * @return string
      */
-    public function generateMultiStatus($fileProperties, $strip404s = false, $propertyNames = array()) {
+    public function generateMultiStatus(array $fileProperties, $strip404s = false, $propertyNames = array()) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;

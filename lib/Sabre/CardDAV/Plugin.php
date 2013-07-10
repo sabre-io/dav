@@ -432,7 +432,7 @@ class Plugin extends DAV\ServerPlugin {
             }
 
 
-            if(($pathProps = $this->server->getPathProperties($href, $query->requestedProperties, 0)) !== false) {
+            if(($pathProps = $this->server->getPathProperties($href, $query->requestedProperties)) !== false) {
                 $result[] = $pathProps;
             }
 

@@ -453,11 +453,6 @@ class Server extends EventEmitter {
 
     }
 
-    // {{{ HTTP Method implementations
-
-
-
-    // }}}
     // {{{ HTTP/WebDAV protocol helpers
 
     /**

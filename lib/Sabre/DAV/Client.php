@@ -12,10 +12,24 @@ namespace Sabre\DAV;
  *
  * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
+ * @author KOLANICH
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * 
  */
 class Client {
 
+    protected static $defaultCurlSettings=array(
+        CURLOPT_RETURNTRANSFER => true,
+        // Return headers as part of the response
+        CURLOPT_HEADER => true,
+        // Automatically follow redirects
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 5,
+        /*CURLOPT_SSL_VERIFYHOST =>0,
+        CURLOPT_SSL_VERIFYPEER =>0,*/
+    );
+    
+    
     /**
      * The propertyMap is a key-value array.
      *
@@ -31,10 +45,8 @@ class Client {
     public $propertyMap = array();
 
     protected $baseUri;
-    protected $userName;
-    protected $password;
-    protected $proxy;
-    protected $trustedCertificates;
+    
+    protected $ch=null;
 
     /**
      * Basic authentication
@@ -45,7 +57,14 @@ class Client {
      * Digest authentication
      */
     const AUTH_DIGEST = 2;
-
+    
+    /**
+     *  Default auth type
+     */
+    
+    const AUTH_DEFAULT= 3;
+    
+    
     /**
      * Identity encoding, which basically does not nothing.
      */
@@ -65,33 +84,12 @@ class Client {
      * Sends all encoding headers.
      */
     const ENCODING_ALL = 7;
-
-
-    /**
-     * The authentication type we're using.
-     *
-     * This is a bitmask of AUTH_BASIC and AUTH_DIGEST.
-     *
-     * If DIGEST is used, the client makes 1 extra request per request, to get
-     * the authentication tokens.
-     *
-     * @var int
+    
+     /**
+     * Default encoding.
      */
-    protected $authType;
+    const ENCODING_DEFAULT = self::ENCODING_IDENTITY;
 
-    /**
-     * Content-encoding
-     *
-     * @var int
-     */
-    protected $encoding = self::ENCODING_IDENTITY;
-
-    /**
-     * Indicates if SSL verification is enabled or not.
-     *
-     * @var boolean
-     */
-    protected $verifyPeer;
 
     /**
      * Constructor
@@ -123,9 +121,6 @@ class Client {
 
         $validSettings = array(
             'baseUri',
-            'userName',
-            'password',
-            'proxy',
         );
 
         foreach($validSettings as $validSetting) {
@@ -134,41 +129,180 @@ class Client {
             }
         }
 
-        if (isset($settings['authType'])) {
-            $this->authType = $settings['authType'];
-        } else {
-            $this->authType = self::AUTH_BASIC | self::AUTH_DIGEST;
-        }
-
-        if (isset($settings['encoding'])) {
-            $this->encoding = $settings['encoding'];
-        }
+        
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
-
+        
+        static::initCurl();
+        
+        if (isset($settings['encoding'])) {
+            static::setEncodings($settings['encoding']);
+        }else{
+            static::setEncodings(self::ENCODING_DEFAULT);
+        }
+        
+        if (isset($settings['proxy'])) {
+            static::setProxy($settings['proxy']);
+        }
+        
+        $authType=isset($settings['authType'])?$settings['authType']:self::AUTH_DEFAULT;
+        
+        if (isset($settings['userName'])) {
+            static::setAuth($settings['userName'],$settings['password'],$authType);
+        }
+        
+        if (isset($settings['verifyPeer'])) {
+            $this->setVerifyPeer($settings['verifyPeer']);
+        }
+        
+        if (isset($settings['cert'])) {
+            $this->addTrustedCertificates($settings['cert']);
+        }
     }
-
+    public function __destruct() {
+        if($this->ch)curl_close($this->ch);
+    }
+    
+    /**
+    * Initializes CURL handle
+    * look for __construct docs
+    * @param array $settings settings for CURL in format for curlopt_setopt_array
+    */
+    protected function initCurl(&$settings=null){
+        $this->ch=curl_init();
+        if (!$this->ch) {
+            throw new Sabre_DAV_Exception('[CURL] unable to initialize curl handle');
+        }
+        $curlSettings = static::$defaultCurlSettings;
+        if (isset($settings)&&is_array($settings)){
+            $curlSettings+=$settings;
+            unset($settings);
+        }
+        curl_setopt_array($this->ch, $curlSettings);
+        unset($curlSettings);
+    }
+    
+    
+    /**
+     * Used to set opts to "cURL "
+     * @param integer $opt curl constant for option
+     * @param mixed $val value
+     * @return the same that cURL should return
+     */
+    
+    protected function curlSetOpt($optName,$val){
+        return curl_setopt($this->ch,$optName,$val);
+    }
+    
+    
+    
+    
+    
+    
     /**
      * Add trusted root certificates to the webdav client.
      *
-     * The parameter certificates should be a absolute path to a file
-     * which contains all trusted certificates
-     *
-     * @param string $certificates
+     * @param string $certificatesPath absolute path to a file which contains all trusted certificates
      */
-    public function addTrustedCertificates($certificates) {
-        $this->trustedCertificates = $certificates;
+    public function addTrustedCertificates($certificatesPath) {
+        if(is_string($certificatesPath)){
+            if(!file_exists($certificatesPath))throw new Exception('certificates path is not valid');
+            static::setCertificates($certificatesPath);
+        }else{
+            throw new Exception('$certificates must be the absolute path of a file holding one or more certificates to verify the peer with.');
+        }
     }
-
+    
+     /**
+     * Used to set certificates file.
+     * Not for usage by end user because addTrustedCertificates checks wheither file exist in call time but
+     * this function will check this requirement during execution curl request.
+     *
+     * @param string $certificatesPath
+     */
+     
+    protected function setCertificates($certificatesPath){
+        static::curlSetOpt(CURLOPT_CAINFO,$certificatesPath);
+    }
+    
     /**
      * Enables/disables SSL peer verification
      *
-     * @param boolean $value
+     * @param boolean $shouldVerifyPeer
      */
-    public function setVerifyPeer($value) {
-        $this->verifyPeer = $value;
+    public function setVerifyPeer($shouldVerifyPeer){
+        static::curlSetOpt(CURLOPT_SSL_VERIFYPEER,$shouldVerifyPeer);
     }
-
+    
+    /**
+     * Used to set proxy
+     *
+     * @param string $proxyAddr address of proxy in format host:port
+     */
+    public function setProxy($proxyAddr) {
+        static::curlSetOpt(CURLOPT_PROXY,$proxyAddr);
+    }
+    
+     /**
+     * Used to set auth type
+     *  
+     * @param string $userName 
+     * @param string $password 
+     * @param integer $authType  If DIGEST is used, the client makes 1 extra request per request, to get the authentication tokens.
+     */
+    public function setAuth($userName='',$password='',$authType=self::AUTH_DEFAULT) {
+        if ($userName && $authType) {
+            static::curlSetOpt(CURLOPT_USERPWD,$userName.':'.$password);
+        }
+        static::curlSetOpt(CURLOPT_HTTPAUTH,static::convertAuthTypeToInnerFormat($authType));
+    }
+    
+    
+    /** converts
+     * @param number $authType bitwise OR of needed AUTH_* constants of this class
+     * to format, suitable for CURL
+     */
+    protected static function convertAuthTypeToInnerFormat(&$authType){
+        $curlAuthType = 0;
+        if ($authType & self::AUTH_BASIC) {
+            $curlAuthType |= CURLAUTH_BASIC;
+        }
+        if ($authType & self::AUTH_DIGEST) {
+            $curlAuthType |= CURLAUTH_DIGEST;
+        }
+        return $curlAuthType;
+    }
+    
+    
+    
+    /** converts
+     * @param number $encodings bitwise OR of needed ENCODING_* constants of this class
+     * to format, suitable for CURL
+     */
+    protected static function convertEncodingsToInnerFormat(&$encodings){
+        $encodingsList = [];
+        if ($encodings & self::ENCODING_IDENTITY) {
+            $encodingsList[] = 'identity';
+        }
+        if ($encodings & self::ENCODING_DEFLATE) {
+            $encodingsList[] = 'deflate';
+        }
+        if ($encodings & self::ENCODING_GZIP) {
+            $encodingsList[] = 'gzip';
+        }
+        return implode(',', $encodingsList);
+    }
+    
+    
+    /**
+     * Used to set enconings
+     *
+     * @param integer $encodings  bitwise OR of needed ENCODING_* constants of this class
+     */
+    public function setEncodings($encodings=self::ENCODING_DEFAULT){
+        static::curlSetOpt(CURLOPT_ENCODING,static::convertEncodingsToInnerFormat($encodings));
+    }
+    
     /**
      * Does a PROPFIND request
      *
@@ -359,34 +493,19 @@ class Client {
     public function request($method, $url = '', $body = null, $headers = array()) {
 
         $url = $this->getAbsoluteUrl($url);
-
         $curlSettings = array(
-            CURLOPT_RETURNTRANSFER => true,
-            // Return headers as part of the response
-            CURLOPT_HEADER => true,
-            // Automatically follow redirects
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_URL => $url,
         );
 
         if (is_null($body)) {
             $curlSettings[CURLOPT_POSTFIELDS] = '';
-        } elseif (is_string($body)) {
+        } elseif (is_string($body)||is_array($body)) {
             $curlSettings[CURLOPT_POSTFIELDS] = $body;
         } elseif (is_resource($body)) {
             // This needs to be set to PUT, regardless of the actual method.
             $curlSettings[CURLOPT_PUT] = true;
             $curlSettings[CURLOPT_INFILE] = $body;
         }
-
-        if($this->verifyPeer !== null) {
-            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verifyPeer;
-        }
-
-        if($this->trustedCertificates) {
-            $curlSettings[CURLOPT_CAINFO] = $this->trustedCertificates;
-        }
-
         switch ($method) {
             case 'HEAD' :
 
@@ -414,44 +533,12 @@ class Client {
         }
         $curlSettings[CURLOPT_HTTPHEADER] = $nHeaders;
 
-        if ($this->proxy) {
-            $curlSettings[CURLOPT_PROXY] = $this->proxy;
-        }
-
-        if ($this->userName && $this->authType) {
-            $curlType = 0;
-            if ($this->authType & self::AUTH_BASIC) {
-                $curlType |= CURLAUTH_BASIC;
-            }
-            if ($this->authType & self::AUTH_DIGEST) {
-                $curlType |= CURLAUTH_DIGEST;
-            }
-            $curlSettings[CURLOPT_HTTPAUTH] = $curlType;
-            $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
-        }
-
-        if ($this->encoding) {
-
-            $encodings = [];
-            if ($this->encoding & self::ENCODING_IDENTITY) {
-                $encodings[] = 'identity';
-            }
-            if ($this->encoding & self::ENCODING_DEFLATE) {
-                $encodings[] = 'deflate';
-            }
-            if ($this->encoding & self::ENCODING_GZIP) {
-                $encodings[] = 'gzip';
-            }
-            $curlSettings[CURLOPT_ENCODING] = implode(',', $encodings);
-
-        }
-
         list(
             $response,
             $curlInfo,
             $curlErrNo,
             $curlError
-        ) = $this->curlRequest($url, $curlSettings);
+        ) = $this->curlRequest($curlSettings);
 
         $headerBlob = substr($response, 0, $curlInfo['header_size']);
         $response = substr($response, $curlInfo['header_size']);
@@ -520,6 +607,7 @@ class Client {
 
     }
 
+    
     /**
      * Wrapper for all curl functions.
      *
@@ -531,16 +619,15 @@ class Client {
      * @return array
      */
     // @codeCoverageIgnoreStart
-    protected function curlRequest($url, $settings) {
+    protected function curlRequest($settings) {
 
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $settings);
+        curl_setopt_array($this->ch, $settings);
 
         return array(
-            curl_exec($curl),
-            curl_getinfo($curl),
-            curl_errno($curl),
-            curl_error($curl)
+            curl_exec($this->ch),
+            curl_getinfo($this->ch),
+            curl_errno($this->ch),
+            curl_error($this->ch)
         );
 
     }

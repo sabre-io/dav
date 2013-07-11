@@ -1113,7 +1113,7 @@ END:VCALENDAR';
 
         $server->addPlugin($caldav);
 
-        $caldav->beforeMethod('GET','foo.xml');
+        $caldav->httpGet($server->httpRequest, $server->httpResponse);
 
         $this->assertEquals('200 OK', $httpResponse->status);
         $this->assertEquals(array(
@@ -1142,9 +1142,7 @@ END:VCALENDAR';
 
         $server->addPlugin($caldav);
 
-        $caldav->beforeMethod('GET','foo');
-
-        $this->assertNull($caldav->beforeMethod('GET','foozz'));
+        $this->assertNull($caldav->httpGet(new HTTP\Request('GET','/foozz'), $server->httpResponse));
 
     }
 

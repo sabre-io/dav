@@ -187,13 +187,14 @@ class Plugin extends DAV\ServerPlugin {
 
         $server->on('method:MKCALENDAR',   [$this,'httpMkcalendar']);
         $server->on('method:POST',         [$this,'httpPost']);
+        $server->on('method:GET',          [$this,'httpGet'], 90);
         $server->on('report',              [$this,'report']);
         $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
         $server->on('onBrowserPostAction', [$this,'browserPostAction']);
         $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
-        $server->on('beforeMethod',        [$this,'beforeMethod']);
+
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -783,18 +784,18 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This event is triggered before any HTTP request is handled.
+     * This event is triggered before the usual GET request handler.
      *
      * We use this to intercept GET calls to notification nodes, and return the
      * proper response.
      *
-     * @param string $method
-     * @param string $path
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
-    public function beforeMethod($method, $path) {
+    public function httpGet(RequestInterface $request, ResponseInterface $response) {
 
-        if ($method!=='GET') return;
+        $path = $request->getPath();
 
         try {
             $node = $this->server->tree->getNodeForPath($path);
@@ -818,11 +819,12 @@ class Plugin extends DAV\ServerPlugin {
         $dom->appendChild($root);
         $node->getNotificationType()->serializeBody($this->server, $root);
 
-        $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->setHeader('ETag',$node->getETag());
-        $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->setBody($dom->saveXML());
+        $response->setHeader('Content-Type','application/xml');
+        $response->setHeader('ETag',$node->getETag());
+        $response->setStatus(200);
+        $response->setBody($dom->saveXML());
 
+        // Return false to break the event chain.
         return false;
 
     }

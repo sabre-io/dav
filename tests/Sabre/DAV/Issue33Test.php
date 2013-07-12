@@ -32,7 +32,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
 
         $server->httpRequest = $request;
 
-        $info = $server->getCopyAndMoveInfo();
+        $info = $server->getCopyAndMoveInfo($request);
 
         $this->assertEquals('%C3%A0fo%C3%B3', urlencode($info['destination']));
         $this->assertFalse($info['destinationExists']);

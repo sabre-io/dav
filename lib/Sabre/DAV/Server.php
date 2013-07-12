@@ -687,12 +687,12 @@ class Server extends EventEmitter {
      *
      * @return array
      */
-    public function getCopyAndMoveInfo() {
+    public function getCopyAndMoveInfo(RequestInterface $request) {
 
         // Collecting the relevant HTTP headers
-        if (!$this->httpRequest->getHeader('Destination')) throw new Exception\BadRequest('The destination header was not supplied');
-        $destination = $this->calculateUri($this->httpRequest->getHeader('Destination'));
-        $overwrite = $this->httpRequest->getHeader('Overwrite');
+        if (!$request->getHeader('Destination')) throw new Exception\BadRequest('The destination header was not supplied');
+        $destination = $this->calculateUri($request->getHeader('Destination'));
+        $overwrite = $request->getHeader('Overwrite');
         if (!$overwrite) $overwrite = 'T';
         if (strtoupper($overwrite)=='T') $overwrite = true;
         elseif (strtoupper($overwrite)=='F') $overwrite = false;

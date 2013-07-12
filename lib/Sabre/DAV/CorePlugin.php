@@ -626,7 +626,7 @@ class CorePlugin extends ServerPlugin {
         $path = $request->getPath();
 
         $this->server->checkPreconditions();
-        $moveInfo = $this->server->getCopyAndMoveInfo();
+        $moveInfo = $this->server->getCopyAndMoveInfo($request);
 
         // If the destination is part of the source tree, we must fail
         if ($moveInfo['destination']==$path)
@@ -671,7 +671,7 @@ class CorePlugin extends ServerPlugin {
         $path = $request->getPath();
 
         $this->server->checkPreconditions();
-        $copyInfo = $this->server->getCopyAndMoveInfo();
+        $copyInfo = $this->server->getCopyAndMoveInfo($request);
         // If the destination is part of the source tree, we must fail
         if ($copyInfo['destination']==$path)
             throw new Exception\Forbidden('Source and destination uri are identical.');

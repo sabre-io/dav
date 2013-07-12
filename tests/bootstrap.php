@@ -3,6 +3,7 @@
 set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATOR . get_include_path());
 
 include __DIR__ . '/../vendor/autoload.php';
+include 'Sabre/TestUtil.php';
 include 'Sabre/DAVServerTest.php';
 include 'Sabre/CardDAV/Backend/AbstractPDOTest.php';
 include 'Sabre/CardDAV/TestUtil.php';

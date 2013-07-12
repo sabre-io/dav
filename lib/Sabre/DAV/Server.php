@@ -879,6 +879,88 @@ class Server extends EventEmitter {
     }
 
     /**
+     * Returns a list of properties for a given path
+     *
+     * The path that should be supplied should have the baseUrl stripped out
+     * The list of properties should be supplied in Clark notation. If the list is empty
+     * 'allprops' is assumed.
+     *
+     * If a depth of 1 is requested child elements will also be returned.
+     *
+     * @param string $path
+     * @param array $propertyNames
+     * @param int $depth
+     * @return array
+     */
+    public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
+
+        if ($depth!=0) $depth = 1;
+
+        $path = rtrim($path,'/');
+
+        // This event allows people to intercept these requests early on in the
+        // process.
+        //
+        // We're not doing anything with the result, but this can be helpful to
+        // pre-fetch certain expensive live properties.
+        $this->emit('beforeGetPropertiesForPath', [$path, $propertyNames, $depth]);
+
+        $returnPropertyList = [];
+
+        $parentNode = $this->tree->getNodeForPath($path);
+        $nodes = [
+            $path => $parentNode
+        ];
+        if ($depth==1 && $parentNode instanceof ICollection) {
+            foreach($this->tree->getChildren($path) as $childNode)
+                $nodes[$path . '/' . $childNode->getName()] = $childNode;
+        }
+
+        foreach($nodes as $myPath=>$node) {
+
+            $r = $this->getPathProperties($myPath, $propertyNames, $node);
+            if ($r) {
+                $returnPropertyList[] = $r;
+            }
+
+        }
+
+        return $returnPropertyList;
+
+    }
+
+    /**
+     * Returns a list of properties for a list of paths.
+     *
+     * The path that should be supplied should have the baseUrl stripped out
+     * The list of properties should be supplied in Clark notation. If the list is empty
+     * 'allprops' is assumed.
+     *
+     * The result is returned as an array, with paths for it's keys.
+     * The result may be returned out of order.
+     *
+     * @param array $paths
+     * @param array $propertyNames
+     * @return array
+     */
+    public function getPropertiesForMultiplePaths(array $paths, array $propertyNames = []) {
+
+        $result = [
+        ];
+
+        $nodes = $this->tree->getMultipleNodes($paths);
+
+        foreach($nodes as $path=>$node) {
+
+            $result[$path] = $this->getPathProperties($path, $propertyNames, $node);
+
+        }
+
+        return $result;
+
+    }
+
+    /**
      * Returns all properties for a single path
      *
      * This method tries to grab all properties for a path.

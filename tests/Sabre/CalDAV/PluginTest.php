@@ -433,6 +433,60 @@ END:VCALENDAR';
         ));
         $this->server->httpRequest = $httpRequest;
 
+        $props = $this->server->getPropertiesForPath('/principals/user1',array(
+            '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
+            '{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',
+            '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
+            '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
+            '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
+            '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
+        ));
+
+        $this->assertArrayHasKey(0,$props);
+        $this->assertArrayHasKey(200,$props[0]);
+
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set',$props[0][200]);
+        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
+        $this->assertTrue($prop instanceof DAV\Property\Href);
+        $this->assertEquals('calendars/user1/',$prop->getHref());
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',$props[0][200]);
+        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL'];
+        $this->assertTrue($prop instanceof DAV\Property\Href);
+        $this->assertEquals('calendars/user1/outbox',$prop->getHref());
+
+        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
+        $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
+        $this->assertTrue($prop instanceof DAV\Property\Href);
+        $this->assertEquals('calendars/user1/notifications/',$prop->getHref());
+
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
+        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
+        $this->assertTrue($prop instanceof DAV\Property\HrefList);
+        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1/'),$prop->getHrefs());
+
+        $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
+        $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
+        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
+        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+
+        $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
+        $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
+        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
+        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+
+
+    }
+
+    function testGetPathProperties() {
+
+        $httpRequest = HTTP\Request::createFromServerArray(array(
+            'HTTP_HOST' => 'sabredav.org',
+        ));
+        $this->server->httpRequest = $httpRequest;
+
         $props = $this->server->getPathProperties('/principals/user1',array(
             '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
             '{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',

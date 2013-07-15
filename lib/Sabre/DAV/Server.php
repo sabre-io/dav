@@ -723,8 +723,14 @@ class Server extends EventEmitter {
             // Destination didn't exist, we're all good
             $destinationNode = false;
 
+        }
 
-
+        $requestPath = $request->getPath();
+        if ($destination===$requestPath) {
+            throw new Exception\Forbidden('Source and destination uri are identical.');
+        }
+        if (substr($destination, 0, strlen($requestPath)+1) === $requestPath . '/') {
+            throw new Exception\Conflict('The destination may not be part of the same subtree as the source path.');
         }
 
         // These are the three relevant properties we need to return

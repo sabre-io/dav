@@ -206,13 +206,15 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
+        $this->assertEquals('201 Created',$this->response->status,'Full response: ' . $this->response->getBody(true));
+
         $this->assertEquals(array(
                 'Content-Length' => '0',
             ),
             $this->response->headers
          );
 
-        $this->assertEquals('201 Created',$this->response->status);
+
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/col2/test.txt'));
 
     }

@@ -16,7 +16,7 @@ namespace Sabre\DAV;
 interface IFile extends INode {
 
     /**
-     * Updates the data
+     * Replaces the contents of the file.
      *
      * The data argument is a readable stream resource.
      *

@@ -628,10 +628,6 @@ class CorePlugin extends ServerPlugin {
         $this->server->checkPreconditions();
         $moveInfo = $this->server->getCopyAndMoveInfo($request);
 
-        // If the destination is part of the source tree, we must fail
-        if ($moveInfo['destination']==$path)
-            throw new Exception\Forbidden('Source and destination uri are identical.');
-
         if ($moveInfo['destinationExists']) {
 
             if (!$this->server->emit('beforeUnbind',[$moveInfo['destination']])) return false;
@@ -672,9 +668,6 @@ class CorePlugin extends ServerPlugin {
 
         $this->server->checkPreconditions();
         $copyInfo = $this->server->getCopyAndMoveInfo($request);
-        // If the destination is part of the source tree, we must fail
-        if ($copyInfo['destination']==$path)
-            throw new Exception\Forbidden('Source and destination uri are identical.');
 
         if ($copyInfo['destinationExists']) {
             if (!$this->server->emit('beforeUnbind',[$copyInfo['destination']])) return false;

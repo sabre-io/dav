@@ -15,6 +15,8 @@ class CopyTest extends \PHPUnit_Framework_TestCase {
     /**
      * This test makes sure that a path like /foo cannot be copied into a path
      * like /foo/bar/
+     *
+     * @expectedException \Sabre\DAV\Exception\Conflict
      */
     public function testCopyIntoSubPath() {
 

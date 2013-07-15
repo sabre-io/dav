@@ -57,6 +57,8 @@
 	* Added: Issue 333: It's now possible to override the calendar-home in the
 	  CalDAV plugin.
 	* Added: A negotiateContentType to HTTP\Request. A convenience method.
+	* Fixed: Issue 349: Denying copying or moving a resource into it's own
+	  subtree.
 
 1.8.6-stable (2013-06-18)
 	* The zip release ships with sabre/vobject 2.1.0.

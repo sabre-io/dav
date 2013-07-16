@@ -685,6 +685,16 @@ class Server extends EventEmitter {
      *   * destination - Destination path
      *   * destinationExists - Whether or not the destination is an existing url (and should therefore be overwritten)
      *
+     * @param RequestInterface $request
+     * @throws Exception\BadRequest upon missing or broken request headers
+     * @throws Exception\UnsupportedMediaType when trying to copy into a
+     *         non-collection.
+     * @throws Exception\PreconditionFailed If overwrite is set to false, but
+     *         the destination exists.
+     * @throws Exception\Forbidden when source and destination paths are
+     *         identical.
+     * @throws Exception\Conflict When trying to copy a node into its own
+     *         subtree.
      * @return array
      */
     public function getCopyAndMoveInfo(RequestInterface $request) {

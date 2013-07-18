@@ -13,3 +13,7 @@ before_script:
 
 script:
   - phpunit --configuration tests/phpunit.xml
+
+notifications:
+  irc:
+    - "chat.freenode.net#sabredav"

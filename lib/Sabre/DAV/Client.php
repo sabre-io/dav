@@ -236,7 +236,7 @@ class Client extends HTTP\Client {
         $response = $this->send($request);
 
         if ((int)$response->getStatus() >= 400) {
-            throw new Exception('HTTP error: ' . $response->getStatus);
+            throw new Exception('HTTP error: ' . $response->getStatus());
         }
 
         $result = $this->parseMultiStatus($response->getBody(true));
@@ -340,6 +340,7 @@ class Client extends HTTP\Client {
      */
     public function options() {
 
+        $url = $this->getAbsoluteUrl($url);
         $request = new HTTP\Request('OPTIONS', $this->getAbsoluteUrl(''));
         $response = $this->send($request);
 

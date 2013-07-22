@@ -340,7 +340,6 @@ class Client extends HTTP\Client {
      */
     public function options() {
 
-        $url = $this->getAbsoluteUrl($url);
         $request = new HTTP\Request('OPTIONS', $this->getAbsoluteUrl(''));
         $response = $this->send($request);
 

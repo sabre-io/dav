@@ -109,7 +109,7 @@ class CorePlugin extends ServerPlugin {
             $nodeSize = null;
         }
 
-        $response->setHeaders($httpHeaders);
+        $response->addHeaders($httpHeaders);
 
         $range = $this->server->getHTTPRange();
         $ifRange = $request->getHeader('If-Range');
@@ -254,7 +254,7 @@ class CorePlugin extends ServerPlugin {
             if (!isset($headers['Content-Type'])) {
                 $headers['Content-Type'] = 'application/octet-stream';
             }
-            $response->setHeaders($headers);
+            $response->addHeaders($headers);
         }
         $response->setStatus(200);
 

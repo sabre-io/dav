@@ -47,7 +47,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -55,10 +59,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -110,7 +114,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_INFILE => $body,
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
-            CURLOPT_ENCODING => 'identity',
             CURLOPT_PUT => true,
         ), $client->curlSettings);
 
@@ -148,7 +151,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -156,11 +163,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PROXY => 'http://localhost:8000/',
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -198,7 +205,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $client->addTrustedCertificates('bla');
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -206,11 +217,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_CAINFO => 'bla',
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
     }
@@ -240,7 +251,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
         $client->setVerifyPeer(true);
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -248,11 +263,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
     }
@@ -282,7 +297,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -290,12 +309,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC | CURLAUTH_DIGEST,
             CURLOPT_USERPWD => 'user:password',
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -334,7 +353,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -342,12 +365,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
             CURLOPT_USERPWD => 'user:password',
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -386,7 +409,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('POST', 'baz', $body, array('Content-Type' => 'text/plain'));
 
         $this->assertEquals('http://example.org/foo/bar/baz', $client->url);
         $this->assertEquals(array(
@@ -394,12 +421,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
             CURLOPT_USERPWD => 'user:password',
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $body,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -413,7 +440,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Sabre\DAV\Exception
+     * @expectedException \Sabre\HTTP\ClientException
      */
     function testRequestError() {
 
@@ -442,121 +469,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception
-     */
-    function testRequestHTTPError() {
-
-        $client = new ClientMock(array(
-            'baseUri' => 'http://example.org/foo/bar/',
-        ));
-
-        $responseBlob = array(
-            "HTTP/1.1 400 Bad Request",
-            "Content-Type: text/plain",
-            "",
-            "Hello there!"
-        );
-
-        $client->response = array(
-            implode("\r\n", $responseBlob),
-            array(
-                'header_size' => 45,
-                'http_code' => 400,
-            ),
-            0,
-            ""
-        );
-
-        $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-
-    }
-
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
-    function testRequestHTTP404() {
-
-        $client = new ClientMock(array(
-            'baseUri' => 'http://example.org/foo/bar/',
-        ));
-
-        $responseBlob = array(
-            "HTTP/1.1 404 Not Found",
-            "Content-Type: text/plain",
-            "",
-            "Hello there!"
-        );
-
-        $client->response = array(
-            implode("\r\n", $responseBlob),
-            array(
-                'header_size' => 45,
-                'http_code' => 404,
-            ),
-            0,
-            ""
-        );
-
-        $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-
-    }
-
-    /**
-     * @dataProvider supportedHTTPCodes
-     */
-    function testSpecificHTTPErrors($error) {
-
-        $client = new ClientMock(array(
-            'baseUri' => 'http://example.org/foo/bar/',
-        ));
-
-        $responseBlob = array(
-            "HTTP/1.1 $error blabla",
-            "Content-Type: text/plain",
-            "",
-            "Hello there!"
-        );
-
-        $client->response = array(
-            implode("\r\n", $responseBlob),
-            array(
-                'header_size' => 42,
-                'http_code' => $error,
-            ),
-            0,
-            ""
-        );
-
-        try {
-            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-            $this->fail('Exception was not thrown');
-        } catch (Exception $e) {
-            $this->assertEquals($e->getHTTPCode(), $error);
-        }
-
-
-    }
-
-    public function supportedHTTPCodes() {
-
-        return array(
-            array(400),
-            array(401),
-            array(402),
-            array(403),
-            array(404),
-            array(405),
-            array(409),
-            array(412),
-            array(416),
-            array(500),
-            array(501),
-            array(507),
-        );
-
-    }
-
     function testUnsupportedHTTPError() {
 
         $client = new ClientMock(array(
@@ -580,13 +492,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        try {
-            $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
-            $this->fail('Exception was not thrown');
-        } catch (Exception $e) {
-            $this->assertEquals(500, $e->getHTTPCode());
-        }
-
+        $response = $client->request('POST', 'baz', 'sillybody', array('Content-Type' => 'text/plain'));
+        $this->assertEquals(580, $response['statusCode']);
 
     }
 
@@ -757,7 +664,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
         $requestBody = implode("\n", $requestBody);
 
-        $this->assertEquals($requestBody, $client->curlSettings[CURLOPT_POSTFIELDS]);
+        $this->assertEquals($requestBody, stream_get_contents($client->curlSettings[CURLOPT_INFILE]));
 
     }
 
@@ -862,7 +769,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
         $requestBody = implode("\n", $requestBody);
 
-        $this->assertEquals($requestBody, $client->curlSettings[CURLOPT_POSTFIELDS]);
+        $this->assertEquals($requestBody, stream_get_contents($client->curlSettings[CURLOPT_INFILE]));
 
     }
 
@@ -922,7 +829,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
         $requestBody = implode("\n", $requestBody);
 
-        $this->assertEquals($requestBody, $client->curlSettings[CURLOPT_POSTFIELDS]);
+        $this->assertEquals($requestBody, stream_get_contents($client->curlSettings[CURLOPT_INFILE]));
 
     }
 
@@ -960,8 +867,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_NOBODY => true,
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
-            CURLOPT_POSTFIELDS => null,
-            CURLOPT_ENCODING => 'identity',
         ), $client->curlSettings);
 
     }
@@ -989,7 +894,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('PUT', 'bar','newcontent');
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('PUT', 'bar', $body);
 
         $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
         $this->assertEquals(array(
@@ -997,10 +906,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => "PUT",
-            CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
-            CURLOPT_ENCODING => 'identity',
+            CURLOPT_INFILE => $body,
+            CURLOPT_PUT => true,
         ), $client->curlSettings);
 
     }
@@ -1029,7 +938,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             ""
         );
 
-        $result = $client->request('PUT', 'bar','newcontent');
+        $body = fopen('php://memory','r+');
+        fwrite($body, 'foo');
+        rewind($body);
+
+        $result = $client->request('PUT', 'bar', $body);
 
         $this->assertEquals('http://example.org/foo/bar/bar', $client->url);
         $this->assertEquals(array(
@@ -1037,10 +950,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_CUSTOMREQUEST => "PUT",
-            CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
             CURLOPT_ENCODING => 'identity,deflate,gzip',
+            CURLOPT_INFILE => $body,
+            CURLOPT_PUT => true,
         ), $client->curlSettings);
 
     }

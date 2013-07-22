@@ -9,9 +9,14 @@ class ClientMock extends Client {
     public $url;
     public $curlSettings;
 
-    protected function curlRequest($url, $curlSettings) {
+    protected function curlRequest($curlSettings) {
 
-        $this->url = $url;
+        // We're just doing this so we don't have to change the unittests that
+        // much ;)
+        $this->url = $curlSettings[CURLOPT_URL];
+
+        unset($curlSettings[CURLOPT_URL]);
+
         $this->curlSettings = $curlSettings;
         return $this->response;
 

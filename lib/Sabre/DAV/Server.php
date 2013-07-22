@@ -297,7 +297,7 @@ class Server extends EventEmitter {
             $headers['Content-Type'] = 'application/xml; charset=utf-8';
 
             $this->httpResponse->setStatus($httpCode);
-            $this->httpResponse->setHeaders($headers);
+            $this->httpResponse->addHeaders($headers);
             $this->httpResponse->setBody($DOM->saveXML());
             $this->httpResponse->send();
 

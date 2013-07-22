@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV;
 
+use Sabre\HTTP;
+
 /**
  * SabreDAV DAV client
  *
@@ -14,7 +16,7 @@ namespace Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Client {
+class Client extends HTTP\Client {
 
     /**
      * The propertyMap is a key-value array.
@@ -31,10 +33,6 @@ class Client {
     public $propertyMap = array();
 
     protected $baseUri;
-    protected $userName;
-    protected $password;
-    protected $proxy;
-    protected $trustedCertificates;
 
     /**
      * Basic authentication
@@ -66,32 +64,12 @@ class Client {
      */
     const ENCODING_ALL = 7;
 
-
-    /**
-     * The authentication type we're using.
-     *
-     * This is a bitmask of AUTH_BASIC and AUTH_DIGEST.
-     *
-     * If DIGEST is used, the client makes 1 extra request per request, to get
-     * the authentication tokens.
-     *
-     * @var int
-     */
-    protected $authType;
-
     /**
      * Content-encoding
      *
      * @var int
      */
     protected $encoding = self::ENCODING_IDENTITY;
-
-    /**
-     * Indicates if SSL verification is enabled or not.
-     *
-     * @var boolean
-     */
-    protected $verifyPeer;
 
     /**
      * Constructor
@@ -128,25 +106,55 @@ class Client {
             'proxy',
         );
 
-        foreach($validSettings as $validSetting) {
-            if (isset($settings[$validSetting])) {
-                $this->$validSetting = $settings[$validSetting];
-            }
+        parent::__construct();
+
+        $this->baseUri = $settings['baseUri'];
+
+        if (isset($settings['proxy'])) {
+            $this->addCurlSetting(CURLOPT_PROXY, $settings['proxy']);
         }
 
-        if (isset($settings['authType'])) {
-            $this->authType = $settings['authType'];
-        } else {
-            $this->authType = self::AUTH_BASIC | self::AUTH_DIGEST;
+        if (isset($settings['userName'])) {
+            $userName = $settings['userName'];
+            $password = isset($settings['password'])?$settings['password']:'';;
+
+            if (isset($settings['authType'])) {
+                $curlType = 0;
+                if ($settings['authType'] & self::AUTH_BASIC) {
+                    $curlType |= CURLAUTH_BASIC;
+                }
+                if ($settings['authType'] & self::AUTH_DIGEST) {
+                    $curlType |= CURLAUTH_DIGEST;
+                }
+            } else {
+                $curlType = CURLAUTH_BASIC | CURLAUTH_DIGEST;
+            }
+
+            $this->addCurlSetting(CURLOPT_HTTPAUTH, $curlType);
+            $this->addCurlSetting(CURLOPT_USERPWD, $userName . ':' . $password);
+
         }
 
         if (isset($settings['encoding'])) {
-            $this->encoding = $settings['encoding'];
+            $encoding = $settings['encoding'];
+
+            $encodings = [];
+            if ($encoding & self::ENCODING_IDENTITY) {
+                $encodings[] = 'identity';
+            }
+            if ($encoding & self::ENCODING_DEFLATE) {
+                $encodings[] = 'deflate';
+            }
+            if ($encoding & self::ENCODING_GZIP) {
+                $encodings[] = 'gzip';
+            }
+            $this->addCurlSetting(CURLOPT_ENCODING, implode(',', $encodings));
         }
 
         $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
 
     }
+
 
     /**
      * Add trusted root certificates to the webdav client.
@@ -155,18 +163,20 @@ class Client {
      * which contains all trusted certificates
      *
      * @param string $certificates
+     * @return void
      */
     public function addTrustedCertificates($certificates) {
-        $this->trustedCertificates = $certificates;
+        $this->addCurlSetting(CURLOPT_CAINFO, $certificates);
     }
 
     /**
      * Enables/disables SSL peer verification
      *
-     * @param boolean $value
+     * @param bool $value
+     * @return void
      */
     public function setVerifyPeer($value) {
-        $this->verifyPeer = $value;
+        $this->addCurlSetting(CURLOPT_SSL_VERIFYPEER, $value);
     }
 
     /**
@@ -216,24 +226,30 @@ class Client {
         $dom->appendChild($root)->appendChild( $prop );
         $body = $dom->saveXML();
 
-        $response = $this->request('PROPFIND', $url, $body, array(
+        $request = new HTTP\Request('PROPFIND', $url, [
             'Depth' => $depth,
             'Content-Type' => 'application/xml'
-        ));
+        ], $body);
 
-        $result = $this->parseMultiStatus($response['body']);
+        $response = $this->send($request);
+
+        if ((int)$response->getStatus() >= 400) {
+            throw new Exception('HTTP error: ' . $response->getStatus);
+        }
+
+        $result = $this->parseMultiStatus($response->getBody(true));
 
         // If depth was 0, we only return the top item
         if ($depth===0) {
             reset($result);
             $result = current($result);
-            return isset($result[200])?$result[200]:array();
+            return isset($result[200])?$result[200]:[];
         }
 
-        $newResult = array();
+        $newResult = [];
         foreach($result as $href => $statusList) {
 
-            $newResult[$href] = isset($statusList[200])?$statusList[200]:array();
+            $newResult[$href] = isset($statusList[200])?$statusList[200]:[];
 
         }
 
@@ -304,10 +320,10 @@ class Client {
         $dom->appendChild($root);
         $body = $dom->saveXML();
 
-        $this->request('PROPPATCH', $url, $body, array(
-            'Content-Type' => 'application/xml'
-        ));
-
+        $request = new HTTP\Request('PROPPATCH', $url, [
+            'Content-Type' => 'application/xml',
+        ], $body);
+        $this->send($request);
     }
 
     /**
@@ -321,12 +337,15 @@ class Client {
      */
     public function options() {
 
-        $result = $this->request('OPTIONS');
-        if (!isset($result['headers']['dav'])) {
+        $request = new HTTP\Request('OPTIONS', $this->getAbsoluteUrl(''));
+        $response = $this->send($request);
+
+        $dav = $response->getHeader('Dav');
+        if (!$dav) {
             return array();
         }
 
-        $features = explode(',', $result['headers']['dav']);
+        $features = explode(',', $dav);
         foreach($features as &$v) {
             $v = trim($v);
         }
@@ -350,201 +369,31 @@ class Client {
      * resource. You can easily do this by simply passing the result of
      * fopen(..., 'r').
      *
+     * This method will throw an exception if an HTTP error was received. Any
+     * HTTP status code above 399 is considered an error.
+     *
+     * Note that it is no longer recommended to use this method, use the send()
+     * method instead.
+     *
      * @param string $method
      * @param string $url
      * @param string|resource|null $body
      * @param array $headers
+     * @throws ClientException, in case a curl error occurred.
      * @return array
      */
-    public function request($method, $url = '', $body = null, $headers = array()) {
+    public function request($method, $url = '', $body = null, array $headers = []) {
 
         $url = $this->getAbsoluteUrl($url);
 
-        $curlSettings = array(
-            CURLOPT_RETURNTRANSFER => true,
-            // Return headers as part of the response
-            CURLOPT_HEADER => true,
-            // Automatically follow redirects
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
-        );
-
-        if (is_null($body)) {
-            $curlSettings[CURLOPT_POSTFIELDS] = '';
-        } elseif (is_string($body)) {
-            $curlSettings[CURLOPT_POSTFIELDS] = $body;
-        } elseif (is_resource($body)) {
-            // This needs to be set to PUT, regardless of the actual method.
-            $curlSettings[CURLOPT_PUT] = true;
-            $curlSettings[CURLOPT_INFILE] = $body;
-        }
-
-        if($this->verifyPeer !== null) {
-            $curlSettings[CURLOPT_SSL_VERIFYPEER] = $this->verifyPeer;
-        }
-
-        if($this->trustedCertificates) {
-            $curlSettings[CURLOPT_CAINFO] = $this->trustedCertificates;
-        }
-
-        switch ($method) {
-            case 'HEAD' :
-
-                // do not read body with HEAD requests (this is necessary because cURL does not ignore the body with HEAD
-                // requests when the Content-Length header is given - which in turn is perfectly valid according to HTTP
-                // specs...) cURL does unfortunately return an error in this case ("transfer closed transfer closed with
-                // ... bytes remaining to read") this can be circumvented by explicitly telling cURL to ignore the
-                // response body
-                $curlSettings[CURLOPT_NOBODY] = true;
-                $curlSettings[CURLOPT_CUSTOMREQUEST] = 'HEAD';
-                break;
-
-            default:
-                $curlSettings[CURLOPT_CUSTOMREQUEST] = $method;
-                break;
-
-        }
-
-        // Adding HTTP headers
-        $nHeaders = array();
-        foreach($headers as $key=>$value) {
-
-            $nHeaders[] = $key . ': ' . $value;
-
-        }
-        $curlSettings[CURLOPT_HTTPHEADER] = $nHeaders;
-
-        if ($this->proxy) {
-            $curlSettings[CURLOPT_PROXY] = $this->proxy;
-        }
-
-        if ($this->userName && $this->authType) {
-            $curlType = 0;
-            if ($this->authType & self::AUTH_BASIC) {
-                $curlType |= CURLAUTH_BASIC;
-            }
-            if ($this->authType & self::AUTH_DIGEST) {
-                $curlType |= CURLAUTH_DIGEST;
-            }
-            $curlSettings[CURLOPT_HTTPAUTH] = $curlType;
-            $curlSettings[CURLOPT_USERPWD] = $this->userName . ':' . $this->password;
-        }
-
-        if ($this->encoding) {
-
-            $encodings = [];
-            if ($this->encoding & self::ENCODING_IDENTITY) {
-                $encodings[] = 'identity';
-            }
-            if ($this->encoding & self::ENCODING_DEFLATE) {
-                $encodings[] = 'deflate';
-            }
-            if ($this->encoding & self::ENCODING_GZIP) {
-                $encodings[] = 'gzip';
-            }
-            $curlSettings[CURLOPT_ENCODING] = implode(',', $encodings);
-
-        }
-
-        list(
-            $response,
-            $curlInfo,
-            $curlErrNo,
-            $curlError
-        ) = $this->curlRequest($url, $curlSettings);
-
-        $headerBlob = substr($response, 0, $curlInfo['header_size']);
-        $response = substr($response, $curlInfo['header_size']);
-
-        // In the case of 100 Continue, or redirects we'll have multiple lists
-        // of headers for each separate HTTP response. We can easily split this
-        // because they are separated by \r\n\r\n
-        $headerBlob = explode("\r\n\r\n", trim($headerBlob, "\r\n"));
-
-        // We only care about the last set of headers
-        $headerBlob = $headerBlob[count($headerBlob)-1];
-
-        // Splitting headers
-        $headerBlob = explode("\r\n", $headerBlob);
-
-        $headers = array();
-        foreach($headerBlob as $header) {
-            $parts = explode(':', $header, 2);
-            if (count($parts)==2) {
-                $headers[strtolower(trim($parts[0]))] = trim($parts[1]);
-            }
-        }
-
-        $response = array(
-            'body' => $response,
-            'statusCode' => $curlInfo['http_code'],
-            'headers' => $headers
-        );
-
-        if ($curlErrNo) {
-            throw new Exception('[CURL] Error while making request: ' . $curlError . ' (error code: ' . $curlErrNo . ')');
-        }
-
-        if ($response['statusCode']>=400) {
-            switch ($response['statusCode']) {
-                case 400 :
-                    throw new Exception\BadRequest('Bad request');
-                case 401 :
-                    throw new Exception\NotAuthenticated('Not authenticated');
-                case 402 :
-                    throw new Exception\PaymentRequired('Payment required');
-                case 403 :
-                    throw new Exception\Forbidden('Forbidden');
-                case 404:
-                    throw new Exception\NotFound('Resource not found.');
-                case 405 :
-                    throw new Exception\MethodNotAllowed('Method not allowed');
-                case 409 :
-                    throw new Exception\Conflict('Conflict');
-                case 412 :
-                    throw new Exception\PreconditionFailed('Precondition failed');
-                case 416 :
-                    throw new Exception\RequestedRangeNotSatisfiable('Requested Range Not Satisfiable');
-                case 500 :
-                    throw new Exception('Internal server error');
-                case 501 :
-                    throw new Exception\NotImplemented('Not Implemented');
-                case 507 :
-                    throw new Exception\InsufficientStorage('Insufficient storage');
-                default:
-                    throw new Exception('HTTP error response. (errorcode ' . $response['statusCode'] . ')');
-            }
-        }
-
-        return $response;
+        $response = $this->send(new HTTP\Request($method, $url, $headers, $body));
+        return [
+            'body' => $response->getBody($asString = true),
+            'statusCode' => (int)$response->getStatus(),
+            'headers' => array_change_key_case($response->getHeaders()),
+        ];
 
     }
-
-    /**
-     * Wrapper for all curl functions.
-     *
-     * The only reason this was split out in a separate method, is so it
-     * becomes easier to unittest.
-     *
-     * @param string $url
-     * @param array $settings
-     * @return array
-     */
-    // @codeCoverageIgnoreStart
-    protected function curlRequest($url, $settings) {
-
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $settings);
-
-        return array(
-            curl_exec($curl),
-            curl_getinfo($curl),
-            curl_errno($curl),
-            curl_error($curl)
-        );
-
-    }
-    // @codeCoverageIgnoreEnd
 
     /**
      * Returns the full url based on the given url (which may be relative). All

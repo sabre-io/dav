@@ -7,6 +7,7 @@ include 'Sabre/TestUtil.php';
 include 'Sabre/DAVServerTest.php';
 include 'Sabre/CardDAV/Backend/AbstractPDOTest.php';
 include 'Sabre/CardDAV/TestUtil.php';
+include 'Sabre/DAV/ClientMock.php';
 
 date_default_timezone_set('GMT');
 

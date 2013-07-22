@@ -116,7 +116,7 @@ class Client extends HTTP\Client {
 
         if (isset($settings['userName'])) {
             $userName = $settings['userName'];
-            $password = isset($settings['password'])?$settings['password']:'';;
+            $password = isset($settings['password'])?$settings['password']:'';
 
             if (isset($settings['authType'])) {
                 $curlType = 0;

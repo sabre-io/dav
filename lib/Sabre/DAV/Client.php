@@ -226,6 +226,8 @@ class Client extends HTTP\Client {
         $dom->appendChild($root)->appendChild( $prop );
         $body = $dom->saveXML();
 
+        $url = $this->getAbsoluteUrl($url);
+
         $request = new HTTP\Request('PROPFIND', $url, [
             'Depth' => $depth,
             'Content-Type' => 'application/xml'
@@ -320,6 +322,7 @@ class Client extends HTTP\Client {
         $dom->appendChild($root);
         $body = $dom->saveXML();
 
+        $url = $this->getAbsoluteUrl($url);
         $request = new HTTP\Request('PROPPATCH', $url, [
             'Content-Type' => 'application/xml',
         ], $body);

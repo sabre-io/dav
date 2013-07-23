@@ -405,7 +405,7 @@ class Client extends HTTP\Client {
      * @param string $url
      * @return string
      */
-    protected function getAbsoluteUrl($url) {
+    public function getAbsoluteUrl($url) {
 
         // If the url starts with http:// or https://, the url is already absolute.
         if (preg_match('/^http(s?):\/\//', $url)) {

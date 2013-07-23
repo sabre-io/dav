@@ -63,6 +63,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -115,6 +116,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PUT => true,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -168,6 +170,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_PROXY => 'http://localhost:8000/',
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -222,6 +225,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
     }
@@ -268,6 +272,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
     }
@@ -315,6 +320,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_USERPWD => 'user:password',
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -371,6 +377,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_USERPWD => 'user:password',
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -427,6 +434,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_USERPWD => 'user:password',
             CURLOPT_PUT => true,
             CURLOPT_INFILE => $body,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -664,7 +672,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
         $requestBody = implode("\n", $requestBody);
 
-        $this->assertEquals($requestBody, stream_get_contents($client->curlSettings[CURLOPT_INFILE]));
+        $this->assertEquals($requestBody, $client->curlSettings[CURLOPT_POSTFIELDS]);
 
     }
 
@@ -769,7 +777,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
         $requestBody = implode("\n", $requestBody);
 
-        $this->assertEquals($requestBody, stream_get_contents($client->curlSettings[CURLOPT_INFILE]));
+        $this->assertEquals($requestBody, $client->curlSettings[CURLOPT_POSTFIELDS]);
 
     }
 
@@ -829,7 +837,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         );
         $requestBody = implode("\n", $requestBody);
 
-        $this->assertEquals($requestBody, stream_get_contents($client->curlSettings[CURLOPT_INFILE]));
+        $this->assertEquals($requestBody, $client->curlSettings[CURLOPT_POSTFIELDS]);
 
     }
 
@@ -867,6 +875,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_NOBODY => true,
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
     }
@@ -910,6 +919,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HTTPHEADER => array(),
             CURLOPT_INFILE => $body,
             CURLOPT_PUT => true,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
     }
@@ -955,6 +965,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_ENCODING => 'identity,deflate,gzip',
             CURLOPT_INFILE => $body,
             CURLOPT_PUT => true,
+            CURLOPT_POSTREDIR => 3,
         ), $client->curlSettings);
 
     }

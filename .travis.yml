@@ -16,4 +16,7 @@ script:
 
 notifications:
   irc:
-    - "chat.freenode.net#sabredav"
+    channels:
+        - "chat.freenode.net#sabredav"
+    on_success: change
+    on_failure: change

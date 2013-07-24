@@ -763,9 +763,8 @@ class Server extends EventEmitter {
      * @param array $propertyNames
      */
     public function getProperties($path, $propertyNames) {
-
-        $result = $this->getPropertiesForPath($path,$propertyNames,0);
-        return $result[0][200];
+        $result = $this->getPathProperties($path, $propertyNames);
+        return $result[200];
 
     }
 
@@ -784,13 +783,16 @@ class Server extends EventEmitter {
     public function getPropertiesForChildren($path, $propertyNames) {
 
         $result = [];
-        foreach($this->getPropertiesForPath($path,$propertyNames,1) as $k=>$row) {
 
-            // Skipping the parent path
-            if ($k === 0) continue;
+        $nodes = $this->getNodesForPath($path,true);
+        // Skip the parent path
+        unset($nodes[key($nodes)]);
+        foreach($nodes as $path => $node) {
+            if(($row = $this->getPathProperties($path, $propertyNames, $node)) === false) {
+                continue;
+            }
 
             $result[$row['href']] = $row[200];
-
         }
         return $result;
 
@@ -838,6 +840,43 @@ class Server extends EventEmitter {
     }
 
     /**
+     * Returns an array of paths and nodes for a given path
+     *
+     * The path that should be supplied should have the baseUrl stripped out
+     * The list of properties should be supplied in Clark notation. If the list is empty
+     * 'allprops' is assumed.
+     *
+     * If getChildren is true is requested child elements will also be returned.
+     *
+     * @param string $path
+     * @param bool $getChildren
+     * @return array
+     */
+    public function getNodesForPath($path, $getChildren = false) {
+
+        $path = rtrim($path,'/');
+
+        // This event allows people to intercept these requests early on in the
+        // process.
+        //
+        // We're not doing anything with the result, but this can be helpful to
+        // pre-fetch certain expensive live properties.
+        $this->emit('beforeGetNodesForPath', [$path, $getChildren]);
+
+        $parentNode = $this->tree->getNodeForPath($path);
+
+        $nodes = [
+            $path => $parentNode
+        ];
+        if ($getChildren && $parentNode instanceof ICollection) {
+            foreach($this->tree->getChildren($path) as $childNode)
+                $nodes[$path . '/' . $childNode->getName()] = $childNode;
+        }
+
+        return $nodes;
+    }
+
+    /**
      * Returns a list of properties for a given path
      *
      * The path that should be supplied should have the baseUrl stripped out
@@ -877,7 +916,7 @@ class Server extends EventEmitter {
 
         foreach($nodes as $myPath=>$node) {
 
-            $r = $this->getPropertiesByNode($myPath, $node, $propertyNames);
+            $r = $this->getPathProperties($myPath, $propertyNames, $node);
             if ($r) {
                 $returnPropertyList[] = $r;
             }
@@ -911,7 +950,7 @@ class Server extends EventEmitter {
 
         foreach($nodes as $path=>$node) {
 
-            $result[$path] = $this->getPropertiesByNode($path, $node, $propertyNames);
+            $result[$path] = $this->getPathProperties($path, $propertyNames, $node);
 
         }
 
@@ -919,28 +958,29 @@ class Server extends EventEmitter {
 
     }
 
-
     /**
-     * Determines all properties for a node.
+     * Returns all properties for a single path
      *
-     * This method tries to grab all properties for a node. This method is used
-     * internally getPropertiesForPath and a few others.
+     * This method tries to grab all properties for a path.
      *
      * It could be useful to call this, if you already have an instance of your
      * target node and simply want to run through the system to get a correct
      * list of properties.
      *
-     * @param string $path The path we're properties for fetching.
-     * @param INode $node
+     * @param string $path The path we're fetching properties for.
      * @param array $propertyNames list of properties to fetch.
-     * @return array
+     * @param INode|null $node
+     * @return array|bool
      */
-    public function getPropertiesByNode($path, INode $node, array $propertyNames) {
-
+    public function getPathProperties($path, array $propertyNames, INode $node = null) {
         $newProperties = [
             '200' => [],
             '404' => [],
         ];
+
+        if($node === null) {
+            $node = $this->tree->getNodeForPath($path);
+        }
 
         // If no properties were supplied, it means this was an 'allprops'
         // request, and we use a default set of properties.
@@ -972,7 +1012,7 @@ class Server extends EventEmitter {
         $result = $this->emit('beforeGetProperties',[$path, $node, &$propertyNames, &$newProperties]);
         // If this method explicitly returned false, we must ignore this
         // node as it is inaccessible.
-        if ($result===false) return;
+        if ($result===false) return false;
 
         if (count($propertyNames) > 0) {
 
@@ -1714,11 +1754,12 @@ class Server extends EventEmitter {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array $fileProperties The list with nodes
-     * @param bool strip404s
+     * @param array $fileProperties Can either be a list of path properties or an array paths with their nodes
+     * @param bool $strip404s
+     * @param array $propertyNames
      * @return string
      */
-    public function generateMultiStatus(array $fileProperties, $strip404s = false) {
+    public function generateMultiStatus(array $fileProperties, $strip404s = false, array $propertyNames = array()) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -1731,9 +1772,11 @@ class Server extends EventEmitter {
             $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
 
         }
-
-        foreach($fileProperties as $entry) {
-
+        foreach($fileProperties as $key => $entry) {
+            // Retrieve path properties in case where we have an array of paths => node
+            if (!is_int($key) && ($entry = $this->getPathProperties($key, $propertyNames, $entry)) === false) {
+                continue;
+            }
             $href = $entry['href'];
             unset($entry['href']);
 

@@ -73,9 +73,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
         $response->setHeader('Content-Type','text/directory');
         $response->setStatus(200);
 
-        $nodes = $this->server->getPropertiesForPath($path, array(
-            '{' . Plugin::NS_CARDDAV . '}address-data',
-        ),1);
+        $nodes = $this->server->getNodesForPath($path,true);
 
         $response->setBody($this->generateVCF($nodes));
 
@@ -94,7 +92,12 @@ class VCFExportPlugin extends DAV\ServerPlugin {
 
         $output = "";
 
-        foreach($nodes as $node) {
+        foreach($nodes as $path => $node) {
+            if(($node = $this->server->getPathProperties($path, array(
+                '{' . Plugin::NS_CARDDAV . '}address-data',
+            ), $node)) === false) {
+                continue;
+            }
 
             if (!isset($node[200]['{' . Plugin::NS_CARDDAV . '}address-data'])) {
                 continue;

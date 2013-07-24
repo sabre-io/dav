@@ -71,9 +71,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $response->setHeader('Content-Type','text/calendar');
         $response->setStatus(200);
 
-        $nodes = $this->server->getPropertiesForPath($path, [
-            '{' . Plugin::NS_CALDAV . '}calendar-data',
-        ],1);
+        $nodes = $this->server->getNodesForPath($path,true);
 
         $response->setBody($this->generateICS($nodes));
 
@@ -104,7 +102,12 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $timezones = array();
         $objects = array();
 
-        foreach($nodes as $node) {
+        foreach($nodes as $path => $node) {
+            if(($node = $this->server->getPathProperties($path, [
+                '{' . Plugin::NS_CALDAV . '}calendar-data',
+            ], $node)) === false) {
+                continue;
+            }
 
             if (!isset($node[200]['{' . Plugin::NS_CALDAV . '}calendar-data'])) {
                 continue;

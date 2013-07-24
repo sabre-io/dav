@@ -317,9 +317,7 @@ class CorePlugin extends ServerPlugin {
 
         $depth = $this->server->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1
-        if ($depth!=0) $depth = 1;
-
-        $newProperties = $this->server->getPropertiesForPath($path,$requestedProperties,$depth);
+        $getChildren = $depth != 0;
 
         // This is a multi-status response
         $response->setStatus(207);
@@ -338,7 +336,7 @@ class CorePlugin extends ServerPlugin {
         $prefer = $this->server->getHTTPPrefer();
         $minimal = $prefer['return-minimal'];
 
-        $data = $this->server->generateMultiStatus($newProperties, $minimal);
+        $data = $this->server->generateMultiStatus($this->server->getNodesForPath($path,$getChildren), $minimal, $requestedProperties);
         $response->setBody($data);
 
         // Sending back false will interupt the event chain and tell the server

@@ -276,25 +276,24 @@ class Plugin extends DAV\ServerPlugin {
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
-        $propertyList = array();
 
-        $uris = [];
+        $propertyList = [];
+
         foreach($hrefElems as $elem) {
 
-            $uris[] = $this->server->calculateUri($elem->nodeValue);
+            $uri = $this->server->calculateUri($elem->nodeValue);
 
+            if(($pathProps = $this->server->getPathProperties($uri,$properties)) !== false) {
+                $propertyList[] = $pathProps;
+            }
         }
-
-        $propertyList = array_values(
-            $this->server->getPropertiesForMultiplePaths($uris, $properties)
-        );
 
         $prefer = $this->server->getHTTPPRefer();
 
         $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal']));
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal'], $properties));
 
     }
 
@@ -444,7 +443,10 @@ class Plugin extends DAV\ServerPlugin {
                 $href = $this->server->getRequestUri() . '/' . $validNode->getName();
             }
 
-            list($result[]) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+
+            if(($pathProps = $this->server->getPathProperties($href, $query->requestedProperties)) !== false) {
+                $result[] = $pathProps;
+            }
 
         }
 

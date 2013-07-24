@@ -241,16 +241,10 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $fullPaths = [];
-
         // Pre-fetching children, if this is possible.
         foreach(array_merge($added, $modified) as $item) {
             $fullPath = $collectionUrl . '/' . $item;
-            $fullPaths[] = $fullPath;
-        }
-
-        foreach($this->server->getPropertiesForMultiplePaths($fullPaths, $properties) as $fullPath => $props) {
-
+            if(($props = $this->server->getPathProperties($fullPath, $properties)) === false) continue;
             // The 'Property_Response' class is responsible for generating a
             // single {DAV:}response xml element.
             $response = new DAV\Property\Response($fullPath, $props);

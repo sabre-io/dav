@@ -637,7 +637,7 @@ class Plugin extends DAV\ServerPlugin {
 
         foreach($lookupResults as $lookupResult) {
 
-            list($matches[]) = $this->server->getPropertiesForPath($lookupResult, $requestedProperties, 0);
+            $matches[] = $this->server->getPathProperties($lookupResult, $requestedProperties);
 
         }
 
@@ -1201,12 +1201,14 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function expandProperties($path, array $requestedProperties, $depth) {
 
-        $foundProperties = $this->server->getPropertiesForPath($path, array_keys($requestedProperties), $depth);
+        $foundProperties = $this->server->getNodesForPath($path, ($depth != 0));
 
         $result = array();
-
-        foreach($foundProperties as $node) {
-
+        $nameProperties = array_keys($requestedProperties);
+        foreach($foundProperties as $nodePath => $node) {
+            if(($node = $this->server->getPathProperties($nodePath, $nameProperties, $node)) === false) {
+                continue;
+            }
             foreach($requestedProperties as $propertyName=>$childRequestedProperties) {
 
                 // We're only traversing if sub-properties were requested

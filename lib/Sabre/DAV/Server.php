@@ -1759,7 +1759,7 @@ class Server extends EventEmitter {
      * @param array $propertyNames
      * @return string
      */
-    public function generateMultiStatus(array $fileProperties, $strip404s = false, $propertyNames = array()) {
+    public function generateMultiStatus(array $fileProperties, $strip404s = false, array $propertyNames = array()) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;

@@ -783,11 +783,11 @@ class Server extends EventEmitter {
     public function getPropertiesForChildren($path, $propertyNames) {
 
         $result = [];
-        $i = 0;
-        foreach($this->getNodesForPath($path,1) as $path => $node) {
-            // Skipping the parent path
-            if ($i++ == 0) continue;
 
+        $nodes = $this->getNodesForPath($path,1);
+        // Skip the parent path
+        unset($nodes[key($nodes)]);
+        foreach($nodes as $path => $node) {
             if(($row = $this->getPathProperties($path, $propertyNames, $node)) === false) {
                 continue;
             }

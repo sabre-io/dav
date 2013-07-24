@@ -784,7 +784,7 @@ class Server extends EventEmitter {
 
         $result = [];
 
-        $nodes = $this->getNodesForPath($path,1);
+        $nodes = $this->getNodesForPath($path,true);
         // Skip the parent path
         unset($nodes[key($nodes)]);
         foreach($nodes as $path => $node) {
@@ -846,15 +846,13 @@ class Server extends EventEmitter {
      * The list of properties should be supplied in Clark notation. If the list is empty
      * 'allprops' is assumed.
      *
-     * If a depth of 1 is requested child elements will also be returned.
+     * If getChildren is true is requested child elements will also be returned.
      *
      * @param string $path
-     * @param int $depth
+     * @param bool $getChildren
      * @return array
      */
-    public function getNodesForPath($path, $depth = 0) {
-
-        if ($depth!=0) $depth = 1;
+    public function getNodesForPath($path, $getChildren = false) {
 
         $path = rtrim($path,'/');
 
@@ -863,14 +861,14 @@ class Server extends EventEmitter {
         //
         // We're not doing anything with the result, but this can be helpful to
         // pre-fetch certain expensive live properties.
-        $this->emit('beforeGetNodesForPath', [$path, $depth]);
+        $this->emit('beforeGetNodesForPath', [$path, $getChildren]);
 
         $parentNode = $this->tree->getNodeForPath($path);
 
         $nodes = [
             $path => $parentNode
         ];
-        if ($depth==1 && $parentNode instanceof ICollection) {
+        if ($getChildren && $parentNode instanceof ICollection) {
             foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
         }

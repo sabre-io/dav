@@ -245,7 +245,7 @@ class Plugin extends DAV\ServerPlugin {
     <tr><th width=\"24\"></th><th>Name</th><th>Type</th><th>Size</th><th>Last modified</th></tr>
     <tr><td colspan=\"5\"><hr /></td></tr>";
 
-        $nodes = $this->server->getNodesForPath($path,1);
+        $nodes = $this->server->getNodesForPath($path,true);
 
         $parent = $nodes[$path];
 

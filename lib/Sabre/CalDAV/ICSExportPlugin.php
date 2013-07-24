@@ -71,7 +71,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $response->setHeader('Content-Type','text/calendar');
         $response->setStatus(200);
 
-        $nodes = $this->server->getNodesForPath($path,1);
+        $nodes = $this->server->getNodesForPath($path,true);
 
         $response->setBody($this->generateICS($nodes));
 

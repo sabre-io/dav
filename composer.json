@@ -17,7 +17,7 @@
         "php": ">=5.4.1",
         "sabre/vobject" : "~3.1@dev",
         "sabre/event" : "~1.0.0",
-        "sabre/http" : "dev-master",
+        "sabre/http" : "~2.0.0alpha3",
         "ext-dom": "*",
         "ext-pcre": "*",
         "ext-spl": "*",

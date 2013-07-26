@@ -303,7 +303,6 @@ class ServerPropsTest extends AbstractServer {
     /**
      * @depends testParsePropPatchRequest
      * @depends testUpdateProperties
-     * @covers Sabre\DAV\Server::httpPropPatch
      */
     public function testPropPatch() {
 

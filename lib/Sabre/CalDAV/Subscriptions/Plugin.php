@@ -73,7 +73,7 @@ class Plugin extends ServerPlugin {
         foreach($props as $prop) {
 
             if (isset($properties[200][$prop])) {
-                $properties[200][$prop] = null;
+                $properties[200][$prop] = '';
             }
 
         }

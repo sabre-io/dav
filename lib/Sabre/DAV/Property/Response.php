@@ -178,8 +178,10 @@ class Response extends DAV\Property implements IHref {
                 }
 
                 if (is_scalar($propertyValue)) {
-                    $text = $document->createTextNode($propertyValue);
-                    $currentProperty->appendChild($text);
+                    if ($propertyValue!=='') { // we want a self-closing xml element for empty strings.
+                        $text = $document->createTextNode($propertyValue);
+                        $currentProperty->appendChild($text);
+                    }
                 } elseif ($propertyValue instanceof DAV\PropertyInterface) {
                     $propertyValue->serialize($server,$currentProperty);
                 } elseif (!is_null($propertyValue)) {

@@ -35,6 +35,10 @@ interface SubscriptionSupport extends BackendInterface {
      *     Sabre\DAV\Property\Href).
      * 7. {http://apple.com/ns/ical/}calendar-color
      * 8. {http://apple.com/ns/ical/}calendar-order
+     * 9. {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set
+     *    (should just be an instance of
+     *    Sabre\CalDAV\Property\SupportedCalendarComponentSet, with a bunch of
+     *    default components).
      *
      * @param string $principalUri
      * @return array

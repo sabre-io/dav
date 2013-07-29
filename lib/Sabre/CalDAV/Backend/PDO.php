@@ -938,6 +938,10 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      *    attachments should not be stripped).
      * 7. {http://apple.com/ns/ical/}calendar-color
      * 8. {http://apple.com/ns/ical/}calendar-order
+     * 9. {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set
+     *    (should just be an instance of
+     *    Sabre\CalDAV\Property\SupportedCalendarComponentSet, with a bunch of
+     *    default components).
      *
      * @param string $principalUri
      * @return array
@@ -965,6 +969,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                 'principaluri' => $row['principaluri'],
                 'source'       => $row['source'],
                 'lastmodified' => $row['lastmodified'],
+
+                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet(['VTODO', 'VEVENT']),
             ];
 
             foreach($this->subscriptionPropertyMap as $xmlName=>$dbName) {

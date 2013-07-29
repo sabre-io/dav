@@ -37,6 +37,8 @@ class Plugin extends ServerPlugin {
         $server->propertyMap['{http://calendarserver.org/ns/}source'] =
             'Sabre\\DAV\\Property\\Href';
 
+        $server->on('afterGetProperties', [$this, 'afterGetProperties']);
+
     }
 
     /**
@@ -50,6 +52,31 @@ class Plugin extends ServerPlugin {
     public function getFeatures() {
 
         return array('calendarserver-subscribed');
+
+    }
+
+    /**
+     * Triggered after properties have been fetched.
+     *
+     * @return void
+     */
+    public function afterGetProperties($path, &$properties, \Sabre\DAV\INode $node) {
+
+        // There's a bunch of properties that must appear as a self-closing
+        // xml-element. This event handler ensures that this will be the case.
+        $props = [
+            '{http://calendarserver.org/ns/}subscribed-strip-alarms',
+            '{http://calendarserver.org/ns/}subscribed-strip-attachment',
+            '{http://calendarserver.org/ns/}subscribed-strip-todos',
+        ];
+
+        foreach($props as $prop) {
+
+            if (isset($properties[200][$prop])) {
+                $properties[200][$prop] = null;
+            }
+
+        }
 
     }
 

@@ -66,7 +66,7 @@ class Plugin extends ServerPlugin {
         // xml-element. This event handler ensures that this will be the case.
         $props = [
             '{http://calendarserver.org/ns/}subscribed-strip-alarms',
-            '{http://calendarserver.org/ns/}subscribed-strip-attachment',
+            '{http://calendarserver.org/ns/}subscribed-strip-attachments',
             '{http://calendarserver.org/ns/}subscribed-strip-todos',
         ];
 

@@ -876,6 +876,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
             CURLOPT_POSTREDIR => 3,
+            CURLOPT_POSTFIELDS => '',
+            CURLOPT_PUT => false,
         ), $client->curlSettings);
 
     }

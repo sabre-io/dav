@@ -58,7 +58,7 @@ class MyCollection extends Sabre\DAV\Collection {
         $path = $this->myPath . '/' . $name;
 
         // We have to throw a NotFound exception if the file didn't exist
-        if (!file\exists($this->myPath)) throw new \Sabre\DAV\Exception\NotFound('The file with name: ' . $name . ' could not be found');
+        if (!file_exists($this->myPath)) throw new \Sabre\DAV\Exception\NotFound('The file with name: ' . $name . ' could not be found');
         // Some added security
 
         if ($name[0]=='.')  throw new \Sabre\DAV\Exception\Forbidden('Access denied');

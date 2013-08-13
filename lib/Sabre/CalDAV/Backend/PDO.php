@@ -698,9 +698,6 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      */
     public function calendarQuery($calendarId, array $filters) {
 
-        $result = [];
-        $validator = new \Sabre\CalDAV\CalendarQueryValidator();
-
         $componentType = null;
         $requirePostFilter = true;
         $timeRange = null;

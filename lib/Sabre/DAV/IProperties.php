@@ -63,7 +63,7 @@ interface IProperties extends INode {
      * The Server class will filter out the extra.
      *
      * @param array $properties
-     * @return void
+     * @return array
      */
     function getProperties($properties);
 

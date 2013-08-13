@@ -264,10 +264,13 @@ class CalendarQueryParser {
     }
 
     /**
-     * Parses the CALDAV:expand element
+     * Parses the CALDAV:expand element.
+     *
+     * This method returns an array with two elements: start and end. Each are
+     * a PHP DateTime object.
      *
      * @param \DOMElement $parentNode
-     * @return void
+     * @return array
      */
     protected function parseExpand(\DOMElement $parentNode) {
 

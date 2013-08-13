@@ -60,9 +60,14 @@ interface IFile extends INode {
      *
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.
      *
-     * Return null if the ETag can not effectively be determined
+     * Return null if the ETag can not effectively be determined.
      *
-     * @return void
+     * The ETag must be surrounded by double-quotes, so something like this
+     * would make a valid ETag:
+     *
+     *   return '"someetag"';
+     *
+     * @returns string|null
      */
     function getETag();
 

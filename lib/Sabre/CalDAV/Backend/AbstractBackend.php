@@ -132,8 +132,6 @@ abstract class AbstractBackend implements BackendInterface {
         $result = array();
         $objects = $this->getCalendarObjects($calendarId);
 
-        $validator = new \Sabre\CalDAV\CalendarQueryValidator();
-
         foreach($objects as $object) {
 
             if ($this->validateFilterForObject($object, $filters)) {

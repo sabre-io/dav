@@ -235,11 +235,11 @@ class Server extends EventEmitter {
             $this->httpRequest->setBaseUrl($this->getBaseUri());
             $this->invokeMethod($this->httpRequest, $this->httpResponse);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             try {
                 $this->emit('exception', [$e]);
-            } catch (Exception $ignore) {
+            } catch (\Exception $ignore) {
             }
             $DOM = new \DOMDocument('1.0','utf-8');
             $DOM->formatOutput = true;

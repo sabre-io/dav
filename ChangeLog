@@ -59,6 +59,7 @@
 	* Added: A negotiateContentType to HTTP\Request. A convenience method.
 	* Fixed: Issue 349: Denying copying or moving a resource into it's own
 	  subtree.
+	* Fixed: SabreDAV catches every exception again.
 
 1.8.6-stable (2013-06-18)
 	* The zip release ships with sabre/vobject 2.1.0.

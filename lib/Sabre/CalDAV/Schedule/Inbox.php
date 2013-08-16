@@ -12,7 +12,7 @@ use Sabre\DAVACL;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Inbox extends DAV\Collection implements IINbox {
+class Inbox extends DAV\Collection implements IInbox {
 
     /**
      * The principal Uri

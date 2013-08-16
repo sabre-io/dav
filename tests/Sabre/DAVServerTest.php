@@ -30,6 +30,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCardDAV = false;
     protected $setupACL = false;
     protected $setupCalDAVSharing = false;
+    protected $setupCalDAVScheduling = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
@@ -68,6 +69,13 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavSharingPlugin;
 
     /**
+     * CalDAV scheduling plugin
+     *
+     * @var CalDAV\Schedule\Plugin
+     */
+    protected $caldavSchedulePlugin;
+
+    /**
      * @var Sabre\DAV\Auth\Plugin
      */
     protected $authPlugin;
@@ -93,6 +101,10 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupCalDAVSharing) {
             $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
+        }
+        if ($this->setupCalDAVScheduling) {
+            $this->caldavSchedulePlugin = new CalDAV\Schedule\Plugin();
+            $this->server->addPlugin($this->caldavSchedulePlugin);
         }
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new CardDAV\Plugin();

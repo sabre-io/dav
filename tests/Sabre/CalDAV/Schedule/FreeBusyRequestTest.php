@@ -1,12 +1,12 @@
 <?php
 
-namespace Sabre\CalDAV;
+namespace Sabre\CalDAV\Schedule;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
-use Sabre\HTTP;
-
-require_once 'Sabre/HTTP/ResponseMock.php';
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\HTTP,
+    Sabre\CalDAV;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
@@ -40,11 +40,11 @@ END:VCALENDAR',
         );
 
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
-        $caldavBackend = new Backend\Mock($calendars, $calendarobjects);
+        $caldavBackend = new CalDAV\Backend\Mock($calendars, $calendarobjects);
 
         $tree = array(
             new DAVACL\PrincipalCollection($principalBackend),
-            new CalendarRootNode($principalBackend, $caldavBackend),
+            new CalDAV\CalendarRootNode($principalBackend, $caldavBackend),
         );
 
         $this->request = HTTP\Request::createFromServerArray([
@@ -64,6 +64,11 @@ END:VCALENDAR',
         $this->authPlugin = new DAV\Auth\Plugin($authBackend,'SabreDAV');
         $this->server->addPlugin($this->authPlugin);
 
+        // CalDAV plugin
+        $this->plugin = new CalDAV\Plugin();
+        $this->server->addPlugin($this->plugin);
+
+        // Scheduling plugin
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 

@@ -101,6 +101,9 @@ class Plugin extends ServerPlugin {
         $this->server = $server;
         $server->on('method:POST', [$this,'httpPost']);
 
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IInbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-inbox';
+
     }
 
     /**

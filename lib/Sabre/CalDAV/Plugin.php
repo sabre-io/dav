@@ -193,12 +193,6 @@ class Plugin extends DAV\ServerPlugin {
             '{' . self::NS_CALDAV . '}supported-collation-set',
             '{' . self::NS_CALDAV . '}calendar-data',
 
-            // scheduling extension
-            '{' . self::NS_CALDAV . '}schedule-inbox-URL',
-            '{' . self::NS_CALDAV . '}schedule-outbox-URL',
-            '{' . self::NS_CALDAV . '}calendar-user-address-set',
-            '{' . self::NS_CALDAV . '}calendar-user-type',
-
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
@@ -311,29 +305,6 @@ class Plugin extends DAV\ServerPlugin {
 
                 unset($requestedProperties[array_search($calHome, $requestedProperties)]);
                 $returnedProperties[200][$calHome] = new DAV\Property\Href($calendarHomePath);
-
-            }
-
-            // schedule-outbox-URL property
-            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-outbox-URL';
-            if (in_array($scheduleProp,$requestedProperties)) {
-
-                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl);
-                $outboxPath = $calendarHomePath . '/outbox';
-
-                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
-                $returnedProperties[200][$scheduleProp] = new DAV\Property\Href($outboxPath);
-
-            }
-
-            // calendar-user-address-set property
-            $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
-            if (in_array($calProp,$requestedProperties)) {
-
-                $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
-                unset($requestedProperties[array_search($calProp, $requestedProperties)]);
-                $returnedProperties[200][$calProp] = new DAV\Property\HrefList($addresses, false);
 
             }
 

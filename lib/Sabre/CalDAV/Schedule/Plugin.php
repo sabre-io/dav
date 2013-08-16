@@ -5,9 +5,12 @@ namespace Sabre\CalDAV\Schedule;
 use
     Sabre\DAV\Server,
     Sabre\DAV\ServerPlugin,
+    Sabre\DAV\Property\Href,
+    Sabre\DAV\Property\HrefList,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
+    Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\DAV\Exception\NotFound,
     Sabre\DAV\Exception\Forbidden,
@@ -100,9 +103,24 @@ class Plugin extends ServerPlugin {
 
         $this->server = $server;
         $server->on('method:POST', [$this,'httpPost']);
+        $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
 
+        /**
+         * This information ensures that the {DAV:}resourcetype property has
+         * the correct values.
+         */
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IInbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-inbox';
+
+        /**
+         * Properties we protect are made read-only by the server.
+         */
+        array_push($server->protectedProperties,
+            '{' . self::NS_CALDAV . '}schedule-inbox-URL',
+            '{' . self::NS_CALDAV . '}schedule-outbox-URL',
+            '{' . self::NS_CALDAV . '}calendar-user-address-set',
+            '{' . self::NS_CALDAV . '}calendar-user-type'
+        );
 
     }
 
@@ -166,6 +184,69 @@ class Plugin extends ServerPlugin {
         return false;
 
     }
+
+
+    /**
+     * beforeGetProperties
+     *
+     * This method handler is invoked before any after properties for a
+     * resource are fetched. This allows us to add in any CalDAV specific
+     * properties.
+     *
+     * @param string $path
+     * @param \Sabre\DAV\INode $node
+     * @param array $requestedProperties
+     * @param array $returnedProperties
+     * @return void
+     */
+    public function beforeGetProperties($path, \Sabre\DAV\INode $node, &$requestedProperties, &$returnedProperties) {
+
+        $caldavPlugin = $this->server->getPlugin('caldav');
+
+        if ($node instanceof DAVACL\IPrincipal) {
+
+            $principalUrl = $node->getPrincipalUrl();
+
+            // schedule-outbox-URL property
+            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-outbox-URL';
+            if (in_array($scheduleProp,$requestedProperties)) {
+
+                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                $outboxPath = $calendarHomePath . '/outbox';
+
+                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
+                $returnedProperties[200][$scheduleProp] = new Href($outboxPath);
+
+            }
+
+            // schedule-inbox-URL property
+            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-inbox-URL';
+            if (in_array($scheduleProp,$requestedProperties)) {
+
+                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                $inboxPath = $calendarHomePath . '/inbox';
+
+                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
+                $returnedProperties[200][$scheduleProp] = new Href($inboxPath);
+
+            }
+
+
+            // calendar-user-address-set property
+            $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
+            if (in_array($calProp,$requestedProperties)) {
+
+                $addresses = $node->getAlternateUriSet();
+                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+                unset($requestedProperties[array_search($calProp, $requestedProperties)]);
+                $returnedProperties[200][$calProp] = new HrefList($addresses, false);
+
+            }
+
+        } // instanceof IPrincipal
+
+    }
+
 
     /**
      * This method handles POST requests to the schedule-outbox.

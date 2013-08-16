@@ -52,7 +52,7 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
 
         $instance = $this->getInstance();
         $children = $instance->getChildren();
-        $this->assertEquals(4, count($children));
+        $this->assertEquals(5, count($children));
 
         // Testing if we got all the objects back.
         $hasShareable = false;

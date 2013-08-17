@@ -75,7 +75,7 @@ class Plugin extends ServerPlugin {
      */
     public function getFeatures() {
 
-        return ['calendar-auth-schedule'];
+        return ['calendar-auto-schedule'];
 
     }
 

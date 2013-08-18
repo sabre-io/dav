@@ -19,9 +19,93 @@ use
 
 /**
  * CalDAV scheduling plugin.
+ * =========================
  *
  * This plugin provides the functionality added by the "Scheduling Extensions
  * to CalDAV" standard, as defined in RFC6638.
+ *
+ * calendar-auto-schedule largely works by intercepting a users request to
+ * update their local calendar. If a user creates a new event with attendees,
+ * this plugin is supposed to grab the information from that event, and notify
+ * the attendees of this.
+ *
+ * There's 3 possible transports for this:
+ * * local delivery
+ * * delivery through email (iMip)
+ * * server-to-server delivery (iSchedule)
+ *
+ * iMip is simply, because we just need to add the iTip message as an email
+ * attachment. Local delivery is harder, because we both need to add this same
+ * message to a local DAV inbox, as well as live-update the relevant events.
+ *
+ * iSchedule is something for later.
+ *
+ *
+ * Scheduling object resources
+ * ---------------------------
+ *
+ * We will check for operations on calendar-objects only. That is, VEVENT
+ * objects within CalDAV calendars.
+ *
+ * The scheduling spec calls normal calendar objects "Calendar Object
+ * Resource".
+ *
+ * Some "Calendar Object Resources" are also "Scheduling Object Resources".
+ * There's a few things we need to check to make sure that this is the case.
+ *
+ * Specifically, if an object has an ORGANIZER or an ATTENDEE property and the
+ * specified address matches with one of the values for the current users'
+ * calendar-user-address-set property, it's a scheduling resource and the
+ * special processing kicks in.
+ *
+ *
+ * SCHEDULE-AGENT
+ * --------------
+ *
+ * Every ATTENDEE or ORGANIZER may also have a 'SCHEDULE-AGENT' parameter. The
+ * value may be either SERVER or CLIENT. If this is set to CLIENT, the server
+ * assumes that the client is responsible for handling the scheduling message.
+ *
+ * If this parameter is omitted, the default is 'SERVER'. SCHEDULE-AGENT may
+ * also be 'NONE', in which case nobody does anything.
+ *
+ *
+ * Organizer
+ * ---------
+ *
+ * If the current user was the organizer of the object, we'll do the following
+ * types of operations:
+ *
+ * 1. Creating a new scheduling resource -> iTIP REQUEST
+ * 2. Updating a scheduling resource -> iTIP ADD or REQUEST
+ * 3. Deleting a scheduling resource -> iTIP CANCEL
+ *
+ *
+ * Attendee
+ * --------
+ *
+ * An attendee is not allowed to update many items in the event, such as
+ * DTSTART, LOCATION or SUMMARY.
+ *
+ * An Attendee may change the following things though:
+ *
+ * 1. Their own PARTSTAT -> results in iTIP REPLY
+ * 2. TRANSP
+ * 3. PERCENT-COMPLETE
+ * 4. COMPLETED
+ * 5. VALARM
+ * 6. CALSCALE (oddly enough)
+ * 7. PRODID
+ * 8. add EXDATE items, and remove overridden components in recurring events.
+ *    This effectively makes the attendee remove itself from one instance of
+ *    the recurring event, and should trigger an iTIP REPLY (because they've
+ *    declined the instance).
+ * 9. CREATED, DTSTAMP, LAST-MODIFIED
+ * 10. SCHEDULE-AGENT (but only if it was already set to CLIENT)
+ * 11. Add new overridden components for recurring events.
+ *
+ * If an Attendee DELETEs the object, we will also send an iTIP REPLY
+ * (decline).
  *
  * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
@@ -104,6 +188,7 @@ class Plugin extends ServerPlugin {
         $this->server = $server;
         $server->on('method:POST', [$this,'httpPost']);
         $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
+        $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
 
         /**
          * This information ensures that the {DAV:}resourcetype property has
@@ -247,6 +332,56 @@ class Plugin extends ServerPlugin {
 
     }
 
+    /**
+     * This method is called before a new node is created.
+     *
+     * @param string $path path to new object.
+     * @param string|resource $data Contents of new object.
+     * @param \Sabre\DAV\INode $parent Parent object
+     * @param bool $modified Wether or not the item's data was modified/
+     * @return bool|null
+     */
+    public function beforeCreateFile($path, &$data, $parent, &$modified) {
+
+        if (!$parentNode instanceof ICalendar) {
+            return;
+        }
+
+        // It's a calendar, so the contents are most likely an iCalendar
+        // object. It's time to start processing this.
+        if (is_resource($data)) {
+            $data = stream_get_contents($data);
+        }
+
+        $vObj = VObject\Reader::read($data);
+
+        // At the moment we only support VEVENT. VTODO may come later.
+        if (!isset($vObj->VEVENT)) {
+            return;
+        }
+
+        // At the moment we only process the first VEVENT. Any other overridden
+        // event will get ignored for the moment.
+        $vevent = $vObj->VEVENT[0];
+
+        $organizer = null;
+        $attendees = [];
+
+        if ($vevent->ORGANIZER) {
+            $organizer = (string)$vevent->ORGANIZER;
+        }
+
+        if (isset($vevent->ATTENDEES)) foreach($vevent->ATTENDEES as $attendee) {
+            $attendees[] = (string)$attendee;
+        }
+
+        // If the object doesn't have organizer or attendee information, we can
+        // ignore it.
+        if (!$organizer && !$attendees) {
+            return;
+        }
+
+    }
 
     /**
      * This method handles POST requests to the schedule-outbox.

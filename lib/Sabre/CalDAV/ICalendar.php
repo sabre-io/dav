@@ -1,7 +1,10 @@
 <?php
 
 namespace Sabre\CalDAV;
-use Sabre\DAV;
+
+use
+    Sabre\DAV,
+    Sabre\DAVACL;
 
 /**
  * Calendar interface
@@ -12,7 +15,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface ICalendar extends DAV\ICollection {
+interface ICalendar extends DAV\ICollection, DAVACL\IACL {
 
     /**
      * Performs a calendar-query on the contents of this calendar.

@@ -381,6 +381,30 @@ class Plugin extends ServerPlugin {
             return;
         }
 
+        // Finding all the email addresses for the user that owns the
+        // calendar.
+        $calendarOwner = $node->getOwner();
+
+        $CAUS = '{' . self::NS_CALDAV . '}calendar-user-address-set';
+
+        $properties = $this->server->getProperties(
+            $calendarOwner,
+            [$CAUS],
+        );
+
+        // If we can't find this information, we'll stop processing
+        if (!isset($properties[$CAUS])) {
+            return;
+        }
+
+        $addresses = $properties[$CUAS]->getHrefs();
+
+        // We're only handling creation of new objects by the ORGANIZER.
+        // Support for ATTENDEE will come later.
+        if (!in_array($organizer, $addresses)) {
+            return;
+        }
+
     }
 
     /**

@@ -337,11 +337,11 @@ class Plugin extends ServerPlugin {
      *
      * @param string $path path to new object.
      * @param string|resource $data Contents of new object.
-     * @param \Sabre\DAV\INode $parent Parent object
+     * @param \Sabre\DAV\INode $parentNode Parent object
      * @param bool $modified Wether or not the item's data was modified/
      * @return bool|null
      */
-    public function beforeCreateFile($path, &$data, $parent, &$modified) {
+    public function beforeCreateFile($path, &$data, $parentNode, &$modified) {
 
         if (!$parentNode instanceof ICalendar) {
             return;
@@ -349,6 +349,9 @@ class Plugin extends ServerPlugin {
 
         // It's a calendar, so the contents are most likely an iCalendar
         // object. It's time to start processing this.
+        //
+        // This step also ensures that $data is re-propagated with a string
+        // version of the object.
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
@@ -371,39 +374,121 @@ class Plugin extends ServerPlugin {
             $organizer = (string)$vevent->ORGANIZER;
         }
 
-        if (isset($vevent->ATTENDEES)) foreach($vevent->ATTENDEES as $attendee) {
-            $attendees[] = (string)$attendee;
-        }
-
         // If the object doesn't have organizer or attendee information, we can
         // ignore it.
-        if (!$organizer && !$attendees) {
+        if (!$organizer || !isset($vevent->ATTENDEE)) {
             return;
         }
 
-        // Finding all the email addresses for the user that owns the
-        // calendar.
-        $calendarOwner = $node->getOwner();
-
-        $CAUS = '{' . self::NS_CALDAV . '}calendar-user-address-set';
-
-        $properties = $this->server->getProperties(
-            $calendarOwner,
-            [$CAUS],
+        $addresses = $this->getAddressesForPrincipal(
+            $parentNode->getOwner()
         );
-
-        // If we can't find this information, we'll stop processing
-        if (!isset($properties[$CAUS])) {
-            return;
-        }
-
-        $addresses = $properties[$CUAS]->getHrefs();
 
         // We're only handling creation of new objects by the ORGANIZER.
         // Support for ATTENDEE will come later.
         if (!in_array($organizer, $addresses)) {
             return;
         }
+
+        // For each attendee we're going to generate a scheduling message.
+        // We do this based on the original object.
+        //
+        // $vObj is the copy for the user that created the object. We will use
+        // that to update some values, such as SCHEDULE-STATUS per attendee.
+        $original = clone $vObj;
+
+        foreach($vevent->ATTENDEE as $attendee) {
+
+            if (!isset($attendee['SCHEDULE-AGENT'])) {
+                $agent = 'SERVER';
+            } else {
+                $agent = strtoupper($attendee['SCHEDULE-AGENT']);
+            }
+
+            // The SCHEDULE-AGENT parameter is 'SERVER' by default, but if it
+            // was set to 'NONE' or 'CLIENT', we are not responsible for
+            // delivering the message.
+            if ($agent!=='SERVER') continue;
+
+            $status = null;
+
+            // Currently only handling mailto: addresses.
+            if (strtolower(substr($attendee->getValue(),0,7))!=='mailto:') {
+                $status = '5.1;This server can currently only handle mailto: addresses';
+            } else {
+
+                $iTipMessage = new ITipMessage();
+
+                // Stripping the mailto:
+                $iTipMessage->recipient = strtolower(substr($attendee->getValue(), 7));
+                if (isset($attendee['CN'])) $iTipMessage->recipientName = (string)$attendee['CN'];
+
+                $iTipMessage->sender = strtolower(substr($organizer, 7));
+                if (isset($vevent->ORGANIZER['CN'])) $iTipMessage->senderName = $vevent->ORGANIZER['CN'];
+
+                $iTipMessage->method = 'REQUEST';
+
+                $iTipBody = clone $original;
+                $iTipBody->METHOD = 'REQUEST';
+
+                $iTipMessage->message = $iTipBody;
+
+                $this->deliver($iTipMessage);
+
+                $attendee['SCHEDULE-STATUS'] = $iTipMessage->scheduleStatus;
+
+            }
+
+        }
+
+        // After all this exciting action we set $data to the updated event
+        // that contains all the new status information (if any).
+        $newData = $vObj->serialize();
+        if ($newData !== $data) {
+            $data = $newData;
+
+            // Setting $modified tells sabredav that the object has changed,
+            // and that no ETag must be sent back.
+            $modified = true;
+        }
+
+    }
+
+    /**
+     * This method is responsible for delivering the ITip message.
+     *
+     * @param ITipMessage $itipMessage
+     * @return void
+     */
+    public function deliver(ITipMessage $iTipMessage) {
+
+        $iTipMessage->scheduleStatus =
+            $this->iMipMessage($iTipMessage->sender, [$iTipMessage->recipient], $iTipMessage->message, '');
+
+    }
+
+    /**
+     * Returns a list of addresses that are associated with a principal.
+     *
+     * @param string $principal
+     * @return array
+     */
+    protected function getAddressesForPrincipal($principal) {
+
+        $CUAS = '{' . self::NS_CALDAV . '}calendar-user-address-set';
+
+        $properties = $this->server->getProperties(
+            $principal,
+            [$CUAS]
+        );
+
+        // If we can't find this information, we'll stop processing
+        if (!isset($properties[$CUAS])) {
+            return;
+        }
+
+        $addresses = $properties[$CUAS]->getHrefs();
+        return $addresses;
 
     }
 

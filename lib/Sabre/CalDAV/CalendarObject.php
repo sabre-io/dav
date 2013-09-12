@@ -130,7 +130,11 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
      */
     public function getContentType() {
 
-        return 'text/calendar; charset=utf-8';
+        $mime = 'text/calendar; charset=utf-8';
+        if ($this->objectData['component']) {
+            $mime.='; component=' . $this->objectData['component'];
+        }
+        return $mime;
 
     }
 

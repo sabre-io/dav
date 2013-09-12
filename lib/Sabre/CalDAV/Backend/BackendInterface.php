@@ -109,6 +109,9 @@ interface BackendInterface {
      *   '"abcdef"')
      *   * calendarid - The calendarid as it was passed to this function.
      *   * size - The size of the calendar objects, in bytes.
+     *   * component - optional, a string containing the type of object, such
+     *     as 'vevent' or 'vtodo'. If specified, this will be used to populate
+     *     the Content-Type header.
      *
      * Note that the etag is optional, but it's highly encouraged to return for
      * speed reasons.

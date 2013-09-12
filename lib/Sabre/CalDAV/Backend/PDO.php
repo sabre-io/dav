@@ -367,6 +367,9 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      *   '  "abcdef"')
      *   * calendarid - The calendarid as it was passed to this function.
      *   * size - The size of the calendar objects, in bytes.
+     *   * component - optional, a string containing the type of object, such
+     *     as 'vevent' or 'vtodo'. If specified, this will be used to populate
+     *     the Content-Type header.
      *
      * Note that the etag is optional, but it's highly encouraged to return for
      * speed reasons.
@@ -384,7 +387,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      */
     public function getCalendarObjects($calendarId) {
 
-        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, componenttype FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
         $stmt->execute([$calendarId]);
 
         $result = [];
@@ -396,6 +399,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                 'etag'         => '"' . $row['etag'] . '"',
                 'calendarid'   => $row['calendarid'],
                 'size'         => (int)$row['size'],
+                'component'    => strtolower($row['componenttype']),
             ];
         }
 
@@ -421,20 +425,21 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      */
     public function getCalendarObject($calendarId,$objectUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, calendardata FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarId, $objectUri]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if(!$row) return null;
 
         return [
-            'id'           => $row['id'],
-            'uri'          => $row['uri'],
-            'lastmodified' => $row['lastmodified'],
-            'etag'         => '"' . $row['etag'] . '"',
-            'calendarid'   => $row['calendarid'],
-            'size'         => (int)$row['size'],
-            'calendardata' => $row['calendardata'],
+            'id'            => $row['id'],
+            'uri'           => $row['uri'],
+            'lastmodified'  => $row['lastmodified'],
+            'etag'          => '"' . $row['etag'] . '"',
+            'calendarid'    => $row['calendarid'],
+            'size'          => (int)$row['size'],
+            'calendardata'  => $row['calendardata'],
+            'component'     => strtolower($row['componenttype']),
          ];
 
     }
@@ -453,7 +458,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      */
     public function getMultipleCalendarObjects($calendarId, array $uris) {
 
-        $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri IN (';
+        $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri IN (';
         // Inserting a whole bunch of question marks
         $query.=implode(',', array_fill(0, count($uris), '?'));
         $query.=')';
@@ -472,6 +477,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                 'calendarid'   => $row['calendarid'],
                 'size'         => (int)$row['size'],
                 'calendardata' => $row['calendardata'],
+                'component'    => strtolower($row['componenttype']),
             ];
 
         }

@@ -56,9 +56,6 @@ class VCFExportPlugin extends DAV\ServerPlugin {
 
         $path = $request->getPath();
 
-        // splitting uri
-        list($path) = explode('?',$path,2);
-
         $node = $this->server->tree->getNodeForPath($path);
 
         if (!($node instanceof IAddressBook)) return;

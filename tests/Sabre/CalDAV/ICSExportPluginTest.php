@@ -12,6 +12,12 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
+    function setUp() {
+
+        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
+
+    }
+
     function testInit() {
 
         $p = new ICSExportPlugin();
@@ -23,7 +29,6 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
     function testBeforeMethod() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
 
         $props = [
@@ -58,13 +63,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
+        $this->assertEquals(6,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
         $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION)!==false);
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals(1,count($obj->{'X-WR-CALNAME'}));
 
     }
     function testBeforeMethodNoVersion() {
@@ -107,7 +113,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
+        $this->assertEquals(6,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
@@ -132,12 +138,8 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException Sabre\DAVACL\Exception\NeedPrivileges
-     */
     function testACLIntegrationBlocked() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
 
         $props = array(
@@ -165,11 +167,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $p->httpGet($h, $s->httpResponse);
 
+        // If the ACL system blocked this request, the effect will be that
+        // there's no response, because the calendar information could not be
+        // fetched.
+        $this->assertNull($s->httpResponse->getStatus());
+
     }
 
     function testACLIntegrationNotBlocked() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
@@ -212,12 +218,305 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
+        $this->assertEquals(6,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
+
+    }
+
+    function testBadStartParam() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&start=foo',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('400 Bad request',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+
+    }
+
+    function testBadEndParam() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&end=foo',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('400 Bad request',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+
+    }
+
+    function testFilterStartEnd() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&start=1&end=2',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
+
+        $this->assertEquals(0,count($obj->VTIMEZONE));
+        $this->assertEquals(0,count($obj->VEVENT));
+
+    }
+
+    function testExpandNoStart() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&expand=1&end=1',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('400 Bad request',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+
+    }
+
+    function testExpand() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&start=1&end=2000000000&expand=1',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
+
+        $this->assertEquals(0,count($obj->VTIMEZONE));
+        $this->assertEquals(1,count($obj->VEVENT));
+
+    }
+
+    function testJCal() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_METHOD' => 'GET',
+            'HTTP_ACCEPT' => 'application/calendar+json',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals('application/calendar+json', $s->httpResponse->getHeader('Content-Type'));
+
+    }
+
+    function testJCalInUrl() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&accept=jcal',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals('application/calendar+json', $s->httpResponse->getHeader('Content-Type'));
+
+    }
+
+    function testNegotiateDefault() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Request::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_METHOD' => 'GET',
+            'HTTP_ACCEPT' => 'text/plain',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals('text/calendar', $s->httpResponse->getHeader('Content-Type'));
 
     }
 }

@@ -50,4 +50,14 @@ CREATE TABLE calendarsubscriptions (
     lastmodified int
 );
 
+CREATE TABLE schedulingobjects (
+    id integer primary key asc,
+    principaluri text,
+    calendardata blob,
+    uri text,
+    lastmodified integer,
+    etag text,
+    size integer
+);
+
 CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);

@@ -57,13 +57,13 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * @var string
      */
     protected $calendarChangesTableName;
-    
+
     /**
-     * The table name that will be used for holding inbox scheduling messages.
+     * The table name that will be used inbox items.
      *
      * @var string
      */
-    protected $schedulingMessageTableName;
+    protected $schedulingObjectTableName;
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
@@ -103,13 +103,13 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
      */
-    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $schedulingMessageTableName = "schedulingmessages") {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $schedulingObjectTableName = "schedulingobjects") {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
         $this->calendarObjectTableName = $calendarObjectTableName;
         $this->calendarChangesTableName = $calendarChangesTableName;
-        $this->schedulingMessageTableName = $schedulingMessageTableName;
+        $this->schedulingObjectTableName = $schedulingObjectTableName;
 
     }
 
@@ -1158,15 +1158,15 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     }
 
     /**
-     * Gets a single scheduling message
+     * Returns a single scheduling object.
      *
      * @param string $principalUri
      * @param string $objectUri
      * @return array
      */
-    public function getSchedulingMessage($principalUri, $objectUri) {
+    public function getSchedulingObject($principalUri, $objectUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, calendardata, lastmodified, etag, size FROM '.$this->schedulingMessageTableName.' WHERE principaluri = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, calendardata, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -1183,14 +1183,14 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     }
 
     /**
-     * Gets scheduling messages for the inbox collection
+     * Returns all scheduling objects for the inbox collection.
      *
      * @param string $principalUri
      * @return array
      */
-    public function getSchedulingMessages($principalUri) {
+    public function getSchedulingObjects($principalUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, calendardata, uri, lastmodified, etag, size FROM '.$this->schedulingMessageTableName.' WHERE principaluri = ?');
+        $stmt = $this->pdo->prepare('SELECT id, calendardata, uri, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ?');
         $stmt->execute([$principalUri]);
 
         $result = [];
@@ -1210,15 +1210,15 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     }
 
     /**
-     * Deletes a scheduling message
+     * Deletes a scheduling object
      *
      * @param string $principalUri
      * @param string $objectUri
      * @return void
      */
-    public function deleteSchedulingMessage($principalUri, $objectUri) {
+    public function deleteSchedulingObject($principalUri, $objectUri) {
 
-        $stmt = $this->pdo->prepare('DELETE FROM '.$this->schedulingMessageTableName.' WHERE principaluri = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
 
     }

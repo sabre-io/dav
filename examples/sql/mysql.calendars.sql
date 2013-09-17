@@ -52,7 +52,7 @@ CREATE TABLE calendarsubscriptions (
     UNIQUE(principaluri, uri)
 );
 
-CREATE TABLE schedulingmessages (
+CREATE TABLE schedulingobjects (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     principaluri VARCHAR(255),
     calendardata MEDIUMBLOB,

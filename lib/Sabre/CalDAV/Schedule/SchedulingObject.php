@@ -3,12 +3,12 @@
 namespace Sabre\CalDAV;
 
 /**
- * The Scheduling Message represents a scheduling object in the Inbox collection 
+ * The SchedulingObject represents a scheduling object in the Inbox collection 
  *
  * @author Brett (https://github.com/bretten)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class SchedulingMessage extends \Sabre\DAV\File implements ISchedulingMessage, \Sabre\DAVACL\IACL {
+class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sabre\DAVACL\IACL {
 
     /**
      * Sabre\CalDAV\Backend\BackendInterface
@@ -18,7 +18,7 @@ class SchedulingMessage extends \Sabre\DAV\File implements ISchedulingMessage, \
     protected $caldavBackend;
 
     /**
-     * Array with information about this SchedulingMessage
+     * Array with information about this SchedulingObject
      *
      * @var array
      */
@@ -82,7 +82,7 @@ class SchedulingMessage extends \Sabre\DAV\File implements ISchedulingMessage, \
         // Pre-populating the 'calendardata' is optional, if we don't have it
         // already we fetch it from the backend.
         if (!isset($this->objectData['calendardata'])) {
-            $this->objectData = $this->caldavBackend->getSchedulingMessage($this->calendarInfo['principaluri'], $this->objectData['uri']);
+            $this->objectData = $this->caldavBackend->getSchedulingObject($this->calendarInfo['principaluri'], $this->objectData['uri']);
         }
         return $this->objectData['calendardata'];
 
@@ -105,7 +105,7 @@ class SchedulingMessage extends \Sabre\DAV\File implements ISchedulingMessage, \
      */
     public function delete() {
 
-        $this->caldavBackend->deleteSchedulingMessage($this->calendarInfo['principaluri'],$this->objectData['uri']);
+        $this->caldavBackend->deleteSchedulingObject($this->calendarInfo['principaluri'],$this->objectData['uri']);
 
     }
 

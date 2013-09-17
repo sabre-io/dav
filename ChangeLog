@@ -25,6 +25,8 @@
 	  information about lists of resources.
 	* Added: MultiGet support to default CalDAV and CardDAV backends, speeding
 	  up the multiget and sync reports quite a bit!
+	* Added: ICSExportPlugin can now generate jCal, filter on time-ranges and
+	  expand recurrences.
 	* Fixed: Read-only access to calendars still allows the sharee to modify
 	  basic calendar properties, such as the displayname and color.
 	* Changed: The default supportedPrivilegeSet has changed. Most privileges

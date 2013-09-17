@@ -51,3 +51,13 @@ CREATE TABLE calendarsubscriptions (
     lastmodified INT(11) UNSIGNED,
     UNIQUE(principaluri, uri)
 );
+
+CREATE TABLE schedulingmessages (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    principaluri VARCHAR(255),
+    calendardata MEDIUMBLOB,
+    uri VARCHAR(200),
+    lastmodified INT(11) UNSIGNED,
+    etag VARCHAR(32),
+    size INT(11) UNSIGNED NOT NULL,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

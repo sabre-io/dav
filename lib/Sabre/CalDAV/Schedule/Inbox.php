@@ -1,9 +1,12 @@
 <?php
 
 namespace Sabre\CalDAV\Schedule;
-use Sabre\DAV;
-use Sabre\CalDAV;
-use Sabre\DAVACL;
+
+use
+    Sabre\DAV,
+    Sabre\CalDAV,
+    Sabre\DAVACL,
+    Sabre\CalDAV\Backend;
 
 /**
  * The CalDAV scheduling inbox 

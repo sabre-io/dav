@@ -36,7 +36,7 @@ class Inbox extends DAV\Collection implements IInbox {
      *
      * @param string $principalUri
      */
-    public function __construct(Backend\BackendInterface $caldavBackend, $principalUri) {
+    public function __construct(Backend\SchedulingSupport $caldavBackend, $principalUri) {
 
         $this->caldavBackend = $caldavBackend;
         $this->principalUri = $principalUri;

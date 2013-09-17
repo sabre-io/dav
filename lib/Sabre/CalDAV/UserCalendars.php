@@ -174,9 +174,11 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
                 $objs[] = new Calendar($this->caldavBackend, $calendar);
             }
         }
-        $objs[] = new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
-        $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
 
+        if ($this->caldavBackend instanceof Backend\SchedulingSupport) {
+            $objs[] = new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
+            $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
+        }
 
         // We're adding a notifications node, if it's supported by the backend.
         if ($this->caldavBackend instanceof Backend\NotificationSupport) {

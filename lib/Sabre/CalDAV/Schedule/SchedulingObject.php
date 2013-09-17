@@ -7,6 +7,7 @@ namespace Sabre\CalDAV;
  *
  * @author Brett (https://github.com/bretten)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @copyright Copyright (C) 2007-2013 fruux GmbH. All rights reserved.
  */
 class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sabre\DAVACL\IACL {
 

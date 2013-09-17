@@ -174,7 +174,7 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
                 $objs[] = new Calendar($this->caldavBackend, $calendar);
             }
         }
-        $objs[] = new Schedule\Inbox($this->principalInfo['uri']);
+        $objs[] = new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
         $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
 
 

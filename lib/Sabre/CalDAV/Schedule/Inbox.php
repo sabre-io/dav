@@ -15,6 +15,13 @@ use Sabre\DAVACL;
 class Inbox extends DAV\Collection implements IInbox {
 
     /**
+     * CalDAV backend
+     *
+     * @var Backend\BackendInterface
+     */
+    protected $caldavBackend;
+
+    /**
      * The principal Uri
      *
      * @var string
@@ -26,8 +33,9 @@ class Inbox extends DAV\Collection implements IInbox {
      *
      * @param string $principalUri
      */
-    public function __construct($principalUri) {
+    public function __construct(Backend\BackendInterface $caldavBackend, $principalUri) {
 
+        $this->caldavBackend = $caldavBackend;
         $this->principalUri = $principalUri;
 
     }
@@ -52,7 +60,13 @@ class Inbox extends DAV\Collection implements IInbox {
      */
     public function getChildren() {
 
-        return array();
+        $objs = $this->caldavBackend->getSchedulingMessages($this->principalUri);
+        $children = [];
+        foreach($objs as $obj) {
+            $obj['acl'] = $this->getACL();
+            $children[] = new SchedulingMessage($this->caldavBackend,$this->calendarInfo,$obj);
+        }
+        return $children;
 
     }
 

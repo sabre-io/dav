@@ -102,6 +102,9 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param \PDO $pdo
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
+     * @param string $calendarChangesTable
+     * @param string $schedulingObjectTable
+     * @todo we have to do something about this signature. It's bullshit.
      */
     public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $schedulingObjectTableName = "schedulingobjects") {
 

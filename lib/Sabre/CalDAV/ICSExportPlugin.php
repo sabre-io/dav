@@ -210,7 +210,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      *
      * @param string $displayName
      * @param array $objects
-     * @return string
+     * @return VObject\Component\VCalendar
      */
     public function mergeObjects($displayName, array $inputObjects) {
 

@@ -133,6 +133,32 @@ class Plugin extends ServerPlugin {
     protected $imipHandler;
 
     /**
+     * The backend
+     *
+     * @var \Sabre\CalDAV\Backend\AbstractBackend
+     */
+    protected $caldavBackend;
+
+    /**
+     * The principal backend
+     *
+     * @var \Sabre\DAVACL\PrincipalBackend\AbstractBackend
+     */
+    protected $principalBackend;
+
+    /**
+     * Constructor
+     *
+     * @param \Sabre\CalDAV\Backend\AbstractBackend $caldavBackend
+     */
+    public function __construct(\Sabre\CalDAV\Backend\AbstractBackend $caldavBackend, \Sabre\DAVACL\PrincipalBackend\AbstractBackend $principalBackend) {
+
+        $this->caldavBackend = $caldavBackend;
+        $this->principalBackend = $principalBackend;
+
+    }
+
+    /**
      * Sets the iMIP handler.
      *
      * iMIP = The email transport of iCalendar scheduling messages. Setting
@@ -363,83 +389,38 @@ class Plugin extends ServerPlugin {
             return;
         }
 
-        // At the moment we only process the first VEVENT. Any other overridden
-        // event will get ignored for the moment.
-        $vevent = $vObj->VEVENT[0];
-
-        $organizer = null;
-        $attendees = [];
-
-        if ($vevent->ORGANIZER) {
-            $organizer = (string)$vevent->ORGANIZER;
+        // Check the main event for an ORGANIZER
+        if ($vObj->VEVENT[0]->ORGANIZER) {
+            $organizer = $vObj->VEVENT[0]->ORGANIZER;
         }
 
-        // If the object doesn't have organizer or attendee information, we can
-        // ignore it.
-        if (!$organizer || !isset($vevent->ATTENDEE)) {
+        // No ORGANIZER
+        if (!$organizer) {
             return;
         }
 
+        // Get the calendar-user-address-set for the ORGANIZER
         $addresses = $this->getAddressesForPrincipal(
             $parentNode->getOwner()
         );
 
+
         // We're only handling creation of new objects by the ORGANIZER.
-        // Support for ATTENDEE will come later.
-        if (!in_array($organizer, $addresses)) {
+        if (!in_array($organizer->getValue(), $addresses)) {
             return;
         }
+        
+        // Process each VEVENT
+        $attendees = $this->getAttendees($vObj, $addresses);
 
-        // For each attendee we're going to generate a scheduling message.
-        // We do this based on the original object.
-        //
-        // $vObj is the copy for the user that created the object. We will use
-        // that to update some values, such as SCHEDULE-STATUS per attendee.
-        $original = clone $vObj;
-
-        foreach($vevent->ATTENDEE as $attendee) {
-
-            if (!isset($attendee['SCHEDULE-AGENT'])) {
-                $agent = 'SERVER';
-            } else {
-                $agent = strtoupper($attendee['SCHEDULE-AGENT']);
-            }
-
-            // The SCHEDULE-AGENT parameter is 'SERVER' by default, but if it
-            // was set to 'NONE' or 'CLIENT', we are not responsible for
-            // delivering the message.
-            if ($agent!=='SERVER') continue;
-
-            $status = null;
-
-            // Currently only handling mailto: addresses.
-            if (strtolower(substr($attendee->getValue(),0,7))!=='mailto:') {
-                $status = '5.1;This server can currently only handle mailto: addresses';
-            } else {
-
-                $iTipMessage = new ITipMessage();
-
-                // Stripping the mailto:
-                $iTipMessage->recipient = strtolower(substr($attendee->getValue(), 7));
-                if (isset($attendee['CN'])) $iTipMessage->recipientName = (string)$attendee['CN'];
-
-                $iTipMessage->sender = strtolower(substr($organizer, 7));
-                if (isset($vevent->ORGANIZER['CN'])) $iTipMessage->senderName = $vevent->ORGANIZER['CN'];
-
-                $iTipMessage->method = 'REQUEST';
-
-                $iTipBody = clone $original;
-                $iTipBody->METHOD = 'REQUEST';
-
-                $iTipMessage->message = $iTipBody;
-
-                $this->deliver($iTipMessage);
-
-                $attendee['SCHEDULE-STATUS'] = $iTipMessage->scheduleStatus;
-
-            }
-
+        // If the object doesn't have organizer or attendee information, we can
+        // ignore it.
+        if (!isset($attendees)) {
+            return;
         }
+        
+        // Insert the new scheduling objects
+        $this->insertSchedulingObjects($path, $organizer, $attendees);
 
         // After all this exciting action we set $data to the updated event
         // that contains all the new status information (if any).
@@ -451,6 +432,178 @@ class Plugin extends ServerPlugin {
             // and that no ETag must be sent back.
             $modified = true;
         }
+
+    }
+
+    /**
+     * This method is triggered before a file gets updated with new content.
+     *
+     * This plugin uses this method to ensure that Scheduling Objects will be
+     * updated with PARTSTAT changes and also that when an ORGANIZER updates a
+     * Scheduling Object, those changes will be sent to ATTENDEEs as well.
+     *
+     * @param string $path
+     * @param DAV\IFile $node
+     * @param resource $data
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
+     * @return void
+     */
+    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
+
+        if (!$node instanceof ICalendarObject)
+            return;
+
+        // If this is NOT a scheduling object
+            // return
+
+        // If this is an ATTENDEE updating
+            // Update PARTSTAT on the ORGANIZER scheduling object
+        
+        // If this is an ORGANIZER updating
+            // If this originally was not a scheduling object
+                // Get the attendees and call $this->insertSchedulingObjects()
+
+            // If this was a scheduling object before
+                // Update ATTENDEE scheduling objects
+
+    }
+
+    /**
+     * This method gets the ATTENDEEs and their scheduling objects from a VCALENDAR.
+     *
+     * @param VObject $vCalendar
+     * @param array $organizerUserAddressSet
+     * @return array
+     */
+    public function getAttendees($vCalendar, $organizerUserAddressSet) {
+        $attendees = [];
+        
+        // Will hold ATTENDEEs from the main VEVENT
+        $mainAttendees = [];
+        // Check each VEVENT for ATTENDEEs
+        foreach ($vCalendar->VEVENT as $key => $vEvent) {
+            // ATTENDEEs in the current VEVENT
+            $current = [];
+            
+            // No ATTENDEEs
+            if (!isset($vEvent->ATTENDEE)) continue;
+            
+            foreach ($vEvent->ATTENDEE as $attendee) {
+                // Ignore the ATTENDEE if it is the same as the ORGANIZER
+                if (in_array($attendee->getValue(), $organizerUserAddressSet)) continue;
+                
+                // Determine the SCHEDULE-AGENT parameter
+                if (!isset($attendee['SCHEDULE-AGENT'])) {
+                    $agent = 'SERVER';
+                } else {
+                    $agent = strtoupper($attendee['SCHEDULE-AGENT']);
+                }
+                // The SCHEDULE-AGENT parameter is 'SERVER' by default, but if it
+                // was set to 'NONE' or 'CLIENT', we are not responsible for
+                // delivering the message.
+                if ($agent !== 'SERVER') continue;
+                
+                // Keep track of the current ATTENDEEs for this VEVENT
+                $current[] = $attendee->getValue();
+                
+                // For the main VEVENT, keep track of the ATTENDEEs for determining EXDATEs
+                if ($key == 0 && !in_array($attendee->getValue(), $mainAttendees)) {
+                    $mainAttendees[] = $attendee->getValue();
+                }
+                
+                // If there is no record of this ATTENDEE, add it to the array
+                if (!array_key_exists($attendee->getValue(), $attendees)) {
+                    // Create a scheduling object with the VTIMEZONEs of the original event
+                    $schedulingObj = VObject\Component::create('VCALENDAR');
+                    $schedulingObj->VERSION = "2.0";
+                    $schedulingObj->PROID = "-//SabreDAV//";
+                    if (isset($vCalendar->VTIMEZONE)) {
+                        foreach ($vCalendar->VTIMEZONE as $timezone) {
+                            $schedulingObj->add(clone $timezone);
+                        }
+                    }
+                    // Determine the principal uri of this ATTENDEE
+                    // If null, then the ATTENDEE is a not a user of the system
+                    $principalUri = $this->principalBackend->getPrincipalUriByEmail(strtolower(substr($attendee->getValue(), 7)));
+                    // Create an ATTENDEE object
+                    $attendees[$attendee->getValue()] = new Attendee(
+                        $this->caldavBackend,
+                        $principalUri,
+                        $attendee,
+                        $schedulingObj
+                    );
+                }
+                
+                // Add the current VEVENT info to the current ATTENDEE
+                $attendees[$attendee->getValue()]->cloneAdd($vEvent);
+            }
+            
+            // For recurring exceptions, see if any main attendees are missing, so they can get an EXDATE
+            if ($key > 0) {
+                foreach (array_diff($mainAttendees, $current) as $exDateAttendee) {
+                    $attendees[$exDateAttendee]->addExDate((string)$vEvent->{'RECURRENCE-ID'});
+                }
+            }
+        }
+        
+        return $attendees;
+    }
+
+    /**
+     * Handles first-time creation of scheduling objects and ITip messages.
+     *
+     * @param string $parentPath
+     * @param \Sabre\VObject\Property $organizer
+     * @param array $attendees
+     */
+    public function insertSchedulingObjects($parentPath, $organizer, $attendees) {
+
+        $calendarObjects = array();
+        $schedulingObjects = array();
+
+        foreach ($attendees as $mailTo => $attendee) {
+            // Check if the ATTENDEE is a user
+            if ($attendee->getPrincipalUri()) {
+                // Create a calendar object that will be inserted into their default calendar
+                $default = $attendee->getDefaultCalendar();
+                $calendarObjects[] = array(
+                    'uri' => $attendee->getSchedulingObject()->VEVENT[0]->UID . ".ics",
+                    'calendardata' => $attendee->getSchedulingObject()->serialize(),
+                    'calendarid' => $default['id'],
+                );
+                
+                // Create a scheduling object that will be inserted into their inbox
+                $attendee->getSchedulingObject()->METHOD = "REQUEST";
+                $schedulingObjects[] = array(
+                    'uri' => md5(uniqid()) . ".ics",
+                    'principaluri' => $attendee->getPrincipalUri(),
+                    'calendardata' => $attendee->getSchedulingObject()->serialize(),
+                );
+            }
+            
+            // Create an ITip message
+            $iTipMessage = new ITipMessage();
+
+            // Stripping the mailto:
+            $iTipMessage->recipient = strtolower(substr($attendee->getEmail(), 7));
+            $iTipMessage->recipientName = $attendee->getCn();
+
+            $iTipMessage->sender = strtolower(substr($organizer->getValue(), 7));
+            if (isset($organizer['CN'])) $iTipMessage->senderName = $organizer['CN'];
+
+            $iTipMessage->method = 'REQUEST';
+
+            $iTipMessage->message = $attendee->getSchedulingObject();
+
+            $this->deliver($iTipMessage);
+
+            // TODO Update the SCHEDULE-STATUS parameter for the ATTENDEE in each VEVENT
+            //$attendee['SCHEDULE-STATUS'] = $iTipMessage->scheduleStatus;
+        }
+        
+        $this->caldavBackend->createCalendarObjects($parentPath, $calendarObjects);
+        $this->caldavBackend->createSchedulingObjects($parentPath, $schedulingObjects);
 
     }
 

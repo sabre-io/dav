@@ -537,7 +537,7 @@ class Plugin extends DAV\ServerPlugin {
                     $vObject->expand($start, $end);
                 }
                 if ($needsJson) {
-                    $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->serializeJson());
+                    $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
                 } else {
                     $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                 }
@@ -628,7 +628,7 @@ class Plugin extends DAV\ServerPlugin {
 
                         }
                         if ($needsJson) {
-                            $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->serializeJson());
+                            $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
                         } elseif ($parser->expand) {
                             $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                         }
@@ -659,7 +659,7 @@ class Plugin extends DAV\ServerPlugin {
                         $vObject->expand($parser->expand['start'], $parser->expand['end']);
                     }
                     if ($needsJson) {
-                        $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->serializeJson());
+                        $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
                     } else {
                         $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                     }

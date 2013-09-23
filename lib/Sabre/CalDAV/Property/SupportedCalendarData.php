@@ -33,8 +33,12 @@ class SupportedCalendarData extends DAV\Property {
         $caldata = $doc->createElement($prefix . ':calendar-data');
         $caldata->setAttribute('content-type','text/calendar');
         $caldata->setAttribute('version','2.0');
-
         $node->appendChild($caldata);
+
+        $caldata = $doc->createElement($prefix . ':calendar-data');
+        $caldata->setAttribute('content-type','application/calendar+json');
+        $node->appendChild($caldata);
+
     }
 
 }

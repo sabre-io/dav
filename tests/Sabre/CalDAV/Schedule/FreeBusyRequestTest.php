@@ -40,7 +40,7 @@ END:VCALENDAR',
         );
 
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
-        $caldavBackend = new CalDAV\Backend\Mock($calendars, $calendarobjects);
+        $caldavBackend = new CalDAV\Backend\MockScheduling($calendars, $calendarobjects);
 
         $tree = array(
             new DAVACL\PrincipalCollection($principalBackend),

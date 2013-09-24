@@ -35,7 +35,7 @@ class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
 
         $instance = $this->getInstance();
         $children = $instance->getChildren();
-        $this->assertEquals(4, count($children));
+        $this->assertEquals(2, count($children));
         foreach($children as $child) {
             if ($child instanceof Subscriptions\Subscription) {
                 return;
@@ -57,7 +57,7 @@ class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
         $instance->createExtendedCollection('sub2', $rt, $props);
 
         $children = $instance->getChildren();
-        $this->assertEquals(5, count($children));
+        $this->assertEquals(3, count($children));
 
     }
 

@@ -177,7 +177,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function setUpBackends() {
 
         if ($this->setupCalDAV && is_null($this->caldavBackend)) {
-            $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+            if ($this->setupCalDAVScheduling) {
+                $this->caldavBackend = new CalDAV\Backend\MockScheduling($this->caldavCalendars, $this->caldavCalendarObjects);
+            } else {
+                $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+            }
         }
         if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);

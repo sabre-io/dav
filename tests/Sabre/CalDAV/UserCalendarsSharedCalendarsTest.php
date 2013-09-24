@@ -52,7 +52,7 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
 
         $instance = $this->getInstance();
         $children = $instance->getChildren();
-        $this->assertEquals(5, count($children));
+        $this->assertEquals(3, count($children));
 
         // Testing if we got all the objects back.
         $hasShareable = false;
@@ -68,9 +68,6 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
             if ($child instanceof ISharedCalendar) {
                 $hasShared = true;
             }
-            if ($child instanceof Schedule\IOutbox) {
-                $hasOutbox = true;
-            }
             if ($child instanceof Notifications\ICollection) {
                 $hasNotifications = true;
             }
@@ -78,7 +75,6 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
         }
         if (!$hasShareable) $this->fail('Missing node!');
         if (!$hasShared) $this->fail('Missing node!');
-        if (!$hasOutbox) $this->fail('Missing node!');
         if (!$hasNotifications) $this->fail('Missing node!'); 
 
     }

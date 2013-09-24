@@ -15,6 +15,8 @@
 	* Added: Support for WebDAV-sync (rfc6578).
 	* Added: Support for caldav-subscriptions, which is an easy way for caldav
 	  clients to manage a list of subscriptions on the server.
+	* Added: Support for emitting and receiving jCal instead of iCalendar for
+	  CalDAV.
 	* Added: BasicCallback authenticaton backend, for creating simple
 	  authentication systems without having to define any classes.
 	* Added: A $transactionType property on the server class. This can be used

@@ -6,6 +6,7 @@ use
     Sabre\DAV,
     Sabre\DAVACL,
     Sabre\VObject,
+    Sabre\HTTP,
     Sabre\HTTP\URLUtil,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface;
@@ -166,7 +167,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('onBrowserPostAction', [$this,'browserPostAction']);
         $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
-
+        $server->on('afterMethod:GET',     [$this,'httpAfterGET']);
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';
         $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
@@ -432,6 +433,8 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
+        $needsJson = $xpath->evaluate("boolean(/cal:calendar-multiget/dav:prop/cal:calendar-data[@content-type='application/calendar+json'])");
+
         $uris = [];
         foreach($hrefElems as $elem) {
             $uris[] = $this->server->calculateUri($elem->nodeValue);
@@ -439,10 +442,16 @@ class Plugin extends DAV\ServerPlugin {
 
         foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $uri=>$objProps) {
 
-            if ($expand && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
+            if (($needsJson || $expand) && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
                 $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
-                $vObject->expand($start, $end);
-                $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+                if ($expand) {
+                    $vObject->expand($start, $end);
+                }
+                if ($needsJson) {
+                    $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
+                } else {
+                    $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+                }
             }
 
             $propertyList[]=$objProps;
@@ -471,6 +480,12 @@ class Plugin extends DAV\ServerPlugin {
 
         $parser = new CalendarQueryParser($dom);
         $parser->parse();
+
+        // TODO: move this into CalendarQueryParser
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
+        $xpath->registerNameSpace('dav','urn:DAV');
+        $needsJson = $xpath->evaluate("boolean(/cal:calendar-multiget/dav:prop/cal:calendar-data[@content-type='application/calendar+json'])");
 
         $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
         $depth = $this->server->getHTTPDepth(0);
@@ -521,6 +536,11 @@ class Plugin extends DAV\ServerPlugin {
                     } else {
                         if ($parser->expand) {
                             $vObject->expand($parser->expand['start'], $parser->expand['end']);
+
+                        }
+                        if ($needsJson) {
+                            $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
+                        } elseif ($parser->expand) {
                             $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                         }
                     }
@@ -544,13 +564,17 @@ class Plugin extends DAV\ServerPlugin {
                 list($properties) =
                     $this->server->getPropertiesForPath($this->server->getRequestUri() . '/' . $path, $parser->requestedProperties);
 
-                if ($parser->expand) {
-                    // We need to do some post-processing
-                    $vObject = VObject\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
-                    $vObject->expand($parser->expand['start'], $parser->expand['end']);
-                    $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+                if (($needsJson || $parser->expand)) {
+                    $vObject = VObject\Reader::read($properties[200]['{' . self::NS_CALDAV . '}calendar-data']);
+                    if ($parser->expand) {
+                        $vObject->expand($parser->expand['start'], $parser->expand['end']);
+                    }
+                    if ($needsJson) {
+                        $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
+                    } else {
+                        $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
+                    }
                 }
-
                 $result[] = $properties;
 
             }
@@ -764,10 +788,20 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($before!==md5($data)) $modified = true;
 
-
         try {
 
-            $vobj = VObject\Reader::read($data);
+            // If the data starts with a [, we can reasonably assume we're dealing
+            // with a jCal object.
+            if (substr($data,0,1)==='[') {
+                $vobj = VObject\Reader::readJson($data);
+
+                // Converting $data back to iCalendar, as that's what we
+                // technically support everywhere.
+                $data = $vobj->serialize();
+                $modified = true;
+            } else {
+                $vobj = VObject\Reader::read($data);
+            }
 
         } catch (VObject\ParseException $e) {
 
@@ -872,6 +906,42 @@ class Plugin extends DAV\ServerPlugin {
         }
         $this->server->createCollection($uri . '/' . $postVars['name'],$resourceType,$properties);
         return false;
+
+    }
+
+    /**
+     * This event is triggered after GET requests.
+     *
+     * This is used to transform data into jCal, if this was requested.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return void
+     */
+    public function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
+
+        if (strpos($response->getHeader('Content-Type'),'text/calendar')===false) {
+            return;
+        }
+
+        $result = HTTP\Util::negotiate(
+            $request->getHeader('Accept'),
+            ['text/calendar', 'application/calendar+json']
+        );
+
+        if ($result !== 'application/calendar+json') {
+            // Do nothing
+            return;
+        }
+
+        // Transforming.
+        $vobj = VObject\Reader::read($response->getBody());
+
+        $jsonBody = json_encode($vobj->jsonSerialize());
+        $response->setBody($jsonBody);
+
+        $response->setHeader('Content-Type', 'application/calendar+json');
+        $response->setHeader('Content-Length', strlen($jsonBody));
 
     }
 

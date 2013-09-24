@@ -209,7 +209,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      * Merges all calendar objects, and builds one big iCalendar blob.
      *
      * @param string $displayName
-     * @param array $objects
+     * @param array $inputObjects
      * @return VObject\Component\VCalendar
      */
     public function mergeObjects($displayName, array $inputObjects) {

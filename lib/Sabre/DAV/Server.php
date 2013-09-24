@@ -664,9 +664,7 @@ class Server extends EventEmitter {
 
             }
 
-        }
-
-        if ($this->httpRequest->getHeader('Brief')=='t') {
+        } elseif ($this->httpRequest->getHeader('Brief')=='t') {
             $result['return-minimal'] = true;
         }
 

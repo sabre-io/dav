@@ -538,6 +538,40 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     }
 
     /**
+     * Creates multiple calendar objects.
+     * 
+     * TODO Make this a transaction
+     *
+     * @param string $parentPath
+     * @param array $calendarObjects
+     * @return void
+     */
+    public function createCalendarObjects($parentPath, $calendarObjects) {
+
+        foreach ($calendarObjects as $object) {
+
+            $extraData = $this->getDenormalizedData($object['calendardata']);
+
+            $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, parent_path) VALUES (?,?,?,?,?,?,?,?,?,?)');
+            $stmt->execute([
+                $object['calendarid'],
+                $object['uri'],
+                $object['calendardata'],
+                time(),
+                $extraData['etag'],
+                $extraData['size'],
+                $extraData['componentType'],
+                $extraData['firstOccurence'],
+                $extraData['lastOccurence'],
+                $parentPath
+            ]);
+            $this->addChange($object['calendarid'], $object['uri'], 1);
+
+        }
+
+    }
+
+    /**
      * Updates an existing calendarobject, based on it's uri.
      *
      * The object uri is only the basename, or filename and not a full path.
@@ -1161,6 +1195,35 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     }
 
     /**
+     * Creates multiple scheduling objects.
+     * 
+     * TODO Make this a transaction
+     *
+     * @param string $parentPath
+     * @param array $schedulingObjects
+     * @return void
+     */
+    public function createSchedulingObjects($parentPath, $schedulingObjects) {
+
+        foreach ($schedulingObjects as $object) {
+
+            $extraData = $this->getDenormalizedData($object['calendardata']);
+
+            $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?,?,?,?,?,?)');
+            $stmt->execute([
+                $object['principaluri'],
+                $object['calendardata'],
+                $object['uri'],
+                time(),
+                $extraData['etag'],
+                $extraData['size'],
+            ]);
+
+        }
+
+    }
+
+    /**
      * Returns a single scheduling object.
      *
      * The returned array should contain the following elements:
@@ -1237,6 +1300,21 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
+
+    }
+
+    /**
+     * Gets the schedule-default-calendar-URL given a principalUri
+     *
+     * @param string $principalUri
+     * @return array
+     */
+    public function getDefaultCalendar($principalUri) {
+
+        $stmt = $this->pdo->prepare('SELECT id, uri FROM '.$this->calendarTableName.' WHERE principaluri = ? AND schedule_default = 1');
+        $stmt->execute([$principalUri]);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
 
     }
 

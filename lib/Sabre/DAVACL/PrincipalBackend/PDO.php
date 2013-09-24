@@ -427,4 +427,21 @@ class PDO extends AbstractBackend {
 
     }
 
+    /**
+     * Gets a principal uri given an email address.
+     *
+     * @param string $email
+     * @return string
+     */
+    public function getPrincipalUriByEmail($email) {
+
+        $stmt = $this->pdo->prepare('SELECT uri FROM '.$this->tableName.' WHERE email = ?;');
+        $stmt->execute(array($email));
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $result['uri'];
+
+    }
+
 }

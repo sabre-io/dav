@@ -83,6 +83,8 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $node = $this->server->getProperties($path, [
             '{DAV:}resourcetype',
             '{DAV:}displayname',
+            '{DAV:}sync-token',
+            '{http://apple.com/ns/ical/}calendar-color',
         ]);
 
         if (!isset($node['{DAV:}resourcetype']) || !$node['{DAV:}resourcetype']->is('{' . Plugin::NS_CALDAV . '}calendar')) {
@@ -91,7 +93,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         // Marking the transactionType, for logging purposes.
         $this->server->transactionType = 'get-calendar-export';
 
-        $displayName = isset($node['{DAV:}displayname'])?$node['{DAV:}displayname']:dirname($path);
+        $properties = $node;
 
         $start = null;
         $end = null;
@@ -131,6 +133,26 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         if (!$format) {
             $format = 'text/calendar';
         }
+
+        $this->generateResponse($path, $start, $end, $expand, $format, $properties, $response);
+
+        // Returning false to break the event chain
+        return false;
+
+    }
+
+    /**
+     * This method is responsible for generating the actual, full response.
+     *
+     * @param string $path
+     * @param DateTime|null $start
+     * @param DateTime|null $end
+     * @param bool $expand
+     * @param string $format
+     * @param array $properties
+     * @param ResponseInterface $response
+     */
+    protected function generateResponse($path, $start, $end, $expand, $format, $properties, ResponseInterface $response) {
 
         $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
 
@@ -177,6 +199,8 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         }
         unset($nodes);
 
+        $displayName = isset($properties['{DAV:}displayname'])?$properties['{DAV:}displayname']:basename($path);
+
         $mergedCalendar = $this->mergeObjects(
             $displayName,
             $blobs
@@ -200,8 +224,6 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $response->setStatus(200);
         $response->setBody($mergedCalendar);
 
-        // Returning false to break the event chain
-        return false;
 
     }
 

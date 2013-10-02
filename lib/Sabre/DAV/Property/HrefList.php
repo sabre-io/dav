@@ -67,7 +67,11 @@ class Sabre_DAV_Property_HrefList extends Sabre_DAV_Property {
         foreach($this->hrefs as $href) {
 
             $elem = $dom->ownerDocument->createElement($prefix . ':href');
-            $value = ($this->autoPrefix?$server->getBaseUri():'') . $href;
+            if ($this->autoPrefix) {
+                $value = $server->getBaseUri() . Sabre_DAV_URLUtil::encodePath($href);
+            } else {
+                $value = $href;
+            }
             $elem->appendChild($dom->ownerDocument->createTextNode($value));
 
             $dom->appendChild($elem);

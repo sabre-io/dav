@@ -352,7 +352,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (in_array($calProp,$requestedProperties)) {
 
                 $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+                $addresses[] = $this->server->getBaseUri() . Sabre_DAV_URLUtil::encodePath($node->getPrincipalUrl() . '/');
                 unset($requestedProperties[array_search($calProp, $requestedProperties)]);
                 $returnedProperties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
 

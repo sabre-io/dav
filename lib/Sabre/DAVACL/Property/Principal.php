@@ -119,7 +119,7 @@ class Sabre_DAVACL_Property_Principal extends Sabre_DAV_Property implements Sabr
                 break;
             case self::HREF :
                 $href = $node->ownerDocument->createElement($prefix . ':href');
-                $href->nodeValue = $server->getBaseUri() . $this->href;
+                $href->nodeValue = $server->getBaseUri() . Sabre_DAV_URLUtil::encodePath($this->href);
                 $node->appendChild($href);
                 break;
 

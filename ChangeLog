@@ -49,6 +49,7 @@
 	  greater flexiblity.
 
 1.7.9-stable (2013-10-02)
+	* The zip release ships with sabre/vobject 2.1.3.
 	* Fixed: Issue #365. Incorrect output when principal urls have spaces in
 	  them.
 	* Added: Issue #367: Automatically adding a UID to vcards that don't have

@@ -358,7 +358,7 @@ class Plugin extends DAV\ServerPlugin {
             if (in_array($calProp,$requestedProperties)) {
 
                 $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+                $addresses[] = $this->server->getBaseUri() . DAV\URLUtil::encodePath($node->getPrincipalUrl() . '/');
                 unset($requestedProperties[array_search($calProp, $requestedProperties)]);
                 $returnedProperties[200][$calProp] = new DAV\Property\HrefList($addresses, false);
 

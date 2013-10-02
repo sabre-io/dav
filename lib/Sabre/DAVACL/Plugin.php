@@ -239,7 +239,7 @@ class Plugin extends DAV\ServerPlugin {
         $userName = $authPlugin->getCurrentUser();
         if (!$userName) return null;
 
-        return $this->defaultUsernamePath . '/' . $userName;
+        return $this->defaultUsernamePath . '/' .  $userName;
 
     }
 

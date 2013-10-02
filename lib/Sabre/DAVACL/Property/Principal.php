@@ -120,7 +120,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
                 break;
             case self::HREF :
                 $href = $node->ownerDocument->createElement($prefix . ':href');
-                $href->nodeValue = $server->getBaseUri() . $this->href;
+                $href->nodeValue = $server->getBaseUri() . DAV\URLUtil::encodePath($this->href);
                 $node->appendChild($href);
                 break;
 

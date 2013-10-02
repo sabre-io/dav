@@ -69,7 +69,11 @@ class HrefList extends DAV\Property {
         foreach($this->hrefs as $href) {
 
             $elem = $dom->ownerDocument->createElement($prefix . ':href');
-            $value = ($this->autoPrefix?$server->getBaseUri():'') . $href;
+            if ($this->autoPrefix) {
+                $value = $server->getBaseUri() . DAV\URLUtil::encodePath($href);
+            } else {
+                $value = $href;
+            }
             $elem->appendChild($dom->ownerDocument->createTextNode($value));
 
             $dom->appendChild($elem);

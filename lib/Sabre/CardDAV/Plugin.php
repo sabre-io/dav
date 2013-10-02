@@ -381,7 +381,10 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if (!isset($vobj->UID)) {
-            throw new DAV\Exception\BadRequest('Every vcard must have a UID.');
+            // No UID in vcards is invalid, but we'll just add it in anyway.
+            $vobj->add('UID', DAV\UUIDUtil::getUUID());
+            $data = $vobj->serialize();
+            $modified = true;
         }
 
     }

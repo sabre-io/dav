@@ -1110,6 +1110,37 @@ class Server extends EventEmitter {
     }
 
     /**
+     * This method is invoked by sub-systems updating a file.
+     *
+     * This method will return true if the file was actually updated
+     *
+     * @param string   $uri
+     * @param resource $data
+     * @param string   $etag
+     * @return bool
+     */
+    public function updateFile($uri,$data, &$etag = null) {
+
+        $node = $this->tree->getNodeForPath($uri);
+
+        // It is possible for an event handler to modify the content of the
+        // body, before it gets written. If this is the case, $modified
+        // should be set to true.
+        //
+        // If $modified is true, we must not send back an etag.
+        $modified = false;
+        if (!$this->emit('beforeWriteContent',[$uri, $node, &$data, &$modified])) return false;
+
+        $etag = $node->put($data);
+        if ($modified) $etag = null;
+        $this->emit('afterWriteContent',[$uri, $node]);
+
+        return true;
+    }
+
+
+
+    /**
      * This method is invoked by sub-systems creating a new directory.
      *
      * @param string $uri

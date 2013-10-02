@@ -501,20 +501,12 @@ class CorePlugin extends ServerPlugin {
             // If the node is a collection, we'll deny it
             if (!($node instanceof IFile)) throw new Exception\Conflict('PUT is not allowed on non-files.');
 
-            // It is possible for an event handler to modify the content of the
-            // body, before it gets written. If this is the case, $modified
-            // should be set to true.
-            //
-            // If $modified is true, we must not send back an etag.
-            $modified = false;
-            if (!$this->server->emit('beforeWriteContent',[$path, $node, &$body, &$modified])) return false;
-
-            $etag = $node->put($body);
-
-            $this->server->emit('afterWriteContent',[$path, $node]);
+            if (!$this->server->updateFile($path, $body, $etag)) {
+                return false;
+            }
 
             $response->setHeader('Content-Length','0');
-            if ($etag && !$modified) $response->setHeader('ETag',$etag);
+            if ($etag) $response->setHeader('ETag',$etag);
             $response->setStatus(204);
 
         } else {

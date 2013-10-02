@@ -224,7 +224,6 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $response->setStatus(200);
         $response->setBody($mergedCalendar);
 
-
     }
 
     /**

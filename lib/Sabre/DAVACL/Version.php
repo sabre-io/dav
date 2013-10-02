@@ -14,7 +14,7 @@ class Sabre_DAVACL_Version {
     /**
      * Full version number
      */
-    const VERSION = '1.7.8';
+    const VERSION = '1.7.9';
 
     /**
      * Stability : alpha, beta, stable

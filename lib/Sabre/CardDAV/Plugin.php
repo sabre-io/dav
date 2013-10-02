@@ -133,7 +133,7 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $addressbookHomePath = self::ADDRESSBOOK_ROOT . '/' . $principalId . '/';
                 unset($requestedProperties[array_search($addHome, $requestedProperties)]);
-                $returnedProperties[200][$addHome] = new Sabre_DAV_Property_Href($addressbookHomePath);
+                $returnedProperties[200][$addHome] = new Sabre_DAV_Property_Href(Sabre_DAV_URLUtil::encodePath($addressbookHomePath));
             }
 
             $directories = '{' . self::NS_CARDDAV . '}directory-gateway';

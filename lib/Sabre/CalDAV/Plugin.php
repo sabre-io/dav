@@ -335,7 +335,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $calendarHomePath = self::CALENDAR_ROOT . '/' . $principalId . '/';
                 unset($requestedProperties[array_search($calHome, $requestedProperties)]);
-                $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href($calendarHomePath);
+                $returnedProperties[200][$calHome] = new Sabre_DAV_Property_Href(Sabre_DAV_URLUtil::encodePath($calendarHomePath));
             }
 
             // schedule-outbox-URL property
@@ -344,7 +344,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $outboxPath = self::CALENDAR_ROOT . '/' . $principalId . '/outbox';
                 unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
-                $returnedProperties[200][$scheduleProp] = new Sabre_DAV_Property_Href($outboxPath);
+                $returnedProperties[200][$scheduleProp] = new Sabre_DAV_Property_Href(Sabre_DAV_URLUtil::encodePath($outboxPath));
             }
 
             // calendar-user-address-set property
@@ -352,7 +352,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
             if (in_array($calProp,$requestedProperties)) {
 
                 $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+                $addresses[] = Sabre_DAV_URLUtil::encodePath($this->server->getBaseUri() . $node->getPrincipalUrl() . '/');
                 unset($requestedProperties[array_search($calProp, $requestedProperties)]);
                 $returnedProperties[200][$calProp] = new Sabre_DAV_Property_HrefList($addresses, false);
 
@@ -373,14 +373,14 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
 
                     $groupNode = $this->server->tree->getNodeForPath($group);
 
-                    // If the node is either ap proxy-read or proxy-write
+                    // If the node is either a proxy-read or proxy-write
                     // group, we grab the parent principal and add it to the
                     // list.
                     if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyRead) {
-                        list($readList[]) = Sabre_DAV_URLUtil::splitPath($group);
+                        list($readList[]) = Sabre_DAV_URLUtil::encodePath(Sabre_DAV_URLUtil::splitPath($group));
                     }
                     if ($groupNode instanceof Sabre_CalDAV_Principal_ProxyWrite) {
-                        list($writeList[]) = Sabre_DAV_URLUtil::splitPath($group);
+                        list($writeList[]) = Sabre_DAV_URLUtil::encodePath(Sabre_DAV_URLUtil::splitPath($group));
                     }
 
                 }
@@ -401,7 +401,7 @@ class Sabre_CalDAV_Plugin extends Sabre_DAV_ServerPlugin {
                 $principalId = $node->getName();
                 $calendarHomePath = 'calendars/' . $principalId . '/notifications/';
                 unset($requestedProperties[$index]);
-                $returnedProperties[200][$notificationUrl] = new Sabre_DAV_Property_Href($calendarHomePath);
+                $returnedProperties[200][$notificationUrl] = new Sabre_DAV_Property_Href(Sabre_DAV_URLUtil::encodePath($calendarHomePath));
             }
 
         } // instanceof IPrincipal

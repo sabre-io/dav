@@ -3,7 +3,6 @@
 namespace Sabre\DAV;
 
 use
-    Sabre\HTTP\URLUtil,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface;
 

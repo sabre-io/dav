@@ -68,6 +68,9 @@
 	  content-types for calendar objects, if the caldav backend provides this
 	  info.
 
+1.8.7-stable (2013-??-??)
+	* Includes changes from version 1.7.9.
+
 1.8.6-stable (2013-06-18)
 	* The zip release ships with sabre/vobject 2.1.0.
 	* Includes changes from version 1.7.8.
@@ -113,6 +116,10 @@
 	  calendar.
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
+
+1.7.9-stable (2013-??-??)
+	* Fixed: Issue #365. Incorrect output when principal urls have spaces in
+	  them.
 
 1.7.8-stable (2013-06-17)
 	* The zip release ships with sabre/vobject 2.1.0.

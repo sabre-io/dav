@@ -238,7 +238,7 @@ class Sabre_DAVACL_Plugin extends Sabre_DAV_ServerPlugin {
         $userName = $authPlugin->getCurrentUser();
         if (!$userName) return null;
 
-        return $this->defaultUsernamePath . '/' .  Sabre_DAV_URLUtil::encodePath($userName);
+        return $this->defaultUsernamePath . '/' .  $userName;
 
     }
 

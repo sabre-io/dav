@@ -363,7 +363,9 @@ class Sabre_CardDAV_Plugin extends Sabre_DAV_ServerPlugin {
         }
 
         if (!isset($vobj->UID)) {
-            throw new Sabre_DAV_Exception_BadRequest('Every vcard must have an UID.');
+            // No UID in vcards is invalid, but we'll just add it in anyway.
+            $vobj->add('UID', Sabre_DAV_UUIDUtil::getUUID());
+            $data = $vobj->serialize();
         }
 
     }

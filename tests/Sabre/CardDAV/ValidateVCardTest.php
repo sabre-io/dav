@@ -89,8 +89,10 @@ class Sabre_CardDAV_ValidateVCardTest extends PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 400 Bad request', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals('HTTP/1.1 201 Created', $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
+        $foo = $this->cardBackend->getCard('addressbook1','blabla.vcf');
+        $this->assertTrue(strpos($foo['carddata'],'UID')!==false);
     }
 
 

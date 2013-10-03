@@ -63,14 +63,13 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(6,count($obj->children()));
+        $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
         $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION)!==false);
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
-        $this->assertEquals(1,count($obj->{'X-WR-CALNAME'}));
 
     }
     function testBeforeMethodNoVersion() {
@@ -113,7 +112,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(6,count($obj->children()));
+        $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
@@ -218,7 +217,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(6,count($obj->children()));
+        $this->assertEquals(5,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));

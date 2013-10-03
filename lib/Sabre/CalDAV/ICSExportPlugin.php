@@ -199,10 +199,8 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         }
         unset($nodes);
 
-        $displayName = isset($properties['{DAV:}displayname'])?$properties['{DAV:}displayname']:basename($path);
-
         $mergedCalendar = $this->mergeObjects(
-            $displayName,
+            $properties,
             $blobs
         );
 
@@ -229,11 +227,11 @@ class ICSExportPlugin extends DAV\ServerPlugin {
     /**
      * Merges all calendar objects, and builds one big iCalendar blob.
      *
-     * @param string $displayName
+     * @param array $properties Some CalDAV properties
      * @param array $inputObjects
      * @return VObject\Component\VCalendar
      */
-    public function mergeObjects($displayName, array $inputObjects) {
+    public function mergeObjects(array $properties, array $inputObjects) {
 
         $calendar = new VObject\Component\VCalendar();
         $calendar->version = '2.0';
@@ -242,7 +240,12 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         } else {
             $calendar->prodid = '-//SabreDAV//SabreDAV//EN';
         }
-        $calendar->{'X-WR-CALNAME'} = $displayName;
+        if (isset($properties['{DAV:}displayname'])) {
+            $calendar->{'X-WR-CALNAME'} = $properties['{DAV:}displayname'];
+        }
+        if (isset($properties['{http://apple.com/ns/ical/}calendar-color'])) {
+            $calendar->{'X-APPLE-CALENDAR-COLOR'} = $properties['{http://apple.com/ns/ical/}calendar-color'];
+        }
 
         $collectedTimezones = [];
 

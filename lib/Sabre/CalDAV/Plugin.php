@@ -902,10 +902,17 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\UnsupportedMediaType('This collection can only support iCalendar objects.');
         }
 
+        $sCCS = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
+
         // Get the Supported Components for the target calendar
         list($parentPath,$object) = URLUtil::splitPath($path);
-        $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
-        $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
+        $calendarProperties = $this->server->getProperties($parentPath, [$sCCS]);
+
+        if (isset($calendarProperties[$sCCS])) {
+            $supportedComponents = $calendarProperties[$sCCS]->getValue();
+        } else {
+            $supportedComponents = ['VJOURNAL', 'VTODO', 'VEVENT'];
+        }
 
         $foundType = null;
         $foundUID = null;

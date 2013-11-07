@@ -33,9 +33,6 @@
         "evert/phpdoc-md" : "~0.0.7",
         "phing/phing" : "2.4.14"
     },
-    "provide" : {
-        "evert/sabredav" : "1.7.*"
-    },
     "suggest" : {
         "ext-apc" : "*",
         "ext-curl" : "*",

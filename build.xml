@@ -12,6 +12,8 @@
         <echo>Running composer</echo>
         <exec command="composer create-project --no-dev sabre/dav build/SabreDAV ${sabredav.version}" checkreturn="false" passthru="1" />
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
+        <echo>Optimizing autoloader</echo>
+        <exec command="composer --working-dir=build -o" checkreturn="false" passthru="1" />
     </target>
 
     <target name="uploadzip" depends="buildzip">

@@ -341,7 +341,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
                     'Reply-To: user1.sabredav@sabredav.org',
                     'From: server@example.org',
                     'Content-Type: text/calendar; method=REQUEST; charset=utf-8',
-                    'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY,
+                    'X-Sabre-Version: ' . DAV\Version::VERSION,
                 ),
            )
         ), $handler->getSentEmails());
@@ -393,7 +393,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
                     'Reply-To: user1.sabredav@sabredav.org',
                     'From: server@example.org',
                     'Content-Type: text/calendar; method=REQUEST; charset=utf-8',
-                    'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY,
+                    'X-Sabre-Version: ' . DAV\Version::VERSION,
                 ),
            )
         ), $handler->getSentEmails());
@@ -444,7 +444,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
                     'Reply-To: user1.sabredav@sabredav.org',
                     'From: server@example.org',
                     'Content-Type: text/calendar; method=REQUEST; charset=utf-8',
-                    'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY,
+                    'X-Sabre-Version: ' . DAV\Version::VERSION,
                 ),
            )
         ), $handler->getSentEmails());
@@ -486,7 +486,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
                     'Reply-To: user1.sabredav@sabredav.org',
                     'From: server@example.org',
                     'Content-Type: text/calendar; method=REPLY; charset=utf-8',
-                    'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY,
+                    'X-Sabre-Version: ' . DAV\Version::VERSION,
                 ),
            )
         ), $handler->getSentEmails());
@@ -528,7 +528,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest {
                     'Reply-To: user1.sabredav@sabredav.org',
                     'From: server@example.org',
                     'Content-Type: text/calendar; method=CANCEL; charset=utf-8',
-                    'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY,
+                    'X-Sabre-Version: ' . DAV\Version::VERSION,
                 ),
            )
         ), $handler->getSentEmails());

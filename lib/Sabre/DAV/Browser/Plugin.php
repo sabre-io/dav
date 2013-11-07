@@ -222,7 +222,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $version = '';
         if (DAV\Server::$exposeVersion) {
-            $version = DAV\Version::VERSION ."-". DAV\Version::STABILITY;
+            $version = DAV\Version::VERSION;
         }
 
         $html = "<html>

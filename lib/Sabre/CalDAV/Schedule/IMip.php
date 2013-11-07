@@ -76,7 +76,7 @@ class IMip {
             $headers[] = 'From: ' . $this->senderEmail;
             $headers[] = 'Content-Type: text/calendar; method=' . (string)$vObject->method . '; charset=utf-8';
             if (DAV\Server::$exposeVersion) {
-                $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY;
+                $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION;
             }
 
             $vcalBody = $vObject->serialize();

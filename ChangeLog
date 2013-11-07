@@ -1,4 +1,4 @@
-1.9.0-alpha (201?-??-??)
+1.9.0-alpha1 (2013-11-07)
 	* BC Break: The CardDAV and CalDAV BackendInterface each have a new
 	  method: getMultipleCards and getMultipleCalendarObjects. The Abstract
 	  and PDO backends have default implementations, but if you implement that

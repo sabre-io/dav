@@ -299,17 +299,19 @@ class Plugin extends DAV\ServerPlugin {
 
             $node = $this->server->tree->getNodeForPath($principal);
             if ($node instanceof IPrincipal) {
-                foreach($node->getGroupMembership() as $groupMember) {
+                $membership = $node->getGroupMembership();
+                if(!empty($membership)){
+                    foreach($membership as $groupMember) {
 
-                    if (!in_array($groupMember, $principals)) {
+                        if (!in_array($groupMember, $principals)) {
 
-                        $check[] = $groupMember;
-                        $principals[] = $groupMember;
+                            $check[] = $groupMember;
+                            $principals[] = $groupMember;
+
+                        }
 
                     }
-
                 }
-
             }
 
         }

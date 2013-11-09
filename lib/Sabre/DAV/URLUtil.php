@@ -12,6 +12,9 @@
  * ). Since these are reserved, but don't have a reserved meaning in url, these characters are
  * kept as-is.
  *
+ * It was also discovered that versions of the SOGO connector for thunderbird
+ * has issues with urlencoded colons.
+ *
  * @package Sabre
  * @subpackage DAV
  * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
@@ -30,7 +33,7 @@ class Sabre_DAV_URLUtil {
      */
     static function encodePath($path) {
 
-        return preg_replace_callback('/([^A-Za-z0-9_\-\.~\(\)\/])/',function($match) {
+        return preg_replace_callback('/([^A-Za-z0-9_\-\.~\(\)\/:])/',function($match) {
 
             return '%'.sprintf('%02x',ord($match[0]));
 
@@ -48,7 +51,7 @@ class Sabre_DAV_URLUtil {
      */
     static function encodePathSegment($pathSegment) {
 
-        return preg_replace_callback('/([^A-Za-z0-9_\-\.~\(\)])/',function($match) {
+        return preg_replace_callback('/([^A-Za-z0-9_\-\.~\(\):])/',function($match) {
 
             return '%'.sprintf('%02x',ord($match[0]));
 

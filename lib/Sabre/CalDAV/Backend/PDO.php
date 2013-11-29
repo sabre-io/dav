@@ -59,6 +59,13 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     protected $calendarChangesTableName;
 
     /**
+     * The table name that will be used for calendar subscriptions.
+     *
+     * @var string
+     */
+    protected $calendarSubscriptionsTableName;
+
+    /**
      * List of CalDAV properties, and how they map to database fieldnames
      * Add your own properties by simply adding on to this array.
      *
@@ -95,13 +102,16 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * @param \PDO $pdo
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
+     * @param string $calendarChangesTableName
+     * @param string $calendarSubscriptionsTableName
      */
-    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges') {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = 'calendarsubscriptions') {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
         $this->calendarObjectTableName = $calendarObjectTableName;
         $this->calendarChangesTableName = $calendarChangesTableName;
+        $this->calendarSubscriptionsTableName = $calendarSubscriptionsTableName;
 
     }
 
@@ -835,7 +845,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     public function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
 
         // Current synctoken
-        $stmt = $this->pdo->prepare('SELECT synctoken FROM calendars WHERE id = ?');
+        $stmt = $this->pdo->prepare('SELECT synctoken FROM ' .$this->calendarTableName . ' WHERE id = ?');
         $stmt->execute([ $calendarId ]);
         $currentToken = $stmt->fetchColumn(0);
 
@@ -884,7 +894,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             }
         } else {
             // No synctoken supplied, this is the initial sync.
-            $query = "SELECT uri FROM calendarobjects WHERE calendarid = ?";
+            $query = "SELECT uri FROM " . $this->calendarObjectTableName . " WHERE calendarid = ?";
             $stmt = $this->pdo->prepare($query);
             $stmt->execute([$calendarId]);
 
@@ -960,7 +970,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
-        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM calendarsubscriptions WHERE principaluri = ? ORDER BY calendarorder ASC");
+        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM " . $this->calendarSubscriptionsTableName . " WHERE principaluri = ? ORDER BY calendarorder ASC");
         $stmt->execute([$principalUri]);
 
         $subscriptions = [];
@@ -1029,7 +1039,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             }
         }
 
-        $stmt = $this->pdo->prepare("INSERT INTO calendarsubscriptions (".implode(', ', $fieldNames).") VALUES (".implode(', ',array_keys($values)).")");
+        $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarSubscriptionsTableName . " (".implode(', ', $fieldNames).") VALUES (".implode(', ',array_keys($values)).")");
         $stmt->execute($values);
 
         return $this->pdo->lastInsertId();
@@ -1127,7 +1137,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             $valuesSql[] = $fieldName . ' = ?';
         }
 
-        $stmt = $this->pdo->prepare("UPDATE calendarsubscriptions SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE " . $this->calendarSubscriptionsTableName . " SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
         $newValues['lastmodified'] = time();
         $newValues['id'] = $subscriptionId;
         $stmt->execute(array_values($newValues));
@@ -1144,7 +1154,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      */
     public function deleteSubscription($subscriptionId) {
 
-        $stmt = $this->pdo->prepare('DELETE FROM calendarsubscriptions WHERE id = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarSubscriptionsTableName . ' WHERE id = ?');
         $stmt->execute([$subscriptionId]);
 
     }

@@ -439,7 +439,7 @@ class PDO extends AbstractBackend implements SyncSupport {
     public function getChangesForAddressBook($addressBookId, $syncToken, $syncLevel, $limit = null) {
 
         // Current synctoken
-        $stmt = $this->pdo->prepare('SELECT synctoken FROM addressbooks WHERE id = ?');
+        $stmt = $this->pdo->prepare('SELECT synctoken FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
         $stmt->execute([ $addressBookId ]);
         $currentToken = $stmt->fetchColumn(0);
 
@@ -488,7 +488,7 @@ class PDO extends AbstractBackend implements SyncSupport {
             }
         } else {
             // No synctoken supplied, this is the initial sync.
-            $query = "SELECT uri FROM cards WHERE addressbookid = ?";
+            $query = "SELECT uri FROM " . $this->cardsTableName . " WHERE addressbookid = ?";
             $stmt = $this->pdo->prepare($query);
             $stmt->execute([$addressBookId]);
 
@@ -508,7 +508,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      */
     protected function addChange($addressBookId, $objectUri, $operation) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->addressBookChangesTableName .' (uri, synctoken, addressbookid, operation) SELECT ?, synctoken, ?, ? FROM addressbooks WHERE id = ?');
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->addressBookChangesTableName .' (uri, synctoken, addressbookid, operation) SELECT ?, synctoken, ?, ? FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
         $stmt->execute([
             $objectUri,
             $addressBookId,

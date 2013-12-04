@@ -11,8 +11,6 @@ include 'Sabre/DAV/ClientMock.php';
 
 date_default_timezone_set('GMT');
 
-// If sqlite is not available, this constant is used to skip the relevant
-// tests
 $config = [
     'SABRE_TEMPDIR'   => dirname(__FILE__) . '/temp/',
     'SABRE_HASSQLITE' => in_array('sqlite',PDO::getAvailableDrivers()),

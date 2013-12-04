@@ -28,7 +28,6 @@ class ConflictingLock extends Locked {
         if ($this->lock) {
             $error = $errorNode->ownerDocument->createElementNS('DAV:','d:no-conflicting-lock');
             $errorNode->appendChild($error);
-            if (!is_object($this->lock)) var_dump($this->lock);
             $error->appendChild($errorNode->ownerDocument->createElementNS('DAV:','d:href',$this->lock->uri));
         }
 

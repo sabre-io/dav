@@ -8,7 +8,7 @@ use
     Sabre\HTTP\URLUtil;
 
 /**
- * The UserCalenders class contains all calendars associated to one user
+ * The UserCalendars class contains all calendars associated to one user
  *
  * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)

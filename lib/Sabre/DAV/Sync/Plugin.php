@@ -10,7 +10,7 @@ use Sabre\DAV;
  * WebDAV-sync is defined by rfc6578
  *
  * The sync capabilities only work with collections that implement
- * Sabreu\DAV\Sync\ISyncCollection.
+ * Sabre\DAV\Sync\ISyncCollection.
  *
  * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)

@@ -237,6 +237,7 @@ class Plugin extends DAV\ServerPlugin {
   <style type=\"text/css\">
   body { Font-family: arial}
   h1 { font-size: 150% }
+  th { text-align: left; vertical-align: top}
   </style>
         ";
 

@@ -3,9 +3,7 @@
 namespace Sabre\DAV\Auth\Backend;
 
 /**
- * This is an authentication backend that uses a file to manage passwords.
- *
- * The backend file must conform to Apache's htdigest format
+ * This is an authentication backend that uses a database to manage passwords.
  *
  * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)

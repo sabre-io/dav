@@ -378,7 +378,7 @@ class Plugin extends DAV\ServerPlugin {
         if ($header) {
 
             if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
-            else if (strtolower($header)=='infinite') $header = LockInfo::TIMEOUT_INFINITE;
+            else if (stripos($header,'infinite')===0) $header = LockInfo::TIMEOUT_INFINITE;
             else throw new DAV\Exception\BadRequest('Invalid HTTP timeout header');
 
         } else {

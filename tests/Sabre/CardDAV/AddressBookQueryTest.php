@@ -12,7 +12,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQuery() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
             'HTTP_DEPTH' => '1',
@@ -37,7 +37,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
         $this->server->exec();
 
-        $this->assertEquals('207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
         $client = new DAV\Client(array('baseUri'=>'/'));
@@ -62,7 +62,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQueryDepth0() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1/card1',
             'HTTP_DEPTH' => '0',
@@ -87,7 +87,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
         $this->server->exec();
 
-        $this->assertEquals('207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
         $client = new DAV\Client(array('baseUri'=>'/'));
@@ -107,7 +107,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQueryNoMatch() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
             'HTTP_DEPTH' => '1',
@@ -132,7 +132,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
         $this->server->exec();
 
-        $this->assertEquals('207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
         $client = new DAV\Client(array('baseUri'=>'/'));
@@ -145,7 +145,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQueryLimit() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'REQUEST_URI' => '/addressbooks/user1/book1',
             'HTTP_DEPTH' => '1',
@@ -171,7 +171,7 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
         $this->server->exec();
 
-        $this->assertEquals('207 Multi-Status', $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
 
         // using the client for parsing
         $client = new DAV\Client(array('baseUri'=>'/'));

@@ -23,11 +23,11 @@ class PluginTest extends DAV\AbstractServer{
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('200 OK',$this->response->status);
+        $this->assertEquals(200, $this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'text/html; charset=utf-8',
             'Content-Security-Policy' => "img-src 'self'; style-src 'unsafe-inline';"
@@ -47,11 +47,11 @@ class PluginTest extends DAV\AbstractServer{
             'REQUEST_METHOD' => 'GET',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('404 Not Found',$this->response->status);
+        $this->assertEquals(404, $this->response->status);
 
     }
 
@@ -62,11 +62,11 @@ class PluginTest extends DAV\AbstractServer{
             'REQUEST_METHOD' => 'POST',
             'CONTENT_TYPE' => 'text/xml',
         );
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('501 Not Implemented', $this->response->status);
+        $this->assertEquals(501, $this->response->status);
 
     }
 
@@ -79,11 +79,11 @@ class PluginTest extends DAV\AbstractServer{
         );
         $postVars = array();
 
-        $request = HTTP\Request::createFromServerArray($serverVars,$postVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars,$postVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('501 Not Implemented', $this->response->status);
+        $this->assertEquals(501, $this->response->status);
 
     }
 
@@ -99,12 +99,12 @@ class PluginTest extends DAV\AbstractServer{
             'name' => 'new_collection',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setPostData($postVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('302 Found', $this->response->status);
+        $this->assertEquals(302, $this->response->status);
         $this->assertEquals(array(
             'Location' => '/',
         ), $this->response->headers);

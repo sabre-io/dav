@@ -48,7 +48,7 @@ END:VCALENDAR
 
     function testQueryTimerange() {
 
-        $request = HTTP\Request::createFromServerArray([
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',

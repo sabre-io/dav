@@ -33,7 +33,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
         $server = new DAV\Server($tree);
         $server->httpResponse = $response;
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_USER' => 'username',
             'PHP_AUTH_PW' => 'wrongpassword',
         ));
@@ -51,7 +51,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
         $server = new DAV\Server($tree);
         $server->httpResponse = $response;
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_USER' => 'username',
             'PHP_AUTH_PW' => 'password',
         ));

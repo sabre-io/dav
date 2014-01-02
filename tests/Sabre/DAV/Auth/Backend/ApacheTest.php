@@ -30,7 +30,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         $backend = new Apache();
 
         $server = new DAV\Server();
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REMOTE_USER' => 'username',
         ));
         $server->httpRequest = $request;

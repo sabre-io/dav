@@ -17,7 +17,7 @@ use
  * This plugin provides functionality added by CalDAV (RFC 4791)
  * It implements new reports, and the MKCALENDAR method.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

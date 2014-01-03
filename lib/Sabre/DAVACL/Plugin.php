@@ -1033,7 +1033,7 @@ class Plugin extends DAV\ServerPlugin {
     public function httpAcl(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $dom = DAV\XMLUtil::loadDOMDocument($body);
 
         $newAcl =

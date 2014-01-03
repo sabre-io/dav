@@ -312,7 +312,7 @@ class CorePlugin extends ServerPlugin {
         $path = $request->getPath();
 
         $requestedProperties = $this->server->parsePropFindRequest(
-            $request->getBody($asString = true)
+            $request->getBodyAsString()
         );
 
         $depth = $this->server->getHTTPDepth(1);
@@ -363,7 +363,7 @@ class CorePlugin extends ServerPlugin {
         $this->server->checkPreconditions();
 
         $newProperties = $this->server->parsePropPatchRequest(
-            $request->getBody($asString = true)
+            $request->getBodyAsString()
         );
 
         $result = $this->server->updateProperties($path, $newProperties);
@@ -418,7 +418,7 @@ class CorePlugin extends ServerPlugin {
      */
     public function httpPut(RequestInterface $request, ResponseInterface $response) {
 
-        $body = $request->getBody();
+        $body = $request->getBodyAsStream();
         $path = $request->getPath();
 
         // Intercepting Content-Range
@@ -542,7 +542,7 @@ class CorePlugin extends ServerPlugin {
      */
     public function httpMkcol(RequestInterface $request, ResponseInterface $response) {
 
-        $requestBody = $request->getBody($asString = true);
+        $requestBody = $request->getBodyAsString();
         $path = $request->getPath();
 
         if ($requestBody) {
@@ -695,7 +695,7 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $dom = XMLUtil::loadDOMDocument($body);
 
         $reportName = XMLUtil::toClarkNotation($dom->firstChild);

@@ -150,7 +150,7 @@ class Plugin extends DAV\ServerPlugin {
         if (!$this->server->emit('beforeWriteContent', [$path, $node, null]))
             return;
 
-        $body = $request->getBody();
+        $body = $request->getBodyAsStream();
         $etag = $node->putRange($body, $start-1);
 
         $this->server->emit('afterWriteContent', [$path, $node]);

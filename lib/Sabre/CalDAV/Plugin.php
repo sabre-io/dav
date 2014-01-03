@@ -970,7 +970,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // Parsing the request body
         try {
-            $vObject = VObject\Reader::read($this->server->httpRequest->getBody(true));
+            $vObject = VObject\Reader::read($this->server->httpRequest->getBody());
         } catch (VObject\ParseException $e) {
             throw new DAV\Exception\BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
         }

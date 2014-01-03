@@ -239,7 +239,7 @@ class Client extends HTTP\Client {
             throw new Exception('HTTP error: ' . $response->getStatus());
         }
 
-        $result = $this->parseMultiStatus($response->getBody(true));
+        $result = $this->parseMultiStatus($response->getBodyAsString());
 
         // If depth was 0, we only return the top item
         if ($depth===0) {

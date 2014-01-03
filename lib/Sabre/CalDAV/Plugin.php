@@ -315,7 +315,7 @@ class Plugin extends DAV\ServerPlugin {
         //    throw new \Sabre\DAV\Exception\Forbidden('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
         //}
 
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $path = $request->getPath();
 
         $properties = array();

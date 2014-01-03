@@ -264,7 +264,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         $hR->setStatus(207);
         $hR->setHeader('Content-Type','application/xml; charset=utf-8');
 
-        $this->server->parsePropFindRequest($request->getBody($asString = true));
+        $this->server->parsePropFindRequest($request->getBodyAsString());
 
         $properties = [
             'href' => $request->getPath(),

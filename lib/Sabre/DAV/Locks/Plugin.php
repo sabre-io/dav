@@ -194,7 +194,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $existingLocks = $this->getLocks($uri);
 
-        if ($body = $request->getBody($asStrign = true)) {
+        if ($body = $request->getBodyAsString()) {
             // This is a new lock request
 
             $existingLock = null;

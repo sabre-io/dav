@@ -276,7 +276,7 @@ class SharingPlugin extends DAV\ServerPlugin {
             return;
         }
 
-        $requestBody = $request->getBody($asString = true);
+        $requestBody = $request->getBodyAsString();
 
         // If this request handler could not deal with this POST request, it
         // will return 'null' and other plugins get a chance to handle the

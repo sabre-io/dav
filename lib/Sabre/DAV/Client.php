@@ -391,7 +391,7 @@ class Client extends HTTP\Client {
 
         $response = $this->send(new HTTP\Request($method, $url, $headers, $body));
         return [
-            'body' => $response->getBody($asString = true),
+            'body' => $response->getBodyAsString(),
             'statusCode' => (int)$response->getStatus(),
             'headers' => array_change_key_case($response->getHeaders()),
         ];

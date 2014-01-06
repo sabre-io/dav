@@ -2,6 +2,16 @@
 
 namespace Sabre\CalDAV\Schedule;
 
+/**
+ * This class represents an ITipMessage.
+ *
+ * This object contains all the information about a scheduling operation. Who
+ * sent it, where it should go to, etc...
+ *
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class ITipMessage {
 
     /**

@@ -9,7 +9,7 @@ use Sabre\DAV;
  * The principal property represents a principal from RFC3744 (ACL).
  * The property can be used to specify a principal or pseudo principals.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -120,7 +120,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
                 break;
             case self::HREF :
                 $href = $node->ownerDocument->createElement($prefix . ':href');
-                $href->nodeValue = $server->getBaseUri() . $this->href;
+                $href->nodeValue = $server->getBaseUri() . DAV\URLUtil::encodePath($this->href);
                 $node->appendChild($href);
                 break;
 

@@ -39,7 +39,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -47,7 +47,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('400 Bad request', $server->httpResponse->status);
+        $this->assertEquals(400, $server->httpResponse->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
@@ -65,7 +65,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -73,7 +73,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('400 Bad request', $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
@@ -91,7 +91,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/principals',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody($xml);
 
         $server = $this->getServer();
@@ -99,7 +99,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals('200 OK', $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(200, $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);

@@ -9,7 +9,7 @@ use
 /**
  * The core plugin provides all the basic features for a WebDAV server.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH. All rights reserved.
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -312,7 +312,7 @@ class CorePlugin extends ServerPlugin {
         $path = $request->getPath();
 
         $requestedProperties = $this->server->parsePropFindRequest(
-            $request->getBody($asString = true)
+            $request->getBodyAsString()
         );
 
         $depth = $this->server->getHTTPDepth(1);
@@ -363,7 +363,7 @@ class CorePlugin extends ServerPlugin {
         $this->server->checkPreconditions();
 
         $newProperties = $this->server->parsePropPatchRequest(
-            $request->getBody($asString = true)
+            $request->getBodyAsString()
         );
 
         $result = $this->server->updateProperties($path, $newProperties);
@@ -418,7 +418,7 @@ class CorePlugin extends ServerPlugin {
      */
     public function httpPut(RequestInterface $request, ResponseInterface $response) {
 
-        $body = $request->getBody();
+        $body = $request->getBodyAsStream();
         $path = $request->getPath();
 
         // Intercepting Content-Range
@@ -501,20 +501,12 @@ class CorePlugin extends ServerPlugin {
             // If the node is a collection, we'll deny it
             if (!($node instanceof IFile)) throw new Exception\Conflict('PUT is not allowed on non-files.');
 
-            // It is possible for an event handler to modify the content of the
-            // body, before it gets written. If this is the case, $modified
-            // should be set to true.
-            //
-            // If $modified is true, we must not send back an etag.
-            $modified = false;
-            if (!$this->server->emit('beforeWriteContent',[$path, $node, &$body, &$modified])) return false;
-
-            $etag = $node->put($body);
-
-            $this->server->emit('afterWriteContent',[$path, $node]);
+            if (!$this->server->updateFile($path, $body, $etag)) {
+                return false;
+            }
 
             $response->setHeader('Content-Length','0');
-            if ($etag && !$modified) $response->setHeader('ETag',$etag);
+            if ($etag) $response->setHeader('ETag',$etag);
             $response->setStatus(204);
 
         } else {
@@ -550,7 +542,7 @@ class CorePlugin extends ServerPlugin {
      */
     public function httpMkcol(RequestInterface $request, ResponseInterface $response) {
 
-        $requestBody = $request->getBody($asString = true);
+        $requestBody = $request->getBodyAsString();
         $path = $request->getPath();
 
         if ($requestBody) {
@@ -703,7 +695,7 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $dom = XMLUtil::loadDOMDocument($body);
 
         $reportName = XMLUtil::toClarkNotation($dom->firstChild);

@@ -40,7 +40,7 @@ use
  * Note that specifying a start or end data implies that only events will be
  * returned. VTODO and VJOURNAL will be stripped.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -83,6 +83,8 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $node = $this->server->getProperties($path, [
             '{DAV:}resourcetype',
             '{DAV:}displayname',
+            '{DAV:}sync-token',
+            '{http://apple.com/ns/ical/}calendar-color',
         ]);
 
         if (!isset($node['{DAV:}resourcetype']) || !$node['{DAV:}resourcetype']->is('{' . Plugin::NS_CALDAV . '}calendar')) {
@@ -91,7 +93,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         // Marking the transactionType, for logging purposes.
         $this->server->transactionType = 'get-calendar-export';
 
-        $displayName = isset($node['{DAV:}displayname'])?$node['{DAV:}displayname']:dirname($path);
+        $properties = $node;
 
         $start = null;
         $end = null;
@@ -131,6 +133,26 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         if (!$format) {
             $format = 'text/calendar';
         }
+
+        $this->generateResponse($path, $start, $end, $expand, $format, $properties, $response);
+
+        // Returning false to break the event chain
+        return false;
+
+    }
+
+    /**
+     * This method is responsible for generating the actual, full response.
+     *
+     * @param string $path
+     * @param DateTime|null $start
+     * @param DateTime|null $end
+     * @param bool $expand
+     * @param string $format
+     * @param array $properties
+     * @param ResponseInterface $response
+     */
+    protected function generateResponse($path, $start, $end, $expand, $format, $properties, ResponseInterface $response) {
 
         $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
 
@@ -178,7 +200,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         unset($nodes);
 
         $mergedCalendar = $this->mergeObjects(
-            $displayName,
+            $properties,
             $blobs
         );
 
@@ -200,19 +222,16 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $response->setStatus(200);
         $response->setBody($mergedCalendar);
 
-        // Returning false to break the event chain
-        return false;
-
     }
 
     /**
      * Merges all calendar objects, and builds one big iCalendar blob.
      *
-     * @param string $displayName
+     * @param array $properties Some CalDAV properties
      * @param array $inputObjects
      * @return VObject\Component\VCalendar
      */
-    public function mergeObjects($displayName, array $inputObjects) {
+    public function mergeObjects(array $properties, array $inputObjects) {
 
         $calendar = new VObject\Component\VCalendar();
         $calendar->version = '2.0';
@@ -221,7 +240,12 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         } else {
             $calendar->prodid = '-//SabreDAV//SabreDAV//EN';
         }
-        $calendar->{'X-WR-CALNAME'} = $displayName;
+        if (isset($properties['{DAV:}displayname'])) {
+            $calendar->{'X-WR-CALNAME'} = $properties['{DAV:}displayname'];
+        }
+        if (isset($properties['{http://apple.com/ns/ical/}calendar-color'])) {
+            $calendar->{'X-APPLE-CALENDAR-COLOR'} = $properties['{http://apple.com/ns/ical/}calendar-color'];
+        }
 
         $collectedTimezones = [];
 

@@ -19,8 +19,7 @@ use
  * This class is supposed to provide a reasonably big framework to quickly get
  * a testing environment running.
  *
- * @package Sabre
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -196,7 +195,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function assertHTTPStatus($expectedStatus, HTTP\Request $req) {
 
         $resp = $this->request($req);
-        $this->assertEquals($resp->getStatus(), $resp->status,'Incorrect HTTP status received: ' . $resp->body);
+        $this->assertEquals((int)$expectedStatus, (int)$resp->status,'Incorrect HTTP status received: ' . $resp->body);
 
     }
 

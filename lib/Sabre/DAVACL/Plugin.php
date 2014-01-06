@@ -18,7 +18,7 @@ use
  * property, defined in RFC5397 and the {DAV:}expand-property report, as
  * defined in RFC3253.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -244,7 +244,7 @@ class Plugin extends DAV\ServerPlugin {
         $userName = $authPlugin->getCurrentUser();
         if (!$userName) return null;
 
-        return $this->defaultUsernamePath . '/' . $userName;
+        return $this->defaultUsernamePath . '/' .  $userName;
 
     }
 
@@ -658,13 +658,14 @@ class Plugin extends DAV\ServerPlugin {
         $this->server = $server;
         $server->on('beforeGetProperties',[$this,'beforeGetProperties'], 20);
 
-        $server->on('beforeMethod',    [$this,'beforeMethod'],20);
-        $server->on('beforeBind',      [$this,'beforeBind'],20);
-        $server->on('beforeUnbind',    [$this,'beforeUnbind'],20);
-        $server->on('updateProperties',[$this,'updateProperties']);
-        $server->on('beforeUnlock',    [$this,'beforeUnlock'],20);
-        $server->on('report',          [$this,'report']);
-        $server->on('method:ACL',      [$this,'httpAcl']);
+        $server->on('beforeMethod',        [$this,'beforeMethod'],20);
+        $server->on('beforeBind',          [$this,'beforeBind'],20);
+        $server->on('beforeUnbind',        [$this,'beforeUnbind'],20);
+        $server->on('updateProperties',    [$this,'updateProperties']);
+        $server->on('beforeUnlock',        [$this,'beforeUnlock'],20);
+        $server->on('report',              [$this,'report']);
+        $server->on('method:ACL',          [$this,'httpAcl']);
+        $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',
@@ -1032,7 +1033,7 @@ class Plugin extends DAV\ServerPlugin {
     public function httpAcl(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $dom = DAV\XMLUtil::loadDOMDocument($body);
 
         $newAcl =
@@ -1393,6 +1394,52 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         return array($searchProperties, array_keys(DAV\XMLUtil::parseProperties($dom->firstChild)), $applyToPrincipalCollectionSet);
+
+    }
+
+
+    /* }}} */
+    /* Browser plugin additions  {{{ */
+
+    /**
+     * This method is used to generate HTML output for the
+     * DAV\Browser\Plugin. This allows us to generate an interface users
+     * can use to create new calendars.
+     *
+     * @param DAV\INode $node
+     * @param string $output
+     * @return bool
+     */
+    public function htmlActionsPanel(DAV\INode $node, &$output) {
+
+        if (!$node instanceof IPrincipal)
+            return;
+
+        $properties['{DAV:}principal-URL'] = $node->getPrincipalUrl();
+        $properties['{DAV:}alternate-URI-set'] = $node->getAlternateUriSet();
+        $properties['{DAV:}group-member-set'] = $node->getGroupMemberSet();
+        $properties['{DAV:}group-membership'] = $node->getGroupMembership();
+
+        $output.= <<<HTML
+
+<tr>
+    <td colspan="2">
+        <h3>Principal properties</h3>
+    </td>
+</tr>
+HTML;
+
+        foreach($properties as $key=>$property) {
+
+            $output.="<tr><th colspan=\"2\">" . $key . "</th><td colspan=\"3\">";
+            $property = (array)$property;
+            foreach($property as $key=>$value) {
+                $property[$key] = $this->server->getBaseUri() . $value;
+            }
+            $output.=implode("<br />", $property);
+            $output.="</td></tr>";
+
+        }
 
     }
 

@@ -68,7 +68,7 @@ ics
 
         $this->server = new DAV\Server([$calendar]);
 
-        $request = HTTP\Request::createFromServerArray([
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/calendar',
         ]);
         $this->server->httpRequest = $request;
@@ -92,7 +92,7 @@ XML;
         $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
-        $this->assertEquals('200 OK', $this->server->httpResponse->status);
+        $this->assertEquals(200, $this->server->httpResponse->status);
         $this->assertEquals('text/calendar', $this->server->httpResponse->headers['Content-Type']);
         $this->assertTrue(strpos($this->server->httpResponse->body,'BEGIN:VFREEBUSY')!==false);
 
@@ -119,7 +119,7 @@ XML;
      */
     function testFreeBusyReportWrongNode() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_URI' => '/',
         ));
         $this->server->httpRequest = $request;

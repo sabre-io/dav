@@ -11,6 +11,8 @@
         <mkdir dir="build" />
         <echo>Running composer</echo>
         <exec command="composer create-project --no-dev sabre/dav build/SabreDAV ${sabredav.version}" checkreturn="false" passthru="1" />
+        <echo>Optimizing autoloader</echo>
+        <exec command="composer dump-autoload --working-dir=build/SabreDAV -o" checkreturn="false" passthru="1" />
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
     </target>
 
@@ -18,7 +20,7 @@
         <echo>Uploading to Google Code</echo>
         <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
         <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
-        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
+        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
     </target>
 
     <target name="clean" depends="init">
@@ -63,8 +65,6 @@
 
                     include_once 'lib/Sabre/DAV/Version.php';
                     $this->getProject()->setNewProperty('sabredav.version',\Sabre\DAV\Version::VERSION);
-                    $this->getProject()->setNewProperty('sabredav.stability',\Sabre\DAV\Version::STABILITY);
-                    $this->getProject()->setNewProperty('sabredav.ucstability',ucwords(Sabre\DAV\Version::STABILITY));
 
                 }
 

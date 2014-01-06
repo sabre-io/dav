@@ -17,7 +17,7 @@ use
  * This plugin provides functionality added by CalDAV (RFC 4791)
  * It implements new reports, and the MKCALENDAR method.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -249,7 +249,7 @@ class Plugin extends DAV\ServerPlugin {
         //    throw new \Sabre\DAV\Exception\Forbidden('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
         //}
 
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $path = $request->getPath();
 
         $properties = array();
@@ -813,10 +813,17 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\UnsupportedMediaType('This collection can only support iCalendar objects.');
         }
 
+        $sCCS = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
+
         // Get the Supported Components for the target calendar
         list($parentPath,$object) = URLUtil::splitPath($path);
-        $calendarProperties = $this->server->getProperties($parentPath,array('{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set'));
-        $supportedComponents = $calendarProperties['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue();
+        $calendarProperties = $this->server->getProperties($parentPath, [$sCCS]);
+
+        if (isset($calendarProperties[$sCCS])) {
+            $supportedComponents = $calendarProperties[$sCCS]->getValue();
+        } else {
+            $supportedComponents = ['VJOURNAL', 'VTODO', 'VEVENT'];
+        }
 
         $foundType = null;
         $foundUID = null;

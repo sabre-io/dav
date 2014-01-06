@@ -11,7 +11,7 @@ use Sabre\VObject;
  *
  * The CardDAV plugin adds CardDAV functionality to the WebDAV server
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -381,7 +381,10 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if (!isset($vobj->UID)) {
-            throw new DAV\Exception\BadRequest('Every vcard must have a UID.');
+            // No UID in vcards is invalid, but we'll just add it in anyway.
+            $vobj->add('UID', DAV\UUIDUtil::getUUID());
+            $data = $vobj->serialize();
+            $modified = true;
         }
 
     }

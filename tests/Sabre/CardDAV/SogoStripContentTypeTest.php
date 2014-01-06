@@ -30,7 +30,7 @@ class SogoStripContentType extends \Sabre\DAVServerTest {
     }
     function testStrip() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'HTTP_USER_AGENT' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ));
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf',array('{DAV:}getcontenttype'));

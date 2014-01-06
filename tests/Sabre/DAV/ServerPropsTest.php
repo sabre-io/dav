@@ -40,7 +40,7 @@ class ServerPropsTest extends AbstractServer {
             'HTTP_DEPTH'          => '0',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody($body);
 
         $this->server->httpRequest = ($request);
@@ -67,7 +67,7 @@ class ServerPropsTest extends AbstractServer {
 
         $this->assertTrue($hasFired);
 
-        $this->assertEquals('207 Multi-Status',$this->response->status);
+        $this->assertEquals(207, $this->response->status);
 
         $this->assertEquals(array(
                 'Content-Type' => 'application/xml; charset=utf-8',
@@ -316,7 +316,7 @@ class ServerPropsTest extends AbstractServer {
   <d:set><d:prop><s:someprop>somevalue</s:someprop></d:prop></d:set>
 </d:propertyupdate>';
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody($body);
 
         $this->server->httpRequest = ($request);
@@ -329,7 +329,7 @@ class ServerPropsTest extends AbstractServer {
             $this->response->headers
          );
 
-        $this->assertEquals('207 Multi-Status',$this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);
+        $this->assertEquals(207, $this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);

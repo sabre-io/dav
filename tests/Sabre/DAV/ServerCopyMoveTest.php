@@ -56,11 +56,11 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/test2.txt',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('204 No Content',$this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals(204, $this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
         $this->assertEquals(array(
                 'Content-Length' => '0',
             ),
@@ -79,11 +79,11 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/test.txt',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('403 Forbidden',$this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals(403, $this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test.txt'));
 
     }
@@ -96,11 +96,11 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/test.txt',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('403 Forbidden',$this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals(403, $this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test.txt'));
 
     }
@@ -113,7 +113,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/test2.txt',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -123,7 +123,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             $this->response->headers
          );
 
-        $this->assertEquals('204 No Content',$this->response->status);
+        $this->assertEquals(204, $this->response->status);
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/test.txt'),'The sourcefile test.txt should no longer exist at this point');
 
@@ -138,7 +138,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_OVERWRITE'   => 'F',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -148,7 +148,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             $this->response->headers
          );
 
-        $this->assertEquals('412 Precondition failed',$this->response->status);
+        $this->assertEquals(412, $this->response->status);
         $this->assertEquals('Test contents2',file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
 
 
@@ -163,7 +163,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_OVERWRITE'   => 'F',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -173,7 +173,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             $this->response->headers
          );
 
-        $this->assertEquals('409 Conflict',$this->response->status);
+        $this->assertEquals(409, $this->response->status);
 
     }
 
@@ -186,11 +186,11 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_OVERWRITE'   => 'SURE!',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('400 Bad request',$this->response->status);
+        $this->assertEquals(400, $this->response->status);
 
     }
 
@@ -202,11 +202,11 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/col2',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('201 Created',$this->response->status,'Full response: ' . $this->response->getBody(true));
+        $this->assertEquals(201, $this->response->status,'Full response: ' . $this->response->getBody(true));
 
         $this->assertEquals(array(
                 'Content-Length' => '0',
@@ -227,7 +227,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/test3.txt',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -237,7 +237,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             $this->response->headers
          );
 
-        $this->assertEquals('201 Created',$this->response->status);
+        $this->assertEquals(201, $this->response->status);
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/test3.txt'));
 
     }
@@ -250,11 +250,11 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'HTTP_DESTINATION' => '/col2',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('201 Created',$this->response->status,'Incorrect status received. Full response body: ' . $this->response->body);
+        $this->assertEquals(201, $this->response->status,'Incorrect status received. Full response body: ' . $this->response->body);
 
         $this->assertEquals(array(
             'Content-Length' => '0',

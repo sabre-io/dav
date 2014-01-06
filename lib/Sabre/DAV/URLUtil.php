@@ -12,12 +12,11 @@ use Sabre\HTTP;
  *
  * This file will be removed in a future version. 
  * 
- * @copyright Copyright (C) 2007-2013 fruux GmbH. All rights reserved.
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/) 
  * @deprecated Use Sabre\HTTP\URLUtil instead!
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class URLUtil extends HTTP\URLUtil {
-
 
 }

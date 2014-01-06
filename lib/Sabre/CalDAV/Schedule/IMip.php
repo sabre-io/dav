@@ -15,7 +15,7 @@ use Sabre\DAV;
  * If you want to customize the email that gets sent out, you can do so by
  * extending this class and overriding the sendMessage method.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -76,7 +76,7 @@ class IMip {
             $headers[] = 'From: ' . $this->senderEmail;
             $headers[] = 'Content-Type: text/calendar; method=' . (string)$vObject->method . '; charset=utf-8';
             if (DAV\Server::$exposeVersion) {
-                $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION . '-' . DAV\Version::STABILITY;
+                $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION;
             }
 
             $vcalBody = $vObject->serialize();

@@ -17,7 +17,7 @@ use
  * $patchPlugin = new \Sabre\DAV\PartialUpdate\Plugin();
  * $server->addPlugin($patchPlugin);
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -150,7 +150,7 @@ class Plugin extends DAV\ServerPlugin {
         if (!$this->server->emit('beforeWriteContent', [$path, $node, null]))
             return;
 
-        $body = $request->getBody();
+        $body = $request->getBodyAsStream();
         $etag = $node->putRange($body, $start-1);
 
         $this->server->emit('afterWriteContent', [$path, $node]);

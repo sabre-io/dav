@@ -28,7 +28,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
             'HTTP_OVERWRITE' => 'F',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
 
         $server->httpRequest = $request;
 
@@ -78,7 +78,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
             'HTTP_OVERWRITE' => 'F',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
 
         $response = new HTTP\ResponseMock();

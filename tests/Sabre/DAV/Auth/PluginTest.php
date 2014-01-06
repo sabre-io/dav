@@ -52,7 +52,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin(new Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/',
@@ -63,7 +63,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->exec();
 
-        $this->assertEquals('403 Forbidden', $fakeServer->httpResponse->status);
+        $this->assertEquals(403, $fakeServer->httpResponse->status);
 
     }
 

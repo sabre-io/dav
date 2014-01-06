@@ -47,7 +47,7 @@ END:VCALENDAR',
             new CalDAV\CalendarRootNode($principalBackend, $caldavBackend),
         );
 
-        $this->request = HTTP\Request::createFromServerArray([
+        $this->request = HTTP\Sapi::createFromServerArray([
             'CONTENT_TYPE' => 'text/calendar',
         ]);
         $this->response = new HTTP\ResponseMock();
@@ -76,7 +76,7 @@ END:VCALENDAR',
 
     function testWrongContentType() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/plain',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -90,7 +90,7 @@ END:VCALENDAR',
 
     function testNotFound() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/blabla',
@@ -104,7 +104,7 @@ END:VCALENDAR',
 
     function testNotOutbox() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/inbox',
@@ -121,7 +121,7 @@ END:VCALENDAR',
      */
     function testNoItipMethod() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -144,7 +144,7 @@ ICS;
      */
     function testNoVFreeBusy() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -168,7 +168,7 @@ ICS;
      */
     function testIncorrectOrganizer() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -193,7 +193,7 @@ ICS;
      */
     function testNoAttendees() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -218,7 +218,7 @@ ICS;
      */
     function testNoDTStart() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -241,7 +241,7 @@ ICS;
 
     function testSucceed() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -269,7 +269,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals('200 OK' , $this->response->status);
+        $this->assertEquals(200, $this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml',
         ), $this->response->headers);
@@ -294,7 +294,7 @@ ICS;
 
     function testNoPrivilege() {
 
-        $this->server->httpRequest = HTTP\Request::createFromServerArray(array(
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/calendars/user1/outbox',
@@ -318,7 +318,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals('200 OK' , $this->response->status);
+        $this->assertEquals(200, $this->response->status);
         $this->assertEquals([
             'Content-Type' => 'application/xml',
         ], $this->response->headers);

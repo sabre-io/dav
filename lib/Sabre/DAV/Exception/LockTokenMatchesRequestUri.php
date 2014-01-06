@@ -9,7 +9,7 @@ use Sabre\DAV;
  *
  * This exception is thrown by UNLOCK if a supplied lock-token is invalid
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

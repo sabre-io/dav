@@ -12,7 +12,7 @@ use Sabre\HTTP;
  *
  * NOTE: This class is experimental, it's api will likely change in the future.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -239,7 +239,7 @@ class Client extends HTTP\Client {
             throw new Exception('HTTP error: ' . $response->getStatus());
         }
 
-        $result = $this->parseMultiStatus($response->getBody(true));
+        $result = $this->parseMultiStatus($response->getBodyAsString());
 
         // If depth was 0, we only return the top item
         if ($depth===0) {
@@ -391,7 +391,7 @@ class Client extends HTTP\Client {
 
         $response = $this->send(new HTTP\Request($method, $url, $headers, $body));
         return [
-            'body' => $response->getBody($asString = true),
+            'body' => $response->getBodyAsString(),
             'statusCode' => (int)$response->getStatus(),
             'headers' => array_change_key_case($response->getHeaders()),
         ];

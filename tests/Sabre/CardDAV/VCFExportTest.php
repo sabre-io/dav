@@ -43,14 +43,14 @@ class VCFExportTest extends \Sabre\DAVServerTest {
 
     function testExport() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_URI' => '/addressbooks/user1/book1?export',
             'QUERY_STRING' => 'export',
             'REQUEST_METHOD' => 'GET',
         ));
 
         $response = $this->request($request);
-        $this->assertEquals('200 OK', $response->status, $response->body);
+        $this->assertEquals(200, $response->status, $response->body);
 
         $expected = "BEGIN:VCARD
 FN:Person1

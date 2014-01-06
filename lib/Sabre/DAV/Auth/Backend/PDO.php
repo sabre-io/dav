@@ -3,11 +3,9 @@
 namespace Sabre\DAV\Auth\Backend;
 
 /**
- * This is an authentication backend that uses a file to manage passwords.
+ * This is an authentication backend that uses a database to manage passwords.
  *
- * The backend file must conform to Apache's htdigest format
- *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -52,13 +50,9 @@ class PDO extends AbstractDigest {
      */
     public function getDigestHash($realm,$username) {
 
-        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM '.$this->tableName.' WHERE username = ?');
+        $stmt = $this->pdo->prepare('SELECT digesta1 FROM '.$this->tableName.' WHERE username = ?');
         $stmt->execute(array($username));
-        $result = $stmt->fetchAll();
-
-        if (!count($result)) return;
-
-        return $result[0]['digesta1'];
+        return $stmt->fetchColumn() ?: null;
 
     }
 

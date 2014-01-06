@@ -14,7 +14,7 @@ use
  * This backend is used to store calendar-data in a PDO database, such as
  * sqlite or MySQL
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -64,6 +64,13 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @var string
      */
     protected $schedulingObjectTableName;
+    
+    /**
+     * The table name that will be used for calendar subscriptions.
+     *
+     * @var string
+     */
+    protected $calendarSubscriptionsTableName;
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
@@ -104,15 +111,17 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarObjectTableName
      * @param string $calendarChangesTable
      * @param string $schedulingObjectTable
+     * @param string $calendarSubscriptionsTableName
      * @todo we have to do something about this signature. It's bullshit.
      */
-    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $schedulingObjectTableName = "schedulingobjects") {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = "calendarsubscriptions", $schedulingObjectTableName = "schedulingobjects") {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
         $this->calendarObjectTableName = $calendarObjectTableName;
         $this->calendarChangesTableName = $calendarChangesTableName;
         $this->schedulingObjectTableName = $schedulingObjectTableName;
+        $this->calendarSubscriptionsTableName = $calendarSubscriptionsTableName;
 
     }
 
@@ -846,7 +855,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     public function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
 
         // Current synctoken
-        $stmt = $this->pdo->prepare('SELECT synctoken FROM calendars WHERE id = ?');
+        $stmt = $this->pdo->prepare('SELECT synctoken FROM ' .$this->calendarTableName . ' WHERE id = ?');
         $stmt->execute([ $calendarId ]);
         $currentToken = $stmt->fetchColumn(0);
 
@@ -895,7 +904,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             }
         } else {
             // No synctoken supplied, this is the initial sync.
-            $query = "SELECT uri FROM calendarobjects WHERE calendarid = ?";
+            $query = "SELECT uri FROM " . $this->calendarObjectTableName . " WHERE calendarid = ?";
             $stmt = $this->pdo->prepare($query);
             $stmt->execute([$calendarId]);
 
@@ -971,7 +980,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
-        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM calendarsubscriptions WHERE principaluri = ? ORDER BY calendarorder ASC");
+        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM " . $this->calendarSubscriptionsTableName . " WHERE principaluri = ? ORDER BY calendarorder ASC");
         $stmt->execute([$principalUri]);
 
         $subscriptions = [];
@@ -1040,7 +1049,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             }
         }
 
-        $stmt = $this->pdo->prepare("INSERT INTO calendarsubscriptions (".implode(', ', $fieldNames).") VALUES (".implode(', ',array_keys($values)).")");
+        $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarSubscriptionsTableName . " (".implode(', ', $fieldNames).") VALUES (".implode(', ',array_keys($values)).")");
         $stmt->execute($values);
 
         return $this->pdo->lastInsertId();
@@ -1138,7 +1147,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             $valuesSql[] = $fieldName . ' = ?';
         }
 
-        $stmt = $this->pdo->prepare("UPDATE calendarsubscriptions SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE " . $this->calendarSubscriptionsTableName . " SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
         $newValues['lastmodified'] = time();
         $newValues['id'] = $subscriptionId;
         $stmt->execute(array_values($newValues));
@@ -1155,7 +1164,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      */
     public function deleteSubscription($subscriptionId) {
 
-        $stmt = $this->pdo->prepare('DELETE FROM calendarsubscriptions WHERE id = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarSubscriptionsTableName . ' WHERE id = ?');
         $stmt->execute([$subscriptionId]);
 
     }

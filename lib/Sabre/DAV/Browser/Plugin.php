@@ -329,6 +329,9 @@ class Plugin extends DAV\ServerPlugin {
                         case '{http://calendarserver.org/ns/}shared-owner' :
                             $type[$k] = 'Shared';
                             break;
+                        case '{http://calendarserver.org/ns/}subscribed' :
+                            $type[$k] = 'Subscription';
+                            break;
                     }
 
                 }

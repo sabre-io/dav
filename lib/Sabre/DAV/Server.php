@@ -209,7 +209,7 @@ class Server extends EventEmitter {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
         $this->httpResponse = new HTTP\Response();
-        $this->httpRequest = HTTP\Request::createFromPHPRequest();
+        $this->httpRequest = HTTP\Sapi::getRequest();
         $this->addPlugin(new CorePlugin());
 
     }
@@ -299,7 +299,7 @@ class Server extends EventEmitter {
             $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->addHeaders($headers);
             $this->httpResponse->setBody($DOM->saveXML());
-            $this->httpResponse->send();
+            HTTP\Sapi::sendResponse($this->httpResponse);
 
         }
 
@@ -449,7 +449,7 @@ class Server extends EventEmitter {
         if (!$this->emit('afterMethod:' . $method,[$request, $response])) return;
         if (!$this->emit('afterMethod', [$request, $response])) return;
 
-        $response->send();
+        HTTP\Sapi::sendResponse($response);
 
     }
 

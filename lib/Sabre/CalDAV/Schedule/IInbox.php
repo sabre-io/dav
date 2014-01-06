@@ -10,6 +10,6 @@ namespace Sabre\CalDAV\Schedule;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface IInbox extends \Sabre\DAV\ICollection, \Sabre\DAVACL\IACL {
+interface IInbox extends \Sabre\CalDAV\ICalendarObjectContainer, \Sabre\DAVACL\IACL {
 
 }

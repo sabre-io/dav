@@ -6,7 +6,8 @@ use
     Sabre\DAV,
     Sabre\CalDAV,
     Sabre\DAVACL,
-    Sabre\CalDAV\Backend;
+    Sabre\CalDAV\Backend,
+    Sabre\VObject;
 
 /**
  * The CalDAV scheduling inbox 
@@ -162,6 +163,39 @@ class Inbox extends DAV\Collection implements IInbox {
     public function getSupportedPrivilegeSet() {
 
         return null;
+
+    }
+
+    /**
+     * Performs a calendar-query on the contents of this calendar.
+     *
+     * The calendar-query is defined in RFC4791 : CalDAV. Using the
+     * calendar-query it is possible for a client to request a specific set of
+     * object, based on contents of iCalendar properties, date-ranges and
+     * iCalendar component types (VTODO, VEVENT).
+     *
+     * This method should just return a list of (relative) urls that match this
+     * query.
+     *
+     * The list of filters are specified as an array. The exact array is
+     * documented by \Sabre\CalDAV\CalendarQueryParser.
+     *
+     * @param array $filters
+     * @return array
+     */
+    public function calendarQuery(array $filters) {
+
+        $result = [];
+        $validator = new CalDAV\CalendarQueryValidator();
+
+        $objects = $this->getChildren();
+        foreach($objects as $object) {
+            $vObject = VObject\Reader::read($object['calendardata']);
+            if ($validator->validate($vObject, $filters)) {
+                $result[] = $object['uri'];
+            }
+        }
+        return $result;
 
     }
 

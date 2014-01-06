@@ -132,7 +132,7 @@ class Plugin extends DAV\ServerPlugin {
         $node = $this->server->tree->getNodeForPath($uri);
 
         $reports = array();
-        if ($node instanceof ICalendar || $node instanceof ICalendarObject) {
+        if ($node instanceof ICalendarObjectContainer || $node instanceof ICalendarObject) {
             $reports[] = '{' . self::NS_CALDAV . '}calendar-multiget';
             $reports[] = '{' . self::NS_CALDAV . '}calendar-query';
         }
@@ -555,7 +555,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // If we're dealing with a calendar, the calendar itself is responsible
         // for the calendar-query.
-        if ($node instanceof ICalendar && $depth = 1) {
+        if ($node instanceof ICalendarObjectContainer && $depth = 1) {
 
             $nodePaths = $node->calendarQuery($parser->filters);
 

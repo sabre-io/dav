@@ -15,25 +15,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface ICalendar extends DAV\ICollection, DAVACL\IACL {
+interface ICalendar extends ICalendarObjectContainer, DAVACL\IACL {
 
-    /**
-     * Performs a calendar-query on the contents of this calendar.
-     *
-     * The calendar-query is defined in RFC4791 : CalDAV. Using the
-     * calendar-query it is possible for a client to request a specific set of
-     * object, based on contents of iCalendar properties, date-ranges and
-     * iCalendar component types (VTODO, VEVENT).
-     *
-     * This method should just return a list of (relative) urls that match this
-     * query.
-     *
-     * The list of filters are specified as an array. The exact array is
-     * documented by \Sabre\CalDAV\CalendarQueryParser.
-     *
-     * @param array $filters
-     * @return array
-     */
-    public function calendarQuery(array $filters);
 
 }

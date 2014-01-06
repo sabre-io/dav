@@ -463,7 +463,9 @@ class Plugin extends ServerPlugin {
     public function deliver(ITipMessage $iTipMessage) {
 
         $iTipMessage->scheduleStatus =
-            $this->iMipMessage($iTipMessage->sender, [$iTipMessage->recipient], $iTipMessage->message, '');
+            $this->iMIPMessage($iTipMessage->sender, [$iTipMessage->recipient], $iTipMessage->message, '');
+
+        file_put_contents('/tmp/schedulelog', print_r($iTipMessage, true), FILE_APPEND);
 
     }
 

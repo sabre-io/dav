@@ -60,6 +60,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
 
         $fakeServer->httpRequest = $request;
+        $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->exec();
 

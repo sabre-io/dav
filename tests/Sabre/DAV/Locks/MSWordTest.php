@@ -25,6 +25,7 @@ class MSWordTest extends \PHPUnit_Framework_TestCase {
 
         $server->httpRequest = $this->getLockRequest();
         $server->httpResponse = $response1;
+        $server->sapi = new HTTP\SapiMock();
         $server->exec();
 
         $this->assertEquals(201, $server->httpResponse->status);

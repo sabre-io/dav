@@ -191,6 +191,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
@@ -244,6 +245,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -279,6 +281,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -314,6 +317,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -353,6 +357,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -388,6 +393,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -427,6 +433,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -464,6 +471,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
@@ -500,6 +508,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 

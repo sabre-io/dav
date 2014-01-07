@@ -4,6 +4,7 @@ namespace Sabre\CardDAV;
 
 use Sabre\DAV;
 use Sabre\DAVACL;
+use Sabre\HTTP;
 
 abstract class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
 
@@ -33,6 +34,7 @@ abstract class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
         $this->plugin = new Plugin();
         $this->plugin->directories = array('directory');
         $this->server = new DAV\Server($tree);
+        $this->server->sapi = new HTTP\SapiMock();
         $this->server->addPlugin($this->plugin);
         $this->server->debugExceptions = true;
 

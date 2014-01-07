@@ -67,6 +67,13 @@ class Server extends EventEmitter {
     public $httpRequest;
 
     /**
+     * PHP HTTP Sapi
+     *
+     * @var Sabre\HTTP\Sapi
+     */
+    public $sapi;
+
+    /**
      * The list of plugins
      *
      * @var array
@@ -208,8 +215,10 @@ class Server extends EventEmitter {
         } else {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
+
+        $this->sapi = new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
-        $this->httpRequest = HTTP\Sapi::getRequest();
+        $this->httpRequest = $this->sapi->getRequest();
         $this->addPlugin(new CorePlugin());
 
     }
@@ -299,7 +308,7 @@ class Server extends EventEmitter {
             $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->addHeaders($headers);
             $this->httpResponse->setBody($DOM->saveXML());
-            HTTP\Sapi::sendResponse($this->httpResponse);
+            $this->sapi->sendResponse($this->httpResponse);
 
         }
 
@@ -449,7 +458,7 @@ class Server extends EventEmitter {
         if (!$this->emit('afterMethod:' . $method,[$request, $response])) return;
         if (!$this->emit('afterMethod', [$request, $response])) return;
 
-        HTTP\Sapi::sendResponse($response);
+        $this->sapi->sendResponse($response);
 
     }
 

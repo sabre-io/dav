@@ -57,7 +57,12 @@ $server->addPlugin($caldavPlugin);
 
 /* Calendar subscription support */
 $server->addPlugin(
-    new Sabre\CalDAV\Subscription\Plugin()
+    new Sabre\CalDAV\Subscriptions\Plugin()
+);
+
+/* Calendar scheduling support */
+$server->addPlugin(
+    new Sabre\CalDAV\Schedule\Plugin()
 );
 
 

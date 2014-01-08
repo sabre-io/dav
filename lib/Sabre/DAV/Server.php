@@ -81,13 +81,6 @@ class Server extends EventEmitter {
     protected $plugins = [];
 
     /**
-     * This array contains a list of callbacks we should call when certain events are triggered
-     *
-     * @var array
-     */
-    protected $eventSubscriptions = [];
-
-    /**
      * This property will be filled with a unique string that describes the
      * transaction. This is useful for performance measuring and logging
      * purposes.

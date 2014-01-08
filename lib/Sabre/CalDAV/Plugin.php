@@ -644,7 +644,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // If we're dealing with a calendar, the calendar itself is responsible
         // for the calendar-query.
-        if ($node instanceof ICalendar && $depth = 1) {
+        if ($node instanceof ICalendar && $depth == 1) {
 
             $nodePaths = $node->calendarQuery($parser->filters);
 

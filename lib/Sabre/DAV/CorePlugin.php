@@ -316,8 +316,6 @@ class CorePlugin extends ServerPlugin {
         );
 
         $depth = $this->server->getHTTPDepth(1);
-        // The only two options for the depth of a propfind is 0 or 1
-        if ($depth!=0) $depth = 1;
 
         $newProperties = $this->server->getPropertiesForPath($path,$requestedProperties,$depth);
 

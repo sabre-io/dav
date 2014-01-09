@@ -73,6 +73,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $objectTree = new DAV\ObjectTree($root);
         $this->server = new DAV\Server($objectTree);
+        $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');
         $this->plugin = new Plugin();

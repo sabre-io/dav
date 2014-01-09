@@ -31,6 +31,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->server = new DAV\Server($tree);
+        $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
 
         $plugin = new Plugin();

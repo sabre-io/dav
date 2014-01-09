@@ -29,6 +29,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
+        $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->debugExceptions = true;
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin();

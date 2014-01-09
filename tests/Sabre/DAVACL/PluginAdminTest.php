@@ -21,6 +21,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
+        $fakeServer->sapi = new HTTP\SapiMock();
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
@@ -56,6 +57,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
+        $fakeServer->sapi = new HTTP\SapiMock();
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();

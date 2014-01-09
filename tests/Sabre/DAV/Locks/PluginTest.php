@@ -933,22 +933,21 @@ class PluginTest extends DAV\AbstractServer {
 
     }
 
-
-    function testGetTimeoutHeaderNotSet() {
+    function testGetTimeoutHeaderTwoItems() {
 
         $request = HTTP\Sapi::createFromServerArray(array(
+            'HTTP_TIMEOUT' => 'second-5, infinite',
         ));
 
         $this->server->httpRequest = $request;
-        $this->assertEquals(0, $this->locksPlugin->getTimeoutHeader());
+        $this->assertEquals(5, $this->locksPlugin->getTimeoutHeader());
 
     }
-
 
     function testGetTimeoutHeaderInfinite() {
 
         $request = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_TIMEOUT' => 'infinite',
+            'HTTP_TIMEOUT' => 'infinite, second-5',
         ));
 
         $this->server->httpRequest = $request;

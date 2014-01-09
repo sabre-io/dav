@@ -165,6 +165,8 @@ class Server extends EventEmitter {
         'Sabre\\DAV\\ICollection' => '{DAV:}collection',
     ];
 
+	public $enablePropfindDepthInfinity = false;
+
     /**
      * If this setting is turned off, SabreDAV's version number will be hidden
      * from various places.
@@ -871,7 +873,9 @@ class Server extends EventEmitter {
      */
     public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
-        $path = rtrim($path,'/');
+	    if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
+
+	    $path = rtrim($path,'/');
 
         // This event allows people to intercept these requests early on in the
         // process.

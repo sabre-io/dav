@@ -1,7 +1,9 @@
-1.9.0-alpha2 (2013-??-??)
+1.9.0-alpha2 (2014-??-??)
 	* Added: Browser can now inspect any node, if ?sabreaction=browser is
 	  appended.
 	* Fixed: Issue #178. Support for multiple items in the Timeout header.
+	* Fixed: Issue #382. Stricter checking if calendar-query is allowed to
+	  run.
 
 1.9.0-alpha1 (2013-11-07)
 	* The zip release ships with sabre/vobject 3.1.3, sabre/http 2.0.0alpha5,

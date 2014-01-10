@@ -873,6 +873,7 @@ class Server extends EventEmitter {
      */
     public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
+	    // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
 	    if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
 	    $path = rtrim($path,'/');

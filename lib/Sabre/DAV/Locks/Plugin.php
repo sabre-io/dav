@@ -17,7 +17,7 @@ use
  * $lockPlugin = new Sabre\DAV\Locks\Plugin($lockBackend);
  * $server->addPlugin($lockPlugin);
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -194,7 +194,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $existingLocks = $this->getLocks($uri);
 
-        if ($body = $request->getBody($asStrign = true)) {
+        if ($body = $request->getBodyAsString()) {
             // This is a new lock request
 
             $existingLock = null;
@@ -378,7 +378,7 @@ class Plugin extends DAV\ServerPlugin {
         if ($header) {
 
             if (stripos($header,'second-')===0) $header = (int)(substr($header,7));
-            else if (strtolower($header)=='infinite') $header = LockInfo::TIMEOUT_INFINITE;
+            else if (stripos($header,'infinite')===0) $header = LockInfo::TIMEOUT_INFINITE;
             else throw new DAV\Exception\BadRequest('Invalid HTTP timeout header');
 
         } else {

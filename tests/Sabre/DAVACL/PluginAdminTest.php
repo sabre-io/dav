@@ -21,12 +21,13 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
+        $fakeServer->sapi = new HTTP\SapiMock();
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'OPTIONS',
             'HTTP_DEPTH' => 1,
             'REQUEST_URI' => '/adminonly',
@@ -39,7 +40,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer->exec();
 
-        $this->assertEquals('403 Forbidden', $response->status);
+        $this->assertEquals(403, $response->status);
 
     }
 
@@ -56,6 +57,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
 
         $fakeServer = new DAV\Server($tree);
+        $fakeServer->sapi = new HTTP\SapiMock();
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
@@ -64,7 +66,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         );
         $fakeServer->addPlugin($plugin);
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'OPTIONS',
             'HTTP_DEPTH' => 1,
             'REQUEST_URI' => '/adminonly',
@@ -77,7 +79,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer->exec();
 
-        $this->assertEquals('200 OK', $response->status);
+        $this->assertEquals(200, $response->status);
 
     }
 }

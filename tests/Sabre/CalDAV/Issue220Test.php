@@ -7,8 +7,7 @@ use Sabre\HTTP;
 /**
  * This unittest is created to check for an endless loop in CalendarQueryValidator
  *
- *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -66,7 +65,7 @@ END:VCALENDAR
 
     function testIssue220() {
 
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',
@@ -95,6 +94,6 @@ END:VCALENDAR
         $this->assertFalse(strpos($response->body, '<s:exception>PHPUnit_Framework_Error_Warning</s:exception>'), 'Error Warning occurred: ' . $response->body);
         $this->assertFalse(strpos($response->body, 'Invalid argument supplied for foreach()'), 'Invalid argument supplied for foreach(): ' . $response->body);
 
-        $this->assertEquals('207 Multi-Status', $response->status);
+        $this->assertEquals(207, $response->status);
     }
 }

@@ -11,7 +11,7 @@ use Sabre\VObject;
  * Hopefully, by the time I'm done with this, I've both found the problem, and
  * fixed it :)
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -56,7 +56,7 @@ END:VCALENDAR
 
     function testExpand() {
 
-        $request = HTTP\Request::createFromServerArray([
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
             'REQUEST_URI' => '/calendars/user1/calendar1',

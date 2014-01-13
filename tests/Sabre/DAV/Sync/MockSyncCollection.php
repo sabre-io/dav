@@ -10,7 +10,7 @@ use Sabre\DAV;
  * This object behaves the same as SimpleCollection. Call addChange to update
  * the 'changelog' that this class uses for the collection.
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) 2007-2014 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

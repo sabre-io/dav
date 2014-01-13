@@ -11,7 +11,8 @@ require_once 'Sabre/DAV/Auth/Backend/Mock.php';
 
 use
     Sabre\HTTP\Request,
-    Sabre\HTTP\Response;
+    Sabre\HTTP\Response,
+    Sabre\HTTP\Sapi;
 
 /**
  * This class may be used as a basis for other webdav-related unittests.
@@ -19,8 +20,7 @@ use
  * This class is supposed to provide a reasonably big framework to quickly get
  * a testing environment running.
  *
- * @package Sabre
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -84,6 +84,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         $this->setUpTree();
 
         $this->server = new DAV\Server($this->tree);
+        $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
 
         if ($this->setupCalDAV) {

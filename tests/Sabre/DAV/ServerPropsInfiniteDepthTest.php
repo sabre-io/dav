@@ -3,10 +3,9 @@
 namespace Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
-class ServerPropsTest extends AbstractServer {
+class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     protected function getRootNode() {
 
@@ -20,8 +19,10 @@ class ServerPropsTest extends AbstractServer {
         parent::setUp();
         file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
         mkdir(SABRE_TEMPDIR . '/col');
-        file_put_contents(SABRE_TEMPDIR . 'col/test.txt', 'Test contents');
+        mkdir(SABRE_TEMPDIR . '/col/col');
+        file_put_contents(SABRE_TEMPDIR . 'col/col/test.txt', 'Test contents');
         $this->server->addPlugin(new Locks\Plugin(new Locks\Backend\File(SABRE_TEMPDIR . '/.locksdb')));
+        $this->server->enablePropfindDepthInfinity = true;
 
     }
 
@@ -37,7 +38,7 @@ class ServerPropsTest extends AbstractServer {
         $serverVars = array(
             'REQUEST_URI'    => '/',
             'REQUEST_METHOD' => 'PROPFIND',
-            'HTTP_DEPTH'          => '0',
+            'HTTP_DEPTH'          => 'infinity',
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
@@ -59,7 +60,7 @@ class ServerPropsTest extends AbstractServer {
             $hasFired = true;
             $self->assertEquals('', $path);
             $self->assertEquals([], $properties);
-            $self->assertEquals(0, $depth);
+            $self->assertEquals(-1, $depth);
 
         });
 
@@ -85,7 +86,8 @@ class ServerPropsTest extends AbstractServer {
         $this->assertEquals('/',(string)$data,'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
-        $this->assertEquals(1,count($data));
+        // 8 resources are to be returned: /, col, col/col, col/col/test.txt, dir, dir/child.txt, test.txt and test2.txt
+        $this->assertEquals(8,count($data));
 
     }
 
@@ -105,22 +107,22 @@ class ServerPropsTest extends AbstractServer {
         $xml->registerXPathNamespace('d','urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry');
-        $this->assertEquals(2,count($data),'We expected two \'d:lockentry\' tags');
+        $this->assertEquals(16,count($data),'We expected sixteen \'d:lockentry\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope');
-        $this->assertEquals(2,count($data),'We expected two \'d:lockscope\' tags');
+        $this->assertEquals(16,count($data),'We expected sixteen \'d:lockscope\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype');
-        $this->assertEquals(2,count($data),'We expected two \'d:locktype\' tags');
+        $this->assertEquals(16,count($data),'We expected sixteen \'d:locktype\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:shared');
-        $this->assertEquals(1,count($data),'We expected a \'d:shared\' tag');
+        $this->assertEquals(8,count($data),'We expected eight \'d:shared\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:exclusive');
-        $this->assertEquals(1,count($data),'We expected a \'d:exclusive\' tag');
+        $this->assertEquals(8,count($data),'We expected eight \'d:exclusive\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype/d:write');
-        $this->assertEquals(2,count($data),'We expected two \'d:write\' tags');
+        $this->assertEquals(16,count($data),'We expected sixteen \'d:write\' tags');
     }
 
     function testLockDiscovery() {
@@ -139,7 +141,7 @@ class ServerPropsTest extends AbstractServer {
         $xml->registerXPathNamespace('d','urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:lockdiscovery');
-        $this->assertEquals(1,count($data),'We expected a \'d:lockdiscovery\' tag');
+        $this->assertEquals(8,count($data),'We expected eight \'d:lockdiscovery\' tags');
 
     }
 
@@ -169,7 +171,7 @@ class ServerPropsTest extends AbstractServer {
         }
 
         $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(1,count($val),$body);
+        $this->assertEquals(8,count($val),$body);
         $this->assertEquals('HTTP/1.1 404 Not Found',(string)$val[0]);
 
     }
@@ -241,7 +243,7 @@ class ServerPropsTest extends AbstractServer {
      */
     public function testUpdatePropertiesFail1() {
 
-        $dir = new PropTestDirMock('updatepropsfalse');
+        $dir = new PropInfiniteDepthTestDirMock('updatepropsfalse');
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -264,7 +266,7 @@ class ServerPropsTest extends AbstractServer {
      */
     public function testUpdatePropertiesFail2() {
 
-        $dir = new PropTestDirMock('updatepropsarray');
+        $dir = new PropInfiniteDepthTestDirMock('updatepropsarray');
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -288,7 +290,7 @@ class ServerPropsTest extends AbstractServer {
      */
     public function testUpdatePropertiesFail3() {
 
-        $dir = new PropTestDirMock('updatepropsobj');
+        $dir = new PropInfiniteDepthTestDirMock('updatepropsobj');
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -371,14 +373,14 @@ class ServerPropsTest extends AbstractServer {
 
         $xpath='//bla:someprop';
         $result = $xml->xpath($xpath);
-        $this->assertEquals(1,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
+        $this->assertEquals(8,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
         $this->assertEquals('somevalue',(string)$result[0],'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
 
     }
 
 }
 
-class PropTestDirMock extends SimpleCollection implements IProperties {
+class PropInfiniteDepthTestDirMock extends SimpleCollection implements IProperties {
 
     public $type;
 

@@ -12,7 +12,7 @@ use
 /**
  * Main DAV server class
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -67,18 +67,18 @@ class Server extends EventEmitter {
     public $httpRequest;
 
     /**
+     * PHP HTTP Sapi
+     *
+     * @var Sabre\HTTP\Sapi
+     */
+    public $sapi;
+
+    /**
      * The list of plugins
      *
      * @var array
      */
     protected $plugins = [];
-
-    /**
-     * This array contains a list of callbacks we should call when certain events are triggered
-     *
-     * @var array
-     */
-    protected $eventSubscriptions = [];
 
     /**
      * This property will be filled with a unique string that describes the
@@ -149,7 +149,7 @@ class Server extends EventEmitter {
      * This property allows you to automatically add the 'resourcetype' value
      * based on a node's classname or interface.
      *
-     * The preset ensures that {DAV:}collection is automaticlly added for nodes
+     * The preset ensures that {DAV:}collection is automatically added for nodes
      * implementing Sabre\DAV\ICollection.
      *
      * @var array
@@ -157,6 +157,13 @@ class Server extends EventEmitter {
     public $resourceTypeMapping = [
         'Sabre\\DAV\\ICollection' => '{DAV:}collection',
     ];
+
+    /**
+     * This property allows the usage of depth INFINITY.
+     *
+     * @var bool
+     */
+    public $enablePropfindDepthInfinity = false;
 
     /**
      * If this setting is turned off, SabreDAV's version number will be hidden
@@ -208,8 +215,10 @@ class Server extends EventEmitter {
         } else {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
+
+        $this->sapi = new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
-        $this->httpRequest = HTTP\Request::createFromPHPRequest();
+        $this->httpRequest = $this->sapi->getRequest();
         $this->addPlugin(new CorePlugin());
 
     }
@@ -299,7 +308,7 @@ class Server extends EventEmitter {
             $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->addHeaders($headers);
             $this->httpResponse->setBody($DOM->saveXML());
-            $this->httpResponse->send();
+            $this->sapi->sendResponse($this->httpResponse);
 
         }
 
@@ -449,7 +458,7 @@ class Server extends EventEmitter {
         if (!$this->emit('afterMethod:' . $method,[$request, $response])) return;
         if (!$this->emit('afterMethod', [$request, $response])) return;
 
-        $response->send();
+        $this->sapi->sendResponse($response);
 
     }
 
@@ -836,6 +845,17 @@ class Server extends EventEmitter {
     }
 
     /**
+     * Small helper to support PROPFIND with DEPTH_INFINITY.
+     */
+    private function addPathNodesRecursively(&$nodes, $path) {
+        foreach($this->tree->getChildren($path) as $childNode) {
+            $nodes[$path . '/' . $childNode->getName()] = $childNode;
+            if ($childNode instanceof ICollection)
+                $this->addPathNodesRecursively($nodes, $path . '/' . $childNode->getName());
+        }
+    }
+
+    /**
      * Returns a list of properties for a given path
      *
      * The path that should be supplied should have the baseUrl stripped out
@@ -851,7 +871,8 @@ class Server extends EventEmitter {
      */
     public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
-        if ($depth!=0) $depth = 1;
+        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
+        if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
         $path = rtrim($path,'/');
 
@@ -871,7 +892,10 @@ class Server extends EventEmitter {
         if ($depth==1 && $parentNode instanceof ICollection) {
             foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
+        } else if ($depth == self::DEPTH_INFINITY && $parentNode instanceof ICollection) {
+            $this->addPathNodesRecursively($nodes, $path);
         }
+
 
         foreach($nodes as $myPath=>$node) {
 

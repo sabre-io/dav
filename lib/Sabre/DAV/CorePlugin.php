@@ -9,7 +9,7 @@ use
 /**
  * The core plugin provides all the basic features for a WebDAV server.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH. All rights reserved.
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -312,12 +312,12 @@ class CorePlugin extends ServerPlugin {
         $path = $request->getPath();
 
         $requestedProperties = $this->server->parsePropFindRequest(
-            $request->getBody($asString = true)
+            $request->getBodyAsString()
         );
 
         $depth = $this->server->getHTTPDepth(1);
-        // The only two options for the depth of a propfind is 0 or 1
-        if ($depth!=0) $depth = 1;
+        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
+        if (!$this->server->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
         $newProperties = $this->server->getPropertiesForPath($path,$requestedProperties,$depth);
 
@@ -363,7 +363,7 @@ class CorePlugin extends ServerPlugin {
         $this->server->checkPreconditions();
 
         $newProperties = $this->server->parsePropPatchRequest(
-            $request->getBody($asString = true)
+            $request->getBodyAsString()
         );
 
         $result = $this->server->updateProperties($path, $newProperties);
@@ -418,7 +418,7 @@ class CorePlugin extends ServerPlugin {
      */
     public function httpPut(RequestInterface $request, ResponseInterface $response) {
 
-        $body = $request->getBody();
+        $body = $request->getBodyAsStream();
         $path = $request->getPath();
 
         // Intercepting Content-Range
@@ -542,7 +542,7 @@ class CorePlugin extends ServerPlugin {
      */
     public function httpMkcol(RequestInterface $request, ResponseInterface $response) {
 
-        $requestBody = $request->getBody($asString = true);
+        $requestBody = $request->getBodyAsString();
         $path = $request->getPath();
 
         if ($requestBody) {
@@ -695,7 +695,7 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $body = $request->getBody($asString = true);
+        $body = $request->getBodyAsString();
         $dom = XMLUtil::loadDOMDocument($body);
 
         $reportName = XMLUtil::toClarkNotation($dom->firstChild);

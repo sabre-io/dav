@@ -17,13 +17,13 @@ class ServerFinderBlockTest extends AbstractServer{
             'HTTP_X_EXPECTED_ENTITY_LENGTH' => '20',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('Testing finder');
         $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('201 Created',$this->response->status);
+        $this->assertEquals(201, $this->response->status);
         $this->assertEquals('0', $this->response->headers['Content-Length']);
 
         $this->assertEquals('Testing finder',file_get_contents(SABRE_TEMPDIR . '/testput.txt'));
@@ -38,12 +38,12 @@ class ServerFinderBlockTest extends AbstractServer{
             'HTTP_X_EXPECTED_ENTITY_LENGTH' => '20',
         );
 
-        $request = HTTP\Request::createFromServerArray($serverVars);
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('403 Forbidden',$this->response->status);
+        $this->assertEquals(403, $this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);

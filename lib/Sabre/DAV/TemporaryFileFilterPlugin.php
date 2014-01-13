@@ -26,7 +26,7 @@ use
  * Additional patterns can be added, by adding on to the
  * temporaryFilePatterns property.
  *
- * @copyright Copyright (C) 2007-2013 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
@@ -264,7 +264,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         $hR->setStatus(207);
         $hR->setHeader('Content-Type','application/xml; charset=utf-8');
 
-        $this->server->parsePropFindRequest($request->getBody($asString = true));
+        $this->server->parsePropFindRequest($request->getBodyAsString());
 
         $properties = [
             'href' => $request->getPath(),

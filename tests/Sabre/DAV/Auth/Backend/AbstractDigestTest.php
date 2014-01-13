@@ -33,7 +33,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $server->httpResponse = $response;
 
         $header = 'username=null, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_DIGEST' => $header,
         ));
         $server->httpRequest = $request;
@@ -53,7 +53,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $server->httpResponse = $response;
 
         $header = 'username=array, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_DIGEST' => $header,
         ));
         $server->httpRequest = $request;
@@ -73,7 +73,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $server->httpResponse = $response;
 
         $header = 'username=false, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_DIGEST' => $header,
         ));
         $server->httpRequest = $request;
@@ -93,7 +93,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $server->httpResponse = $response;
 
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_DIGEST' => $header,
             'REQUEST_METHOD'  => 'PUT',
         ));
@@ -112,7 +112,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $digestHash = md5('HELLO:12345:1:1:auth:' . md5('GET:/'));
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response='.$digestHash.', opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD'  => 'GET',
             'PHP_AUTH_DIGEST' => $header,
             'REQUEST_URI'     => '/',

@@ -46,7 +46,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -56,7 +56,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertFalse($p->httpGet($h, $s->httpResponse));
 
-        $this->assertEquals('200 OK',$s->httpResponse->status);
+        $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
             'Content-Type' => 'text/calendar',
         ], $s->httpResponse->headers);
@@ -93,7 +93,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -105,7 +105,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($p->httpGet($h, $s->httpResponse));
         DAV\Server::$exposeVersion = true;
 
-        $this->assertEquals('200 OK',$s->httpResponse->status);
+        $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
             'Content-Type' => 'text/calendar',
         ], $s->httpResponse->headers);
@@ -129,7 +129,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s = new DAV\Server();
         $s->addPlugin($p);
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -157,7 +157,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export',
         ]);
 
@@ -191,6 +191,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
@@ -200,7 +201,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->getPlugin('acl')->adminPrincipals = array('principals/admin');
 
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -210,7 +211,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals(array(
             'Content-Type' => 'text/calendar',
         ), $s->httpResponse->headers);
@@ -244,10 +245,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export&start=foo',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -257,7 +259,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('400 Bad request',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
 
     }
 
@@ -279,10 +281,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export&end=foo',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -292,7 +295,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('400 Bad request',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
 
     }
 
@@ -314,10 +317,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export&start=1&end=2',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -327,7 +331,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(0,count($obj->VTIMEZONE));
@@ -353,10 +357,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export&expand=1&end=1',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -366,7 +371,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('400 Bad request',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
 
     }
 
@@ -388,10 +393,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export&start=1&end=2000000000&expand=1',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -401,7 +407,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $obj = VObject\Reader::read($s->httpResponse->body);
 
         $this->assertEquals(0,count($obj->VTIMEZONE));
@@ -427,10 +433,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
             'HTTP_ACCEPT' => 'application/calendar+json',
@@ -441,7 +448,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals('application/calendar+json', $s->httpResponse->getHeader('Content-Type'));
 
     }
@@ -464,10 +471,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export&accept=jcal',
             'REQUEST_METHOD' => 'GET',
         ]);
@@ -477,7 +485,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals('application/calendar+json', $s->httpResponse->getHeader('Content-Type'));
 
     }
@@ -500,10 +508,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
 
         $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
 
-        $h = HTTP\Request::createFromServerArray([
+        $h = HTTP\Sapi::createFromServerArray([
             'REQUEST_URI' => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
             'HTTP_ACCEPT' => 'text/plain',
@@ -514,7 +523,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals('200 OK',$s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals('text/calendar', $s->httpResponse->getHeader('Content-Type'));
 
     }

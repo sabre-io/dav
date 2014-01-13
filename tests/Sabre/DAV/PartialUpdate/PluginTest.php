@@ -41,20 +41,20 @@ class PluginTest extends \Sabre\DAVServerTest {
     public function testPatchNoRange() {
 
         $this->node->put('00000000');
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/partial',
         ));
         $response = $this->request($request);
 
-        $this->assertEquals('400 Bad request', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(400, $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchNotSupported() {
 
         $this->node->put('00000000');
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/',
             'X_UPDATE_RANGE' => '3-4',
@@ -65,14 +65,14 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('405 Method Not Allowed', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(405, $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchNoContentType() {
 
         $this->node->put('00000000');
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-4',
@@ -83,14 +83,14 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('415 Unsupported Media Type', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(415, $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchBadRange() {
 
         $this->node->put('00000000');
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-4',
@@ -101,14 +101,14 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('416 Requested Range Not Satisfiable', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(416, $response->status, 'Full response body:' . $response->body);
 
     }
 
     public function testPatchSuccess() {
 
         $this->node->put('00000000');
-        $request = HTTP\Request::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-5',
@@ -120,7 +120,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('204 No Content', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(204, $response->status, 'Full response body:' . $response->body);
         $this->assertEquals('00111000', $this->node->get());
 
     }

@@ -11,13 +11,15 @@ namespace Sabre\HTTP;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class ResponseMock extends Response {
+class SapiMock extends Sapi {
 
     /**
-     * Making these public.
+     * Overriding this so nothing is ever echo'd.
+     *
+     * @return void
      */
-    public $body;
-    public $status;
-    public $headers = [];
+    static public function sendResponse(\Sabre\HTTP\ResponseInterface $r) {
+
+    }
 
 }

@@ -4,7 +4,7 @@ namespace Sabre\DAV\Auth\Backend;
 
 use
     Sabre\DAV\Server,
-    Sabre\HTTP\Request;
+    Sabre\HTTP\Sapi;
 
 class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
 
@@ -21,7 +21,7 @@ class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
         $backend = new BasicCallBack($callBack);
 
         $server = new Server();
-        $server->httpRequest = Request::createFromServerArray([
+        $server->httpRequest = Sapi::createFromServerArray([
             'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode('foo:bar'),
         ]);
 

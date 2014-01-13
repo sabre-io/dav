@@ -51,8 +51,15 @@ $server->addPlugin($authPlugin);
 $aclPlugin = new Sabre\DAVACL\Plugin();
 $server->addPlugin($aclPlugin);
 
+/* CalDAV support */
 $caldavPlugin = new Sabre\CalDAV\Plugin();
 $server->addPlugin($caldavPlugin);
+
+/* Calendar subscription support */
+$server->addPlugin(
+    new Sabre\CalDAV\Subscription\Plugin()
+);
+
 
 // Support for html frontend
 $browser = new Sabre\DAV\Browser\Plugin();

@@ -149,7 +149,7 @@ class Server extends EventEmitter {
      * This property allows you to automatically add the 'resourcetype' value
      * based on a node's classname or interface.
      *
-     * The preset ensures that {DAV:}collection is automaticlly added for nodes
+     * The preset ensures that {DAV:}collection is automatically added for nodes
      * implementing Sabre\DAV\ICollection.
      *
      * @var array
@@ -157,6 +157,13 @@ class Server extends EventEmitter {
     public $resourceTypeMapping = [
         'Sabre\\DAV\\ICollection' => '{DAV:}collection',
     ];
+
+    /**
+     * This property allows the usage of depth INFINITY.
+     *
+     * @var bool
+     */
+    public $enablePropfindDepthInfinity = false;
 
     /**
      * If this setting is turned off, SabreDAV's version number will be hidden
@@ -838,6 +845,17 @@ class Server extends EventEmitter {
     }
 
     /**
+     * Small helper to support PROPFIND with DEPTH_INFINITY.
+     */
+    private function addPathNodesRecursively(&$nodes, $path) {
+        foreach($this->tree->getChildren($path) as $childNode) {
+            $nodes[$path . '/' . $childNode->getName()] = $childNode;
+            if ($childNode instanceof ICollection)
+                $this->addPathNodesRecursively($nodes, $path . '/' . $childNode->getName());
+        }
+    }
+
+    /**
      * Returns a list of properties for a given path
      *
      * The path that should be supplied should have the baseUrl stripped out
@@ -853,7 +871,8 @@ class Server extends EventEmitter {
      */
     public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
-        if ($depth!=0) $depth = 1;
+        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
+        if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
         $path = rtrim($path,'/');
 
@@ -873,7 +892,10 @@ class Server extends EventEmitter {
         if ($depth==1 && $parentNode instanceof ICollection) {
             foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
+        } else if ($depth == self::DEPTH_INFINITY && $parentNode instanceof ICollection) {
+            $this->addPathNodesRecursively($nodes, $path);
         }
+
 
         foreach($nodes as $myPath=>$node) {
 

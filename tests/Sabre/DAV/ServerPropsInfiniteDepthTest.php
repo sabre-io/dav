@@ -3,7 +3,6 @@
 namespace Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
 require_once 'Sabre/DAV/AbstractServer.php';
 
 class ServerPropsInfiniteDepthTest extends AbstractServer {
@@ -19,11 +18,11 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         if (file_exists(SABRE_TEMPDIR.'../.sabredav')) unlink(SABRE_TEMPDIR.'../.sabredav');
         parent::setUp();
         file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
-	    mkdir(SABRE_TEMPDIR . '/col');
-	    mkdir(SABRE_TEMPDIR . '/col/col');
+        mkdir(SABRE_TEMPDIR . '/col');
+        mkdir(SABRE_TEMPDIR . '/col/col');
         file_put_contents(SABRE_TEMPDIR . 'col/col/test.txt', 'Test contents');
         $this->server->addPlugin(new Locks\Plugin(new Locks\Backend\File(SABRE_TEMPDIR . '/.locksdb')));
-	    $this->server->enablePropfindDepthInfinity = true;
+        $this->server->enablePropfindDepthInfinity = true;
 
     }
 
@@ -87,7 +86,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $this->assertEquals('/',(string)$data,'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
-	    // 8 resources are to be returned: /, col, col/col, col/col/test.txt, dir, dir/child.txt, test.txt and test2.txt
+        // 8 resources are to be returned: /, col, col/col, col/col/test.txt, dir, dir/child.txt, test.txt and test2.txt
         $this->assertEquals(8,count($data));
 
     }

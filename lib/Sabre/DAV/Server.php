@@ -159,7 +159,13 @@ class Server extends EventEmitter {
     ];
 
     /**
-     * This property allows the usage of depth INFINITY.
+     * This property allows the usage of Depth: infinity on PROPFIND requests.
+     *
+     * By default Depth: infinity is treated as Depth: 1. Allowing Depth:
+     * infinity is potentially risky, as it allows a single client to do a full
+     * index of the webdav server, which is an easy DoS attack vector.
+     *
+     * Only turn this on if you know what you're doing.
      *
      * @var bool
      */

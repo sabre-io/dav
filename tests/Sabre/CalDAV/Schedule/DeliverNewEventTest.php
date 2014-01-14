@@ -3,7 +3,8 @@
 namespace Sabre\CalDAV\Schedule;
 
 use
-    Sabre\HTTP\Request;
+    Sabre\HTTP\Request,
+    Sabre\VObject;
 
 class DeliverNewEventTest extends \Sabre\DAVServerTest {
 
@@ -17,7 +18,7 @@ class DeliverNewEventTest extends \Sabre\DAVServerTest {
             'principals/user1',
             'default',
             [
-               
+
             ]
         );
 
@@ -43,15 +44,41 @@ ATTENDEE;CN="Roxy Kesh";CUTYPE=INDIVIDUAL;EMAIL="roxannakesh@gmail.com";
 SUMMARY:Just testing!
 DTSTART;TZID=America/Toronto:20140107T100000
 DTSTAMP:20140109T204422Z
-ORGANIZER;CN="Adminstrator":mailto:evertpot@gmail.com
+ORGANIZER;CN="Administrator":mailto:user1.sabredav@sabredav.org
 SEQUENCE:4
 END:VEVENT
 END:VCALENDAR
 ICS
-);
+    );
+
+        $messages = [];
+        $this->server->on('schedule', function($message) use (&$messages) {
+            $messages[] = $message;
+        });
+
         $response = $this->request($request);
+
         $this->assertEquals(201, $response->getStatus(), 'Incorrect status code received. Response body:' . $response->getBodyAsString());
-        $this->markTestIncomplete('Need to test if the message gets delivered');
+
+        $result = $this->request(new Request('GET', '/calendars/user1/default/foo.ics'))->getBody();
+        $resultVObj = VObject\Reader::read($result);
+
+        $this->assertEquals(
+            '5.2;There was no system capable of delivering the scheduling message',
+            $resultVObj->VEVENT->ATTENDEE[1]['SCHEDULE-STATUS']->getValue()
+        );
+
+        $this->assertEquals(1, count($messages));
+        $message = $messages[0];
+
+        $this->assertInstanceOf('\Sabre\CalDAV\Schedule\ITipMessage', $message);
+        $this->assertEquals('roxannakesh@gmail.com', $message->recipient);
+        $this->assertEquals('Roxy Kesh', $message->recipientName);
+        $this->assertEquals('user1.sabredav@sabredav.org', $message->sender);
+        $this->assertEquals('Administrator', $message->senderName);
+        $this->assertEquals('REQUEST', $message->method);
+
+        $this->assertEquals('REQUEST', $message->message->METHOD->getValue());
 
     }
 

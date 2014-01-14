@@ -167,7 +167,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
         foreach($objects as $uri => &$object) {
             $object['calendarid'] = $calendarId;
             $object['uri'] = $uri;
-
+            $object['lastmodified'] = null;
         }
         return $objects;
 
@@ -193,6 +193,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
         $object = $this->calendarData[$calendarId][$objectUri];
         $object['calendarid'] = $calendarId;
         $object['uri'] = $objectUri;
+        $object['lastmodified'] = null;
         return $object;
 
     }

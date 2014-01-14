@@ -424,7 +424,12 @@ class Plugin extends ServerPlugin {
                 if (isset($attendee['CN'])) $iTipMessage->recipientName = (string)$attendee['CN'];
 
                 $iTipMessage->sender = strtolower(substr($organizer, 7));
-                if (isset($vevent->ORGANIZER['CN'])) $iTipMessage->senderName = $vevent->ORGANIZER['CN'];
+                if (isset($vevent->ORGANIZER['CN'])) $iTipMessage->senderName = (string)$vevent->ORGANIZER['CN'];
+
+                // Skipping if sender matches the recipient
+                if ($iTipMessage->sender === $iTipMessage->recipient) {
+                    continue;
+                }
 
                 $iTipMessage->method = 'REQUEST';
 
@@ -462,10 +467,15 @@ class Plugin extends ServerPlugin {
      */
     public function deliver(ITipMessage $iTipMessage) {
 
+        /*
         $iTipMessage->scheduleStatus =
             $this->iMIPMessage($iTipMessage->sender, [$iTipMessage->recipient], $iTipMessage->message, '');
+        */
 
-        file_put_contents('/tmp/schedulelog', print_r($iTipMessage, true), FILE_APPEND);
+        $this->server->emit('schedule', [$iTipMessage]);
+        if (!$iTipMessage->scheduleStatus) {
+            $iTipMessage->scheduleStatus='5.2;There was no system capable of delivering the scheduling message';
+        }
 
     }
 

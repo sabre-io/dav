@@ -1,11 +1,13 @@
-1.9.0-alpha2 (2014-??-??)
+1.9.0-alpha2 (2014-01-14)
+	* The zip release ships with sabre/vobject 3.1.3, sabre/http 2.0.1, and
+	  sabre/event 1.0.0.
 	* Added: Browser can now inspect any node, if ?sabreaction=browser is
 	  appended.
 	* Fixed: Issue #178. Support for multiple items in the Timeout header.
 	* Fixed: Issue #382. Stricter checking if calendar-query is allowed to
 	  run.
 	* Added: Depth: Infinity support for PROPFIND request. Thanks Thomas
-	  Müller.
+	  Müller and Markus Goetz.
 
 1.9.0-alpha1 (2013-11-07)
 	* The zip release ships with sabre/vobject 3.1.3, sabre/http 2.0.0alpha5,

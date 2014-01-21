@@ -1257,6 +1257,10 @@ ChangeLog
 * Added: now a PEAR-compatible package again, thanks to Michael Gauthier
 * Changed: moved default copy and move logic from ObjectTree to Tree class
 
+0.9a-alpha (2009-07-21)
+----------------------
+
+* Fixed: Broken release
 
 0.9-alpha (2009-07-21)
 ----------------------

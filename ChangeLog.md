@@ -857,6 +857,15 @@ ChangeLog
   size'-1.
 
 
+1.2.5 (2010-08-18)
+------------------
+
+* Fixed: Issue 73: guessBaseUrl fails for some servers.
+* Fixed: Issue 67: SabreDAV works better with non-seekable streams.
+* Fixed: If-Modified-Since and If-Unmodified-Since would be incorrect if
+  the date is an exact match.
+
+
 1.2.4 (2010-07-13)
 ------------------
 

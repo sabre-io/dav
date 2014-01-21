@@ -85,42 +85,42 @@ ChangeLog
   for calendar objects, if the caldav backend provides this info.
 
 
-1.8.8-stable (2013-??-??)
--------------------------
+1.8.8 (2013-??-??)
+------------------
 
 * includes changes from version 1.7.10.
 
 
-1.8.7-stable (2013-10-02)
--------------------------
+1.8.7 (2013-10-02)
+------------------
 
 * the zip release ships with sabre/vobject 2.1.3.
 * includes changes from version 1.7.9.
 
 
-1.8.6-stable (2013-06-18)
--------------------------
+1.8.6 (2013-06-18)
+------------------
 
 * The zip release ships with sabre/vobject 2.1.0.
 * Includes changes from version 1.7.8.
 
 
-1.8.5-stable (2013-04-11)
--------------------------
+1.8.5 (2013-04-11)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.7.
 * Includes changes from version 1.7.7.
 
 
-1.8.4-stable (2013-04-08)
--------------------------
+1.8.4 (2013-04-08)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.7.
 * Includes changes from version 1.7.6.
 
 
-1.8.3-stable (2013-03-01)
--------------------------
+1.8.3 (2013-03-01)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.6.
 * Includes changes from version 1.7.5.
@@ -128,23 +128,23 @@ ChangeLog
   mailto:, as it should.
 
 
-1.8.2-stable (2013-01-19)
--------------------------
+1.8.2 (2013-01-19)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
 * Includes changes from version 1.7.4.
 
 
-1.8.1-stable (2012-12-01)
--------------------------
+1.8.1 (2012-12-01)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
 * Includes changes from version 1.7.3.
 * Fixed: Typo in 1.7 migration script caused it to fail.
 
 
-1.8.0-stable (2012-11-08)
--------------------------
+1.8.0 (2012-11-08)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
 * BC Break: Moved the entire codebase to PHP namespaces.
@@ -165,22 +165,22 @@ ChangeLog
   greater flexiblity.
 
 
-1.7.10-stable (2014-??-??)
---------------------------
+1.7.10 (2014-??-??)
+-------------------
 
 * Fixed: Issue #374: Don't urlescape colon (:) when it's not required.
 
 
-1.7.9-stable (2013-10-02)
--------------------------
+1.7.9 (2013-10-02)
+------------------
 
 * The zip release ships with sabre/vobject 2.1.3.
 * Fixed: Issue #365. Incorrect output when principal urls have spaces in them.
 * Added: Issue #367: Automatically adding a UID to vcards that don't have them.
 
 
-1.7.8-stable (2013-06-17)
--------------------------
+1.7.8 (2013-06-17)
+------------------
 
 * The zip release ships with sabre/vobject 2.1.0.
 * Changed: Sabre\DAV\Client::verifyPeer is now a protected property (instead of
@@ -193,16 +193,16 @@ ChangeLog
 * Added: Issue 339: beforeGetPropertiesForPath event.
 
 
-1.7.7-stable (2013-04-11)
--------------------------
+1.7.7 (2013-04-11)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.7.
 * Fixed: Assets in the browser plugins were not being served on windows
   machines.
 
 
-1.7.6-stable (2013-04-08)
--------------------------
+1.7.6 (2013-04-08)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.7.
 * Fixed: vcardurl in database schema can now hold 255 characters instead of 80
@@ -211,8 +211,8 @@ ChangeLog
   file on windows servers (CVE-2013-1939).
 
 
-1.7.5-stable (2013-03-01)
--------------------------
+1.7.5 (2013-03-01)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.6.
 * Change: No longer advertising support for 4.0 vcards. iOS and OS X address
@@ -222,8 +222,8 @@ ChangeLog
   don't use this..).
 
 
-1.7.4-stable (2013-01-19)
--------------------------
+1.7.4 (2013-01-19)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
 * Changed: To be compatibile with MS Office 2011 for Mac, a workaround was
@@ -242,8 +242,8 @@ ChangeLog
 * Added: Sabre_DAV_Exception_ServiceUnavailable, for emitting 503's.
 
 
-1.7.3-stable (2012-12-01)
--------------------------
+1.7.3 (2012-12-01)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
 * Fixed: Removing double slashes from getPropertiesForPath.
@@ -254,8 +254,8 @@ ChangeLog
 * Fixed: Issue 174. Sending back HTTP/1.0 for requests with this version.
 
 
-1.7.2-stable (2012-11-08)
--------------------------
+1.7.2 (2012-11-08)
+------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
 * Added: ACL plugin advertises support for 'calendarserver-principal-
@@ -278,14 +278,14 @@ ChangeLog
   Code tickets. We're using github now.
 
 
-1.7.1-stable (2012-10-07)
--------------------------
+1.7.1 (2012-10-07)
+------------------
 
 * Fixed: include path problem in the migration script.
 
 
-1.7.0-stable (2012-10-06)
--------------------------
+1.7.0 (2012-10-06)
+------------------
 
 * BC Break: The calendarobjects database table has a bunch of new fields, and a
   migration script is required to ensure everything will keep working. Read the
@@ -351,23 +351,23 @@ ChangeLog
 * Fixed: Several embarrassing spelling mistakes in docblocks.
 
 
-1.6.10-stable (2013-06-17)
---------------------------
+1.6.10 (2013-06-17)
+-------------------
 
 * Fixed: Text was incorrectly escaped in the Href and HrefList properties,
   disallowing urls with ampersands (&) in them.
 * Fixed: Issue 341: Escaping xml in 423 Locked error responses.
 
 
-1.6.9-stable (2013-04-11)
--------------------------
+1.6.9 (2013-04-11)
+------------------
 
 * Fixed: Assets in the browser plugins were not being served on windows
   machines.
 
 
-1.6.8-stable (2013-04-08)
--------------------------
+1.6.8 (2013-04-08)
+------------------
 
 * Fixed: vcardurl in database schema can now hold 255 characters instead of 80
   (which is often way to small).
@@ -375,8 +375,8 @@ ChangeLog
   file on windows servers. (CVE-2013-1939).
 
 
-1.6.7-stable (2013-03-01)
--------------------------
+1.6.7 (2013-03-01)
+------------------
 
 * Change: No longer advertising support for 4.0 vcards. iOS and OS X address
   book don't handle this well, and just advertising 3.0 support seems like the
@@ -385,15 +385,15 @@ ChangeLog
   don't use this..).
 
 
-1.6.6-stable (2013-01-19)
--------------------------
+1.6.6 (2013-01-19)
+------------------
 
 * Fixed: Backported a fix for broken XML serialization in error responses.
   (Thanks @DeepDiver1975!)
 
 
-1.6.5-stable (2012-10-04)
--------------------------
+1.6.5 (2012-10-04)
+------------------
 
 * Fixed: Workaround for line-ending bug OS X 10.8 addressbook has.
 * Added: Ability to allow users to set SSL certificates for the Client class.
@@ -404,8 +404,8 @@ ChangeLog
 * Fixed: Issue with filtering on alarms in tasks.
 
 
-1.6.4-stable (2012-08-02)
--------------------------
+1.6.4 (2012-08-02)
+------------------
 
 * Fixed: Issue 220: Calendar-query filters may fail when filtering on alarms, if
   an overridden event has it's alarm removed.
@@ -425,8 +425,8 @@ ChangeLog
   calendar-query REPORT and free-busy calculations.
 
 
-1.6.3-stable (2012-06-12)
--------------------------
+1.6.3 (2012-06-12)
+------------------
 
 * Added: It's now possible to specify in Sabre_DAV_Client which type of
   authentication is to be used.
@@ -447,8 +447,8 @@ ChangeLog
 * Fixed: Issue 217: Sabre_DAV_Tree_FileSystem was pretty broken.
 
 
-1.6.2-stable (2012-04-16)
--------------------------
+1.6.2 (2012-04-16)
+------------------
 
 * Fixed: Sabre_VObject_Node::$parent should have been public.
 * Fixed: Recurrence rules of events are now taken into consideration when doing
@@ -467,8 +467,8 @@ ChangeLog
 * Added: New HTTP status codes from draft-nottingham-http-new-status-04.
 
 
-1.6.1-stable (2012-03-05)
--------------------------
+1.6.1 (2012-03-05)
+------------------
 
 * Added: createFile and put() can now return an ETag.
 * Added: Sending back an ETag on for operations on CardDAV backends. This should
@@ -486,8 +486,8 @@ ChangeLog
 * Fixed: Calendardata would be destroyed when performing a MOVE request.
 
 
-1.6.0-stable (2012-02-22)
--------------------------
+1.6.0 (2012-02-22)
+------------------
 
 * BC Break: Now requires PHP 5.3
 * BC Break: Any node that implemented Sabre_DAVACL_IACL must now also implement
@@ -586,21 +586,21 @@ ChangeLog
   Postgres.
 
 
-1.5.9-stable (2012-04-16)
--------------------------
+1.5.9 (2012-04-16)
+------------------
 
 * Fixed: Issue with parsing timezone identifiers that were surrounded by quotes.
   (Fixes emClient compatibility).
 
 
-1.5.8-stable (2012-02-22)
--------------------------
+1.5.8 (2012-02-22)
+------------------
 
 * Fixed: Issue 95: Another timezone parsing issue, this time in calendar-query.
 
 
-1.5.7-stable (2012-02-19)
--------------------------
+1.5.7 (2012-02-19)
+------------------
 
 * Fixed: VObject properties are now always encoded before components.
 * Fixed: Sabre_DAVACL had issues with multiple levels of privilege aggregration.
@@ -615,23 +615,23 @@ ChangeLog
 * Fixed: Issue 191: beforeUnlock was triggered twice.
 
 
-1.5.6-stable (2012-01-07)
--------------------------
+1.5.6 (2012-01-07)
+------------------
 
 * Fixed: Issue 174: VObject could break UTF-8 characters.
 * Fixed: pear package installation issues.
 
 
-1.5.5-stable (2011-12-16)
--------------------------
+1.5.5 (2011-12-16)
+------------------
 
 * Fixed: CalDAV time-range filter workaround for recurring events.
 * Fixed: Bug in Sabre_DAV_Locks_Backend_File that didn't allow multiple files to
   be locked at the same time.
 
 
-1.5.4-stable (2011-10-28)
--------------------------
+1.5.4 (2011-10-28)
+------------------
 
 * Fixed: GuessContentType plugin now supports mixed case file extensions.
 * Fixed: DATE-TIME encoding was wrong in VObject. (we used 'DATETIME').
@@ -641,8 +641,8 @@ ChangeLog
 * Added: All VObject elements now have a reference to their parent node.
 
 
-1.5.3-stable (2011-09-28)
--------------------------
+1.5.3 (2011-09-28)
+------------------
 
 * Fixed: Sabre_DAV_Collection was missing from the includes file.
 * Fixed: Issue 152. iOS 1.4.2 apparantly requires HTTP/1.1 200 OK to be in
@@ -655,8 +655,8 @@ ChangeLog
 * Added: Issue 158: Support for the CARDDAV:supported-address-data property.
 
 
-1.5.2-stable (2011-09-21)
--------------------------
+1.5.2 (2011-09-21)
+------------------
 
 * Fixed: carddata and calendardata MySQL fields are now of type 'mediumblob'.
   'TEXT' was too small sometimes to hold all the data.
@@ -675,8 +675,8 @@ ChangeLog
   backends.
 
 
-1.5.1-stable (2011-08-24)
--------------------------
+1.5.1 (2011-08-24)
+------------------
 
 * Fixed: Issue 137. Hiding action interface in HTML browser for non-collections.
 * Fixed: addressbook-query is now correctly returned from the
@@ -685,8 +685,8 @@ ChangeLog
 * Fixed: Issue 139: Rejecting PUT requests with Content-Range.
 
 
-1.5.0-stable (2011-08-12)
--------------------------
+1.5.0 (2011-08-12)
+------------------
 
 * Added: CardDAV support.
 * Added: An experimental WebDAV client.
@@ -717,8 +717,8 @@ ChangeLog
   'action' to reduce the chance of collisions.
 
 
-1.4.4-stable (2011-07-07)
--------------------------
+1.4.4 (2011-07-07)
+------------------
 
 * Fixed: Issue 131: Custom CalDAV backends could break in certain cases.
 * Added: The option to override the default tablename all PDO backends use.
@@ -732,8 +732,8 @@ ChangeLog
   custom classes.
 
 
-1.4.3-stable (2011-04-25)
--------------------------
+1.4.3 (2011-04-25)
+------------------
 
 * Fixed: Issue 123: Added workaround for Windows 7 UNLOCK bug.
 * Fixed: datatype of lastmodified field in mysql.calendars.sql. Please change
@@ -1056,8 +1056,8 @@ ChangeLog
 * Fixed: Issue 18: Doesn't work with Evolution Contacts
 
 
-1.0.15-stable (2010-05-28)
---------------------------
+1.0.15 (2010-05-28)
+-------------------
 
 * Added: Issue 31: Hiding exception information by default. Can be turned on
   with the Sabre_DAV_Server::$debugExceptions property.
@@ -1065,20 +1065,20 @@ ChangeLog
   case in the upcoming 1.2.0, so it will improve future compatibility.
 
 
-1.0.14-stable (2010-04-15)
---------------------------
+1.0.14 (2010-04-15)
+-------------------
 
 * Fixed: double namespace declaration in multistatus responses.
 
 
-1.0.13-stable (2010-03-30)
---------------------------
+1.0.13 (2010-03-30)
+-------------------
 
 * Fixed: Issue 40: Last references to basename/dirname
 
 
-1.0.12-stable (2010-03-30)
---------------------------
+1.0.12 (2010-03-30)
+-------------------
 
 * Fixed: Issue 37: Incorrect smultron regex in temporary filefilter.
 * Fixed: Issue 26: Workaround for broken GVFS behaviour with encoded special
@@ -1091,29 +1091,29 @@ ChangeLog
 * Updated: Now using pear.sabredav.org pear channel.
 
 
-1.0.11-stable (2010-03-23)
---------------------------
+1.0.11 (2010-03-23)
+-------------------
 
 * Non-public release. This release is identical to 1.0.10, but it is used to
   test releasing packages to pear.sabredav.org.
 
 
-1.0.10-stable (2010-03-22)
---------------------------
+1.0.10 (2010-03-22)
+-------------------
 
 * Fixed: Issue 34: Invalid Lock-Token header response.
 * Added: Issue 35: Addign SabreDAV version to HTTP OPTIONS responses.
 
 
-1.0.9-stable (2010-03-19)
--------------------------
+1.0.9 (2010-03-19)
+------------------
 
 * Fixed: Issue 27: Entities not being encoded in PROPFIND responses.
 * Fixed: Issue 29: Added missing TIMEOUT_INFINITE constant.
 
 
-1.0.8-stable (2010-03-03)
--------------------------
+1.0.8 (2010-03-03)
+------------------
 
 * Fixed: Issue 21: typos causing errors
 * Fixed: Issue 23: Comma's between methods in Allow header.
@@ -1123,36 +1123,36 @@ ChangeLog
   ensure future compatibility.
 
 
-1.0.7-stable (2010-02-24)
--------------------------
+1.0.7 (2010-02-24)
+------------------
 
 * Fixed: Issue 19 regression for MS Office
 
 
-1.0.6-stable (2010-02-23)
--------------------------
+1.0.6 (2010-02-23)
+------------------
 
 * Fixed: Issue 19: HEAD requests on Collections
 
 
-1.0.5-stable (2010-01-22)
--------------------------
+1.0.5 (2010-01-22)
+------------------
 
 * Fixed: Fatal error when a malformed url was used for unlocking, in conjuction
   with Sabre.autoload.php due to a incorrect filename.
 * Fixed: Improved unittests and build system
 
 
-1.0.4-stable (2010-01-11)
--------------------------
+1.0.4 (2010-01-11)
+------------------
 
 * Fixed: needed 2 different releases. One for googlecode and one for pearfarm.
   This is to retain the old method to install SabreDAV until pearfarm becomes
   the standard installation method.
 
 
-1.0.3-stable (2010-01-11)
--------------------------
+1.0.3 (2010-01-11)
+------------------
 
 * Added: RFC4709 support (davmount)
 * Added: 6 unittests
@@ -1161,15 +1161,15 @@ ChangeLog
 * Changed: Now using pearfarm.org channel server.
 
 
-1.0.1-stable (2009-12-22)
--------------------------
+1.0.1 (2009-12-22)
+------------------
 
 * Fixed: Issue 15: typos in examples
 * Fixed: Minor pear installation issues
 
 
-1.0.0-stable (2009-11-02)
--------------------------
+1.0.0 (2009-11-02)
+------------------
 
 * Added: SimpleDirectory class. This class allows creating static directory
   structures with ease.

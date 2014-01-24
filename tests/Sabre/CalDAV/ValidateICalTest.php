@@ -92,10 +92,12 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
             'Content-Length' => '0',
             'ETag' => '"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"',
         ), $response->headers);
+
         $expected = array(
             'uri'          => 'blabla.ics',
             'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
             'calendarid'   => 'calendar1',
+            'lastmodified' => null,
         );
 
         $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));
@@ -218,6 +220,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
             'uri'          => 'blabla.ics',
             'calendardata' => $body,
             'calendarid'   => 'calendar1',
+            'lastmodified' => null,
         );
 
         $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));

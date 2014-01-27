@@ -81,13 +81,6 @@ class Server extends EventEmitter {
     protected $plugins = [];
 
     /**
-     * This array contains a list of callbacks we should call when certain events are triggered
-     *
-     * @var array
-     */
-    protected $eventSubscriptions = [];
-
-    /**
      * This property will be filled with a unique string that describes the
      * transaction. This is useful for performance measuring and logging
      * purposes.
@@ -156,7 +149,7 @@ class Server extends EventEmitter {
      * This property allows you to automatically add the 'resourcetype' value
      * based on a node's classname or interface.
      *
-     * The preset ensures that {DAV:}collection is automaticlly added for nodes
+     * The preset ensures that {DAV:}collection is automatically added for nodes
      * implementing Sabre\DAV\ICollection.
      *
      * @var array
@@ -164,6 +157,19 @@ class Server extends EventEmitter {
     public $resourceTypeMapping = [
         'Sabre\\DAV\\ICollection' => '{DAV:}collection',
     ];
+
+    /**
+     * This property allows the usage of Depth: infinity on PROPFIND requests.
+     *
+     * By default Depth: infinity is treated as Depth: 1. Allowing Depth:
+     * infinity is potentially risky, as it allows a single client to do a full
+     * index of the webdav server, which is an easy DoS attack vector.
+     *
+     * Only turn this on if you know what you're doing.
+     *
+     * @var bool
+     */
+    public $enablePropfindDepthInfinity = false;
 
     /**
      * If this setting is turned off, SabreDAV's version number will be hidden
@@ -845,6 +851,17 @@ class Server extends EventEmitter {
     }
 
     /**
+     * Small helper to support PROPFIND with DEPTH_INFINITY.
+     */
+    private function addPathNodesRecursively(&$nodes, $path) {
+        foreach($this->tree->getChildren($path) as $childNode) {
+            $nodes[$path . '/' . $childNode->getName()] = $childNode;
+            if ($childNode instanceof ICollection)
+                $this->addPathNodesRecursively($nodes, $path . '/' . $childNode->getName());
+        }
+    }
+
+    /**
      * Returns a list of properties for a given path
      *
      * The path that should be supplied should have the baseUrl stripped out
@@ -860,7 +877,8 @@ class Server extends EventEmitter {
      */
     public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
-        if ($depth!=0) $depth = 1;
+        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
+        if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
         $path = rtrim($path,'/');
 
@@ -880,7 +898,10 @@ class Server extends EventEmitter {
         if ($depth==1 && $parentNode instanceof ICollection) {
             foreach($this->tree->getChildren($path) as $childNode)
                 $nodes[$path . '/' . $childNode->getName()] = $childNode;
+        } else if ($depth == self::DEPTH_INFINITY && $parentNode instanceof ICollection) {
+            $this->addPathNodesRecursively($nodes, $path);
         }
+
 
         foreach($nodes as $myPath=>$node) {
 

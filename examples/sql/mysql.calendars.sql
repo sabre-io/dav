@@ -9,6 +9,7 @@ CREATE TABLE calendarobjects (
     componenttype VARCHAR(8),
     firstoccurence INT(11) UNSIGNED,
     lastoccurence INT(11) UNSIGNED,
+    uid VARCHAR(200),
     UNIQUE(calendarid, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

@@ -528,7 +528,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence) VALUES (?,?,?,?,?,?,?,?,?)');
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, uid) VALUES (?,?,?,?,?,?,?,?,?,?)');
         $stmt->execute([
             $calendarId,
             $objectUri,
@@ -539,6 +539,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             $extraData['componentType'],
             $extraData['firstOccurence'],
             $extraData['lastOccurence'],
+            $extraData['uid'],
         ]);
         $this->addChange($calendarId, $objectUri, 1);
 
@@ -568,8 +569,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE calendarid = ? AND uri = ?');
-        $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $calendarId, $objectUri]);
+        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ?, uid = ? WHERE calendarid = ? AND uri = ?');
+        $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $extraData['uid'], $calendarId, $objectUri]);
 
         $this->addChange($calendarId, $objectUri, 2);
 
@@ -582,11 +583,12 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * calendar-queries.
      *
      * Returns an array with the following keys:
-     *   * etag
-     *   * size
-     *   * componentType
+     *   * etag - An md5 checksum of the object without the quotes.
+     *   * size - Size of the object in bytes
+     *   * componentType - VEVENT, VTODO or VJOURNAL
      *   * firstOccurence
      *   * lastOccurence
+     *   * uid - value of the UID property
      *
      * @param string $calendarData
      * @return array
@@ -598,9 +600,11 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         $component = null;
         $firstOccurence = null;
         $lastOccurence = null;
+        $uid = null;
         foreach($vObject->getComponents() as $component) {
             if ($component->name!=='VTIMEZONE') {
                 $componentType = $component->name;
+                $uid = (string)$component->UID;
                 break;
             }
         }
@@ -648,6 +652,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             'componentType' => $componentType,
             'firstOccurence' => $firstOccurence,
             'lastOccurence'  => $lastOccurence,
+            'uid' => $uid,
         ];
 
     }
@@ -1261,6 +1266,26 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, UNIX_TIMESTAMP(), ?, ?)');
         $stmt->execute([$principalUri, $objectData, $objectUri, md5($objectData), strlen($objectData) ]);
+
+    }
+
+    /**
+     * Searches through all of a users calendars and calendar objects to find
+     * an object with a specific UID.
+     *
+     * The returned data should contain all the information getCalendarObject
+     * also returns, but also include a 'calendarUri' property. This property
+     * should *just* be the basename of the calendar.
+     *
+     * Return false if the object cannot be found.
+     *
+     * @param string $principalUri
+     * @param string $uid
+     * @return array|bool
+     */
+    public function getCalendarObjectByUID($principalUri, $uid) {
+
+        throw new \Exception('Not implemented yet');
 
     }
 

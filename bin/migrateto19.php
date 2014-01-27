@@ -77,7 +77,7 @@ switch($driver) {
 
 foreach(['calendar', 'addressbook'] as $itemType) {
 
-    $tableName = $itemType . 's'; 
+    $tableName = $itemType . 's';
     $tableNameOld = $tableName . '_old';
     $changesTable = $itemType . 'changes';
 
@@ -297,6 +297,74 @@ CREATE TABLE calendarsubscriptions (
 
             $pdo->exec("CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);");
             break;
+
+    }
+
+}
+
+echo "Upgrading 'calendarobjects'\n";
+$addUid = false;
+try {
+    $result = $pdo->query('SELECT * FROM calendarobjects LIMIT 1');
+    $row = $result->fetch(\PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        echo "No data in table. Going to try to add the uid field anyway.\n";
+        $addUid = true;
+    } elseif (array_key_exists('uid', $row)) {
+        echo "uid field eixsts. Assuming that this part of the migration has\n";
+        echo "Already been completed.\n";
+    } else {
+        echo "1.8 schema detected.\n";
+        $addUid = true;
+    }
+
+} catch (Exception $e) {
+    echo "Could not find a calendarobjects table. Skipping this part of the\n";
+    echo "upgrade.\n";
+}
+
+if ($addUid) {
+
+    switch($driver) {
+        case 'mysql' :
+            $pdo->exec('ALTER TABLE calendarobjects ADD uid VARCHAR(200)');
+            break;
+        case 'sqlite' :
+            $pdo->exec('ALTER TABLE calendarobjects ADD uid TEXT');
+            break;
+    }
+
+    $result = $pdo->query('SELECT id, calendardata FROM calendarobjects');
+    $stmt = $pdo->query('UPDATE calendarobjects SET uid = ? WHERE id = ?');
+    $counter = 0;
+
+    while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+
+        yoyo:
+
+        try {
+            $vobj = \Sabre\VObject\Reader::read($row['calendardata']);
+        } catch (\Exception $e) {
+            echo "Warning! Item with id $row[id] could not be parsed!\n";
+            goto yoyo;
+        }
+        $uid = null;
+        foreach($vobj->select() as $item) {
+            if ($item instanceof \Sabre\VObject\Component) {
+                if ($item->name === 'VTIMEZONE') {
+                    continue;
+                }
+                if (!isset($item->UID)) {
+                    echo "Warning! Item with id $item[id] does NOT have a UID property and this is required.\n";
+                    goto yoyo;
+                }
+                $uid = (string)$uid;
+
+            }
+        }
+        $stmt->exec(array($uid, $row['id']));
+        $counter++;
 
     }
 

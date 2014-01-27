@@ -8,7 +8,8 @@ CREATE TABLE calendarobjects (
     size integer,
     componenttype text,
     firstoccurence integer,
-    lastoccurence integer
+    lastoccurence integer,
+    uid text
 );
 
 CREATE TABLE calendars (

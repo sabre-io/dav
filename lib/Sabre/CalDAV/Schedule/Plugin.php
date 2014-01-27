@@ -506,6 +506,7 @@ class Plugin extends ServerPlugin {
                 '{DAV:}principal-URL',
                  $caldavNS . 'calendar-home-set',
                  $caldavNS . 'schedule-inbox-URL',
+                 $caldavNS . 'schedule-default-calendar-URL',
                 '{http://sabredav.org/ns}email-address',
             ]
         );
@@ -524,7 +525,6 @@ class Plugin extends ServerPlugin {
         $inbox->createFile('sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics', $iTipMessage->message->serialize());
 
         $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
-
 
     }
 

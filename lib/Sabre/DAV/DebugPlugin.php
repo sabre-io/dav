@@ -3,9 +3,23 @@
 namespace Sabre\DAV;
 
 use
-    Psr\LoggerInterface,
-    Psr\LogLevel;
+    Psr\Log\LoggerInterface,
+    Psr\Log\LogLevel,
+    DateTime,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
+/**
+ * Debugging Plugin
+ *
+ * This plugin injects itself into the server and logs a LOT of data.
+ * This is for development purposes only. Using this plugin can greatly
+ * increase memory usage.
+ *
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ */
 class DebugPlugin extends ServerPlugin {
 
     protected $logger;
@@ -39,6 +53,7 @@ class DebugPlugin extends ServerPlugin {
 
         $this->server = $server;
         $server->on('beforeMethod', [$this, 'beforeMethod'], 5);
+        $server->on('afterMethod', [$this, 'afterMethod'], 200);
         $this->log(LogLevel::INFO, 'Initialized plugin. Request time ' . $this->startTime . ' (' . date(DateTime::RFC2822,$this->startTime) . '). Version: ' . Version::VERSION);
 
     }
@@ -53,7 +68,8 @@ class DebugPlugin extends ServerPlugin {
      */
     public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $this->log(LogLevel::INFO, $request->getMethod() . ' ' . $request->getPath());
+        $path = $request->getPath()?:'(root)';
+        $this->log(LogLevel::INFO, 'REQUEST: ' . $request->getMethod() . ' ' . $path);
 
         $this->log(LogLevel::DEBUG, 'Plugins loaded:');
         foreach($this->server->getPlugins() as $pluginName => $plugin) {
@@ -61,7 +77,7 @@ class DebugPlugin extends ServerPlugin {
         }
         $this->log(LogLevel::DEBUG, 'SabreDAV server Base URI: ' . $this->server->getBaseUri());
         $this->log(LogLevel::DEBUG,'Headers:');
-        foreach($this->server->httpRequest->getHeaders() as $key=>$value) {
+        foreach($request->getHeaders() as $key=>$value) {
             $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
         }
 
@@ -103,8 +119,62 @@ class DebugPlugin extends ServerPlugin {
     }
 
     /**
+     * The last event to be triggered. This allows us to log the HTTP response.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return void
+     */
+    public function afterMethod(RequestInterface $request, ResponseInterface $response) {
+
+        $this->log(LogLevel::INFO, 'RESPONSE: ' . $response->getStatus() . ' ' . $response->getStatusText());
+
+        $this->log(LogLevel::DEBUG,'Headers:');
+        foreach($response->getHeaders() as $key=>$value) {
+            $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
+        }
+
+        // We're only going to show the request body if it's text-based. The
+        // maximum size will be 10k.
+        $contentType = $response->getHeader('Content-Type');
+        $showBody = false;
+        foreach($this->contentTypeWhiteList as $wl) {
+
+            if (preg_match($wl, $contentType)) {
+                $showBody = true;
+                break;
+            }
+
+        }
+        if ($showBody) {
+            // We need to grab the body, and put it in an intermediate stream.
+            $newBody = fopen('php://temp','r+');
+            $body = $response->getBodyAsStream();
+
+            // Only grabbing the first 10kb
+            $strBody = fread($body, 10240);
+
+            $this->log(LogLevel::DEBUG, 'Request body:');
+            $this->log(LogLevel::DEBUG, $strBody);
+
+            // Writing the bytes we already read
+            fwrite($newBody, $strBody);
+
+            // Writing the remainder of the input body, if there's anything
+            // left.
+            stream_copy_to_stream($body, $newBody);
+            rewind($newBody);
+
+            $response->setBody($newBody, true);
+
+        }
+
+    }
+
+    /**
      * Appends a message to the log
      *
+     * @param int $logLevel
      * @param string $message
      * @return void
      */

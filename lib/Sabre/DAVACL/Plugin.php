@@ -587,6 +587,31 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
+     * Returns a principal url based on an email address.
+     *
+     * Note that wether or not this works may depend on wether a search
+     * facility is built into the server.
+     *
+     * This method returns false if the principal could not be found.
+     *
+     * @return string|bool
+     */
+    public function getPrincipalByEmail($email) {
+
+        $result = $this->principalSearch(
+            ['{http://sabredav.org/ns}email-address' => $email],
+            ['{DAV:}principal-URL']
+        );
+
+        if (!count($result)) {
+            return false;
+        }
+
+        return $result[0][200]['{DAV:}principal-URL'];
+
+    }
+
+    /**
      * Principal property search
      *
      * This method can search for principals matching certain values in

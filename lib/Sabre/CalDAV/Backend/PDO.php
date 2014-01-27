@@ -64,7 +64,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @var string
      */
     protected $schedulingObjectTableName;
-    
+
     /**
      * The table name that will be used for calendar subscriptions.
      *
@@ -1246,6 +1246,21 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
+
+    }
+
+    /**
+     * Creates a new scheduling object. This should land in a users' inbox.
+     *
+     * @param string $principalUri
+     * @param string $objectUri
+     * @param string $objectData
+     * @return void
+     */
+    public function createSchedulingObject($principalUri, $objectUri, $objectData) {
+
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, UNIX_TIMESTAMP(), ?, ?)');
+        $stmt->execute([$principalUri, $objectData, $objectUri, md5($objectData), strlen($objectData) ]);
 
     }
 

@@ -186,7 +186,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
     /**
      * Updates this principals properties.
-     * 
+     *
      * @param array $mutations
      * @see Sabre\DAV\IProperties::updateProperties
      * @return bool|array
@@ -238,13 +238,13 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
      */
     public function getACL() {
 
-        return array(
-            array(
+        return [
+            [
                 'privilege' => '{DAV:}read',
-                'principal' => $this->getPrincipalUrl(),
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
 
     }
 

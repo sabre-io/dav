@@ -10,6 +10,8 @@ class DeliverNewEventTest extends \Sabre\DAVServerTest {
 
     public $setupCalDAV = true;
     public $setupCalDAVScheduling = true;
+    public $setupACL = true;
+    public $autoLogin = 'user1';
 
     function setUp() {
 
@@ -38,9 +40,8 @@ UID:AADC6438-18CF-4B52-8DD2-EF9AD75ADE83
 DTEND;TZID=America/Toronto:20140107T110000
 TRANSP:OPAQUE
 ATTENDEE;CN="Adminstrator";CUTYPE=INDIVIDUAL;PARTSTAT=ACCEPTED:mailto:user1.sabredav@sabredav.org
-ATTENDEE;CN="Roxy Kesh";CUTYPE=INDIVIDUAL;EMAIL="roxannakesh@gmail.com";
- PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT;RSVP=TRUE:mailto:roxannakesh@
- gmail.com
+ATTENDEE;CN="Roxy Kesh";CUTYPE=INDIVIDUAL;EMAIL="user2.sabredav@sabrdav.org";
+ PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT;RSVP=TRUE:mailto:user2.sabredav@sabredav.org
 SUMMARY:Just testing!
 DTSTART;TZID=America/Toronto:20140107T100000
 DTSTAMP:20140109T204422Z
@@ -64,7 +65,7 @@ ICS
         $resultVObj = VObject\Reader::read($result);
 
         $this->assertEquals(
-            '5.2;There was no system capable of delivering the scheduling message',
+            '1.2;Message delivered locally',
             $resultVObj->VEVENT->ATTENDEE[1]['SCHEDULE-STATUS']->getValue()
         );
 
@@ -72,7 +73,7 @@ ICS
         $message = $messages[0];
 
         $this->assertInstanceOf('\Sabre\CalDAV\Schedule\ITipMessage', $message);
-        $this->assertEquals('roxannakesh@gmail.com', $message->recipient);
+        $this->assertEquals('user2.sabredav@sabredav.org', $message->recipient);
         $this->assertEquals('Roxy Kesh', $message->recipientName);
         $this->assertEquals('user1.sabredav@sabredav.org', $message->sender);
         $this->assertEquals('Administrator', $message->senderName);

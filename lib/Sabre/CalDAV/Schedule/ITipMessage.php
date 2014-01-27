@@ -75,4 +75,26 @@ class ITipMessage {
      */
     public $message;
 
+    /**
+     * This method is strictly for debugging. Allows us to pretty-print the
+     * contents of this message.
+     */
+    public function __toString() {
+
+        $sender = $this->senderName . ' <' . $this->sender . '>';
+        $recipient = $this->recipientName . ' <' . $this->recipient . '>';
+        $status = $this->scheduleStatus?:null;
+
+        return <<<HI
+Sender: $sender
+Recipient: $recipient
+Method: {$this->method}
+Status: $status
+
+
+HI
+        . $this->message->serialize();
+
+    }
+
 }

@@ -187,8 +187,9 @@ class Plugin extends ServerPlugin {
 
         $this->server = $server;
         $server->on('method:POST', [$this,'httpPost']);
-        $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
-        $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
+        $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
+        $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
+        $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 
         /**
          * This information ensures that the {DAV:}resourcetype property has
@@ -476,6 +477,54 @@ class Plugin extends ServerPlugin {
         if (!$iTipMessage->scheduleStatus) {
             $iTipMessage->scheduleStatus='5.2;There was no system capable of delivering the scheduling message';
         }
+
+    }
+
+    /**
+     * Event handler for the 'schedule' event.
+     *
+     * This handler attempts to look at local accounts to deliver the
+     * scheduling object.
+     *
+     * @param ITipImessage $iTipMessage
+     * @return void
+     */
+    public function scheduleLocalDelivery($iTipMessage) {
+
+        $aclPlugin = $this->server->getPlugin('acl');
+
+        // Local delivery is not available if the ACL plugin is not loaded.
+        if (!$aclPlugin) {
+            return;
+        }
+
+        $caldavNS = '{' . Plugin::NS_CALDAV . '}';
+
+        $result = $aclPlugin->principalSearch(
+            ['{http://sabredav.org/ns}email-address' => $iTipMessage->recipient],
+            [
+                '{DAV:}principal-URL',
+                 $caldavNS . 'calendar-home-set',
+                 $caldavNS . 'schedule-inbox-URL',
+                '{http://sabredav.org/ns}email-address',
+            ]
+        );
+
+        if (!count($result)) {
+            $iTipMessage->scheduleStatus = '3.7; Could not find principal with email: ' . $iTipMessage->recipient;
+            return;
+        }
+
+        $inboxPath = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
+
+        // Note that we are bypassing ACL on purpose by calling this directly.
+        // We may need to look a bit deeper into this later. Supporting ACL
+        // here would be nice
+        $inbox = $this->server->tree->getNodeForPath($inboxPath);
+        $inbox->createFile('sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics', $iTipMessage->message->serialize());
+
+        $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
+
 
     }
 

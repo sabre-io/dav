@@ -52,4 +52,14 @@ interface SchedulingSupport extends BackendInterface {
      */
     public function deleteSchedulingObject($principalUri, $objectUri);
 
+    /**
+     * Creates a new scheduling object. This should land in a users' inbox.
+     *
+     * @param string $principalUri
+     * @param string $objectUri
+     * @param string $objectData
+     * @return void
+     */
+    public function createSchedulingObject($principalUri, $objectUri, $objectData);
+
 }

@@ -2,9 +2,11 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
-use Sabre\VObject;
+use Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface,
+    Sabre\VObject;
 
 /**
  * CardDAV plugin
@@ -54,6 +56,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
         $server->on('afterGetProperties',  [$this, 'afterGetProperties']);
         $server->on('updateProperties',    [$this, 'updateProperties']);
+        $server->on('method:POST',         [$this, 'post']);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
         $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
@@ -224,16 +227,52 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $closureResult = false;
-        foreach($innerResult as $status => $props) {
+
+        foreach ($innerResult as $status => $props) {
             if (is_array($props) && array_key_exists('{http://sabredav.org/ns}vcard-url', $props)) {
                 $result[$status][$meCard] = null;
                 $closureResult = ($status>=200 && $status<300);
             }
-
         }
 
         return $result;
+    }
 
+    /**
+     * This method handles POST requests specific to CardDAV
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return bool
+     */
+    public function post(RequestInterface $request, ResponseInterface $response)
+    {
+        // check if this is a text/x-vcard content type
+        $contentType = $request->getHeader('Content-Type');
+
+        if (strpos($contentType, 'text/x-vcard') !== 0) {
+            return;
+        }
+
+        $path = $request->getPath();
+
+        // check if we're talking to an AddressBook
+        try {
+            $node = $this->server->tree->getNodeForPath($path);
+        } catch (DAV\Exception\NotFound $e) {
+            return;
+        }
+
+        if (!$node instanceof AddressBook) {
+            return;
+        }
+
+        // create card and allow the backend to choose the id?
+        //
+        // $this->server->transactionType = 'post-caldav-outbox';
+        // $this->outboxRequest($node, $path);
+
+        return false;
     }
 
     /**

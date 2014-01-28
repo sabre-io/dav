@@ -101,6 +101,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1',
+            'CONTENT_TYPE' => 'text/x-vcard'
         ));
 
         $request->setBody("BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n");

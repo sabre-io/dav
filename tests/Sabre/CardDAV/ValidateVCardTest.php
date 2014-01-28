@@ -8,13 +8,13 @@ use Sabre\DAVACL;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
-
+class ValidateVCardTest extends \PHPUnit_Framework_TestCase
+{
     protected $server;
     protected $cardBackend;
 
-    function setUp() {
-
+    public function setUp()
+    {
         $addressbooks = array(
             array(
                 'id' => 'addressbook1',
@@ -39,20 +39,18 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $response = new HTTP\ResponseMock();
         $this->server->httpResponse = $response;
-
     }
 
-    function request(HTTP\Request $request) {
-
+    public function request(HTTP\Request $request)
+    {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
         return $this->server->httpResponse;
-
     }
 
-    function testCreateFile() {
-
+    public function testCreateCard()
+    {
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
@@ -61,11 +59,10 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals(415, $response->status);
-
     }
 
-    function testCreateFileValid() {
-
+    public function testCreateCardValid()
+    {
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
@@ -76,16 +73,15 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $expected = array(
-            'uri'          => 'blabla.vcf',
+            'uri' => 'blabla.vcf',
             'carddata' => "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n",
         );
 
         $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1','blabla.vcf'));
-
     }
 
-    function testCreateFileNoUID() {
-
+    public function testCreateCardNoUID()
+    {
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
@@ -97,12 +93,38 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
         $foo = $this->cardBackend->getCard('addressbook1','blabla.vcf');
-        $this->assertTrue(strpos($foo['carddata'],'UID')!==false);
+        $this->assertTrue(strpos($foo['carddata'],'UID') !== false);
     }
 
+    public function testCreateCardWithPost()
+    {
+        $request = HTTP\Sapi::createFromServerArray(array(
+            'REQUEST_METHOD' => 'POST',
+            'REQUEST_URI' => '/addressbooks/admin/addressbook1',
+        ));
 
-    function testCreateFileVCalendar() {
+        $request->setBody("BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n");
 
+        $response = $this->request($request);
+
+        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+        $uri = $response->getHeader('location');
+        $etag = $response->getHeader('etag');
+
+        $this->assertNotEmpty($uri);
+        $this->assertNotEmpty($etag);
+
+        $expected = array(
+            'uri' => $uri,
+            'carddata' => "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n",
+        );
+
+        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1', $uri));
+    }
+
+    public function testCreateCardVCalendar()
+    {
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
@@ -112,11 +134,10 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
-
     }
 
-    function testUpdateFile() {
-
+    public function testUpdateCard()
+    {
         $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
@@ -126,11 +147,10 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals(415, $response->status);
-
     }
 
-    function testUpdateFileParsableBody() {
-
+    public function testUpdateCardParsableBody()
+    {
         $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
         $request = HTTP\Sapi::createFromServerArray(array(
             'REQUEST_METHOD' => 'PUT',
@@ -144,13 +164,10 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(204, $response->status);
 
         $expected = array(
-            'uri'          => 'blabla.vcf',
+            'uri' => 'blabla.vcf',
             'carddata' => $body,
         );
 
         $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1','blabla.vcf'));
-
     }
 }
-
-?>

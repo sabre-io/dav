@@ -14,13 +14,6 @@
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
     </target>
 
-    <target name="uploadzip" depends="buildzip">
-        <echo>Uploading to Google Code</echo>
-        <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
-        <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
-        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav --labels=${sabredav.ucstability} -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
-    </target>
-
     <target name="clean" depends="init">
         <echo msg="Removing build files (cleaning up distribution)" />
         <delete dir="docs/api" />

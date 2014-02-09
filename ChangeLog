@@ -1,4 +1,6 @@
-1.7.10-stable (2014-??-??)
+1.7.10-stable (2014-02-09)
+	* The zip release ships with sabre/vobject 2.1.3.
+	* Fixed: Potential security vulnerability in the http client.
 	* Fixed: Issue #374: Don't urlescape colon (:) when it's not required.
 
 1.7.9-stable (2013-10-02)

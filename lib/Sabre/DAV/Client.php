@@ -314,7 +314,11 @@ class Client {
             CURLOPT_RETURNTRANSFER => true,
             // Return headers as part of the response
             CURLOPT_HEADER => true,
-            CURLOPT_POSTFIELDS => $body,
+
+            // For security we cast this to a string. If somehow an array could
+            // be passed here, it would be possible for an attacker to use @ to
+            // post local files.
+            CURLOPT_POSTFIELDS => (string)$body,
             // Automatically follow redirects
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,

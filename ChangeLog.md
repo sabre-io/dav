@@ -90,7 +90,6 @@ ChangeLog
 
 * includes changes from version 1.7.10.
 * The zip release ships with sabre/vobject 2.1.3.
-* includes changes from version 1.7.10.
 
 1.8.7 (2013-10-02)
 ------------------

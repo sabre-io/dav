@@ -85,11 +85,11 @@ ChangeLog
   for calendar objects, if the caldav backend provides this info.
 
 
-1.8.8 (2013-??-??)
+1.8.8 (2014-02-09)
 ------------------
 
 * includes changes from version 1.7.10.
-
+* The zip release ships with sabre/vobject 2.1.3.
 
 1.8.7 (2013-10-02)
 ------------------
@@ -165,10 +165,11 @@ ChangeLog
   greater flexiblity.
 
 
-1.7.10 (2014-??-??)
+1.7.10 (2014-02-09)
 -------------------
 
 * Fixed: Issue #374: Don't urlescape colon (:) when it's not required.
+* Fixed: Potential security vulnerability in the http client.
 
 
 1.7.9 (2013-10-02)

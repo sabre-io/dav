@@ -159,7 +159,7 @@ class Sabre_HTTP_Response {
 
         if (is_resource($body)) {
 
-            fpassthru($body);
+            file_put_contents('php://output', $body);
 
         } else {
 

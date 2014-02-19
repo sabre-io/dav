@@ -84,7 +84,7 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
-1.8.8 (2014-??-??)
+1.8.9 (2014-??-??)
 ------------------
 
 * includes changes from version 1.7.11.

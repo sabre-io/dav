@@ -113,6 +113,9 @@ class XMLUtil {
 
         // Retaining old error setting
         $oldErrorSetting =  libxml_use_internal_errors(true);
+        // Fixes an XXE vulnerability on PHP versions older than 5.3.23 or
+        // 5.4.13.
+        $oldEntityLoaderSetting = libxml_disable_entity_loader(true);
 
         // Clearing any previous errors
         libxml_clear_errors();
@@ -121,7 +124,7 @@ class XMLUtil {
 
         // We don't generally care about any whitespace
         $dom->preserveWhiteSpace = false;
-        
+
         $dom->loadXML(self::convertDAVNamespace($xml),LIBXML_NOWARNING | LIBXML_NOERROR);
 
         if ($error = libxml_get_last_error()) {
@@ -131,6 +134,7 @@ class XMLUtil {
 
         // Restoring old mechanism for error handling
         if ($oldErrorSetting===false) libxml_use_internal_errors(false);
+        if ($oldEntityLoaderSetting===false) libxml_disable_entity_loader(true);
 
         return $dom;
 

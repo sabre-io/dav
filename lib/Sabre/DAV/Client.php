@@ -530,7 +530,12 @@ class Client {
 
         $body = XMLUtil::convertDAVNamespace($body);
 
+        // Fixes an XXE vulnerability on PHP versions older than 5.3.23 or
+        // 5.4.13.
+        $previous = libxml_disable_entity_loader(true);
         $responseXML = simplexml_load_string($body, null, LIBXML_NOBLANKS | LIBXML_NOCDATA);
+        libxml_disable_entity_loader($previous);
+
         if ($responseXML===false) {
             throw new \InvalidArgumentException('The passed data is not valid XML');
         }

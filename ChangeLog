@@ -1,5 +1,6 @@
-1.7.11-stable (2014-??-??)
+1.7.11-stable (2014-02-26)
 	* Fixed: Issue #407: large downloads failed.
+	* Fixed: Issue #414: XXE security problem on older PHP versions.
 
 1.7.10-stable (2014-02-09)
 	* The zip release ships with sabre/vobject 2.1.3.

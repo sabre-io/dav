@@ -132,10 +132,9 @@ class Plugin extends DAV\ServerPlugin {
             // calendar-home-set property
             $addHome = '{' . self::NS_CARDDAV . '}addressbook-home-set';
             if (in_array($addHome,$requestedProperties)) {
-                $principalId = $node->getName();
-                $addressbookHomePath = self::ADDRESSBOOK_ROOT . '/' . $principalId . '/';
+
                 unset($requestedProperties[array_search($addHome, $requestedProperties)]);
-                $returnedProperties[200][$addHome] = new DAV\Property\Href($addressbookHomePath);
+                $returnedProperties[200][$addHome] = new DAV\Property\Href($this->getAddressBookHomeForPrincipal($path) . '/');
             }
 
             $directories = '{' . self::NS_CARDDAV . '}directory-gateway';
@@ -261,6 +260,20 @@ class Plugin extends DAV\ServerPlugin {
 
 
     }
+
+    /**
+     * Returns the addressbook home for a given principal
+     *
+     * @param string $principal
+     * @return string
+     */
+    protected function getAddressbookHomeForPrincipal($principal) {
+
+        list(, $principalId) = \Sabre\HTTP\URLUtil::splitPath($principal);
+        return self::ADDRESSBOOK_ROOT . '/' . $principalId;
+
+    }
+
 
     /**
      * This function handles the addressbook-multiget REPORT.
@@ -719,5 +732,4 @@ class Plugin extends DAV\ServerPlugin {
         return false;
 
     }
-
 }

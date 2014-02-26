@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+1.9.0-alpha3 (????-??-??)
+-------------------------
+
+* Making it easier for implementors to override how the CardDAV addressbook
+  home is located.
+
 1.9.0-alpha2 (2014-01-14)
 -------------------------
 

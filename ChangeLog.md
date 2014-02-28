@@ -90,9 +90,10 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
-1.8.9 (2014-??-??)
+1.8.9 (2014-02-26)
 ------------------
 
+* The zip release ships with sabre/vobject 2.1.3.
 * includes changes from version 1.7.11.
 
 
@@ -176,10 +177,12 @@ ChangeLog
   greater flexiblity.
 
 
-1.7.11 (2014-??-??)
+1.7.11 (2014-02-26)
 -------------------
 
+* The zip release ships with sabre/vobject 2.1.3.
 * Fixed: Issue #407: large downloads failed.
+* Fixed: Issue #414: XXE security problem on older PHP versions.
 
 
 1.7.10 (2014-02-09)

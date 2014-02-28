@@ -90,6 +90,10 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
+1.8.10 (????-??-??)
+-------------------
+* includes changes from version 1.7.12.
+
 1.8.9 (2014-02-26)
 ------------------
 
@@ -175,6 +179,12 @@ ChangeLog
   calendar.
 * Added: The Proxy principal classes now both implement an interface, for
   greater flexiblity.
+
+
+1.7.12 (????-??-??)
+-------------------
+
+* Fixed: Restoring old setting after changing libxml_disable_entity_loader.
 
 
 1.7.11 (2014-02-26)

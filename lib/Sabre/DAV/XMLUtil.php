@@ -134,7 +134,7 @@ class XMLUtil {
 
         // Restoring old mechanism for error handling
         if ($oldErrorSetting===false) libxml_use_internal_errors(false);
-        if ($oldEntityLoaderSetting===false) libxml_disable_entity_loader(true);
+        if ($oldEntityLoaderSetting===false) libxml_disable_entity_loader(false);
 
         return $dom;
 

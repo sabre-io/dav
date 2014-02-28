@@ -1,3 +1,7 @@
+1.7.12-stable (????-??-??)
+	* Fixed: Restoring old setting after changing
+	  libxml_disable_entity_loader.
+
 1.7.11-stable (2014-02-26)
 	* The zip release ships with sabre/vobject 2.1.3.
 	* Fixed: Issue #407: large downloads failed.

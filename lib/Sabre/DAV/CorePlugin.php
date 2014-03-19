@@ -491,12 +491,12 @@ class CorePlugin extends ServerPlugin {
 
         }
 
+        // Checking If-None-Match and related headers.
+        if (!$this->server->checkPreconditions()) return false;
+
         if ($this->server->tree->nodeExists($path)) {
 
             $node = $this->server->tree->getNodeForPath($path);
-
-            // Checking If-None-Match and related headers.
-            if (!$this->server->checkPreconditions()) return false;
 
             // If the node is a collection, we'll deny it
             if (!($node instanceof IFile)) throw new Exception\Conflict('PUT is not allowed on non-files.');

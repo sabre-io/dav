@@ -6,6 +6,8 @@ ChangeLog
 
 * Making it easier for implementors to override how the CardDAV addressbook
   home is located.
+* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+  files. Not really a chance for data-loss, but incorrect nevertheless.
 
 1.9.0-alpha2 (2014-01-14)
 -------------------------
@@ -185,6 +187,8 @@ ChangeLog
 -------------------
 
 * Fixed: Restoring old setting after changing libxml_disable_entity_loader.
+* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+  files. Not really a chance for data-loss, but incorrect nevertheless.
 
 
 1.7.11 (2014-02-26)

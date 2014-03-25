@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Mock;
+
+use Sabre\DAV;
+
 /**
  * Mock File
  *
@@ -9,7 +13,7 @@
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Sabre_DAV_Mock_File extends Sabre_DAV_File {
+class File extends DAV\File {
 
     protected $name;
     protected $contents;

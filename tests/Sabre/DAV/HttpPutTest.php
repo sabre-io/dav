@@ -1,16 +1,21 @@
 <?php
 
+namespace Sabre\DAV;
+
+use Sabre\DAVServerTest;
+use Sabre\HTTP;
+
 /**
  * Tests related to the PUT request.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
- * @covers Sabre_DAV_Server::httpPut
- * @covers Sabre_DAV_Server::createFile
- * @covers Sabre_DAV_Server::checkPreconditions
+ * @covers Sabre\DAV\Server::httpPut
+ * @covers Sabre\DAV\Server::createFile
+ * @covers Sabre\DAV\Server::checkPreconditions
  */
-class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
+class HttpPutTest extends DAVServerTest {
 
     /**
      * Sets up the DAV tree.
@@ -19,7 +24,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function setUpTree() {
 
-        $this->tree = new Sabre_DAV_Mock_Collection('root', array(
+        $this->tree = new Mock\Collection('root', array(
             'file1' => 'foo',
         ));
 
@@ -30,7 +35,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPut() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
         ));
@@ -62,7 +67,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutExisting() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'PUT',
         ));
@@ -94,7 +99,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutExistingIfMatchStar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_IF_MATCH' => '*',
@@ -127,7 +132,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutExistingIfMatchCorrect() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_IF_MATCH' => '"' . md5('foo') . '"',
@@ -160,7 +165,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutContentRange() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_CONTENT_RANGE' => 'bytes/100-200',
@@ -179,7 +184,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutIfNoneMatchStar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_IF_NONE_MATCH' => '*',
@@ -212,7 +217,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutIfMatchStar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_IF_MATCH' => '*',
@@ -232,7 +237,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutExistingIfNoneMatchStar() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_IF_NONE_MATCH' => '*',
@@ -252,7 +257,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testPutNoParent() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1/file2',
             'REQUEST_METHOD' => 'PUT',
         ));
@@ -272,7 +277,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testFinderPutSuccess() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_X_EXPECTED_ENTITY_LENGTH' => '5',
@@ -305,7 +310,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
      */
     public function testFinderPutFail() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
             'HTTP_X_EXPECTED_ENTITY_LENGTH' => '5',
@@ -325,7 +330,7 @@ class Sabre_DAV_HttpPutTest extends Sabre_DAVServerTest {
 
         $this->server->subscribeEvent('beforeBind', array($this, 'beforeBind'));
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'PUT',
         ));

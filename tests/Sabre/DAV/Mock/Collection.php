@@ -1,5 +1,9 @@
 <?php
 
+namespace Sabre\DAV\Mock;
+
+use Sabre\DAV;
+
 /**
  * Mock Collection.
  *
@@ -9,13 +13,13 @@
  * Every key a filename, every array value is either:
  *   * an array, for a sub-collection
  *   * a string, for a file
- *   * An instance of Sabre_DAV_INode.
+ *   * An instance of \Sabre\DAV\INode.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Sabre_DAV_Mock_Collection extends Sabre_DAV_Collection {
+class Collection extends DAV\Collection {
 
     protected $name;
     protected $children;
@@ -96,19 +100,19 @@ class Sabre_DAV_Mock_Collection extends Sabre_DAV_Collection {
     /**
      * Returns an array with all the child nodes
      *
-     * @return Sabre_DAV_INode[]
+     * @return \Sabre\DAV\INode[]
      */
     public function getChildren() {
 
         $result = array();
         foreach($this->children as $key=>$value) {
 
-            if ($value instanceof Sabre_DAV_INode) {
+            if ($value instanceof DAV\INode) {
                 $result[] = $value;
             } elseif (is_array($value)) {
-                $result[] = new Sabre_DAV_Mock_Collection($key, $value);
+                $result[] = new Collection($key, $value);
             } else {
-                $result[] = new Sabre_DAV_Mock_File($key, $value);
+                $result[] = new File($key, $value);
             }
 
         }

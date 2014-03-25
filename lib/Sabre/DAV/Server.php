@@ -871,12 +871,12 @@ class Sabre_DAV_Server {
 
         }
 
+        // Checking If-None-Match and related headers.
+        if (!$this->checkPreconditions()) return;
+
         if ($this->tree->nodeExists($uri)) {
 
             $node = $this->tree->getNodeForPath($uri);
-
-            // Checking If-None-Match and related headers.
-            if (!$this->checkPreconditions()) return;
 
             // If the node is a collection, we'll deny it
             if (!($node instanceof Sabre_DAV_IFile)) throw new Sabre_DAV_Exception_Conflict('PUT is not allowed on non-files.');

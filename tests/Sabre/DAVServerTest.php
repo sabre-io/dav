@@ -1,10 +1,17 @@
 <?php
 
 require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+
 require_once 'Sabre/DAV/Auth/MockBackend.php';
+require_once 'Sabre/DAV/Mock/File.php';
+require_once 'Sabre/DAV/Mock/Collection.php';
+
+require_once 'Sabre/DAVACL/MockPrincipalBackend.php';
+
+require_once 'Sabre/CalDAV/Backend/Mock.php';
+
+require_once 'Sabre/CardDAV/Backend/Mock.php';
+
 
 /**
  * This class may be used as a basis for other webdav-related unittests.

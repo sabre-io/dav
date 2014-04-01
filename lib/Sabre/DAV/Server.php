@@ -684,6 +684,10 @@ class Sabre_DAV_Server {
     protected function httpDelete($uri) {
 
         if (!$this->broadcastEvent('beforeUnbind',array($uri))) return;
+
+        // Checking If-None-Match and related headers.
+        if (!$this->checkPreconditions()) return;
+
         $this->tree->delete($uri);
         $this->broadcastEvent('afterUnbind',array($uri));
 

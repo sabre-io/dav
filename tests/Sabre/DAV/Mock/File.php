@@ -26,7 +26,7 @@ class File extends DAV\File {
      * @param array $children
      * @return void
      */
-    public function __construct($name, $contents, Sabre_DAV_Mock_Collection $parent) {
+    public function __construct($name, $contents, Collection $parent) {
 
         $this->name = $name;
         $this->put($contents);

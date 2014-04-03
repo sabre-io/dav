@@ -32,7 +32,7 @@ class Collection extends DAV\Collection {
      * @param array $children
      * @return void
      */
-    public function __construct($name, array $children = array(), Sabre_DAV_Mock_Collection $parent = null) {
+    public function __construct($name, array $children = array(), Collection $parent = null) {
 
         $this->name = $name;
         $this->children = $children;
@@ -133,7 +133,7 @@ class Collection extends DAV\Collection {
 
         foreach($this->children as $key=>$value) {
 
-            if ($value instanceof Sabre_DAV_INode) {
+            if ($value instanceof DAV\INode) {
                 if ($value->getName() == $name) {
                     unset($this->children[$key]);
                     return;

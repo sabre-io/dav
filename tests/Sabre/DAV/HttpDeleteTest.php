@@ -1,5 +1,10 @@
 <?php
 
+namespace Sabre\DAV;
+
+use Sabre\DAVServerTest;
+use Sabre\HTTP;
+
 /**
  * Tests related to the PUT request.
  *
@@ -7,7 +12,7 @@
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
+class HttpDeleteTest extends DAVServerTest {
 
     /**
      * Sets up the DAV tree.
@@ -16,7 +21,7 @@ class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
      */
     public function setUpTree() {
 
-        $this->tree = new Sabre_DAV_Mock_Collection('root', array(
+        $this->tree = new Mock\Collection('root', array(
             'file1' => 'foo',
             'dir' => array(
                 'subfile' => 'bar',
@@ -31,7 +36,7 @@ class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
      */
     public function testDelete() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'DELETE',
         ));
@@ -58,7 +63,7 @@ class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
      */
     public function testDeleteDirectory() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/dir',
             'REQUEST_METHOD' => 'DELETE',
         ));
@@ -85,7 +90,7 @@ class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
      */
     public function testDeleteNotFound() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file2',
             'REQUEST_METHOD' => 'DELETE',
         ));
@@ -105,7 +110,7 @@ class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
      */
     public function testDeletePreconditions() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'DELETE',
             'HTTP_IF_MATCH' => '"' . md5('foo') . '"',
@@ -126,7 +131,7 @@ class Sabre_DAV_HttpDeleteTest extends Sabre_DAVServerTest {
      */
     public function testDeletePreconditionsFailed() {
 
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_URI' => '/file1',
             'REQUEST_METHOD' => 'DELETE',
             'HTTP_IF_MATCH' => '"' . md5('bar') . '"',

@@ -176,50 +176,6 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
-    function testDelete() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'DELETE',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Length' => '0',
-        ),$this->response->headers);
-
-        $this->assertEquals(204, $this->response->status);
-        $this->assertEquals('', $this->response->body);
-        $this->assertFalse(file_exists($this->tempDir . '/test.txt'));
-
-    }
-
-    function testDeleteDirectory() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/testcol',
-            'REQUEST_METHOD' => 'DELETE',
-        );
-
-        mkdir($this->tempDir.'/testcol');
-        file_put_contents($this->tempDir.'/testcol/test.txt','Hi! I\'m a file with a short lifespan');
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'Content-Length' => '0',
-        ),$this->response->headers);
-        $this->assertEquals(204, $this->response->status);
-        $this->assertEquals('', $this->response->body);
-        $this->assertFalse(file_exists($this->tempDir . '/col'));
-
-    }
-
     function testOptions() {
 
         $serverVars = array(

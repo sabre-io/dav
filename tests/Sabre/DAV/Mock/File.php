@@ -17,6 +17,7 @@ class File extends DAV\File {
 
     protected $name;
     protected $contents;
+    protected $parent;
 
     /**
      * Creates the object
@@ -25,10 +26,11 @@ class File extends DAV\File {
      * @param array $children
      * @return void
      */
-    public function __construct($name, $contents) {
+    public function __construct($name, $contents, Collection $parent) {
 
         $this->name = $name;
         $this->put($contents);
+        $this->parent = $parent;
 
     }
 
@@ -111,6 +113,17 @@ class File extends DAV\File {
     public function getSize() {
 
         return strlen($this->contents);
+
+    }
+
+    /**
+     * Delete the node
+     *
+     * @return void
+     */
+    public function delete() {
+
+        $this->parent->deleteChild($this->name);
 
     }
 

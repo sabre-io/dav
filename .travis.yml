@@ -17,6 +17,7 @@ services:
 
 before_script:
   - mysql -e 'create database sabredav'
+  - composer self-update
   - composer install --prefer-source
 #  - echo "zend.enable_gc=0" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 

@@ -19,6 +19,7 @@ class Sabre_DAV_Mock_Collection extends Sabre_DAV_Collection {
 
     protected $name;
     protected $children;
+    protected $parent;
 
     /**
      * Creates the object
@@ -27,10 +28,11 @@ class Sabre_DAV_Mock_Collection extends Sabre_DAV_Collection {
      * @param array $children
      * @return void
      */
-    public function __construct($name, array $children = array()) {
+    public function __construct($name, array $children = array(), Sabre_DAV_Mock_Collection $parent = null) {
 
         $this->name = $name;
         $this->children = $children;
+        $this->parent = $parent;
 
     }
 
@@ -106,14 +108,52 @@ class Sabre_DAV_Mock_Collection extends Sabre_DAV_Collection {
             if ($value instanceof Sabre_DAV_INode) {
                 $result[] = $value;
             } elseif (is_array($value)) {
-                $result[] = new Sabre_DAV_Mock_Collection($key, $value);
+                $result[] = new Sabre_DAV_Mock_Collection($key, $value, $this);
             } else {
-                $result[] = new Sabre_DAV_Mock_File($key, $value);
+                $result[] = new Sabre_DAV_Mock_File($key, $value, $this);
             }
 
         }
 
         return $result;
+
+    }
+
+    /**
+     * Removes a childnode from this node.
+     *
+     * @param string $name
+     * @return void
+     */
+    public function deleteChild($name) {
+
+        foreach($this->children as $key=>$value) {
+
+            if ($value instanceof Sabre_DAV_INode) {
+                if ($value->getName() == $name) {
+                    unset($this->children[$key]);
+                    return;
+                }
+            } elseif ($key === $name) {
+                unset($this->children[$key]);
+                return;
+            }
+
+        }
+
+    }
+
+    /**
+     * Deletes this collection and all its children,.
+     *
+     * @return void
+     */
+    public function delete() {
+
+        foreach($this->getChildren() as $child) {
+            $this->deleteChild($child->getName());
+        }
+        $this->parent->deleteChild($this->getName());
 
     }
 

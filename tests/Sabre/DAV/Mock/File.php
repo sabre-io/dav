@@ -13,6 +13,7 @@ class Sabre_DAV_Mock_File extends Sabre_DAV_File {
 
     protected $name;
     protected $contents;
+    protected $parent;
 
     /**
      * Creates the object
@@ -21,10 +22,11 @@ class Sabre_DAV_Mock_File extends Sabre_DAV_File {
      * @param array $children
      * @return void
      */
-    public function __construct($name, $contents) {
+    public function __construct($name, $contents, Sabre_DAV_Mock_Collection $parent) {
 
         $this->name = $name;
         $this->put($contents);
+        $this->parent = $parent;
 
     }
 
@@ -107,6 +109,17 @@ class Sabre_DAV_Mock_File extends Sabre_DAV_File {
     public function getSize() {
 
         return strlen($this->contents);
+
+    }
+
+    /**
+     * Delete the node
+     *
+     * @return void
+     */
+    public function delete() {
+
+        $this->parent->deleteChild($this->name);
 
     }
 

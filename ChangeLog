@@ -63,9 +63,10 @@
 1.7.12-stable (????-??-??)
 	* Fixed: Restoring old setting after changing
 	  libxml_disable_entity_loader.
-	* Fixed: Issue #422 Preconditions were not being set on PUT on non-
+	* Fixed: Issue #422: Preconditions were not being set on PUT on non-
 	  existant files. Not really a chance for data-loss, but incorrect
 	  nevertheless.
+	* Fixed: Issue #427: Now checking preconditions on DELETE requests.
 
 1.7.11-stable (2014-02-26)
 	* The zip release ships with sabre/vobject 2.1.3.

@@ -9,7 +9,7 @@ set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATO
 include __DIR__ . '/../vendor/autoload.php';
 include 'Sabre/DAVServerTest.php';
 
-date_default_timezone_set('GMT');
+date_default_timezone_set('UTC');
 
 define("SABRE_TEMPDIR",dirname(__FILE__) . '/temp/');
 

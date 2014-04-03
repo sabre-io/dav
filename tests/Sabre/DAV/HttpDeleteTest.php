@@ -21,13 +21,13 @@ class HttpDeleteTest extends DAVServerTest {
      */
     public function setUpTree() {
 
-        $this->tree = new Mock\Collection('root', array(
+        $this->tree = new Mock\Collection('root', [
             'file1' => 'foo',
-            'dir' => array(
+            'dir' => [
                 'subfile' => 'bar',
                 'subfile2' => 'baz',
-            ),
-        ));
+            ],
+        ]);
 
     }
 
@@ -36,24 +36,21 @@ class HttpDeleteTest extends DAVServerTest {
      */
     public function testDelete() {
 
-        $request = new HTTP\Request(array(
-            'REQUEST_URI' => '/file1',
-            'REQUEST_METHOD' => 'DELETE',
-        ));
+        $request = new HTTP\Request('DELETE', '/file1');
 
         $response = $this->request($request);
 
         $this->assertEquals(
-            'HTTP/1.1 204 No Content',
-            $response->status,
-            "Incorrect status code. Response body:  " . $response->body
+            204,
+            $response->getStatus(),
+            "Incorrect status code. Response body:  " . $response->getBodyAsString()
         );
 
         $this->assertEquals(
-            array(
+            [
                 'Content-Length' => '0',
-            ),
-            $response->headers
+            ],
+            $response->getHeaders()
         );
 
     }
@@ -63,24 +60,21 @@ class HttpDeleteTest extends DAVServerTest {
      */
     public function testDeleteDirectory() {
 
-        $request = new HTTP\Request(array(
-            'REQUEST_URI' => '/dir',
-            'REQUEST_METHOD' => 'DELETE',
-        ));
+        $request = new HTTP\Request('DELETE', '/dir');
 
         $response = $this->request($request);
 
         $this->assertEquals(
-            'HTTP/1.1 204 No Content',
-            $response->status,
-            "Incorrect status code. Response body:  " . $response->body
+            204,
+            $response->getStatus(),
+            "Incorrect status code. Response body:  " . $response->getBodyAsString()
         );
 
         $this->assertEquals(
-            array(
+            [
                 'Content-Length' => '0',
-            ),
-            $response->headers
+            ],
+            $response->getHeaders()
         );
 
     }
@@ -90,17 +84,13 @@ class HttpDeleteTest extends DAVServerTest {
      */
     public function testDeleteNotFound() {
 
-        $request = new HTTP\Request(array(
-            'REQUEST_URI' => '/file2',
-            'REQUEST_METHOD' => 'DELETE',
-        ));
-
+        $request = new HTTP\Request('DELETE', '/file2');
         $response = $this->request($request);
 
         $this->assertEquals(
-            'HTTP/1.1 404 Not Found',
-            $response->status,
-            "Incorrect status code. Response body:  " . $response->body
+            404,
+            $response->getStatus(),
+            "Incorrect status code. Response body:  " . $response->getBodyAsString()
         );
 
     }
@@ -110,18 +100,16 @@ class HttpDeleteTest extends DAVServerTest {
      */
     public function testDeletePreconditions() {
 
-        $request = new HTTP\Request(array(
-            'REQUEST_URI' => '/file1',
-            'REQUEST_METHOD' => 'DELETE',
-            'HTTP_IF_MATCH' => '"' . md5('foo') . '"',
-        ));
+        $request = new HTTP\Request('DELETE', '/file1', [
+            'If-Match' => '"' . md5('foo') . '"',
+        ]);
 
         $response = $this->request($request);
 
         $this->assertEquals(
-            'HTTP/1.1 204 No Content',
-            $response->status,
-            "Incorrect status code. Response body:  " . $response->body
+            204,
+            $response->getStatus(),
+            "Incorrect status code. Response body:  " . $response->getBodyAsString()
         );
 
     }
@@ -131,18 +119,16 @@ class HttpDeleteTest extends DAVServerTest {
      */
     public function testDeletePreconditionsFailed() {
 
-        $request = new HTTP\Request(array(
-            'REQUEST_URI' => '/file1',
-            'REQUEST_METHOD' => 'DELETE',
-            'HTTP_IF_MATCH' => '"' . md5('bar') . '"',
-        ));
+        $request = new HTTP\Request('DELETE', '/file1', [
+            'If-Match' => '"' . md5('bar') . '"',
+        ]);
 
         $response = $this->request($request);
 
         $this->assertEquals(
-            'HTTP/1.1 412 Precondition failed',
-            $response->status,
-            "Incorrect status code. Response body:  " . $response->body
+            412,
+            $response->getStatus(),
+            "Incorrect status code. Response body:  " . $response->getBodyAsString()
         );
 
     }

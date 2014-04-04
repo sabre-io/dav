@@ -25,6 +25,7 @@ abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
         $this->server = new Server($this->getRootNode());
         $this->server->httpResponse = $this->response;
         $this->server->debugExceptions = true;
+        $this->deleteTree(SABRE_TEMPDIR,false);
         file_put_contents(SABRE_TEMPDIR . '/test.txt', 'Test contents');
         mkdir(SABRE_TEMPDIR . '/dir');
         file_put_contents(SABRE_TEMPDIR . '/dir/child.txt', 'Child contents');

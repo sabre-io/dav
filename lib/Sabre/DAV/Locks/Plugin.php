@@ -503,7 +503,7 @@ class Plugin extends DAV\ServerPlugin {
 
                         $uri = $conditionUri?$conditionUri:$this->server->getRequestUri();
                         $node = $this->server->tree->getNodeForPath($uri);
-                        $etagValid = $node instanceof Sabre_DAV_IFile && $node->getETag()==$conditionToken[2];
+                        $etagValid = $node instanceof DAV\IFile && $node->getETag()==$conditionToken[2];
 
                     }
 

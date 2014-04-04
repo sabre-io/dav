@@ -922,7 +922,7 @@ class PluginTest extends DAV\AbstractServer {
             'HTTP_IF' => '(["etag1"])',
         );
 
-        $request = new Sabre_HTTP_Request($serverVars);
+        $request = new HTTP\Request($serverVars);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();

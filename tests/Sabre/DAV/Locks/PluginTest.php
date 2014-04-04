@@ -922,6 +922,21 @@ class PluginTest extends DAV\AbstractServer {
 
     }
 
+    function testDeleteWithETagOnCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir',
+            'REQUEST_METHOD' => 'DELETE',
+            'HTTP_IF' => '(["etag1"])',
+        );
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+        $this->assertEquals(412, $this->response->status);
+
+    }
+
     function testGetTimeoutHeader() {
 
         $request = HTTP\Sapi::createFromServerArray(array(

@@ -1621,7 +1621,7 @@ class Server extends EventEmitter {
                     // The token was valid, and there was an etag.. We must
                     // grab the current etag and check it.
                     $node = $this->tree->getNodeForPath($uri);
-                    $etagValid = $node->getETag() == $token['etag'];
+                    $etagValid = $node instanceof IFile && $node->getETag() == $token['etag'];
 
                 }
 

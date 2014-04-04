@@ -2,17 +2,26 @@ language: php
 php:
   - 5.4
   - 5.5
+  - 5.5.9
+  - 5.5.10
+  - 5.6
   - hhvm
+  - hhvm-nightly
 
 matrix:
+  fast_finish: true
   allow_failures:
+    - php: 5.5.10
+    - php: 5.6
     - php: hhvm
+    - php: hhvm-nightly
 
 services:
   - mysql
 
 before_script:
   - mysql -e 'create database sabredav'
+  - composer self-update
   - composer install --prefer-source
 #  - echo "zend.enable_gc=0" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 

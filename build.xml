@@ -16,17 +16,26 @@
         <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
     </target>
 
-    <target name="uploadzip" depends="buildzip">
-        <echo>Uploading to Google Code</echo>
-        <propertyprompt propertyName="googlecode.username" promptText="Enter your googlecode username" useExistingValue="true" />
-        <propertyprompt propertyName="googlecode.password" promptText="Enter your googlecode password" useExistingValue="true" />
-        <exec command="bin/googlecode_upload.py -s 'SabreDAV ${sabredav.version}' -p sabredav -u '${googlecode.username}' -w '${googlecode.password}' build/SabreDAV-${sabredav.version}.zip" checkreturn="true" />
+    <target name="buildphar" depends="init, test, clean">
+        <pharpackage
+            destfile="build/SabreDAV-${sabredav.version}.phar"
+            basedir="./build/SabreDAV/"
+            clistub="bin/sabredav"
+            webstub="examples/fileserver.php"
+            >
+            <fileset dir="build/SabreDAV">
+                <include name="**/**" />
+            </fileset>
+            <metadata>
+                <element name="version" value="${sabredav.version}" />
+            </metadata>
+        </pharpackage>
     </target>
 
     <target name="clean" depends="init">
         <echo msg="Removing build files (cleaning up distribution)" />
         <delete dir="docs/api" />
-        <delete dir="build" />
+        <delete dir="build/SabreDAV" />
     </target>
 
     <target name="markrelease" depends="init,clean,test">

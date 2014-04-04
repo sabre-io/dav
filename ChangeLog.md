@@ -1,6 +1,15 @@
 ChangeLog
 =========
 
+1.9.0-alpha3 (????-??-??)
+-------------------------
+
+* Making it easier for implementors to override how the CardDAV addressbook
+  home is located.
+* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+  files. Not really a chance for data-loss, but incorrect nevertheless.
+* Fixed: Issue #428: Etag check with If: fails if the target is a collection.
+
 1.9.0-alpha2 (2014-01-14)
 -------------------------
 
@@ -84,12 +93,22 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
+1.8.10 (????-??-??)
+-------------------
+* includes changes from version 1.7.12.
 
-1.8.8 (2013-??-??)
+1.8.9 (2014-02-26)
+------------------
+
+* The zip release ships with sabre/vobject 2.1.3.
+* includes changes from version 1.7.11.
+
+
+1.8.8 (2014-02-09)
 ------------------
 
 * includes changes from version 1.7.10.
-
+* The zip release ships with sabre/vobject 2.1.3.
 
 1.8.7 (2013-10-02)
 ------------------
@@ -165,10 +184,29 @@ ChangeLog
   greater flexiblity.
 
 
-1.7.10 (2014-??-??)
+1.7.12 (????-??-??)
+-------------------
+
+* Fixed: Restoring old setting after changing libxml_disable_entity_loader.
+* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+  files. Not really a chance for data-loss, but incorrect nevertheless.
+* Fixed: Issue #427: Now checking preconditions on DELETE requests.
+* Fixed: Issue #428: Etag check with If: fails if the target is a collection.
+
+
+1.7.11 (2014-02-26)
+-------------------
+
+* The zip release ships with sabre/vobject 2.1.3.
+* Fixed: Issue #407: large downloads failed.
+* Fixed: Issue #414: XXE security problem on older PHP versions.
+
+
+1.7.10 (2014-02-09)
 -------------------
 
 * Fixed: Issue #374: Don't urlescape colon (:) when it's not required.
+* Fixed: Potential security vulnerability in the http client.
 
 
 1.7.9 (2013-10-02)

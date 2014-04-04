@@ -501,7 +501,7 @@ class Sabre_DAV_Locks_Plugin extends Sabre_DAV_ServerPlugin {
 
                         $uri = $conditionUri?$conditionUri:$this->server->getRequestUri();
                         $node = $this->server->tree->getNodeForPath($uri);
-                        $etagValid = $node->getETag()==$conditionToken[2];
+                        $etagValid = $node instanceof Sabre_DAV_IFile && $node->getETag()==$conditionToken[2];
 
                     }
 

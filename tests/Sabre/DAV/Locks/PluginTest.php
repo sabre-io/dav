@@ -909,6 +909,22 @@ class Sabre_DAV_Locks_PluginTest extends Sabre_DAV_AbstractServer {
 
     }
 
+    function testDeleteWithETagOnCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir',
+            'REQUEST_METHOD' => 'DELETE',
+            'HTTP_IF' => '(["etag1"])',
+        );
+
+        $request = new Sabre_HTTP_Request($serverVars);
+        $request->setBody('newbody');
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+
+    }
+
     function testGetTimeoutHeader() {
 
         $request = new Sabre_HTTP_Request(array(

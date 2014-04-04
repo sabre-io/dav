@@ -929,12 +929,11 @@ class PluginTest extends DAV\AbstractServer {
             'REQUEST_METHOD' => 'DELETE',
             'HTTP_IF' => '(["etag1"])',
         );
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
 
-        $request = new HTTP\Request($serverVars);
-        $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
-        $this->assertEquals('HTTP/1.1 412 Precondition failed',$this->response->status);
+        $this->assertEquals(412, $this->response->status);
 
     }
 

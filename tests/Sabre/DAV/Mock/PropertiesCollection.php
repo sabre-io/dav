@@ -9,14 +9,31 @@ use
 
 /**
  * A node specifically for testing property-related operations
- * 
+ *
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
- * @author Evert Pot (http://evertpot.com/) 
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 class PropertiesCollection extends Collection implements IProperties {
 
     public $failMode = false;
+
+    public $properties;
+
+    /**
+     * Creates the object
+     *
+     * @param string $name
+     * @param array $children
+     * @param array $properties
+     * @return void
+     */
+    public function __construct($name, array $children, array $properties = []) {
+
+        parent::__construct($name, $children, null);
+        $this->properties = $properties;
+
+    }
 
     /**
      * Updates properties on this node.
@@ -48,11 +65,32 @@ class PropertiesCollection extends Collection implements IProperties {
 
     }
 
-    function getProperties($requestedPropeties) {
+    /**
+     * Returns a list of properties for this nodes.
+     *
+     * The properties list is a list of propertynames the client requested,
+     * encoded in clark-notation {xmlnamespace}tagname
+     *
+     * If the array is empty, it means 'all properties' were requested.
+     *
+     * Note that it's fine to liberally give properties back, instead of
+     * conforming to the list of requested properties.
+     * The Server class will filter out the extra.
+     *
+     * @param array $properties
+     * @return array
+     */
+    public function getProperties($requestedProperties) {
 
-        return array();
+        $returnedProperties = array();
+        foreach($requestedProperties as $requestedProperty) {
+            if (isset($this->properties[$requestedProperty])) {
+                $returnedProperties[$requestedProperty] =
+                    $this->properties[$requestedProperty];
+            }
+        }
+        return $returnedProperties;
 
     }
-
 
 }

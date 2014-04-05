@@ -661,7 +661,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeMethod',        [$this,'beforeMethod'],20);
         $server->on('beforeBind',          [$this,'beforeBind'],20);
         $server->on('beforeUnbind',        [$this,'beforeUnbind'],20);
-        $server->on('updateProperties',    [$this,'updateProperties']);
+        $server->on('propPatch',           [$this,'propPatch']);
         $server->on('beforeUnlock',        [$this,'beforeUnlock'],20);
         $server->on('report',              [$this,'report']);
         $server->on('method:ACL',          [$this,'httpAcl']);
@@ -956,42 +956,36 @@ class Plugin extends DAV\ServerPlugin {
      * This method intercepts PROPPATCH methods and make sure the
      * group-member-set is updated correctly.
      *
-     * @param array $propertyDelta
-     * @param array $result
-     * @param DAV\INode $node
-     * @return bool
+     * @param string $path
+     * @param DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties(&$propertyDelta, &$result, DAV\INode $node) {
+    public function propPatch($path, DAV\PropPatch $propPatch) {
 
-        if (!array_key_exists('{DAV:}group-member-set', $propertyDelta))
-            return;
+        $propPatch->handle('{DAV:}group-member-set', function($value) use ($path) {
+            if (is_null($value)) {
+                $memberSet = [];
+            } elseif ($value instanceof DAV\Property\HrefList) {
+                $memberSet = array_map(
+                    [$this->server,'calculateUri'],
+                    $value->getHrefs()
+                );
+            } else {
+                throw new DAV\Exception('The group-member-set property MUST be an instance of Sabre\DAV\Property\HrefList or null');
+            }
+            $node = $this->server->tree->getNodeForPath($path);
+            if (!($node instanceof IPrincipal)) {
+                // Fail
+                return false;
+            }
 
-        if (is_null($propertyDelta['{DAV:}group-member-set'])) {
-            $memberSet = array();
-        } elseif ($propertyDelta['{DAV:}group-member-set'] instanceof DAV\Property\HrefList) {
-            $memberSet = array_map(
-                array($this->server,'calculateUri'),
-                $propertyDelta['{DAV:}group-member-set']->getHrefs()
-            );
-        } else {
-            throw new DAV\Exception('The group-member-set property MUST be an instance of Sabre\DAV\Property\HrefList or null');
-        }
+            $node->setGroupMemberSet($memberSet);
+            // We must also clear our cache, just in case
 
-        if (!($node instanceof IPrincipal)) {
-            $result[403]['{DAV:}group-member-set'] = null;
-            unset($propertyDelta['{DAV:}group-member-set']);
+            $this->principalMembershipCache = array();
 
-            // Returning false will stop the updateProperties process
-            return false;
-        }
-
-        $node->setGroupMemberSet($memberSet);
-        // We must also clear our cache, just in case
-
-        $this->principalMembershipCache = array();
-
-        $result[200]['{DAV:}group-member-set'] = null;
-        unset($propertyDelta['{DAV:}group-member-set']);
+            return true;
+        });
 
     }
 

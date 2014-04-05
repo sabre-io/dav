@@ -22,10 +22,10 @@ interface IProperties extends INode {
      * To update specific properties, call the 'handle' method on this object.
      * Read the PropPatch documentation for more information.
      *
-     * @param array $mutations
-     * @return bool|array
+     * @param PropPatch $propPatch
+     * @return void
      */
-    public function propPatch(PropPatch $proppatch);
+    public function propPatch(PropPatch $propPatch);
 
     /**
      * Returns a list of properties for this nodes.

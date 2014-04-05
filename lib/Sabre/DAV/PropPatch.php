@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV;
 
+use UnexpectedValueException;
+
 /**
  * This class represents a set of properties that are going to be updated.
  *
@@ -80,7 +82,7 @@ class PropPatch {
         $usedProperties = [];
         foreach((array)$properties as $propertyName) {
 
-            if (isset($this->mutations[$propertyName]) && !isset($this->result[$propertyName])) {
+            if (array_key_exists($propertyName, $this->mutations) && !isset($this->result[$propertyName])) {
 
                 $usedProperties[] = $propertyName;
                 // HTTP Accepted
@@ -208,13 +210,13 @@ class PropPatch {
 
         foreach($this->propertyUpdateCallbacks as $callbackInfo) {
 
+            if ($this->failed) {
+                break;
+            }
             if (is_string($callbackInfo[0])) {
                 $this->doCallbackSingleProp($callbackInfo[0], $callbackInfo[1]);
             } else {
                 $this->doCallbackMultiProp($callbackInfo[0], $callbackInfo[1]);
-            }
-            if ($this->failed) {
-                break;
             }
 
         }
@@ -228,7 +230,7 @@ class PropPatch {
             foreach($this->result as $propertyName=>$status) {
                 if ($status === 202) {
                     // Failed dependency
-                    $this->result[$propertyName][$status] = 424;
+                    $this->result[$propertyName] = 424;
                 }
             }
 
@@ -265,7 +267,7 @@ class PropPatch {
         if (!is_int($result)) {
             throw new UnexpectedValueException('A callback sent to handle() did not return an int or a bool');
         }
-        $this->mutations[$propertyName] = $result;
+        $this->result[$propertyName] = $result;
         if ($result>=400) {
             $this->failed = true;
         }
@@ -286,14 +288,15 @@ class PropPatch {
             $argument[$propertyName] = $this->mutations[$propertyName];
         }
 
-        $result = $callback($propertyName);
+        $result = $callback($argument);
 
         if (is_array($result)) {
             foreach($propertyList as $propertyName) {
                 if (!isset($result[$propertyName])) {
                     $resultCode = 500;
+                } else {
+                    $resultCode = $result[$propertyName];
                 }
-                $resultCode = $result[$propertyName];
                 if ($resultCode >= 400) {
                     $this->failed = true;
                 }
@@ -313,7 +316,9 @@ class PropPatch {
             foreach($propertyList as $propertyName) {
                 $this->result[$propertyName] = 403;
             }
-        } 
+        } else {
+            throw new UnexpectedValueException('A callback sent to handle() did not return an array or a bool');
+        }
 
     }
 

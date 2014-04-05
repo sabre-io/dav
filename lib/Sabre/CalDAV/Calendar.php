@@ -4,7 +4,8 @@ namespace Sabre\CalDAV;
 
 use
     Sabre\DAV,
-    Sabre\DAVACL;
+    Sabre\DAVACL,
+    Sabre\DAV\PropPatch;
 
 /**
  * This object represents a CalDAV calendar.
@@ -57,14 +58,20 @@ class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyn
     }
 
     /**
-     * Updates properties such as the display name and description
+     * Updates properties on this node.
      *
-     * @param array $mutations
-     * @return array
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
+     *
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
+     *
+     * @param PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties($mutations) {
+    public function propPatch(PropPatch $propPatch) {
 
-        return $this->caldavBackend->updateCalendar($this->calendarInfo['id'],$mutations);
+        return $this->caldavBackend->updateCalendar($this->calendarInfo['id'], $propPatch);
 
     }
 

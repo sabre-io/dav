@@ -225,7 +225,7 @@ class ServerPropsTest extends AbstractServer {
 
     public function testUpdatePropertiesFail1() {
 
-        $dir = new Mock\PropertiesCollection([]);
+        $dir = new Mock\PropertiesCollection('root', []);
         $dir->failMode = 'updatepropsfalse';
 
         $objectTree = new ObjectTree($dir);
@@ -248,7 +248,7 @@ class ServerPropsTest extends AbstractServer {
      */
     public function testUpdatePropertiesFail2() {
 
-        $dir = new Mock\PropertiesCollection([]);
+        $dir = new Mock\PropertiesCollection('root', []);
         $dir->failMode = 'updatepropsarray';
 
         $objectTree = new ObjectTree($dir);
@@ -272,7 +272,7 @@ class ServerPropsTest extends AbstractServer {
      */
     public function testUpdatePropertiesFail3() {
 
-        $dir = new Mock\PropertiesCollection([]);
+        $dir = new Mock\PropertiesCollection('root', []);
         $dir->failMode = 'updatepropsobj';
 
         $objectTree = new ObjectTree($dir);

@@ -4,10 +4,13 @@ namespace Sabre\CalDAV\Subscriptions;
 
 use
     Sabre\DAV\Collection,
-    Sabre\CalDAV\Backend\SubscriptionSupport,
     Sabre\DAV\Property\Href,
+    Sabre\DAV\PropPatch,
+    Sabre\DAV\Exception\MethodNotAllowed,
     Sabre\DAVACL\IACL,
-    Sabre\DAV\Exception\MethodNotAllowed;
+    Sabre\CalDAV\Backend\SubscriptionSupport;
+
+
 
 /**
  * Subscription Node
@@ -113,43 +116,20 @@ class Subscription extends Collection implements ISubscription, IACL {
     /**
      * Updates properties on this node.
      *
-     * The properties array uses the propertyName in clark-notation as key,
-     * and the array value for the property value. In the case a property
-     * should be deleted, the property value will be null.
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
      *
-     * This method must be atomic. If one property cannot be changed, the
-     * entire operation must fail.
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
      *
-     * If the operation was successful, true can be returned.
-     * If the operation failed, false can be returned.
-     *
-     * Deletion of a non-existent property is always successful.
-     *
-     * Lastly, it is optional to return detailed information about any
-     * failures. In this case an array should be returned with the following
-     * structure:
-     *
-     * array(
-     *   403 => array(
-     *      '{DAV:}displayname' => null,
-     *   ),
-     *   424 => array(
-     *      '{DAV:}owner' => null,
-     *   )
-     * )
-     *
-     * In this example it was forbidden to update {DAV:}displayname.
-     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
-     * (424 Failed Dependency) because the request needs to be atomic.
-     *
-     * @param array $mutations
-     * @return bool|array
+     * @param PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties($mutations) {
+    public function propPatch(PropPatch $propPatch) {
 
         return $this->caldavBackend->updateSubscription(
             $this->subscriptionInfo['id'],
-            $mutations
+            $propPatch
         );
 
     }

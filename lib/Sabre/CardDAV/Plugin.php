@@ -53,7 +53,7 @@ class Plugin extends DAV\ServerPlugin {
         /* Events */
         $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
         $server->on('afterGetProperties',  [$this, 'afterGetProperties']);
-        $server->on('updateProperties',    [$this, 'updateProperties']);
+        $server->on('propPatch',           [$this, 'propPatch']);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
         $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
@@ -187,51 +187,38 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * This event is triggered when a PROPPATCH method is executed
      *
-     * @param array $mutations
-     * @param array $result
-     * @param DAV\INode $node
+     * @param string $path
+     * @param DAV\PropPatch $propPatch
      * @return bool
      */
-    public function updateProperties(&$mutations, &$result, DAV\INode $node) {
+    public function propPatch($path, DAV\PropPatch $propPatch) {
 
+        $node = $this->server->tree->getNodeForPath($path);
         if (!$node instanceof UserAddressBooks) {
             return true;
         }
 
         $meCard = '{http://calendarserver.org/ns/}me-card';
 
-        // The only property we care about
-        if (!isset($mutations[$meCard]))
-            return true;
+        $propPatch->handle($meCard, function($value) use ($node) {
 
-        $value = $mutations[$meCard];
-        unset($mutations[$meCard]);
-
-        if ($value instanceof DAV\Property\IHref) {
-            $value = $value->getHref();
-            $value = $this->server->calculateUri($value);
-        } elseif (!is_null($value)) {
-            $result[400][$meCard] = null;
-            return false;
-        }
-
-        $innerResult = $this->server->updateProperties(
-            $node->getOwner(),
-            array(
-                '{http://sabredav.org/ns}vcard-url' => $value,
-            )
-        );
-
-        $closureResult = false;
-        foreach($innerResult as $status => $props) {
-            if (is_array($props) && array_key_exists('{http://sabredav.org/ns}vcard-url', $props)) {
-                $result[$status][$meCard] = null;
-                $closureResult = ($status>=200 && $status<300);
+            if ($value instanceof DAV\Property\IHref) {
+                $value = $value->getHref();
+                $value = $this->server->calculateUri($value);
+            } elseif (!is_null($value)) {
+                return 400;
             }
 
-        }
+            $innerResult = $this->server->updateProperties(
+                $node->getOwner(),
+                array(
+                    '{http://sabredav.org/ns}vcard-url' => $value,
+                )
+            );
 
-        return $result;
+            return $innerResult['{http://sabredav.org/ns}vcard-url'];
+
+        });
 
     }
 

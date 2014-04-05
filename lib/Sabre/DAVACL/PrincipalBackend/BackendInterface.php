@@ -57,6 +57,7 @@ interface BackendInterface {
      *
      * @param string $path
      * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
      */
     function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch);
 

@@ -91,62 +91,64 @@ class PDO extends AbstractBackend implements SyncSupport {
 
 
     /**
-     * Updates an addressbook's properties
+     * Updates properties for an address book.
      *
-     * See Sabre\DAV\IProperties for a description of the mutations array, as
-     * well as the return value.
+     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
+     * To do the actual updates, you must tell this object which properties
+     * you're going to process with the handle() method.
      *
-     * @param mixed $addressBookId
-     * @param array $mutations
-     * @see Sabre\DAV\IProperties::updateProperties
-     * @return bool|array
+     * Calling the handle method is like telling the PropPatch object "I
+     * promise I can handle updating this property".
+     *
+     * Read the PropPatch documenation for more info and examples.
+     *
+     * @param string $addressBookId
+     * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateAddressBook($addressBookId, array $mutations) {
+    public function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch) {
 
-        $updates = array();
+        $supportedProperties = [
+            '{DAV:}displayname',
+            '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description',
+        ];
 
-        foreach($mutations as $property=>$newValue) {
+        $propPatch->handle($supportedProperties, function($mutations) use ($addressBookId) {
 
-            switch($property) {
-                case '{DAV:}displayname' :
-                    $updates['displayname'] = $newValue;
-                    break;
-                case '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' :
-                    $updates['description'] = $newValue;
-                    break;
-                default :
-                    // If any unsupported values were being updated, we must
-                    // let the entire request fail.
-                    return false;
+            $updates = [];
+            foreach($mutations as $property=>$newValue) {
+
+                switch($property) {
+                    case '{DAV:}displayname' :
+                        $updates['displayname'] = $newValue;
+                        break;
+                    case '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' :
+                        $updates['description'] = $newValue;
+                        break;
+                }
             }
-
-        }
-
-        // No values are being updated?
-        if (!$updates) {
-            return false;
-        }
-
-        $query = 'UPDATE ' . $this->addressBooksTableName . ' SET ';
-        $first = true;
-        foreach($updates as $key=>$value) {
-            if ($first) {
-                $first = false;
-            } else {
-                $query.=', ';
+            $query = 'UPDATE ' . $this->addressBooksTableName . ' SET ';
+            $first = true;
+            foreach($updates as $key=>$value) {
+                if ($first) {
+                    $first = false;
+                } else {
+                    $query.=', ';
+                }
+                $query.=' `' . $key . '` = :' . $key . ' ';
             }
-            $query.=' `' . $key . '` = :' . $key . ' ';
-        }
-        $query.=' WHERE id = :addressbookid';
+            $query.=' WHERE id = :addressbookid';
 
-        $stmt = $this->pdo->prepare($query);
-        $updates['addressbookid'] = $addressBookId;
+            $stmt = $this->pdo->prepare($query);
+            $updates['addressbookid'] = $addressBookId;
 
-        $stmt->execute($updates);
+            $stmt->execute($updates);
 
-        $this->addChange($addressBookId, "", 2);
+            $this->addChange($addressBookId, "", 2);
 
-        return true;
+            return true;
+
+        });
 
     }
 

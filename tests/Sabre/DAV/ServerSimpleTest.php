@@ -381,7 +381,6 @@ class ServerSimpleTest extends AbstractServer{
     }
 
     /**
-     * @covers \Sabre\DAV\Server::guessBaseUri
      */
     function testGuessBaseUri() {
 
@@ -400,7 +399,6 @@ class ServerSimpleTest extends AbstractServer{
 
     /**
      * @depends testGuessBaseUri
-     * @covers Sabre\DAV\Server::guessBaseUri
      */
     function testGuessBaseUriPercentEncoding() {
 
@@ -419,7 +417,6 @@ class ServerSimpleTest extends AbstractServer{
 
     /**
      * @depends testGuessBaseUri
-     * @covers \Sabre\DAV\Server::guessBaseUri
      */
     /*
     function testGuessBaseUriPercentEncoding2() {
@@ -483,7 +480,6 @@ class ServerSimpleTest extends AbstractServer{
 
 
     /**
-     * @covers \Sabre\DAV\Server::guessBaseUri
      * @depends testGuessBaseUri
      */
     function testGuessBaseUriQueryString() {
@@ -502,7 +498,6 @@ class ServerSimpleTest extends AbstractServer{
     }
 
     /**
-     * @covers \Sabre\DAV\Server::guessBaseUri
      * @depends testGuessBaseUri
      * @expectedException \Sabre\DAV\Exception
      */

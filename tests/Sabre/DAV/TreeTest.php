@@ -2,9 +2,6 @@
 
 namespace Sabre\DAV;
 
-/**
- * @covers \Sabre\DAV\Tree
- */
 class TreeTest extends \PHPUnit_Framework_TestCase {
 
     function testNodeExists() {

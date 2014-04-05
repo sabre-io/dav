@@ -27,7 +27,6 @@ class SupportedReportSetTest extends DAV\AbstractServer {
     }
 
     /**
-     * @covers Sabre\DAV\Property\SupportedReportSet
      */
     function testNoReports() {
 
@@ -60,7 +59,6 @@ class SupportedReportSetTest extends DAV\AbstractServer {
     }
 
     /**
-     * @covers Sabre\DAV\Property\SupportedReportSet
      * @depends testNoReports
      */
     function testCustomReport() {

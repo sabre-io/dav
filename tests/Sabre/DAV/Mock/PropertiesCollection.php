@@ -3,7 +3,9 @@
 namespace Sabre\DAV\Mock;
 
 use
-    Sabre\DAV\IProperties;
+    Sabre\DAV\IProperties,
+    Sabre\DAV\PropPatch;
+
 
 /**
  * A node specifically for testing property-related operations
@@ -30,13 +32,13 @@ class PropertiesCollection extends Collection implements IProperties {
      */
     public function propPatch(PropPatch $proppatch) {
 
-        $proppatch->on('commit', function() {
+        $proppatch->handleRemaining(function($updateProperties) {
 
             switch($this->failMode) {
                 case 'updatepropsfalse' : return false;
                 case 'updatepropsarray' :
-                    $r = array(402 => array());
-                    foreach($updateProperties as $k=>$v) $r[402][$k] = null;
+                    $r = [];
+                    foreach($updateProperties as $k=>$v) $r[$k] = 402;
                     return $r;
                 case 'updatepropsobj' :
                     return new \STDClass();

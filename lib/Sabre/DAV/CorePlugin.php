@@ -43,7 +43,7 @@ class CorePlugin extends ServerPlugin {
         $server->on('method:COPY',      [$this, 'httpCopy']);
         $server->on('method:REPORT',    [$this, 'httpReport']);
 
-        $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 100);
+        $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 90);
         $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
 
     }
@@ -748,7 +748,7 @@ class CorePlugin extends ServerPlugin {
         );
 
         if ($protected) {
-            $propPatch->setRemainingResultCode($protected, 403);
+            $propPatch->setResultCode($protected, 403);
         }
 
     }

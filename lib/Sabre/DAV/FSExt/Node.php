@@ -4,7 +4,8 @@ namespace Sabre\DAV\FSExt;
 
 use
     Sabre\DAV,
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\DAV\PropPatch;
 
 /**
  * Base node-class
@@ -18,31 +19,39 @@ use
 abstract class Node extends DAV\FS\Node implements DAV\IProperties {
 
     /**
-     * Updates properties on this node,
+     * Updates properties on this node.
      *
-     * @param array $properties
-     * @see Sabre\DAV\IProperties::updateProperties
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
+     *
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
+     *
+     * @param array $mutations
      * @return bool|array
      */
-    public function updateProperties($properties) {
+    public function propPatch(PropPatch $proppatch) {
 
-        $resourceData = $this->getResourceData();
+        $proppatch->handleRemaining(function(array $properties) {
 
-        foreach($properties as $propertyName=>$propertyValue) {
+            $resourceData = $this->getResourceData();
+            foreach($properties as $propertyName=>$propertyValue) {
 
-            // If it was null, we need to delete the property
-            if (is_null($propertyValue)) {
-                if (isset($resourceData['properties'][$propertyName])) {
-                    unset($resourceData['properties'][$propertyName]);
+                // If it was null, we need to delete the property
+                if (is_null($propertyValue)) {
+                    if (isset($resourceData['properties'][$propertyName])) {
+                        unset($resourceData['properties'][$propertyName]);
+                    }
+                } else {
+                    $resourceData['properties'][$propertyName] = $propertyValue;
                 }
-            } else {
-                $resourceData['properties'][$propertyName] = $propertyValue;
+
             }
+            $this->putResourceData($resourceData);
 
-        }
+            return true;
+        });
 
-        $this->putResourceData($resourceData);
-        return true;
     }
 
     /**

@@ -1281,7 +1281,19 @@ class Server extends EventEmitter {
                 // Re-throwing exception
                 if ($exception) throw $exception;
 
-                return $errorResult;
+                // Re-arranging the result so it makes sense for
+                // generateMultiStatus.
+                $newResult = [
+                    'href' => $uri,
+                ];
+                foreach($errorResult as $property=>$code) {
+                    if (!isset($newResult[$code])) {
+                        $newResult[$code] = [$property => null];
+                    } else {
+                        $newResult[$code][$property] = null;
+                    }
+                }
+                return $newResult;
             }
 
         }
@@ -1300,15 +1312,31 @@ class Server extends EventEmitter {
      * Note that this request should either completely succeed, or
      * completely fail.
      *
-     * The response is an array with statuscodes for keys, which in turn
-     * contain arrays with propertynames. This response can be used
-     * to generate a multistatus body.
+     * The response is an array with properties for keys, and http status codes
+     * as their values.
      *
-     * @param string $uri
+     * @param string $path
      * @param array $properties
      * @return array
      */
-    public function updateProperties($uri, array $properties) {
+    public function updateProperties($path, array $properties) {
+
+        $propPatch = new PropPatch($properties);
+        $this->emit('propPatch', [$path, $propPatch]);
+        $propPatch->commit();
+
+        return $propPatch->getResult();
+
+        /*
+        $restructuredResult = [];
+        foreach($result as $key=>$value) {
+            if (isset($restructedResult[$value])) {
+                $restructedResult[$value] = [
+                    $key => null,
+                ];
+            }
+        }
+
 
         // we'll start by grabbing the node, this will throw the appropriate
         // exceptions if it doesn't.
@@ -1405,6 +1433,7 @@ class Server extends EventEmitter {
         }
         $result['href'] = $uri;
         return $result;
+         */
 
     }
 

@@ -164,10 +164,22 @@ class TreeFileTester extends File implements IProperties {
 
     }
 
-    function updateProperties($properties) {
+    /**
+     * Updates properties on this node.
+     *
+     * This method received a PropPatch object, which contains all the 
+     * information about the update.
+     *
+     * To update specific properties, call the 'handle' method on this object. 
+     * Read the PropPatch documentation for more information.
+     *
+     * @param array $mutations
+     * @return bool|array
+     */
+    public function propPatch(PropPatch $propPatch) {
 
-        $this->properties = $properties;
-        return true;
+        $this->properties = $propPatch->getMutations();
+        $propPatch->setRemainingResultCode(200);
 
     }
 

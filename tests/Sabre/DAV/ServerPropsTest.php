@@ -378,35 +378,3 @@ class ServerPropsTest extends AbstractServer {
 
 }
 
-class PropTestDirMock extends SimpleCollection implements IProperties {
-
-    public $type;
-
-    function __construct($type) {
-
-        $this->type =$type;
-        parent::__construct('root');
-
-    }
-
-    function updateProperties($updateProperties) {
-
-        switch($this->type) {
-            case 'updatepropsfalse' : return false;
-            case 'updatepropsarray' :
-                $r = array(402 => array());
-                foreach($updateProperties as $k=>$v) $r[402][$k] = null;
-                return $r;
-            case 'updatepropsobj' :
-                return new \STDClass();
-        }
-
-    }
-
-    function getProperties($requestedPropeties) {
-
-        return array();
-
-    }
-
-}

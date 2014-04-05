@@ -209,10 +209,9 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
         $result = $this->server->updateProperties('/test2.txt',$props);
 
-        $this->assertEquals(array(
-            '200' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/test2.txt',
-        ), $result);
+        $this->assertEquals([
+            '{http://sabredav.org/NS/test}someprop' => 200,
+        ], $result);
 
     }
 
@@ -230,9 +229,8 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $result = $this->server->updateProperties('/test2.txt',$props);
 
         $this->assertEquals(array(
-            '424' => array('{http://sabredav.org/NS/test}someprop' => null),
-            '403' => array('{DAV:}getcontentlength' => null),
-            'href' => '/test2.txt',
+            '{http://sabredav.org/NS/test}someprop' => array(),
+            '{DAV:}getcontentlength' => array(),
         ), $result);
 
     }
@@ -375,39 +373,6 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $result = $xml->xpath($xpath);
         $this->assertEquals(8,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
         $this->assertEquals('somevalue',(string)$result[0],'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
-
-    }
-
-}
-
-class PropInfiniteDepthTestDirMock extends SimpleCollection implements IProperties {
-
-    public $type;
-
-    function __construct($type) {
-
-        $this->type =$type;
-        parent::__construct('root');
-
-    }
-
-    function updateProperties($updateProperties) {
-
-        switch($this->type) {
-            case 'updatepropsfalse' : return false;
-            case 'updatepropsarray' :
-                $r = array(402 => array());
-                foreach($updateProperties as $k=>$v) $r[402][$k] = null;
-                return $r;
-            case 'updatepropsobj' :
-                return new \STDClass();
-        }
-
-    }
-
-    function getProperties($requestedPropeties) {
-
-        return array();
 
     }
 

@@ -73,7 +73,7 @@ class PropPatch {
      *
      * It's possible to specify more than one property.
      *
-     * @param string|array $properties
+     * @param string|string[] $properties
      * @param callable $callback
      * @return void
      */
@@ -96,8 +96,9 @@ class PropPatch {
             return;
         }
         $this->propertyUpdateCallbacks[] = [
-            // We need to set this as a string, so the commit function knows
-            // how to format the arguments to the callback.
+            // If the original argument to this method was a string, we need
+            // to also make sure that it stays that way, so the commit function
+            // knows how to format the arguments to the callback.
             is_string($properties)?$properties:$usedProperties,
             $callback
         ];
@@ -109,7 +110,6 @@ class PropPatch {
      * been handled by anything else yet. Note that you effectively claim with
      * this that you promise to process _all_ properties that are coming in.
      *
-     * @param string|array $properties
      * @param callable $callback
      * @return void
      */
@@ -136,10 +136,7 @@ class PropPatch {
     /**
      * Sets the result code for one or more properties.
      *
-     * Properties can either be specified as a single string, or an array of
-     * strings.
-     *
-     * @param string|array $properties
+     * @param string|string[] $properties
      * @param int $resultCode
      * @return void
      */
@@ -194,7 +191,7 @@ class PropPatch {
      * This method returns true or false depending on if the operation was
      * successful.
      *
-     * @return void
+     * @return bool
      */
     public function commit() {
 
@@ -242,7 +239,7 @@ class PropPatch {
 
     /**
      * Executes a property callback with the single-property syntax.
-     * 
+     *
      * @param string $propertyName
      * @param callable $callback
      * @return void
@@ -251,7 +248,7 @@ class PropPatch {
 
         $result = $callback($this->mutations[$propertyName]);
         if (is_bool($result)) {
-            if ($result) { 
+            if ($result) {
                 if (is_null($this->mutations[$propertyName])) {
                     // Delete
                     $result = 204;
@@ -262,7 +259,7 @@ class PropPatch {
             } else {
                 // Fail
                 $result = 403;
-            } 
+            }
         }
         if (!is_int($result)) {
             throw new UnexpectedValueException('A callback sent to handle() did not return an int or a bool');
@@ -276,8 +273,8 @@ class PropPatch {
 
     /**
      * Executes a property callback with the multi-property syntax.
-     * 
-     * @param array $propertyName
+     *
+     * @param array $propertyList
      * @param callable $callback
      * @return void
      */

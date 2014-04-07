@@ -12,7 +12,7 @@ use Sabre\DAV;
  *
  * @author Thomas Müller <thomas.mueller@tmit.eu>
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class ServiceUnavailable extends DAV\Exception {
 

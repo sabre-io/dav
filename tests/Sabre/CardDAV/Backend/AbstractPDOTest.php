@@ -3,6 +3,7 @@
 namespace Sabre\CardDAV\Backend;
 
 use Sabre\CardDAV;
+use Sabre\DAV\PropPatch;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
@@ -49,11 +50,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateAddressBookInvalidProp() {
 
-        $result = $this->backend->updateAddressBook(1, array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'updated',
             '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
             '{DAV:}foo' => 'bar',
-        ));
+        ]);
+
+        $this->backend->updateAddressBook(1, $propPatch);
+        $result = $propPatch->commit();
 
         $this->assertFalse($result);
 
@@ -78,9 +82,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateAddressBookNoProps() {
 
-        $result = $this->backend->updateAddressBook(1, array());
+        $propPatch = new PropPatch([
+        ]);
 
-        $this->assertFalse($result);
+        $this->backend->updateAddressBook(1, $propPatch);
+        $result = $propPatch->commit();
+        $this->assertTrue($result);
 
         $result = $this->backend->getAddressBooksForUser('principals/user1');
 
@@ -104,10 +111,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateAddressBookSuccess() {
 
-        $result = $this->backend->updateAddressBook(1, array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'updated',
             '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
-        ));
+        ]);
+
+        $this->backend->updateAddressBook(1, $propPatch);
+        $result = $propPatch->commit();
 
         $this->assertTrue($result);
 

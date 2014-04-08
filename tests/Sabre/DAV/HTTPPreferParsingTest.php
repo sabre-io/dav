@@ -155,12 +155,11 @@ BLA
 BLA
         );
 
-        $this->server->on('updateProperties', function(&$props, &$result) {
+        $this->server->on('propPatch', function($path, PropPatch $propPatch) {
 
-            if (isset($props['{DAV:}something'])) {
-                unset($props['{DAV:}something']);
-                $result[200]['{DAV:}something'] = null;
-            }
+            $propPatch->handle('{DAV:}something', function($props) {
+                return true; 
+            });
 
         });
 

@@ -174,9 +174,6 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::parsePropPatchRequest
-     */
     public function testParsePropPatchRequest() {
 
         $body = '<?xml version="1.0"?>
@@ -196,9 +193,6 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     */
     public function testUpdateProperties() {
 
         $props = array(
@@ -208,16 +202,11 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/test2.txt',$props);
 
         $this->assertEquals(array(
-            '200' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/test2.txt',
+            '{http://sabredav.org/NS/test}someprop' => 200
         ), $result);
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
     public function testUpdatePropertiesProtected() {
 
         $props = array(
@@ -228,20 +217,17 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/test2.txt',$props);
 
         $this->assertEquals(array(
-            '424' => array('{http://sabredav.org/NS/test}someprop' => null),
-            '403' => array('{DAV:}getcontentlength' => null),
-            'href' => '/test2.txt',
+            '{http://sabredav.org/NS/test}someprop' => 424,
+            '{DAV:}getcontentlength' => 403,
         ), $result);
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
     public function testUpdatePropertiesFail1() {
 
-        $dir = new PropTestDirMock('updatepropsfalse');
+        $dir = new Mock\PropertiesCollection('root', []);
+        $dir->failMode = 'updatepropsfalse';
+
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -252,19 +238,19 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/',$props);
 
         $this->assertEquals(array(
-            '403' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/',
+            '{http://sabredav.org/NS/test}someprop' => 403,
         ), $result);
 
     }
 
     /**
-     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
      */
     public function testUpdatePropertiesFail2() {
 
-        $dir = new PropTestDirMock('updatepropsarray');
+        $dir = new Mock\PropertiesCollection('root', []);
+        $dir->failMode = 'updatepropsarray';
+
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -275,20 +261,20 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/',$props);
 
         $this->assertEquals(array(
-            '402' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/',
+            '{http://sabredav.org/NS/test}someprop' => 402
         ), $result);
 
     }
 
     /**
-     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \UnexpectedValueException
      */
     public function testUpdatePropertiesFail3() {
 
-        $dir = new PropTestDirMock('updatepropsobj');
+        $dir = new Mock\PropertiesCollection('root', []);
+        $dir->failMode = 'updatepropsobj';
+
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -378,35 +364,3 @@ class ServerPropsTest extends AbstractServer {
 
 }
 
-class PropTestDirMock extends SimpleCollection implements IProperties {
-
-    public $type;
-
-    function __construct($type) {
-
-        $this->type =$type;
-        parent::__construct('root');
-
-    }
-
-    function updateProperties($updateProperties) {
-
-        switch($this->type) {
-            case 'updatepropsfalse' : return false;
-            case 'updatepropsarray' :
-                $r = array(402 => array());
-                foreach($updateProperties as $k=>$v) $r[402][$k] = null;
-                return $r;
-            case 'updatepropsobj' :
-                return new \STDClass();
-        }
-
-    }
-
-    function getProperties($requestedPropeties) {
-
-        return array();
-
-    }
-
-}

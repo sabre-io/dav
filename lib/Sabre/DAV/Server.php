@@ -1281,7 +1281,19 @@ class Server extends EventEmitter {
                 // Re-throwing exception
                 if ($exception) throw $exception;
 
-                return $errorResult;
+                // Re-arranging the result so it makes sense for
+                // generateMultiStatus.
+                $newResult = [
+                    'href' => $uri,
+                ];
+                foreach($errorResult as $property=>$code) {
+                    if (!isset($newResult[$code])) {
+                        $newResult[$code] = [$property => null];
+                    } else {
+                        $newResult[$code][$property] = null;
+                    }
+                }
+                return $newResult;
             }
 
         }
@@ -1300,111 +1312,20 @@ class Server extends EventEmitter {
      * Note that this request should either completely succeed, or
      * completely fail.
      *
-     * The response is an array with statuscodes for keys, which in turn
-     * contain arrays with propertynames. This response can be used
-     * to generate a multistatus body.
+     * The response is an array with properties for keys, and http status codes
+     * as their values.
      *
-     * @param string $uri
+     * @param string $path
      * @param array $properties
      * @return array
      */
-    public function updateProperties($uri, array $properties) {
+    public function updateProperties($path, array $properties) {
 
-        // we'll start by grabbing the node, this will throw the appropriate
-        // exceptions if it doesn't.
-        $node = $this->tree->getNodeForPath($uri);
+        $propPatch = new PropPatch($properties);
+        $this->emit('propPatch', [$path, $propPatch]);
+        $propPatch->commit();
 
-        $result = [
-            200 => [],
-            403 => [],
-            424 => [],
-        ];
-        $remainingProperties = $properties;
-        $hasError = false;
-
-        // Running through all properties to make sure none of them are protected
-        if (!$hasError) foreach($properties as $propertyName => $value) {
-            if(in_array($propertyName, $this->protectedProperties)) {
-                $result[403][$propertyName] = null;
-                unset($remainingProperties[$propertyName]);
-                $hasError = true;
-            }
-        }
-
-        if (!$hasError) {
-            // Allowing plugins to take care of property updating
-            $hasError = !$this->emit('updateProperties', [
-                &$remainingProperties,
-                &$result,
-                $node
-            ]);
-        }
-
-        // If the node is not an instance of Sabre\DAV\IProperties, every
-        // property is 403 Forbidden
-        if (!$hasError && count($remainingProperties) && !($node instanceof IProperties)) {
-            $hasError = true;
-            foreach($properties as $propertyName=> $value) {
-                $result[403][$propertyName] = null;
-            }
-            $remainingProperties = [];
-        }
-
-        // Only if there were no errors we may attempt to update the resource
-        if (!$hasError) {
-
-            if (count($remainingProperties)>0) {
-
-                $updateResult = $node->updateProperties($remainingProperties);
-
-                if ($updateResult===true) {
-                    // success
-                    foreach($remainingProperties as $propertyName=>$value) {
-                        $result[200][$propertyName] = null;
-                    }
-
-                } elseif ($updateResult===false) {
-                    // The node failed to update the properties for an
-                    // unknown reason
-                    foreach($remainingProperties as $propertyName=>$value) {
-                        $result[403][$propertyName] = null;
-                    }
-
-                } elseif (is_array($updateResult)) {
-
-                    // The node has detailed update information
-                    // We need to merge the results with the earlier results.
-                    foreach($updateResult as $status => $props) {
-                        if (is_array($props)) {
-                            if (!isset($result[$status]))
-                                $result[$status] = [];
-
-                            $result[$status] = array_merge($result[$status], $updateResult[$status]);
-                        }
-                    }
-
-                } else {
-                    throw new Exception('Invalid result from updateProperties');
-                }
-                $remainingProperties = [];
-            }
-
-        }
-
-        foreach($remainingProperties as $propertyName=>$value) {
-            // if there are remaining properties, it must mean
-            // there's a dependency failure
-            $result[424][$propertyName] = null;
-        }
-
-        // Removing empty array values
-        foreach($result as $status=>$props) {
-
-            if (count($props)===0) unset($result[$status]);
-
-        }
-        $result['href'] = $uri;
-        return $result;
+        return $propPatch->getResult();
 
     }
 

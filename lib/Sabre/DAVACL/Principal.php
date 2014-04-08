@@ -185,15 +185,23 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
     }
 
     /**
-     * Updates this principals properties.
-     * 
-     * @param array $mutations
-     * @see Sabre\DAV\IProperties::updateProperties
-     * @return bool|array
+     * Updates properties on this node.
+     *
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
+     *
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
+     *
+     * @param DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties($mutations) {
+    public function propPatch(DAV\PropPatch $propPatch) {
 
-        return $this->principalBackend->updatePrincipal($this->principalProperties['uri'], $mutations);
+        return $this->principalBackend->updatePrincipal(
+            $this->principalProperties['uri'],
+            $propPatch
+        );
 
     }
 

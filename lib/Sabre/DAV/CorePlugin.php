@@ -43,6 +43,9 @@ class CorePlugin extends ServerPlugin {
         $server->on('method:COPY',      [$this, 'httpCopy']);
         $server->on('method:REPORT',    [$this, 'httpReport']);
 
+        $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 90);
+        $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
+
     }
 
     /**
@@ -377,7 +380,7 @@ class CorePlugin extends ServerPlugin {
             // request was succesful, and don't need to return the
             // multi-status.
             $ok = true;
-            foreach($result as $code=>$prop) {
+            foreach($result as $prop=>$code) {
                 if ((int)$code > 299) {
                     $ok = false;
                 }
@@ -395,8 +398,20 @@ class CorePlugin extends ServerPlugin {
         $response->setStatus(207);
         $response->setHeader('Content-Type','application/xml; charset=utf-8');
 
+
+        // Reorganizing the result for generateMultiStatus
+        $multiStatus = [];
+        foreach($result as $propertyName => $code) {
+            if (isset($multiStatus[$code])) {
+                $multiStatus[$code][$propertyName] = null;
+            } else {
+                $multiStatus[$code] = [$propertyName => null];
+            }
+        }
+        $multiStatus['href'] = $path;
+
         $response->setBody(
-            $this->server->generateMultiStatus([$result])
+            $this->server->generateMultiStatus([$multiStatus])
         );
 
         // Sending back false will interupt the event chain and tell the server
@@ -710,6 +725,51 @@ class CorePlugin extends ServerPlugin {
         // Sending back false will interupt the event chain and tell the server
         // we've handled this method.
         return false;
+
+    }
+
+    /**
+     * This method is called during property updates.
+     *
+     * Here we check if a user attempted to update a protected property and
+     * ensure that the process fails if this is the case.
+     *
+     * @param PropPatch $propPatch
+     * @return void
+     */
+    public function propPatchProtectedPropertyCheck($path, PropPatch $propPatch) {
+
+        // Comparing the mutation list to the list of propetected properties.
+        $mutations = $propPatch->getMutations();
+
+        $protected = array_intersect(
+            $this->server->protectedProperties,
+            array_keys($mutations)
+        );
+
+        if ($protected) {
+            $propPatch->setResultCode($protected, 403);
+        }
+
+    }
+
+    /**
+     * This method is called during property updates.
+     *
+     * Here we check if a node implements IProperties and let the node handle
+     * updating of (some) properties.
+     *
+     * @param PropPatch $propPatch
+     * @return void
+     */
+    public function propPatchNodeUpdate($path, PropPatch $propPatch) {
+
+        // This should trigger a 404 if the node doesn't exist.
+        $node = $this->server->tree->getNodeForPath($path);
+
+        if ($node instanceof IProperties) {
+            $node->propPatch($propPatch);
+        }
 
     }
 

@@ -48,18 +48,36 @@ class Mock extends AbstractBackend {
 
     }
 
-    function updateAddressBook($addressBookId, array $mutations) {
+    /**
+     * Updates properties for an address book.
+     *
+     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
+     * To do the actual updates, you must tell this object which properties
+     * you're going to process with the handle() method.
+     *
+     * Calling the handle method is like telling the PropPatch object "I
+     * promise I can handle updating this property".
+     *
+     * Read the PropPatch documenation for more info and examples.
+     *
+     * @param string $addressBookId
+     * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
+     */
+    public function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch) {
 
         foreach($this->addressBooks as &$book) {
             if ($book['id'] !== $addressBookId)
                 continue;
 
-            foreach($mutations as $key=>$value) {
-                $book[$key] = $value;
-            }
-            return true;
+            $propPatch->handleRemaining(function($mutations) use (&$book) {
+                foreach($mutations as $key=>$value) {
+                    $book[$key] = $value;
+                }
+                return true;
+            });
+
         }
-        return false;
 
     }
 

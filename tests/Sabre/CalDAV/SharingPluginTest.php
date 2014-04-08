@@ -33,7 +33,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
                 'id' => 3,
                 'uri' => 'cal3',
             ),
-        ); 
+        );
 
         parent::setUp();
 
@@ -96,10 +96,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
         ));
 
         $this->assertEquals(array(
-            200 => array(
-                '{DAV:}resourcetype' => null,
-            ),
-            'href' => 'calendars/user1/cal1',
+            '{DAV:}resourcetype' => 200
         ), $result);
 
         $this->assertEquals(0, count($this->caldavBackend->getShares(1)));
@@ -113,10 +110,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
         ));
 
         $this->assertEquals(array(
-            403 => array(
-                '{DAV:}foo' => null,
-            ),
-            'href' => 'calendars/user1/cal3',
+            '{DAV:}foo' => 403,
         ), $result);
 
     }

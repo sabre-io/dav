@@ -27,21 +27,19 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      * To update specific properties, call the 'handle' method on this object.
      * Read the PropPatch documentation for more information.
      *
-     * @param array $mutations
-     * @return bool|array
+     * @param PropPatch $propPatch
+     * @return void
      */
-    public function propPatch(PropPatch $proppatch) {
+    public function propPatch(PropPatch $propPatch) {
 
-        $proppatch->handleRemaining(function(array $properties) {
+        $propPatch->handleRemaining(function(array $properties) {
 
             $resourceData = $this->getResourceData();
             foreach($properties as $propertyName=>$propertyValue) {
 
                 // If it was null, we need to delete the property
                 if (is_null($propertyValue)) {
-                    if (isset($resourceData['properties'][$propertyName])) {
-                        unset($resourceData['properties'][$propertyName]);
-                    }
+                    unset($resourceData['properties'][$propertyName]);
                 } else {
                     $resourceData['properties'][$propertyName] = $propertyValue;
                 }
@@ -63,7 +61,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      * @param array $properties
      * @return array
      */
-    function getProperties($properties) {
+    public function getProperties($properties) {
 
         $resourceData = $this->getResourceData();
 
@@ -206,7 +204,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
 
         // Unserializing and checking if the resource file contains data for this file
         $data = unserialize($data);
-        if (isset($data[$this->getName()])) unset($data[$this->getName()]);
+        unset($data[$this->getName()]);
         ftruncate($handle,0);
         rewind($handle);
         fwrite($handle,serialize($data));

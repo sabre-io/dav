@@ -34,7 +34,7 @@ class File extends Node implements DAV\PartialUpdate\IFile {
      * The offset argument is a 0-based offset where the data should be
      * written.
      *
-     * param resource|string $data
+     * @param resource|string $data
      * @return void
      */
     public function putRange($data, $offset) {

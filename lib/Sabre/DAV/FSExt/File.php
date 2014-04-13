@@ -68,9 +68,7 @@ class File extends Node implements DAV\PartialUpdate\IFile {
      * @return bool
      */
     public function delete() {
-
-        unlink($this->path);
-        return parent::delete();
+        return unlink($this->path) && parent::delete();
 
     }
 
@@ -115,4 +113,3 @@ class File extends Node implements DAV\PartialUpdate\IFile {
     }
 
 }
-

@@ -187,7 +187,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      * Deletes the resource information.
      * @return bool
      */
-    public function deleteResourceData() {
+    protected function deleteResourceData() {
 
         // When we're deleting this node, we also need to delete any resource information
         $path = $this->getResourceInfoPath();

@@ -110,6 +110,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         }
 
         // We're all good
+        flock($handle,LOCK_UN);
         fclose($handle);
 
         // Unserializing and checking if the resource file contains data for this file
@@ -153,6 +154,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         rewind($handle);
 
         fwrite($handle,serialize($data));
+        flock($handle,LOCK_UN);
         fclose($handle);
 
     }
@@ -208,6 +210,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         ftruncate($handle,0);
         rewind($handle);
         fwrite($handle,serialize($data));
+        flock($handle,LOCK_UN);
         fclose($handle);
 
         return true;
@@ -220,4 +223,3 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
 }
-

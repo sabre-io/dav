@@ -149,6 +149,7 @@ class File extends AbstractBackend {
         $data = stream_get_contents($handle);
 
         // We're all good
+        flock($handle,LOCK_UN);
         fclose($handle);
 
         // Unserializing and checking if the resource file contains data for this file
@@ -175,9 +176,9 @@ class File extends AbstractBackend {
         rewind($handle);
 
         fwrite($handle,serialize($newData));
+        flock($handle,LOCK_UN);
         fclose($handle);
 
     }
 
 }
-

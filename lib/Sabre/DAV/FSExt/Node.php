@@ -53,10 +53,10 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Returns a list of properties for this nodes.;
+     * Returns a list of properties for this nodes.
      *
      * The properties list is a list of propertynames the client requested, encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
-     * If the array is empty, all properties should be returned
+     * If the array is empty, all properties should be returned.
      *
      * @param array $properties
      * @return array
@@ -78,7 +78,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Returns the path to the resource file
+     * Returns the path to the resource file.
      *
      * @return string
      */
@@ -90,7 +90,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Returns all the stored resource information
+     * Returns all the stored resource information.
      *
      * @return array
      */
@@ -125,7 +125,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Updates the resource information
+     * Updates the resource information.
      *
      * @param array $newData
      * @return void
@@ -158,7 +158,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Renames the node
+     * Renames the node.
      *
      * @param string $name The new name
      * @return void
@@ -182,6 +182,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
+     * Deletes the resource information.
      * @return bool
      */
     public function deleteResourceData() {

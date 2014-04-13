@@ -17,7 +17,7 @@ class SimpleCollection extends Collection {
     /**
      * List of childnodes
      *
-     * @var array
+     * @var INode[]
      */
     protected $children = array();
 
@@ -35,7 +35,7 @@ class SimpleCollection extends Collection {
      * This nodes must be instances of INode
      *
      * @param string $name
-     * @param array $children
+     * @param INode[] $children
      */
     public function __construct($name,array $children = array()) {
 
@@ -95,7 +95,7 @@ class SimpleCollection extends Collection {
     /**
      * Returns a list of children for this collection
      *
-     * @return array
+     * @return INode[]
      */
     public function getChildren() {
 
@@ -105,4 +105,3 @@ class SimpleCollection extends Collection {
 
 
 }
-

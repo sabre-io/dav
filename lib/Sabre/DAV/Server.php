@@ -24,16 +24,6 @@ class Server extends EventEmitter {
     const DEPTH_INFINITY = -1;
 
     /**
-     * Nodes that are files, should have this as the type property
-     */
-    const NODE_FILE = 1;
-
-    /**
-     * Nodes that are directories, should use this value as the type property
-     */
-    const NODE_DIRECTORY = 2;
-
-    /**
      * XML namespace for all SabreDAV related elements
      */
     const NS_SABREDAV = 'http://sabredav.org/ns';

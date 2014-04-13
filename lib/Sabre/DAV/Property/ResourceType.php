@@ -28,13 +28,9 @@ class ResourceType extends DAV\Property {
      *
      * @param mixed $resourceType
      */
-    public function __construct($resourceType = array()) {
+    public function __construct($resourceType = []) {
 
-        if ($resourceType === DAV\Server::NODE_FILE)
-            $this->resourceType = array();
-        elseif ($resourceType === DAV\Server::NODE_DIRECTORY)
-            $this->resourceType = array('{DAV:}collection');
-        elseif (is_array($resourceType))
+        if (is_array($resourceType))
             $this->resourceType = $resourceType;
         else
             $this->resourceType = array($resourceType);

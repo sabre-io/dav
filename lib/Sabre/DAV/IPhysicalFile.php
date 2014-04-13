@@ -3,7 +3,7 @@
 namespace Sabre\DAV;
 
 /**
- * PhysicalFile
+ * IPhysicalFile
  *
  * This interface is for Files that have a physical representation on disk. So 
  * instead of a virtual file that can represent anything, this is a literal 
@@ -17,7 +17,7 @@ namespace Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/) 
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface PhysicalFile extends IFile {
+interface IPhysicalFile extends IFile {
 
     /**
      * getPhysicalPath 

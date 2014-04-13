@@ -10,7 +10,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class File extends Node implements DAV\PartialUpdate\IFile {
+class File extends Node implements DAV\PartialUpdate\IFile, DAV\IPhysicalFile {
 
     /**
      * Updates the data
@@ -111,6 +111,17 @@ class File extends Node implements DAV\PartialUpdate\IFile {
     public function getSize() {
 
         return filesize($this->path);
+
+    }
+
+    /**
+     * Returns the physical file location.
+     *
+     * @return string
+     */
+    public function getPhysicalPath() {
+
+        return realpath($this->path);
 
     }
 

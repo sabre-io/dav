@@ -13,6 +13,8 @@ ChangeLog
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #428: Etag check with `If:` fails if the target is a collection.
 * Removed: `Sabre\DAV\Server::NODE_*` constants.
+* Moved all precondition checking into a central place, instead of having to
+  think about it on a per-method basis.
 
 1.9.0-alpha2 (2014-01-14)
 -------------------------

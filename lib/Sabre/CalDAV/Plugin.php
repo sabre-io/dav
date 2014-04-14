@@ -830,7 +830,6 @@ class Plugin extends DAV\ServerPlugin {
         if (!$node instanceof Notifications\INode)
             return;
 
-        if (!$this->server->checkPreconditions(true)) return false;
         $dom = new \DOMDocument('1.0', 'UTF-8');
 
         $dom->formatOutput = true;

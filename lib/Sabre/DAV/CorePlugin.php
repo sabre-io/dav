@@ -74,7 +74,6 @@ class CorePlugin extends ServerPlugin {
         $path = $request->getPath();
         $node = $this->server->tree->getNodeForPath($path,0);
 
-        if (!$this->server->checkPreconditions(true)) return false;
         if (!$node instanceof IFile) return;
 
         $body = $node->get();
@@ -280,7 +279,6 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $this->server->checkPreconditions();
         if (!$this->server->emit('beforeUnbind',[$path])) return false;
         $this->server->tree->delete($path);
         $this->server->emit('afterUnbind',[$path]);
@@ -363,7 +361,6 @@ class CorePlugin extends ServerPlugin {
     public function httpPropPatch(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
-        $this->server->checkPreconditions();
 
         $newProperties = $this->server->parsePropPatchRequest(
             $request->getBodyAsString()
@@ -506,9 +503,6 @@ class CorePlugin extends ServerPlugin {
 
         }
 
-        // Checking If-None-Match and related headers.
-        if (!$this->server->checkPreconditions()) return false;
-
         if ($this->server->tree->nodeExists($path)) {
 
             $node = $this->server->tree->getNodeForPath($path);
@@ -632,7 +626,6 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $this->server->checkPreconditions();
         $moveInfo = $this->server->getCopyAndMoveInfo($request);
 
         if ($moveInfo['destinationExists']) {
@@ -673,7 +666,6 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $this->server->checkPreconditions();
         $copyInfo = $this->server->getCopyAndMoveInfo($request);
 
         if ($copyInfo['destinationExists']) {

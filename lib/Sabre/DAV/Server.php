@@ -444,6 +444,10 @@ class Server extends EventEmitter {
 
         $this->transactionType = strtolower($method);
 
+        if (!$this->checkPreconditions($request, $response)) {
+            return;
+        }
+
         if ($this->emit('method:' . $method, [$request, $response])) {
             if ($this->emit('method',[$request, $response])) {
                 // Unsupported method
@@ -1337,28 +1341,25 @@ class Server extends EventEmitter {
      * related to If-None-Match, If-Match and If-Unmodified Since. It will
      * set the status to 304 Not Modified for If-Modified_since.
      *
-     * If the $handleAsGET argument is set to true, it will also return 304
-     * Not Modified for failure of the If-None-Match precondition. This is the
-     * desired behaviour for HTTP GET and HTTP HEAD requests.
-     *
-     * @param bool $handleAsGET
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function checkPreconditions($handleAsGET = false) {
+    public function checkPreconditions(RequestInterface $request, ResponseInterface $response) {
 
-        $uri = $this->getRequestUri();
+        $path = $request->getPath();
         $node = null;
         $lastMod = null;
         $etag = null;
 
-        if ($ifMatch = $this->httpRequest->getHeader('If-Match')) {
+        if ($ifMatch = $request->getHeader('If-Match')) {
 
             // If-Match contains an entity tag. Only if the entity-tag
             // matches we are allowed to make the request succeed.
             // If the entity-tag is '*' we are only allowed to make the
             // request succeed if a resource exists at that url.
             try {
-                $node = $this->tree->getNodeForPath($uri);
+                $node = $this->tree->getNodeForPath($path);
             } catch (Exception\NotFound $e) {
                 throw new Exception\PreconditionFailed('An If-Match header was specified and the resource did not exist','If-Match');
             }
@@ -1392,7 +1393,7 @@ class Server extends EventEmitter {
             }
         }
 
-        if ($ifNoneMatch = $this->httpRequest->getHeader('If-None-Match')) {
+        if ($ifNoneMatch = $request->getHeader('If-None-Match')) {
 
             // The If-None-Match header contains an etag.
             // Only if the ETag does not match the current ETag, the request will succeed
@@ -1401,7 +1402,7 @@ class Server extends EventEmitter {
             $nodeExists = true;
             if (!$node) {
                 try {
-                    $node = $this->tree->getNodeForPath($uri);
+                    $node = $this->tree->getNodeForPath($path);
                 } catch (Exception\NotFound $e) {
                     $nodeExists = false;
                 }
@@ -1427,8 +1428,8 @@ class Server extends EventEmitter {
                 }
 
                 if ($haveMatch) {
-                    if ($handleAsGET) {
-                        $this->httpResponse->setStatus(304);
+                    if ($request->getMethod()==='GET') {
+                        $response->setStatus(304);
                         return false;
                     } else {
                         throw new Exception\PreconditionFailed('An If-None-Match header was specified, but the ETag matched (or * was specified).','If-None-Match');
@@ -1438,7 +1439,7 @@ class Server extends EventEmitter {
 
         }
 
-        if (!$ifNoneMatch && ($ifModifiedSince = $this->httpRequest->getHeader('If-Modified-Since'))) {
+        if (!$ifNoneMatch && ($ifModifiedSince = $request->getHeader('If-Modified-Since'))) {
 
             // The If-Modified-Since header contains a date. We
             // will only return the entity if it has been changed since
@@ -1450,21 +1451,21 @@ class Server extends EventEmitter {
 
             if ($date) {
                 if (is_null($node)) {
-                    $node = $this->tree->getNodeForPath($uri);
+                    $node = $this->tree->getNodeForPath($path);
                 }
                 $lastMod = $node->getLastModified();
                 if ($lastMod) {
                     $lastMod = new \DateTime('@' . $lastMod);
                     if ($lastMod <= $date) {
-                        $this->httpResponse->setStatus(304);
-                        $this->httpResponse->setHeader('Last-Modified', HTTP\Util::toHTTPDate($lastMod));
+                        $response->setStatus(304);
+                        $response->setHeader('Last-Modified', HTTP\Util::toHTTPDate($lastMod));
                         return false;
                     }
                 }
             }
         }
 
-        if ($ifUnmodifiedSince = $this->httpRequest->getHeader('If-Unmodified-Since')) {
+        if ($ifUnmodifiedSince = $request->getHeader('If-Unmodified-Since')) {
 
             // The If-Unmodified-Since will allow allow the request if the
             // entity has not changed since the specified date.
@@ -1473,7 +1474,7 @@ class Server extends EventEmitter {
             // We must only check the date if it's valid
             if ($date) {
                 if (is_null($node)) {
-                    $node = $this->tree->getNodeForPath($uri);
+                    $node = $this->tree->getNodeForPath($path);
                 }
                 $lastMod = $node->getLastModified();
                 if ($lastMod) {
@@ -1494,7 +1495,7 @@ class Server extends EventEmitter {
         //
         // The only proper way to deal with these, is to emit events, that a
         // Sync and Lock plugin can pick up.
-        $ifConditions = $this->getIfConditions();
+        $ifConditions = $this->getIfConditions($request);
 
         foreach($ifConditions as $kk => $ifCondition) {
             foreach($ifCondition['tokens'] as $ii => $token) {
@@ -1505,7 +1506,7 @@ class Server extends EventEmitter {
         // Plugins are responsible for validating all the tokens.
         // If a plugin deemed a token 'valid', it will set 'validToken' to
         // true.
-        $this->emit('validateTokens', [ &$ifConditions ]);
+        $this->emit('validateTokens', [ $request, &$ifConditions ]);
 
         // Now we're going to analyze the result.
 
@@ -1625,9 +1626,9 @@ class Server extends EventEmitter {
      *
      * @return array
      */
-    public function getIfConditions() {
+    public function getIfConditions(RequestInterface $request) {
 
-        $header = $this->httpRequest->getHeader('If');
+        $header = $request->getHeader('If');
         if (!$header) return [];
 
         $matches = [];
@@ -1651,7 +1652,7 @@ class Server extends EventEmitter {
             } else {
 
                 if (!$match['uri']) {
-                    $realUri = $this->getRequestUri();
+                    $realUri = $request->getPath();
                 } else {
                     $realUri = $this->calculateUri($match['uri']);
                 }

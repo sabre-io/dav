@@ -144,9 +144,6 @@ class Plugin extends DAV\ServerPlugin {
         if($end - $start + 1 != $len)
             throw new DAV\Exception\RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
 
-        // Checking If-None-Match and related headers.
-        if (!$this->server->checkPreconditions()) return;
-
         if (!$this->server->emit('beforeWriteContent', [$path, $node, null]))
             return;
 

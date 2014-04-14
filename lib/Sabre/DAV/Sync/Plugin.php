@@ -3,6 +3,7 @@
 namespace Sabre\DAV\Sync;
 
 use Sabre\DAV;
+use Sabre\HTTP\RequestInterface;
 
 /**
  * This plugin all WebDAV-sync capabilities to the Server.
@@ -65,8 +66,8 @@ class Plugin extends DAV\ServerPlugin {
 
         });
 
-        $server->on('beforeGetProperties', array($this, 'beforeGetProperties'));
-        $server->on('validateTokens',      array($this, 'validateTokens'));
+        $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
+        $server->on('validateTokens',      [$this, 'validateTokens']);
 
     }
 
@@ -311,7 +312,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param mixed $conditions
      * @return void
      */
-    public function validateTokens( &$conditions ) {
+    public function validateTokens( RequestInterface $request, &$conditions ) {
 
         foreach($conditions as $kk=>$condition) {
 

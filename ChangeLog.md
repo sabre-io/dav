@@ -12,6 +12,7 @@ ChangeLog
 * Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #428: Etag check with `If:` fails if the target is a collection.
+* Fixed: Issues #430, #431, #433: Locks plugin didn't not properly release filesystem based locks.
 * Removed: `Sabre\DAV\Server::NODE_*` constants.
 * Moved all precondition checking into a central place, instead of having to
   think about it on a per-method basis.

@@ -180,6 +180,16 @@ class Client extends HTTP\Client {
     }
 
     /**
+     * Enables/disables SSL host verification
+     *
+     * @param integer $value
+     * @return void
+     */
+    public function setVerifyHost($value) {
+        $this->addCurlSetting(CURLOPT_SSL_VERIFYHOST, $value);
+    }
+
+    /**
      * Does a PROPFIND request
      *
      * The list of requested properties must be specified as an array, in clark

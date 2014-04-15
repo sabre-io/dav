@@ -148,7 +148,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
 
         // Load the begin and end data
         $start = ($range[0])?$range[0]:0;
-        $end   = ($range[1])?$range[1]:$len-1;
+        $end   = ($range[1])?$range[1]:$start+$len-1;
 
         // Check consistency
         if($end < $start)

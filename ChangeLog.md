@@ -199,6 +199,8 @@ ChangeLog
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #427: Now checking preconditions on DELETE requests.
 * Fixed: Issue #428: Etag check with If: fails if the target is a collection.
+* Fixed: Issue #393: PATCH request with missing end-range was handled
+  incorrectly.
 
 
 1.7.11 (2014-02-26)

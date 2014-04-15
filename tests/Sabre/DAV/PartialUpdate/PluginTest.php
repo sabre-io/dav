@@ -130,7 +130,7 @@ class PluginTest extends \Sabre\DAVServerTest {
     public function testPatchNoEndRange() {
 
         $this->node->put('00000');
-        $request = new Sabre_HTTP_Request(array(
+        $request = new HTTP\Request(array(
             'REQUEST_METHOD'      => 'PATCH',
             'REQUEST_URI'         => '/partial',
             'HTTP_X_UPDATE_RANGE' => 'bytes=3-',

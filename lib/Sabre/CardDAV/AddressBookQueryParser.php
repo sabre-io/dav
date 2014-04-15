@@ -113,12 +113,14 @@ class AddressBookQueryParser {
 
         $propFilters = array();
 
-        $propFilterNodes = $this->xpath->query('card:prop-filter', $filter);
-        for($ii=0; $ii < $propFilterNodes->length; $ii++) {
+        if (!is_null($filter)) {
+            $propFilterNodes = $this->xpath->query('card:prop-filter', $filter);
+            for($ii=0; $ii < $propFilterNodes->length; $ii++) {
 
-            $propFilters[] = $this->parsePropFilterNode($propFilterNodes->item($ii));
+                $propFilters[] = $this->parsePropFilterNode($propFilterNodes->item($ii));
 
 
+            }
         }
 
         $this->filters = $propFilters;

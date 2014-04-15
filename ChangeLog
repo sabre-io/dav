@@ -69,6 +69,8 @@
 	* Fixed: Issue #427: Now checking preconditions on DELETE requests.
 	* Fixed: Issue #428: Etag check with If: fails if the target is a
 	  collection.
+	* Fixed: Issue #393: PATCH request with missing end-range was handled
+	  incorrectly.
 
 1.7.11-stable (2014-02-26)
 	* The zip release ships with sabre/vobject 2.1.3.

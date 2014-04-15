@@ -118,7 +118,7 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
 
-        $range = $this->getHTTPUpdateRange();
+        $range = $this->getHTTPUpdateRange($request);
 
         if (!$range) {
             throw new DAV\Exception\BadRequest('No valid "X-Update-Range" found in the headers');
@@ -173,11 +173,12 @@ class Plugin extends DAV\ServerPlugin {
      * If the second offset is null, it should be treated as the offset of the last byte of the entity
      * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
      *
+     * @param RequestInterface $request
      * @return array|null
      */
-    public function getHTTPUpdateRange() {
+    public function getHTTPUpdateRange(RequestInterface $request) {
 
-        $range = $this->server->httpRequest->getHeader('X-Update-Range');
+        $range = $request->getHeader('X-Update-Range');
         if (is_null($range)) return null;
 
         // Matching "Range: bytes=1234-5678: both numbers are optional

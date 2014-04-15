@@ -162,6 +162,8 @@ class Client extends HTTP\Client {
      * The parameter certificates should be a absolute path to a file
      * which contains all trusted certificates
      *
+     * @deprecated This method will be removed in the future, use
+     *             addCurlSetting instead.
      * @param string $certificates
      * @return void
      */
@@ -172,6 +174,8 @@ class Client extends HTTP\Client {
     /**
      * Enables/disables SSL peer verification
      *
+     * @deprecated This method will be removed in the future, use
+     *             addCurlSetting instead.
      * @param bool $value
      * @return void
      */

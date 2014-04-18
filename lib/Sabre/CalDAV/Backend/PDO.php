@@ -1016,7 +1016,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
         $supportedProperties = array_keys($this->subscriptionPropertyMap);
         $supportedProperties[] = '{http://calendarserver.org/ns/}source';
-        
+
         $propPatch->handle($supportedProperties, function($mutations) use ($subscriptionId) {
 
             $newValues = [];

@@ -4,11 +4,19 @@ ChangeLog
 1.9.0-alpha3 (????-??-??)
 -------------------------
 
+* BC Break: Property updating got refactored. Read the migration document for
+  more information. This allows for creation of a generic property storage,
+  and other property-related functionality that was not possible before.
 * Making it easier for implementors to override how the CardDAV addressbook
   home is located.
 * Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
   files. Not really a chance for data-loss, but incorrect nevertheless.
-* Fixed: Issue #428: Etag check with If: fails if the target is a collection.
+* Fixed: Issue #428: Etag check with `If:` fails if the target is a collection.
+* Fixed: Issues #430, #431, #433: Locks plugin didn't not properly release
+  filesystem based locks.
+* Removed: `Sabre\DAV\Server::NODE_*` constants.
+* Moved all precondition checking into a central place, instead of having to
+  think about it on a per-method basis.
 
 1.9.0-alpha2 (2014-01-14)
 -------------------------
@@ -192,6 +200,8 @@ ChangeLog
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #427: Now checking preconditions on DELETE requests.
 * Fixed: Issue #428: Etag check with If: fails if the target is a collection.
+* Fixed: Issue #393: PATCH request with missing end-range was handled
+  incorrectly.
 
 
 1.7.11 (2014-02-26)

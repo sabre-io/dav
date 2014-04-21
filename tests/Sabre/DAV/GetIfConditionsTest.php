@@ -11,28 +11,17 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testNoConditions() {
 
-        $serverVars = array(
-        );
+        $request = new HTTP\Request();
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
         $this->assertEquals(array(),$conditions);
 
     }
 
     function testLockToken() {
 
-        $serverVars = array(
-            'HTTP_IF' => '(<opaquelocktoken:token1>)',
-            'REQUEST_URI' => '/path/',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $request = new HTTP\Request('GET', '/path/', ['If' => '(<opaquelocktoken:token1>)']);
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -62,9 +51,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -92,9 +79,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -123,9 +108,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -158,9 +141,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -198,9 +179,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -244,9 +223,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -273,9 +250,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 
@@ -309,9 +284,7 @@ class GetIfConditionsTest extends AbstractServer {
         );
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-
-        $conditions = $this->server->getIfConditions();
+        $conditions = $this->server->getIfConditions($request);
 
         $compare = array(
 

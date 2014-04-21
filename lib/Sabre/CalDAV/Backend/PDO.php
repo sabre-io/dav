@@ -16,7 +16,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport {
 
@@ -252,104 +252,54 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     /**
      * Updates properties for a calendar.
      *
-     * The mutations array uses the propertyName in clark-notation as key,
-     * and the array value for the property value. In the case a property
-     * should be deleted, the property value will be null.
+     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
+     * To do the actual updates, you must tell this object which properties
+     * you're going to process with the handle() method.
      *
-     * This method must be atomic. If one property cannot be changed, the
-     * entire operation must fail.
+     * Calling the handle method is like telling the PropPatch object "I
+     * promise I can handle updating this property".
      *
-     * If the operation was successful, true can be returned.
-     * If the operation failed, false can be returned.
-     *
-     * Deletion of a non-existent property is always successful.
-     *
-     * Lastly, it is optional to return detailed information about any
-     * failures. In this case an array should be returned with the following
-     * structure:
-     *
-     * [
-     *   403 => [
-     *      '{DAV:}displayname' => null,
-     *   ],
-     *   424 => [
-     *      '{DAV:}owner' => null,
-     *   ]
-     * ]
-     *
-     * In this example it was forbidden to update {DAV:}displayname.
-     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
-     * (424 Failed Dependency) because the request needs to be atomic.
+     * Read the PropPatch documenation for more info and examples.
      *
      * @param string $calendarId
-     * @param array $mutations
-     * @return bool|array
+     * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateCalendar($calendarId, array $mutations) {
+    public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
 
-        $newValues = [];
-        $result = [
-            200 => [], // Ok
-            403 => [], // Forbidden
-            424 => [], // Failed Dependency
-        ];
+        $supportedProperties = array_keys($this->propertyMap);
+        $supportedProperties[] = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
 
-        $hasError = false;
-
-        foreach($mutations as $propertyName=>$propertyValue) {
-
-            switch($propertyName) {
-                case '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' :
-                    $fieldName = 'transparent';
-                    $newValues[$fieldName] = $propertyValue->getValue()==='transparent';
-                    break;
-                default :
-                    // Checking the property map
-                    if (!isset($this->propertyMap[$propertyName])) {
-                        // We don't know about this property.
-                        $hasError = true;
-                        $result[403][$propertyName] = null;
-                        unset($mutations[$propertyName]);
-                        continue;
-                    }
-
-                    $fieldName = $this->propertyMap[$propertyName];
-                    $newValues[$fieldName] = $propertyValue;
-            }
-
-        }
-
-        // If there were any errors we need to fail the request
-        if ($hasError) {
-            // Properties has the remaining properties
+        $propPatch->handle($supportedProperties, function($mutations) use ($calendarId) {
+            $newValues = [];
             foreach($mutations as $propertyName=>$propertyValue) {
-                $result[424][$propertyName] = null;
+
+                switch($propertyName) {
+                    case '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' :
+                        $fieldName = 'transparent';
+                        $newValues[$fieldName] = $propertyValue->getValue()==='transparent';
+                        break;
+                    default :
+                        $fieldName = $this->propertyMap[$propertyName];
+                        $newValues[$fieldName] = $propertyValue;
+                        break;
+                }
+
+            }
+            $valuesSql = [];
+            foreach($newValues as $fieldName=>$value) {
+                $valuesSql[] = $fieldName . ' = ?';
             }
 
-            // Removing unused statuscodes for cleanliness
-            foreach($result as $status=>$properties) {
-                if (is_array($properties) && count($properties)===0) unset($result[$status]);
-            }
+            $stmt = $this->pdo->prepare("UPDATE " . $this->calendarTableName . " SET " . implode(', ',$valuesSql) . " WHERE id = ?");
+            $newValues['id'] = $calendarId;
+            $stmt->execute(array_values($newValues));
 
-            return $result;
+            $this->addChange($calendarId, "", 2);
 
-        }
+            return true;
 
-        // Success
-
-        // Now we're generating the sql query.
-        $valuesSql = [];
-        foreach($newValues as $fieldName=>$value) {
-            $valuesSql[] = $fieldName . ' = ?';
-        }
-
-        $stmt = $this->pdo->prepare("UPDATE " . $this->calendarTableName . " SET " . implode(', ',$valuesSql) . " WHERE id = ?");
-        $newValues['id'] = $calendarId;
-        $stmt->execute(array_values($newValues));
-
-        $this->addChange($calendarId, "", 2);
-
-        return true;
+        });
 
     }
 
@@ -1064,100 +1014,53 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     /**
      * Updates a subscription
      *
-     * The mutations array uses the propertyName in clark-notation as key,
-     * and the array value for the property value. In the case a property
-     * should be deleted, the property value will be null.
+     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
+     * To do the actual updates, you must tell this object which properties
+     * you're going to process with the handle() method.
      *
-     * This method must be atomic. If one property cannot be changed, the
-     * entire operation must fail.
+     * Calling the handle method is like telling the PropPatch object "I
+     * promise I can handle updating this property".
      *
-     * If the operation was successful, you can just return true.
-     * If the operation failed, you may just return false.
-     *
-     * Deletion of a non-existent property is always successful.
-     *
-     * Lastly, it is optional to return detailed information about any
-     * failures. In this case an array should be returned with the following
-     * structure:
-     *
-     * array(
-     *   403 => array(
-     *      '{DAV:}displayname' => null,
-     *   ),
-     *   424 => array(
-     *      '{DAV:}owner' => null,
-     *   )
-     * )
-     *
-     * In this example it was forbidden to update {DAV:}displayname.
-     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
-     * (424 Failed Dependency) because the request needs to be atomic.
+     * Read the PropPatch documenation for more info and examples.
      *
      * @param mixed $subscriptionId
-     * @param array $mutations
-     * @return bool|array
+     * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateSubscription($subscriptionId, array $mutations) {
+    public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
 
-        $newValues = [];
-        $result = [
-            200 => [], // Ok
-            403 => [], // Forbidden
-            424 => [], // Failed Dependency
-        ];
+        $supportedProperties = array_keys($this->subscriptionPropertyMap);
+        $supportedProperties[] = '{http://calendarserver.org/ns/}source';
 
-        $hasError = false;
+        $propPatch->handle($supportedProperties, function($mutations) use ($subscriptionId) {
 
-        foreach($mutations as $propertyName=>$propertyValue) {
+            $newValues = [];
 
-            if ($propertyName === '{http://calendarserver.org/ns/}source') {
-                $newValues['source'] = $propertyValue->getHref();
-            } else {
-                // Checking the property map
-                if (!isset($this->subscriptionPropertyMap[$propertyName])) {
-                    // We don't know about this property.
-                    $hasError = true;
-                    $result[403][$propertyName] = null;
-                    unset($mutations[$propertyName]);
-                    continue;
+            foreach($mutations as $propertyName=>$propertyValue) {
+
+                if ($propertyName === '{http://calendarserver.org/ns/}source') {
+                    $newValues['source'] = $propertyValue->getHref();
+                } else {
+                    $fieldName = $this->subscriptionPropertyMap[$propertyName];
+                    $newValues[$fieldName] = $propertyValue;
                 }
 
-                $fieldName = $this->subscriptionPropertyMap[$propertyName];
-                $newValues[$fieldName] = $propertyValue;
             }
 
-        }
-
-        // If there were any errors we need to fail the request
-        if ($hasError) {
-            // Properties has the remaining properties
-            foreach($mutations as $propertyName=>$propertyValue) {
-                $result[424][$propertyName] = null;
+            // Now we're generating the sql query.
+            $valuesSql = [];
+            foreach($newValues as $fieldName=>$value) {
+                $valuesSql[] = $fieldName . ' = ?';
             }
 
-            // Removing unused statuscodes for cleanliness
-            foreach($result as $status=>$properties) {
-                if (is_array($properties) && count($properties)===0) unset($result[$status]);
-            }
+            $stmt = $this->pdo->prepare("UPDATE " . $this->calendarSubscriptionsTableName . " SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
+            $newValues['lastmodified'] = time();
+            $newValues['id'] = $subscriptionId;
+            $stmt->execute(array_values($newValues));
 
-            return $result;
+            return true;
 
-        }
-
-        // Success
-
-        // Now we're generating the sql query.
-        $valuesSql = [];
-        foreach($newValues as $fieldName=>$value) {
-            $valuesSql[] = $fieldName . ' = ?';
-        }
-
-        $stmt = $this->pdo->prepare("UPDATE " . $this->calendarSubscriptionsTableName . " SET " . implode(', ',$valuesSql) . ", lastmodified = ? WHERE id = ?");
-        $newValues['lastmodified'] = time();
-        $newValues['id'] = $subscriptionId;
-        $stmt->execute(array_values($newValues));
-
-        return true;
+        });
 
     }
 

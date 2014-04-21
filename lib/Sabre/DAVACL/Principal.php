@@ -19,7 +19,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
@@ -185,15 +185,23 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
     }
 
     /**
-     * Updates this principals properties.
+     * Updates properties on this node.
      *
-     * @param array $mutations
-     * @see Sabre\DAV\IProperties::updateProperties
-     * @return bool|array
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
+     *
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
+     *
+     * @param DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties($mutations) {
+    public function propPatch(DAV\PropPatch $propPatch) {
 
-        return $this->principalBackend->updatePrincipal($this->principalProperties['uri'], $mutations);
+        return $this->principalBackend->updatePrincipal(
+            $this->principalProperties['uri'],
+            $propPatch
+        );
 
     }
 

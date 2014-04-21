@@ -19,7 +19,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Plugin extends DAV\ServerPlugin {
 
@@ -118,7 +118,7 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
 
-        $range = $this->getHTTPUpdateRange();
+        $range = $this->getHTTPUpdateRange($request);
 
         if (!$range) {
             throw new DAV\Exception\BadRequest('No valid "X-Update-Range" found in the headers');
@@ -136,16 +136,13 @@ class Plugin extends DAV\ServerPlugin {
 
         // Load the begin and end data
         $start = ($range[0])?$range[0]:0;
-        $end   = ($range[1])?$range[1]:$len-1;
+        $end   = ($range[1])?$range[1]:$start+$len-1;
 
         // Check consistency
         if($end < $start)
             throw new DAV\Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
         if($end - $start + 1 != $len)
             throw new DAV\Exception\RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
-
-        // Checking If-None-Match and related headers.
-        if (!$this->server->checkPreconditions()) return;
 
         if (!$this->server->emit('beforeWriteContent', [$path, $node, null]))
             return;
@@ -176,11 +173,12 @@ class Plugin extends DAV\ServerPlugin {
      * If the second offset is null, it should be treated as the offset of the last byte of the entity
      * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
      *
+     * @param RequestInterface $request
      * @return array|null
      */
-    public function getHTTPUpdateRange() {
+    public function getHTTPUpdateRange(RequestInterface $request) {
 
-        $range = $this->server->httpRequest->getHeader('X-Update-Range');
+        $range = $request->getHeader('X-Update-Range');
         if (is_null($range)) return null;
 
         // Matching "Range: bytes=1234-5678: both numbers are optional

@@ -4,7 +4,8 @@ namespace Sabre\DAV\FSExt;
 
 use
     Sabre\DAV,
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\DAV\PropPatch;
 
 /**
  * Base node-class
@@ -13,48 +14,54 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 abstract class Node extends DAV\FS\Node implements DAV\IProperties {
 
     /**
-     * Updates properties on this node,
+     * Updates properties on this node.
      *
-     * @param array $properties
-     * @see Sabre\DAV\IProperties::updateProperties
-     * @return bool|array
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
+     *
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
+     *
+     * @param PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties($properties) {
+    public function propPatch(PropPatch $propPatch) {
 
-        $resourceData = $this->getResourceData();
+        $propPatch->handleRemaining(function(array $properties) {
 
-        foreach($properties as $propertyName=>$propertyValue) {
+            $resourceData = $this->getResourceData();
+            foreach($properties as $propertyName=>$propertyValue) {
 
-            // If it was null, we need to delete the property
-            if (is_null($propertyValue)) {
-                if (isset($resourceData['properties'][$propertyName])) {
+                // If it was null, we need to delete the property
+                if (is_null($propertyValue)) {
                     unset($resourceData['properties'][$propertyName]);
+                } else {
+                    $resourceData['properties'][$propertyName] = $propertyValue;
                 }
-            } else {
-                $resourceData['properties'][$propertyName] = $propertyValue;
+
             }
+            $this->putResourceData($resourceData);
 
-        }
+            return true;
+        });
 
-        $this->putResourceData($resourceData);
-        return true;
     }
 
     /**
-     * Returns a list of properties for this nodes.;
+     * Returns a list of properties for this nodes.
      *
      * The properties list is a list of propertynames the client requested, encoded as xmlnamespace#tagName, for example: http://www.example.org/namespace#author
-     * If the array is empty, all properties should be returned
+     * If the array is empty, all properties should be returned.
      *
      * @param array $properties
      * @return array
      */
-    function getProperties($properties) {
+    public function getProperties($properties) {
 
         $resourceData = $this->getResourceData();
 
@@ -71,7 +78,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Returns the path to the resource file
+     * Returns the path to the resource file.
      *
      * @return string
      */
@@ -83,7 +90,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Returns all the stored resource information
+     * Returns all the stored resource information.
      *
      * @return array
      */
@@ -103,6 +110,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         }
 
         // We're all good
+        flock($handle,LOCK_UN);
         fclose($handle);
 
         // Unserializing and checking if the resource file contains data for this file
@@ -118,7 +126,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
-     * Updates the resource information
+     * Updates the resource information.
      *
      * @param array $newData
      * @return void
@@ -146,12 +154,13 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         rewind($handle);
 
         fwrite($handle,serialize($data));
+        flock($handle,LOCK_UN);
         fclose($handle);
 
     }
 
     /**
-     * Renames the node
+     * Renames the node.
      *
      * @param string $name The new name
      * @return void
@@ -175,9 +184,10 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
     /**
+     * Deletes the resource information.
      * @return bool
      */
-    public function deleteResourceData() {
+    protected function deleteResourceData() {
 
         // When we're deleting this node, we also need to delete any resource information
         $path = $this->getResourceInfoPath();
@@ -197,10 +207,11 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
 
         // Unserializing and checking if the resource file contains data for this file
         $data = unserialize($data);
-        if (isset($data[$this->getName()])) unset($data[$this->getName()]);
+        unset($data[$this->getName()]);
         ftruncate($handle,0);
         rewind($handle);
         fwrite($handle,serialize($data));
+        flock($handle,LOCK_UN);
         fclose($handle);
 
         return true;
@@ -213,4 +224,3 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     }
 
 }
-

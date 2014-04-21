@@ -2,12 +2,20 @@
 
 namespace Sabre\CalDAV\Backend;
 
+use
+    Sabre\DAV\PropPatch;
+
 class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateCalendar() {
 
         $abstract = new AbstractMock();
-        $this->assertEquals(false, $abstract->updateCalendar('randomid', array('{DAV:}displayname' => 'anything')));
+        $propPatch = new PropPatch( ['{DAV:}displayname' => 'anything'] );
+
+        $abstract->updateCalendar('randomid', $propPatch);
+        $result = $propPatch->commit();
+
+        $this->assertFalse($result);
 
     }
 

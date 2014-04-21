@@ -128,10 +128,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
 
-        $result = $backend->updatePrincipal('principals/user', array(
+        $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'pietje',
             '{http://sabredav.org/ns}vcard-url' => 'blabla',
-        ));
+        ]);
+
+        $backend->updatePrincipal('principals/user', $propPatch);
+        $result = $propPatch->commit();
 
         $this->assertTrue($result);
 
@@ -150,21 +153,22 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
 
-        $result = $backend->updatePrincipal('principals/user', array(
+        $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'pietje',
             '{http://sabredav.org/ns}vcard-url' => 'blabla',
             '{DAV:}unknown' => 'foo',
-        ));
+        ]);
+
+        $backend->updatePrincipal('principals/user', $propPatch);
+        $result = $propPatch->commit();
+
+        $this->assertFalse($result);
 
         $this->assertEquals(array(
-            424 => array(
-                '{DAV:}displayname' => null,
-                '{http://sabredav.org/ns}vcard-url' => null,
-            ),
-            403 => array(
-                '{DAV:}unknown' => null,
-            ),
-        ), $result); 
+            '{DAV:}displayname' => 424,
+            '{http://sabredav.org/ns}vcard-url' => 424,
+            '{DAV:}unknown' => 403
+        ), $propPatch->getResult());
 
         $this->assertEquals(array(
             'id' => '1',

@@ -13,7 +13,7 @@ namespace Sabre\CardDAV\Backend;
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 interface BackendInterface {
 
@@ -37,17 +37,22 @@ interface BackendInterface {
     public function getAddressBooksForUser($principalUri);
 
     /**
-     * Updates an addressbook's properties
+     * Updates properties for an address book.
      *
-     * See Sabre\DAV\IProperties for a description of the mutations array, as
-     * well as the return value.
+     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
+     * To do the actual updates, you must tell this object which properties
+     * you're going to process with the handle() method.
      *
-     * @param mixed $addressBookId
-     * @param array $mutations
-     * @see Sabre\DAV\IProperties::updateProperties
-     * @return bool|array
+     * Calling the handle method is like telling the PropPatch object "I
+     * promise I can handle updating this property".
+     *
+     * Read the PropPatch documenation for more info and examples.
+     *
+     * @param string $addressBookId
+     * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateAddressBook($addressBookId, array $mutations);
+    public function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch);
 
     /**
      * Creates a new address book

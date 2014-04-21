@@ -2,9 +2,8 @@
 
 namespace Sabre\CardDAV;
 
-use
-    Sabre\DAV,
-    Sabre\DAVACL;
+use Sabre\DAV;
+use Sabre\DAVACL;
 
 /**
  * The AddressBook class represents a CardDAV addressbook, owned by a specific user
@@ -13,7 +12,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class AddressBook extends DAV\Collection implements IAddressBook, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection, DAV\IMultiGet {
 
@@ -178,43 +177,20 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
     }
 
     /**
-     * Updates properties on this node,
+     * Updates properties on this node.
      *
-     * The properties array uses the propertyName in clark-notation as key,
-     * and the array value for the property value. In the case a property
-     * should be deleted, the property value will be null.
+     * This method received a PropPatch object, which contains all the
+     * information about the update.
      *
-     * This method must be atomic. If one property cannot be changed, the
-     * entire operation must fail.
+     * To update specific properties, call the 'handle' method on this object.
+     * Read the PropPatch documentation for more information.
      *
-     * If the operation was successful, true can be returned.
-     * If the operation failed, false can be returned.
-     *
-     * Deletion of a non-existent property is always successful.
-     *
-     * Lastly, it is optional to return detailed information about any
-     * failures. In this case an array should be returned with the following
-     * structure:
-     *
-     * [
-     *   403 => [
-     *      '{DAV:}displayname' => null,
-     *   ],
-     *   424 => [
-     *      '{DAV:}owner' => null,
-     *   ]
-     * ]
-     *
-     * In this example it was forbidden to update {DAV:}displayname.
-     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
-     * (424 Failed Dependency) because the request needs to be atomic.
-     *
-     * @param array $mutations
-     * @return bool|array
+     * @param DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateProperties($mutations) {
+    public function propPatch(DAV\PropPatch $propPatch) {
 
-        return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $mutations);
+        return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $propPatch);
 
     }
 

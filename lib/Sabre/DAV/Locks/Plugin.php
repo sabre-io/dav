@@ -19,7 +19,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Plugin extends DAV\ServerPlugin {
 
@@ -59,10 +59,10 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->on('method:LOCK',   [$this, 'httpLock']);
-        $server->on('method:UNLOCK', [$this, 'httpUnlock']);
-        $server->on('afterGetProperties',array($this,'afterGetProperties'));
-        $server->on('validateTokens', array($this, 'validateTokens'));
+        $server->on('method:LOCK',        [$this, 'httpLock']);
+        $server->on('method:UNLOCK',      [$this, 'httpUnlock']);
+        $server->on('afterGetProperties', [$this, 'afterGetProperties']);
+        $server->on('validateTokens',     [$this, 'validateTokens']);
 
     }
 
@@ -215,9 +215,8 @@ class Plugin extends DAV\ServerPlugin {
 
             // Gonna check if this was a lock refresh.
             $existingLocks = $this->getLocks($uri);
-            $conditions = $this->server->getIfConditions();
+            $conditions = $this->server->getIfConditions($request);
             $found = null;
-
 
             foreach($existingLocks as $existingLock) {
                 foreach($conditions as $condition) {
@@ -428,11 +427,11 @@ class Plugin extends DAV\ServerPlugin {
      * @param mixed $conditions
      * @return void
      */
-    public function validateTokens( &$conditions ) {
+    public function validateTokens( RequestInterface $request, &$conditions ) {
 
         // First we need to gather a list of locks that must be satisfied.
         $mustLocks = [];
-        $method = $this->server->httpRequest->getMethod();
+        $method = $request->getMethod();
 
         // Methods not in that list are operations that doesn't alter any
         // resources, and we don't need to check the lock-states for.
@@ -440,7 +439,7 @@ class Plugin extends DAV\ServerPlugin {
 
             case 'DELETE' :
                 $mustLocks = array_merge($mustLocks, $this->getLocks(
-                    $this->server->getRequestUri(),
+                    $request->getPath(),
                     true
                 ));
                 break;
@@ -450,26 +449,36 @@ class Plugin extends DAV\ServerPlugin {
             case 'PUT' :
             case 'PATCH' :
                 $mustLocks = array_merge($mustLocks, $this->getLocks(
-                    $this->server->getRequestUri(),
+                    $request->getPath(),
                     false
                 ));
                 break;
             case 'MOVE' :
                 $mustLocks = array_merge($mustLocks, $this->getLocks(
-                    $this->server->getRequestUri(),
+                    $request->getPath(),
                     true
                 ));
                 $mustLocks = array_merge($mustLocks, $this->getLocks(
-                    $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
+                    $this->server->calculateUri($request->getHeader('Destination')),
                     false
                 ));
                 break;
             case 'COPY' :
                 $mustLocks = array_merge($mustLocks, $this->getLocks(
-                    $this->server->calculateUri($this->server->httpRequest->getHeader('Destination')),
+                    $this->server->calculateUri($request->getHeader('Destination')),
                     false
                 ));
                 break;
+            case 'LOCK' :
+                //Temporary measure.. figure out later why this is needed
+                // Here we basically ignore all incoming tokens...
+                foreach($conditions as $ii=>$condition) {
+                    foreach($condition['tokens'] as $jj=>$token) {
+                        $conditions[$ii]['tokens'][$jj]['validToken'] = true;
+                    }
+                }
+                return;
+
         }
 
         // It's possible that there's identical locks, because of shared

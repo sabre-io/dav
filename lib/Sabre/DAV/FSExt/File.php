@@ -8,7 +8,7 @@ use Sabre\DAV;
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class File extends Node implements DAV\PartialUpdate\IFile {
 
@@ -34,7 +34,7 @@ class File extends Node implements DAV\PartialUpdate\IFile {
      * The offset argument is a 0-based offset where the data should be
      * written.
      *
-     * param resource|string $data
+     * @param resource|string $data
      * @return void
      */
     public function putRange($data, $offset) {
@@ -68,9 +68,7 @@ class File extends Node implements DAV\PartialUpdate\IFile {
      * @return bool
      */
     public function delete() {
-
-        unlink($this->path);
-        return parent::delete();
+        return unlink($this->path) && parent::delete();
 
     }
 
@@ -115,4 +113,3 @@ class File extends Node implements DAV\PartialUpdate\IFile {
     }
 
 }
-

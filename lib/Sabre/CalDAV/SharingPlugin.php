@@ -21,7 +21,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class SharingPlugin extends DAV\ServerPlugin {
 
@@ -94,7 +94,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         $this->server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
         $this->server->on('afterGetProperties',  [$this, 'afterGetProperties']);
-        $this->server->on('updateProperties',    [$this, 'updateProperties']);
+        $this->server->on('propPatch',           [$this, 'propPatch'], 40);
         $this->server->on('method:POST',         [$this, 'httpPost']);
 
     }
@@ -221,35 +221,28 @@ class SharingPlugin extends DAV\ServerPlugin {
      * Even though this is no longer in the current spec, we keep this around
      * because OS X 10.7 may still make use of this feature.
      *
-     * @param array $mutations
-     * @param array $result
-     * @param DAV\INode $node
+     * @param string $path
+     * @param DAV\PropPatch $propPatch
      * @return void
      */
-    public function updateProperties(array &$mutations, array &$result, DAV\INode $node) {
+    public function propPatch($path, DAV\PropPatch $propPatch) {
 
+        $node = $this->server->tree->getNodeForPath($path);
         if (!$node instanceof IShareableCalendar)
             return;
 
-        if (!isset($mutations['{DAV:}resourcetype'])) {
-            return;
-        }
+        $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
+            if($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
+            $shares = $node->getShares();
+            $remove = array();
+            foreach($shares as $share) {
+                $remove[] = $share['href'];
+            }
+            $node->updateShares(array(), $remove);
 
-        // Only doing something if shared-owner is indeed not in the list.
-        if($mutations['{DAV:}resourcetype']->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return;
+            return true;
 
-        $shares = $node->getShares();
-        $remove = array();
-        foreach($shares as $share) {
-            $remove[] = $share['href'];
-        }
-        $node->updateShares(array(), $remove);
-
-        // We're marking this update as 200 OK
-        $result[200]['{DAV:}resourcetype'] = null;
-
-        // Removing it from the mutations list
-        unset($mutations['{DAV:}resourcetype']);
+        });
 
     }
 

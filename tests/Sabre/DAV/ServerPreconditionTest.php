@@ -9,7 +9,6 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @covers Sabre\DAV\Server::checkPreconditions
      * @expectedException Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfMatchNoNode() {
@@ -20,14 +19,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MATCH' => '*',
             'REQUEST_URI'   => '/bar'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     function testIfMatchHasNode() {
 
@@ -37,14 +34,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MATCH' => '*',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      * @expectedException Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfMatchWrongEtag() {
@@ -55,14 +50,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MATCH' => '1234',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     function testIfMatchCorrectEtag() {
 
@@ -72,16 +65,14 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
      * Evolution sometimes uses \" instead of " for If-Match headers.
      *
-     * @covers \Sabre\DAV\Server::checkPreconditions
      * @depends testIfMatchCorrectEtag
      */
     function testIfMatchEvolutionEtag() {
@@ -92,14 +83,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MATCH' => '\\"abc123\\"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
 
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     function testIfMatchMultiple() {
 
@@ -109,14 +99,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MATCH' => '"hellothere", "abc123"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
 
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     function testIfNoneMatchNoNode() {
 
@@ -126,14 +115,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_NONE_MATCH' => '*',
             'REQUEST_URI'   => '/bar'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      * @expectedException Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfNoneMatchHasNode() {
@@ -144,14 +131,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_NONE_MATCH' => '*',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     function testIfNoneMatchWrongEtag() {
 
@@ -161,14 +146,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_NONE_MATCH' => '"1234"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     function testIfNoneMatchWrongEtagMultiple() {
 
@@ -178,14 +161,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_NONE_MATCH' => '"1234", "5678"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      * @expectedException Sabre\DAV\Exception\PreconditionFailed
      */
     public function testIfNoneMatchCorrectEtag() {
@@ -196,14 +177,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_NONE_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      * @expectedException Sabre\DAV\Exception\PreconditionFailed
      */
     public function testIfNoneMatchCorrectEtagMultiple() {
@@ -214,33 +193,30 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_NONE_MATCH' => '"1234", "abc123"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfNoneMatchCorrectEtagAsGet() {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
         $httpRequest = HTTP\Sapi::createFromServerArray(array(
+            'REQUEST_METHOD' => 'GET',
             'HTTP_IF_NONE_MATCH' => '"abc123"',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
         $server->httpResponse = new HTTP\ResponseMock();
 
-        $this->assertFalse($server->checkPreconditions(true));
+        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
         $this->assertEquals(304, $server->httpResponse->status);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfModifiedSinceUnModified() {
 
@@ -250,9 +226,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
         $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertFalse($server->checkPreconditions());
+        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
 
         $this->assertEquals(304, $server->httpResponse->status);
         $this->assertEquals(array(
@@ -263,7 +238,6 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfModifiedSinceModified() {
 
@@ -273,14 +247,14 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions());
+
+        $httpRequest = $httpRequest;
+        $httpResponse = new HTTP\ResponseMock();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfModifiedSinceInvalidDate() {
 
@@ -290,16 +264,15 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
+        $httpRequest = $httpRequest;
+        $httpResponse = new HTTP\ResponseMock();
 
         // Invalid dates must be ignored, so this should return true
-        $this->assertTrue($server->checkPreconditions());
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfModifiedSinceInvalidDate2() {
 
@@ -309,15 +282,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\ResponseMock();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfUnmodifiedSinceUnModified() {
 
@@ -327,14 +298,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      * @expectedException Sabre\DAV\Exception\PreconditionFailed
      */
     public function testIfUnmodifiedSinceModified() {
@@ -345,14 +315,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\ResponseMock();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
     /**
-     * @covers \Sabre\DAV\Server::checkPreconditions
      */
     public function testIfUnmodifiedSinceInvalidDate() {
 
@@ -362,9 +330,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\ResponseMock();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 

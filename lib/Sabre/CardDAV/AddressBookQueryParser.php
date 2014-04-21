@@ -12,7 +12,7 @@ use Sabre\DAV;
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class AddressBookQueryParser {
 
@@ -113,12 +113,14 @@ class AddressBookQueryParser {
 
         $propFilters = array();
 
-        $propFilterNodes = $this->xpath->query('card:prop-filter', $filter);
-        for($ii=0; $ii < $propFilterNodes->length; $ii++) {
+        if (!is_null($filter)) {
+            $propFilterNodes = $this->xpath->query('card:prop-filter', $filter);
+            for($ii=0; $ii < $propFilterNodes->length; $ii++) {
 
-            $propFilters[] = $this->parsePropFilterNode($propFilterNodes->item($ii));
+                $propFilters[] = $this->parsePropFilterNode($propFilterNodes->item($ii));
 
 
+            }
         }
 
         $this->filters = $propFilters;

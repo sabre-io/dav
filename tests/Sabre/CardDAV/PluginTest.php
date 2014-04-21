@@ -119,10 +119,7 @@ class PluginTest extends AbstractPluginTest {
 
         $this->assertEquals(
             array(
-                'href' => 'addressbooks/user1',
-                200 => array(
-                    '{http://calendarserver.org/ns/}me-card' => null,
-                ),
+                '{http://calendarserver.org/ns/}me-card' => 200,
             ),
             $result
         );
@@ -137,10 +134,7 @@ class PluginTest extends AbstractPluginTest {
 
         $this->assertEquals(
             array(
-                'href' => 'addressbooks/user1',
-                400 => array(
-                    '{http://calendarserver.org/ns/}me-card' => null,
-                ),
+                '{http://calendarserver.org/ns/}me-card' => 400,
             ),
             $result
         );

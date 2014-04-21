@@ -9,7 +9,7 @@ use Sabre\HTTP\URLUtil;
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 abstract class Tree {
 
@@ -177,7 +177,7 @@ abstract class Tree {
      * @param string $destinationName
      * @return void
      */
-    protected function copyNode(INode $source,ICollection $destinationParent,$destinationName = null) {
+    protected function copyNode(INode $source, ICollection $destinationParent, $destinationName = null) {
 
         if (!$destinationName) $destinationName = $source->getName();
 
@@ -210,7 +210,9 @@ abstract class Tree {
         if ($source instanceof IProperties && $destination instanceof IProperties) {
 
             $props = $source->getProperties(array());
-            $destination->updateProperties($props);
+            $propPatch = new PropPatch($props);
+            $destination->propPatch($propPatch);
+            $propPatch->commit();
 
         }
 

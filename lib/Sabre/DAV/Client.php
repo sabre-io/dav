@@ -14,7 +14,7 @@ use Sabre\HTTP;
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Client extends HTTP\Client {
 
@@ -162,6 +162,8 @@ class Client extends HTTP\Client {
      * The parameter certificates should be a absolute path to a file
      * which contains all trusted certificates
      *
+     * @deprecated This method will be removed in the future, use
+     *             addCurlSetting instead.
      * @param string $certificates
      * @return void
      */
@@ -172,6 +174,8 @@ class Client extends HTTP\Client {
     /**
      * Enables/disables SSL peer verification
      *
+     * @deprecated This method will be removed in the future, use
+     *             addCurlSetting instead.
      * @param bool $value
      * @return void
      */

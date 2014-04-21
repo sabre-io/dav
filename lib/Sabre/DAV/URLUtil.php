@@ -15,7 +15,7 @@ use Sabre\HTTP;
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/) 
  * @deprecated Use Sabre\HTTP\URLUtil instead!
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class URLUtil extends HTTP\URLUtil {
 

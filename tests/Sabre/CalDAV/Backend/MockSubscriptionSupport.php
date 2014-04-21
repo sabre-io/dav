@@ -12,7 +12,7 @@ use Sabre\CalDAV;
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
 
@@ -95,40 +95,20 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
     /**
      * Updates a subscription
      *
-     * The mutations array uses the propertyName in clark-notation as key,
-     * and the array value for the property value. In the case a property
-     * should be deleted, the property value will be null.
+     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
+     * To do the actual updates, you must tell this object which properties
+     * you're going to process with the handle() method.
      *
-     * This method must be atomic. If one property cannot be changed, the
-     * entire operation must fail.
+     * Calling the handle method is like telling the PropPatch object "I
+     * promise I can handle updating this property".
      *
-     * If the operation was successful, true can be returned.
-     * If the operation failed, false can be returned.
-     *
-     * Deletion of a non-existent property is always successful.
-     *
-     * Lastly, it is optional to return detailed information about any
-     * failures. In this case an array should be returned with the following
-     * structure:
-     *
-     * array(
-     *   403 => array(
-     *      '{DAV:}displayname' => null,
-     *   ),
-     *   424 => array(
-     *      '{DAV:}owner' => null,
-     *   )
-     * )
-     *
-     * In this example it was forbidden to update {DAV:}displayname.
-     * (403 Forbidden), which in turn also caused {DAV:}owner to fail
-     * (424 Failed Dependency) because the request needs to be atomic.
+     * Read the PropPatch documenation for more info and examples.
      *
      * @param mixed $subscriptionId
-     * @param array $mutations
-     * @return bool|array
+     * @param \Sabre\DAV\PropPatch $propPatch
+     * @return void
      */
-    public function updateSubscription($subscriptionId, array $mutations) {
+    public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
 
         $found = null;
         foreach($this->subs[$subscriptionId[0]] as &$sub) {
@@ -140,13 +120,14 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
 
         }
 
-        if (!$found) return false;
+        if (!$found) return;
 
-        foreach($mutations as $k=>$v) {
-            $found[$k] = $v;
-        }
-
-        return true;
+        $propPatch->handleRemaining(function($mutations) use (&$found) {
+            foreach($mutations as $k=>$v) {
+                $found[$k] = $v;
+            }
+            return true;
+        });
 
     }
 

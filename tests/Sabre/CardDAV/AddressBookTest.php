@@ -2,6 +2,7 @@
 
 namespace Sabre\CardDAV;
 
+use Sabre\DAV\PropPatch;
 
 require_once 'Sabre/CardDAV/Backend/Mock.php';
 
@@ -105,9 +106,11 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateProperties() {
 
-        $this->assertTrue(
-            $this->ab->updateProperties(array('{DAV:}displayname' => 'barrr'))
-        );
+        $propPatch = new PropPatch([
+            '{DAV:}displayname' => 'barrr',
+        ]);
+        $this->ab->propPatch($propPatch);
+        $this->assertTrue($propPatch->commit());
 
         $this->assertEquals('barrr', $this->backend->addressBooks[0]['{DAV:}displayname']);
 

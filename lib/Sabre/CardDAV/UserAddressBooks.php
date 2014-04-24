@@ -145,7 +145,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      */
     public function getChildren() {
 
-        $addressbooks = $this->carddavBackend->getAddressbooksForUser($this->principalUri);
+        $addressbooks = $this->carddavBackend->getAddressBooksForUser($this->principalUri);
         $objs = array();
         foreach($addressbooks as $addressbook) {
             $objs[] = new AddressBook($this->carddavBackend, $addressbook);

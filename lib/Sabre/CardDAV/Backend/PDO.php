@@ -295,7 +295,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      * Creates a new card.
      *
      * The addressbook id will be passed as the first argument. This is the
-     * same id as it is returned from the getAddressbooksForUser method.
+     * same id as it is returned from the getAddressBooksForUser method.
      *
      * The cardUri is a base uri, and doesn't include the full path. The
      * cardData argument is the vcard body, and is passed as a string.
@@ -332,7 +332,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      * Updates a card.
      *
      * The addressbook id will be passed as the first argument. This is the
-     * same id as it is returned from the getAddressbooksForUser method.
+     * same id as it is returned from the getAddressBooksForUser method.
      *
      * The cardUri is a base uri, and doesn't include the full path. The
      * cardData argument is the vcard body, and is passed as a string.

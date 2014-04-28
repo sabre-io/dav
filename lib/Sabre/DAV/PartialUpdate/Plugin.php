@@ -118,7 +118,7 @@ class Plugin extends DAV\ServerPlugin {
         $path = $request->getPath();
 
         // Get the node. Will throw a 404 if not found
-        $node = $this->server->tree->getNodeForPath($uri);
+        $node = $this->server->tree->getNodeForPath($path);
         if (!$node instanceof IFile && !$node instanceof IPatchSupport) {
             throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
@@ -155,10 +155,8 @@ class Plugin extends DAV\ServerPlugin {
                 }
                 break;
         }
-        // Checking If-None-Match and related headers.
-        if (!$this->server->checkPreconditions()) return;
 
-        if (!$this->server->broadcastEvent('beforeWriteContent',array($uri, $node, null)))
+        if (!$this->server->emit('beforeWriteContent', [$path, $node, null]))
             return;
 
         $body = $this->server->httpRequest->getBody();

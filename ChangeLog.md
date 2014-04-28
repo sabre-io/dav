@@ -195,6 +195,9 @@ ChangeLog
 1.7.12 (????-??-??)
 -------------------
 
+* Updated: Issue #439. Lots of updates in PATCH support. The
+  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be
+  removed in a future version.
 * Fixed: Restoring old setting after changing libxml_disable_entity_loader.
 * Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
   files. Not really a chance for data-loss, but incorrect nevertheless.

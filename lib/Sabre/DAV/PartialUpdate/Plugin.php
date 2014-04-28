@@ -98,12 +98,13 @@ class Plugin extends DAV\ServerPlugin {
     public function getHTTPMethods($uri) {
 
         $tree = $this->server->tree;
-        if ($tree->nodeExists($uri) && 
-            $tree->getNodeForPath($uri) instanceof IFile) {
-            return array('PATCH');
-         }
-
-         return array();
+        if ($tree->nodeExists($uri)) {
+            $node = $tree->getNodeForPath($uri);
+            if ($node instanceof IFile || $node instanceof IPatchSupport) {
+                return array('PATCH');
+            }
+        }
+        return array();
 
     }
 
@@ -177,7 +178,7 @@ class Plugin extends DAV\ServerPlugin {
         $body = $this->server->httpRequest->getBody();
 
 
-        if ($node instanceof Sabre_DAV_PartialUpdate_IPatchSupport) {
+        if ($node instanceof IPatchSupport) {
             $etag = $node->patch($body, $range[0], isset($range[1])?$range[1]:null);
         } else {
             // The old interface

@@ -1,23 +1,29 @@
 <?php
 
+namespace Sabre\DAV\PartialUpdate;
+
+use Sabre\DAV\FSExt\File;
+use Sabre\DAV\Server;
+use Sabre\HTTP;
+
 /**
  * This test is an end-to-end sabredav test that goes through all
  * the cases in the specification.
  *
  * See: http://sabre.io/dav/http-patch/
  */
-class Sabre_DAV_PartialUpdate_SpecificationTest extends PHPUnit_Framework_TestCase {
+class SpecificationTest extends \PHPUnit_Framework_TestCase {
 
     protected $server;
 
     public function setUp() {
 
         $tree = array(
-            new Sabre_DAV_FSExt_File(SABRE_TEMPDIR . '/foobar.txt')
+            new File(SABRE_TEMPDIR . '/foobar.txt')
         );
-        $server = new Sabre_DAV_Server($tree);
+        $server = new Server($tree);
         $server->debugExceptions = true;
-        $server->addPlugin(new Sabre_DAV_PartialUpdate_Plugin());
+        $server->addPlugin(new Plugin());
 
         $tree[0]->put('1234567890');
 
@@ -27,7 +33,7 @@ class Sabre_DAV_PartialUpdate_SpecificationTest extends PHPUnit_Framework_TestCa
 
     public function tearDown() {
 
-        Sabre_TestUtil::clearTempDir();
+        \Sabre\TestUtil::clearTempDir();
 
     }
 
@@ -46,11 +52,11 @@ class Sabre_DAV_PartialUpdate_SpecificationTest extends PHPUnit_Framework_TestCa
             $vars['HTTP_CONTENT_LENGTH'] = (string)$contentLength;
         }
 
-        $request = new Sabre_HTTP_Request($vars);
+        $request = new HTTP\Request($vars);
 
         $request->setBody('----');
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = new Sabre_HTTP_ResponseMock();
+        $this->server->httpResponse = new HTTP\ResponseMock();
         $this->server->exec();
 
         $this->assertEquals($httpStatus, $this->server->httpResponse->status, 'Incorrect http status received: ' . $this->server->httpResponse->body);

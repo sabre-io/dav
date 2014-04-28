@@ -97,7 +97,7 @@ class Sabre_DAV_PartialUpdate_Plugin extends Sabre_DAV_ServerPlugin {
         $tree = $this->server->tree;
 
         if ($tree->nodeExists($uri) &&
-            $tree->getNodeForPath($uri) instanceof Sabre_DAV_PartialUpdate_IFile) {
+            ($tree->getNodeForPath($uri) instanceof Sabre_DAV_PartialUpdate_IFile || $tree->getNodeForPath($uri) instanceof Sabre_DAV_PartialUpdate_IPatchSupport)) {
             return array('PATCH');
          }
 

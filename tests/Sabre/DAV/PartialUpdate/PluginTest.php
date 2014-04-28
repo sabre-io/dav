@@ -98,7 +98,7 @@ class Sabre_DAV_PartialUpdate_PluginTest extends Sabre_DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals('HTTP/1.1 416 Requested Range Not Satisfiable', $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals('HTTP/1.1 411 Length Required', $response->status, 'Full response body:' . $response->body);
 
     }
 
@@ -118,7 +118,7 @@ class Sabre_DAV_PartialUpdate_PluginTest extends Sabre_DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals('HTTP/1.1 204 No Content', $response->status, 'Full response body:' . $response->body);
-        $this->assertEquals('00111000', $this->node->get());
+        $this->assertEquals('00011100', $this->node->get());
 
     }
 

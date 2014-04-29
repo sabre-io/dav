@@ -79,7 +79,7 @@ class ResponseList extends DAV\Property {
     public static function unserialize(\DOMElement $prop, array $propertyMap) {
 
         $xpath = new \DOMXPath( $prop->ownerDocument );
-        $xpath->registerNamespace('d','DAV:');
+        $xpath->registerNamespace('d','urn:DAV');
 
         // Finding the 'response' element
         $xResponses = $xpath->evaluate(

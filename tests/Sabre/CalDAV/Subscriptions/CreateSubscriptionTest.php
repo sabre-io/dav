@@ -42,14 +42,14 @@ XML;
         $headers = [
             'Content-Type' => 'application/xml',
         ];
-        $request = new Request('MKCOL', '/calendars/user1/subscription1', $headers, $body); 
+        $request = new Request('MKCOL', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
         $this->assertEquals(201, $response->getStatus());
         $subscriptions = $this->caldavBackend->getSubscriptionsForUser('principals/user1');
-        $this->assertSubscription($subscriptions[0]); 
+        $this->assertSubscription($subscriptions[0]);
 
-    
+
     }
     /**
      * OS X 10.9.2 and up
@@ -86,12 +86,20 @@ XML;
         $headers = [
             'Content-Type' => 'application/xml',
         ];
-        $request = new Request('MKCALENDAR', '/calendars/user1/subscription1', $headers, $body); 
+        $request = new Request('MKCALENDAR', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
         $this->assertEquals(201, $response->getStatus());
         $subscriptions = $this->caldavBackend->getSubscriptionsForUser('principals/user1');
-        $this->assertSubscription($subscriptions[0]); 
+        $this->assertSubscription($subscriptions[0]);
+
+        // Also seeing if it works when calling this as a PROPFIND.
+        $this->assertEquals([
+                '{http://calendarserver.org/ns/}subscribed-strip-alarms' => '',
+            ],
+            $this->server->getProperties('calendars/user1/subscription1', ['{http://calendarserver.org/ns/}subscribed-strip-alarms'])
+        );
+
 
     }
 

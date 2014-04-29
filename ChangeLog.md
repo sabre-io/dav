@@ -19,6 +19,7 @@ ChangeLog
 * Removed: `Sabre\DAV\Server::NODE_*` constants.
 * Moved all precondition checking into a central place, instead of having to
   think about it on a per-method basis.
+* jCal transformation for calendar-query REPORT now works again.
 
 
 1.9.0-alpha2 (2014-01-14)

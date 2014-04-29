@@ -334,7 +334,17 @@ class Plugin extends DAV\ServerPlugin {
             }
         }
 
-        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
+        // iCal abuses MKCALENDAR since iCal 10.9.2 to create server-stored
+        // subscriptions. Before that it used MKCOL which was the correct way
+        // to do this.
+        //
+        // If the body had a {DAV:}resourcetype, it means we stumbled upon this
+        // request, and we simply use it instead of the pre-defined list.
+        if (isset($properties['{DAV:}resourcetype'])) {
+            $resourceType = $properties['{DAV:}resourcetype']->getValue();
+        } else {
+            $resourceType = ['{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar'];
+        }
 
         $this->server->createCollection($path,$resourceType,$properties);
 
@@ -500,7 +510,7 @@ class Plugin extends DAV\ServerPlugin {
         $xpath->registerNameSpace('dav','urn:DAV');
 
         $expand = $xpath->query('/cal:calendar-multiget/dav:prop/cal:calendar-data/cal:expand');
-        if ($expand->length>0) {
+        if ($expand->length > 0) {
             $expandElem = $expand->item(0);
             $start = $expandElem->getAttribute('start');
             $end = $expandElem->getAttribute('end');

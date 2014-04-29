@@ -14,9 +14,12 @@ ChangeLog
 * Fixed: Issue #428: Etag check with `If:` fails if the target is a collection.
 * Fixed: Issues #430, #431, #433: Locks plugin didn't not properly release
   filesystem based locks.
+* Fixed: #443. Support for creating new calendar subscriptions for OS X 10.9.2
+  and up.
 * Removed: `Sabre\DAV\Server::NODE_*` constants.
 * Moved all precondition checking into a central place, instead of having to
   think about it on a per-method basis.
+
 
 1.9.0-alpha2 (2014-01-14)
 -------------------------

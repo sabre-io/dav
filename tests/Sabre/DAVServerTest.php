@@ -37,6 +37,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCardDAV = false;
     protected $setupACL = false;
     protected $setupCalDAVSharing = false;
+    protected $setupCalDAVSubscriptions = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
@@ -101,6 +102,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupCalDAVSharing) {
             $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
+        }
+        if ($this->setupCalDAVSubscriptions) {
+            $this->server->addPlugin(new CalDAV\Subscriptions\Plugin());
         }
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new CardDAV\Plugin();
@@ -172,6 +176,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
+        if ($this->setupCalDAVSubscriptions && is_null($this->caldavBackend)) {
+            $this->caldavBackend = new CalDAV\Backend\MockSubscriptionSupport($this->caldavCalendars, $this->caldavCalendarObjects);
+        }
         if ($this->setupCalDAV && is_null($this->caldavBackend)) {
             $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
         }

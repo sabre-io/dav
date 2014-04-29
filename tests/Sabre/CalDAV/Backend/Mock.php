@@ -11,7 +11,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
     private $notifications;
     private $shares = array();
 
-    function __construct(array $calendars, array $calendarData, array $notifications = array()) {
+    function __construct(array $calendars = [], array $calendarData = [], array $notifications = []) {
 
         $this->calendars = $calendars;
         $this->calendarData = $calendarData;

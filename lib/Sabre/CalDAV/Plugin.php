@@ -584,7 +584,7 @@ class Plugin extends DAV\ServerPlugin {
         $xpath = new \DOMXPath($dom);
         $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
         $xpath->registerNameSpace('dav','urn:DAV');
-        $needsJson = $xpath->evaluate("boolean(/cal:calendar-multiget/dav:prop/cal:calendar-data[@content-type='application/calendar+json'])");
+        $needsJson = $xpath->evaluate("boolean(/cal:calendar-query/dav:prop/cal:calendar-data[@content-type='application/calendar+json'])");
 
         $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
         $depth = $this->server->getHTTPDepth(0);

@@ -125,6 +125,10 @@ class Server extends EventEmitter {
         '{DAV:}acl-restrictions',
         '{DAV:}inherited-acl-set',
 
+        // RFC3253
+        '{DAV:}supported-method-set',
+        '{DAV:}supported-report-set',
+
     ];
 
     /**
@@ -467,10 +471,10 @@ class Server extends EventEmitter {
     /**
      * Returns an array with all the supported HTTP methods for a specific uri.
      *
-     * @param string $uri
+     * @param string $path
      * @return array
      */
-    public function getAllowedMethods($uri) {
+    public function getAllowedMethods($path) {
 
         $methods = [
             'OPTIONS',
@@ -487,13 +491,13 @@ class Server extends EventEmitter {
 
         // The MKCOL is only allowed on an unmapped uri
         try {
-            $this->tree->getNodeForPath($uri);
+            $this->tree->getNodeForPath($path);
         } catch (Exception\NotFound $e) {
             $methods[] = 'MKCOL';
         }
 
         // We're also checking if any of the plugins register any new methods
-        foreach($this->plugins as $plugin) $methods = array_merge($methods, $plugin->getHTTPMethods($uri));
+        foreach($this->plugins as $plugin) $methods = array_merge($methods, $plugin->getHTTPMethods($path));
         array_unique($methods);
 
         return $methods;

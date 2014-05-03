@@ -814,6 +814,11 @@ class CorePlugin extends ServerPlugin {
         $propFind->handle('{DAV:}resourcetype', function() use ($node) {
             return new Property\ResourceType($this->server->getResourceTypeForNode($node));
         });
+        $propFind->handle('{DAV:}supported-method-set', function() use ($propFind) {
+            return new Property\SupportedMethodSet(
+                $this->server->getAllowedMethods($propFind->getPath())
+            );
+        });
 
     }
 

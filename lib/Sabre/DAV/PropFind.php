@@ -121,10 +121,10 @@ class PropFind {
      */
     public function set($propertyName, $value, $status = null) {
 
-        if (is_null($status)) {
-            $status = is_null($value) ? 404 : 200;
-        }
         if (isset($this->result[$propertyName])) {
+            if (is_null($status)) {
+                $status = is_null($value) ? 404 : 200;
+            }
             if ($status!==404 && $this->result[$propertyName][0]===404) {
                 $this->itemsLeft--;
             } elseif ($status === 404 && $this->result[$propertyName][0] !== 404) {

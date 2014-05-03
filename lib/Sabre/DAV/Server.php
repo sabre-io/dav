@@ -925,16 +925,17 @@ class Server extends EventEmitter {
 
         foreach($propFindRequests as $propFindRequest) {
 
-            $r = $this->getPropertiesByNode($propFindRequest[0], $propFindRequest[1]);
+            list($propFind, $node) = $propFindRequest;
+            $r = $this->getPropertiesByNode($propFind, $node);
             if ($r) {
-                $result = $propFindRequest[0]->getResultForMultiStatus();
-                $result['href'] = $propFindRequest[0]->getPath();
+                $result = $propFind->getResultForMultiStatus();
+                $result['href'] = $propFind->getPath();
 
                 // WebDAV recommends adding a slash to the path, if the path is
                 // a collection.
                 // Furthermore, iCal also demands this to be the case for
                 // principals. This is non-standard, but we support it.
-                $resourceType = $this->getResourceTypeForNode($propFindRequest[1]);
+                $resourceType = $this->getResourceTypeForNode($node);
                 if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
                     $result['href'].='/';
                 }

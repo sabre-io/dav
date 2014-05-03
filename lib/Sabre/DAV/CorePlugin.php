@@ -727,6 +727,7 @@ class CorePlugin extends ServerPlugin {
      * Here we check if a user attempted to update a protected property and
      * ensure that the process fails if this is the case.
      *
+     * @param string $path
      * @param PropPatch $propPatch
      * @return void
      */
@@ -752,6 +753,7 @@ class CorePlugin extends ServerPlugin {
      * Here we check if a node implements IProperties and let the node handle
      * updating of (some) properties.
      *
+     * @param string $path
      * @param PropPatch $propPatch
      * @return void
      */

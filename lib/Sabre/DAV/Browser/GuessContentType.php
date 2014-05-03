@@ -4,7 +4,9 @@ namespace Sabre\DAV\Browser;
 
 use
     Sabre\HTTP\URLUtil,
-    Sabre\DAV;
+    Sabre\DAV,
+    Sabre\DAV\PropFind,
+    Sabre\DAV\Inode;
 
 /**
  * GuessContentType plugin
@@ -56,30 +58,27 @@ class GuessContentType extends DAV\ServerPlugin {
 
         // Using a relatively low priority (200) to allow other extensions
         // to set the content-type first.
-        $server->on('afterGetProperties',array($this,'afterGetProperties'),200);
+        $server->on('propFind', [$this,'propFind'], 200);
 
     }
 
     /**
-     * Handler for teh afterGetProperties event
+     * Our PROPFIND handler
      *
-     * @param string $path
-     * @param array $properties
+     * Here we set a contenttype, if the node didn't already have one.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
      * @return void
      */
-    public function afterGetProperties($path, &$properties) {
+    public function propFind(PropFind $propFind, INode $node) {
 
-        if (array_key_exists('{DAV:}getcontenttype', $properties[404])) {
+        $propFind->handle('{DAV:}getcontenttype', function() use ($propFind) {
 
-            list(, $fileName) = URLUtil::splitPath($path);
-            $contentType = $this->getContentType($fileName);
+            list(, $fileName) = URLUtil::splitPath($propFind->getPath());
+            return $this->getContentType($fileName);
 
-            if ($contentType) {
-                $properties[200]['{DAV:}getcontenttype'] = $contentType;
-                unset($properties[404]['{DAV:}getcontenttype']);
-            }
-
-        }
+        });
 
     }
 

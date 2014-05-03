@@ -139,11 +139,26 @@ class PropFind {
      * Returns the current value for a property.
      *
      * @param string $propertyName
-     * @return void
+     * @return mixed
      */
     public function get($propertyName) {
 
         return isset($this->result[$propertyName])?$this->result[$propertyName][1]:null;
+
+    }
+
+    /**
+     * Returns the current status code for a property name.
+     *
+     * If the property does not appear in the list of requested properties,
+     * null will be returned.
+     *
+     * @param string $propertyName
+     * @return int|null
+     */
+    public function getStatus($propertyName) {
+
+        return isset($this->result[$propertyName])?$this->result[$propertyName][0]:null;
 
     }
 

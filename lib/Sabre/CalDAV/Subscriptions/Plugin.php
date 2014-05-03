@@ -3,6 +3,8 @@
 namespace Sabre\CalDAV\Subscriptions;
 
 use
+    Sabre\DAV\INode,
+    Sabre\DAV\PropFind,
     Sabre\DAV\ServerPlugin,
     Sabre\DAV\Server;
 
@@ -37,7 +39,7 @@ class Plugin extends ServerPlugin {
         $server->propertyMap['{http://calendarserver.org/ns/}source'] =
             'Sabre\\DAV\\Property\\Href';
 
-        $server->on('afterGetProperties', [$this, 'afterGetProperties']);
+        $server->on('propFind', [$this, 'propFind'], 120);
 
     }
 
@@ -51,7 +53,7 @@ class Plugin extends ServerPlugin {
      */
     public function getFeatures() {
 
-        return array('calendarserver-subscribed');
+        return ['calendarserver-subscribed'];
 
     }
 
@@ -60,7 +62,7 @@ class Plugin extends ServerPlugin {
      *
      * @return void
      */
-    public function afterGetProperties($path, &$properties, \Sabre\DAV\INode $node) {
+    public function propFind(PropFind $propFind, INode $node) {
 
         // There's a bunch of properties that must appear as a self-closing
         // xml-element. This event handler ensures that this will be the case.
@@ -72,8 +74,8 @@ class Plugin extends ServerPlugin {
 
         foreach($props as $prop) {
 
-            if (isset($properties[200][$prop])) {
-                $properties[200][$prop] = '';
+            if ($propFind->getStatus($prop)===200) {
+                $propFind->set($prop, '', 200);
             }
 
         }

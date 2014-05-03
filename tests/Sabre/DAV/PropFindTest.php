@@ -50,7 +50,7 @@ class PropFindTest extends \PHPUnit_Framework_TestCase {
     function testSet() {
 
         $propFind = new PropFind('foo', ['{DAV:}displayname']);
-        $propFind->set('{DAV:}displayname', 200, 'bar');
+        $propFind->set('{DAV:}displayname', 'bar');
 
         $this->assertEquals([
             200 => ['{DAV:}displayname' => 'bar'],
@@ -62,8 +62,8 @@ class PropFindTest extends \PHPUnit_Framework_TestCase {
     function testSetUnset() {
 
         $propFind = new PropFind('foo', ['{DAV:}displayname']);
-        $propFind->set('{DAV:}displayname', 200, 'bar');
-        $propFind->set('{DAV:}displayname', 404);
+        $propFind->set('{DAV:}displayname', 'bar');
+        $propFind->set('{DAV:}displayname', null);
 
         $this->assertEquals([
             200 => [],

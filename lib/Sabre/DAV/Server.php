@@ -1022,7 +1022,7 @@ class Server extends EventEmitter {
 
             foreach($propertyList as $propertyName=>$value) {
 
-                $propFind->set($propertyName, $status, $value);
+                $propFind->set($propertyName, $value, $status);
 
             }
 
@@ -1035,7 +1035,7 @@ class Server extends EventEmitter {
             $nodeProperties = $node->getProperties($propertyNames);
 
             foreach($nodeProperties as $propertyName=>$value) {
-                $propFind->set($propertyName, 200, $value);
+                $propFind->set($propertyName, $value, 200);
             }
 
         }
@@ -1051,7 +1051,7 @@ class Server extends EventEmitter {
 
             foreach($propertyList as $propertyName=>$value) {
 
-                $propFind->set($propertyName, $status, $value);
+                $propFind->set($propertyName, $value, $status);
 
             }
 

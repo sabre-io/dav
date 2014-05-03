@@ -109,17 +109,21 @@ class PropFind {
     }
 
     /**
-     * Sets the status code and optionally the value of a property.
+     * Sets the value of the property
      *
-     * If the property was never requested, it will be ignored.
+     * If status is not supplied, the status will default to 200 for non-null
+     * properties, and 404 for null properties.
      *
      * @param string $propertyName
      * @param int $status
      * @param mixed $value
      * @return void
      */
-    public function set($propertyName, $status, $value = null) {
+    public function set($propertyName, $value, $status = null) {
 
+        if (is_null($status)) {
+            $status = is_null($value) ? 404 : 200;
+        }
         if (isset($this->result[$propertyName])) {
             if ($status!==404 && $this->result[$propertyName][0]===404) {
                 $this->itemsLeft--;
@@ -128,6 +132,18 @@ class PropFind {
             }
             $this->result[$propertyName] = [$status, $value];
         }
+
+    }
+
+    /**
+     * Returns the current value for a property.
+     *
+     * @param string $propertyName
+     * @return void
+     */
+    public function get($propertyName) {
+
+        return isset($this->result[$propertyName])?$this->result[$propertyName][1]:null;
 
     }
 

@@ -92,10 +92,10 @@ class SharingPlugin extends DAV\ServerPlugin {
             '{' . Plugin::NS_CALENDARSERVER . '}shared-url'
         );
 
-        $this->server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
-        $this->server->on('afterGetProperties',  [$this, 'afterGetProperties']);
-        $this->server->on('propPatch',           [$this, 'propPatch'], 40);
-        $this->server->on('method:POST',         [$this, 'httpPost']);
+        $this->server->on('propFind',     [$this,'propFindEarly']);
+        $this->server->on('propFind',     [$this,'propFindLate'], 200);
+        $this->server->on('propPatch',    [$this, 'propPatch'], 40);
+        $this->server->on('method:POST',  [$this, 'httpPost']);
 
     }
 
@@ -105,44 +105,31 @@ class SharingPlugin extends DAV\ServerPlugin {
      *
      * This allows us to inject any properties early.
      *
-     * @param string $path
+     * @param DAV\PropFind $propFind
      * @param DAV\INode $node
-     * @param array $requestedProperties
-     * @param array $returnedProperties
      * @return void
      */
-    public function beforeGetProperties($path, DAV\INode $node, &$requestedProperties, &$returnedProperties) {
+    public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
 
         if ($node instanceof IShareableCalendar) {
-            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
 
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}invite'] =
-                    new Property\Invite(
-                        $node->getShares()
-                    );
-
-            }
+            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
+                return new Property\Invite(
+                    $node->getShares()
+                );
+            });
 
         }
 
         if ($node instanceof ISharedCalendar) {
 
-            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}shared-url', $requestedProperties))!==false) {
+            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}shared-url', function() use ($node) {
+                return new DAV\Property\Href(
+                    $node->getSharedUrl()
+                );
+            });
 
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}shared-url'] =
-                    new DAV\Property\Href(
-                        $node->getSharedUrl()
-                    );
-
-            }
-            // The 'invite' property is slightly different for the 'shared'
-            // instance of the calendar, as it also contains the owner
-            // information.
-            if (($index = array_search('{' . Plugin::NS_CALENDARSERVER . '}invite', $requestedProperties))!==false) {
-
-                unset($requestedProperties[$index]);
+            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
 
                 // Fetching owner information
                 $props = $this->server->getPropertiesForPath($node->getOwner(), array(
@@ -167,14 +154,12 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 }
 
-                $returnedProperties[200]['{' . Plugin::NS_CALENDARSERVER . '}invite'] =
-                    new Property\Invite(
-                        $node->getShares(),
-                        $ownerInfo
-                    );
+                return new Property\Invite(
+                    $node->getShares(),
+                    $ownerInfo
+                );
 
-            }
-
+            });
 
         }
 
@@ -185,26 +170,21 @@ class SharingPlugin extends DAV\ServerPlugin {
      * This allows us to inject the correct resourcetype for calendars that
      * have been shared.
      *
-     * @param string $path
-     * @param array $properties
+     * @param DAV\PropFind $propFind
      * @param DAV\INode $node
      * @return void
      */
-    public function afterGetProperties($path, &$properties, DAV\INode $node) {
+    public function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 
         if ($node instanceof IShareableCalendar) {
-            if (isset($properties[200]['{DAV:}resourcetype'])) {
-                if (count($node->getShares())>0) {
-                    $properties[200]['{DAV:}resourcetype']->add(
-                        '{' . Plugin::NS_CALENDARSERVER . '}shared-owner'
-                    );
+            if ($rt = $propFind->get('{DAV:}resourcetype')) {
+                if (count($node->getShares()) > 0) {
+                    $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared-owner');
                 }
             }
-            $propName = '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes';
-            if (array_key_exists($propName, $properties[404])) {
-                unset($properties[404][$propName]);
-                $properties[200][$propName] = new Property\AllowedSharingModes(true,false);
-            }
+            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes', function() {
+                return new Property\AllowedSharingModes(true,false);
+            });
 
         }
 

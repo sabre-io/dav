@@ -45,6 +45,7 @@ class CorePlugin extends ServerPlugin {
 
         $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 90);
         $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
+        $server->on('propFind',  [$this, 'propFind']);
 
     }
 
@@ -762,6 +763,57 @@ class CorePlugin extends ServerPlugin {
         if ($node instanceof IProperties) {
             $node->propPatch($propPatch);
         }
+
+    }
+
+    /**
+     * This method is called when properties are retrieved.
+     *
+     * Here we add all the default properties.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    public function propFind(PropFind $propFind, INode $node) {
+
+        $propFind->handle('{DAV:}getlastmodified', function() use ($node) {
+            $lm = $node->getLastModified();
+            if ($lm) {
+                return new Property\GetLastModified($lm);
+            }
+        });
+
+        if ($node instanceof IFile) {
+            $propFind->handle('{DAV:}getcontentlength', [$node, 'getSize']);
+            $propFind->handle('{DAV:}getetag', [$node, 'getETag']);
+            $propFind->handle('{DAV:}getcontenttype', [$node, 'getContentType']);
+        }
+
+        if ($node instanceof IQuota) {
+            $quotaInfo = null;
+            $propFind->handle('{DAV:}quota-used-bytes', function() use (&$quotaInfo) {
+                $quotaInfo = $node->getQuotaInfo();
+                return $quotaInfo[0];
+            });
+            $propFind->handle('{DAV:}quota-available-bytes', function() use (&$quotaInfo) {
+                if (!$quotaInfo) {
+                    $quotaInfo = $node->getQuotaInfo();
+                }
+                return $quotaInfo[1];
+            });
+        }
+
+        $propFind->handle('{DAV:}supported-report-set', function() use ($propFind) {
+            $reports = [];
+            foreach($this->server->plugins as $plugin) {
+                $reports = array_merge($reports, $plugin->getSupportedReportSet($propFind->getPath()));
+            }
+            return new Property\SupportedReportSet($reports);
+        });
+        $propFind->handle('{DAV:}resourcetype', function() use ($node) {
+            return new Property\ResourceType($this->server->getResourceTypeForNode($node));
+        });
 
     }
 

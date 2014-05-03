@@ -60,7 +60,7 @@ class PropFind {
            ];
         }
 
-        foreach($properties as $propertyName) {
+        foreach($this->properties as $propertyName) {
 
             // Seeding properties with 404's.
             $this->result[$propertyName] = [404, null];
@@ -178,20 +178,20 @@ class PropFind {
     }
 
     /**
-     * Returns all propertynames that have a 404 status, and thus don't have a 
+     * Returns all propertynames that have a 404 status, and thus don't have a
      * value yet.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function get404Properties() {
 
         if ($this->itemsLeft === 0) {
             return [];
-        } 
+        }
         $result = [];
         foreach($this->result as $propertyName=>$stuff) {
             if ($stuff[0]===404) {
-                $this->itemsLeft[] = $propertyName;
+                $result[] = $propertyName;
             }
         }
         return $result;
@@ -202,8 +202,8 @@ class PropFind {
      * Returns the full list of requested properties.
      *
      * This returns just their names, not a status or value.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getRequestedProperties() {
 
@@ -214,18 +214,21 @@ class PropFind {
     /**
      * Returns a result array that's often used in multistatus responses.
      *
-     * The array uses status codes as keys, and property names and value pairs 
+     * The array uses status codes as keys, and property names and value pairs
      * as the value of the top array.. such as :
      *
      * [
      *  200 => [ '{DAV:}displayname' => 'foo' ],
      * ]
      *
-     * @return array 
+     * @return array
      */
     public function getResultForMultiStatus() {
 
-        $r = [];
+        $r = [
+            200 => [],
+            404 => [],
+        ];
         foreach($this->result as $propertyName=>$info) {
             if (!isset($r[$info[0]])) {
                 $r[$info[0]] = [$propertyName => $info[1]];

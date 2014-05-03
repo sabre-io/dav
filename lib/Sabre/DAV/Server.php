@@ -859,14 +859,15 @@ class Server extends EventEmitter {
         foreach($this->tree->getChildren($path) as $childNode) {
             $subPropFind = clone $propFind;
             $subPropFind->setDepth($newDepth);
-            $subPropFind->setPath($path . '/' . $childNode->getName());
+            $subPath = $path? $path . '/' . $childNode->getName() : $childNode->getName();
+            $subPropFind->setPath($subPath);
 
             $propFindRequests[] = [
                 $subPropFind,
                 $childNode
             ];
 
-            if ($newDepth===self::DEPTH_INFINITY || $newDepth>=1) {
+            if (($newDepth===self::DEPTH_INFINITY || $newDepth>=1) && $childNode instanceof ICollection) {
                 $this->addPathNodesRecursively($propFindRequests, $subPropFind);
             }
 
@@ -892,15 +893,17 @@ class Server extends EventEmitter {
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
-        $path = rtrim($path,'/');
-        $propFind = new PropFind(rtrim($path,'/'), $propertyNames, $depth);
+        $path = trim($path,'/');
+
+        $propFindType = $propertyNames?PropFind::NORMAL:PropFind::ALLPROPS;
+        $propFind = new PropFind($path, $propertyNames, $depth, $propFindType);
 
         // This event allows people to intercept these requests early on in the
         // process.
         //
         // We're not doing anything with the result, but this can be helpful to
         // pre-fetch certain expensive live properties.
-        $this->emit('beforeGetPropertiesForPath', [$propFind]);
+        $this->emit('beforeGetPropertiesForPath', [$propFind->getPath(), $propertyNames, $depth]);
 
         $parentNode = $this->tree->getNodeForPath($path);
         $nodes = [
@@ -963,7 +966,17 @@ class Server extends EventEmitter {
 
         foreach($nodes as $path=>$node) {
 
-            $result[$path] = $this->getPropertiesByNode($path, $node, $propertyNames);
+            $propFind = new PropFind($path, $propertyNames);
+            $r = $this->getPropertiesByNode($propFind,$node);
+            if ($r) {
+                $result[$path] = $propFind->getResultForMultiStatus();
+                $result[$path]['href'] = $path;
+
+                $resourceType = $this->getResourceTypeForNode($node);
+                if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
+                    $result[$path]['href'].='/';
+                }
+            }
 
         }
 

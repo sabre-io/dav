@@ -792,11 +792,11 @@ class CorePlugin extends ServerPlugin {
 
         if ($node instanceof IQuota) {
             $quotaInfo = null;
-            $propFind->handle('{DAV:}quota-used-bytes', function() use (&$quotaInfo) {
+            $propFind->handle('{DAV:}quota-used-bytes', function() use (&$quotaInfo, $node) {
                 $quotaInfo = $node->getQuotaInfo();
                 return $quotaInfo[0];
             });
-            $propFind->handle('{DAV:}quota-available-bytes', function() use (&$quotaInfo) {
+            $propFind->handle('{DAV:}quota-available-bytes', function() use (&$quotaInfo, $node) {
                 if (!$quotaInfo) {
                     $quotaInfo = $node->getQuotaInfo();
                 }
@@ -806,7 +806,7 @@ class CorePlugin extends ServerPlugin {
 
         $propFind->handle('{DAV:}supported-report-set', function() use ($propFind) {
             $reports = [];
-            foreach($this->server->plugins as $plugin) {
+            foreach($this->server->getPlugins() as $plugin) {
                 $reports = array_merge($reports, $plugin->getSupportedReportSet($propFind->getPath()));
             }
             return new Property\SupportedReportSet($reports);

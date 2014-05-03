@@ -75,7 +75,7 @@ XML;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus());
+        $this->assertEquals(207, $response->getStatus(), 'Full rsponse: ' . $response->getBodyAsString());
 
         $body = $response->getBodyAsString();
 

@@ -148,7 +148,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 $props = $this->server->getPropertiesForPath($node->getOwner(), array(
                     '{http://sabredav.org/ns}email-address',
                     '{DAV:}displayname',
-                ), 1);
+                ), 0);
 
                 $ownerInfo = array(
                     'href' => $node->getOwner(),

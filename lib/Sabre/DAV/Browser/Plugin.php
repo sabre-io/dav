@@ -99,7 +99,7 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('method:GET',[$this,'httpGet']);
+        $this->server->on('method:GET', [$this,'httpGet'], 200);
         $this->server->on('onHTMLActionsPanel', [$this, 'htmlActionsPanel'],200);
         if ($this->enablePost) $this->server->on('method:POST', [$this,'httpPOST']);
     }
@@ -132,11 +132,6 @@ class Plugin extends DAV\ServerPlugin {
             // with other plugins.
             return;
         }
-
-        // Don't show the browser if it's a IFile node, unless
-        // sabreAction=browser.
-        if ($sabreAction!=='browser' && $node instanceof DAV\IFile)
-            return;
 
         $response->setStatus(200);
         $response->setHeader('Content-Type','text/html; charset=utf-8');

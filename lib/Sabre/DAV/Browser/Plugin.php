@@ -35,6 +35,7 @@ class Plugin extends DAV\ServerPlugin {
      * @var array
      */
     public $iconMap = array(
+        'Sabre\\DAV\\INode' => 'icons/other',
         'Sabre\\DAV\\IFile' => 'icons/file',
         'Sabre\\DAV\\ICollection' => 'icons/collection',
         'Sabre\\DAVACL\\IPrincipal' => 'icons/principal',

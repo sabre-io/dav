@@ -18,7 +18,7 @@ class SupportedMethodSet extends DAV\Property {
     /**
      * List of methods
      *
-     * @var array
+     * @var string[]
      */
     protected $methods = [];
 
@@ -27,7 +27,7 @@ class SupportedMethodSet extends DAV\Property {
      *
      * Any reports passed in the constructor should be valid HTTP methods.
      *
-     * @param array $methods
+     * @param string[] $methods
      */
     public function __construct(array $method) {
 
@@ -38,7 +38,7 @@ class SupportedMethodSet extends DAV\Property {
     /**
      * Returns the list of supported methods.
      *
-     * @return array
+     * @return string[]
      */
     public function getValue() {
 

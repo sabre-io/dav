@@ -115,8 +115,8 @@ class PropFind {
      * properties, and 404 for null properties.
      *
      * @param string $propertyName
-     * @param int $status
      * @param mixed $value
+     * @param int $status
      * @return void
      */
     public function set($propertyName, $value, $status = null) {

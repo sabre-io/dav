@@ -59,10 +59,10 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->on('method:LOCK',        [$this, 'httpLock']);
-        $server->on('method:UNLOCK',      [$this, 'httpUnlock']);
-        $server->on('afterGetProperties', [$this, 'afterGetProperties']);
-        $server->on('validateTokens',     [$this, 'validateTokens']);
+        $server->on('method:LOCK',    [$this, 'httpLock']);
+        $server->on('method:UNLOCK',  [$this, 'httpUnlock']);
+        $server->on('validateTokens', [$this, 'validateTokens']);
+        $server->on('propFind',       [$this, 'propFind']);
 
     }
 
@@ -84,33 +84,20 @@ class Plugin extends DAV\ServerPlugin {
      * This method is called after most properties have been found
      * it allows us to add in any Lock-related properties
      *
-     * @param string $path
-     * @param array $newProperties
-     * @return bool
+     * @param DAV\PropFind $propFind
+     * @param DAV\INode $node
+     * @return void
      */
-    public function afterGetProperties($path, &$newProperties) {
+    public function propFind(DAV\PropFind $propFind, DAV\INode $node) {
 
-        foreach($newProperties[404] as $propName=>$discard) {
-
-            switch($propName) {
-
-                case '{DAV:}supportedlock' :
-                    $val = false;
-                    if ($this->locksBackend) $val = true;
-                    $newProperties[200][$propName] = new DAV\Property\SupportedLock($val);
-                    unset($newProperties[404][$propName]);
-                    break;
-
-                case '{DAV:}lockdiscovery' :
-                    $newProperties[200][$propName] = new DAV\Property\LockDiscovery($this->getLocks($path));
-                    unset($newProperties[404][$propName]);
-                    break;
-
-            }
-
-
-        }
-        return true;
+        $propFind->handle('{DAV:}supportedlock', function() {
+            return new DAV\Property\SupportedLock(!!$this->locksBackend);
+        });
+        $propFind->handle('{DAV:}lockdiscovery', function() use ($propFind) {
+            return new DAV\Property\LockDiscovery(
+                $this->getLocks( $propFind->getPath() )
+            );
+        });
 
     }
 
@@ -127,9 +114,9 @@ class Plugin extends DAV\ServerPlugin {
     public function getHTTPMethods($uri) {
 
         if ($this->locksBackend)
-            return array('LOCK','UNLOCK');
+            return ['LOCK','UNLOCK'];
 
-        return array();
+        return [];
 
     }
 

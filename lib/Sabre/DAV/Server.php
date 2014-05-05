@@ -1045,23 +1045,6 @@ class Server extends EventEmitter {
 
         }
 
-        // Note: this event is also deprecated, and will be removed in a future
-        // version.
-        $newProperties = $propFind->getResultForMultiStatus();
-
-        $this->emit('afterGetProperties',[$propFind->getPath(), &$newProperties, $node]);
-
-        // Ew
-        foreach($newProperties as $status=>$propertyList) {
-
-            foreach($propertyList as $propertyName=>$value) {
-
-                $propFind->set($propertyName, $value, $status);
-
-            }
-
-        }
-
         return true;
 
     }

@@ -52,7 +52,7 @@ class Plugin extends DAV\ServerPlugin {
 
         /* Events */
         $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
-        $server->on('afterGetProperties',  [$this, 'afterGetProperties']);
+        $server->on('propFind',            [$this, 'propFind'],150);
         $server->on('propPatch',           [$this, 'propPatch']);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
@@ -646,26 +646,25 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This event is triggered after webdav-properties have been retrieved.
+     * This event is triggered when fetching properties.
      *
-     * @return bool
+     * This event is scheduled late in the process, after most work for
+     * propfind has been done.
      */
-    public function afterGetProperties($uri, &$properties, DAV\INode $node) {
+    public function propFind(DAV\PropFind $propFind, DAV\INode $node) {
 
         // If the request was made using the SOGO connector, we must rewrite
         // the content-type property. By default SabreDAV will send back
         // text/x-vcard; charset=utf-8, but for SOGO we must strip that last
         // part.
-        if (!isset($properties[200]['{DAV:}getcontenttype']))
-            return;
-
         if (strpos($this->server->httpRequest->getHeader('User-Agent'),'Thunderbird')===false) {
             return;
         }
-
-        if (strpos($properties[200]['{DAV:}getcontenttype'],'text/x-vcard')===0) {
-            $properties[200]['{DAV:}getcontenttype'] = 'text/x-vcard';
+        $contentType = $propFind->get('{DAV:}getcontenttype');
+        if (!$contentType || strpos($contentType, 'text/x-vcard')!==0) {
+           return;
         }
+        $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
 
     }
 

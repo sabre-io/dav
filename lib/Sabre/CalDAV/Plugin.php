@@ -190,7 +190,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('method:POST',         [$this,'httpPost']);
         $server->on('method:GET',          [$this,'httpGet'], 90);
         $server->on('report',              [$this,'report']);
-        $server->on('beforeGetProperties', [$this,'beforeGetProperties']);
+        $server->on('propFind',            [$this,'propFind']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
         $server->on('onBrowserPostAction', [$this,'browserPostAction']);
         $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
@@ -356,68 +356,58 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * beforeGetProperties
+     * PropFind
      *
      * This method handler is invoked before any after properties for a
      * resource are fetched. This allows us to add in any CalDAV specific
      * properties.
      *
-     * @param string $path
+     * @param DAV\PropFind $propFind
      * @param DAV\INode $node
-     * @param array $requestedProperties
-     * @param array $returnedProperties
      * @return void
      */
-    public function beforeGetProperties($path, DAV\INode $node, &$requestedProperties, &$returnedProperties) {
+    public function propFind(DAV\PropFind $propFind, DAV\INode $node) {
 
         if ($node instanceof DAVACL\IPrincipal) {
 
             $principalUrl = $node->getPrincipalUrl();
 
-            // calendar-home-set property
-            $calHome = '{' . self::NS_CALDAV . '}calendar-home-set';
-            if (in_array($calHome,$requestedProperties)) {
+            $propFind->handle('{' . self::NS_CALDAV . '}calendar-home-set', function() use ($principalUrl) {
 
                 $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl) . '/';
+                return new DAV\Property\Href($calendarHomePath);
 
-                unset($requestedProperties[array_search($calHome, $requestedProperties)]);
-                $returnedProperties[200][$calHome] = new DAV\Property\Href($calendarHomePath);
-
-            }
+            });
 
             // schedule-outbox-URL property
-            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-outbox-URL';
-            if (in_array($scheduleProp,$requestedProperties)) {
+            $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL', function() use ($principalUrl) {
 
                 $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl);
                 $outboxPath = $calendarHomePath . '/outbox';
+                return new DAV\Property\Href($outboxPath);
 
-                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
-                $returnedProperties[200][$scheduleProp] = new DAV\Property\Href($outboxPath);
-
-            }
+            });
 
             // calendar-user-address-set property
-            $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
-            if (in_array($calProp,$requestedProperties)) {
+            $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node, $principalUrl) {
 
                 $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . DAV\URLUtil::encodePath($node->getPrincipalUrl() . '/');
-                unset($requestedProperties[array_search($calProp, $requestedProperties)]);
-                $returnedProperties[200][$calProp] = new DAV\Property\HrefList($addresses, false);
+                $addresses[] = $this->server->getBaseUri() . DAV\URLUtil::encodePath($principalUrl . '/');
+                return new DAV\Property\HrefList($addresses, false);
 
-            }
+            });
 
             // These two properties are shortcuts for ical to easily find
             // other principals this principal has access to.
             $propRead = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for';
             $propWrite = '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for';
-            if (in_array($propRead,$requestedProperties) || in_array($propWrite,$requestedProperties)) {
+
+            if ($propFind->getStatus($propRead)===404 || $propFind->getStatus($propWrite)===404) {
 
                 $aclPlugin = $this->server->getPlugin('acl');
-                $membership = $aclPlugin->getPrincipalMembership($path);
-                $readList = array();
-                $writeList = array();
+                $membership = $aclPlugin->getPrincipalMembership($propFind->getPath());
+                $readList = [];
+                $writeList = [];
 
                 foreach($membership as $group) {
 
@@ -434,59 +424,48 @@ class Plugin extends DAV\ServerPlugin {
                     }
 
                 }
-                if (in_array($propRead,$requestedProperties)) {
-                    unset($requestedProperties[$propRead]);
-                    $returnedProperties[200][$propRead] = new DAV\Property\HrefList($readList);
-                }
-                if (in_array($propWrite,$requestedProperties)) {
-                    unset($requestedProperties[$propWrite]);
-                    $returnedProperties[200][$propWrite] = new DAV\Property\HrefList($writeList);
-                }
+
+                $propFind->set($propRead, new DAV\Property\HrefList($readList));
+                $propFind->set($propWrite, new DAV\Property\HrefList($writeList));
 
             }
 
             // notification-URL property
-            $notificationUrl = '{' . self::NS_CALENDARSERVER . '}notification-URL';
-            if (($index = array_search($notificationUrl, $requestedProperties)) !== false) {
-                $principalId = $node->getName();
+            $propFind->handle('{' . self::NS_CALENDARSERVER . '}notification-URL', function() use ($node, $principalUrl) {
 
+                $principalId = $node->getName();
                 $notificationPath = $this->getCalendarHomeForPrincipal($principalUrl) . '/notifications/';
-                unset($requestedProperties[$index]);
-                $returnedProperties[200][$notificationUrl] = new DAV\Property\Href($notificationPath);
-            }
+                return new DAV\Property\Href($notificationPath);
+
+            });
 
         } // instanceof IPrincipal
 
         if ($node instanceof Notifications\INode) {
 
-            $propertyName = '{' . self::NS_CALENDARSERVER . '}notificationtype';
-            if (($index = array_search($propertyName, $requestedProperties)) !== false) {
-
-                $returnedProperties[200][$propertyName] =
-                    $node->getNotificationType();
-
-                unset($requestedProperties[$index]);
-
-            }
+            $propFind->handle(
+                '{' . self::NS_CALENDARSERVER . '}notificationtype',
+                [$node, 'getNotificationType']
+            );
 
         } // instanceof Notifications_INode
 
 
         if ($node instanceof ICalendarObject) {
+
             // The calendar-data property is not supposed to be a 'real'
             // property, but in large chunks of the spec it does act as such.
             // Therefore we simply expose it as a property.
-            $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
-            if (in_array($calDataProp, $requestedProperties)) {
-                unset($requestedProperties[$calDataProp]);
+            $propFind->handle( '{' . Plugin::NS_CALDAV . '}calendar-data', function() use ($node) {
                 $val = $node->get();
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
                 // Taking out \r to not screw up the xml output
-                $returnedProperties[200][$calDataProp] = str_replace("\r","", $val);
+                return str_replace("\r","", $val);
 
-            }
+            });
+
         }
 
     }

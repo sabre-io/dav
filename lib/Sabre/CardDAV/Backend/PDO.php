@@ -505,7 +505,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      *
      * @param mixed $addressBookId
      * @param string $objectUri
-     * @param int $operation 1 = add, 2 = modify, 3 = delete/
+     * @param int $operation 1 = add, 2 = modify, 3 = delete
      * @return void
      */
     protected function addChange($addressBookId, $objectUri, $operation) {

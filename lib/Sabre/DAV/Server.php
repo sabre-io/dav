@@ -1011,28 +1011,6 @@ class Server extends EventEmitter {
             '404' => [],
         ];
 
-        // Note: the beforeGetProperties is deprecated and will be removed from
-        // a future version of sabre/dav.
-        $requestedProperties = $propFind->getRequestedProperties();
-
-        $result = $this->emit('beforeGetProperties', [$propFind->getPath(), $node, &$requestedProperties, &$newProperties]);
-
-        // If any event handler returned false, it means that the operation
-        // should be stopped and this node should be completely ignored.
-        if ($result===false) {
-            return false;
-        }
-
-        foreach($newProperties as $status=>$propertyList) {
-
-            foreach($propertyList as $propertyName=>$value) {
-
-                $propFind->set($propertyName, $value, $status);
-
-            }
-
-        }
-
         $this->emit('propFind', [$propFind, $node]);
 
         if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {

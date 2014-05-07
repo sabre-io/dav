@@ -46,6 +46,7 @@ class CorePlugin extends ServerPlugin {
         $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 90);
         $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
         $server->on('propFind',  [$this, 'propFind']);
+        $server->on('propFind',  [$this, 'propFindNode'], 120);
 
     }
 
@@ -821,6 +822,30 @@ class CorePlugin extends ServerPlugin {
                 $this->server->getAllowedMethods($propFind->getPath())
             );
         });
+
+    }
+
+    /**
+     * Fetches properties for a node.
+     *
+     * This event is called a bit later, so plugins have a chance first to
+     * populate the result.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    public function propFindNode(PropFind $propFind, INode $node) {
+
+        if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {
+
+            $nodeProperties = $node->getProperties($propertyNames);
+
+            foreach($nodeProperties as $propertyName=>$value) {
+                $propFind->set($propertyName, $value, 200);
+            }
+
+        }
 
     }
 

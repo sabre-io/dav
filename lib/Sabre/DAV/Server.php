@@ -1006,24 +1006,7 @@ class Server extends EventEmitter {
      */
     public function getPropertiesByNode(PropFind $propFind, INode $node) {
 
-        $newProperties = [
-            '200' => [],
-            '404' => [],
-        ];
-
-        $this->emit('propFind', [$propFind, $node]);
-
-        if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {
-
-            $nodeProperties = $node->getProperties($propertyNames);
-
-            foreach($nodeProperties as $propertyName=>$value) {
-                $propFind->set($propertyName, $value, 200);
-            }
-
-        }
-
-        return true;
+        return $this->emit('propFind', [$propFind, $node]);
 
     }
 

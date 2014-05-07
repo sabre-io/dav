@@ -8,7 +8,7 @@ SabreDAV is the most popular WebDAV framework for PHP. Use it to create WebDAV, 
 
 Full documentation can be found on the website:
 
-http://code.google.com/p/sabredav
+http://sabre.io/
 
 Build status
 ------------

@@ -18,13 +18,9 @@ bin/generate_vcards
 bin/phpdocmd
 bin/phpunit
 
-# Various debugging/testing stuff
-fileserver.php
-fileserver2.php
-calendarserver.php
-groupwareserver.php
-tmpdata
-public
+# Assuming every .php file in the root is for testing
+/*.php
+
 
 # Build
 build

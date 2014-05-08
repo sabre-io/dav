@@ -2,17 +2,20 @@
     box-sizing: border-box;
 }
 
-body {
+body, input {
     font-family: arial, sans-serif;
-    margin: 0;
     font-size: 14px;
+}
+
+body {
+    margin: 0;
     line-height: 22px;
     font-weight: 300;
 }
 
 a {
     text-decoration: none;
-    color: black;
+    color: #31A1CD;
 }
 
 th {
@@ -38,6 +41,11 @@ header a {
     text-decoration: none;
 }
 
+input[type=text] {
+    border: 1px solid #999;
+    font-size: 18px;
+}
+
 nav {
     padding: 5px;
 }
@@ -51,12 +59,20 @@ section h1 {
     color: #B10610;
 }
 
-.btn {
+section h2 {
+    font-size: 28px;
+    color #333;
+    font-weight: 300;
+    line-height: 36px;
+}
+
+.btn, input[type=submit] {
     display: inline-block;
     color: white;
     background: #B10610;
     padding: 3px;
     border-radius: 2px;
+    border: 0;
 }
 
 .btn.disabled {
@@ -74,9 +90,14 @@ section table td {
 
 section table .oi {
     color: #B10610;
-} 
+}
+
+.propTable a {
+    color: #
+}
 
 .nodeTable .namecolumn {
     min-width: 200px;
 }
+
 

@@ -24,6 +24,8 @@ ChangeLog
   think about it on a per-method basis.
 * jCal transformation for calendar-query REPORT now works again.
 * Switched to PSR-4
+* Fixed: #175. Returning ETag header upon a failed `If-Match` or
+  `If-None-Match` check.
 
 
 1.9.0-alpha2 (2014-01-14)

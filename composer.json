@@ -39,12 +39,11 @@
         "ext-pdo" : "*"
     },
     "autoload": {
-        "psr-0" : {
-            "Sabre\\DAV"     : "lib/",
-            "Sabre\\HTTP"    : "lib/",
-            "Sabre\\DAVACL"  : "lib/",
-            "Sabre\\CalDAV"  : "lib/",
-            "Sabre\\CardDAV" : "lib/"
+        "psr-4" : {
+            "Sabre\\DAV\\"     : "lib/DAV/",
+            "Sabre\\DAVACL\\"  : "lib/DAVACL/",
+            "Sabre\\CalDAV\\"  : "lib/CalDAV/",
+            "Sabre\\CardDAV\\" : "lib/CardDAV/"
         }
     },
     "support" : {

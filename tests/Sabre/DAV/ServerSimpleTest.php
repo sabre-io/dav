@@ -4,10 +4,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/DAV/AbstractServer.php';
-require_once 'Sabre/DAV/Exception.php';
-
 class ServerSimpleTest extends AbstractServer{
 
     function testConstructArray() {

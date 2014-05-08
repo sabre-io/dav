@@ -26,6 +26,7 @@ ChangeLog
 * Switched to PSR-4
 * Fixed: #175. Returning ETag header upon a failed `If-Match` or
   `If-None-Match` check.
+* Removed: `lib/Sabre/autoload.php`. Use `vendor/autoload.php` instead.
 
 
 1.9.0-alpha2 (2014-01-14)

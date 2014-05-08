@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-1.9.0-alpha3 (????-??-??)
+2.0.0-alpha1 (????-??-??)
 -------------------------
 
 * BC Break: Property updating and fetching got refactored. Read the migration

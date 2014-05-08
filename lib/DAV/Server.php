@@ -1310,6 +1310,7 @@ class Server extends EventEmitter {
 
                 }
                 if (!$haveMatch) {
+                    if ($etag) $response->setHeader('ETag', $etag);
                      throw new Exception\PreconditionFailed('An If-Match header was specified, but none of the specified the ETags matched.','If-Match');
                 }
             }
@@ -1350,6 +1351,7 @@ class Server extends EventEmitter {
                 }
 
                 if ($haveMatch) {
+                    if ($etag) $response->setHeader('ETag', $etag);
                     if ($request->getMethod()==='GET') {
                         $response->setStatus(304);
                         return false;

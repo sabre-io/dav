@@ -204,15 +204,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_METHOD' => 'GET',
-            'HTTP_IF_NONE_MATCH' => '"abc123"',
-            'REQUEST_URI'   => '/foo'
-        ));
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
         $server->httpResponse = new HTTP\ResponseMock();
 
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
-        $this->assertEquals(304, $server->httpResponse->status);
+        $this->assertEquals(304, $server->httpResponse->getStatus());
+        $this->assertEquals(['ETag' => '"abc123"'], $server->httpResponse->getHeaders());
 
     }
 

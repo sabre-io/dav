@@ -119,6 +119,8 @@ class Response extends DAV\Property implements IHref {
 
         $uri = URLUtil::encodePath($this->href);
 
+        if ($uri==='/') $uri = '';
+
         // Adding the baseurl to the beginning of the url
         $uri = $server->getBaseUri() . $uri;
 

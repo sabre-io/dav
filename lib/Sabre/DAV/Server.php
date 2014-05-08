@@ -125,6 +125,10 @@ class Server extends EventEmitter {
         '{DAV:}acl-restrictions',
         '{DAV:}inherited-acl-set',
 
+        // RFC3253
+        '{DAV:}supported-method-set',
+        '{DAV:}supported-report-set',
+
     ];
 
     /**
@@ -467,10 +471,10 @@ class Server extends EventEmitter {
     /**
      * Returns an array with all the supported HTTP methods for a specific uri.
      *
-     * @param string $uri
+     * @param string $path
      * @return array
      */
-    public function getAllowedMethods($uri) {
+    public function getAllowedMethods($path) {
 
         $methods = [
             'OPTIONS',
@@ -487,13 +491,13 @@ class Server extends EventEmitter {
 
         // The MKCOL is only allowed on an unmapped uri
         try {
-            $this->tree->getNodeForPath($uri);
+            $this->tree->getNodeForPath($path);
         } catch (Exception\NotFound $e) {
             $methods[] = 'MKCOL';
         }
 
         // We're also checking if any of the plugins register any new methods
-        foreach($this->plugins as $plugin) $methods = array_merge($methods, $plugin->getHTTPMethods($uri));
+        foreach($this->plugins as $plugin) $methods = array_merge($methods, $plugin->getHTTPMethods($path));
         array_unique($methods);
 
         return $methods;
@@ -847,11 +851,30 @@ class Server extends EventEmitter {
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
      */
-    private function addPathNodesRecursively(&$nodes, $path) {
+    private function addPathNodesRecursively(&$propFindRequests, PropFind $propFind) {
+
+        $newDepth = $propFind->getDepth();
+        $path = $propFind->getPath();
+
+        if ($newDepth !== self::DEPTH_INFINITY) {
+            $newDepth--;
+        }
+
         foreach($this->tree->getChildren($path) as $childNode) {
-            $nodes[$path . '/' . $childNode->getName()] = $childNode;
-            if ($childNode instanceof ICollection)
-                $this->addPathNodesRecursively($nodes, $path . '/' . $childNode->getName());
+            $subPropFind = clone $propFind;
+            $subPropFind->setDepth($newDepth);
+            $subPath = $path? $path . '/' . $childNode->getName() : $childNode->getName();
+            $subPropFind->setPath($subPath);
+
+            $propFindRequests[] = [
+                $subPropFind,
+                $childNode
+            ];
+
+            if (($newDepth===self::DEPTH_INFINITY || $newDepth>=1) && $childNode instanceof ICollection) {
+                $this->addPathNodesRecursively($propFindRequests, $subPropFind);
+            }
+
         }
     }
 
@@ -874,34 +897,49 @@ class Server extends EventEmitter {
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
-        $path = rtrim($path,'/');
+        $path = trim($path,'/');
+
+        $propFindType = $propertyNames?PropFind::NORMAL:PropFind::ALLPROPS;
+        $propFind = new PropFind($path, $propertyNames, $depth, $propFindType);
 
         // This event allows people to intercept these requests early on in the
         // process.
         //
         // We're not doing anything with the result, but this can be helpful to
         // pre-fetch certain expensive live properties.
-        $this->emit('beforeGetPropertiesForPath', [$path, $propertyNames, $depth]);
-
-        $returnPropertyList = [];
+        $this->emit('beforeGetPropertiesForPath', [$propFind->getPath(), $propertyNames, $depth]);
 
         $parentNode = $this->tree->getNodeForPath($path);
         $nodes = [
             $path => $parentNode
         ];
-        if ($depth==1 && $parentNode instanceof ICollection) {
-            foreach($this->tree->getChildren($path) as $childNode)
-                $nodes[$path . '/' . $childNode->getName()] = $childNode;
-        } else if ($depth == self::DEPTH_INFINITY && $parentNode instanceof ICollection) {
-            $this->addPathNodesRecursively($nodes, $path);
+
+        $propFindRequests = [[
+            $propFind,
+            $parentNode
+        ]];
+
+        if ($depth > 0 || $depth === self::DEPTH_INFINITY) {
+            $this->addPathNodesRecursively($propFindRequests, $propFind);
         }
 
+        foreach($propFindRequests as $propFindRequest) {
 
-        foreach($nodes as $myPath=>$node) {
-
-            $r = $this->getPropertiesByNode($myPath, $node, $propertyNames);
+            list($propFind, $node) = $propFindRequest;
+            $r = $this->getPropertiesByNode($propFind, $node);
             if ($r) {
-                $returnPropertyList[] = $r;
+                $result = $propFind->getResultForMultiStatus();
+                $result['href'] = $propFind->getPath();
+
+                // WebDAV recommends adding a slash to the path, if the path is
+                // a collection.
+                // Furthermore, iCal also demands this to be the case for
+                // principals. This is non-standard, but we support it.
+                $resourceType = $this->getResourceTypeForNode($node);
+                if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
+                    $result['href'].='/';
+                }
+                $returnPropertyList[] = $result;
             }
 
         }
@@ -933,7 +971,17 @@ class Server extends EventEmitter {
 
         foreach($nodes as $path=>$node) {
 
-            $result[$path] = $this->getPropertiesByNode($path, $node, $propertyNames);
+            $propFind = new PropFind($path, $propertyNames);
+            $r = $this->getPropertiesByNode($propFind,$node);
+            if ($r) {
+                $result[$path] = $propFind->getResultForMultiStatus();
+                $result[$path]['href'] = $path;
+
+                $resourceType = $this->getResourceTypeForNode($node);
+                if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
+                    $result[$path]['href'].='/';
+                }
+            }
 
         }
 
@@ -952,139 +1000,13 @@ class Server extends EventEmitter {
      * target node and simply want to run through the system to get a correct
      * list of properties.
      *
-     * @param string $path The path we're properties for fetching.
+     * @param PropFind $propFind
      * @param INode $node
-     * @param array $propertyNames list of properties to fetch.
-     * @return array
+     * @return bool
      */
-    public function getPropertiesByNode($path, INode $node, array $propertyNames) {
+    public function getPropertiesByNode(PropFind $propFind, INode $node) {
 
-        $newProperties = [
-            '200' => [],
-            '404' => [],
-        ];
-
-        // If no properties were supplied, it means this was an 'allprops'
-        // request, and we use a default set of properties.
-        $allProperties = count($propertyNames)===0;
-
-        if ($allProperties) {
-            // Default list of propertyNames, when all properties were requested.
-            $propertyNames = [
-                '{DAV:}getlastmodified',
-                '{DAV:}getcontentlength',
-                '{DAV:}resourcetype',
-                '{DAV:}quota-used-bytes',
-                '{DAV:}quota-available-bytes',
-                '{DAV:}getetag',
-                '{DAV:}getcontenttype',
-            ];
-        }
-
-        // If the resourceType was not part of the list, we manually add it
-        // and mark it for removal. We need to know the resourcetype in order
-        // to make certain decisions about the entry.
-        // WebDAV dictates we should add a / and the end of href's for collections
-        $removeRT = false;
-        if (!in_array('{DAV:}resourcetype',$propertyNames)) {
-            $propertyNames[] = '{DAV:}resourcetype';
-            $removeRT = true;
-        }
-
-        $result = $this->emit('beforeGetProperties',[$path, $node, &$propertyNames, &$newProperties]);
-        // If this method explicitly returned false, we must ignore this
-        // node as it is inaccessible.
-        if ($result===false) return;
-
-        if (count($propertyNames) > 0) {
-
-            if ($node instanceof IProperties) {
-                $nodeProperties = $node->getProperties($propertyNames);
-
-                // The getProperties method may give us too much,
-                // properties, in case the implementor was lazy.
-                //
-                // So as we loop through this list, we will only take the
-                // properties that were actually requested and discard the
-                // rest.
-                foreach($propertyNames as $k=>$propertyName) {
-                    if (isset($nodeProperties[$propertyName])) {
-                        unset($propertyNames[$k]);
-                        $newProperties[200][$propertyName] = $nodeProperties[$propertyName];
-                    }
-                }
-
-            }
-
-        }
-
-        foreach($propertyNames as $prop) {
-
-            if (isset($newProperties[200][$prop])) continue;
-
-            switch($prop) {
-                case '{DAV:}getlastmodified'       : if ($node->getLastModified()) $newProperties[200][$prop] = new Property\GetLastModified($node->getLastModified()); break;
-                case '{DAV:}getcontentlength'      :
-                    if ($node instanceof IFile) {
-                        $size = $node->getSize();
-                        if (!is_null($size)) {
-                            $newProperties[200][$prop] = (int)$node->getSize();
-                        }
-                    }
-                    break;
-                case '{DAV:}quota-used-bytes'      :
-                    if ($node instanceof IQuota) {
-                        $quotaInfo = $node->getQuotaInfo();
-                        $newProperties[200][$prop] = $quotaInfo[0];
-                    }
-                    break;
-                case '{DAV:}quota-available-bytes' :
-                    if ($node instanceof IQuota) {
-                        $quotaInfo = $node->getQuotaInfo();
-                        $newProperties[200][$prop] = $quotaInfo[1];
-                    }
-                    break;
-                case '{DAV:}getetag'               : if ($node instanceof IFile && $etag = $node->getETag())  $newProperties[200][$prop] = $etag; break;
-                case '{DAV:}getcontenttype'        : if ($node instanceof IFile && $ct = $node->getContentType())  $newProperties[200][$prop] = $ct; break;
-                case '{DAV:}supported-report-set'  :
-                    $reports = [];
-                    foreach($this->plugins as $plugin) {
-                        $reports = array_merge($reports, $plugin->getSupportedReportSet($path));
-                    }
-                    $newProperties[200][$prop] = new Property\SupportedReportSet($reports);
-                    break;
-                case '{DAV:}resourcetype' :
-                    $newProperties[200]['{DAV:}resourcetype'] = new Property\ResourceType();
-                    foreach($this->resourceTypeMapping as $className => $resourceType) {
-                        if ($node instanceof $className) $newProperties[200]['{DAV:}resourcetype']->add($resourceType);
-                    }
-                    break;
-
-            }
-
-            // If we were unable to find the property, we will list it as 404.
-            if (!$allProperties && !isset($newProperties[200][$prop])) $newProperties[404][$prop] = null;
-
-        }
-
-        $this->emit('afterGetProperties',[trim($path,'/'),&$newProperties, $node]);
-
-        $newProperties['href'] = trim($path,'/');
-
-        // Its is a WebDAV recommendation to add a trailing slash to collectionnames.
-        // Apple's iCal also requires a trailing slash for principals (rfc 3744), though this is non-standard.
-        if ($path!='' && isset($newProperties[200]['{DAV:}resourcetype'])) {
-            $rt = $newProperties[200]['{DAV:}resourcetype'];
-            if ($rt->is('{DAV:}collection') || $rt->is('{DAV:}principal')) {
-                $newProperties['href'] .='/';
-            }
-        }
-
-        // If the resourcetype property was manually added to the requested property list,
-        // we will remove it again.
-        if ($removeRT) unset($newProperties[200]['{DAV:}resourcetype']);
-
-        return $newProperties;
+        return $this->emit('propFind', [$propFind, $node]);
 
     }
 
@@ -1673,6 +1595,22 @@ class Server extends EventEmitter {
         }
 
         return $conditions;
+
+    }
+
+    /**
+     * Returns an array with resourcetypes for a node.
+     *
+     * @param INode $node
+     * @return array
+     */
+    public function getResourceTypeForNode(INode $node) {
+
+        $result = [];
+        foreach($this->resourceTypeMapping as $className => $resourceType) {
+            if ($node instanceof $className) $result[] = $resourceType;
+        }
+        return $result;
 
     }
 

@@ -27,7 +27,7 @@ class PluginTest extends DAV\AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->status, "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
         $this->assertEquals(array(
             'Content-Type' => 'text/html; charset=utf-8',
             'Content-Security-Policy' => "img-src 'self'; style-src 'unsafe-inline';"

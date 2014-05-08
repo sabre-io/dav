@@ -45,6 +45,8 @@ class CorePlugin extends ServerPlugin {
 
         $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 90);
         $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
+        $server->on('propFind',  [$this, 'propFind']);
+        $server->on('propFind',  [$this, 'propFindNode'], 120);
 
     }
 
@@ -726,6 +728,7 @@ class CorePlugin extends ServerPlugin {
      * Here we check if a user attempted to update a protected property and
      * ensure that the process fails if this is the case.
      *
+     * @param string $path
      * @param PropPatch $propPatch
      * @return void
      */
@@ -751,6 +754,7 @@ class CorePlugin extends ServerPlugin {
      * Here we check if a node implements IProperties and let the node handle
      * updating of (some) properties.
      *
+     * @param string $path
      * @param PropPatch $propPatch
      * @return void
      */
@@ -761,6 +765,86 @@ class CorePlugin extends ServerPlugin {
 
         if ($node instanceof IProperties) {
             $node->propPatch($propPatch);
+        }
+
+    }
+
+    /**
+     * This method is called when properties are retrieved.
+     *
+     * Here we add all the default properties.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    public function propFind(PropFind $propFind, INode $node) {
+
+        $propFind->handle('{DAV:}getlastmodified', function() use ($node) {
+            $lm = $node->getLastModified();
+            if ($lm) {
+                return new Property\GetLastModified($lm);
+            }
+        });
+
+        if ($node instanceof IFile) {
+            $propFind->handle('{DAV:}getcontentlength', [$node, 'getSize']);
+            $propFind->handle('{DAV:}getetag', [$node, 'getETag']);
+            $propFind->handle('{DAV:}getcontenttype', [$node, 'getContentType']);
+        }
+
+        if ($node instanceof IQuota) {
+            $quotaInfo = null;
+            $propFind->handle('{DAV:}quota-used-bytes', function() use (&$quotaInfo, $node) {
+                $quotaInfo = $node->getQuotaInfo();
+                return $quotaInfo[0];
+            });
+            $propFind->handle('{DAV:}quota-available-bytes', function() use (&$quotaInfo, $node) {
+                if (!$quotaInfo) {
+                    $quotaInfo = $node->getQuotaInfo();
+                }
+                return $quotaInfo[1];
+            });
+        }
+
+        $propFind->handle('{DAV:}supported-report-set', function() use ($propFind) {
+            $reports = [];
+            foreach($this->server->getPlugins() as $plugin) {
+                $reports = array_merge($reports, $plugin->getSupportedReportSet($propFind->getPath()));
+            }
+            return new Property\SupportedReportSet($reports);
+        });
+        $propFind->handle('{DAV:}resourcetype', function() use ($node) {
+            return new Property\ResourceType($this->server->getResourceTypeForNode($node));
+        });
+        $propFind->handle('{DAV:}supported-method-set', function() use ($propFind) {
+            return new Property\SupportedMethodSet(
+                $this->server->getAllowedMethods($propFind->getPath())
+            );
+        });
+
+    }
+
+    /**
+     * Fetches properties for a node.
+     *
+     * This event is called a bit later, so plugins have a chance first to
+     * populate the result.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    public function propFindNode(PropFind $propFind, INode $node) {
+
+        if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {
+
+            $nodeProperties = $node->getProperties($propertyNames);
+
+            foreach($nodeProperties as $propertyName=>$value) {
+                $propFind->set($propertyName, $value, 200);
+            }
+
         }
 
     }

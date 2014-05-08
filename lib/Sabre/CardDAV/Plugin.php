@@ -51,8 +51,8 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         /* Events */
-        $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
-        $server->on('afterGetProperties',  [$this, 'afterGetProperties']);
+        $server->on('propFind',            [$this, 'propFindEarly']);
+        $server->on('propFind',            [$this, 'propFindLate'],150);
         $server->on('propPatch',           [$this, 'propPatch']);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
@@ -119,29 +119,23 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Adds all CardDAV-specific properties
      *
-     * @param string $path
+     * @param DAV\PropFind $propFind
      * @param DAV\INode $node
-     * @param array $requestedProperties
-     * @param array $returnedProperties
      * @return void
      */
-    public function beforeGetProperties($path, DAV\INode $node, array &$requestedProperties, array &$returnedProperties) {
+    public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
 
         if ($node instanceof DAVACL\IPrincipal) {
 
-            // calendar-home-set property
-            $addHome = '{' . self::NS_CARDDAV . '}addressbook-home-set';
-            if (in_array($addHome,$requestedProperties)) {
+            $path = $propFind->getPath();
 
-                unset($requestedProperties[array_search($addHome, $requestedProperties)]);
-                $returnedProperties[200][$addHome] = new DAV\Property\Href($this->getAddressBookHomeForPrincipal($path) . '/');
-            }
+            $propFind->handle('{' . self::NS_CARDDAV . '}addressbook-home-set', function() use ($path) {
+                return new DAV\Property\Href($this->getAddressBookHomeForPrincipal($path) . '/');
+            });
 
-            $directories = '{' . self::NS_CARDDAV . '}directory-gateway';
-            if ($this->directories && in_array($directories, $requestedProperties)) {
-                unset($requestedProperties[array_search($directories, $requestedProperties)]);
-                $returnedProperties[200][$directories] = new DAV\Property\HrefList($this->directories);
-            }
+            if ($this->directories) $propFind->handle('{' . self::NS_CARDDAV . '}directory-gateway', function() {
+                return new DAV\Property\HrefList($this->directories);
+            });
 
         }
 
@@ -150,35 +144,31 @@ class Plugin extends DAV\ServerPlugin {
             // The address-data property is not supposed to be a 'real'
             // property, but in large chunks of the spec it does act as such.
             // Therefore we simply expose it as a property.
-            $addressDataProp = '{' . self::NS_CARDDAV . '}address-data';
-            if (in_array($addressDataProp, $requestedProperties)) {
-                unset($requestedProperties[$addressDataProp]);
+            $propFind->handle('{' . self::NS_CARDDAV . '}address-data', function() use ($node) {
                 $val = $node->get();
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
-                $returnedProperties[200][$addressDataProp] = $val;
+                return $val;
 
-            }
+            });
+
         }
 
         if ($node instanceof UserAddressBooks) {
 
-            $meCardProp = '{http://calendarserver.org/ns/}me-card';
-            if (in_array($meCardProp, $requestedProperties)) {
+            $propFind->handle('{http://calendarserver.org/ns/}me-card', function() use ($node) {
 
-                $props = $this->server->getProperties($node->getOwner(), array('{http://sabredav.org/ns}vcard-url'));
+                $props = $this->server->getProperties($node->getOwner(), ['{http://sabredav.org/ns}vcard-url']);
                 if (isset($props['{http://sabredav.org/ns}vcard-url'])) {
 
-                    $returnedProperties[200][$meCardProp] = new DAV\Property\Href(
+                    return new DAV\Property\Href(
                         $props['{http://sabredav.org/ns}vcard-url']
                     );
-                    $pos = array_search($meCardProp, $requestedProperties);
-                    unset($requestedProperties[$pos]);
 
                 }
 
-            }
+            });
 
         }
 
@@ -646,26 +636,25 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * This event is triggered after webdav-properties have been retrieved.
+     * This event is triggered when fetching properties.
      *
-     * @return bool
+     * This event is scheduled late in the process, after most work for
+     * propfind has been done.
      */
-    public function afterGetProperties($uri, &$properties, DAV\INode $node) {
+    public function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 
         // If the request was made using the SOGO connector, we must rewrite
         // the content-type property. By default SabreDAV will send back
         // text/x-vcard; charset=utf-8, but for SOGO we must strip that last
         // part.
-        if (!isset($properties[200]['{DAV:}getcontenttype']))
-            return;
-
         if (strpos($this->server->httpRequest->getHeader('User-Agent'),'Thunderbird')===false) {
             return;
         }
-
-        if (strpos($properties[200]['{DAV:}getcontenttype'],'text/x-vcard')===0) {
-            $properties[200]['{DAV:}getcontenttype'] = 'text/x-vcard';
+        $contentType = $propFind->get('{DAV:}getcontenttype');
+        if (!$contentType || strpos($contentType, 'text/x-vcard')!==0) {
+           return;
         }
+        $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
 
     }
 

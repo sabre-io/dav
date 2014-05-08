@@ -4,9 +4,12 @@ ChangeLog
 1.9.0-alpha3 (????-??-??)
 -------------------------
 
-* BC Break: Property updating got refactored. Read the migration document for
-  more information. This allows for creation of a generic property storage,
-  and other property-related functionality that was not possible before.
+* BC Break: Property updating and fetching got refactored. Read the migration
+  document for more information. This allows for creation of a generic property
+  storage, and other property-related functionality that was not possible
+  before.
+* BC Break: Removed 'propertyUpdate' and 'afterGetProperties' events.
+* Added: Support for the `{DAV:}supported-method-set` property server-wide.
 * Making it easier for implementors to override how the CardDAV addressbook
   home is located.
 * Fixed: Issue #422 Preconditions were not being set on PUT on non-existant

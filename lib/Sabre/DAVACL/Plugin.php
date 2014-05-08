@@ -656,8 +656,7 @@ class Plugin extends DAV\ServerPlugin {
     public function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->on('beforeGetProperties',[$this,'beforeGetProperties'], 20);
-
+        $server->on('propFind',            [$this,'propFind'], 20);
         $server->on('beforeMethod',        [$this,'beforeMethod'],20);
         $server->on('beforeBind',          [$this,'beforeBind'],20);
         $server->on('beforeUnbind',        [$this,'beforeUnbind'],20);
@@ -809,28 +808,33 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Triggered before properties are looked up in specific nodes.
      *
-     * @param string $uri
+     * @param DAV\PropFind $propFind
      * @param DAV\INode $node
      * @param array $requestedProperties
      * @param array $returnedProperties
      * @TODO really should be broken into multiple methods, or even a class.
      * @return bool
      */
-    public function beforeGetProperties($uri, DAV\INode $node, &$requestedProperties, &$returnedProperties) {
+    public function propFind(DAV\PropFind $propFind, DAV\INode $node) {
+
+        $path = $propFind->getPath();
 
         // Checking the read permission
-        if (!$this->checkPrivileges($uri,'{DAV:}read',self::R_PARENT,false)) {
-
+        if (!$this->checkPrivileges($path,'{DAV:}read',self::R_PARENT,false)) {
             // User is not allowed to read properties
+
+            // Returning false causes the property-fetching system to pretend
+            // that the node does not exist, and will cause it to be hidden
+            // from listings such as PROPFIND or the browser plugin.
             if ($this->hideNodesFromListings) {
                 return false;
             }
 
-            // Marking all requested properties as '403'.
-            foreach($requestedProperties as $key=>$requestedProperty) {
-                unset($requestedProperties[$key]);
-                $returnedProperties[403][$requestedProperty] = null;
+            // Otherwise we simply mark every property as 403.
+            foreach($propFind->getRequestedProperties() as $requestedProperty) {
+                $propFind->set($requestedProperty, null, 403);
             }
+
             return;
 
         }
@@ -838,116 +842,70 @@ class Plugin extends DAV\ServerPlugin {
         /* Adding principal properties */
         if ($node instanceof IPrincipal) {
 
-            if (false !== ($index = array_search('{DAV:}alternate-URI-set', $requestedProperties))) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}alternate-URI-set'] = new DAV\Property\HrefList($node->getAlternateUriSet());
-
-            }
-            if (false !== ($index = array_search('{DAV:}principal-URL', $requestedProperties))) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}principal-URL'] = new DAV\Property\Href($node->getPrincipalUrl() . '/');
-
-            }
-            if (false !== ($index = array_search('{DAV:}group-member-set', $requestedProperties))) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}group-member-set'] = new DAV\Property\HrefList($node->getGroupMemberSet());
-
-            }
-            if (false !== ($index = array_search('{DAV:}group-membership', $requestedProperties))) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}group-membership'] = new DAV\Property\HrefList($node->getGroupMembership());
-
-            }
-
-            if (false !== ($index = array_search('{DAV:}displayname', $requestedProperties))) {
-
-                $returnedProperties[200]['{DAV:}displayname'] = $node->getDisplayName();
-
-            }
+            $propFind->handle('{DAV:}alternate-URI-set', function() use ($node) {
+                return new DAV\Property\HrefList($node->getAlternateUriSet());
+            });
+            $propFind->handle('{DAV:}principal-URL', function() use ($node) {
+                return new DAV\Property\Href($node->getPrincipalUrl() . '/');
+            });
+            $propFind->handle('{DAV:}group-member-set', function() use ($node) {
+                return new DAV\Property\HrefList($node->getGroupMemberSet());
+            });
+            $propFind->handle('{DAV:}group-membership', function() use ($node) {
+                return new DAV\Property\HrefList($node->getGroupMembership());
+            });
+            $propFind->handle('{DAV:}displayname', [$node, 'getDisplayName']);
 
         }
-        if (false !== ($index = array_search('{DAV:}principal-collection-set', $requestedProperties))) {
 
-            unset($requestedProperties[$index]);
+        $propFind->handle('{DAV:}principal-collection-set', function() {
+
             $val = $this->principalCollectionSet;
             // Ensuring all collections end with a slash
             foreach($val as $k=>$v) $val[$k] = $v . '/';
-            $returnedProperties[200]['{DAV:}principal-collection-set'] = new DAV\Property\HrefList($val);
+            return new DAV\Property\HrefList($val);
 
-        }
-        if (false !== ($index = array_search('{DAV:}current-user-principal', $requestedProperties))) {
-
-            unset($requestedProperties[$index]);
+        });
+        $propFind->handle('{DAV:}current-user-principal', function() {
             if ($url = $this->getCurrentUserPrincipal()) {
-                $returnedProperties[200]['{DAV:}current-user-principal'] = new Property\Principal(Property\Principal::HREF, $url . '/');
+                return new Property\Principal(Property\Principal::HREF, $url . '/');
             } else {
-                $returnedProperties[200]['{DAV:}current-user-principal'] = new Property\Principal(Property\Principal::UNAUTHENTICATED);
+                return new Property\Principal(Property\Principal::UNAUTHENTICATED);
             }
-
-        }
-        if (false !== ($index = array_search('{DAV:}supported-privilege-set', $requestedProperties))) {
-
-            unset($requestedProperties[$index]);
-            $returnedProperties[200]['{DAV:}supported-privilege-set'] = new Property\SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
-
-        }
-        if (false !== ($index = array_search('{DAV:}current-user-privilege-set', $requestedProperties))) {
-
-            if (!$this->checkPrivileges($uri, '{DAV:}read-current-user-privilege-set', self::R_PARENT, false)) {
-                $returnedProperties[403]['{DAV:}current-user-privilege-set'] = null;
-                unset($requestedProperties[$index]);
+        });
+        $propFind->handle('{DAV:}supported-privilege-set', function() use ($node) {
+            return new Property\SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
+        });
+        $propFind->handle('{DAV:}current-user-privilege-set', function() use ($node, $propFind, $path) {
+            if (!$this->checkPrivileges($path, '{DAV:}read-current-user-privilege-set', self::R_PARENT, false)) {
+                $propFind->set('{DAV:}current-user-privilege-set', null, 403);
             } else {
                 $val = $this->getCurrentUserPrivilegeSet($node);
                 if (!is_null($val)) {
-                    unset($requestedProperties[$index]);
-                    $returnedProperties[200]['{DAV:}current-user-privilege-set'] = new Property\CurrentUserPrivilegeSet($val);
+                    return new Property\CurrentUserPrivilegeSet($val);
                 }
             }
-
-        }
-
-        /* The ACL property contains all the permissions */
-        if (false !== ($index = array_search('{DAV:}acl', $requestedProperties))) {
-
-            if (!$this->checkPrivileges($uri, '{DAV:}read-acl', self::R_PARENT, false)) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[403]['{DAV:}acl'] = null;
-
+        });
+        $propFind->handle('{DAV:}acl', function() use ($node, $propFind, $path) {
+            /* The ACL property contains all the permissions */
+            if (!$this->checkPrivileges($path, '{DAV:}read-acl', self::R_PARENT, false)) {
+                $propFind->set('{DAV:}acl', null, 403);
             } else {
-
                 $acl = $this->getACL($node);
                 if (!is_null($acl)) {
-                    unset($requestedProperties[$index]);
-                    $returnedProperties[200]['{DAV:}acl'] = new Property\Acl($this->getACL($node));
+                    return new Property\Acl($this->getACL($node));
                 }
-
             }
-
-        }
-
-        /* The acl-restrictions property contains information on how privileges
-         * must behave.
-         */
-        if (false !== ($index = array_search('{DAV:}acl-restrictions', $requestedProperties))) {
-            unset($requestedProperties[$index]);
-            $returnedProperties[200]['{DAV:}acl-restrictions'] = new Property\AclRestrictions();
-        }
+        });
+        $propFind->handle('{DAV:}acl-restrictions', function() {
+            return new Property\AclRestrictions();
+        });
 
         /* Adding ACL properties */
         if ($node instanceof IACL) {
-
-            if (false !== ($index = array_search('{DAV:}owner', $requestedProperties))) {
-
-                unset($requestedProperties[$index]);
-                $returnedProperties[200]['{DAV:}owner'] = new DAV\Property\Href($node->getOwner() . '/');
-
-            }
-
+            $propFind->handle('{DAV:}owner', function() use ($node) {
+                return new DAV\Property\Href($node->getOwner() . '/');
+            });
         }
 
     }

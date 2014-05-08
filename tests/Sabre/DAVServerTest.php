@@ -2,20 +2,6 @@
 
 namespace Sabre;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
-require_once 'Sabre/DAV/Auth/Backend/Mock.php';
-require_once 'Sabre/DAV/Mock/File.php';
-require_once 'Sabre/DAV/Mock/Collection.php';
-require_once 'Sabre/DAV/Mock/PropertiesCollection.php';
-
-require_once 'Sabre/DAVACL/PrincipalBackend/Mock.php';
-
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/CalDAV/Backend/MockSubscriptionSupport.php';
-
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-
 use
     Sabre\HTTP\Request,
     Sabre\HTTP\Response,

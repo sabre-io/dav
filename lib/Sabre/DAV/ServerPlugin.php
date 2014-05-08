@@ -36,7 +36,7 @@ abstract class ServerPlugin {
      */
     public function getFeatures() {
 
-        return array();
+        return [];
 
     }
 
@@ -47,12 +47,12 @@ abstract class ServerPlugin {
      * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
      *
-     * @param string $uri
+     * @param string $path
      * @return array
      */
-    public function getHTTPMethods($uri) {
+    public function getHTTPMethods($path) {
 
-        return array();
+        return [];
 
     }
 
@@ -82,7 +82,7 @@ abstract class ServerPlugin {
      */
     public function getSupportedReportSet($uri) {
 
-        return array();
+        return [];
 
     }
 

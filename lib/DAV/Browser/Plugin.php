@@ -24,34 +24,6 @@ use
 class Plugin extends DAV\ServerPlugin {
 
     /**
-     * List of default icons for nodes.
-     *
-     * This is an array with class / interface names as keys, and asset names
-     * as values.
-     *
-     * The evaluation order is reversed. The last item in the list gets
-     * precendence.
-     *
-     * @var array
-     */
-    public $iconMap = array(
-        'Sabre\\DAV\\INode' => 'icons/other',
-        'Sabre\\DAV\\IFile' => 'icons/file',
-        'Sabre\\DAV\\ICollection' => 'icons/collection',
-        'Sabre\\DAVACL\\IPrincipal' => 'icons/principal',
-        'Sabre\\CalDAV\\ICalendar' => 'icons/calendar',
-        'Sabre\\CardDAV\\IAddressBook' => 'icons/addressbook',
-        'Sabre\\CardDAV\\ICard' => 'icons/card',
-    );
-
-    /**
-     * The file extension used for all icons
-     *
-     * @var string
-     */
-    public $iconExtension = '.png';
-
-    /**
      * reference to server class
      *
      * @var Sabre\DAV\Server
@@ -167,7 +139,10 @@ class Plugin extends DAV\ServerPlugin {
                         $this->server->createDirectory($uri . '/' . $folderName);
                     }
                     break;
+
+                // @codeCoverageIgnoreStart
                 case 'put' :
+
                     if ($_FILES) $file = current($_FILES);
                     else break;
 
@@ -182,6 +157,7 @@ class Plugin extends DAV\ServerPlugin {
                         $this->server->createFile($uri . '/' . $newName, fopen($file['tmp_name'],'r'));
                     }
                     break;
+                // @codeCoverageIgnoreEnd
 
             }
 
@@ -230,7 +206,7 @@ class Plugin extends DAV\ServerPlugin {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>$vars[path] / - sabre/dav $version</title>
+    <title>$vars[path]/ - sabre/dav $version</title>
     <link rel="shortcut icon" href="$vars[favicon]"   type="image/vnd.microsoft.icon" />
     <link rel="stylesheet"    href="$vars[style]"     type="text/css" />
     <link rel="stylesheet"    href="$vars[iconstyle]" type="text/css" />
@@ -414,10 +390,10 @@ HTML;
         $path = $assetDir . $assetName;
 
         // Making sure people aren't trying to escape from the base path.
-        if (strpos(realpath($path), realpath($assetDir)) === 0) {
+        if (strpos(realpath($path), realpath($assetDir)) === 0 && file_exists($path)) {
             return $path;
         }
-        throw new DAV\Exception\Forbidden('Path does not exist, or escaping from the base path was detected');
+        throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
     }
 
     /**
@@ -429,28 +405,18 @@ HTML;
     protected function serveAsset($assetName) {
 
         $assetPath = $this->getLocalAssetPath($assetName);
-        if (!file_exists($assetPath)) {
-            throw new DAV\Exception\NotFound('Could not find an asset with this name');
-        }
+
         // Rudimentary mime type detection
-        switch(strtolower(substr($assetPath,strpos($assetPath,'.')+1))) {
+        $mime = 'application/octet-stream';
+        $map = [
+            'ico'  => 'image/vnd.microsoft.icon',
+            'png'  => 'image/png',
+            'css'  =>  'text/css',
+        ];
 
-        case 'ico' :
-            $mime = 'image/vnd.microsoft.icon';
-            break;
-
-        case 'png' :
-            $mime = 'image/png';
-            break;
-
-        case 'css' :
-            $mime = 'text/css';
-            break;
-
-        default:
-            $mime = 'application/octet-stream';
-            break;
-
+        $ext = substr($assetName, strrpos($assetName, '.')+1);
+        if (isset($map[$ext])) {
+            $mime = $map[$ext];
         }
 
         $this->server->httpResponse->setHeader('Content-Type', $mime);

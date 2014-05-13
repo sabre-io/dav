@@ -603,7 +603,7 @@ HTML;
                 break;
             case 'hreflist' :
                 echo implode('<br />', array_map(function($href) {
-                    if (strpos($href,'mailto:')===0 || strpos($href,'/')===0 || strpos($href,'http:')===0 || strpos($href,'https:') === 0) {
+                    if (stripos($href,'mailto:')===0 || stripos($href,'/')===0 || stripos($href,'http:')===0 || stripos($href,'https:') === 0) {
                         return "<a href=\"" . $this->escapeHTML($href) . '\">' . $this->escapeHTML($href) . '</a>';
                     } else {
                         return "<a href=\"" . $this->escapeHTML($this->server->getBaseUri() . $href) . '\">' . $this->escapeHTML($this->server->getBaseUri() . $href) . '</a>';

@@ -545,11 +545,10 @@ HTML;
             foreach($mapping as $class=>$val) {
                 if ($value instanceof $class) {
                     $view = $val;
+                    break;
                 }
             }
         }
-
-
 
         list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($name);
 

@@ -32,7 +32,6 @@ class PropFind {
      */
     const PROPNAME = 2;
 
-
     /**
      * Creates the PROPFIND object
      *

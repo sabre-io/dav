@@ -67,6 +67,17 @@ class CurrentUserPrivilegeSet extends DAV\Property {
     }
 
     /**
+     * Returns the list of privileges.
+     *
+     * @return array
+     */
+    public function getValue() {
+
+        return $this->privileges;
+
+    }
+
+    /**
      * Serializes one privilege
      *
      * @param \DOMDocument $doc

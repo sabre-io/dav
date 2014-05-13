@@ -1,0 +1,103 @@
+* {
+    box-sizing: border-box;
+}
+
+body, input {
+    font-family: arial, sans-serif;
+    font-size: 14px;
+}
+
+body {
+    margin: 0;
+    line-height: 22px;
+    font-weight: 300;
+}
+
+a {
+    text-decoration: none;
+    color: #31A1CD;
+}
+
+th {
+    text-align: left;
+}
+
+header {
+    background-color: #EEE;
+}
+
+header .logo {
+    padding: 5px 10px;
+}
+
+header .logo img {
+    vertical-align: middle;
+}
+
+header a {
+    font-size: 28px;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+}
+
+input[type=text] {
+    border: 1px solid #999;
+    font-size: 18px;
+}
+
+nav {
+    padding: 5px;
+}
+
+section {
+    padding: 5px;
+}
+
+section h1 {
+    font-size: 28px;
+    color: #B10610;
+}
+
+section h2 {
+    font-size: 28px;
+    color #333;
+    font-weight: 300;
+    line-height: 36px;
+}
+
+.btn, input[type=submit] {
+    display: inline-block;
+    color: white;
+    background: #B10610;
+    padding: 3px;
+    border-radius: 2px;
+    border: 0;
+}
+
+.btn.disabled {
+    background: #999;
+}
+
+section table tr {
+    background: #EEE;
+    height: 40px;
+}
+
+section table td {
+    padding: 0 10px;
+}
+
+section table .oi {
+    color: #B10610;
+}
+
+.propTable a {
+    color: #
+}
+
+.nodeTable .namecolumn {
+    min-width: 200px;
+}
+
+

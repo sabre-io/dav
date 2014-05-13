@@ -21,6 +21,10 @@ bin/phpunit
 # Assuming every .php file in the root is for testing
 /*.php
 
+# Other testing stuff
+/tmpdata
+/data
+/public
 
 # Build
 build
@@ -29,3 +33,6 @@ build.properties
 # Docs
 docs/api
 docs/wikidocs
+
+# Mac
+.DS_Store

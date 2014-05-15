@@ -7,6 +7,7 @@ define('SABRE_MYSQLPASS','');
 set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATOR . get_include_path());
 
 include __DIR__ . '/../vendor/autoload.php';
+include 'Sabre/TestUtil.php';
 include 'Sabre/DAVServerTest.php';
 
 date_default_timezone_set('UTC');

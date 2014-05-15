@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.0.0-alpha1 (????-??-??)
+2.0.0-beta1 (2014-05-15)
 -------------------------
 
 * The zip release ships with [sabre/vobject 3.2.2][vobj],
@@ -12,7 +12,7 @@ ChangeLog
   possible before.
 * BC Break: Removed `propertyUpdate`, `beforeGetProperties` and
   `afterGetProperties` events.
-* Fixed: #413: Memory optimizations for the CardDAV PDO backend. 
+* Fixed: #413: Memory optimizations for the CardDAV PDO backend.
 * Updated: Brand new browser plugin with more debugging features and a design
   that is slightly less painful.
 * Added: Support for the `{DAV:}supported-method-set` property server-wide.

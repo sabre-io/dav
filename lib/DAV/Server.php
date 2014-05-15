@@ -902,13 +902,6 @@ class Server extends EventEmitter {
         $propFindType = $propertyNames?PropFind::NORMAL:PropFind::ALLPROPS;
         $propFind = new PropFind($path, $propertyNames, $depth, $propFindType);
 
-        // This event allows people to intercept these requests early on in the
-        // process.
-        //
-        // We're not doing anything with the result, but this can be helpful to
-        // pre-fetch certain expensive live properties.
-        $this->emit('beforeGetPropertiesForPath', [$propFind->getPath(), $propertyNames, $depth]);
-
         $parentNode = $this->tree->getNodeForPath($path);
         $nodes = [
             $path => $parentNode

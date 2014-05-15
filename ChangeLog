@@ -1,4 +1,4 @@
-1.7.12-stable (????-??-??)
+1.7.12-stable (2014-05-15)
 	* Updated: Issue #439. Lots of updates in PATCH support. The
 	  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be
 	  removed in a future version.

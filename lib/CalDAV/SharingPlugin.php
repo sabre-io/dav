@@ -93,7 +93,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         );
 
         $this->server->on('propFind',     [$this,'propFindEarly']);
-        $this->server->on('propFind',     [$this,'propFindLate'], 200);
+        $this->server->on('propFind',     [$this,'propFindLate'], 150);
         $this->server->on('propPatch',    [$this, 'propPatch'], 40);
         $this->server->on('method:POST',  [$this, 'httpPost']);
 

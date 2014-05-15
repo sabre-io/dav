@@ -46,7 +46,7 @@ class Plugin extends ServerPlugin {
      */
     public function initialize(Server $server) {
 
-        $server->on('propFind', [$this, 'propFind'], 101);
+        $server->on('propFind', [$this, 'propFind'], 130);
         $server->on('propPatch', [$this, 'propPatch'], 300);
         $server->on('afterUnbind', [$this, 'afterUnbind']);
 

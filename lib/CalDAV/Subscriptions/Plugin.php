@@ -39,7 +39,7 @@ class Plugin extends ServerPlugin {
         $server->propertyMap['{http://calendarserver.org/ns/}source'] =
             'Sabre\\DAV\\Property\\Href';
 
-        $server->on('propFind', [$this, 'propFind'], 120);
+        $server->on('propFind', [$this, 'propFind'], 150);
 
     }
 

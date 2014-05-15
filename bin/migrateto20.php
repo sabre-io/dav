@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-echo "SabreDAV migrate script for version 2.0.0\n";
+echo "SabreDAV migrate script for version 2.0\n";
 
 if ($argc<2) {
 
@@ -172,7 +172,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
                 }
 
         }
-        echo "Creation of 1.9 $tableName table is complete\n";
+        echo "Creation of 2.0 $tableName table is complete\n";
 
     } else {
 
@@ -198,7 +198,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
 
             }
 
-            echo "Upgraded '$tableName' to 1.9 schema.\n";
+            echo "Upgraded '$tableName' to 2.0 schema.\n";
 
         }
 
@@ -305,4 +305,144 @@ CREATE TABLE calendarsubscriptions (
 
 }
 
-echo "Upgrade to 1.9 schema completed.\n";
+try {
+    $pdo->query("SELECT * FROM propertystorage LIMIT 1");
+
+    echo "'propertystorage' already exists. Assuming that this part of the\n";
+    echo "upgrade was already completed.\n";
+
+} catch (Exception $e) {
+    echo "Creating propertystorage table.\n";
+
+    switch($driver) {
+
+        case 'mysql' :
+            $pdo->exec("
+CREATE TABLE propertystorage (
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    path VARBINARY(1024) NOT NULL,
+    name VARBINARY(100) NOT NULL,
+    value MEDIUMBLOB
+);
+            ");
+            $pdo->exec("
+CREATE UNIQUE INDEX path_property ON propertystorage (path(600), name(100));
+            ");
+            break;
+        case 'sqlite' :
+            $pdo->exec("
+CREATE TABLE propertystorage (
+    id integer primary key asc,
+    path TEXT,
+    name TEXT,
+    value TEXT
+);
+            ");
+            $pdo->exec("
+CREATE UNIQUE INDEX path_property ON propertystorage (path, name);
+            ");
+
+            break;
+
+    }
+
+}
+
+echo "Upgrading cards table to 2.0 schema\n";
+
+try {
+
+    $create = false;
+    $row = $pdo->query("SELECT * FROM cards LIMIT 1")->fetch();
+    if (!$row) {
+        echo "There was no data in the cards table, so we're re-creating it\n";
+        echo "The old table will be renamed to cards_old, just in case.\n";
+
+        $create = true;
+
+        switch($driver) {
+            case 'mysql' :
+                $pdo->exec("RENAME TABLE cards TO cards_old");
+                break;
+            case 'sqlite' :
+                $pdo->exec("ALTER TABLE cards RENAME TO cards_old");
+                break;
+
+        }
+    }
+
+} catch (Exception $e) {
+
+    echo "Exception while checking cards table. Assuming that the table does not yet exist.\n";
+    $create = true;
+
+}
+
+if ($create) {
+    switch($driver) {
+        case 'mysql' :
+            $pdo->exec("
+CREATE TABLE cards (
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    addressbookid INT(11) UNSIGNED NOT NULL,
+    carddata MEDIUMBLOB,
+    uri VARCHAR(200),
+    lastmodified INT(11) UNSIGNED,
+    etag VARBINARY(32),
+    size INT(11) UNSIGNED NOT NULL,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+            ");
+            break;
+
+        case 'sqlite' :
+
+            $pdo->exec("
+CREATE TABLE cards (
+    id integer primary key asc,
+    addressbookid integer,
+    carddata blob,
+    uri text,
+    lastmodified integer
+    etag text,
+    size integer
+);
+            ");
+            break;
+
+    }
+} else {
+    switch($driver) {
+        case 'mysql' :
+            $pdo->exec("
+                ALTER TABLE cards
+                ADD etag VARBINARY(32),
+                ADD size INT(11) UNSIGNED NOT NULL;
+            ");
+            break;
+
+        case 'sqlite' :
+
+            $pdo->exec("
+ALTER TABLE cards
+ADD etag text,
+ADD size integer;
+            ");
+            break;
+
+    }
+    echo "Reading all old vcards and populating etag and size fields.\n";
+    $result = $pdo->query('SELECT id, carddata FROM cards');
+    $stmt = $pdo->prepare('UPDATE cards SET etag = ?, size = ? WHERE id = ?');
+    while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+        $stmt->execute([
+            md5($row['carddata']),
+            strlen($row['carddata']),
+            $row['id']
+        ]);
+    }
+
+
+}
+
+echo "Upgrade to 2.0 schema completed.\n";

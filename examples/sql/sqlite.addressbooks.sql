@@ -13,6 +13,8 @@ CREATE TABLE cards (
     carddata blob,
     uri text,
     lastmodified integer
+    etag text,
+    size integer
 );
 
 CREATE TABLE addressbookchanges (

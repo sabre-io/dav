@@ -11,6 +11,18 @@ use Sabre\DAV\INode;
 class Plugin extends ServerPlugin {
 
     /**
+     * If you only want this plugin to store properties for a limited set of
+     * paths, you can use a pathFilter to do this.
+     *
+     * The pathFilter should be a callable. The callable retrieves a path as
+     * its argument, and should return true or false wether it allows
+     * properties to be stored.
+     *
+     * @var callable
+     */
+    public $pathFilter;
+
+    /**
      * Creates the plugin
      *
      * @param Backend\BackendInterface $backend
@@ -52,6 +64,8 @@ class Plugin extends ServerPlugin {
      */
     public function propFind(PropFind $propFind, INode $node) {
 
+        $path = $propFind->getPath();
+        if ($this->pathFilter && !$this->pathFilter($path)) return;
         $this->backend->propFind($propFind->getPath(), $propFind);
 
     }
@@ -68,6 +82,7 @@ class Plugin extends ServerPlugin {
      */
     public function propPatch($path, PropPatch $propPatch) {
 
+        if ($this->pathFilter && !$this->pathFilter($path)) return;
         $this->backend->propPatch($path, $propPatch);
 
     }
@@ -83,6 +98,7 @@ class Plugin extends ServerPlugin {
      */
     public function afterUnbind($path) {
 
+        if ($this->pathFilter && !$this->pathFilter($path)) return;
         $this->backend->delete($path);
 
     }

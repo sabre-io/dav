@@ -72,7 +72,7 @@
 
                 public function main() {
 
-                    include_once 'lib/Sabre/DAV/Version.php';
+                    include_once 'lib/DAV/Version.php';
                     $this->getProject()->setNewProperty('sabredav.version',\Sabre\DAV\Version::VERSION);
 
                 }

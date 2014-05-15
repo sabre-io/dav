@@ -12,7 +12,7 @@ CREATE TABLE cards (
     addressbookid integer,
     carddata blob,
     uri text,
-    lastmodified integer
+    lastmodified integer,
     etag text,
     size integer
 );

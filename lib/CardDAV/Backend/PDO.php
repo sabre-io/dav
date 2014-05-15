@@ -231,11 +231,15 @@ class PDO extends AbstractBackend implements SyncSupport {
      */
     public function getCards($addressbookId) {
 
-        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
+        $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, size FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
         $stmt->execute(array($addressbookId));
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
+        $result = [];
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $row['etag'] = '"' . $row['etag'] . '"';
+            $result[] = $row;
+        }
+        return $result;
 
     }
 
@@ -253,12 +257,15 @@ class PDO extends AbstractBackend implements SyncSupport {
      */
     public function getCard($addressBookId, $cardUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ? LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified, etag, size FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ? LIMIT 1');
         $stmt->execute(array($addressBookId, $cardUri));
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        return $result?$result:false;
+        if (!$result) return false;
+
+        $result['etag'] = '"' . $result['etag'] . '"';
+        return $result;
 
     }
 
@@ -280,14 +287,19 @@ class PDO extends AbstractBackend implements SyncSupport {
             return $this->getCard($addressBookId, $uri);
         }, $uris);
 
-        $query = 'SELECT id, carddata, uri, lastmodified FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = IN (';
+        $query = 'SELECT id, uri, lastmodified, etag, size FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = IN (';
         // Inserting a whole bunch of question marks
         $query.=implode(',', array_fill(0, count($uris), '?'));
         $query.=')';
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(array_merge([$addressBookId], $uris));
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = [];
+        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $row['etag'] = '"' . $row['etag'] . '"';
+            $result[] = $row;
+        }
+        return $result;
 
     }
 
@@ -318,13 +330,22 @@ class PDO extends AbstractBackend implements SyncSupport {
      */
     public function createCard($addressBookId, $cardUri, $cardData) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->cardsTableName . ' (carddata, uri, lastmodified, addressbookid) VALUES (?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->cardsTableName . ' (carddata, uri, lastmodified, addressbookid, size, etag) VALUES (?, ?, ?, ?, ?, ?)');
 
-        $result = $stmt->execute(array($cardData, $cardUri, time(), $addressBookId));
+        $etag = md5($cardData);
+
+        $result = $stmt->execute([
+            $cardData,
+            $cardUri,
+            time(),
+            $addressBookId,
+            strlen($cardData),
+            $etag,
+        ]);
 
         $this->addChange($addressBookId, $cardUri, 1);
 
-        return '"' . md5($cardData) . '"';
+        return '"' . $etag . '"';
 
     }
 
@@ -355,12 +376,21 @@ class PDO extends AbstractBackend implements SyncSupport {
      */
     public function updateCard($addressBookId, $cardUri, $cardData) {
 
-        $stmt = $this->pdo->prepare('UPDATE ' . $this->cardsTableName . ' SET carddata = ?, lastmodified = ? WHERE uri = ? AND addressbookid =?');
-        $stmt->execute(array($cardData, time(), $cardUri, $addressBookId));
+        $stmt = $this->pdo->prepare('UPDATE ' . $this->cardsTableName . ' SET carddata = ?, lastmodified = ?, size = ?, etag = ? WHERE uri = ? AND addressbookid =?');
+
+        $etag = md5($cardData);
+        $stmt->execute([
+            $cardData,
+            time(),
+            strlen($cardData),
+            $etag,
+            $cardUri,
+            $addressBookId
+        ]);
 
         $this->addChange($addressBookId, $cardUri, 2);
 
-        return '"' . md5($cardData) . '"';
+        return '"' . $etag . '"';
 
     }
 

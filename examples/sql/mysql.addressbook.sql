@@ -15,7 +15,7 @@ CREATE TABLE cards (
     uri VARCHAR(200),
     lastmodified INT(11) UNSIGNED,
     etag VARBINARY(32),
-    size INT(11) UNSIGNED NOT NULL,
+    size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE addressbookchanges (

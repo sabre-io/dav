@@ -4,11 +4,17 @@ ChangeLog
 2.0.0-alpha1 (????-??-??)
 -------------------------
 
-* BC Break: Property updating and fetching got refactored. Read the migration
-  document for more information. This allows for creation of a generic property
-  storage, and other property-related functionality that was not possible
-  before.
-* BC Break: Removed 'propertyUpdate' and 'afterGetProperties' events.
+* The zip release ships with [sabre/vobject 3.2.2][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.0][evnt].
+* BC Break: Property updating and fetching got refactored. Read the [migration
+  document][mi20] for more information. This allows for creation of a generic
+  property storage, and other property-related functionality that was not
+  possible before.
+* BC Break: Removed `propertyUpdate`, `beforeGetProperties` and
+  `afterGetProperties` events.
+* Fixed: #413: Memory optimizations for the CardDAV PDO backend. 
+* Updated: Brand new browser plugin with more debugging features and a design
+  that is slightly less painful.
 * Added: Support for the `{DAV:}supported-method-set` property server-wide.
 * Making it easier for implementors to override how the CardDAV addressbook
   home is located.
@@ -27,7 +33,12 @@ ChangeLog
 * Fixed: #175. Returning ETag header upon a failed `If-Match` or
   `If-None-Match` check.
 * Removed: `lib/Sabre/autoload.php`. Use `vendor/autoload.php` instead.
-
+* Removed: all the rfc documentation from the sabre/dav source. This made the
+  package needlessly larger.
+* Updated: Issue #439. Lots of updates in PATCH support. The
+  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be
+  removed in a future version.
+* Added: `Sabre\DAV\Exception\LengthRequired`.
 
 1.9.0-alpha2 (2014-01-14)
 -------------------------
@@ -1495,3 +1506,9 @@ ChangeLog
 * First release!
 * Passes litmus: basic, http and copymove test.
 * Fully working in Finder and DavFSv2 Project started: 2007-12-13
+
+
+[vobj]: http://sabre.io/vobject/
+[evnt]: http://sabre.io/event/
+[http]: http://sabre.io/http/
+[mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/

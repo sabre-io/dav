@@ -98,7 +98,7 @@ BLA;
 
         // Checking the sync-token
         $this->assertEquals(
-            'http://sabredav.org/ns/sync/1',
+            'http://sabre.io/ns/sync/1',
             $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
         );
 
@@ -148,7 +148,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-     <D:sync-token>http://sabredav.org/ns/sync/1</D:sync-token>
+     <D:sync-token>http://sabre.io/ns/sync/1</D:sync-token>
      <D:sync-level>infinite</D:sync-level>
       <D:prop>
         <D:getcontentlength/>
@@ -168,7 +168,7 @@ BLA;
 
         // Checking the sync-token
         $this->assertEquals(
-            'http://sabredav.org/ns/sync/2',
+            'http://sabre.io/ns/sync/2',
             $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
         );
 
@@ -214,7 +214,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-    <D:sync-token>http://sabredav.org/ns/sync/1</D:sync-token>
+    <D:sync-token>http://sabre.io/ns/sync/1</D:sync-token>
     <D:sync-level>infinite</D:sync-level>
     <D:prop>
         <D:getcontentlength/>
@@ -235,7 +235,7 @@ BLA;
 
         // Checking the sync-token
         $this->assertEquals(
-            'http://sabredav.org/ns/sync/2',
+            'http://sabre.io/ns/sync/2',
             $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
         );
 
@@ -272,7 +272,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-     <D:sync-token>http://sabredav.org/ns/sync/1</D:sync-token>
+     <D:sync-token>http://sabre.io/ns/sync/1</D:sync-token>
       <D:prop>
         <D:getcontentlength/>
       </D:prop>
@@ -291,7 +291,7 @@ BLA;
 
         // Checking the sync-token
         $this->assertEquals(
-            'http://sabredav.org/ns/sync/2',
+            'http://sabre.io/ns/sync/2',
             $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
         );
 
@@ -391,7 +391,7 @@ BLA;
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
-     <D:sync-token>http://sabredav.org/ns/sync/invalid</D:sync-token>
+     <D:sync-token>http://sabre.io/ns/sync/invalid</D:sync-token>
      <D:sync-level>1</D:sync-level>
       <D:prop>
         <D:getcontentlength/>
@@ -499,7 +499,7 @@ BLA;
         $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
-            'HTTP_IF'        => '</coll> (<http://sabredav.org/ns/sync/1>)',
+            'HTTP_IF'        => '</coll> (<http://sabre.io/ns/sync/1>)',
         ]);
         $response = $this->request($request);
 
@@ -516,7 +516,7 @@ BLA;
         $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'DELETE',
             'REQUEST_URI'    => '/coll/file1.txt',
-            'HTTP_IF'        => '</coll> (Not <http://sabredav.org/ns/sync/2>)',
+            'HTTP_IF'        => '</coll> (Not <http://sabre.io/ns/sync/2>)',
         ]);
         $response = $this->request($request);
 

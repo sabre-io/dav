@@ -50,23 +50,7 @@ class ServerPropsTest extends AbstractServer {
 
     public function testPropFindEmptyBody() {
 
-        $hasFired = false;
-
-        $self = $this;
-        // Also testing the beforeGetPropertiesForPath event.
-        $this->server->on('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
-
-            $hasFired = true;
-            $self->assertEquals('', $path);
-            $self->assertEquals([], $properties);
-            $self->assertEquals(0, $depth);
-
-        });
-
         $this->sendRequest("");
-
-        $this->assertTrue($hasFired);
-
         $this->assertEquals(207, $this->response->status);
 
         $this->assertEquals(array(

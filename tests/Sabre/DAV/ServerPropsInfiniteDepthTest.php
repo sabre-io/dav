@@ -48,20 +48,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $hasFired = false;
 
         $self = $this;
-        // Also testing the beforeGetPropertiesForPath event.
-        $this->server->on('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
-
-            $hasFired = true;
-            $self->assertEquals('', $path);
-            $self->assertEquals([], $properties);
-            $self->assertEquals(-1, $depth);
-
-        });
 
         $this->sendRequest("");
 
         $this->assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->getBodyAsString());
-        $this->assertTrue($hasFired);
 
         $this->assertEquals(array(
                 'Content-Type' => 'application/xml; charset=utf-8',

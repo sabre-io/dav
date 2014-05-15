@@ -1,16 +1,16 @@
 #!/usr/bin/env php
 <?php
 
-echo "SabreDAV migrate script for version 1.9\n";
+echo "SabreDAV migrate script for version 2.0.0\n";
 
 if ($argc<2) {
 
     echo <<<HELLO
 
-This script help you migrate from a pre-1.9 database to 1.9 and later
+This script help you migrate from a pre-2.0 database to 2.0 and later
 
-The 'calendars' and 'addressbooks' tables will be upgraded, and new tables
-(calendarchanges, addressbookchanges) will be added.
+The 'calendars', 'addressbooks' and 'cards' tables will be upgraded, and new
+tables (calendarchanges, addressbookchanges, propertystorage) will be added.
 
 If you don't use the default PDO CalDAV or CardDAV backend, it's pointless to
 run this script.
@@ -18,8 +18,11 @@ run this script.
 Keep in mind that ALTER TABLE commands will be executed. If you have a large
 dataset this may mean that this process takes a while.
 
-Lastly: Make a back-up first. If this was not obvious to you, you have some
-soul-searching to do.
+Lastly: Make a back-up first. This script has been tested, but the amount of
+potential variants are extremely high, so it's impossible to deal with every
+possible situation.
+
+In the worst case, you will lose all your data. This is not an overstatement.
 
 Usage:
 
@@ -38,10 +41,10 @@ HELLO;
 
 // There's a bunch of places where the autoloader could be, so we'll try all of
 // them.
-$paths = array(
+$paths = [
     __DIR__ . '/../vendor/autoload.php',
     __DIR__ . '/../../../autoload.php',
-);
+];
 
 foreach($paths as $path) {
     if (file_exists($path)) {
@@ -77,7 +80,7 @@ switch($driver) {
 
 foreach(['calendar', 'addressbook'] as $itemType) {
 
-    $tableName = $itemType . 's'; 
+    $tableName = $itemType . 's';
     $tableNameOld = $tableName . '_old';
     $changesTable = $itemType . 'changes';
 

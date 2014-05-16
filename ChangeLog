@@ -61,7 +61,11 @@
 	* Added: The Proxy principal classes now both implement an interface, for
 	  greater flexiblity.
 
-1.7.12-stable (????-??-??)
+1.7.13-stable (????-??-??)
+	* Changed: Removed phing and went with a custom build script for now.
+
+1.7.12-stable (2014-05-15)
+	* The zip release ships with sabre/vobject 2.1.4.
 	* Updated: Issue #439. Lots of updates in PATCH support. The
 	  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be
 	  removed in a future version.
@@ -75,6 +79,7 @@
 	  collection.
 	* Fixed: Issue #393: PATCH request with missing end-range was handled
 	  incorrectly.
+	* Added: Sabre_DAV_Exception_LengthRequired to omit 411 errors.
 
 1.7.11-stable (2014-02-26)
 	* The zip release ships with sabre/vobject 2.1.3.

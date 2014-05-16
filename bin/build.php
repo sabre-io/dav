@@ -121,7 +121,7 @@ function buildzip() {
 
     global $baseDir, $version;
     echo "  Asking composer to download sabre/dav $version\n\n";
-    system("composer create-project --no-dev sabre/dav build/SabreDAV $version", $code);
+    system("composer create-project -n --no-dev sabre/dav build/SabreDAV $version", $code);
     if ($code!==0) {
         echo "Composer reported error code $code\n";
         die(1);

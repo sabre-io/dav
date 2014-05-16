@@ -8,7 +8,7 @@
     "authors": [
         {
             "name": "Evert Pot",
-            "email": "evert@rooftopsolutions.nl",
+            "email": "me@evertpot.com",
             "homepage" : "http://evertpot.com/",
             "role" : "Developer"
         }
@@ -27,8 +27,7 @@
         "ext-libxml" : "*"
     },
     "require-dev" : {
-        "phpunit/phpunit" : "~4.0.0",
-        "phing/phing" : "~2.4"
+        "phpunit/phpunit" : "~4.0.0"
     },
     "provide" : {
         "evert/sabredav" : "1.7.*"

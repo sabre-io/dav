@@ -20,6 +20,10 @@ use Sabre\DAV;
  */
 class Plugin extends DAV\ServerPlugin {
 
+    const RANGE_APPEND = 1;
+    const RANGE_START = 2;
+    const RANGE_END = 3;
+
     /**
      * Reference to server
      *
@@ -69,7 +73,7 @@ class Plugin extends DAV\ServerPlugin {
     public function unknownMethod($method, $uri) {
 
         switch($method) {
-            
+
             case 'PATCH':
                 return $this->httpPatch($uri);
 
@@ -83,7 +87,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
-     * 
+     *
      * We claim to support PATCH method (partial update) if and only if
      *     - the node exist
      *     - the node implements our partial update interface
@@ -92,15 +96,15 @@ class Plugin extends DAV\ServerPlugin {
      * @return array
      */
     public function getHTTPMethods($uri) {
-        
+
         $tree = $this->server->tree;
-        
-        if ($tree->nodeExists($uri) && 
-            $tree->getNodeForPath($uri) instanceof IFile) {
-            return array('PATCH');
-         }
-         
-         return array();
+        if ($tree->nodeExists($uri)) {
+            $node = $tree->getNodeForPath($uri);
+            if ($node instanceof IFile || $node instanceof IPatchSupport) {
+                return array('PATCH');
+            }
+        }
+        return array();
 
     }
 
@@ -118,7 +122,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Patch an uri
      *
-     * The WebDAV patch request can be used to modify only a part of an 
+     * The WebDAV patch request can be used to modify only a part of an
      * existing resource. If the resource does not exist yet and the first
      * offset is not 0, the request fails
      *
@@ -129,7 +133,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // Get the node. Will throw a 404 if not found
         $node = $this->server->tree->getNodeForPath($uri);
-        if (!($node instanceof IFile)) {
+        if (!$node instanceof IFile && !$node instanceof IPatchSupport) {
             throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
 
@@ -138,27 +142,33 @@ class Plugin extends DAV\ServerPlugin {
         if (!$range) {
             throw new DAV\Exception\BadRequest('No valid "X-Update-Range" found in the headers');
         }
-        
+
         $contentType = strtolower(
             $this->server->httpRequest->getHeader('Content-Type')
         );
-        
+
         if ($contentType != 'application/x-sabredav-partialupdate') {
             throw new DAV\Exception\UnsupportedMediaType('Unknown Content-Type header "' . $contentType . '"');
         }
 
         $len = $this->server->httpRequest->getHeader('Content-Length');
+        if (!$len) throw new DAV\Exception\LengthRequired('A Content-Length header is required');
 
-        // Load the begin and end data
-        $start = ($range[0])?$range[0]:0;
-        $end   = ($range[1])?$range[1]:$start+$len-1;
-
-        // Check consistency
-        if($end < $start)
-            throw new DAV\Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-        if($end - $start + 1 != $len)
-            throw new DAV\Exception\RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[0] . ') and end (' . $range[1] . ') offsets');
-
+        switch($range[0]) {
+            case self::RANGE_START :
+                // Calculate the end-range if it doesn't exist.
+                if (!$range[2]) {
+                    $range[2] = $range[1] + $len - 1;
+                } else {
+                    if ($range[2] < $range[1]) {
+                        throw new DAV\Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[2] . ') is lower than the start offset (' . $range[1] . ')');
+                    }
+                    if($range[2] - $range[1] + 1 != $len) {
+                        throw new DAV\Exception\RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[1] . ') and end (' . $range[2] . ') offsets');
+                    }
+                }
+                break;
+        }
         // Checking If-None-Match and related headers.
         if (!$this->server->checkPreconditions()) return;
 
@@ -166,7 +176,23 @@ class Plugin extends DAV\ServerPlugin {
             return;
 
         $body = $this->server->httpRequest->getBody();
-        $etag = $node->putRange($body, $start-1);
+
+
+        if ($node instanceof IPatchSupport) {
+            $etag = $node->patch($body, $range[0], isset($range[1])?$range[1]:null);
+        } else {
+            // The old interface
+            switch($range[0]) {
+                case self::RANGE_APPEND :
+                    throw new DAV\Exception\NotImplemented('This node does not support the append syntax. Please upgrade it to IPatchSupport');
+                case self::RANGE_START :
+                    $etag = $node->putRange($body, $range[1]);
+                    break;
+                case self::RANGE_END :
+                    throw new DAV\Exception\NotImplemented('This node does not support the end-range syntax. Please upgrade it to IPatchSupport');
+                    break;
+            }
+        }
 
         $this->server->broadcastEvent('afterWriteContent',array($uri, $node));
 
@@ -177,18 +203,23 @@ class Plugin extends DAV\ServerPlugin {
         return false;
 
     }
-    
+
    /**
      * Returns the HTTP custom range update header
      *
      * This method returns null if there is no well-formed HTTP range request
-     * header or array($start, $end).
+     * header. It returns array(1) if it was an append request, array(2,
+     * $start, $end) if it's a start and end range, lastly it's array(3,
+     * $endoffset) if the offset was negative, and should be calculated from
+     * the end of the file.
      *
-     * The first number is the offset of the first byte in the range.
-     * The second number is the offset of the last byte in the range.
+     * Examples:
      *
-     * If the second offset is null, it should be treated as the offset of the last byte of the entity
-     * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
+     * null - invalid
+     * array(1) - append
+     * array(2,10,15) - update bytes 10, 11, 12, 13, 14, 15
+     * array(2,10,null) - update bytes 10 until the end of the patch body
+     * array(3,-5) - update from 5 bytes from the end of the file.
      *
      * @return array|null
      */
@@ -199,14 +230,17 @@ class Plugin extends DAV\ServerPlugin {
 
         // Matching "Range: bytes=1234-5678: both numbers are optional
 
-        if (!preg_match('/^bytes=([0-9]*)-([0-9]*)$/i',$range,$matches)) return null;
+        if (!preg_match('/^(append)|(?:bytes=([0-9]+)-([0-9]*))|(?:bytes=(-[0-9]+))$/i',$range,$matches)) return null;
 
-        if ($matches[1]==='' && $matches[2]==='') return null;
-
-        return array(
-            $matches[1]!==''?$matches[1]:null,
-            $matches[2]!==''?$matches[2]:null,
-        );
+        if ($matches[1]==='append') {
+            return array(self::RANGE_APPEND);
+        } elseif (strlen($matches[2])>0) {
+            return array(self::RANGE_START, $matches[2], $matches[3]?:null);
+        } elseif ($matches[4]) {
+            return array(self::RANGE_END, $matches[4]);
+        } else {
+            return null;
+        }
 
     }
 }

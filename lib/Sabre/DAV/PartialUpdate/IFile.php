@@ -5,13 +5,12 @@ namespace Sabre\DAV\PartialUpdate;
 use Sabre\DAV;
 
 /**
- * This interface provides a way to modify only part of a target resource
- * It may be used to update a file chunk, upload big a file into smaller
- * chunks or resume an upload
+ * This interface is deprecated. Use IPatchSupport instead.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Jean-Tiare LE BIGOT (http://www.jtlebi.fr/)
  * @license http://sabre.io/license/ Modified BSD License
+ * @deprecated
  */
 interface IFile extends DAV\IFile {
 

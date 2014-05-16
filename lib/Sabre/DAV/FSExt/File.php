@@ -10,7 +10,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class File extends Node implements DAV\PartialUpdate\IFile {
+class File extends Node implements DAV\PartialUpdate\IPatchSupport {
 
     /**
      * Updates the data
@@ -28,19 +28,47 @@ class File extends Node implements DAV\PartialUpdate\IFile {
     }
 
     /**
-     * Updates the data at a given offset
+     * Updates the file based on a range specification.
      *
-     * The data argument is a readable stream resource.
-     * The offset argument is a 0-based offset where the data should be
-     * written.
+     * The first argument is the data, which is either a readable stream
+     * resource or a string.
      *
-     * param resource|string $data
-     * @return void
+     * The second argument is the type of update we're doing.
+     * This is either:
+     * * 1. append
+     * * 2. update based on a start byte
+     * * 3. update based on an end byte
+     *;
+     * The third argument is the start or end byte.
+     *
+     * After a successful put operation, you may choose to return an ETag. The
+     * etag must always be surrounded by double-quotes. These quotes must
+     * appear in the actual string you're returning.
+     *
+     * Clients may use the ETag from a PUT request to later on make sure that
+     * when they update the file, the contents haven't changed in the mean
+     * time.
+     *
+     * @param resource|string $data
+     * @param int $rangeType
+     * @param int $offset
+     * @return string|null
      */
-    public function putRange($data, $offset) {
+    public function patch($data, $rangeType, $offset = null) {
 
-        $f = fopen($this->path, 'c');
-        fseek($f,$offset-1);
+        switch($rangeType) {
+            case 1 :
+                $f = fopen($this->path, 'a');
+                break;
+            case 2 :
+                $f = fopen($this->path, 'c');
+                fseek($f,$offset);
+                break;
+            case 3 :
+                $f = fopen($this->path, 'c');
+                fseek($f, $offset, SEEK_END);
+                break;
+        }
         if (is_string($data)) {
             fwrite($f, $data);
         } else {

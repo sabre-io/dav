@@ -123,8 +123,9 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
-1.8.10 (????-??-??)
+1.8.10 (2014-05-15)
 -------------------
+* The zip release ships with sabre/vobject 2.1.4.
 * includes changes from version 1.7.12.
 
 1.8.9 (2014-02-26)
@@ -213,20 +214,24 @@ ChangeLog
 * Added: The Proxy principal classes now both implement an interface, for
   greater flexiblity.
 
-
-1.7.12 (????-??-??)
+1.7.13 (????-??-??)
 -------------------
+* Changed: Removed phing and went with a custom build script for now.
 
+1.7.12 (2014-05-15)
+-------------------
+* The zip release ships with sabre/vobject 2.1.4.
 * Updated: Issue #439. Lots of updates in PATCH support. The
-  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be
-  removed in a future version.
+  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be removed
+  in a future version.
 * Fixed: Restoring old setting after changing libxml_disable_entity_loader.
-* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+* Fixed: Issue #422: Preconditions were not being set on PUT on non-existant
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #427: Now checking preconditions on DELETE requests.
 * Fixed: Issue #428: Etag check with If: fails if the target is a collection.
 * Fixed: Issue #393: PATCH request with missing end-range was handled
   incorrectly.
+* Added: Sabre_DAV_Exception_LengthRequired to omit 411 errors.
 
 
 1.7.11 (2014-02-26)

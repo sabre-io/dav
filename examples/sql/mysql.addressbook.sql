@@ -5,7 +5,7 @@ CREATE TABLE addressbooks (
     uri VARCHAR(200),
     description TEXT,
     ctag INT(11) UNSIGNED NOT NULL DEFAULT '1',
-    UNIQUE(principaluri, uri)
+    UNIQUE(principaluri(100), uri(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE cards (

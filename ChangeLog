@@ -1,3 +1,7 @@
+1.8.11-stable (2014-??-??)
+	* Updated: MySQL database schema optimized by using more efficient column
+	  types.
+
 1.8.10-stable (2014-05-15)
 	* The zip release ships with sabre/vobject 2.1.4.
 	* includes changes from version 1.7.12.

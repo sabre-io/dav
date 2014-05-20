@@ -424,9 +424,8 @@ CREATE TABLE cards (
         case 'sqlite' :
 
             $pdo->exec("
-ALTER TABLE cards
-ADD etag text,
-ADD size integer;
+                ALTER TABLE cards ADD etag text;
+                ALTER TABLE cards ADD size integer;
             ");
             break;
 

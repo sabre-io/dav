@@ -149,4 +149,113 @@ XML;
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception
+     */
+    function testPropFindError() {
+
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $client->response = new Response(405, []);
+        $client->propfind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
+
+    }
+
+    function testPropFindDepth1() {
+
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $responseBody = <<<XML
+<?xml version="1.0"?>
+<multistatus xmlns="DAV:">
+<response>
+  <href>/foo</href>
+  <propstat>
+    <prop>
+      <displayname>bar</displayname>
+    </prop>
+    <status>HTTP/1.1 200 OK</status>
+  </propstat>
+</response>
+</multistatus>
+XML;
+
+        $client->response = new Response(207, [], $responseBody);
+        $result = $client->propfind('foo', ['{DAV:}displayname', '{urn:zim}gir'], 1);
+
+        $this->assertEquals([
+            '/foo' => [
+            '{DAV:}displayname' => 'bar'
+            ],
+        ], $result);
+
+        $request = $client->request;
+        $this->assertEquals('PROPFIND', $request->getMethod());
+        $this->assertEquals('/foo', $request->getUrl());
+        $this->assertEquals([
+            'Depth' => '1',
+            'Content-Type' => 'application/xml',
+        ], $request->getHeaders());
+
+    }
+
+    function testPropPatch() {
+
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $responseBody = <<<XML
+<?xml version="1.0"?>
+<multistatus xmlns="DAV:">
+<response>
+  <href>/foo</href>
+  <propstat>
+    <prop>
+      <displayname>bar</displayname>
+    </prop>
+    <status>HTTP/1.1 200 OK</status>
+  </propstat>
+</response>
+</multistatus>
+XML;
+
+        $client->response = new Response(207, [], $responseBody);
+        $result = $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null], 1);
+        $request = $client->request;
+        $this->assertEquals('PROPPATCH', $request->getMethod());
+        $this->assertEquals('/foo', $request->getUrl());
+        $this->assertEquals([
+            'Content-Type' => 'application/xml',
+        ], $request->getHeaders());
+
+    }
+
+    function testOPTIONS() {
+
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $client->response = new Response(207, [
+            'DAV' => 'calendar-access, extended-mkcol',
+        ]);
+        $result = $client->options();
+
+        $this->assertEquals(
+            ['calendar-access', 'extended-mkcol'],
+            $result
+        );
+
+        $request = $client->request;
+        $this->assertEquals('OPTIONS', $request->getMethod());
+        $this->assertEquals('/', $request->getUrl());
+        $this->assertEquals([
+        ], $request->getHeaders());
+
+    }
 }

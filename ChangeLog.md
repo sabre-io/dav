@@ -1,10 +1,12 @@
 ChangeLog
 =========
 
-2.0.0-beta2 (2014-??-??)
-------------------------
+2.0.0 (2014-05-22)
+------------------
+
 * Fixed: #456: Issue in sqlite migration script.
 * Updated: MySQL database schema optimized by using more efficient column types.
+* Cleaned up browser design.
 
 
 2.0.0-beta1 (2014-05-15)

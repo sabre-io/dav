@@ -4,6 +4,8 @@ ChangeLog
 2.0.0 (2014-05-22)
 ------------------
 
+* The zip release ships with [sabre/vobject 3.2.2][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.0][evnt].
 * Fixed: #456: Issue in sqlite migration script.
 * Updated: MySQL database schema optimized by using more efficient column types.
 * Cleaned up browser design.

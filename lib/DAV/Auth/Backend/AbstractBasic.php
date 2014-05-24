@@ -73,7 +73,7 @@ abstract class AbstractBasic implements BackendInterface {
         // Authenticates the user
         if (!$this->validateUserPass($userpass[0],$userpass[1])) {
             $auth->requireLogin();
-            throw new DAV\Exception\NotAuthenticated('Username or password does not match, User: ' . $userpass[0]);
+            throw new DAV\Exception\NotAuthenticated('Username or password does not match, Username: ' . $userpass[0]);
         }
         $this->currentUser = $userpass[0];
         return true;

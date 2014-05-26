@@ -61,6 +61,18 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetMultipleNodes() {
+
+        $tree = new TreeMock();
+        $result = $tree->getMultipleNodes(['hi/sub', 'hi/file']);
+        $this->assertArrayHasKey('hi/sub', $result);
+        $this->assertArrayHasKey('hi/file', $result);
+
+        $this->assertEquals('sub',  $result['hi/sub']->getName());
+        $this->assertEquals('file', $result['hi/file']->getName());
+
+    }
+
 }
 
 class TreeMock extends Tree {

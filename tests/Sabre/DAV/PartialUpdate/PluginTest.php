@@ -101,7 +101,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(411, $response->status, 'Full response body:' . $response->body);
 
     }
 
@@ -121,7 +121,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals(204, $response->status, 'Full response body:' . $response->body);
-        $this->assertEquals('00111000', $this->node->get());
+        $this->assertEquals('00011100', $this->node->get());
 
     }
 

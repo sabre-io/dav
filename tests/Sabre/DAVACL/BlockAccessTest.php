@@ -162,27 +162,22 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testBeforeGetProperties() {
+    function testPropFind() {
 
-        $requestedProperties = [
+        $propFind = new DAV\PropFind('testdir', [
             '{DAV:}displayname',
             '{DAV:}getcontentlength',
             '{DAV:}bar',
             '{DAV:}owner',
-        ];
-        $returnedProperties = [];
+        ]);
 
-        $arguments = [
-            'testdir',
-            new DAV\SimpleCollection('testdir'),
-            &$requestedProperties,
-            &$returnedProperties
-        ];
-        $r = $this->server->emit('beforeGetProperties',$arguments);
+        $r = $this->server->emit('propFind', [$propFind, new DAV\SimpleCollection('testdir')]);
         $this->assertTrue($r);
 
         $expected = [
-            '403' => [
+            200 => [],
+            404 => [],
+            403 => [
                 '{DAV:}displayname' => null,
                 '{DAV:}getcontentlength' => null,
                 '{DAV:}bar' => null,
@@ -190,30 +185,21 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
             ],
         ];
 
-        $this->assertEquals($expected, $returnedProperties);
-        $this->assertEquals([], $requestedProperties);
+        $this->assertEquals($expected, $propFind->getResultForMultiStatus());
 
     }
 
     function testBeforeGetPropertiesNoListing() {
 
         $this->plugin->hideNodesFromListings = true;
-
-        $requestedProperties = [
+        $propFind = new DAV\PropFind('testdir', [
             '{DAV:}displayname',
             '{DAV:}getcontentlength',
             '{DAV:}bar',
             '{DAV:}owner',
-        ];
-        $returnedProperties = [];
+        ]);
 
-        $arguments = [
-            'testdir',
-            new DAV\SimpleCollection('testdir'),
-            &$requestedProperties,
-            &$returnedProperties
-        ];
-        $r = $this->server->emit('beforeGetProperties',$arguments);
+        $r = $this->server->emit('propFind', [$propFind, new DAV\SimpleCollection('testdir')]);
         $this->assertFalse($r);
 
     }

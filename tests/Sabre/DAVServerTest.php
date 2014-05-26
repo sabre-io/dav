@@ -2,20 +2,6 @@
 
 namespace Sabre;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
-require_once 'Sabre/DAV/Auth/Backend/Mock.php';
-require_once 'Sabre/DAV/Mock/File.php';
-require_once 'Sabre/DAV/Mock/Collection.php';
-require_once 'Sabre/DAV/Mock/PropertiesCollection.php';
-
-require_once 'Sabre/DAVACL/PrincipalBackend/Mock.php';
-
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/CalDAV/Backend/MockSubscriptionSupport.php';
-
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-
 use
     Sabre\HTTP\Request,
     Sabre\HTTP\Response,
@@ -38,6 +24,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupACL = false;
     protected $setupCalDAVSharing = false;
     protected $setupCalDAVScheduling = false;
+    protected $setupCalDAVSubscriptions = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
@@ -114,6 +101,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->caldavSchedulePlugin = new CalDAV\Schedule\Plugin();
             $this->server->addPlugin($this->caldavSchedulePlugin);
         }
+        if ($this->setupCalDAVSubscriptions) {
+            $this->server->addPlugin(new CalDAV\Subscriptions\Plugin());
+        }
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new CardDAV\Plugin();
             $this->server->addPlugin($this->carddavPlugin);
@@ -184,6 +174,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
+        if ($this->setupCalDAVSubscriptions && is_null($this->caldavBackend)) {
+            $this->caldavBackend = new CalDAV\Backend\MockSubscriptionSupport($this->caldavCalendars, $this->caldavCalendarObjects);
+        }
         if ($this->setupCalDAV && is_null($this->caldavBackend)) {
             if ($this->setupCalDAVScheduling) {
                 $this->caldavBackend = new CalDAV\Backend\MockScheduling($this->caldavCalendars, $this->caldavCalendarObjects);

@@ -35,16 +35,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     private function sendRequest($body) {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'PROPFIND',
-            'HTTP_DEPTH'          => 'infinity',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('PROPFIND', '/', ['Depth' => 'infinity']);
         $request->setBody($body);
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
     }
@@ -54,21 +48,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $hasFired = false;
 
         $self = $this;
-        // Also testing the beforeGetPropertiesForPath event.
-        $this->server->on('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
-
-            $hasFired = true;
-            $self->assertEquals('', $path);
-            $self->assertEquals([], $properties);
-            $self->assertEquals(-1, $depth);
-
-        });
 
         $this->sendRequest("");
 
-        $this->assertTrue($hasFired);
-
-        $this->assertEquals(207, $this->response->status);
+        $this->assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->getBodyAsString());
 
         $this->assertEquals(array(
                 'Content-Type' => 'application/xml; charset=utf-8',

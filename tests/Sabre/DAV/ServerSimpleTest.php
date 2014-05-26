@@ -174,13 +174,8 @@ class ServerSimpleTest extends AbstractServer{
 
     function testOptions() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'OPTIONS',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $request = new HTTP\Request('OPTIONS', '/');
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals(array(
@@ -195,8 +190,29 @@ class ServerSimpleTest extends AbstractServer{
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('', $this->response->body);
 
+    }
+
+    function testOptionsUnmapped() {
+
+        $request = new HTTP\Request('OPTIONS', '/unmapped');
+        $this->server->httpRequest = $request;
+
+        $this->server->exec();
+
+        $this->assertEquals(array(
+            'DAV'            => '1, 3, extended-mkcol',
+            'MS-Author-Via'  => 'DAV',
+            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, MKCOL',
+            'Accept-Ranges'  => 'bytes',
+            'Content-Length' => '0',
+            'X-Sabre-Version' => Version::VERSION,
+        ),$this->response->headers);
+
+        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals('', $this->response->body);
 
     }
+
     function testNonExistantMethod() {
 
         $serverVars = array(

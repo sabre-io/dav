@@ -1,6 +1,16 @@
 ChangeLog
 =========
 
+2.0.0 (2014-05-22)
+------------------
+
+* The zip release ships with [sabre/vobject 3.2.2][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.0][evnt].
+* Fixed: #456: Issue in sqlite migration script.
+* Updated: MySQL database schema optimized by using more efficient column types.
+* Cleaned up browser design.
+
+
 2.0.0-beta1 (2014-05-15)
 -------------------------
 
@@ -123,8 +133,14 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
+1.8.11 (2014-??-??)
+-------------------
+
+* Updated: MySQL database schema optimized by using more efficient column types.
+
 1.8.10 (2014-05-15)
 -------------------
+
 * The zip release ships with sabre/vobject 2.1.4.
 * includes changes from version 1.7.12.
 

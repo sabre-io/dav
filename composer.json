@@ -33,7 +33,6 @@
         "evert/phpdoc-md" : "~0.0.7"
     },
     "suggest" : {
-        "ext-apc" : "*",
         "ext-curl" : "*",
         "ext-pdo" : "*"
     },

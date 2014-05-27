@@ -104,4 +104,42 @@ class PDO implements BackendInterface {
 
     }
 
+    /**
+     * This method is called after a successful MOVE
+     *
+     * This should be used to migrate all properties from one path to another.
+     * Note that entire collections may be moved, so ensure that all properties
+     * for children are also moved along.
+     *
+     * @param string $source
+     * @param string $destination
+     * @return void
+     */
+    public function move($source, $destination) {
+
+        // I don't know a way to write this all in a single sql query that's
+        // also compatible across db engines, so we're letting PHP do all the
+        // updates. Much slower, but it should still be pretty fast in most
+        // cases.
+        $select = $this->pdo->prepare('SELECT id, path FROM propertystorage WHERE path = ? OR path LIKE ?');
+        $select->execute([$source, $source . '/%']);
+
+        $update = $this->pdo->prepare('UPDATE propertystorage SET path = ? WHERE id = ?');
+        while($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+
+            // Sanity check. SQL may select too many records, such as records
+            // with different cases.
+            if ($row['path'] !== $source && strpos($row['path'], $source . '/')!==0) continue;
+
+            $trailingPart = substr($row['path'], strlen($source)+1);
+            $newPath = $destination;
+            if ($trailingPart) {
+                $newPath.='/' . $trailingPart;
+            }
+            $update->execute([$newPath, $row['id']]);
+
+        }
+
+    }
+
 }

@@ -639,7 +639,14 @@ class CorePlugin extends ServerPlugin {
 
         if (!$this->server->emit('beforeUnbind',[$path])) return false;
         if (!$this->server->emit('beforeBind',[$moveInfo['destination']])) return false;
+        if (!$this->server->emit('beforeMove', [$path, $moveInfo['destination']])) return false;
         $this->server->tree->move($path, $moveInfo['destination']);
+
+        // Its important afterMove is called before afterUnbind, because it
+        // allows systems to transfer data from one path to another.
+        // PropertyStorage uses this. If afterUnbind was first, it would clean
+        // up all the properties before it has a chance.
+        !$this->server->emit('afterMove', [$path, $moveInfo['destination']]);
         $this->server->emit('afterUnbind',[$path]);
         $this->server->emit('afterBind',[$moveInfo['destination']]);
 

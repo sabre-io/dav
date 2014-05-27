@@ -3,10 +3,14 @@ ChangeLog
 
 2.1.0-alpha1 (2014-??-??)
 -------------------------
+* Changed: PropertyStorage backends now have a `move` method.
+* Added: `beforeMove`, and `afterMove` events.
+* #460: PropertyStorage must move properties during MOVE requests
 
 2.0.1 (2014-??-??)
 * #459: PROPFIND requests on Files with no Depth header would return a fatal
   error.
+
 
 2.0.0 (2014-05-22)
 ------------------

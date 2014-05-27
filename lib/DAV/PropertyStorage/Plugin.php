@@ -46,8 +46,9 @@ class Plugin extends ServerPlugin {
      */
     public function initialize(Server $server) {
 
-        $server->on('propFind', [$this, 'propFind'], 130);
-        $server->on('propPatch', [$this, 'propPatch'], 300);
+        $server->on('propFind',    [$this, 'propFind'], 130);
+        $server->on('propPatch',   [$this, 'propPatch'], 300);
+        $server->on('afterMove',   [$this, 'afterMove']);
         $server->on('afterUnbind', [$this, 'afterUnbind']);
 
     }
@@ -103,4 +104,22 @@ class Plugin extends ServerPlugin {
 
     }
 
+    /**
+     * Called after a node is moved.
+     *
+     * This allows the backend to move all the associated properties.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function afterMove($source, $destination) {
+
+        if ($this->pathFilter && !$this->pathFilter($source)) return;
+        // If the destination is filtered, afterUnbind will handle cleaning up
+        // the properties.
+        if ($this->pathFilter && !$this->pathFilter($destination)) return;
+
+        $this->backend->move($source, $destination);
+
+    }
 }

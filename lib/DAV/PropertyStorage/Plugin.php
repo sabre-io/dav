@@ -109,7 +109,8 @@ class Plugin extends ServerPlugin {
      *
      * This allows the backend to move all the associated properties.
      *
-     * @param string $path
+     * @param string $source
+     * @param string $destination
      * @return void
      */
     public function afterMove($source, $destination) {

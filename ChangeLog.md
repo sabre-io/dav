@@ -2,8 +2,13 @@ ChangeLog
 =========
 
 2.0.1 (2014-??-??)
+------------------
+
 * #459: PROPFIND requests on Files with no Depth header would return a fatal
   error.
+* #464: A PROPFIND allprops request should not return properties with status
+  404.
+
 
 2.0.0 (2014-05-22)
 ------------------

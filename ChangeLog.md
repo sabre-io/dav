@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.0.1 (2014-??-??)
+2.0.1 (2014-05-28)
 ------------------
 
 * #459: PROPFIND requests on Files with no Depth header would return a fatal

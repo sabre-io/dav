@@ -266,6 +266,8 @@ class PropFind {
                 $r[$info[0]][$propertyName] = $info[1];
             }
         }
+        // Removing the 404's for multi-status requests.
+        if ($this->requestType === self::ALLPROPS) unset($r[404]);
         return $r;
 
     }

@@ -3,13 +3,27 @@ ChangeLog
 
 2.1.0-alpha1 (2014-??-??)
 -------------------------
+
 * Changed: PropertyStorage backends now have a `move` method.
 * Added: `beforeMove`, and `afterMove` events.
 * #460: PropertyStorage must move properties during MOVE requests
 
-2.0.1 (2014-??-??)
+
+2.0.2 (2014-05-??)
+------------------
+
+* #467: Fixed a problem in `examples/calendarserver.php`.
+* #466: All the postgresql sample files have been updated.
+
+
+2.0.1 (2014-05-28)
+------------------
+
 * #459: PROPFIND requests on Files with no Depth header would return a fatal
   error.
+* #464: A PROPFIND allprops request should not return properties with status
+  404.
+
 
 
 2.0.0 (2014-05-22)

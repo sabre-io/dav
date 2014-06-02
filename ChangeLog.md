@@ -4,7 +4,8 @@ ChangeLog
 2.0.2 (2014-05-??)
 ------------------
 
-* Fixed a problem in examples/calendarserver.php
+* #467: Fixed a problem in `examples/calendarserver.php`.
+* #466: All the postgresql sample files have been updated.
 
 2.0.1 (2014-05-28)
 ------------------

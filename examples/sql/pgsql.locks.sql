@@ -4,10 +4,16 @@ CREATE TABLE locks (
     timeout INTEGER,
     created INTEGER,
     token VARCHAR(100),
-    scope smallint,
-    depth smallint,
-    uri text
+    scope SMALLINT,
+    depth SMALLINT,
+    uri TEXT
 );
 
 ALTER TABLE ONLY locks
     ADD CONSTRAINT locks_pkey PRIMARY KEY (id);
+
+CREATE INDEX locks_token_ix
+    ON locks USING btree (token);
+
+CREATE INDEX locks_uri_ix
+    ON locks USING btree (uri);

@@ -8,6 +8,7 @@ ChangeLog
 * #466: All the postgresql sample files have been updated.
 * Fixed: An error would be thrown if a client did a propfind on a node the
   user didn't have access to.
+* Removed: Old and broken example code from the `examples/` directory.
 
 2.0.1 (2014-05-28)
 ------------------

@@ -7,7 +7,8 @@ ChangeLog
 * Changed: PropertyStorage backends now have a `move` method.
 * Added: `beforeMove`, and `afterMove` events.
 * #460: PropertyStorage must move properties during MOVE requests
-
+* Changed: Restructured the zip distribution to be a little bit more lean
+  and consistent.
 
 2.0.2 (2014-05-??)
 ------------------

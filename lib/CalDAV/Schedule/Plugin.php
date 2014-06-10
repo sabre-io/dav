@@ -7,6 +7,8 @@ use
     Sabre\DAV\ServerPlugin,
     Sabre\DAV\Property\Href,
     Sabre\DAV\Property\HrefList,
+    Sabre\DAV\PropFind,
+    Sabre\DAV\INode,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
@@ -187,7 +189,7 @@ class Plugin extends ServerPlugin {
 
         $this->server = $server;
         $server->on('method:POST', [$this,'httpPost']);
-        $server->on('beforeGetProperties', [$this, 'beforeGetProperties']);
+        $server->on('propFind',            [$this, 'propFind']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 
@@ -271,65 +273,47 @@ class Plugin extends ServerPlugin {
 
     }
 
-
     /**
-     * beforeGetProperties
+     * This method handler is invoked during fetching of properties.
      *
-     * This method handler is invoked before any after properties for a
-     * resource are fetched. This allows us to add in any CalDAV specific
-     * properties.
+     * We use this event to add calendar-auto-schedule-specific properties.
      *
-     * @param string $path
-     * @param \Sabre\DAV\INode $node
-     * @param array $requestedProperties
-     * @param array $returnedProperties
+     * @param PropFind $propFind
+     * @param INode $node
      * @return void
      */
-    public function beforeGetProperties($path, \Sabre\DAV\INode $node, &$requestedProperties, &$returnedProperties) {
+    public function propFind(PropFind $propFind, INode $node) {
+
+        if (!$node instanceof DAVACL\IPrincipal) return;
 
         $caldavPlugin = $this->server->getPlugin('caldav');
+        $principalUrl = $node->getPrincipalUrl();
 
-        if ($node instanceof DAVACL\IPrincipal) {
+        // schedule-outbox-URL property
+        $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL' , function() use ($principalUrl, $caldavPlugin) {
 
-            $principalUrl = $node->getPrincipalUrl();
+            $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+            $outboxPath = $calendarHomePath . '/outbox';
 
-            // schedule-outbox-URL property
-            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-outbox-URL';
-            if (in_array($scheduleProp,$requestedProperties)) {
+            return new Href($outboxPath);
 
-                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-                $outboxPath = $calendarHomePath . '/outbox';
+        });
+        // schedule-inbox-URL property
+        $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL' , function() use ($principalUrl, $caldavPlugin) {
 
-                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
-                $returnedProperties[200][$scheduleProp] = new Href($outboxPath);
+            $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+            $inboxPath = $calendarHomePath . '/inbox';
 
-            }
+            return new Href($inboxPath);
 
-            // schedule-inbox-URL property
-            $scheduleProp = '{' . self::NS_CALDAV . '}schedule-inbox-URL';
-            if (in_array($scheduleProp,$requestedProperties)) {
-
-                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-                $inboxPath = $calendarHomePath . '/inbox';
-
-                unset($requestedProperties[array_search($scheduleProp, $requestedProperties)]);
-                $returnedProperties[200][$scheduleProp] = new Href($inboxPath);
-
-            }
-
-
-            // calendar-user-address-set property
-            $calProp = '{' . self::NS_CALDAV . '}calendar-user-address-set';
-            if (in_array($calProp,$requestedProperties)) {
-
-                $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
-                unset($requestedProperties[array_search($calProp, $requestedProperties)]);
-                $returnedProperties[200][$calProp] = new HrefList($addresses, false);
-
-            }
-
-        } // instanceof IPrincipal
+        });
+        // The calendar-user-address-set property is basically mapped to
+        // the {DAV:}alternate-URI-set property.
+        $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node) {
+            $addresses = $node->getAlternateUriSet();
+            $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+            return new HrefList($addresses, false);
+        });
 
     }
 

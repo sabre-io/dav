@@ -1062,23 +1062,21 @@ END:VCALENDAR';
 
     function testNotificationProperties() {
 
-        $request = array(
-            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
-        );
-        $result = array();
         $notification = new Notifications\Node(
             $this->caldavBackend,
             'principals/user1',
             new Notifications\Notification\SystemStatus('foo','"1"')
         );
-        $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
+        $propFind = new DAV\PropFind('calendars/user1/notifications', [
+            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
+        ]);
+
+        $this->plugin->propFind($propFind, $notification);
 
         $this->assertEquals(
-            array(
-                200 => array(
-                    '{' . Plugin::NS_CALENDARSERVER . '}notificationtype' => $notification->getNotificationType()
-                )
-            ), $result);
+            $notification->getNotificationType(),
+            $propFind->get('{' . Plugin::NS_CALENDARSERVER . '}notificationtype')
+        );
 
     }
 

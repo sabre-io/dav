@@ -32,41 +32,18 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    private function sendRequest($body) {
+    private function sendRequest($body, $path = '/', $headers = ['Depth' => '0']) {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'PROPFIND',
-            'HTTP_DEPTH'          => '0',
-        );
+        $request = new HTTP\Request('PROPFIND', $path, $headers, $body);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($body);
-
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
     }
 
     public function testPropFindEmptyBody() {
 
-        $hasFired = false;
-
-        $self = $this;
-        // Also testing the beforeGetPropertiesForPath event.
-        $this->server->on('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
-
-            $hasFired = true;
-            $self->assertEquals('', $path);
-            $self->assertEquals([], $properties);
-            $self->assertEquals(0, $depth);
-
-        });
-
         $this->sendRequest("");
-
-        $this->assertTrue($hasFired);
-
         $this->assertEquals(207, $this->response->status);
 
         $this->assertEquals(array(
@@ -85,6 +62,31 @@ class ServerPropsTest extends AbstractServer {
         $this->assertEquals('/',(string)$data,'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
+        $this->assertEquals(1,count($data));
+
+    }
+
+    public function testPropFindEmptyBodyFile() {
+
+        $this->sendRequest("", '/test2.txt', []);
+        $this->assertEquals(207, $this->response->status);
+
+        $this->assertEquals(array(
+                'Content-Type' => 'application/xml; charset=utf-8',
+                'DAV' => '1, 3, extended-mkcol, 2',
+                'Vary' => 'Brief,Prefer',
+            ),
+            $this->response->headers
+         );
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+
+        list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
+        $this->assertEquals('/test2.txt',(string)$data,'href element should have been /');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength');
         $this->assertEquals(1,count($data));
 
     }

@@ -8,7 +8,7 @@
     "authors": [
         {
             "name": "Evert Pot",
-            "email": "evert@rooftopsolutions.nl",
+            "email": "me@evertpot.com",
             "homepage" : "http://evertpot.com/",
             "role" : "Developer"
         }
@@ -29,22 +29,19 @@
         "ext-libxml" : "*"
     },
     "require-dev" : {
-        "phpunit/phpunit" : "~4.0.0",
-        "phing/phing" : "~2.4",
+        "phpunit/phpunit" : "~4.1.1",
         "evert/phpdoc-md" : "~0.0.7"
     },
     "suggest" : {
-        "ext-apc" : "*",
         "ext-curl" : "*",
         "ext-pdo" : "*"
     },
     "autoload": {
-        "psr-0" : {
-            "Sabre\\DAV"     : "lib/",
-            "Sabre\\HTTP"    : "lib/",
-            "Sabre\\DAVACL"  : "lib/",
-            "Sabre\\CalDAV"  : "lib/",
-            "Sabre\\CardDAV" : "lib/"
+        "psr-4" : {
+            "Sabre\\DAV\\"     : "lib/DAV/",
+            "Sabre\\DAVACL\\"  : "lib/DAVACL/",
+            "Sabre\\CalDAV\\"  : "lib/CalDAV/",
+            "Sabre\\CardDAV\\" : "lib/CardDAV/"
         }
     },
     "support" : {

@@ -2,15 +2,8 @@
 
 set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATOR . get_include_path());
 
-include __DIR__ . '/../vendor/autoload.php';
-include 'Sabre/TestUtil.php';
-include 'Sabre/DAVServerTest.php';
-include 'Sabre/CardDAV/Backend/AbstractPDOTest.php';
-include 'Sabre/CardDAV/TestUtil.php';
-include 'Sabre/HTTP/SapiMock.php';
-include 'Sabre/DAV/ClientMock.php';
-include 'Sabre/CalDAV/Schedule/IMip/Mock.php';
-include 'Sabre/CalDAV/Backend/MockScheduling.php';
+$autoLoader = include __DIR__ . '/../vendor/autoload.php';
+$autoLoader->add('Sabre\\', __DIR__);
 
 date_default_timezone_set('UTC');
 

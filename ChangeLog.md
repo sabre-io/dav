@@ -1,12 +1,58 @@
 ChangeLog
 =========
 
-1.9.0-alpha3 (????-??-??)
+2.1.0-alpha1 (2014-??-??)
 -------------------------
 
-* BC Break: Property updating got refactored. Read the migration document for
-  more information. This allows for creation of a generic property storage,
-  and other property-related functionality that was not possible before.
+* Changed: PropertyStorage backends now have a `move` method.
+* Added: `beforeMove`, and `afterMove` events.
+* #460: PropertyStorage must move properties during MOVE requests
+* Changed: Restructured the zip distribution to be a little bit more lean
+  and consistent.
+
+2.0.2 (2014-05-??)
+------------------
+
+* #467: Fixed a problem in `examples/calendarserver.php`.
+* #466: All the postgresql sample files have been updated.
+* Fixed: An error would be thrown if a client did a propfind on a node the
+  user didn't have access to.
+
+
+2.0.1 (2014-05-28)
+------------------
+
+* #459: PROPFIND requests on Files with no Depth header would return a fatal
+  error.
+* #464: A PROPFIND allprops request should not return properties with status
+  404.
+
+
+2.0.0 (2014-05-22)
+------------------
+
+* The zip release ships with [sabre/vobject 3.2.2][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.0][evnt].
+* Fixed: #456: Issue in sqlite migration script.
+* Updated: MySQL database schema optimized by using more efficient column types.
+* Cleaned up browser design.
+
+
+2.0.0-beta1 (2014-05-15)
+-------------------------
+
+* The zip release ships with [sabre/vobject 3.2.2][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.0][evnt].
+* BC Break: Property updating and fetching got refactored. Read the [migration
+  document][mi20] for more information. This allows for creation of a generic
+  property storage, and other property-related functionality that was not
+  possible before.
+* BC Break: Removed `propertyUpdate`, `beforeGetProperties` and
+  `afterGetProperties` events.
+* Fixed: #413: Memory optimizations for the CardDAV PDO backend.
+* Updated: Brand new browser plugin with more debugging features and a design
+  that is slightly less painful.
+* Added: Support for the `{DAV:}supported-method-set` property server-wide.
 * Making it easier for implementors to override how the CardDAV addressbook
   home is located.
 * Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
@@ -14,9 +60,22 @@ ChangeLog
 * Fixed: Issue #428: Etag check with `If:` fails if the target is a collection.
 * Fixed: Issues #430, #431, #433: Locks plugin didn't not properly release
   filesystem based locks.
+* Fixed: #443. Support for creating new calendar subscriptions for OS X 10.9.2
+  and up.
 * Removed: `Sabre\DAV\Server::NODE_*` constants.
 * Moved all precondition checking into a central place, instead of having to
   think about it on a per-method basis.
+* jCal transformation for calendar-query REPORT now works again.
+* Switched to PSR-4
+* Fixed: #175. Returning ETag header upon a failed `If-Match` or
+  `If-None-Match` check.
+* Removed: `lib/Sabre/autoload.php`. Use `vendor/autoload.php` instead.
+* Removed: all the rfc documentation from the sabre/dav source. This made the
+  package needlessly larger.
+* Updated: Issue #439. Lots of updates in PATCH support. The
+  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be
+  removed in a future version.
+* Added: `Sabre\DAV\Exception\LengthRequired`.
 
 1.9.0-alpha2 (2014-01-14)
 -------------------------
@@ -101,8 +160,15 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
-1.8.10 (????-??-??)
+1.8.11 (2014-??-??)
 -------------------
+
+* Updated: MySQL database schema optimized by using more efficient column types.
+
+1.8.10 (2014-05-15)
+-------------------
+
+* The zip release ships with sabre/vobject 2.1.4.
 * includes changes from version 1.7.12.
 
 1.8.9 (2014-02-26)
@@ -191,17 +257,24 @@ ChangeLog
 * Added: The Proxy principal classes now both implement an interface, for
   greater flexiblity.
 
-
-1.7.12 (????-??-??)
+1.7.13 (????-??-??)
 -------------------
+* Changed: Removed phing and went with a custom build script for now.
 
+1.7.12 (2014-05-15)
+-------------------
+* The zip release ships with sabre/vobject 2.1.4.
+* Updated: Issue #439. Lots of updates in PATCH support. The
+  Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be removed
+  in a future version.
 * Fixed: Restoring old setting after changing libxml_disable_entity_loader.
-* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+* Fixed: Issue #422: Preconditions were not being set on PUT on non-existant
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #427: Now checking preconditions on DELETE requests.
 * Fixed: Issue #428: Etag check with If: fails if the target is a collection.
 * Fixed: Issue #393: PATCH request with missing end-range was handled
   incorrectly.
+* Added: Sabre_DAV_Exception_LengthRequired to omit 411 errors.
 
 
 1.7.11 (2014-02-26)
@@ -1481,3 +1554,9 @@ ChangeLog
 * First release!
 * Passes litmus: basic, http and copymove test.
 * Fully working in Finder and DavFSv2 Project started: 2007-12-13
+
+
+[vobj]: http://sabre.io/vobject/
+[evnt]: http://sabre.io/event/
+[http]: http://sabre.io/http/
+[mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/

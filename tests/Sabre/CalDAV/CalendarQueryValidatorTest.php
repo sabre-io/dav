@@ -6,6 +6,20 @@ use Sabre\DAV;
 
 class CalendarQueryValidatorTest extends \PHPUnit_Framework_TestCase {
 
+    function testTopLevelFail() {
+
+        $validator = new CalendarQueryValidator();
+        $vcal = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+END:VEVENT
+END:VCALENDAR
+ICS;
+        $vcal = VObject\Reader::read($vcal);
+        $this->assertFalse($validator->validate($vcal, ['name' => 'VFOO']));
+
+    }
+
     /**
      * @dataProvider provider
      */

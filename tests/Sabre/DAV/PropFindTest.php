@@ -34,15 +34,6 @@ class PropFindTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
             200 => [],
-            404 => [
-                '{DAV:}getlastmodified' => null,
-                '{DAV:}getcontentlength' => null,
-                '{DAV:}resourcetype' => null,
-                '{DAV:}quota-used-bytes' => null,
-                '{DAV:}quota-available-bytes' => null,
-                '{DAV:}getetag' => null,
-                '{DAV:}getcontenttype' => null,
-            ],
         ], $propFind->getResultForMultiStatus());
 
     }

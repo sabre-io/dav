@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.0.2 (2014-05-??)
+2.0.2 (2014-06-12)
 ------------------
 
 * #470: Fixed compatibility with PHP < 5.4.14.
@@ -10,8 +10,9 @@ ChangeLog
 * Fixed: An error would be thrown if a client did a propfind on a node the
   user didn't have access to.
 * Removed: Old and broken example code from the `examples/` directory.
-* The zip release ships with [sabre/vobject 3.2.2][vobj],
+* The zip release ships with [sabre/vobject 3.2.3][vobj],
   [sabre/http 2.0.3][http], and [sabre/event 1.0.1][evnt].
+
 
 2.0.1 (2014-05-28)
 ------------------

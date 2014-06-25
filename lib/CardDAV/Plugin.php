@@ -652,7 +652,7 @@ class Plugin extends DAV\ServerPlugin {
         }
         $contentType = $propFind->get('{DAV:}getcontenttype');
         if (!$contentType || strpos($contentType, 'text/x-vcard')!==0) {
-           return;
+            return;
         }
         $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
 

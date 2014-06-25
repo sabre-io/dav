@@ -183,7 +183,12 @@ class ICSExportPlugin extends DAV\ServerPlugin {
 
             // queryResult is just a list of base urls. We need to prefix the
             // calendar path.
-            $queryResult = array_map(function($item) use ($path) { return $path . '/' . $item; }, $queryResult);
+            $queryResult = array_map(
+                function($item) use ($path) {
+                    return $path . '/' . $item;
+                },
+                $queryResult
+            );
             $nodes = $this->server->getPropertiesForMultiplePaths($queryResult, [$calDataProp]);
             unset($queryResult);
 

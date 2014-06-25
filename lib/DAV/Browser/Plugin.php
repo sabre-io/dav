@@ -200,7 +200,7 @@ class Plugin extends DAV\ServerPlugin {
             'iconstyle' => $this->getAssetUrl('openiconic/open-iconic.css'),
             'logo'      => $this->getAssetUrl('sabredav.png'),
             'baseUrl'   => $this->server->getBaseUri(),
-       ];
+        ];
 
         $html = <<<HTML
 <!DOCTYPE html>

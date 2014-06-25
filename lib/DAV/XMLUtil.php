@@ -34,7 +34,10 @@ class XMLUtil {
         if ($dom->nodeType !== XML_ELEMENT_NODE) return null;
 
         // Mapping back to the real namespace, in case it was dav
-        if ($dom->namespaceURI=='urn:DAV') $ns = 'DAV:'; else $ns = $dom->namespaceURI;
+        if ($dom->namespaceURI=='urn:DAV')
+            $ns = 'DAV:';
+        else
+            $ns = $dom->namespaceURI;
 
         // Mapping to clark notation
         return '{' . $ns . '}' . $dom->localName;

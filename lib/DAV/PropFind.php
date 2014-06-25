@@ -56,7 +56,7 @@ class PropFind {
                 '{DAV:}quota-available-bytes',
                 '{DAV:}getetag',
                 '{DAV:}getcontenttype',
-           ];
+            ];
         }
 
         foreach($this->properties as $propertyName) {

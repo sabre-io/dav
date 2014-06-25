@@ -17,6 +17,7 @@ bin/vobject
 bin/generate_vcards
 bin/phpdocmd
 bin/phpunit
+bin/phpcs
 
 # Assuming every .php file in the root is for testing
 /*.php

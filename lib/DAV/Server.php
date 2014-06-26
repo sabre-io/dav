@@ -916,7 +916,7 @@ class Server extends EventEmitter {
             $this->addPathNodesRecursively($propFindRequests, $propFind);
         }
 
-        $returnProperties = [];
+        $returnPropertyList = [];
 
         foreach($propFindRequests as $propFindRequest) {
 

@@ -9,7 +9,6 @@ ChangeLog
 * #460: PropertyStorage must move properties during MOVE requests
 * Changed: Restructured the zip distribution to be a little bit more lean
   and consistent.
-* #474: Fixed PropertyStorage `pathFilter()`.
 
 
 2.0.2 (2014-06-12)

@@ -34,23 +34,6 @@ class Plugin extends ServerPlugin {
     }
 
     /**
-     * This method is triggered when an inaccessible method
-     * is invoked in the context of this object.
-     *
-     * Allows us to call $this->pathFilter() as a method.
-     *
-     * @param  string $method
-     * @param  array $args
-     * @return void|callable
-     */
-    public function __call($method, $args)
-    {
-        if (is_callable([$this, $method])) {
-            return call_user_func_array($this->$method, $args);
-        }
-    }
-
-    /**
      * This initializes the plugin.
      *
      * This function is called by Sabre\DAV\Server, after
@@ -82,7 +65,8 @@ class Plugin extends ServerPlugin {
     public function propFind(PropFind $propFind, INode $node) {
 
         $path = $propFind->getPath();
-        if ($this->pathFilter && !$this->pathFilter($path)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($path)) return;
         $this->backend->propFind($propFind->getPath(), $propFind);
 
     }
@@ -99,7 +83,8 @@ class Plugin extends ServerPlugin {
      */
     public function propPatch($path, PropPatch $propPatch) {
 
-        if ($this->pathFilter && !$this->pathFilter($path)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($path)) return;
         $this->backend->propPatch($path, $propPatch);
 
     }
@@ -115,7 +100,8 @@ class Plugin extends ServerPlugin {
      */
     public function afterUnbind($path) {
 
-        if ($this->pathFilter && !$this->pathFilter($path)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($path)) return;
         $this->backend->delete($path);
 
     }

@@ -23,6 +23,7 @@ ChangeLog
 * Removed: Old and broken example code from the `examples/` directory.
 * The zip release ships with [sabre/vobject 3.2.3][vobj],
   [sabre/http 2.0.3][http], and [sabre/event 1.0.1][evnt].
+* #474: Fixed PropertyStorage `pathFilter()`.
 
 
 

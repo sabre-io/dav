@@ -66,7 +66,8 @@ class Plugin extends ServerPlugin {
     public function propFind(PropFind $propFind, INode $node) {
 
         $path = $propFind->getPath();
-        if ($this->pathFilter && !$this->pathFilter($path)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($path)) return;
         $this->backend->propFind($propFind->getPath(), $propFind);
 
     }
@@ -83,7 +84,8 @@ class Plugin extends ServerPlugin {
      */
     public function propPatch($path, PropPatch $propPatch) {
 
-        if ($this->pathFilter && !$this->pathFilter($path)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($path)) return;
         $this->backend->propPatch($path, $propPatch);
 
     }
@@ -99,7 +101,8 @@ class Plugin extends ServerPlugin {
      */
     public function afterUnbind($path) {
 
-        if ($this->pathFilter && !$this->pathFilter($path)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($path)) return;
         $this->backend->delete($path);
 
     }
@@ -115,10 +118,11 @@ class Plugin extends ServerPlugin {
      */
     public function afterMove($source, $destination) {
 
-        if ($this->pathFilter && !$this->pathFilter($source)) return;
+        $pathFilter = $this->pathFilter;
+        if ($pathFilter && !$pathFilter($source)) return;
         // If the destination is filtered, afterUnbind will handle cleaning up
         // the properties.
-        if ($this->pathFilter && !$this->pathFilter($destination)) return;
+        if ($pathFilter && !$pathFilter($destination)) return;
 
         $this->backend->move($source, $destination);
 

@@ -5,7 +5,7 @@ namespace Sabre\DAV\Exception;
 use Sabre\DAV;
 
 /**
- * TooMuchMatches
+ * TooManyMatches
  *
  * This exception is emited for the {DAV:}number-of-matches-within-limits
  * post-condition, as defined in rfc6578, section 3.2.
@@ -19,7 +19,7 @@ use Sabre\DAV;
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @license http://sabre.io/license/ Modified BSD License
  */
-class TooMuchMatches extends DAV\Forbidden {
+class TooManyMatches extends Forbidden {
 
     /**
      * This method allows the exception to include additional information into the WebDAV error response

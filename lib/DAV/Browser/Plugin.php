@@ -566,12 +566,12 @@ HTML;
         switch($view) {
 
             case 'href' :
-                echo "<a href=\"" . $this->server->getBaseUri() . $value->getHref() . '\">' . $this->server->getBaseUri() . $value->getHref() . '</a>';
+                echo "<a href=\"" . $this->server->getBaseUri() . $value->getHref() . '">' . $this->server->getBaseUri() . $value->getHref() . '</a>';
                 break;
             case 'hreflist' :
                 echo implode('<br />', array_map(function($href) {
                     if (stripos($href,'mailto:')===0 || stripos($href,'/')===0 || stripos($href,'http:')===0 || stripos($href,'https:') === 0) {
-                        return "<a href=\"" . $this->escapeHTML($href) . '\">' . $this->escapeHTML($href) . '</a>';
+                        return "<a href=\"" . $this->escapeHTML($href) . '">' . $this->escapeHTML($href) . '</a>';
                     } else {
                         return "<a href=\"" . $this->escapeHTML($this->server->getBaseUri() . $href) . '">' . $this->escapeHTML($this->server->getBaseUri() . $href) . '</a>';
                     }

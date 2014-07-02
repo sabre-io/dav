@@ -19,6 +19,8 @@ ChangeLog
 * #476: CSP policy incorrect, causing stylesheets to not load in the browser
   plugin.
 * #475: Href properties in the browser plugin sometimes included a backslash.
+* #478: `TooMuchMatches` exception never worked. This was fixed, and we also
+  took this opportunity to rename it to `TooManyMatches`.
 
 2.0.2 (2014-06-12)
 ------------------

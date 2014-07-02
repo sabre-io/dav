@@ -195,10 +195,10 @@ class Plugin extends DAV\ServerPlugin {
 
         $vars = [
             'path'      => $this->escapeHTML($path),
-            'favicon'   => $this->getAssetUrl('favicon.ico'),
-            'style'     => $this->getAssetUrl('sabredav.css'),
-            'iconstyle' => $this->getAssetUrl('openiconic/open-iconic.css'),
-            'logo'      => $this->getAssetUrl('sabredav.png'),
+            'favicon'   => $this->escapeHTML($this->getAssetUrl('favicon.ico')),
+            'style'     => $this->escapeHTML($this->getAssetUrl('sabredav.css')),
+            'iconstyle' => $this->escapeHTML($this->getAssetUrl('openiconic/open-iconic.css')),
+            'logo'      => $this->escapeHTML($this->getAssetUrl('sabredav.png')),
             'baseUrl'   => $this->server->getBaseUri(),
         ];
 
@@ -320,7 +320,7 @@ HTML;
         </body>
         </html>";
 
-        $this->server->httpResponse->setHeader('Content-Security-Policy', "img-src 'self'; style-src 'unsafe-inline';");
+        $this->server->httpResponse->setHeader('Content-Security-Policy', "img-src 'self'; style-src 'self';");
 
         return $html;
 
@@ -566,14 +566,14 @@ HTML;
         switch($view) {
 
             case 'href' :
-                echo "<a href=\"" . $this->server->getBaseUri() . $value->getHref() . '\">' . $this->server->getBaseUri() . $value->getHref() . '</a>';
+                echo "<a href=\"" . $this->server->getBaseUri() . $value->getHref() . '">' . $this->server->getBaseUri() . $value->getHref() . '</a>';
                 break;
             case 'hreflist' :
                 echo implode('<br />', array_map(function($href) {
                     if (stripos($href,'mailto:')===0 || stripos($href,'/')===0 || stripos($href,'http:')===0 || stripos($href,'https:') === 0) {
-                        return "<a href=\"" . $this->escapeHTML($href) . '\">' . $this->escapeHTML($href) . '</a>';
+                        return "<a href=\"" . $this->escapeHTML($href) . '">' . $this->escapeHTML($href) . '</a>';
                     } else {
-                        return "<a href=\"" . $this->escapeHTML($this->server->getBaseUri() . $href) . '\">' . $this->escapeHTML($this->server->getBaseUri() . $href) . '</a>';
+                        return "<a href=\"" . $this->escapeHTML($this->server->getBaseUri() . $href) . '">' . $this->escapeHTML($this->server->getBaseUri() . $href) . '</a>';
                     }
                 }, $value->getHrefs()));
                 break;

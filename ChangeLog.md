@@ -7,7 +7,7 @@ ChangeLog
 * #474: Fixed PropertyStorage `pathFilter()`.
 * #476: CSP policy incorrect, causing stylesheets to not load in the browser
   plugin.
-* #476: Href properties in the browser plugin sometimes included a backslash.
+* #475: Href properties in the browser plugin sometimes included a backslash.
 
 2.0.2 (2014-06-12)
 ------------------

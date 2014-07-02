@@ -67,7 +67,7 @@ interface IFile extends INode {
      *
      *   return '"someetag"';
      *
-     * @returns string|null
+     * @return string|null
      */
     function getETag();
 

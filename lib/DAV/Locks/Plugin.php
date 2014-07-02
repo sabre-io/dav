@@ -394,7 +394,7 @@ class Plugin extends DAV\ServerPlugin {
         $lockDiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
         $prop->appendChild($lockDiscovery);
 
-        $lockObj = new DAV\Property\LockDiscovery(array($lockInfo),true);
+        $lockObj = new DAV\Property\LockDiscovery(array($lockInfo));
         $lockObj->serialize($this->server,$lockDiscovery);
 
         return $dom->saveXML();

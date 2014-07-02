@@ -9,6 +9,7 @@ ChangeLog
 * #460: PropertyStorage must move properties during MOVE requests
 * Changed: Restructured the zip distribution to be a little bit more lean
   and consistent.
+* #472: Always returning lock tokens in the lockdiscovery property.
 
 
 2.0.3 (????-??-??)

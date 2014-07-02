@@ -23,13 +23,6 @@ class LockDiscovery extends DAV\Property {
     public $locks;
 
     /**
-     * Should we show the locktoken as well?
-     *
-     * @var bool
-     */
-    public $revealLockToken;
-
-    /**
      * Hides the {DAV:}lockroot element from the response.
      *
      * It was reported that showing the lockroot in the response can break
@@ -43,10 +36,9 @@ class LockDiscovery extends DAV\Property {
      * @param array $locks
      * @param bool $revealLockToken
      */
-    public function __construct($locks, $revealLockToken = false) {
+    public function __construct($locks) {
 
         $this->locks = $locks;
-        $this->revealLockToken = $revealLockToken;
 
     }
 
@@ -88,11 +80,9 @@ class LockDiscovery extends DAV\Property {
             $activeLock->appendChild($doc->createElementNS('DAV:','d:depth',($lock->depth == DAV\Server::DEPTH_INFINITY?'infinity':$lock->depth)));
             $activeLock->appendChild($doc->createElementNS('DAV:','d:timeout','Second-' . $lock->timeout));
 
-            if ($this->revealLockToken) {
-                $lockToken = $doc->createElementNS('DAV:','d:locktoken');
-                $activeLock->appendChild($lockToken);
-                $lockToken->appendChild($doc->createElementNS('DAV:','d:href','opaquelocktoken:' . $lock->token));
-            }
+            $lockToken = $doc->createElementNS('DAV:','d:locktoken');
+            $activeLock->appendChild($lockToken);
+            $lockToken->appendChild($doc->createElementNS('DAV:','d:href','opaquelocktoken:' . $lock->token));
 
             $activeLock->appendChild($doc->createElementNS('DAV:','d:owner',$lock->owner));
 

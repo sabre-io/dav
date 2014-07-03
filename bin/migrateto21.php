@@ -9,7 +9,9 @@ if ($argc<2) {
 
 This script help you migrate from a pre-2.1 database to 2.1 and later
 
-The 'calendarobjects' table will be upgraded.
+Changes:
+  The 'calendarobjects' table will be upgraded.
+  'schedulingobjects' will be created.
 
 If you don't use the default PDO CalDAV or CardDAV backend, it's pointless to
 run this script.
@@ -144,5 +146,44 @@ if ($addUid) {
     }
 
 }
+
+echo "Creating 'schedulingobjects'\n";
+
+switch($driver) {
+
+    case 'mysql' :
+        $pdo->exec('CREATE TABLE IF NOT EXISTS schedulingobjects
+(
+    id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    principaluri VARCHAR(255),
+    calendardata MEDIUMBLOB,
+    uri VARCHAR(200),
+    lastmodified INT(11) UNSIGNED,
+    etag VARCHAR(32),
+    size INT(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+        ');
+        break;
+
+
+    case 'sqlite' :
+        $pdo->exec('CREATE TABLE IF NOT EXISTS schedulingobjects (
+    id integer primary key asc,
+    principaluri text,
+    calendardata blob,
+    uri text,
+    lastmodified integer,
+    etag text,
+    size integer
+)
+');
+        break;
+        $pdo->exec('
+            CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);
+        ');
+        break;
+}
+
+echo "Done.\n";
 
 echo "Upgrade to 2.1 schema completed.\n";

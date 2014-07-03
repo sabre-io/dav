@@ -23,6 +23,13 @@ class DeliverNewEventTest extends \Sabre\DAVServerTest {
 
             ]
         );
+        $this->caldavBackend->createCalendar(
+            'principals/user2',
+            'default',
+            [
+
+            ]
+        );
 
     }
 

@@ -307,12 +307,41 @@ class Plugin extends ServerPlugin {
             return new Href($inboxPath);
 
         });
+
+        $propFind->handle('{' . self::NS_CALDAV . '}schedule-default-calendar-URL', function() use ($principalUrl, $caldavPlugin) {
+
+            // We don't support customizing this property yet, so in the
+            // meantime we just grab the first calendar in the home-set.
+            $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+
+            $nodes = $this->server->tree->getNodeForPath($calendarHomePath)->getChildren();
+
+            foreach($nodes as $node) {
+
+                if ($node instanceof ICalendar) {
+
+                    return new Href($calendarHomePath . '/' . $node->getName());
+
+                }
+
+            }
+
+        });
+
         // The calendar-user-address-set property is basically mapped to
         // the {DAV:}alternate-URI-set property.
         $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node) {
             $addresses = $node->getAlternateUriSet();
             $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
             return new HrefList($addresses, false);
+        });
+
+        // The server currently reports every principal to be of type
+        // 'INDIVIDUAL'
+        $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-type', function() {
+
+            return 'INDIVIDUAL';
+
         });
 
     }
@@ -500,13 +529,28 @@ class Plugin extends ServerPlugin {
             return;
         }
 
+        if (!isset($result[0][200][$caldavNS . 'schedule-inbox-URL'])) {
+            $iTipMessage->scheduleStatus = '3.7; Could not find local inbox';
+            return;
+        }
+        if (!isset($result[0][200][$caldavNS . 'schedule-default-calendar-URL'])) {
+            $iTipMessage->scheduleStatus = '3.7; Could not find a schedule-default-calendar-URL property';
+            return;
+        }
+
+        $calendarPath = $result[0][200][$caldavNS . 'schedule-default-calendar-URL']->getHref();
         $inboxPath = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
 
         // Note that we are bypassing ACL on purpose by calling this directly.
         // We may need to look a bit deeper into this later. Supporting ACL
-        // here would be nice
+        // here would be nice.
         $inbox = $this->server->tree->getNodeForPath($inboxPath);
-        $inbox->createFile('sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics', $iTipMessage->message->serialize());
+        $calendar = $this->server->tree->getNodeForPath($calendarPath);
+
+        $objectPath = 'sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics';
+
+        $inbox->createFile($objectPath, $iTipMessage->message->serialize());
+        $calendar->createFile($objectPath, $iTipMessage->message->serialize());
 
         $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
 

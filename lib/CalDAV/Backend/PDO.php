@@ -1167,8 +1167,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      */
     public function createSchedulingObject($principalUri, $objectUri, $objectData) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, UNIX_TIMESTAMP(), ?, ?)');
-        $stmt->execute([$principalUri, $objectData, $objectUri, md5($objectData), strlen($objectData) ]);
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData) ]);
 
     }
 

@@ -912,9 +912,11 @@ class Server extends EventEmitter {
             $parentNode
         ]];
 
-        if ($depth > 0 || $depth === self::DEPTH_INFINITY) {
+        if (($depth > 0 || $depth === self::DEPTH_INFINITY) && $parentNode instanceof ICollection) {
             $this->addPathNodesRecursively($propFindRequests, $propFind);
         }
+
+        $returnProperties = [];
 
         foreach($propFindRequests as $propFindRequest) {
 

@@ -93,4 +93,38 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @depends testPropFind
+     */
+    function testMove() {
+
+        $backend = $this->getBackend();
+        // Creating a new child property.
+        $propPatch = new PropPatch(['{DAV:}displayname' => 'child']);
+        $backend->propPatch('dir/child', $propPatch);
+        $propPatch->commit();
+
+        $backend->move('dir','dir2');
+
+        // Old 'dir'
+        $propFind = new PropFind('dir', ['{DAV:}displayname']);
+        $backend->propFind('dir', $propFind);
+        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+
+        // Old 'dir/child'
+        $propFind = new PropFind('dir/child', ['{DAV:}displayname']);
+        $backend->propFind('dir/child', $propFind);
+        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+
+        // New 'dir2'
+        $propFind = new PropFind('dir2', ['{DAV:}displayname']);
+        $backend->propFind('dir2', $propFind);
+        $this->assertEquals('Directory', $propFind->get('{DAV:}displayname'));
+
+        // New 'dir2/child'
+        $propFind = new PropFind('dir2/child', ['{DAV:}displayname']);
+        $backend->propFind('dir2/child', $propFind);
+        $this->assertEquals('child', $propFind->get('{DAV:}displayname'));
+    }
+
 }

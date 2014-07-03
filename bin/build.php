@@ -120,12 +120,43 @@ function test() {
 function buildzip() {
 
     global $baseDir, $version;
-    echo "  Asking composer to download sabre/dav $version\n\n";
-    system("composer create-project -n --no-dev sabre/dav build/SabreDAV $version", $code);
+    echo "  Generating composer.json\n";
+
+    $input = json_decode(file_get_contents(__DIR__ . '/../composer.json'), true);
+    $newComposer = [
+        "require" => $input['require'],
+        "config"  => [
+            "bin-dir" => "./bin",
+        ]
+    ];
+    $newComposer['require']['sabre/dav'] = $version;
+    mkdir('build/SabreDAV');
+    file_put_contents('build/SabreDAV/composer.json', json_encode($newComposer));
+
+    echo "  Downloading dependencies\n";
+    system("cd build/SabreDAV; composer install -n --no-dev", $code);
     if ($code!==0) {
         echo "Composer reported error code $code\n";
         die(1);
     }
+
+    echo "  Removing pointless files\n";
+    unlink('build/SabreDAV/composer.json');
+    unlink('build/SabreDAV/composer.lock');
+
+    echo "  Moving important files to the root of the project\n";
+
+    $fileNames = [
+        'ChangeLog.md',
+        'LICENSE',
+        'README.md',
+        'examples',
+    ];
+    foreach($fileNames as $fileName) {
+        echo "    $fileName\n";
+        rename('build/SabreDAV/vendor/sabre/dav/' . $fileName, 'build/SabreDAV/' . $fileName);
+    }
+
     // <zip destfile="build/SabreDAV-${sabredav.version}.zip" basedir="build/SabreDAV" prefix="SabreDAV/" />
 
     echo "\n";

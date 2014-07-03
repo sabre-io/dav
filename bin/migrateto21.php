@@ -77,7 +77,6 @@ switch($driver) {
         die(-1);
 }
 
-
 echo "Upgrading 'calendarobjects'\n";
 $addUid = false;
 try {

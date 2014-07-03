@@ -81,4 +81,34 @@ class Mock implements BackendInterface {
 
     }
 
+    /**
+     * This method is called after a successful MOVE
+     *
+     * This should be used to migrate all properties from one path to another.
+     * Note that entire collections may be moved, so ensure that all properties
+     * for children are also moved along.
+     *
+     * @param string $source
+     * @param string $destination
+     * @return void
+     */
+    public function move($source, $destination) {
+
+        foreach($this->data as $path => $props) {
+
+            if ($path === $source) {
+                $this->data[$destination] = $props;
+                unset($this->data[$path]);
+                continue;
+            }
+
+            if (strpos($path, $source . '/')===0) {
+                $this->data[$destination . substr($path, strlen($source)+1)] = $props;
+                unset($this->data[$path]);
+            }
+
+        }
+
+    }
+
 }

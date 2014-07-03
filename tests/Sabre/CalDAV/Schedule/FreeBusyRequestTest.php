@@ -294,6 +294,8 @@ ICS;
 
     function testNoPrivilege() {
 
+        $this->markTestIncomplete('Currently there\'s no "no privilege" situation');
+
         $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',
             'REQUEST_METHOD' => 'POST',

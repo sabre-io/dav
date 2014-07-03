@@ -5,14 +5,14 @@ namespace Sabre\CalDAV;
 /**
  * This interface represents a node that may contain calendar objects.
  *
- * This is the shared parent for both the Inbox collection and calendars 
+ * This is the shared parent for both the Inbox collection and calendars
  * resources.
  *
- * In most cases you will likely want to look at ICalendar instead of this 
+ * In most cases you will likely want to look at ICalendar instead of this
  * interface.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
- * @author Evert Pot (http://evertpot.com/) 
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
 interface ICalendarObjectContainer extends \Sabre\DAV\ICollection {
@@ -37,4 +37,4 @@ interface ICalendarObjectContainer extends \Sabre\DAV\ICollection {
     public function calendarQuery(array $filters);
 
 
-} 
+}

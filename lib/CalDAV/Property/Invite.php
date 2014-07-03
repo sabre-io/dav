@@ -88,94 +88,94 @@ class Invite extends DAV\Property {
      */
     public function serialize(DAV\Server $server,\DOMElement $node) {
 
-       $doc = $node->ownerDocument;
+        $doc = $node->ownerDocument;
 
-       if (!is_null($this->organizer)) {
+        if (!is_null($this->organizer)) {
 
-           $xorganizer = $doc->createElement('cs:organizer');
+            $xorganizer = $doc->createElement('cs:organizer');
 
-           $href = $doc->createElement('d:href');
-           $href->appendChild($doc->createTextNode($this->organizer['href']));
-           $xorganizer->appendChild($href);
+            $href = $doc->createElement('d:href');
+            $href->appendChild($doc->createTextNode($this->organizer['href']));
+            $xorganizer->appendChild($href);
 
-           if (isset($this->organizer['commonName']) && $this->organizer['commonName']) {
-               $commonName = $doc->createElement('cs:common-name');
-               $commonName->appendChild($doc->createTextNode($this->organizer['commonName']));
-               $xorganizer->appendChild($commonName);
-           }
-           if (isset($this->organizer['firstName']) && $this->organizer['firstName']) {
-               $firstName = $doc->createElement('cs:first-name');
-               $firstName->appendChild($doc->createTextNode($this->organizer['firstName']));
-               $xorganizer->appendChild($firstName);
-           }
-           if (isset($this->organizer['lastName']) && $this->organizer['lastName']) {
-               $lastName = $doc->createElement('cs:last-name');
-               $lastName->appendChild($doc->createTextNode($this->organizer['lastName']));
-               $xorganizer->appendChild($lastName);
-           }
+            if (isset($this->organizer['commonName']) && $this->organizer['commonName']) {
+                $commonName = $doc->createElement('cs:common-name');
+                $commonName->appendChild($doc->createTextNode($this->organizer['commonName']));
+                $xorganizer->appendChild($commonName);
+            }
+            if (isset($this->organizer['firstName']) && $this->organizer['firstName']) {
+                $firstName = $doc->createElement('cs:first-name');
+                $firstName->appendChild($doc->createTextNode($this->organizer['firstName']));
+                $xorganizer->appendChild($firstName);
+            }
+            if (isset($this->organizer['lastName']) && $this->organizer['lastName']) {
+                $lastName = $doc->createElement('cs:last-name');
+                $lastName->appendChild($doc->createTextNode($this->organizer['lastName']));
+                $xorganizer->appendChild($lastName);
+            }
 
-           $node->appendChild($xorganizer);
+            $node->appendChild($xorganizer);
 
 
-       }
+        }
 
-       foreach($this->users as $user) {
+        foreach($this->users as $user) {
 
-           $xuser = $doc->createElement('cs:user');
+            $xuser = $doc->createElement('cs:user');
 
-           $href = $doc->createElement('d:href');
-           $href->appendChild($doc->createTextNode($user['href']));
-           $xuser->appendChild($href);
+            $href = $doc->createElement('d:href');
+            $href->appendChild($doc->createTextNode($user['href']));
+            $xuser->appendChild($href);
 
-           if (isset($user['commonName']) && $user['commonName']) {
-               $commonName = $doc->createElement('cs:common-name');
-               $commonName->appendChild($doc->createTextNode($user['commonName']));
-               $xuser->appendChild($commonName);
-           }
+            if (isset($user['commonName']) && $user['commonName']) {
+                $commonName = $doc->createElement('cs:common-name');
+                $commonName->appendChild($doc->createTextNode($user['commonName']));
+                $xuser->appendChild($commonName);
+            }
 
-           switch($user['status']) {
+            switch($user['status']) {
 
-               case SharingPlugin::STATUS_ACCEPTED :
-                   $status = $doc->createElement('cs:invite-accepted');
-                   $xuser->appendChild($status);
-                   break;
-               case SharingPlugin::STATUS_DECLINED :
-                   $status = $doc->createElement('cs:invite-declined');
-                   $xuser->appendChild($status);
-                   break;
-               case SharingPlugin::STATUS_NORESPONSE :
-                   $status = $doc->createElement('cs:invite-noresponse');
-                   $xuser->appendChild($status);
-                   break;
-               case SharingPlugin::STATUS_INVALID :
-                   $status = $doc->createElement('cs:invite-invalid');
-                   $xuser->appendChild($status);
-                   break;
+                case SharingPlugin::STATUS_ACCEPTED :
+                    $status = $doc->createElement('cs:invite-accepted');
+                    $xuser->appendChild($status);
+                    break;
+                case SharingPlugin::STATUS_DECLINED :
+                    $status = $doc->createElement('cs:invite-declined');
+                    $xuser->appendChild($status);
+                    break;
+                case SharingPlugin::STATUS_NORESPONSE :
+                    $status = $doc->createElement('cs:invite-noresponse');
+                    $xuser->appendChild($status);
+                    break;
+                case SharingPlugin::STATUS_INVALID :
+                    $status = $doc->createElement('cs:invite-invalid');
+                    $xuser->appendChild($status);
+                    break;
 
-           }
+            }
 
-           $xaccess = $doc->createElement('cs:access');
+            $xaccess = $doc->createElement('cs:access');
 
-           if ($user['readOnly']) {
-                $xaccess->appendChild(
-                    $doc->createElement('cs:read')
-                );
-           } else {
-                $xaccess->appendChild(
-                    $doc->createElement('cs:read-write')
-                );
-           }
-           $xuser->appendChild($xaccess);
+            if ($user['readOnly']) {
+                 $xaccess->appendChild(
+                     $doc->createElement('cs:read')
+                 );
+            } else {
+                 $xaccess->appendChild(
+                     $doc->createElement('cs:read-write')
+                 );
+            }
+            $xuser->appendChild($xaccess);
 
-           if (isset($user['summary']) && $user['summary']) {
-               $summary = $doc->createElement('cs:summary');
-               $summary->appendChild($doc->createTextNode($user['summary']));
-               $xuser->appendChild($summary);
-           }
+            if (isset($user['summary']) && $user['summary']) {
+                $summary = $doc->createElement('cs:summary');
+                $summary->appendChild($doc->createTextNode($user['summary']));
+                $xuser->appendChild($summary);
+            }
 
-           $node->appendChild($xuser);
+            $node->appendChild($xuser);
 
-       }
+        }
 
 
     }

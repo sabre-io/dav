@@ -32,7 +32,7 @@ class SupportedCalendarComponentSet extends DAV\Property {
      */
     public function __construct(array $components) {
 
-       $this->components = $components;
+        $this->components = $components;
 
     }
 
@@ -56,14 +56,14 @@ class SupportedCalendarComponentSet extends DAV\Property {
      */
     public function serialize(DAV\Server $server,\DOMElement $node) {
 
-       $doc = $node->ownerDocument;
-       foreach($this->components as $component) {
+        $doc = $node->ownerDocument;
+        foreach($this->components as $component) {
 
             $xcomp = $doc->createElement('cal:comp');
             $xcomp->setAttribute('name',$component);
             $node->appendChild($xcomp);
 
-       }
+        }
 
     }
 

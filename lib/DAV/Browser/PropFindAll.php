@@ -124,7 +124,7 @@ class PropFindAll extends PropFind {
         // If there's nothing in this list, we're adding one fictional item.
         if (!$result) {
             $result[] = '{http://sabredav.org/ns}idk';
-        } 
+        }
         return $result;
 
     }

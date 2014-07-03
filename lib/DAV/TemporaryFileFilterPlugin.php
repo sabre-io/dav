@@ -121,8 +121,8 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
                 return $this->httpPropfind($request, $response, $tempLocation);
             case 'DELETE' :
                 return $this->httpDelete($request, $response, $tempLocation);
-         }
-         return true;
+        }
+        return true;
 
     }
 

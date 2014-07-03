@@ -9,14 +9,31 @@ ChangeLog
 * #460: PropertyStorage must move properties during MOVE requests
 * Changed: Restructured the zip distribution to be a little bit more lean
   and consistent.
+* #472: Always returning lock tokens in the lockdiscovery property.
 
-2.0.2 (2014-05-??)
+
+2.0.3 (????-??-??)
 ------------------
 
+* #474: Fixed PropertyStorage `pathFilter()`.
+* #476: CSP policy incorrect, causing stylesheets to not load in the browser
+  plugin.
+* #475: Href properties in the browser plugin sometimes included a backslash.
+* #478: `TooMuchMatches` exception never worked. This was fixed, and we also
+  took this opportunity to rename it to `TooManyMatches`.
+
+2.0.2 (2014-06-12)
+------------------
+
+* #470: Fixed compatibility with PHP < 5.4.14.
 * #467: Fixed a problem in `examples/calendarserver.php`.
 * #466: All the postgresql sample files have been updated.
 * Fixed: An error would be thrown if a client did a propfind on a node the
   user didn't have access to.
+* Removed: Old and broken example code from the `examples/` directory.
+* The zip release ships with [sabre/vobject 3.2.3][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.1][evnt].
+
 
 
 2.0.1 (2014-05-28)
@@ -26,6 +43,8 @@ ChangeLog
   error.
 * #464: A PROPFIND allprops request should not return properties with status
   404.
+* The zip release ships with [sabre/vobject 3.2.2][vobj],
+  [sabre/http 2.0.3][http], and [sabre/event 1.0.0][evnt].
 
 
 2.0.0 (2014-05-22)

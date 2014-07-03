@@ -59,15 +59,15 @@ class AllowedSharingModes extends DAV\Property {
      */
     public function serialize(DAV\Server $server, \DOMElement $node) {
 
-       $doc = $node->ownerDocument;
-       if ($this->canBeShared) {
+        $doc = $node->ownerDocument;
+        if ($this->canBeShared) {
             $xcomp = $doc->createElement('cs:can-be-shared');
             $node->appendChild($xcomp);
-       }
-       if ($this->canBePublished) {
+        }
+        if ($this->canBePublished) {
             $xcomp = $doc->createElement('cs:can-be-published');
             $node->appendChild($xcomp);
-       }
+        }
 
     }
 

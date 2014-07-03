@@ -38,7 +38,7 @@ class SupportedAddressData extends DAV\Property {
             );
         }
 
-       $this->supportedData = $supportedData;
+        $this->supportedData = $supportedData;
 
     }
 

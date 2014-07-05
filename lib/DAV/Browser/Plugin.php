@@ -541,6 +541,7 @@ HTML;
                 'Sabre\\DAV\\Property\\ResourceType' => 'xmlvaluelist',
                 'Sabre\\DAV\\Property\\SupportedReportSet' => 'xmlvaluelist',
                 'Sabre\\DAVACL\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
+                'Sabre\\DAVACL\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
             ];
 
             $view = 'complex';
@@ -561,6 +562,15 @@ HTML;
 
         ob_start();
 
+        $xmlValueDisplay = function($propName) {
+            $realPropName = $propName;
+            list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($propName);
+            if (isset($this->server->xmlNamespaces[$ns])) {
+                $propName = $this->server->xmlNamespaces[$ns] . ':' . $localName;
+            }
+            return "<span title=\"" . $this->escapeHTML($realPropName) . "\">" . $this->escapeHTML($propName) . "</span>";
+        };
+
         echo "<tr><th><span title=\"", $this->escapeHTML($realName), "\">", $this->escapeHTML($name), "</span></th><td>";
 
         switch($view) {
@@ -578,17 +588,33 @@ HTML;
                 }, $value->getHrefs()));
                 break;
             case 'xmlvaluelist' :
-                echo implode(', ', array_map(function($propName) {
-                    $realPropName = $propName;
-                    list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($propName);
-                    if (isset($this->server->xmlNamespaces[$ns])) {
-                        $propName = $this->server->xmlNamespaces[$ns] . ':' . $localName;
-                    }
-                    return "<span title=\"" . $this->escapeHTML($realPropName) . "\">" . $this->escapeHTML($propName) . "</span>";
-                }, $value->getValue()));
+                echo implode(', ', array_map($xmlValueDisplay, $value->getValue()));
                 break;
             case 'valuelist' :
                 echo $this->escapeHTML(implode(', ', $value->getValue()));
+                break;
+            case 'supported-privilege-set' :
+                $traverse = function($priv) use (&$traverse, $xmlValueDisplay) {
+                    echo "<li>";
+                    echo $xmlValueDisplay($priv['privilege']);
+                    if (isset($priv['abstract']) && $priv['abstract']) {
+                        echo " <i>(abstract)</i>";
+                    }
+                    if (isset($priv['description'])) {
+                        echo " " . $this->escapeHTML($priv['description']);
+                    }
+                    if (isset($priv['aggregates'])) {
+                        echo "\n<ul>\n";
+                        foreach($priv['aggregates'] as $subPriv) {
+                            $traverse($subPriv);
+                        }
+                        echo "</ul>";
+                    }
+                    echo "</li>\n";
+                };
+                echo "<ul class=\"tree\">";
+                $traverse($value->getValue(), '');
+                echo "</ul>\n";
                 break;
             case 'string' :
                 echo $this->escapeHTML($value);

@@ -10,7 +10,7 @@ use
     Sabre\VObject;
 
 /**
- * The CalDAV scheduling inbox 
+ * The CalDAV scheduling inbox
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
@@ -192,7 +192,17 @@ class Inbox extends DAV\Collection implements IInbox {
      */
     public function getSupportedPrivilegeSet() {
 
-        return null;
+        $ns = '{' . CalDAV\Plugin::NS_CALDAV . '}';
+
+        $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
+        $default['aggregates'][] = [
+            'privilege' => $ns . 'schedule-deliver',
+            'aggregates' => [
+               ['privilege' => $ns . 'schedule-deliver-invite'],
+               ['privilege' => $ns . 'schedule-deliver-reply'],
+            ],
+        ];
+        return $default;
 
     }
 

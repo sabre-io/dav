@@ -530,11 +530,11 @@ class Plugin extends ServerPlugin {
         }
 
         if (!isset($result[0][200][$caldavNS . 'schedule-inbox-URL'])) {
-            $iTipMessage->scheduleStatus = '3.7; Could not find local inbox';
+            $iTipMessage->scheduleStatus = '5.2; Could not find local inbox';
             return;
         }
         if (!isset($result[0][200][$caldavNS . 'schedule-default-calendar-URL'])) {
-            $iTipMessage->scheduleStatus = '3.7; Could not find a schedule-default-calendar-URL property';
+            $iTipMessage->scheduleStatus = '5.2; Could not find a schedule-default-calendar-URL property';
             return;
         }
 
@@ -544,14 +544,18 @@ class Plugin extends ServerPlugin {
         // Note that we are bypassing ACL on purpose by calling this directly.
         // We may need to look a bit deeper into this later. Supporting ACL
         // here would be nice.
+        if (!$acl->checkPrivileges($inboxPath, '{' . self::NS_CALDAV . '}schedule-deliver-invite', DAVACL\Plugin::R_PARENT, false)) {
+            $iTipMessage->scheduleStatus = '3.8; organizer did not have the schedule-deliver-invite privilege on the attendees inbox';
+            return;
+        }
+
+        // Next, we're going to find out if the item already exits in one of
+        // the users' calendars.
+
         $inbox = $this->server->tree->getNodeForPath($inboxPath);
         $calendar = $this->server->tree->getNodeForPath($calendarPath);
 
-        $objectPath = 'sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics';
-
-        $inbox->createFile($objectPath, $iTipMessage->message->serialize());
-        $calendar->createFile($objectPath, $iTipMessage->message->serialize());
-
+        $inbox->deliverInvite($itipMessage);
         $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
 
     }

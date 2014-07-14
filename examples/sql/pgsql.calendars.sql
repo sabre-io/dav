@@ -3,7 +3,7 @@ CREATE TABLE calendars (
     principaluri VARCHAR(100),
     displayname VARCHAR(100),
     uri VARCHAR(200),
-    synctoken INTEGER NOT NULL DEFAULT 0,
+    synctoken INTEGER NOT NULL DEFAULT 1,
     description TEXT,
     calendarorder INTEGER NOT NULL DEFAULT 0,
     calendarcolor VARCHAR(10),

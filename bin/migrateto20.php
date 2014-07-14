@@ -108,7 +108,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
                 principaluri VARCHAR(100),
                 displayname VARCHAR(100),
                 uri VARCHAR(200),
-                synctoken INT(11) UNSIGNED NOT NULL DEFAULT '0',
+                synctoken INT(11) UNSIGNED NOT NULL DEFAULT '1',
                 description TEXT,
                 calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
                 calendarcolor VARCHAR(10),

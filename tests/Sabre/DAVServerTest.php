@@ -152,7 +152,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function setUpTree() {
 
         if ($this->setupCalDAV) {
-            $this->tree[] = new CalDAV\CalendarRootNode(
+            $this->tree[] = new CalDAV\CalendarRoot(
                 $this->principalBackend,
                 $this->caldavBackend
             );

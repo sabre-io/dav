@@ -13,7 +13,7 @@ namespace Sabre\CalDAV\Backend;
 interface SchedulingSupport extends BackendInterface {
 
     /**
-     * Returns a single scheduling object.
+     * Returns a single scheduling object for the inbox collection.
      *
      * The returned array should contain the following elements:
      *   * uri - A unique basename for the object. This will be used to
@@ -44,7 +44,7 @@ interface SchedulingSupport extends BackendInterface {
     public function getSchedulingObjects($principalUri);
 
     /**
-     * Deletes a scheduling object
+     * Deletes a scheduling object from the inbox collection.
      *
      * @param string $principalUri
      * @param string $objectUri

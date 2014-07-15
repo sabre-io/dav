@@ -8,13 +8,18 @@ use
     Sabre\HTTP\URLUtil;
 
 /**
- * The UserCalendars class contains all calendars associated to one user
+ * The CalendarHome represents a node that is usually in a users'
+ * calendar-homeset.
+ *
+ * It contains all the users' calendars, and can optionally contain a
+ * notifications collection, calendar subscriptions, a users' inbox, and a
+ * users' outbox.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
+class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
     /**
      * CalDAV backend

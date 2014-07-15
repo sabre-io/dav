@@ -142,7 +142,7 @@ class Plugin extends DAV\ServerPlugin {
         // iCal has a bug where it assumes that sync support is enabled, only
         // if we say we support it on the calendar-home, even though this is
         // not actually the case.
-        if ($node instanceof UserCalendars && $this->server->getPlugin('sync')) {
+        if ($node instanceof CalendarHome && $this->server->getPlugin('sync')) {
             $reports[] = '{DAV:}sync-collection';
         }
         return $reports;
@@ -869,7 +869,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function htmlActionsPanel(DAV\INode $node, &$output) {
 
-        if (!$node instanceof UserCalendars)
+        if (!$node instanceof CalendarHome)
             return;
 
         $output.= '<tr><td colspan="2"><form method="post" action="">

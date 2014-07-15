@@ -40,7 +40,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = array(
-            new CalendarRootNode($principalBackend, $this->calBackend),
+            new CalendarRoot($principalBackend, $this->calBackend),
         );
 
         $this->server = new DAV\Server($tree);

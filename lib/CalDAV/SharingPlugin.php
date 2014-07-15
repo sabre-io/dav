@@ -302,7 +302,7 @@ class SharingPlugin extends DAV\ServerPlugin {
             case '{'. Plugin::NS_CALENDARSERVER.'}invite-reply' :
 
                 // This only works on the calendar-home-root node.
-                if (!$node instanceof UserCalendars) {
+                if (!$node instanceof CalendarHome) {
                     return;
                 }
                 $this->server->transactionType = 'post-invite-reply';

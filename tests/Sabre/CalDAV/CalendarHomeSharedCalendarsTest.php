@@ -8,7 +8,7 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 
 /**
  */
-class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
+class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
 
@@ -34,7 +34,7 @@ class UserCalendarsSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
             array()
         );
 
-        return new UserCalendars($this->backend, array(
+        return new CalendarHome($this->backend, array(
             'uri' => 'principals/user1'
         ));
 

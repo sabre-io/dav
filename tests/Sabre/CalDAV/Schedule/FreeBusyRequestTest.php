@@ -44,7 +44,7 @@ END:VCALENDAR',
 
         $tree = array(
             new DAVACL\PrincipalCollection($principalBackend),
-            new CalDAV\CalendarRootNode($principalBackend, $caldavBackend),
+            new CalDAV\CalendarRoot($principalBackend, $caldavBackend),
         );
 
         $this->request = HTTP\Sapi::createFromServerArray([

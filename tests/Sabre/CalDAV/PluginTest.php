@@ -64,7 +64,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             'uri' => 'principals/admin/calendar-proxy-write',
         ));
 
-        $calendars = new CalendarRootNode($principalBackend,$this->caldavBackend);
+        $calendars = new CalendarRoot($principalBackend,$this->caldavBackend);
         $principals = new Principal\Collection($principalBackend);
 
         $root = new DAV\SimpleCollection('root');

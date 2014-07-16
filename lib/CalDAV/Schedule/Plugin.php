@@ -533,30 +533,52 @@ class Plugin extends ServerPlugin {
             $iTipMessage->scheduleStatus = '5.2; Could not find local inbox';
             return;
         }
+        if (!isset($result[0][200][$caldavNS . 'calendar-home-set'])) {
+            $iTipMessage->scheduleStatus = '5.2; Could not locate a calendar-home-set';
+            return;
+        }
         if (!isset($result[0][200][$caldavNS . 'schedule-default-calendar-URL'])) {
             $iTipMessage->scheduleStatus = '5.2; Could not find a schedule-default-calendar-URL property';
             return;
         }
 
         $calendarPath = $result[0][200][$caldavNS . 'schedule-default-calendar-URL']->getHref();
+        $homePath = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
         $inboxPath = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
 
         // Note that we are bypassing ACL on purpose by calling this directly.
         // We may need to look a bit deeper into this later. Supporting ACL
         // here would be nice.
-        if (!$acl->checkPrivileges($inboxPath, '{' . self::NS_CALDAV . '}schedule-deliver-invite', DAVACL\Plugin::R_PARENT, false)) {
+        if (!$aclPlugin->checkPrivileges($inboxPath, '{' . self::NS_CALDAV . '}schedule-deliver-invite', DAVACL\Plugin::R_PARENT, false)) {
             $iTipMessage->scheduleStatus = '3.8; organizer did not have the schedule-deliver-invite privilege on the attendees inbox';
             return;
         }
 
         // Next, we're going to find out if the item already exits in one of
         // the users' calendars.
+        $uid = $iTipMessage->message->VEVENT->UID;
 
+        $newFileName = 'sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics';
+
+        $home = $this->server->tree->getNodeForPath($homePath);
         $inbox = $this->server->tree->getNodeForPath($inboxPath);
-        $calendar = $this->server->tree->getNodeForPath($calendarPath);
 
-        $inbox->deliverInvite($itipMessage);
-        $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
+        $result = $home->getCalendarObjectByUID($uid);
+
+        if (!$result) {
+            // This was a new item
+
+            $calendar = $this->server->tree->getNodeForPath($calendarPath);
+
+            $inbox->createFile($newFileName, $iTipMessage->message->serialize());
+            $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
+
+        } else {
+
+            // We need to find the current version of the calendar object.
+            throw new \Exception('Not implemented');
+
+        }
 
     }
 

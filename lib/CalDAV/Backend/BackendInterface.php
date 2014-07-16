@@ -247,15 +247,20 @@ interface BackendInterface {
      * Searches through all of a users calendars and calendar objects to find
      * an object with a specific UID.
      *
-     * The returned data should contain all the information getCalendarObject
-     * also returns, but also include a 'calendarUri' property. This property
-     * should *just* be the basename of the calendar.
+     * This method should return the path to this object, relative to the
+     * calendar home, so this path usually only contains two parts:
      *
-     * Return false if the object cannot be found.
+     * calendarpath/objectpath.ics
+     *
+     * If the uid is not found, return null.
+     *
+     * This method should only consider * objects that the principal owns, so
+     * any calendars owned by other principals that also appear in this
+     * collection should be ignored.
      *
      * @param string $principalUri
      * @param string $uid
-     * @return array|bool
+     * @return string|null
      */
     public function getCalendarObjectByUID($principalUri, $uid);
 

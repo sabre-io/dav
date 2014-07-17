@@ -12,6 +12,7 @@ use
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
+    Sabre\VObject\ITip,
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\DAV\Exception\NotFound,
@@ -404,57 +405,19 @@ class Plugin extends ServerPlugin {
             return;
         }
 
-        // For each attendee we're going to generate a scheduling message.
-        // We do this based on the original object.
-        //
-        // $vObj is the copy for the user that created the object. We will use
-        // that to update some values, such as SCHEDULE-STATUS per attendee.
-        $original = clone $vObj;
+        $broker = new VObject\ITip\Broker();
+        $messages = $broker->createEvent($vObj);
 
-        foreach($vevent->ATTENDEE as $attendee) {
+        foreach($messages as $message) {
 
-            if (!isset($attendee['SCHEDULE-AGENT'])) {
-                $agent = 'SERVER';
-            } else {
-                $agent = strtoupper($attendee['SCHEDULE-AGENT']);
-            }
+            $this->deliver($message);
 
-            // The SCHEDULE-AGENT parameter is 'SERVER' by default, but if it
-            // was set to 'NONE' or 'CLIENT', we are not responsible for
-            // delivering the message.
-            if ($agent!=='SERVER') continue;
+            foreach($vObj->VEVENT->ATTENDEE as $attendee) {
 
-            $status = null;
-
-            // Currently only handling mailto: addresses.
-            if (strtolower(substr($attendee->getValue(),0,7))!=='mailto:') {
-                $status = '5.1;This server can currently only handle mailto: addresses';
-            } else {
-
-                $iTipMessage = new ITipMessage();
-
-                // Stripping the mailto:
-                $iTipMessage->recipient = strtolower(substr($attendee->getValue(), 7));
-                if (isset($attendee['CN'])) $iTipMessage->recipientName = (string)$attendee['CN'];
-
-                $iTipMessage->sender = strtolower(substr($organizer, 7));
-                if (isset($vevent->ORGANIZER['CN'])) $iTipMessage->senderName = (string)$vevent->ORGANIZER['CN'];
-
-                // Skipping if sender matches the recipient
-                if ($iTipMessage->sender === $iTipMessage->recipient) {
-                    continue;
+                if ($attendee->getValue() === $message->recipient) {
+                    $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                    break;
                 }
-
-                $iTipMessage->method = 'REQUEST';
-
-                $iTipBody = clone $original;
-                $iTipBody->METHOD = 'REQUEST';
-
-                $iTipMessage->message = $iTipBody;
-
-                $this->deliver($iTipMessage);
-
-                $attendee['SCHEDULE-STATUS'] = $iTipMessage->scheduleStatus;
 
             }
 
@@ -476,10 +439,10 @@ class Plugin extends ServerPlugin {
     /**
      * This method is responsible for delivering the ITip message.
      *
-     * @param ITipMessage $itipMessage
+     * @param ITip\Message $itipMessage
      * @return void
      */
-    public function deliver(ITipMessage $iTipMessage) {
+    public function deliver(ITip\Message $iTipMessage) {
 
         /*
         $iTipMessage->scheduleStatus =
@@ -514,7 +477,7 @@ class Plugin extends ServerPlugin {
         $caldavNS = '{' . Plugin::NS_CALDAV . '}';
 
         $result = $aclPlugin->principalSearch(
-            ['{http://sabredav.org/ns}email-address' => $iTipMessage->recipient],
+            ['{http://sabredav.org/ns}email-address' => substr($iTipMessage->recipient, 7)],
             [
                 '{DAV:}principal-URL',
                  $caldavNS . 'calendar-home-set',

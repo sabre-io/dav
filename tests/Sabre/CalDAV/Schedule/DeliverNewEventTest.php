@@ -79,10 +79,10 @@ ICS
         $this->assertEquals(1, count($messages));
         $message = $messages[0];
 
-        $this->assertInstanceOf('\Sabre\CalDAV\Schedule\ITipMessage', $message);
-        $this->assertEquals('user2.sabredav@sabredav.org', $message->recipient);
+        $this->assertInstanceOf('\Sabre\VObject\ITip\Message', $message);
+        $this->assertEquals('mailto:user2.sabredav@sabredav.org', $message->recipient);
         $this->assertEquals('Roxy Kesh', $message->recipientName);
-        $this->assertEquals('user1.sabredav@sabredav.org', $message->sender);
+        $this->assertEquals('mailto:user1.sabredav@sabredav.org', $message->sender);
         $this->assertEquals('Administrator', $message->senderName);
         $this->assertEquals('REQUEST', $message->method);
 

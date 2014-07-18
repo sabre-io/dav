@@ -9,12 +9,15 @@ use
     Sabre\DAV\Property\HrefList,
     Sabre\DAV\PropFind,
     Sabre\DAV\INode,
+    Sabre\DAV\IFile,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
+    Sabre\VObject\Reader,
     Sabre\VObject\ITip,
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
+    Sabre\CalDAV\ICalendarObject,
     Sabre\DAV\Exception\NotFound,
     Sabre\DAV\Exception\Forbidden,
     Sabre\DAV\Exception\BadRequest,
@@ -372,7 +375,7 @@ class Plugin extends ServerPlugin {
             $data = stream_get_contents($data);
         }
 
-        $vObj = VObject\Reader::read($data);
+        $vObj = Reader::read($data);
 
         // At the moment we only support VEVENT. VTODO may come later.
         if (!isset($vObj->VEVENT)) {
@@ -402,7 +405,7 @@ class Plugin extends ServerPlugin {
             return;
         }
 
-        $broker = new VObject\ITip\Broker();
+        $broker = new ITip\Broker();
         $messages = $broker->parseNewEvent($vObj);
 
         foreach($messages as $message) {
@@ -439,14 +442,14 @@ class Plugin extends ServerPlugin {
      * We use this event to process any changes to scheduling objects.
      *
      * @param string $path
-     * @param DAV\IFile $node
+     * @param IFile $node
      * @param resource|string $data
      * @param bool $modified
      * @return void
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
+    public function beforeWriteContent($path, IFile $node, &$data, &$modified) {
 
-        if (!$parentNode instanceof ICalendar) {
+        if (!$node instanceof ICalendarObject) {
             return;
         }
 
@@ -459,7 +462,7 @@ class Plugin extends ServerPlugin {
             $data = stream_get_contents($data);
         }
 
-        $vObj = VObject\Reader::read($data);
+        $vObj = Reader::read($data);
 
         // At the moment we only support VEVENT. VTODO may come later.
         if (!isset($vObj->VEVENT)) {
@@ -483,7 +486,7 @@ class Plugin extends ServerPlugin {
         }
 
         $addresses = $this->getAddressesForPrincipal(
-            $parentNode->getOwner()
+            $node->getOwner()
         );
 
         // We're only handling creation of new objects by the ORGANIZER.
@@ -495,7 +498,7 @@ class Plugin extends ServerPlugin {
         // Fetching the current event body.
         $oldEvent = Reader::read($node->get());
 
-        $broker = new VObject\ITip\Broker();
+        $broker = new ITip\Broker();
         $messages = $broker->parseUpdatedEvent($vObj, $oldEvent);
 
         foreach($messages as $message) {
@@ -608,7 +611,7 @@ class Plugin extends ServerPlugin {
 
         // Next, we're going to find out if the item already exits in one of
         // the users' calendars.
-        $uid = $iTipMessage->message->VEVENT->UID;
+        $uid = $iTipMessage->uid;
 
         $newFileName = 'sabredav-' . \Sabre\DAV\UUIDUtil::getUUID() . '.ics';
 
@@ -629,7 +632,7 @@ class Plugin extends ServerPlugin {
             $isNewNode = true;
         }
 
-        $broker = new VObject\ITip\Broker();
+        $broker = new ITip\Broker();
         $newObject = $broker->processMessage($iTipMessage, $currentObject);
 
         $inbox->createFile($newFileName, $iTipMessage->message->serialize());

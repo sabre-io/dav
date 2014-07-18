@@ -4,6 +4,8 @@ namespace Sabre\DAVACL;
 
 use
     Sabre\DAV,
+    Sabre\DAV\IFile,
+    Sabre\DAV\INode,
     Sabre\HTTP\URLUtil,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface;
@@ -330,7 +332,7 @@ class Plugin extends DAV\ServerPlugin {
      * You can either get the list of privileges by a uri (path) or by
      * specifying a Node.
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      * @return array
      */
     public function getSupportedPrivilegeSet($node) {
@@ -420,14 +422,14 @@ class Plugin extends DAV\ServerPlugin {
      *   - abstract
      *   - concrete
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      * @return array
      */
     final public function getFlatPrivilegeSet($node) {
 
         $privs = $this->getSupportedPrivilegeSet($node);
 
-        $flat = array();
+        $flat = [];
         $this->getFPSTraverse($privs, null, $flat);
 
         return $flat;
@@ -474,7 +476,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Returns the full ACL list.
      *
-     * Either a uri or a DAV\INode may be passed.
+     * Either a uri or a INode may be passed.
      *
      * null will be returned if the node doesn't support ACLs.
      *

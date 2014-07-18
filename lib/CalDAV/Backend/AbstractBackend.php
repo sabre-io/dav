@@ -197,6 +197,7 @@ abstract class AbstractBackend implements BackendInterface {
                                         'negate-condition' => false,
                                         'collation' => 'i;octet',
                                     ],
+                                    'param-filters' => [],
                                 ],
                             ]
                         ]

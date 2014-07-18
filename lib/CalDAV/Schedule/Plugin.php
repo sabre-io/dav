@@ -192,6 +192,7 @@ class Plugin extends ServerPlugin {
         $server->on('method:POST', [$this,'httpPost']);
         $server->on('propFind',            [$this, 'propFind']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
+        $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 
         /**
@@ -377,15 +378,11 @@ class Plugin extends ServerPlugin {
         if (!isset($vObj->VEVENT)) {
             return;
         }
-
-        // At the moment we only process the first VEVENT. Any other overridden
-        // event will get ignored for the moment.
         $vevent = $vObj->VEVENT[0];
 
         $organizer = null;
-        $attendees = [];
 
-        if ($vevent->ORGANIZER) {
+        if ($vevent[0]->ORGANIZER) {
             $organizer = (string)$vevent->ORGANIZER;
         }
 
@@ -406,7 +403,7 @@ class Plugin extends ServerPlugin {
         }
 
         $broker = new VObject\ITip\Broker();
-        $messages = $broker->createEvent($vObj);
+        $messages = $broker->parseNewEvent($vObj);
 
         foreach($messages as $message) {
 
@@ -434,6 +431,98 @@ class Plugin extends ServerPlugin {
             $modified = true;
         }
 
+    }
+
+    /**
+     * This method is triggered before a file gets updated with new content.
+     *
+     * We use this event to process any changes to scheduling objects.
+     *
+     * @param string $path
+     * @param DAV\IFile $node
+     * @param resource|string $data
+     * @param bool $modified
+     * @return void
+     */
+    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
+
+        if (!$parentNode instanceof ICalendar) {
+            return;
+        }
+
+        // It's a calendar, so the contents are most likely an iCalendar
+        // object. It's time to start processing this.
+        //
+        // This step also ensures that $data is re-propagated with a string
+        // version of the object.
+        if (is_resource($data)) {
+            $data = stream_get_contents($data);
+        }
+
+        $vObj = VObject\Reader::read($data);
+
+        // At the moment we only support VEVENT. VTODO may come later.
+        if (!isset($vObj->VEVENT)) {
+            return;
+        }
+
+        // At the moment we only process the first VEVENT. Any other overridden
+        // event will get ignored for the moment.
+        $vevent = $vObj->VEVENT[0];
+
+        $organizer = null;
+
+        if ($vevent->ORGANIZER) {
+            $organizer = (string)$vevent->ORGANIZER;
+        }
+
+        // If the object doesn't have organizer or attendee information, we can
+        // ignore it.
+        if (!$organizer || !isset($vevent->ATTENDEE)) {
+            return;
+        }
+
+        $addresses = $this->getAddressesForPrincipal(
+            $parentNode->getOwner()
+        );
+
+        // We're only handling creation of new objects by the ORGANIZER.
+        // Support for ATTENDEE will come later.
+        if (!in_array($organizer, $addresses)) {
+            return;
+        }
+
+        // Fetching the current event body.
+        $oldEvent = Reader::read($node->get());
+
+        $broker = new VObject\ITip\Broker();
+        $messages = $broker->parseUpdatedEvent($vObj, $oldEvent);
+
+        foreach($messages as $message) {
+
+            $this->deliver($message);
+
+            foreach($vObj->VEVENT->ATTENDEE as $attendee) {
+
+                if ($attendee->getValue() === $message->recipient) {
+                    $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                    break;
+                }
+
+            }
+
+        }
+
+        // After all this exciting action we set $data to the updated event
+        // that contains all the new status information (if any).
+        $newData = $vObj->serialize();
+        if ($newData !== $data) {
+            $data = $newData;
+
+            // Setting $modified tells sabredav that the object has changed,
+            // and that no ETag must be sent back.
+            $modified = true;
+        }
     }
 
     /**
@@ -526,22 +615,32 @@ class Plugin extends ServerPlugin {
         $home = $this->server->tree->getNodeForPath($homePath);
         $inbox = $this->server->tree->getNodeForPath($inboxPath);
 
+        $currentObject = null;
+        $objectNode = null;
+        $isNewNode = false;
+
         $result = $home->getCalendarObjectByUID($uid);
-
-        if (!$result) {
-            // This was a new item
-
-            $calendar = $this->server->tree->getNodeForPath($calendarPath);
-
-            $inbox->createFile($newFileName, $iTipMessage->message->serialize());
-            $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
-
+        if ($result) {
+            // There was an existing object, we need to update probably.
+            $objectPath = $homePath . '/' . $result;
+            $objectNode = $this->server->tree->getNodeForPath($objectPath);
+            $currentObject = Reader::read($objectNode->get());
         } else {
-
-            // We need to find the current version of the calendar object.
-            throw new \Exception('Not implemented');
-
+            $isNewNode = true;
         }
+
+        $broker = new VObject\ITip\Broker();
+        $newObject = $broker->processMessage($iTipMessage, $currentObject);
+
+        $inbox->createFile($newFileName, $iTipMessage->message->serialize());
+
+        if ($isNewNode) {
+            $calendar = $this->server->tree->getNodeForPath($calendarPath);
+            $calendar->createFile($newFileName, $newObject->serialize());
+        } else {
+            $objectNode->put($newObject->serialize());
+        }
+        $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
 
     }
 

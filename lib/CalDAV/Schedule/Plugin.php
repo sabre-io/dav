@@ -377,36 +377,12 @@ class Plugin extends ServerPlugin {
 
         $vObj = Reader::read($data);
 
-        // At the moment we only support VEVENT. VTODO may come later.
-        if (!isset($vObj->VEVENT)) {
-            return;
-        }
-        $vevent = $vObj->VEVENT[0];
-
-        $organizer = null;
-
-        if ($vevent[0]->ORGANIZER) {
-            $organizer = (string)$vevent->ORGANIZER;
-        }
-
-        // If the object doesn't have organizer or attendee information, we can
-        // ignore it.
-        if (!$organizer || !isset($vevent->ATTENDEE)) {
-            return;
-        }
-
         $addresses = $this->getAddressesForPrincipal(
             $parentNode->getOwner()
         );
 
-        // We're only handling creation of new objects by the ORGANIZER.
-        // Support for ATTENDEE will come later.
-        if (!in_array($organizer, $addresses)) {
-            return;
-        }
-
         $broker = new ITip\Broker();
-        $messages = $broker->parseNewEvent($vObj);
+        $messages = $broker->parseEvent($vObj, $addresses);
 
         foreach($messages as $message) {
 
@@ -464,42 +440,12 @@ class Plugin extends ServerPlugin {
 
         $vObj = Reader::read($data);
 
-        // At the moment we only support VEVENT. VTODO may come later.
-        if (!isset($vObj->VEVENT)) {
-            return;
-        }
-
-        // At the moment we only process the first VEVENT. Any other overridden
-        // event will get ignored for the moment.
-        $vevent = $vObj->VEVENT[0];
-
-        $organizer = null;
-
-        if ($vevent->ORGANIZER) {
-            $organizer = (string)$vevent->ORGANIZER;
-        }
-
-        // If the object doesn't have organizer or attendee information, we can
-        // ignore it.
-        if (!$organizer || !isset($vevent->ATTENDEE)) {
-            return;
-        }
-
         $addresses = $this->getAddressesForPrincipal(
             $node->getOwner()
         );
 
-        // We're only handling creation of new objects by the ORGANIZER.
-        // Support for ATTENDEE will come later.
-        if (!in_array($organizer, $addresses)) {
-            return;
-        }
-
-        // Fetching the current event body.
-        $oldEvent = Reader::read($node->get());
-
         $broker = new ITip\Broker();
-        $messages = $broker->parseUpdatedEvent($vObj, $oldEvent);
+        $messages = $broker->parseEvent($vObj, $addresses, $node->get());
 
         foreach($messages as $message) {
 
@@ -636,6 +582,17 @@ class Plugin extends ServerPlugin {
         $newObject = $broker->processMessage($iTipMessage, $currentObject);
 
         $inbox->createFile($newFileName, $iTipMessage->message->serialize());
+
+        if ($isNewNode && !$newObject) {
+            // We received an iTip message referring to a UID that we don't
+            // have in any calendars yet, and processMessage did not give us a
+            // calendarobject back.
+            //
+            // The implication is that processMessage did not understand the
+            // iTip message.
+            $iTipMessage->scheduleStatus = '5.0;iTip message was not processed by the server, likely because we didn\'t understand it.';
+            return;
+        }
 
         if ($isNewNode) {
             $calendar = $this->server->tree->getNodeForPath($calendarPath);

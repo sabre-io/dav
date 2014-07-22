@@ -12,6 +12,12 @@ ChangeLog
 * #472: Always returning lock tokens in the lockdiscovery property.
 
 
+2.0.4 (????-??-??)
+------------------
+
+* #483: typo in calendars creation for PostgreSQL.
+
+
 2.0.3 (2014-07-14)
 ------------------
 
@@ -23,6 +29,7 @@ ChangeLog
   took this opportunity to rename it to `TooManyMatches`.
 * The zip release ships with [sabre/vobject 3.2.4][vobj],
   [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
+
 
 2.0.2 (2014-06-12)
 ------------------

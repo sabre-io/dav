@@ -583,7 +583,7 @@ class Plugin extends ServerPlugin {
 
         $inbox->createFile($newFileName, $iTipMessage->message->serialize());
 
-        if ($isNewNode && !$newObject) {
+        if (!$newObject) {
             // We received an iTip message referring to a UID that we don't
             // have in any calendars yet, and processMessage did not give us a
             // calendarobject back.

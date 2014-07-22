@@ -391,7 +391,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      */
     public function getCalendarObjectByUID($uid) {
 
-        $this->caldavBackend->getCalendarObjectByUID($this->principalInfo['uri'], $uid);
+        return $this->caldavBackend->getCalendarObjectByUID($this->principalInfo['uri'], $uid);
 
     }
 

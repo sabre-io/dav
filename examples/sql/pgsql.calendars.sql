@@ -77,5 +77,5 @@ CREATE INDEX calendarchanges_calendarid_synctoken_ix
     ON calendarchanges USING btree (calendarid, synctoken);
 
 ALTER TABLE ONLY calendarchanges
-    ADD CONSTRAINT calendarchanges_calendar_fk FOREIGN KEY (calendarid) REFERENCES calendards(id)
+    ADD CONSTRAINT calendarchanges_calendar_fk FOREIGN KEY (calendarid) REFERENCES calendars(id)
         ON DELETE CASCADE;

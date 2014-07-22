@@ -18,7 +18,7 @@ CREATE TABLE calendars (
     principaluri VARBINARY(100),
     displayname VARCHAR(100),
     uri VARBINARY(200),
-    synctoken INTEGER UNSIGNED NOT NULL DEFAULT '0',
+    synctoken INTEGER UNSIGNED NOT NULL DEFAULT '1',
     description TEXT,
     calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
     calendarcolor VARBINARY(10),

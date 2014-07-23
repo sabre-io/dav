@@ -451,11 +451,19 @@ class Plugin extends ServerPlugin {
 
             $this->deliver($message);
 
-            foreach($vObj->VEVENT->ATTENDEE as $attendee) {
+            if (isset($vObj->VEVENT->ORGANIZER) && ($vObj->VEVENT->ORGANIZER->getValue() === $message->recipient)) {
 
-                if ($attendee->getValue() === $message->recipient) {
-                    $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
-                    break;
+                $vObj->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
+
+            } else {
+
+                foreach($vObj->VEVENT->ATTENDEE as $attendee) {
+
+                    if ($attendee->getValue() === $message->recipient) {
+                        $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                        break;
+                    }
+
                 }
 
             }

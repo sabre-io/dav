@@ -50,6 +50,17 @@ class PropFindTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testSetAllpropCustom() {
+
+        $propFind = new PropFind('foo', ['{DAV:}displayname'], 0, PropFind::ALLPROPS);
+        $propFind->set('{DAV:}customproperty', 'bar');
+
+        $this->assertEquals([
+            200 => ['{DAV:}customproperty' => 'bar'],
+        ], $propFind->getResultForMultiStatus());
+
+    }
+
     function testSetUnset() {
 
         $propFind = new PropFind('foo', ['{DAV:}displayname']);

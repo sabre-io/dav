@@ -11,7 +11,9 @@ ChangeLog
   and consistent.
 * #472: Always returning lock tokens in the lockdiscovery property.
 * Directory entries in the Browser plugin are sorted by type and name.
-
+  (@aklomp)
+* #486: It's now possible to return additional properties when an 'allprop'
+  PROPFIND request is being done. (@aklomp)
 
 2.0.3 (2014-07-14)
 ------------------

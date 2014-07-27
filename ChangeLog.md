@@ -10,6 +10,7 @@ ChangeLog
 * Changed: Restructured the zip distribution to be a little bit more lean
   and consistent.
 * #472: Always returning lock tokens in the lockdiscovery property.
+* Directory entries in the Browser plugin are sorted by type and name.
 
 
 2.0.3 (2014-07-14)

@@ -120,17 +120,23 @@ class PropFind {
      */
     public function set($propertyName, $value, $status = null) {
 
-        if (isset($this->result[$propertyName])) {
-            if (is_null($status)) {
-                $status = is_null($value) ? 404 : 200;
-            }
-            if ($status!==404 && $this->result[$propertyName][0]===404) {
-                $this->itemsLeft--;
-            } elseif ($status === 404 && $this->result[$propertyName][0] !== 404) {
-                $this->itemsLeft++;
-            }
-            $this->result[$propertyName] = [$status, $value];
+        if (is_null($status)) {
+            $status = is_null($value) ? 404 : 200;
         }
+        // If this is an ALLPROPS request and the property is
+        // unknown, add it to the result; else ignore it:
+        if (!isset($this->result[$propertyName])) {
+            if ($this->requestType === self::ALLPROPS) {
+                $this->result[$propertyName] = [$status, $value];
+            }
+            return;
+        }
+        if ($status!==404 && $this->result[$propertyName][0]===404) {
+            $this->itemsLeft--;
+        } elseif ($status === 404 && $this->result[$propertyName][0] !== 404) {
+            $this->itemsLeft++;
+        }
+        $this->result[$propertyName] = [$status, $value];
 
     }
 

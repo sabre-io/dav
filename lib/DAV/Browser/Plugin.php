@@ -253,16 +253,23 @@ HTML;
                 $fullPath = URLUtil::encodePath($this->server->getBaseUri() . $subPath);
                 list(, $displayPath) = URLUtil::splitPath($subPath);
 
+                $subNodes[$subPath]['subNode'] = $subNode;
+                $subNodes[$subPath]['fullPath'] = $fullPath;
+                $subNodes[$subPath]['displayPath'] = $displayPath;
+            }
+            uasort($subNodes, [$this, 'compareNodes']);
+
+            foreach($subNodes as $subProps) {
                 $type = [
                     'string' => 'Unknown',
                     'icon'   => 'cog',
                 ];
                 if (isset($subProps['{DAV:}resourcetype'])) {
-                    $type = $this->mapResourceType($subProps['{DAV:}resourcetype']->getValue(), $subNode);
+                    $type = $this->mapResourceType($subProps['{DAV:}resourcetype']->getValue(), $subProps['subNode']);
                 }
 
                 $html.= '<tr>';
-                $html.= '<td class="nameColumn"><a href="' . $this->escapeHTML($fullPath) . '"><span class="oi" data-glyph="'.$type['icon'].'"></span> ' . $this->escapeHTML($displayPath) . '</a></td>';
+                $html.= '<td class="nameColumn"><a href="' . $this->escapeHTML($subProps['fullPath']) . '"><span class="oi" data-glyph="'.$type['icon'].'"></span> ' . $this->escapeHTML($subProps['displayPath']) . '</a></td>';
                 $html.= '<td class="typeColumn">' . $type['string'] . '</td>';
                 $html.= '<td>';
                 if (isset($subProps['{DAV:}getcontentlength'])) {
@@ -426,6 +433,32 @@ HTML;
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
         $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setBody(fopen($assetPath,'r'));
+
+    }
+
+    /**
+     * Sort helper function: compares two directory entries based on type and
+     * display name. Collections sort above other types.
+     *
+     * @param array $a
+     * @param array $b
+     * @return int
+     */
+    protected function compareNodes($a, $b) {
+
+        $typeA = (isset($a['{DAV:}resourcetype']))
+            ? (in_array('{DAV:}collection', $a['{DAV:}resourcetype']->getValue()))
+            : false;
+
+        $typeB = (isset($b['{DAV:}resourcetype']))
+            ? (in_array('{DAV:}collection', $b['{DAV:}resourcetype']->getValue()))
+            : false;
+
+        // If same type, sort alphabetically by filename:
+        if ($typeA === $typeB) {
+            return strnatcasecmp($a['displayPath'], $b['displayPath']);
+        }
+        return (($typeA < $typeB) ? 1 : -1);
 
     }
 

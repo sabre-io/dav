@@ -129,6 +129,7 @@ class Plugin extends ServerPlugin {
         $server->on('propFind',            [$this, 'propFind']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
+        $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
         $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 
         /**
@@ -431,6 +432,36 @@ class Plugin extends ServerPlugin {
         $this->server->emit('schedule', [$iTipMessage]);
         if (!$iTipMessage->scheduleStatus) {
             $iTipMessage->scheduleStatus='5.2;There was no system capable of delivering the scheduling message';
+        }
+
+    }
+
+    /**
+     * This method is triggered before a file gets deleted.
+     *
+     * We use this event to make sure that when this happens, attendees get
+     * cancellations, and organizers get 'DECLINED' statuses.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function beforeUnbind($path) {
+
+        $node = $this->server->tree->getNodeForPath($path);
+
+        if (!$node instanceof ICalendarObject) {
+            return;
+        }
+
+        $addresses = $this->getAddressesForPrincipal(
+            $node->getOwner()
+        );
+
+        $broker = new ITip\Broker();
+        $messages = $broker->parseEvent(null, $addresses, $node->get());
+
+        foreach($messages as $message) {
+            $this->deliver($message);
         }
 
     }

@@ -266,6 +266,10 @@ class Plugin extends ServerPlugin {
             return;
         }
 
+        if (!$this->scheduleReply($this->server->httpRequest)) {
+            return;
+        }
+
         // It's a calendar, so the contents are most likely an iCalendar
         // object. It's time to start processing this.
         //
@@ -310,6 +314,10 @@ class Plugin extends ServerPlugin {
     public function beforeWriteContent($path, IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICalendarObject) {
+            return;
+        }
+
+        if (!$this->scheduleReply($this->server->httpRequest)) {
             return;
         }
 
@@ -378,6 +386,10 @@ class Plugin extends ServerPlugin {
         $node = $this->server->tree->getNodeForPath($path);
 
         if (!$node instanceof ICalendarObject) {
+            return;
+        }
+
+        if (!$this->scheduleReply($this->server->httpRequest)) {
             return;
         }
 
@@ -856,4 +868,19 @@ class Plugin extends ServerPlugin {
             'href' => 'mailto:' . $email,
         ];
     }
+
+    /**
+     * This method checks the 'Schedule-Reply' header
+     * and returns false if it's 'F', otherwise true.
+     *
+     * @param RequestInterface $request
+     * @return bool
+     */
+    private function scheduleReply(RequestInterface $request) {
+
+        $scheduleReply = $request->getHeader('Schedule-Reply');
+        return strpos($scheduleReply, 'F')!=='0';
+
+    }
+
 }

@@ -66,33 +66,6 @@ class Plugin extends ServerPlugin {
     protected $server;
 
     /**
-     * The email handler for invites and other scheduling messages.
-     *
-     * @var IMip
-     */
-    protected $imipHandler;
-
-    /**
-     * Sets the iMIP handler.
-     *
-     * iMIP = The email transport of iCalendar scheduling messages. Setting
-     * this is optional, but if you want the server to allow invites to be sent
-     * out, you must set a handler.
-     *
-     * Specifically iCal will plain assume that the server supports this. If
-     * the server doesn't, iCal will display errors when inviting people to
-     * events.
-     *
-     * @param IMip $imipHandler
-     * @return void
-     */
-    public function setIMipHandler(IMip $imipHandler) {
-
-        $this->imipHandler = $imipHandler;
-
-    }
-
-    /**
      * Returns a list of features for the DAV: HTTP header.
      *
      * @return array
@@ -126,7 +99,7 @@ class Plugin extends ServerPlugin {
     public function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('method:POST', [$this,'httpPost']);
+        $server->on('method:POST',         [$this, 'httpPost']);
         $server->on('propFind',            [$this, 'propFind']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
@@ -679,179 +652,11 @@ class Plugin extends ServerPlugin {
             $acl && $acl->checkPrivileges($outboxPath, '{' . self::NS_CALDAV . '}schedule-query-freebusy');
             $this->handleFreeBusyRequest($outboxNode, $vObject, $request, $response);
 
-        } elseif ($componentType === 'VEVENT' && in_array($method, ['REQUEST','REPLY','ADD','CANCEL'])) {
-
-            $acl && $acl->checkPrivileges($outboxPath, '{' . Plugin::NS_CALDAV . '}schedule-post-vevent');
-            $this->handleEventNotification($outboxNode, $vObject, $request, $response);
-
         } else {
 
-            throw new NotImplemented('SabreDAV supports only VFREEBUSY (REQUEST) and VEVENT (REQUEST, REPLY, ADD, CANCEL)');
+            throw new NotImplemented('We only support VFREEBUSY (REQUEST) on this endpoint');
 
         }
-
-    }
-
-    /**
-     * This method handles the REQUEST, REPLY, ADD and CANCEL methods for
-     * VEVENT iTip messages.
-     *
-     * @param IOutbox $outboxNode
-     * @param VObject\Component $vObject
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return void
-     */
-    protected function handleEventNotification(IOutbox $outboxNode, VObject\Component $vObject, RequestInterface $request, ResponseInterface $response) {
-
-        $originator = $request->getHeader('Originator');
-        $recipients = $request->getHeader('Recipient');
-
-        if (!$originator) {
-            throw new BadRequest('The Originator: header must be specified when making POST requests');
-        }
-        if (!$recipients) {
-            throw new BadRequest('The Recipient: header must be specified when making POST requests');
-        }
-
-        $recipients = explode(',',$recipients);
-        foreach($recipients as $k=>$recipient) {
-
-            $recipient = trim($recipient);
-            if (!preg_match('/^mailto:(.*)@(.*)$/i', $recipient)) {
-                throw new BadRequest('Recipients must start with mailto: and must be valid email address');
-            }
-            $recipient = substr($recipient, 7);
-            $recipients[$k] = $recipient;
-        }
-
-        // We need to make sure that 'originator' matches the currently
-        // authenticated user.
-        $aclPlugin = $this->server->getPlugin('acl');
-        if (is_null($aclPlugin)) throw new DAV\Exception('The ACL plugin must be loaded for scheduling to work');
-        $principal = $aclPlugin->getCurrentUserPrincipal();
-
-        $props = $this->server->getProperties($principal, [
-            '{' . self::NS_CALDAV . '}calendar-user-address-set',
-        ]);
-
-        $addresses = [];
-        if (isset($props['{' . self::NS_CALDAV . '}calendar-user-address-set'])) {
-            $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
-        }
-
-        $found = false;
-        foreach($addresses as $address) {
-
-            // Trimming the / on both sides, just in case..
-            if (rtrim(strtolower($originator),'/') === rtrim(strtolower($address),'/')) {
-                $found = true;
-                break;
-            }
-
-        }
-
-        if (!$found) {
-            throw new Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
-        }
-
-        // If the Originator header was a url, and not a mailto: address..
-        // we're going to try to pull the mailto: from the vobject body.
-        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
-            $originator = (string)$vObject->VEVENT->ORGANIZER;
-
-        }
-        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
-            throw new Forbidden('Could not find mailto: address in both the Orignator header, and the ORGANIZER property in the VEVENT');
-        }
-        $originator = substr($originator,7);
-
-        $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
-        $response->setStatus(200);
-        $response->setHeader('Content-Type','application/xml');
-        $response->setBody($this->generateScheduleResponse($result));
-
-    }
-
-    /**
-     * Sends an iMIP message by email.
-     *
-     * This method must return an array with status codes per recipient.
-     * This should look something like:
-     *
-     * [
-     *    'user1@example.org' => '2.0;Success'
-     * ]
-     *
-     * Formatting for this status code can be found at:
-     * https://tools.ietf.org/html/rfc5545#section-3.8.8.3
-     *
-     * A list of valid status codes can be found at:
-     * https://tools.ietf.org/html/rfc5546#section-3.6
-     *
-     * @param string $originator
-     * @param array $recipients
-     * @param VObject\Component $vObject
-     * @param string $principal Principal url
-     * @return array
-     */
-    protected function iMIPMessage($originator, array $recipients, VObject\Component $vObject, $principal) {
-
-        if (!$this->imipHandler) {
-            $resultStatus = '5.2;This server does not support this operation';
-        } else {
-            $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
-            $resultStatus = '2.0;Success';
-        }
-
-        $result = [];
-        foreach($recipients as $recipient) {
-            $result[$recipient] = $resultStatus;
-        }
-
-        return $result;
-
-    }
-
-    /**
-     * Generates a schedule-response XML body
-     *
-     * The recipients array is a key->value list, containing email addresses
-     * and iTip status codes. See the iMIPMessage method for a description of
-     * the value.
-     *
-     * @param array $recipients
-     * @return string
-     */
-    public function generateScheduleResponse(array $recipients) {
-
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $xscheduleResponse = $dom->createElement('cal:schedule-response');
-        $dom->appendChild($xscheduleResponse);
-
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $xscheduleResponse->setAttribute('xmlns:' . $prefix, $namespace);
-
-        }
-
-        foreach($recipients as $recipient=>$status) {
-            $xresponse = $dom->createElement('cal:response');
-
-            $xrecipient = $dom->createElement('cal:recipient');
-            $xrecipient->appendChild($dom->createTextNode($recipient));
-            $xresponse->appendChild($xrecipient);
-
-            $xrequestStatus = $dom->createElement('cal:request-status');
-            $xrequestStatus->appendChild($dom->createTextNode($status));
-            $xresponse->appendChild($xrequestStatus);
-
-            $xscheduleResponse->appendChild($xresponse);
-
-        }
-
-        return $dom->saveXML();
 
     }
 

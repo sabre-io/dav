@@ -6,7 +6,8 @@ use
     Sabre\DAV,
     Sabre\DAVACL,
     Sabre\HTTP,
-    Sabre\CalDAV;
+    Sabre\CalDAV,
+    Sabre\CalDAV\Property\ScheduleCalendarTransp;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
@@ -24,6 +25,12 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
                 'id'           => 1,
                 'uri'          => 'calendar1',
             ),
+            array(
+                'principaluri' => 'principals/user2',
+                'id'           => 2,
+                'uri'          => 'calendar2',
+                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => ScheduleCalendarTransp::TRANSPARENT,
+            ),
         );
         $calendarobjects = array(
             1 => array( '1.ics' => array(
@@ -35,6 +42,16 @@ DURATION:PT1H
 END:VEVENT
 END:VCALENDAR',
                 'calendarid' => 1,
+            )),
+            2 => array( '2.ics' => array(
+                'uri' => '2.ics',
+                'calendardata' => 'BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20110101T080000
+DURATION:PT1H
+END:VEVENT
+END:VCALENDAR',
+                'calendarid' => 2,
             ))
 
         );
@@ -289,6 +306,10 @@ ICS;
             );
         }
 
+        $this->assertTrue(
+            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z')==false,
+            'The response body did contain free busy info from a transparent calendar.'
+        );
 
     }
 

@@ -63,6 +63,22 @@ ICS;
         $this->assertItemsInInbox('user2', 0);
 
     }
+    function testNewInviteSchedulingDisabled() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->deliver(null, $newObject, true);
+        $this->assertItemsInInbox('user2', 0);
+
+    }
     function testUpdatedInvite() {
 
         $newObject = <<<ICS
@@ -85,6 +101,30 @@ ICS;
 
         $this->deliver($oldObject, $newObject);
         $this->assertItemsInInbox('user2', 1);
+
+    }
+    function testUpdatedInviteSchedulingDisabled() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+        $oldObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->deliver($oldObject, $newObject, true);
+        $this->assertItemsInInbox('user2', 0);
 
     }
 
@@ -132,6 +172,26 @@ ICS;
         $this->assertItemsInInbox('user2', 1);
 
     }
+
+    function testDeletedInviteSchedulingDisabled() {
+
+        $newObject = null;
+
+        $oldObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->deliver($oldObject, $newObject, true);
+        $this->assertItemsInInbox('user2', 0);
+
+    }
+
     function testDeletedInviteWrongUrl() {
 
         $newObject = null;
@@ -154,7 +214,11 @@ ICS;
 
     protected $calendarObjectUri;
 
-    function deliver($oldObject, $newObject) {
+    function deliver($oldObject, $newObject, $disableScheduling = false) {
+
+        if ($disableScheduling) {
+            $this->server->httpRequest->setHeader('Schedule-Reply','F');
+        }
 
         if ($oldObject && $newObject) {
             // update

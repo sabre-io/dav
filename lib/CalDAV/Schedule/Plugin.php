@@ -879,7 +879,7 @@ class Plugin extends ServerPlugin {
     private function scheduleReply(RequestInterface $request) {
 
         $scheduleReply = $request->getHeader('Schedule-Reply');
-        return strpos($scheduleReply, 'F')!=='0';
+        return $scheduleReply!=='F';
 
     }
 

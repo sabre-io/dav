@@ -17,6 +17,8 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest {
             '{urn:ietf:params:xml:ns:caldav}schedule-inbox-URL',
             '{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',
             '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
+            '{urn:ietf:params:xml:ns:caldav}calendar-user-type',
+            '{urn:ietf:params:xml:ns:caldav}schedule-default-calendar-URL',
         ));
 
         $this->assertArrayHasKey(0,$props);
@@ -32,11 +34,14 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest {
         $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/inbox',$prop->getHref());
 
-
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
         $this->assertTrue($prop instanceof DAV\Property\HrefList);
         $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1/'),$prop->getHrefs());
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-type',$props[0][200]);
+        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-type'];
+        $this->assertEquals('INDIVIDUAL',$prop);
 
     }
 

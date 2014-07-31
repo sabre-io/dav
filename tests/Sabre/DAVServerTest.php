@@ -26,6 +26,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCalDAVScheduling = false;
     protected $setupCalDAVSubscriptions = false;
 
+    /**
+     * An array with calendars. Every calendar should have
+     *   - principaluri
+     *   - uri
+     */
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
 

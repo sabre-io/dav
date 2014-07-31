@@ -268,14 +268,6 @@ class Plugin extends ServerPlugin {
 
         });
 
-        // The calendar-user-address-set property is basically mapped to
-        // the {DAV:}alternate-URI-set property.
-        $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node) {
-            $addresses = $node->getAlternateUriSet();
-            $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
-            return new HrefList($addresses, false);
-        });
-
         // The server currently reports every principal to be of type
         // 'INDIVIDUAL'
         $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-type', function() {

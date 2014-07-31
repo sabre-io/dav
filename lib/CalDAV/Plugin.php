@@ -4,6 +4,7 @@ namespace Sabre\CalDAV;
 
 use
     Sabre\DAV,
+    Sabre\DAV\Property\HrefList,
     Sabre\DAVACL,
     Sabre\VObject,
     Sabre\HTTP,
@@ -312,6 +313,13 @@ class Plugin extends DAV\ServerPlugin {
                 return new DAV\Property\Href($calendarHomePath);
 
             });
+            // The calendar-user-address-set property is basically mapped to
+            // the {DAV:}alternate-URI-set property.
+            $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node) {
+                $addresses = $node->getAlternateUriSet();
+                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+                return new HrefList($addresses, false);
+            });
 
             // These two properties are shortcuts for ical to easily find
             // other principals this principal has access to.
@@ -341,8 +349,8 @@ class Plugin extends DAV\ServerPlugin {
 
                 }
 
-                $propFind->set($propRead, new DAV\Property\HrefList($readList));
-                $propFind->set($propWrite, new DAV\Property\HrefList($writeList));
+                $propFind->set($propRead, new HrefList($readList));
+                $propFind->set($propWrite, new HrefList($writeList));
 
             }
 

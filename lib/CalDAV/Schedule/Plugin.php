@@ -14,6 +14,7 @@ use
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
     Sabre\VObject\Reader,
+    Sabre\VObject\Component\VCalendar,
     Sabre\VObject\ITip,
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
@@ -315,23 +316,7 @@ class Plugin extends ServerPlugin {
             $parentNode->getOwner()
         );
 
-        $broker = new ITip\Broker();
-        $messages = $broker->parseEvent($vObj, $addresses);
-
-        foreach($messages as $message) {
-
-            $this->deliver($message);
-
-            foreach($vObj->VEVENT->ATTENDEE as $attendee) {
-
-                if ($attendee->getValue() === $message->recipient) {
-                    $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
-                    break;
-                }
-
-            }
-
-        }
+        $this->processICalendarChange(null, $vObj, $addresses);
 
         // After all this exciting action we set $data to the updated event
         // that contains all the new status information (if any).
@@ -378,31 +363,9 @@ class Plugin extends ServerPlugin {
             $node->getOwner()
         );
 
-        $broker = new ITip\Broker();
-        $messages = $broker->parseEvent($vObj, $addresses, $node->get());
+        $oldObj = Reader::read($node->get());
 
-        foreach($messages as $message) {
-
-            $this->deliver($message);
-
-            if (isset($vObj->VEVENT->ORGANIZER) && ($vObj->VEVENT->ORGANIZER->getValue() === $message->recipient)) {
-
-                $vObj->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
-
-            } else {
-
-                foreach($vObj->VEVENT->ATTENDEE as $attendee) {
-
-                    if ($attendee->getValue() === $message->recipient) {
-                        $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
-                        break;
-                    }
-
-                }
-
-            }
-
-        }
+        $this->processICalendarChange($oldObj, $vObj, $addresses);
 
         // After all this exciting action we set $data to the updated event
         // that contains all the new status information (if any).
@@ -545,7 +508,11 @@ class Plugin extends ServerPlugin {
             // There was an existing object, we need to update probably.
             $objectPath = $homePath . '/' . $result;
             $objectNode = $this->server->tree->getNodeForPath($objectPath);
-            $currentObject = Reader::read($objectNode->get());
+            $oldICalendarData = $objectNode->get();
+            if (is_resource($oldICalendarData)) {
+                $oldICalendarData = stream_get_contents($oldICalendarData);
+            }
+            $currentObject = Reader::read($oldICalendarData);
         } else {
             $isNewNode = true;
         }
@@ -570,9 +537,69 @@ class Plugin extends ServerPlugin {
             $calendar = $this->server->tree->getNodeForPath($calendarPath);
             $calendar->createFile($newFileName, $newObject->serialize());
         } else {
+            // If the message was a reply, we may have to inform other
+            // attendees of this attendees status. Therefore we're shooting off
+            // another itipMessage.
+            if ($message->itipMessage->method === 'REPLY') {
+                $this->processICalendarChange(
+                    $oldICalendarData,
+                    $newObject,
+                    [$message->recipient],
+                    [$message->sender]
+                );
+            }
             $objectNode->put($newObject->serialize());
         }
         $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
+
+    }
+
+    /**
+     * This method looks at an old iCalendar object, a new iCalendar object and
+     * starts sending scheduling messages based on the changes.
+     *
+     * A list of addresses needs to be specified, so the system knows who made
+     * the update, because the behavior may be different based on if it's an
+     * attendee or an organizer.
+     *
+     * This method may update $newObject to add any status changes.
+     *
+     * @param VCalendar $oldObject
+     * @param VCalendar $newObject
+     * @param array $addresses
+     * @param array $ignore Any addresses to not send messages to.
+     * @return void
+     */
+    protected function processICalendarChange(VCalendar $oldObject = null, VCalendar $newObject, array $addresses, array $ignore = []) {
+
+        $broker = new ITip\Broker();
+        $messages = $broker->parseEvent($newObject, $addresses, $oldObject);
+
+        foreach($messages as $message) {
+
+            if (in_array($message->recipient, $ignore)) {
+                continue;
+            }
+
+            $this->deliver($message);
+
+            if (isset($newObject->VEVENT->ORGANIZER) && ($newObject->VEVENT->ORGANIZER->getValue() === $message->recipient)) {
+                $newObject->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
+
+            } else {
+
+                foreach($newObject->VEVENT->ATTENDEE as $attendee) {
+
+                    if ($attendee->getValue() === $message->recipient) {
+                        $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                        break;
+                    }
+
+                }
+
+            }
+
+        }
 
     }
 

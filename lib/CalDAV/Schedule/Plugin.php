@@ -486,9 +486,6 @@ class Plugin extends ServerPlugin {
             $objectPath = $homePath . '/' . $result;
             $objectNode = $this->server->tree->getNodeForPath($objectPath);
             $oldICalendarData = $objectNode->get();
-            if (is_resource($oldICalendarData)) {
-                $oldICalendarData = stream_get_contents($oldICalendarData);
-            }
             $currentObject = Reader::read($oldICalendarData);
         } else {
             $isNewNode = true;
@@ -517,12 +514,12 @@ class Plugin extends ServerPlugin {
             // If the message was a reply, we may have to inform other
             // attendees of this attendees status. Therefore we're shooting off
             // another itipMessage.
-            if ($message->itipMessage->method === 'REPLY') {
+            if ($iTipMessage->method === 'REPLY') {
                 $this->processICalendarChange(
                     $oldICalendarData,
                     $newObject,
-                    [$message->recipient],
-                    [$message->sender]
+                    [$iTipMessage->recipient],
+                    [$iTipMessage->sender]
                 );
             }
             $objectNode->put($newObject->serialize());
@@ -541,13 +538,13 @@ class Plugin extends ServerPlugin {
      *
      * This method may update $newObject to add any status changes.
      *
-     * @param VCalendar $oldObject
+     * @param VCalendar|string $oldObject
      * @param VCalendar $newObject
      * @param array $addresses
      * @param array $ignore Any addresses to not send messages to.
      * @return void
      */
-    protected function processICalendarChange(VCalendar $oldObject = null, VCalendar $newObject, array $addresses, array $ignore = []) {
+    protected function processICalendarChange($oldObject = null, VCalendar $newObject, array $addresses, array $ignore = []) {
 
         $broker = new ITip\Broker();
         $messages = $broker->parseEvent($newObject, $addresses, $oldObject);

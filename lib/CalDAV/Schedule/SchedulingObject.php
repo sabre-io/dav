@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV\Schedule;
 
 use Sabre\CalDAV\Backend;
+use Sabre\DAV\Exception\MethodNotAllowed;
 
 /**
  * The SchedulingObject represents a scheduling object in the Inbox collection
@@ -90,6 +91,8 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      * @return string
      */
     public function put($calendarData) {
+
+        throw new MethodNotAllowed('Updating scheduling objects is not supported');
 
     }
 

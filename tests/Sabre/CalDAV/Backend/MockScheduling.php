@@ -90,42 +90,4 @@ class MockScheduling extends Mock implements SchedulingSupport {
 
     }
 
-    /**
-     * Searches through all of a users calendars and calendar objects to find
-     * an object with a specific UID.
-     *
-     * The returned data should contain all the information getCalendarObject
-     * also returns, but also include a 'calendarUri' property. This property
-     * should *just* be the basename of the calendar.
-     *
-     * Return false if the object cannot be found.
-     *
-     * @param string $principalUri
-     * @param string $uid
-     * @return array|bool
-     */
-    public function getCalendarObjectByUID($principalUri, $uid) {
-
-        // Super slow mode...
-        foreach($this->getCalendarsForUser($principalUri) as $calendar) {
-            foreach($this->getCalendarObjects($calendar['id']) as $calendarObject) {
-                $vobj = \Sabre\VObject\Reader::read($calendarObject['calendardata']);
-                foreach($vobj->children as $child) {
-                    if (!$child instanceof \Sabre\VObject\Component) {
-                        continue;
-                    }
-                    if (!isset($child->UID)) {
-                        continue;
-                    }
-                    if ($child->UID->getValue() !== $uid) {
-                        continue 2;
-                    }
-                    $calendarObject['calendarUri'] = $calendar['uri'];
-                    return $calendarObject;
-                }
-            }
-        }
-
-    }
-
 }

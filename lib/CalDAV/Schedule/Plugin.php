@@ -19,6 +19,7 @@ use
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\CalDAV\ICalendarObject,
+    Sabre\CalDAV\Property\ScheduleCalendarTransp,
     Sabre\DAV\Exception\NotFound,
     Sabre\DAV\Exception\Forbidden,
     Sabre\DAV\Exception\BadRequest,
@@ -814,6 +815,14 @@ class Plugin extends ServerPlugin {
             if (!$node instanceof ICalendar) {
                 continue;
             }
+
+            $sct = $caldavNS . 'schedule-calendar-transp';
+            $props = $node->getProperties([$sct]);
+
+            if (isset($props[$sct]) && $props[$sct]->getValue() == ScheduleCalendarTransp::TRANSPARENT) {
+                continue;
+            }
+
             $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
 
             // Getting the list of object uris within the time-range

@@ -822,7 +822,7 @@ class Plugin extends ServerPlugin {
             $sct = $caldavNS . 'schedule-calendar-transp';
             $props = $node->getProperties([$sct]);
 
-            if (isset($props[$sct]) && $props[$sct] == ScheduleCalendarTransp::TRANSPARENT) {
+            if (isset($props[$sct]) && $props[$sct]->getValue() == ScheduleCalendarTransp::TRANSPARENT) {
                 continue;
             }
 

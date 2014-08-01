@@ -29,7 +29,7 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
                 'principaluri' => 'principals/user2',
                 'id'           => 2,
                 'uri'          => 'calendar2',
-                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => ScheduleCalendarTransp::TRANSPARENT,
+                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT),
             ),
         );
         $calendarobjects = array(

@@ -16,6 +16,7 @@ use
     Sabre\VObject\Reader,
     Sabre\VObject\Component\VCalendar,
     Sabre\VObject\ITip,
+    Sabre\VObject\ITip\Message,
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\CalDAV\ICalendarObject,
@@ -104,7 +105,7 @@ class Plugin extends ServerPlugin {
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
-        $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
+        $server->on('schedule',            [$this, 'schedulelocaldelivery']);
 
         /**
          * This information ensures that the {DAV:}resourcetype property has
@@ -412,10 +413,10 @@ class Plugin extends ServerPlugin {
      * This handler attempts to look at local accounts to deliver the
      * scheduling object.
      *
-     * @param ITipImessage $iTipMessage
+     * @param ITip\Message $iTipMessage
      * @return void
      */
-    public function scheduleLocalDelivery($iTipMessage) {
+    public function scheduleLocalDelivery(ITip\Message $iTipMessage) {
 
         $aclPlugin = $this->server->getPlugin('acl');
 

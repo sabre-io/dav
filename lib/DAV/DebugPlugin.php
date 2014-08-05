@@ -26,8 +26,8 @@ class DebugPlugin extends ServerPlugin {
     protected $startTime;
 
     protected $contentTypeWhiteList = array(
-        '|^text/|',
-        '|^application/xml|',
+        '#^text/(?!html|css)#',
+        '#^application/xml#',
     );
 
     public function __construct(LoggerInterface $logger) {

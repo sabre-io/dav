@@ -25,14 +25,17 @@ class DebugPlugin extends ServerPlugin {
     protected $logger;
     protected $startTime;
 
+    protected $redactAuthHeader;
+
     protected $contentTypeWhiteList = array(
         '#^text/(?!html|css)#',
         '#^application/xml#',
     );
 
-    public function __construct(LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger, $redactAuthHeader = true) {
 
         $this->logger = $logger;
+        $this->redactAuthHeader = $redactAuthHeader;
         $this->startTime = time();
 
     }
@@ -78,7 +81,11 @@ class DebugPlugin extends ServerPlugin {
         $this->log(LogLevel::DEBUG, 'SabreDAV server Base URI: ' . $this->server->getBaseUri());
         $this->log(LogLevel::DEBUG,'Headers:');
         foreach($request->getHeaders() as $key=>$value) {
-            $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
+            if(strtolower($key) == 'authorization' && $this->redactAuthHeader) {
+                $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . '<REDACTED>');
+            } else {
+                $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
+            }
         }
 
         // We're only going to show the request body if it's text-based. The

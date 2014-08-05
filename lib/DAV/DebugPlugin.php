@@ -54,7 +54,7 @@ class DebugPlugin extends ServerPlugin {
         $this->server = $server;
         $server->on('beforeMethod', [$this, 'beforeMethod'], 5);
         $server->on('afterMethod', [$this, 'afterMethod'], 200);
-        $this->log(LogLevel::INFO, 'Initialized plugin. Request time ' . $this->startTime . ' (' . date(DateTime::RFC2822,$this->startTime) . '). Version: ' . Version::VERSION);
+        $this->log(LogLevel::INFO, 'Initialized plugin. Request time ' . $this->startTime . ' (' . date(DateTime::RFC2822, $this->startTime) . '). Version: ' . Version::VERSION);
 
     }
 
@@ -154,7 +154,7 @@ class DebugPlugin extends ServerPlugin {
             // Only grabbing the first 10kb
             $strBody = fread($body, 10240);
 
-            $this->log(LogLevel::DEBUG, 'Request body:');
+            $this->log(LogLevel::DEBUG, 'Response body:');
             $this->log(LogLevel::DEBUG, $strBody);
 
             // Writing the bytes we already read

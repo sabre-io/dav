@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV\Subscriptions;
 
 use Sabre\DAV\Property\Href;
+use Sabre\DAV\PropPatch;
 
 class SubscriptionTest extends \PHPUnit_Framework_TestCase {
 
@@ -114,9 +115,11 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
     function testUpdateProperties() {
 
         $sub = $this->getSub();
-        $this->assertTrue($sub->updateProperties([
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'foo',
-        ]));
+        ]);
+        $sub->propPatch($propPatch);
+        $this->assertTrue($propPatch->commit());
 
         $this->assertEquals(
             'foo',

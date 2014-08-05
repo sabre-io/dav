@@ -101,7 +101,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(411, $response->status, 'Full response body:' . $response->body);
 
     }
 
@@ -121,7 +121,23 @@ class PluginTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals(204, $response->status, 'Full response body:' . $response->body);
-        $this->assertEquals('00111000', $this->node->get());
+        $this->assertEquals('00011100', $this->node->get());
+
+    }
+
+    public function testPatchNoEndRange() {
+
+        $this->node->put('00000');
+        $request = new HTTP\Request('PATCH','/partial',[
+            'X-Update-Range' => 'bytes=3-',
+            'Content-Type'   => 'application/x-sabredav-partialupdate',
+            'Content-Length' => '3',
+        ], '111');
+
+        $response = $this->request($request);
+
+        $this->assertEquals(204, $response->getStatus(), 'Full response body:' . $response->getBodyAsString());
+        $this->assertEquals('00111', $this->node->get());
 
     }
 

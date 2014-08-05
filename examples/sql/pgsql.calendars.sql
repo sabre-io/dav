@@ -3,7 +3,7 @@ CREATE TABLE calendars (
     principaluri VARCHAR(100),
     displayname VARCHAR(100),
     uri VARCHAR(200),
-    ctag INTEGER NOT NULL DEFAULT 0,
+    synctoken INTEGER NOT NULL DEFAULT 1,
     description TEXT,
     calendarorder INTEGER NOT NULL DEFAULT 0,
     calendarcolor VARCHAR(10),
@@ -20,13 +20,13 @@ CREATE UNIQUE INDEX calendars_ukey
 
 CREATE TABLE calendarobjects (
     id SERIAL NOT NULL,
-    calendarid INTEGER NOT NULL,
     calendardata TEXT,
     uri VARCHAR(200),
+    calendarid INTEGER NOT NULL,
+    lastmodified INTEGER,
     etag VARCHAR(32),
     size INTEGER NOT NULL,
     componenttype VARCHAR(8),
-    lastmodified INTEGER,
     firstoccurence INTEGER,
     lastoccurence INTEGER
 );
@@ -53,7 +53,7 @@ CREATE TABLE calendarsubscriptions (
     striptodos SMALLINT NULL,
     stripalarms SMALLINT NULL,
     stripattachments SMALLINT NULL,
-    lastmodified INTEGER,
+    lastmodified INTEGER
 );
 
 ALTER TABLE ONLY calendarsubscriptions
@@ -61,3 +61,21 @@ ALTER TABLE ONLY calendarsubscriptions
 
 CREATE UNIQUE INDEX calendarsubscriptions_ukey
     ON calendarsubscriptions USING btree (principaluri, uri);
+
+CREATE TABLE calendarchanges (
+    id SERIAL NOT NULL,
+    uri VARCHAR(200) NOT NULL,
+    synctoken INTEGER NOT NULL,
+    calendarid INTEGER NOT NULL,
+    operation SMALLINT NOT NULL DEFAULT 0
+);
+
+ALTER TABLE ONLY calendarchanges
+    ADD CONSTRAINT calendarchanges_pkey PRIMARY KEY (id);
+
+CREATE INDEX calendarchanges_calendarid_synctoken_ix
+    ON calendarchanges USING btree (calendarid, synctoken);
+
+ALTER TABLE ONLY calendarchanges
+    ADD CONSTRAINT calendarchanges_calendar_fk FOREIGN KEY (calendarid) REFERENCES calendars(id)
+        ON DELETE CASCADE;

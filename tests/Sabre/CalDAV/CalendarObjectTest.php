@@ -209,6 +209,42 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testDefaultACL() {
+
+        $backend = new Backend\Mock([], []);
+        $calendarObject = new CalendarObject($backend, ['principaluri' => 'principals/user1'], ['calendarid' => 1, 'uri' => 'foo']);
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => true,
+            ),
+        );
+        $this->assertEquals($expected, $calendarObject->getACL());
+
+
+    }
+
     /**
      * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */

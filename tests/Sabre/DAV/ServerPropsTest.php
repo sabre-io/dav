@@ -32,41 +32,18 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    private function sendRequest($body) {
+    private function sendRequest($body, $path = '/', $headers = ['Depth' => '0']) {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'PROPFIND',
-            'HTTP_DEPTH'          => '0',
-        );
+        $request = new HTTP\Request('PROPFIND', $path, $headers, $body);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($body);
-
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
     }
 
     public function testPropFindEmptyBody() {
 
-        $hasFired = false;
-
-        $self = $this;
-        // Also testing the beforeGetPropertiesForPath event.
-        $this->server->on('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
-
-            $hasFired = true;
-            $self->assertEquals('', $path);
-            $self->assertEquals([], $properties);
-            $self->assertEquals(0, $depth);
-
-        });
-
         $this->sendRequest("");
-
-        $this->assertTrue($hasFired);
-
         $this->assertEquals(207, $this->response->status);
 
         $this->assertEquals(array(
@@ -85,6 +62,31 @@ class ServerPropsTest extends AbstractServer {
         $this->assertEquals('/',(string)$data,'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
+        $this->assertEquals(1,count($data));
+
+    }
+
+    public function testPropFindEmptyBodyFile() {
+
+        $this->sendRequest("", '/test2.txt', []);
+        $this->assertEquals(207, $this->response->status);
+
+        $this->assertEquals(array(
+                'Content-Type' => 'application/xml; charset=utf-8',
+                'DAV' => '1, 3, extended-mkcol, 2',
+                'Vary' => 'Brief,Prefer',
+            ),
+            $this->response->headers
+         );
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d','urn:DAV');
+
+        list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
+        $this->assertEquals('/test2.txt',(string)$data,'href element should have been /');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength');
         $this->assertEquals(1,count($data));
 
     }
@@ -174,9 +176,6 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::parsePropPatchRequest
-     */
     public function testParsePropPatchRequest() {
 
         $body = '<?xml version="1.0"?>
@@ -196,9 +195,6 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     */
     public function testUpdateProperties() {
 
         $props = array(
@@ -208,16 +204,11 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/test2.txt',$props);
 
         $this->assertEquals(array(
-            '200' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/test2.txt',
+            '{http://sabredav.org/NS/test}someprop' => 200
         ), $result);
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
     public function testUpdatePropertiesProtected() {
 
         $props = array(
@@ -228,20 +219,17 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/test2.txt',$props);
 
         $this->assertEquals(array(
-            '424' => array('{http://sabredav.org/NS/test}someprop' => null),
-            '403' => array('{DAV:}getcontentlength' => null),
-            'href' => '/test2.txt',
+            '{http://sabredav.org/NS/test}someprop' => 424,
+            '{DAV:}getcontentlength' => 403,
         ), $result);
 
     }
 
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
     public function testUpdatePropertiesFail1() {
 
-        $dir = new PropTestDirMock('updatepropsfalse');
+        $dir = new Mock\PropertiesCollection('root', []);
+        $dir->failMode = 'updatepropsfalse';
+
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -252,19 +240,19 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/',$props);
 
         $this->assertEquals(array(
-            '403' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/',
+            '{http://sabredav.org/NS/test}someprop' => 403,
         ), $result);
 
     }
 
     /**
-     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
      */
     public function testUpdatePropertiesFail2() {
 
-        $dir = new PropTestDirMock('updatepropsarray');
+        $dir = new Mock\PropertiesCollection('root', []);
+        $dir->failMode = 'updatepropsarray';
+
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -275,20 +263,20 @@ class ServerPropsTest extends AbstractServer {
         $result = $this->server->updateProperties('/',$props);
 
         $this->assertEquals(array(
-            '402' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/',
+            '{http://sabredav.org/NS/test}someprop' => 402
         ), $result);
 
     }
 
     /**
-     * @covers Sabre\DAV\Server::updateProperties
      * @depends testUpdateProperties
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \UnexpectedValueException
      */
     public function testUpdatePropertiesFail3() {
 
-        $dir = new PropTestDirMock('updatepropsobj');
+        $dir = new Mock\PropertiesCollection('root', []);
+        $dir->failMode = 'updatepropsobj';
+
         $objectTree = new ObjectTree($dir);
         $this->server->tree = $objectTree;
 
@@ -378,35 +366,3 @@ class ServerPropsTest extends AbstractServer {
 
 }
 
-class PropTestDirMock extends SimpleCollection implements IProperties {
-
-    public $type;
-
-    function __construct($type) {
-
-        $this->type =$type;
-        parent::__construct('root');
-
-    }
-
-    function updateProperties($updateProperties) {
-
-        switch($this->type) {
-            case 'updatepropsfalse' : return false;
-            case 'updatepropsarray' :
-                $r = array(402 => array());
-                foreach($updateProperties as $k=>$v) $r[402][$k] = null;
-                return $r;
-            case 'updatepropsobj' :
-                return new \STDClass();
-        }
-
-    }
-
-    function getProperties($requestedPropeties) {
-
-        return array();
-
-    }
-
-}

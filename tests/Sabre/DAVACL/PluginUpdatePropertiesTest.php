@@ -23,10 +23,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         ));
 
         $expected = array(
-            'href' => 'foo',
-            '403' => array(
-                '{DAV:}foo' => null,
-            ),
+            '{DAV:}foo' => 403,
         );
 
         $this->assertEquals($expected, $result);
@@ -46,10 +43,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         ));
 
         $expected = array(
-            'href' => 'foo',
-            '200' => array(
-                '{DAV:}group-member-set' => null,
-            ),
+            '{DAV:}group-member-set' => 204
         );
 
         $this->assertEquals($expected, $result);
@@ -70,10 +64,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         ));
 
         $expected = array(
-            'href' => 'foo',
-            '200' => array(
-                '{DAV:}group-member-set' => null,
-            ),
+            '{DAV:}group-member-set' => 200
         );
 
         $this->assertEquals($expected, $result);
@@ -108,17 +99,10 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $result = $server->updateProperties('foo', array(
             '{DAV:}group-member-set' => new DAV\Property\HrefList(array('/bar','/baz'),false),
-            '{DAV:}bar' => 'baz',
         ));
 
         $expected = array(
-            'href' => 'foo',
-            '403' => array(
-                '{DAV:}group-member-set' => null,
-            ),
-            '424' => array(
-                '{DAV:}bar' => null,
-            ),
+            '{DAV:}group-member-set' => 403,
         );
 
         $this->assertEquals($expected, $result);

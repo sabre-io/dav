@@ -164,12 +164,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockRefresh() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/test.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -182,25 +177,20 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $lockToken = $this->response->headers['Lock-Token'];
+        $lockToken = $this->response->getHeader('Lock-Token');
 
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
-        $serverVars = array(
-            'REQUEST_URI' => '/test.txt',
-            'REQUEST_METHOD' => 'LOCK',
-            'HTTP_IF' => '(' . $lockToken . ')',
-        );
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/test.txt', ['If' => '(' . $lockToken . ')' ]);
         $request->setBody('');
-        $this->server->httpRequest = $request;
 
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->getHeader('Content-Type'));
 
-        $this->assertEquals(200, $this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals(200, $this->response->status,'We received an incorrect status code. Full response body: ' . $this->response->getBody());
 
     }
 
@@ -919,6 +909,21 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->httpRequest = $request;
         $this->server->exec();
         $this->assertEquals(204, $this->response->status, 'Incorrect status received. Full response body:' . $this->response->body);
+
+    }
+
+    function testDeleteWithETagOnCollection() {
+
+        $serverVars = array(
+            'REQUEST_URI'    => '/dir',
+            'REQUEST_METHOD' => 'DELETE',
+            'HTTP_IF' => '(["etag1"])',
+        );
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+        $this->assertEquals(412, $this->response->status);
 
     }
 

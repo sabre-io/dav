@@ -24,7 +24,7 @@ date_default_timezone_set('UTC');
  *
  * This can be for example the root / or a complete path to your server script.
  */
-$baseUri = '/';
+// $baseUri = '/';
 
 /**
  * Database
@@ -78,7 +78,7 @@ $nodes = [
 
 // The object tree needs in turn to be passed to the server class
 $server = new \Sabre\DAV\Server($nodes);
-$server->setBaseUri($baseUri);
+if (isset($baseUri)) $server->setBaseUri($baseUri);
 
 // Plugins
 $server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend,'SabreDAV'));

@@ -8,8 +8,8 @@ php:
   - hhvm
 
 matrix:
+  fast_finish: true
   allow_failures:
-    - php: 5.6
     - php: hhvm
 
 services:

@@ -253,7 +253,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nRRULE:FREQ=DAILY\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nRRULE:FREQ=DAILY\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
@@ -277,7 +277,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nRRULE:FREQ=DAILY;COUNT=1000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nUID:foo\r\nRRULE:FREQ=DAILY;COUNT=1000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 

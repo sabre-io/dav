@@ -7,10 +7,10 @@
   strict="true"
   >
   <testsuite name="sabre-vobject">
-      <directory>../vendor/sabre/vobject/tests/Sabre/VObject</directory>
+      <directory>../vendor/sabre/vobject/tests/VObject</directory>
   </testsuite>
   <testsuite name="sabre-event">
-      <directory>../vendor/sabre/event/tests/Sabre/Event</directory>
+      <directory>../vendor/sabre/event/tests/</directory>
   </testsuite>
   <testsuite name="sabre-http">
       <directory>../vendor/sabre/http/tests/Sabre/HTTP</directory>

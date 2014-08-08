@@ -152,6 +152,11 @@ class Inbox extends DAV\Collection implements IInbox {
                 'protected' => true,
             ],
             [
+                'privilege' => '{DAV:}write-properties',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner() . '/calendar-proxy-read',
                 'protected' => true,

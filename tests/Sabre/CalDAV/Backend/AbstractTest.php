@@ -60,6 +60,34 @@ class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetMultipleCalendarObjects() {
+
+        $abstract = new AbstractMock();
+        $result = $abstract->getMultipleCalendarObjects(1, [
+            'event1.ics',
+            'task1.ics',
+        ]);
+
+        $expected = [
+            array(
+                'id' => 1,
+                'calendarid' => 1,
+                'uri' => 'event1.ics',
+                'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+            ),
+            array(
+                'id' => 2,
+                'calendarid' => 1,
+                'uri' => 'task1.ics',
+                'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
+            ),
+        ];
+
+        $this->assertEquals($expected, $result);
+
+
+    }
+
 }
 
 class AbstractMock extends AbstractBackend {
@@ -93,7 +121,7 @@ class AbstractMock extends AbstractBackend {
         );
 
     }
-    function getCalendarObject($calendarId,$objectUri) {
+    function getCalendarObject($calendarId, $objectUri) {
 
         switch($objectUri) {
 
@@ -106,9 +134,9 @@ class AbstractMock extends AbstractBackend {
                 );
             case 'task1.ics' :
                 return array(
-                    'id' => 1,
+                    'id' => 2,
                     'calendarid' => 1,
-                    'uri' => 'event1.ics',
+                    'uri' => 'task1.ics',
                     'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
                 );
 

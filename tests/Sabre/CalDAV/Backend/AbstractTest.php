@@ -44,14 +44,40 @@ class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetCalendarObjectByUID() {
+
+        $abstract = new AbstractMock();
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal1', 'zim')
+        );
+        $this->assertEquals(
+            'cal1/event1.ics',
+            $abstract->getCalendarObjectByUID('principal1', 'foo')
+        );
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal22', 'foo')
+        );
+
+    }
+
 }
 
 class AbstractMock extends AbstractBackend {
 
-    function getCalendarsForUser($principalUri) { }
+    function getCalendarsForUser($principalUri) {
+
+        return array(
+            array(
+                'id' => 1,
+                'principaluri' => 'principal1',
+                'uri' => 'cal1',
+            ),
+        );
+
+    }
     function createCalendar($principalUri,$calendarUri,array $properties) { }
     function deleteCalendar($calendarId) { }
-    function getCalendarObjects($calendarId) { 
+    function getCalendarObjects($calendarId) {
 
         return array(
             array(
@@ -67,7 +93,7 @@ class AbstractMock extends AbstractBackend {
         );
 
     }
-    function getCalendarObject($calendarId,$objectUri) { 
+    function getCalendarObject($calendarId,$objectUri) {
 
         switch($objectUri) {
 
@@ -76,7 +102,7 @@ class AbstractMock extends AbstractBackend {
                     'id' => 1,
                     'calendarid' => 1,
                     'uri' => 'event1.ics',
-                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
                 );
             case 'task1.ics' :
                 return array(

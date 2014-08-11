@@ -30,7 +30,7 @@ class EmailAddressSet extends DAV\Property {
      *
      * @param array $emails
      */
-    public function __construct(array $hrefs) {
+    public function __construct(array $emails) {
 
         $this->emails = $emails;
 

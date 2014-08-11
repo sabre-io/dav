@@ -327,10 +327,10 @@ class Plugin extends DAV\ServerPlugin {
                 $emails = [];
                 foreach($addresses as $address) {
                     if (substr($address,0,7)==='mailto:') {
-                        $emails[] = $address;
+                        $emails[] = substr($address,7);
                     }
                 }
-                return new HrefList($emails, false);
+                return new Property\EmailAddressSet($emails);
             });
 
             // These two properties are shortcuts for ical to easily find

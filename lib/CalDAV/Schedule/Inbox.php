@@ -152,6 +152,11 @@ class Inbox extends DAV\Collection implements IInbox {
                 'protected' => true,
             ],
             [
+                'privilege' => '{DAV:}write-properties',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner() . '/calendar-proxy-read',
                 'protected' => true,
@@ -234,7 +239,7 @@ class Inbox extends DAV\Collection implements IInbox {
         $result = [];
         $validator = new CalDAV\CalendarQueryValidator();
 
-        $objects = $this->getChildren();
+        $objects = $this->caldavBackend->getSchedulingObjects($this->principalUri);
         foreach($objects as $object) {
             $vObject = VObject\Reader::read($object['calendardata']);
             if ($validator->validate($vObject, $filters)) {

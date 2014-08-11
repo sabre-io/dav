@@ -1095,14 +1095,14 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      */
     public function getSchedulingObject($principalUri, $objectUri) {
 
-        $stmt = $this->pdo->prepare('SELECT id, calendardata, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
+        $stmt = $this->pdo->prepare('SELECT uri, calendardata, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if(!$row) return null;
 
         return [
-            'id'           => $row['id'],
+            'uri'          => $row['uri'],
             'calendardata' => $row['calendardata'],
             'lastmodified' => $row['lastmodified'],
             'etag'         => '"' . $row['etag'] . '"',
@@ -1130,7 +1130,6 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         $result = [];
         foreach($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $result[] = [
-                'id'           => $row['id'],
                 'calendardata' => $row['calendardata'],
                 'uri'          => $row['uri'],
                 'lastmodified' => $row['lastmodified'],

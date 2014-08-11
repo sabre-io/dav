@@ -3,7 +3,7 @@
     "type": "library",
     "description": "WebDAV Framework for PHP",
     "keywords": ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],
-    "homepage": "http://code.google.com/p/sabredav/",
+    "homepage": "http://sabre.io/",
     "license" : "BSD-3-Clause",
     "authors": [
         {
@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.4.1",
-        "sabre/vobject" : "dev-itip",
+        "sabre/vobject" : "~3.3.0",
         "sabre/event" : "~2.0.0",
         "sabre/http" : "~2.0.3",
         "ext-dom": "*",

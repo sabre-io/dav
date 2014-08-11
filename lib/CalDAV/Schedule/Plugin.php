@@ -20,6 +20,7 @@ use
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\CalDAV\ICalendarObject,
+    Sabre\CalDAV\Property\ScheduleCalendarTransp,
     Sabre\DAV\Exception\NotFound,
     Sabre\DAV\Exception\Forbidden,
     Sabre\DAV\Exception\BadRequest,
@@ -107,21 +108,23 @@ class Plugin extends ServerPlugin {
         $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
         $server->on('schedule',            [$this, 'schedulelocaldelivery']);
 
+        $ns = '{' . self::NS_CALDAV . '}';
+
         /**
          * This information ensures that the {DAV:}resourcetype property has
          * the correct values.
          */
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IInbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-inbox';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = $ns . 'schedule-outbox';
+        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IInbox'] = $ns . 'schedule-inbox';
 
         /**
          * Properties we protect are made read-only by the server.
          */
         array_push($server->protectedProperties,
-            '{' . self::NS_CALDAV . '}schedule-inbox-URL',
-            '{' . self::NS_CALDAV . '}schedule-outbox-URL',
-            '{' . self::NS_CALDAV . '}calendar-user-address-set',
-            '{' . self::NS_CALDAV . '}calendar-user-type'
+            $ns . 'schedule-inbox-URL',
+            $ns . 'schedule-outbox-URL',
+            $ns . 'calendar-user-address-set',
+            $ns . 'calendar-user-type'
         );
 
     }
@@ -815,6 +818,14 @@ class Plugin extends ServerPlugin {
             if (!$node instanceof ICalendar) {
                 continue;
             }
+
+            $sct = $caldavNS . 'schedule-calendar-transp';
+            $props = $node->getProperties([$sct]);
+
+            if (isset($props[$sct]) && $props[$sct]->getValue() == ScheduleCalendarTransp::TRANSPARENT) {
+                continue;
+            }
+
             $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
 
             // Getting the list of object uris within the time-range

@@ -153,7 +153,7 @@ class IMipPlugin extends DAV\ServerPlugin {
      */
     protected function mail($to, $subject, $body, array $headers) {
 
-/bin/bash: :W: command not found
+        mail($to, $subject, $body, implode("\r\n", $headers));
 
     }
 

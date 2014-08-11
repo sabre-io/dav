@@ -320,6 +320,18 @@ class Plugin extends DAV\ServerPlugin {
                 $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
                 return new HrefList($addresses, false);
             });
+            // For some reason somebody thought it was a good idea to add
+            // another one of these properties. We're supporting it too.
+            $propFind->handle('{' . self::NS_CALENDARSERVER . '}email-address-set', function() use ($node) {
+                $addresses = $node->getAlternateUriSet();
+                $emails = [];
+                foreach($addresses as $address) {
+                    if (substr($address,0,7)==='mailto:') {
+                        $emails[] = $address;
+                    }
+                }
+                return new HrefList($emails, false);
+            });
 
             // These two properties are shortcuts for ical to easily find
             // other principals this principal has access to.

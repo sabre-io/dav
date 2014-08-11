@@ -2,9 +2,8 @@
 
 namespace Sabre\CalDAV;
 
-use
-    Sabre\DAV,
-    Sabre\DAVACL;
+use Sabre\DAV;
+use Sabre\DAVACL;
 
 /**
  * Calendar interface

@@ -45,6 +45,21 @@ ICS;
         $this->deliver(null, $newObject);
         $this->assertItemsInInbox('user2', 1);
 
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="1.2;Message delivered locally":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
     }
 
     function testNewOnWrongCollection() {
@@ -62,6 +77,7 @@ ICS;
         $this->calendarObjectUri = '/calendars/user1/object.ics';
         $this->deliver(null, $newObject);
         $this->assertItemsInInbox('user2', 0);
+
 
     }
     function testNewInviteSchedulingDisabled() {
@@ -102,6 +118,22 @@ ICS;
 
         $this->deliver($oldObject, $newObject);
         $this->assertItemsInInbox('user2', 1);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="1.2;Message delivered locally":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
 
     }
     function testUpdatedInviteSchedulingDisabled() {
@@ -245,12 +277,226 @@ ICS;
         $this->assertItemsInInbox('user2', 1);
         $this->assertItemsInInbox('user1', 0);
 
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER;SCHEDULE-STATUS="1.2;Message delivered locally":mailto:user2.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user2.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user3.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
     }
 
 
+
+    function testInviteUnknownUser() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user3.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->deliver(null, $newObject);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="3.7;Could not find principal.":mailto:user3.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
+    }
+
+    function testInviteNoInboxUrl() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->server->on('propFind', function($propFind) {
+            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-inbox-URL', null, 403); 
+        });
+        $this->deliver(null, $newObject);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="5.2;Could not find local inbox":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
+    }
+
+    function testInviteNoCalendarHomeSet() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->server->on('propFind', function($propFind) {
+            $propFind->set('{' . Plugin::NS_CALDAV . '}calendar-home-set', null, 403); 
+        });
+        $this->deliver(null, $newObject);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="5.2;Could not locate a calendar-home-set":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
+    }
+    function testInviteNoDefaultCalendar() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->server->on('propFind', function($propFind) {
+            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-default-calendar-URL', null, 403); 
+        });
+        $this->deliver(null, $newObject);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="5.2;Could not find a schedule-default-calendar-URL property":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
+    }
+    function testInviteNoScheduler() {
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->server->removeAllListeners('schedule');
+        $this->deliver(null, $newObject);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="5.2;There was no system capable of delivering the scheduling message":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
+    }
+    function testInviteNoACLPlugin() {
+
+        $this->setupACL = false;
+        parent::setUp();
+
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->deliver(null, $newObject);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;SCHEDULE-STATUS="5.2;There was no system capable of delivering the scheduling message":mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjEquals(
+            $expected,
+            $newObject
+        );
+
+    }
+
     protected $calendarObjectUri;
 
-    function deliver($oldObject, $newObject, $disableScheduling = false) {
+    function deliver($oldObject, &$newObject, $disableScheduling = false) {
 
         if ($disableScheduling) {
             $this->server->httpRequest->setHeader('Schedule-Reply','F');
@@ -271,6 +517,9 @@ ICS;
                 $stream,
                 $modified
             );
+            if ($modified) {
+                $newObject = $stream;
+            }
 
         } elseif ($oldObject && !$newObject) {
             // delete
@@ -291,9 +540,14 @@ ICS;
                 $this->server->tree->getNodeForPath(dirname($this->calendarObjectUri)),
                 $modified
             );
+
+            if ($modified) {
+                $newObject = $stream;
+            }
         }
 
     }
+
 
     /**
      * Creates or updates a node at the specified path.
@@ -324,6 +578,26 @@ ICS;
 
         $inboxNode = $this->server->tree->getNodeForPath('calendars/'.$user.'/inbox');
         $this->assertEquals($count, count($inboxNode->getChildren()));
+
+    }
+
+    function assertVObjEquals($expected, $actual) {
+
+        $format = function($data) {
+
+            $data = trim($data, "\r\n");
+            $data = str_replace("\r","", $data);
+            // Unfolding lines.
+            $data = str_replace("\n ", "", $data);
+
+            return $data;
+
+        };
+
+        $this->assertEquals(
+            $format($expected),
+            $format($actual)
+        );
 
     }
 

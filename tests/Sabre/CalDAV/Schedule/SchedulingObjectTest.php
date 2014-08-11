@@ -355,4 +355,44 @@ ICS;
         $this->assertEquals(4, $obj->getSize());
 
     }
+
+    function testGetContentType() {
+
+        $objectInfo = array(
+            'uri' => 'foo',
+            'calendarid' => 1,
+        );
+
+        $backend = new Backend\MockScheduling(array(), array());
+        $obj = new SchedulingObject($backend, $objectInfo);
+        $this->assertEquals('text/calendar; charset=utf-8', $obj->getContentType());
+
+    }
+
+    function testGetContentType2() {
+
+        $objectInfo = array(
+            'uri' => 'foo',
+            'calendarid' => 1,
+            'component' => 'VEVENT',
+        );
+
+        $backend = new Backend\MockScheduling(array(), array());
+        $obj = new SchedulingObject($backend, $objectInfo);
+        $this->assertEquals('text/calendar; charset=utf-8; component=VEVENT', $obj->getContentType());
+
+    }
+    function testGetACL2() {
+
+        $objectInfo = array(
+            'uri' => 'foo',
+            'calendarid' => 1,
+            'acl' => [],
+        );
+
+        $backend = new Backend\MockScheduling(array(), array());
+        $obj = new SchedulingObject($backend, $objectInfo);
+        $this->assertEquals([], $obj->getACL());
+
+    }
 }

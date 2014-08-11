@@ -171,6 +171,11 @@ class Inbox extends DAV\Collection implements IInbox {
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ],
+            [
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver-reply',
+                'principal' => '{DAV:}authenticated',
+                'protected' => true,
+            ],
         ];
 
     }

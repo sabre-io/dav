@@ -442,20 +442,20 @@ class Plugin extends ServerPlugin {
         );
 
         if (!count($result)) {
-            $iTipMessage->scheduleStatus = '3.7; Could not find principal with email: ' . $iTipMessage->recipient;
+            $iTipMessage->scheduleStatus = '3.7;Could not find principal.';
             return;
         }
 
         if (!isset($result[0][200][$caldavNS . 'schedule-inbox-URL'])) {
-            $iTipMessage->scheduleStatus = '5.2; Could not find local inbox';
+            $iTipMessage->scheduleStatus = '5.2;Could not find local inbox';
             return;
         }
         if (!isset($result[0][200][$caldavNS . 'calendar-home-set'])) {
-            $iTipMessage->scheduleStatus = '5.2; Could not locate a calendar-home-set';
+            $iTipMessage->scheduleStatus = '5.2;Could not locate a calendar-home-set';
             return;
         }
         if (!isset($result[0][200][$caldavNS . 'schedule-default-calendar-URL'])) {
-            $iTipMessage->scheduleStatus = '5.2; Could not find a schedule-default-calendar-URL property';
+            $iTipMessage->scheduleStatus = '5.2;Could not find a schedule-default-calendar-URL property';
             return;
         }
 
@@ -463,11 +463,14 @@ class Plugin extends ServerPlugin {
         $homePath = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
         $inboxPath = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
 
-        // Note that we are bypassing ACL on purpose by calling this directly.
-        // We may need to look a bit deeper into this later. Supporting ACL
-        // here would be nice.
-        if (!$aclPlugin->checkPrivileges($inboxPath, '{' . self::NS_CALDAV . '}schedule-deliver-invite', DAVACL\Plugin::R_PARENT, false)) {
-            $iTipMessage->scheduleStatus = '3.8; organizer did not have the schedule-deliver-invite privilege on the attendees inbox';
+        if ($iTipMessage->method === 'REPLY') {
+            $privilege = 'schedule-deliver-reply';
+        } else {
+            $privilege = 'schedule-deliver-invite';
+        }
+
+        if (!$aclPlugin->checkPrivileges($inboxPath, $caldavNS . $privilege, DAVACL\Plugin::R_PARENT, false)) {
+            $iTipMessage->scheduleStatus = '3.8;organizer did not have the '.$privilege.' privilege on the attendees inbox';
             return;
         }
 
@@ -511,6 +514,9 @@ class Plugin extends ServerPlugin {
             return;
         }
 
+        // Note that we are bypassing ACL on purpose by calling this directly.
+        // We may need to look a bit deeper into this later. Supporting ACL
+        // here would be nice.
         if ($isNewNode) {
             $calendar = $this->server->tree->getNodeForPath($calendarPath);
             $calendar->createFile($newFileName, $newObject->serialize());

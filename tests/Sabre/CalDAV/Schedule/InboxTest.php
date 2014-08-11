@@ -43,6 +43,11 @@ class InboxTest extends \PHPUnit_Framework_TestCase {
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ),
+            array(
+                'privilege' => '{urn:ietf:params:xml:ns:caldav}schedule-deliver-reply',
+                'principal' => '{DAV:}authenticated',
+                'protected' => true,
+            ),
         ), $inbox->getACL());
 
         $ok = false;

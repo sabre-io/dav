@@ -875,10 +875,18 @@ class Plugin extends DAV\ServerPlugin {
                 return new DAV\Property\Href($node->getPrincipalUrl() . '/');
             });
             $propFind->handle('{DAV:}group-member-set', function() use ($node) {
-                return new DAV\Property\HrefList($node->getGroupMemberSet());
+                $members = $node->getGroupMemberSet();
+                foreach($members as $k=>$member) {
+                    $members[$k] = rtrim($member,'/') . '/';
+                }
+                return new DAV\Property\HrefList($members);
             });
             $propFind->handle('{DAV:}group-membership', function() use ($node) {
-                return new DAV\Property\HrefList($node->getGroupMembership());
+                $members = $node->getGroupMembership();
+                foreach($members as $k=>$member) {
+                    $members[$k] = rtrim($member,'/') . '/';
+                }
+                return new DAV\Property\HrefList($members);
             });
             $propFind->handle('{DAV:}displayname', [$node, 'getDisplayName']);
 

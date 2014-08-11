@@ -70,7 +70,7 @@ class IMipPlugin extends DAV\ServerPlugin {
      * @param Server $server
      * @return void
      */
-    public function initalize(DAV\Server $server) {
+    public function initialize(DAV\Server $server) {
 
         $server->on('schedule', [$this, 'schedule']);
 
@@ -110,7 +110,7 @@ class IMipPlugin extends DAV\ServerPlugin {
         }
 
         $subject = 'SabreDAV iTIP message';
-        switch(strtoupper($vObject->METHOD)) {
+        switch(strtoupper($iTipMessage->method)) {
             case 'REPLY' :
                 $subject = 'Re: ' . $summary;
                 break;
@@ -131,11 +131,12 @@ class IMipPlugin extends DAV\ServerPlugin {
             $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION;
         }
         $this->mail(
-            $iTipMessage->recipient,
+            $recipient,
             $subject,
             $iTipMessage->message->serialize(),
             $headers
         );
+        $iTipMessage->scheduleStatus = '1.1; Scheduling message is sent via iMip';
 
     }
 

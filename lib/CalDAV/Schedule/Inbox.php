@@ -157,12 +157,22 @@ class Inbox extends DAV\Collection implements IInbox {
                 'protected' => true,
             ],
             [
+                'privilege' => '{DAV:}unbind',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner() . '/calendar-proxy-read',
                 'protected' => true,
             ],
             [
                 'privilege' => '{DAV:}read',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}unbind',
                 'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
             ],

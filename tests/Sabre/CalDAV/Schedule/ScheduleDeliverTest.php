@@ -36,6 +36,7 @@ class ScheduleDeliverTest extends \Sabre\DAVServerTest {
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -49,6 +50,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="1.2;Message delivered locally":mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -68,6 +70,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -86,6 +89,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -102,6 +106,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -111,6 +116,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 END:VEVENT
 END:VCALENDAR
@@ -123,6 +129,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="1.2;Message delivered locally":mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -142,6 +149,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -151,6 +159,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 END:VEVENT
 END:VCALENDAR
@@ -167,6 +176,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -176,6 +186,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 END:VEVENT
 END:VCALENDAR
@@ -195,6 +206,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -214,6 +226,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -233,6 +246,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -251,6 +265,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user2.sabredav@sabredav.org
 ATTENDEE;PARTSTAT=ACCEPTED:mailto:user2.sabredav@sabredav.org
 ATTENDEE:mailto:user1.sabredav@sabredav.org
@@ -263,6 +278,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user2.sabredav@sabredav.org
 ATTENDEE;PARTSTAT=ACCEPTED:mailto:user2.sabredav@sabredav.org
 ATTENDEE;PARTSTAT=ACCEPTED:mailto:user1.sabredav@sabredav.org
@@ -281,6 +297,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER;SCHEDULE-STATUS="1.2;Message delivered locally":mailto:user2.sabredav@sabredav.org
 ATTENDEE;PARTSTAT=ACCEPTED:mailto:user2.sabredav@sabredav.org
 ATTENDEE;PARTSTAT=ACCEPTED:mailto:user1.sabredav@sabredav.org
@@ -304,6 +321,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user3.sabredav@sabredav.org
 END:VEVENT
@@ -316,6 +334,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="3.7;Could not find principal.":mailto:user3.sabredav@sabredav.org
 END:VEVENT
@@ -335,6 +354,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -350,6 +370,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="5.2;Could not find local inbox":mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -369,6 +390,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -384,6 +406,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="5.2;Could not locate a calendar-home-set":mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -402,6 +425,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -417,6 +441,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="5.2;Could not find a schedule-default-calendar-URL property":mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -435,6 +460,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -448,6 +474,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="5.2;There was no system capable of delivering the scheduling message":mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -469,6 +496,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE:mailto:user2.sabredav@sabredav.org
 END:VEVENT
@@ -481,6 +509,7 @@ ICS;
 BEGIN:VCALENDAR
 BEGIN:VEVENT
 UID:foo
+DTSTART:20140811T230000Z
 ORGANIZER:mailto:user1.sabredav@sabredav.org
 ATTENDEE;SCHEDULE-STATUS="5.2;There was no system capable of delivering the scheduling message":mailto:user2.sabredav@sabredav.org
 END:VEVENT

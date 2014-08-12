@@ -317,7 +317,7 @@ class Plugin extends ServerPlugin {
      */
     public function beforeWriteContent($path, IFile $node, &$data, &$modified) {
 
-        if (!$node instanceof ICalendarObject) {
+        if (!$node instanceof ICalendarObject || $node instanceof ISchedulingObject) {
             return;
         }
 
@@ -389,7 +389,7 @@ class Plugin extends ServerPlugin {
 
         $node = $this->server->tree->getNodeForPath($path);
 
-        if (!$node instanceof ICalendarObject) {
+        if (!$node instanceof ICalendarObject || $node instanceof ISchedulingObject) {
             return;
         }
 

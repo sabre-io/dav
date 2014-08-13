@@ -567,14 +567,14 @@ class Plugin extends ServerPlugin {
 
             $this->deliver($message);
 
-            if (isset($newObject->VEVENT->ORGANIZER) && ($newObject->VEVENT->ORGANIZER->getValue() === $message->recipient)) {
+            if (isset($newObject->VEVENT->ORGANIZER) && ($newObject->VEVENT->ORGANIZER->getNormalizedValue() === $message->recipient)) {
                 $newObject->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
 
             } else {
 
                 foreach($newObject->VEVENT->ATTENDEE as $attendee) {
 
-                    if ($attendee->getValue() === $message->recipient) {
+                    if ($attendee->getNormalizedValue() === $message->recipient) {
                         $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
                         break;
                     }

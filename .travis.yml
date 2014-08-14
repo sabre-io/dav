@@ -22,7 +22,7 @@ services:
 before_script:
   - mysql -e 'create database sabredav'
   - composer self-update
-  - if ["$VOBJECT" == "3"]; then cp tests/composer.vobject3.json composer.json
+  - if ["$VOBJECT" == "3"]; then cp tests/composer.vobject3.json composer.json; fi
   - composer install --prefer-sourc
 #  - echo "zend.enable_gc=0" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 

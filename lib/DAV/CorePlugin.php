@@ -437,29 +437,14 @@ class CorePlugin extends ServerPlugin {
         // Intercepting Content-Range
         if ($request->getHeader('Content-Range')) {
             /**
-            Content-Range is dangerous for PUT requests:  PUT per definition
-            stores a full resource.  draft-ietf-httpbis-p2-semantics-15 says
-            in section 7.6:
-              An origin server SHOULD reject any PUT request that contains a
-              Content-Range header field, since it might be misinterpreted as
-              partial content (or might be partial content that is being mistakenly
-              PUT as a full representation).  Partial content updates are possible
-              by targeting a separately identified resource with state that
-              overlaps a portion of the larger resource, or by using a different
-              method that has been specifically defined for partial updates (for
-              example, the PATCH method defined in [RFC5789]).
-            This clarifies RFC2616 section 9.6:
-              The recipient of the entity MUST NOT ignore any Content-*
-              (e.g. Content-Range) headers that it does not understand or implement
-              and MUST return a 501 (Not Implemented) response in such cases.
-            OTOH is a PUT request with a Content-Range currently the only way to
-            continue an aborted upload request and is supported by curl, mod_dav,
-            Tomcat and others.  Since some clients do use this feature which results
-            in unexpected behaviour (cf PEAR::HTTP_WebDAV_Client 1.0.1), we reject
-            all PUT requests with a Content-Range for now.
-            */
+               An origin server that allows PUT on a given target resource MUST send
+               a 400 (Bad Request) response to a PUT request that contains a
+               Content-Range header field.
 
-            throw new Exception\NotImplemented('PUT with Content-Range is not allowed.');
+               Reference: http://tools.ietf.org/html/rfc7231#section-4.3.4
+
+            */
+            throw new Exception\BadRequest('Content-Range on PUT requests are forbidden.');
         }
 
         // Intercepting the Finder problem

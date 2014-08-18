@@ -162,7 +162,7 @@ class HttpPutTest extends DAVServerTest {
         );
 
         $response = $this->request($request);
-        $this->assertEquals(501, $response->getStatus());
+        $this->assertEquals(400, $response->getStatus());
 
     }
 

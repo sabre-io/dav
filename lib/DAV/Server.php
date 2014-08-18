@@ -1210,6 +1210,7 @@ class Server extends EventEmitter {
         }
         $this->tree->markDirty($parentUri);
         $this->emit('afterBind',[$uri]);
+        $this->emit('afterCreateCollection',[$uri, $parent]);
 
     }
 

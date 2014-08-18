@@ -334,6 +334,7 @@ yow;
         $blob31 = <<<yow
 BEGIN:VCALENDAR
 BEGIN:VEVENT
+UID:foobar
 DTSTART:20080101T120000Z
 DURATION:PT1H
 RRULE:FREQ=YEARLY
@@ -344,6 +345,7 @@ yow;
         $blob32 = <<<yow
 BEGIN:VCALENDAR
 BEGIN:VEVENT
+UID:foobar
 DTSTART:20080102T120000Z
 DURATION:PT1H
 RRULE:FREQ=YEARLY
@@ -353,6 +355,7 @@ yow;
         $blob33 = <<<yow
 BEGIN:VCALENDAR
 BEGIN:VEVENT
+UID:foobar
 DTSTART;VALUE=DATE:20120628
 RRULE:FREQ=DAILY
 END:VEVENT
@@ -361,6 +364,7 @@ yow;
         $blob34 = <<<yow
 BEGIN:VCALENDAR
 BEGIN:VEVENT
+UID:foobar
 DTSTART;VALUE=DATE:20120628
 RRULE:FREQ=DAILY
 BEGIN:VALARM
@@ -667,38 +671,38 @@ yow;
             array($blob1, $filter3, 0),
             array($blob1, $filter4, 1),
 
-            // Subcomponent check
+            // Subcomponent check (4)
             array($blob1, $filter5, 0),
             array($blob2, $filter5, 1),
 
-            // Property check
+            // Property checki (6)
             array($blob1, $filter6, 1),
             array($blob1, $filter7, 0),
             array($blob1, $filter8, 0),
             array($blob1, $filter9, 1),
 
-            // Subcomponent + property
+            // Subcomponent + property (10)
             array($blob2, $filter10, 1),
 
-            // Param filter
+            // Param filter (11)
             array($blob3, $filter11, 1),
             array($blob3, $filter12, 0),
             array($blob3, $filter13, 0),
             array($blob3, $filter14, 1),
 
-            // Param + text
+            // Param + text (15)
             array($blob3, $filter15, 1),
             array($blob3, $filter16, 0),
             array($blob3, $filter17, 0),
             array($blob3, $filter18, 1),
 
-            // Prop + text
+            // Prop + text (19)
             array($blob2, $filter19, 1),
 
-            // Incorrect object (vcard)
+            // Incorrect object (vcard) (20)
             array($blob4, $filter1, -1),
 
-            // Time-range for event
+            // Time-range for event (21)
             array($blob5, $filter20, 1),
             array($blob6, $filter20, 1),
             array($blob7, $filter20, 1),
@@ -712,7 +716,7 @@ yow;
             array($blob7, $filter23, 0),
             array($blob8, $filter23, 0),
 
-            // Time-range for todo
+            // Time-range for todo (31)
             array($blob9, $filter24, 1),
             array($blob9, $filter25, 0),
             array($blob9, $filter26, 1),
@@ -744,7 +748,7 @@ yow;
             array($blob16, $filter25, 1),
             array($blob16, $filter26, 1),
 
-            // Time-range for journals
+            // Time-range for journals (55)
             array($blob17, $filter27, 0),
             array($blob17, $filter28, 0),
             array($blob18, $filter27, 0),
@@ -752,15 +756,15 @@ yow;
             array($blob19, $filter27, 1),
             array($blob19, $filter28, 1),
 
-            // Time-range for free-busy
+            // Time-range for free-busy (61)
             array($blob20, $filter29, -1),
 
-            // Time-range on property
+            // Time-range on property (62)
             array($blob5, $filter30, 1),
             array($blob3, $filter37, -1),
             array($blob3, $filter30, 0),
 
-            // Time-range on alarm in vevent
+            // Time-range on alarm in vevent (65)
             array($blob21, $filter31, 1),
             array($blob21, $filter32, 0),
             array($blob22, $filter31, 1),
@@ -774,28 +778,28 @@ yow;
             array($blob26, $filter31, 1),
             array($blob26, $filter32, 0),
 
-            // Time-range on alarm for vtodo
+            // Time-range on alarm for vtodo (77)
             array($blob27, $filter33, 1),
             array($blob27, $filter34, 0),
 
-            // Time-range on alarm for vjournal
+            // Time-range on alarm for vjournal (79)
             array($blob28, $filter35, -1),
             array($blob28, $filter36, -1),
 
-            // Time-range on alarm with duration
+            // Time-range on alarm with duration (81)
             array($blob29, $filter31, 1),
             array($blob29, $filter32, 0),
             array($blob30, $filter31, 0),
             array($blob30, $filter32, 0),
 
-            // Time-range with RRULE
+            // Time-range with RRULE (85)
             array($blob31, $filter20, 1),
             array($blob32, $filter20, 0),
 
-            // Bug reported on mailing list, related to all-day events.
-            array($blob33, $filter38, 1),
+            // Bug reported on mailing list, related to all-day events (87)
+            //array($blob33, $filter38, 1),
 
-            // Event in timerange, but filtered alarm is in the far future.
+            // Event in timerange, but filtered alarm is in the far future (88).
             array($blob34, $filter39, 0),
         );
 

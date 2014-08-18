@@ -24,6 +24,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupACL = false;
     protected $setupCalDAVSharing = false;
     protected $setupCalDAVSubscriptions = false;
+    protected $setupLocks = false;
 
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
@@ -40,6 +41,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavBackend;
     protected $carddavBackend;
     protected $principalBackend;
+    protected $locksBackend;
 
     /**
      * @var Sabre\CalDAV\Plugin
@@ -65,6 +67,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
      * @var Sabre\DAV\Auth\Plugin
      */
     protected $authPlugin;
+
+    /**
+     * @var Sabre\DAV\Locks\Plugin
+     */
+    protected $locksPlugin;
 
     /**
      * If this string is set, we will automatically log in the user with this
@@ -99,6 +106,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupACL) {
             $this->aclPlugin = new DAVACL\Plugin();
             $this->server->addPlugin($this->aclPlugin);
+        }
+        if ($this->setupLocks) {
+            $this->locksPlugin = new DAV\Locks\Plugin(
+                $this->locksBackend
+            );
+            $this->server->addPlugin($this->locksPlugin);
         }
         if ($this->autoLogin) {
             $authBackend = new DAV\Auth\Backend\Mock();
@@ -173,6 +186,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
         if ($this->setupCardDAV || $this->setupCalDAV) {
             $this->principalBackend = new DAVACL\PrincipalBackend\Mock();
+        }
+        if ($this->setupLocks) {
+            $this->locksBackend = new DAV\Locks\Backend\Mock();
         }
 
     }

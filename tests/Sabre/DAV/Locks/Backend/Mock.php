@@ -5,37 +5,15 @@ namespace Sabre\DAV\Locks\Backend;
 use Sabre\DAV\Locks\LockInfo;
 
 /**
- * This Locks backend stores all locking information in a single file.
+ * Locks Mock backend.
  *
- * Note that this is not nearly as robust as a database. If you are considering
- * using this backend, keep in mind that the PDO backend can work with SqLite,
- * which is designed to be a good file-based database.
- *
- * It literally solves the problem this class solves as well, but much better.
+ * This backend stores lock information in memory. Mainly useful for testing.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class File extends AbstractBackend {
-
-    /**
-     * The storage file
-     *
-     * @var string
-     */
-    private $locksFile;
-
-    /**
-     * Constructor
-     *
-     * @param string $locksFile path to file
-     */
-    public function __construct($locksFile) {
-
-        $this->locksFile = $locksFile;
-
-    }
+class Mock extends AbstractBackend {
 
     /**
      * Returns a list of Sabre\DAV\Locks\LockInfo objects
@@ -133,6 +111,8 @@ class File extends AbstractBackend {
 
     }
 
+    protected $data = [];
+
     /**
      * Loads the lockdata from the filesystem.
      *
@@ -140,23 +120,7 @@ class File extends AbstractBackend {
      */
     protected function getData() {
 
-        if (!file_exists($this->locksFile)) return array();
-
-        // opening up the file, and creating a shared lock
-        $handle = fopen($this->locksFile,'r');
-        flock($handle,LOCK_SH);
-
-        // Reading data until the eof
-        $data = stream_get_contents($handle);
-
-        // We're all good
-        flock($handle,LOCK_UN);
-        fclose($handle);
-
-        // Unserializing and checking if the resource file contains data for this file
-        $data = unserialize($data);
-        if (!$data) return array();
-        return $data;
+        return $this->data;
 
     }
 
@@ -168,17 +132,7 @@ class File extends AbstractBackend {
      */
     protected function putData(array $newData) {
 
-        // opening up the file, and creating an exclusive lock
-        $handle = fopen($this->locksFile,'a+');
-        flock($handle,LOCK_EX);
-
-        // We can only truncate and rewind once the lock is acquired.
-        ftruncate($handle,0);
-        rewind($handle);
-
-        fwrite($handle,serialize($newData));
-        flock($handle,LOCK_UN);
-        fclose($handle);
+        $this->data = $newData;
 
     }
 

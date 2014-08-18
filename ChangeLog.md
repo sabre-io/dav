@@ -42,6 +42,7 @@ ChangeLog
 ------------------
 
 * #483: typo in calendars creation for PostgreSQL.
+* #487: Locks are now automatically removed after a node has been deleted.
 
 
 2.0.3 (2014-07-14)

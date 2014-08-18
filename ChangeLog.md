@@ -4,9 +4,25 @@ ChangeLog
 2.1.0-alpha1 (2014-??-??)
 -------------------------
 
+* Added: Support for [rfc6638][rfc6638], also known as CalDAV Scheduling.
 * Changed: PropertyStorage backends now have a `move` method.
 * Added: `beforeMove`, and `afterMove` events.
-* #460: PropertyStorage must move properties during MOVE requests
+* Changed: A few database changes for the CalDAV PDO backend. Make sure you
+  run `bin/migrate21.php` to upgrade your database schema.
+* Changed: CalDAV backends have a new method: `getCalendarObjectByUID`. This
+  method MUST be implemented by all backends, but the `AbstractBackend` has a
+  simple default implementation for this.
+* Changed: `Sabre\CalDAV\UserCalendars` has been renamed to
+  `Sabre\CalDAV\CalendarHome`.
+* Changed: `Sabre\CalDAV\CalendarRootNode` has been renamed to
+  `Sabre\CalDAV\CalendarRoot`.
+* Changed: The IMipHandler has been completely removed. With CalDAV scheduling
+  support, it is no longer needed. It's functionality has been replaced by
+  `Sabre\CalDAV\Schedule\IMipPlugin`, which can now send emails for clients
+  other than iCal.
+* Added: Support for the `{http://calendarserver.org/ns/}email-address-set`
+  property.
+* #460: PropertyStorage must move properties during `MOVE` requests.
 * Changed: Restructured the zip distribution to be a little bit more lean
   and consistent.
 * #472: Always returning lock tokens in the lockdiscovery property.
@@ -19,6 +35,8 @@ ChangeLog
   mistake.
 * Changed: `PUT` requests with a `Content-Range` header now emit a 400 status
   instead of 501, as per RFC7231.
+* Added: Browser plugin can now display the contents of the
+  `{DAV:}supported-privilege-set` property.
 
 2.0.4 (????-??-??)
 ------------------
@@ -1601,3 +1619,4 @@ ChangeLog
 [evnt]: http://sabre.io/event/
 [http]: http://sabre.io/http/
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
+[rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"

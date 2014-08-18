@@ -18,7 +18,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
+class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -57,6 +57,13 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * @var string
      */
     protected $calendarChangesTableName;
+
+    /**
+     * The table name that will be used inbox items.
+     *
+     * @var string
+     */
+    protected $schedulingObjectTableName;
 
     /**
      * The table name that will be used for calendar subscriptions.
@@ -102,15 +109,18 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * @param \PDO $pdo
      * @param string $calendarTableName
      * @param string $calendarObjectTableName
-     * @param string $calendarChangesTableName
+     * @param string $calendarChangesTable
+     * @param string $schedulingObjectTable
      * @param string $calendarSubscriptionsTableName
+     * @todo we have to do something about this signature. It's bullshit.
      */
-    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = 'calendarsubscriptions') {
+    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = "calendarsubscriptions", $schedulingObjectTableName = "schedulingobjects") {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
         $this->calendarObjectTableName = $calendarObjectTableName;
         $this->calendarChangesTableName = $calendarChangesTableName;
+        $this->schedulingObjectTableName = $schedulingObjectTableName;
         $this->calendarSubscriptionsTableName = $calendarSubscriptionsTableName;
 
     }
@@ -468,7 +478,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
         $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence) VALUES (?,?,?,?,?,?,?,?,?)');
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, uid) VALUES (?,?,?,?,?,?,?,?,?,?)');
         $stmt->execute([
             $calendarId,
             $objectUri,
@@ -479,6 +489,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             $extraData['componentType'],
             $extraData['firstOccurence'],
             $extraData['lastOccurence'],
+            $extraData['uid'],
         ]);
         $this->addChange($calendarId, $objectUri, 1);
 
@@ -508,8 +519,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
         $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ? WHERE calendarid = ? AND uri = ?');
-        $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $calendarId, $objectUri]);
+        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ?, uid = ? WHERE calendarid = ? AND uri = ?');
+        $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $extraData['uid'], $calendarId, $objectUri]);
 
         $this->addChange($calendarId, $objectUri, 2);
 
@@ -522,11 +533,12 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * calendar-queries.
      *
      * Returns an array with the following keys:
-     *   * etag
-     *   * size
-     *   * componentType
+     *   * etag - An md5 checksum of the object without the quotes.
+     *   * size - Size of the object in bytes
+     *   * componentType - VEVENT, VTODO or VJOURNAL
      *   * firstOccurence
      *   * lastOccurence
+     *   * uid - value of the UID property
      *
      * @param string $calendarData
      * @return array
@@ -538,9 +550,11 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
         $component = null;
         $firstOccurence = null;
         $lastOccurence = null;
+        $uid = null;
         foreach($vObject->getComponents() as $component) {
             if ($component->name!=='VTIMEZONE') {
                 $componentType = $component->name;
+                $uid = (string)$component->UID;
                 break;
             }
         }
@@ -588,6 +602,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
             'componentType' => $componentType,
             'firstOccurence' => $firstOccurence,
             'lastOccurence'  => $lastOccurence,
+            'uid' => $uid,
         ];
 
     }
@@ -1059,6 +1074,100 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
 
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarSubscriptionsTableName . ' WHERE id = ?');
         $stmt->execute([$subscriptionId]);
+
+    }
+
+    /**
+     * Returns a single scheduling object.
+     *
+     * The returned array should contain the following elements:
+     *   * uri - A unique basename for the object. This will be used to
+     *           construct a full uri.
+     *   * calendardata - The iCalendar object
+     *   * lastmodified - The last modification date. Can be an int for a unix
+     *                    timestamp, or a PHP DateTime object.
+     *   * etag - A unique token that must change if the object changed.
+     *   * size - The size of the object, in bytes.
+     *
+     * @param string $principalUri
+     * @param string $objectUri
+     * @return array
+     */
+    public function getSchedulingObject($principalUri, $objectUri) {
+
+        $stmt = $this->pdo->prepare('SELECT uri, calendardata, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
+        $stmt->execute([$principalUri, $objectUri]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if(!$row) return null;
+
+        return [
+            'uri'          => $row['uri'],
+            'calendardata' => $row['calendardata'],
+            'lastmodified' => $row['lastmodified'],
+            'etag'         => '"' . $row['etag'] . '"',
+            'size'         => (int)$row['size'],
+         ];
+
+    }
+
+    /**
+     * Returns all scheduling objects for the inbox collection.
+     *
+     * These objects should be returned as an array. Every item in the array
+     * should follow the same structure as returned from getSchedulingObject.
+     *
+     * The main difference is that 'calendardata' is optional.
+     *
+     * @param string $principalUri
+     * @return array
+     */
+    public function getSchedulingObjects($principalUri) {
+
+        $stmt = $this->pdo->prepare('SELECT id, calendardata, uri, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ?');
+        $stmt->execute([$principalUri]);
+
+        $result = [];
+        foreach($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            $result[] = [
+                'calendardata' => $row['calendardata'],
+                'uri'          => $row['uri'],
+                'lastmodified' => $row['lastmodified'],
+                'etag'         => '"' . $row['etag'] . '"',
+                'size'         => (int)$row['size'],
+            ];
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * Deletes a scheduling object
+     *
+     * @param string $principalUri
+     * @param string $objectUri
+     * @return void
+     */
+    public function deleteSchedulingObject($principalUri, $objectUri) {
+
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
+        $stmt->execute([$principalUri, $objectUri]);
+
+    }
+
+    /**
+     * Creates a new scheduling object. This should land in a users' inbox.
+     *
+     * @param string $principalUri
+     * @param string $objectUri
+     * @param string $objectData
+     * @return void
+     */
+    public function createSchedulingObject($principalUri, $objectUri, $objectData) {
+
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData) ]);
 
     }
 

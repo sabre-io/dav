@@ -4,6 +4,7 @@ namespace Sabre\CalDAV;
 
 use
     Sabre\DAV,
+    Sabre\DAV\Property\HrefList,
     Sabre\DAVACL,
     Sabre\VObject,
     Sabre\HTTP,
@@ -45,33 +46,6 @@ class Plugin extends DAV\ServerPlugin {
      * @var DAV\Server
      */
     protected $server;
-
-    /**
-     * The email handler for invites and other scheduling messages.
-     *
-     * @var Schedule\IMip
-     */
-    protected $imipHandler;
-
-    /**
-     * Sets the iMIP handler.
-     *
-     * iMIP = The email transport of iCalendar scheduling messages. Setting
-     * this is optional, but if you want the server to allow invites to be sent
-     * out, you must set a handler.
-     *
-     * Specifically iCal will plain assume that the server supports this. If
-     * the server doesn't, iCal will display errors when inviting people to
-     * events.
-     *
-     * @param Schedule\IMip $imipHandler
-     * @return void
-     */
-    public function setIMipHandler(Schedule\IMip $imipHandler) {
-
-        $this->imipHandler = $imipHandler;
-
-    }
 
     /**
      * Use this method to tell the server this plugin defines additional
@@ -159,7 +133,7 @@ class Plugin extends DAV\ServerPlugin {
         $node = $this->server->tree->getNodeForPath($uri);
 
         $reports = array();
-        if ($node instanceof ICalendar || $node instanceof ICalendarObject) {
+        if ($node instanceof ICalendarObjectContainer || $node instanceof ICalendarObject) {
             $reports[] = '{' . self::NS_CALDAV . '}calendar-multiget';
             $reports[] = '{' . self::NS_CALDAV . '}calendar-query';
         }
@@ -169,7 +143,7 @@ class Plugin extends DAV\ServerPlugin {
         // iCal has a bug where it assumes that sync support is enabled, only
         // if we say we support it on the calendar-home, even though this is
         // not actually the case.
-        if ($node instanceof UserCalendars && $this->server->getPlugin('sync')) {
+        if ($node instanceof CalendarHome && $this->server->getPlugin('sync')) {
             $reports[] = '{DAV:}sync-collection';
         }
         return $reports;
@@ -187,7 +161,6 @@ class Plugin extends DAV\ServerPlugin {
         $this->server = $server;
 
         $server->on('method:MKCALENDAR',   [$this,'httpMkcalendar']);
-        $server->on('method:POST',         [$this,'httpPost']);
         $server->on('method:GET',          [$this,'httpGet'], 90);
         $server->on('report',              [$this,'report']);
         $server->on('propFind',            [$this,'propFind']);
@@ -204,7 +177,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->propertyMap['{' . self::NS_CALDAV . '}schedule-calendar-transp'] = 'Sabre\\CalDAV\\Property\\ScheduleCalendarTransp';
 
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = '{urn:ietf:params:xml:ns:caldav}schedule-outbox';
+
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
@@ -222,12 +195,6 @@ class Plugin extends DAV\ServerPlugin {
             '{' . self::NS_CALDAV . '}supported-collation-set',
             '{' . self::NS_CALDAV . '}calendar-data',
 
-            // scheduling extension
-            '{' . self::NS_CALDAV . '}schedule-inbox-URL',
-            '{' . self::NS_CALDAV . '}schedule-outbox-URL',
-            '{' . self::NS_CALDAV . '}calendar-user-address-set',
-            '{' . self::NS_CALDAV . '}calendar-user-type',
-
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
@@ -236,38 +203,6 @@ class Plugin extends DAV\ServerPlugin {
             '{' . self::NS_CALENDARSERVER . '}notificationtype'
 
         );
-    }
-
-    /**
-     * This method handles POST request for the outbox.
-     *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return bool
-     */
-    public function httpPost(RequestInterface $request, ResponseInterface $response) {
-
-        // Checking if this is a text/calendar content type
-        $contentType = $request->getHeader('Content-Type');
-        if (strpos($contentType, 'text/calendar')!==0) {
-            return;
-        }
-
-        $path = $request->getPath();
-
-        // Checking if we're talking to an outbox
-        try {
-            $node = $this->server->tree->getNodeForPath($path);
-        } catch (DAV\Exception\NotFound $e) {
-            return;
-        }
-        if (!$node instanceof Schedule\IOutbox)
-            return;
-
-        $this->server->transactionType = 'post-caldav-outbox';
-        $this->outboxRequest($node, $path);
-        return false;
-
     }
 
     /**
@@ -378,23 +313,24 @@ class Plugin extends DAV\ServerPlugin {
                 return new DAV\Property\Href($calendarHomePath);
 
             });
-
-            // schedule-outbox-URL property
-            $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL', function() use ($principalUrl) {
-
-                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl);
-                $outboxPath = $calendarHomePath . '/outbox';
-                return new DAV\Property\Href($outboxPath);
-
-            });
-
-            // calendar-user-address-set property
-            $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node, $principalUrl) {
-
+            // The calendar-user-address-set property is basically mapped to
+            // the {DAV:}alternate-URI-set property.
+            $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node) {
                 $addresses = $node->getAlternateUriSet();
-                $addresses[] = $this->server->getBaseUri() . DAV\URLUtil::encodePath($principalUrl . '/');
-                return new DAV\Property\HrefList($addresses, false);
-
+                $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
+                return new HrefList($addresses, false);
+            });
+            // For some reason somebody thought it was a good idea to add
+            // another one of these properties. We're supporting it too.
+            $propFind->handle('{' . self::NS_CALENDARSERVER . '}email-address-set', function() use ($node) {
+                $addresses = $node->getAlternateUriSet();
+                $emails = [];
+                foreach($addresses as $address) {
+                    if (substr($address,0,7)==='mailto:') {
+                        $emails[] = substr($address,7);
+                    }
+                }
+                return new Property\EmailAddressSet($emails);
             });
 
             // These two properties are shortcuts for ical to easily find
@@ -425,8 +361,8 @@ class Plugin extends DAV\ServerPlugin {
 
                 }
 
-                $propFind->set($propRead, new DAV\Property\HrefList($readList));
-                $propFind->set($propWrite, new DAV\Property\HrefList($writeList));
+                $propFind->set($propRead, new HrefList($readList));
+                $propFind->set($propWrite, new HrefList($writeList));
 
             }
 
@@ -633,7 +569,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // If we're dealing with a calendar, the calendar itself is responsible
         // for the calendar-query.
-        if ($node instanceof ICalendar && $depth == 1) {
+        if ($node instanceof ICalendarObjectContainer && $depth == 1) {
 
             $nodePaths = $node->calendarQuery($parser->filters);
 
@@ -939,431 +875,8 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-    /**
-     * This method handles POST requests to the schedule-outbox.
-     *
-     * Currently, two types of requests are support:
-     *   * FREEBUSY requests from RFC 6638
-     *   * Simple iTIP messages from draft-desruisseaux-caldav-sched-04
-     *
-     * The latter is from an expired early draft of the CalDAV scheduling
-     * extensions, but iCal depends on a feature from that spec, so we
-     * implement it.
-     *
-     * @param Schedule\IOutbox $outboxNode
-     * @param string $outboxUri
-     * @return void
-     */
-    public function outboxRequest(Schedule\IOutbox $outboxNode, $outboxUri) {
 
-        // Parsing the request body
-        try {
-            $vObject = VObject\Reader::read($this->server->httpRequest->getBody());
-        } catch (VObject\ParseException $e) {
-            throw new DAV\Exception\BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
-        }
 
-        // The incoming iCalendar object must have a METHOD property, and a
-        // component. The combination of both determines what type of request
-        // this is.
-        $componentType = null;
-        foreach($vObject->getComponents() as $component) {
-            if ($component->name !== 'VTIMEZONE') {
-                $componentType = $component->name;
-                break;
-            }
-        }
-        if (is_null($componentType)) {
-            throw new DAV\Exception\BadRequest('We expected at least one VTODO, VJOURNAL, VFREEBUSY or VEVENT component');
-        }
-
-        // Validating the METHOD
-        $method = strtoupper((string)$vObject->METHOD);
-        if (!$method) {
-            throw new DAV\Exception\BadRequest('A METHOD property must be specified in iTIP messages');
-        }
-
-        // So we support two types of requests:
-        //
-        // REQUEST with a VFREEBUSY component
-        // REQUEST, REPLY, ADD, CANCEL on VEVENT components
-
-        $acl = $this->server->getPlugin('acl');
-
-        if ($componentType === 'VFREEBUSY' && $method === 'REQUEST') {
-
-            $acl && $acl->checkPrivileges($outboxUri,'{' . Plugin::NS_CALDAV . '}schedule-query-freebusy');
-            $this->handleFreeBusyRequest($outboxNode, $vObject);
-
-        } elseif ($componentType === 'VEVENT' && in_array($method, array('REQUEST','REPLY','ADD','CANCEL'))) {
-
-            $acl && $acl->checkPrivileges($outboxUri,'{' . Plugin::NS_CALDAV . '}schedule-post-vevent');
-            $this->handleEventNotification($outboxNode, $vObject);
-
-        } else {
-
-            throw new DAV\Exception\NotImplemented('SabreDAV supports only VFREEBUSY (REQUEST) and VEVENT (REQUEST, REPLY, ADD, CANCEL)');
-
-        }
-
-    }
-
-    /**
-     * This method handles the REQUEST, REPLY, ADD and CANCEL methods for
-     * VEVENT iTip messages.
-     *
-     * @return void
-     */
-    protected function handleEventNotification(Schedule\IOutbox $outboxNode, VObject\Component $vObject) {
-
-        $originator = $this->server->httpRequest->getHeader('Originator');
-        $recipients = $this->server->httpRequest->getHeader('Recipient');
-
-        if (!$originator) {
-            throw new DAV\Exception\BadRequest('The Originator: header must be specified when making POST requests');
-        }
-        if (!$recipients) {
-            throw new DAV\Exception\BadRequest('The Recipient: header must be specified when making POST requests');
-        }
-
-        $recipients = explode(',',$recipients);
-        foreach($recipients as $k=>$recipient) {
-
-            $recipient = trim($recipient);
-            if (!preg_match('/^mailto:(.*)@(.*)$/i', $recipient)) {
-                throw new DAV\Exception\BadRequest('Recipients must start with mailto: and must be valid email address');
-            }
-            $recipient = substr($recipient, 7);
-            $recipients[$k] = $recipient;
-        }
-
-        // We need to make sure that 'originator' matches the currently
-        // authenticated user.
-        $aclPlugin = $this->server->getPlugin('acl');
-        if (is_null($aclPlugin)) throw new DAV\Exception('The ACL plugin must be loaded for scheduling to work');
-        $principal = $aclPlugin->getCurrentUserPrincipal();
-
-        $props = $this->server->getProperties($principal,array(
-            '{' . self::NS_CALDAV . '}calendar-user-address-set',
-        ));
-
-        $addresses = array();
-        if (isset($props['{' . self::NS_CALDAV . '}calendar-user-address-set'])) {
-            $addresses = $props['{' . self::NS_CALDAV . '}calendar-user-address-set']->getHrefs();
-        }
-
-        $found = false;
-        foreach($addresses as $address) {
-
-            // Trimming the / on both sides, just in case..
-            if (rtrim(strtolower($originator),'/') === rtrim(strtolower($address),'/')) {
-                $found = true;
-                break;
-            }
-
-        }
-
-        if (!$found) {
-            throw new DAV\Exception\Forbidden('The addresses specified in the Originator header did not match any addresses in the owners calendar-user-address-set header');
-        }
-
-        // If the Originator header was a url, and not a mailto: address..
-        // we're going to try to pull the mailto: from the vobject body.
-        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
-            $originator = (string)$vObject->VEVENT->ORGANIZER;
-
-        }
-        if (strtolower(substr($originator,0,7)) !== 'mailto:') {
-            throw new DAV\Exception\Forbidden('Could not find mailto: address in both the Orignator header, and the ORGANIZER property in the VEVENT');
-        }
-        $originator = substr($originator,7);
-
-        $result = $this->iMIPMessage($originator, $recipients, $vObject, $principal);
-        $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->setBody($this->generateScheduleResponse($result));
-
-    }
-
-    /**
-     * Sends an iMIP message by email.
-     *
-     * This method must return an array with status codes per recipient.
-     * This should look something like:
-     *
-     * array(
-     *    'user1@example.org' => '2.0;Success'
-     * )
-     *
-     * Formatting for this status code can be found at:
-     * https://tools.ietf.org/html/rfc5545#section-3.8.8.3
-     *
-     * A list of valid status codes can be found at:
-     * https://tools.ietf.org/html/rfc5546#section-3.6
-     *
-     * @param string $originator
-     * @param array $recipients
-     * @param VObject\Component $vObject
-     * @param string $principal Principal url
-     * @return array
-     */
-    protected function iMIPMessage($originator, array $recipients, VObject\Component $vObject, $principal) {
-
-        if (!$this->imipHandler) {
-            $resultStatus = '5.2;This server does not support this operation';
-        } else {
-            $this->imipHandler->sendMessage($originator, $recipients, $vObject, $principal);
-            $resultStatus = '2.0;Success';
-        }
-
-        $result = array();
-        foreach($recipients as $recipient) {
-            $result[$recipient] = $resultStatus;
-        }
-
-        return $result;
-
-    }
-
-    /**
-     * Generates a schedule-response XML body
-     *
-     * The recipients array is a key->value list, containing email addresses
-     * and iTip status codes. See the iMIPMessage method for a description of
-     * the value.
-     *
-     * @param array $recipients
-     * @return string
-     */
-    public function generateScheduleResponse(array $recipients) {
-
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $xscheduleResponse = $dom->createElement('cal:schedule-response');
-        $dom->appendChild($xscheduleResponse);
-
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $xscheduleResponse->setAttribute('xmlns:' . $prefix, $namespace);
-
-        }
-
-        foreach($recipients as $recipient=>$status) {
-            $xresponse = $dom->createElement('cal:response');
-
-            $xrecipient = $dom->createElement('cal:recipient');
-            $xrecipient->appendChild($dom->createTextNode($recipient));
-            $xresponse->appendChild($xrecipient);
-
-            $xrequestStatus = $dom->createElement('cal:request-status');
-            $xrequestStatus->appendChild($dom->createTextNode($status));
-            $xresponse->appendChild($xrequestStatus);
-
-            $xscheduleResponse->appendChild($xresponse);
-
-        }
-
-        return $dom->saveXML();
-
-    }
-
-    /**
-     * This method is responsible for parsing a free-busy query request and
-     * returning it's result.
-     *
-     * @param Schedule\IOutbox $outbox
-     * @param string $request
-     * @return string
-     */
-    protected function handleFreeBusyRequest(Schedule\IOutbox $outbox, VObject\Component $vObject) {
-
-        $vFreeBusy = $vObject->VFREEBUSY;
-        $organizer = $vFreeBusy->organizer;
-
-        $organizer = (string)$organizer;
-
-        // Validating if the organizer matches the owner of the inbox.
-        $owner = $outbox->getOwner();
-
-        $caldavNS = '{' . Plugin::NS_CALDAV . '}';
-
-        $uas = $caldavNS . 'calendar-user-address-set';
-        $props = $this->server->getProperties($owner,array($uas));
-
-        if (empty($props[$uas]) || !in_array($organizer, $props[$uas]->getHrefs())) {
-            throw new DAV\Exception\Forbidden('The organizer in the request did not match any of the addresses for the owner of this inbox');
-        }
-
-        if (!isset($vFreeBusy->ATTENDEE)) {
-            throw new DAV\Exception\BadRequest('You must at least specify 1 attendee');
-        }
-
-        $attendees = array();
-        foreach($vFreeBusy->ATTENDEE as $attendee) {
-            $attendees[]= (string)$attendee;
-        }
-
-
-        if (!isset($vFreeBusy->DTSTART) || !isset($vFreeBusy->DTEND)) {
-            throw new DAV\Exception\BadRequest('DTSTART and DTEND must both be specified');
-        }
-
-        $startRange = $vFreeBusy->DTSTART->getDateTime();
-        $endRange = $vFreeBusy->DTEND->getDateTime();
-
-        $results = array();
-        foreach($attendees as $attendee) {
-            $results[] = $this->getFreeBusyForEmail($attendee, $startRange, $endRange, $vObject);
-        }
-
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $scheduleResponse = $dom->createElement('cal:schedule-response');
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $scheduleResponse->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
-        $dom->appendChild($scheduleResponse);
-
-        foreach($results as $result) {
-            $response = $dom->createElement('cal:response');
-
-            $recipient = $dom->createElement('cal:recipient');
-            $recipientHref = $dom->createElement('d:href');
-
-            $recipientHref->appendChild($dom->createTextNode($result['href']));
-            $recipient->appendChild($recipientHref);
-            $response->appendChild($recipient);
-
-            $reqStatus = $dom->createElement('cal:request-status');
-            $reqStatus->appendChild($dom->createTextNode($result['request-status']));
-            $response->appendChild($reqStatus);
-
-            if (isset($result['calendar-data'])) {
-
-                $calendardata = $dom->createElement('cal:calendar-data');
-                $calendardata->appendChild($dom->createTextNode(str_replace("\r\n","\n",$result['calendar-data']->serialize())));
-                $response->appendChild($calendardata);
-
-            }
-            $scheduleResponse->appendChild($response);
-        }
-
-        $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml');
-        $this->server->httpResponse->setBody($dom->saveXML());
-
-    }
-
-    /**
-     * Returns free-busy information for a specific address. The returned
-     * data is an array containing the following properties:
-     *
-     * calendar-data : A VFREEBUSY VObject
-     * request-status : an iTip status code.
-     * href: The principal's email address, as requested
-     *
-     * The following request status codes may be returned:
-     *   * 2.0;description
-     *   * 3.7;description
-     *
-     * @param string $email address
-     * @param \DateTime $start
-     * @param \DateTime $end
-     * @param VObject\Component $request
-     * @return array
-     */
-    protected function getFreeBusyForEmail($email, \DateTime $start, \DateTime $end, VObject\Component $request) {
-
-        $caldavNS = '{' . Plugin::NS_CALDAV . '}';
-
-        $aclPlugin = $this->server->getPlugin('acl');
-        if (substr($email,0,7)==='mailto:') $email = substr($email,7);
-
-        $result = $aclPlugin->principalSearch(
-            array('{http://sabredav.org/ns}email-address' => $email),
-            array(
-                '{DAV:}principal-URL', $caldavNS . 'calendar-home-set',
-                '{http://sabredav.org/ns}email-address',
-            )
-        );
-
-        if (!count($result)) {
-            return array(
-                'request-status' => '3.7;Could not find principal',
-                'href' => 'mailto:' . $email,
-            );
-        }
-
-        if (!isset($result[0][200][$caldavNS . 'calendar-home-set'])) {
-            return array(
-                'request-status' => '3.7;No calendar-home-set property found',
-                'href' => 'mailto:' . $email,
-            );
-        }
-        $homeSet = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
-
-        // Grabbing the calendar list
-        $objects = array();
-        foreach($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
-            if (!$node instanceof ICalendar) {
-                continue;
-            }
-            $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
-
-            // Getting the list of object uris within the time-range
-            $urls = $node->calendarQuery(array(
-                'name' => 'VCALENDAR',
-                'comp-filters' => array(
-                    array(
-                        'name' => 'VEVENT',
-                        'comp-filters' => array(),
-                        'prop-filters' => array(),
-                        'is-not-defined' => false,
-                        'time-range' => array(
-                            'start' => $start,
-                            'end' => $end,
-                        ),
-                    ),
-                ),
-                'prop-filters' => array(),
-                'is-not-defined' => false,
-                'time-range' => null,
-            ));
-
-            $calObjects = array_map(function($url) use ($node) {
-                $obj = $node->getChild($url)->get();
-                return $obj;
-            }, $urls);
-
-            $objects = array_merge($objects,$calObjects);
-
-        }
-
-        $vcalendar = new VObject\Component\VCalendar();
-        $vcalendar->VERSION = '2.0';
-        $vcalendar->METHOD = 'REPLY';
-        $vcalendar->CALSCALE = 'GREGORIAN';
-        $vcalendar->PRODID = '-//SabreDAV//SabreDAV ' . DAV\Version::VERSION . '//EN';
-
-        $generator = new VObject\FreeBusyGenerator();
-        $generator->setObjects($objects);
-        $generator->setTimeRange($start, $end);
-        $generator->setBaseObject($vcalendar);
-
-        $result = $generator->getResult();
-
-        $vcalendar->VFREEBUSY->ATTENDEE = 'mailto:' . $email;
-        $vcalendar->VFREEBUSY->UID = (string)$request->VFREEBUSY->UID;
-        $vcalendar->VFREEBUSY->ORGANIZER = clone $request->VFREEBUSY->ORGANIZER;
-
-        return array(
-            'calendar-data' => $result,
-            'request-status' => '2.0;Success',
-            'href' => 'mailto:' . $email,
-        );
-    }
 
     /**
      * This method is used to generate HTML output for the
@@ -1376,7 +889,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function htmlActionsPanel(DAV\INode $node, &$output) {
 
-        if (!$node instanceof UserCalendars)
+        if (!$node instanceof CalendarHome)
             return;
 
         $output.= '<tr><td colspan="2"><form method="post" action="">

@@ -1,12 +1,13 @@
 <?php
 
-namespace Sabre\CalDAV;
+namespace Sabre\CalDAV\Schedule;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
-use Sabre\HTTP;
-
-require_once 'Sabre/HTTP/ResponseMock.php';
+use
+    Sabre\DAV,
+    Sabre\DAVACL,
+    Sabre\HTTP,
+    Sabre\CalDAV,
+    Sabre\CalDAV\Property\ScheduleCalendarTransp;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
@@ -24,6 +25,12 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
                 'id'           => 1,
                 'uri'          => 'calendar1',
             ),
+            array(
+                'principaluri' => 'principals/user2',
+                'id'           => 2,
+                'uri'          => 'calendar2',
+                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT),
+            ),
         );
         $calendarobjects = array(
             1 => array( '1.ics' => array(
@@ -35,16 +42,26 @@ DURATION:PT1H
 END:VEVENT
 END:VCALENDAR',
                 'calendarid' => 1,
+            )),
+            2 => array( '2.ics' => array(
+                'uri' => '2.ics',
+                'calendardata' => 'BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20110101T080000
+DURATION:PT1H
+END:VEVENT
+END:VCALENDAR',
+                'calendarid' => 2,
             ))
 
         );
 
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
-        $caldavBackend = new Backend\Mock($calendars, $calendarobjects);
+        $caldavBackend = new CalDAV\Backend\MockScheduling($calendars, $calendarobjects);
 
         $tree = array(
             new DAVACL\PrincipalCollection($principalBackend),
-            new CalendarRootNode($principalBackend, $caldavBackend),
+            new CalDAV\CalendarRoot($principalBackend, $caldavBackend),
         );
 
         $this->request = HTTP\Sapi::createFromServerArray([
@@ -64,6 +81,11 @@ END:VCALENDAR',
         $this->authPlugin = new DAV\Auth\Plugin($authBackend,'SabreDAV');
         $this->server->addPlugin($this->authPlugin);
 
+        // CalDAV plugin
+        $this->plugin = new CalDAV\Plugin();
+        $this->server->addPlugin($this->plugin);
+
+        // Scheduling plugin
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 
@@ -135,7 +157,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
     function testNoVFreeBusy() {
 
@@ -284,10 +306,16 @@ ICS;
             );
         }
 
+        $this->assertTrue(
+            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z')==false,
+            'The response body did contain free busy info from a transparent calendar.'
+        );
 
     }
 
     function testNoPrivilege() {
+
+        $this->markTestIncomplete('Currently there\'s no "no privilege" situation');
 
         $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
             'CONTENT_TYPE' => 'text/calendar',

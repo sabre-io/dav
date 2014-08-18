@@ -4,7 +4,7 @@ namespace Sabre\CalDAV;
 
 use Sabre\DAVACL;
 
-class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
+class CalendarHomeSubscriptionsTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
 
@@ -20,7 +20,7 @@ class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
         $this->backend = new Backend\MockSubscriptionSupport([], []);
         $this->backend->createSubscription('principals/user1', 'uri', $props);
 
-        return new UserCalendars($this->backend, $principal);
+        return new CalendarHome($this->backend, $principal);
 
     }
 
@@ -35,7 +35,7 @@ class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
 
         $instance = $this->getInstance();
         $children = $instance->getChildren();
-        $this->assertEquals(3, count($children));
+        $this->assertEquals(2, count($children));
         foreach($children as $child) {
             if ($child instanceof Subscriptions\Subscription) {
                 return;
@@ -57,7 +57,7 @@ class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
         $instance->createExtendedCollection('sub2', $rt, $props);
 
         $children = $instance->getChildren();
-        $this->assertEquals(4, count($children));
+        $this->assertEquals(3, count($children));
 
     }
 
@@ -70,7 +70,7 @@ class UserCalendarsSubscriptionsTest extends \PHPUnit_Framework_TestCase {
             'uri' => 'principals/user1'
         ];
         $backend = new Backend\Mock([], []);
-        $uC = new UserCalendars($backend, $principal);
+        $uC = new CalendarHome($backend, $principal);
 
         $rt = ['{DAV:}collection', '{http://calendarserver.org/ns/}subscribed'];
 

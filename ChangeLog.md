@@ -14,6 +14,11 @@ ChangeLog
   (@aklomp)
 * #486: It's now possible to return additional properties when an 'allprop'
   PROPFIND request is being done. (@aklomp)
+* Changed: Now return HTTP errors when an addressbook-query REPORT is done
+  on a uri that's not a vcard. This should help with debugging this common
+  mistake.
+* Changed: `PUT` requests with a `Content-Range` header now emit a 400 status
+  instead of 501, as per RFC7231.
 
 2.0.4 (????-??-??)
 ------------------

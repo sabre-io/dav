@@ -208,3 +208,15 @@ footer {
   font-size: 80%;
   text-align: center;
 }
+
+ul.tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.tree ul {
+    list-style: none;
+    padding-left: 10px;
+    border-left: 4px solid #ccc;
+}

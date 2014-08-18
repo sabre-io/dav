@@ -179,7 +179,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/admin',
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             )
         ),$principal->getACL());

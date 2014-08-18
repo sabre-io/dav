@@ -39,6 +39,17 @@ class SupportedPrivilegeSet extends DAV\Property {
     }
 
     /**
+     * Returns the privilege value.
+     *
+     * @return array
+     */
+    public function getValue() {
+
+        return $this->privileges;
+
+    }
+
+    /**
      * Serializes the property into a domdocument.
      *
      * @param DAV\Server $server

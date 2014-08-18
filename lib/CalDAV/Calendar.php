@@ -17,7 +17,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Calendar implements ICalendar, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection, DAV\IMultiGet {
+class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, DAV\IMultiGet {
 
     /**
      * This is an array with calendar information

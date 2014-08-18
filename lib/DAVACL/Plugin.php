@@ -4,6 +4,8 @@ namespace Sabre\DAVACL;
 
 use
     Sabre\DAV,
+    Sabre\DAV\IFile,
+    Sabre\DAV\INode,
     Sabre\HTTP\URLUtil,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface;
@@ -330,7 +332,7 @@ class Plugin extends DAV\ServerPlugin {
      * You can either get the list of privileges by a uri (path) or by
      * specifying a Node.
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      * @return array
      */
     public function getSupportedPrivilegeSet($node) {
@@ -420,14 +422,14 @@ class Plugin extends DAV\ServerPlugin {
      *   - abstract
      *   - concrete
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      * @return array
      */
     final public function getFlatPrivilegeSet($node) {
 
         $privs = $this->getSupportedPrivilegeSet($node);
 
-        $flat = array();
+        $flat = [];
         $this->getFPSTraverse($privs, null, $flat);
 
         return $flat;
@@ -474,7 +476,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Returns the full ACL list.
      *
-     * Either a uri or a DAV\INode may be passed.
+     * Either a uri or a INode may be passed.
      *
      * null will be returned if the node doesn't support ACLs.
      *
@@ -583,6 +585,31 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         return array_values(array_unique($collected2));
+
+    }
+
+    /**
+     * Returns a principal url based on an email address.
+     *
+     * Note that wether or not this works may depend on wether a search
+     * facility is built into the server.
+     *
+     * This method returns false if the principal could not be found.
+     *
+     * @return string|bool
+     */
+    public function getPrincipalByEmail($email) {
+
+        $result = $this->principalSearch(
+            ['{http://sabredav.org/ns}email-address' => $email],
+            ['{DAV:}principal-URL']
+        );
+
+        if (!count($result)) {
+            return false;
+        }
+
+        return $result[0][200]['{DAV:}principal-URL'];
 
     }
 
@@ -848,10 +875,18 @@ class Plugin extends DAV\ServerPlugin {
                 return new DAV\Property\Href($node->getPrincipalUrl() . '/');
             });
             $propFind->handle('{DAV:}group-member-set', function() use ($node) {
-                return new DAV\Property\HrefList($node->getGroupMemberSet());
+                $members = $node->getGroupMemberSet();
+                foreach($members as $k=>$member) {
+                    $members[$k] = rtrim($member,'/') . '/';
+                }
+                return new DAV\Property\HrefList($members);
             });
             $propFind->handle('{DAV:}group-membership', function() use ($node) {
-                return new DAV\Property\HrefList($node->getGroupMembership());
+                $members = $node->getGroupMembership();
+                foreach($members as $k=>$member) {
+                    $members[$k] = rtrim($member,'/') . '/';
+                }
+                return new DAV\Property\HrefList($members);
             });
             $propFind->handle('{DAV:}displayname', [$node, 'getDisplayName']);
 

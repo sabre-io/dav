@@ -16,7 +16,7 @@ namespace Sabre\CalDAV\Schedule\IMip;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Mock extends \Sabre\CalDAV\Schedule\IMip {
+class MockPlugin extends \Sabre\CalDAV\Schedule\IMipPlugin {
 
     protected $emails = array();
 

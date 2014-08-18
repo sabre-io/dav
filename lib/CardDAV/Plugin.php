@@ -397,9 +397,12 @@ class Plugin extends DAV\ServerPlugin {
         $depth = $this->server->getHTTPDepth(0);
 
         if ($depth==0) {
-            $candidateNodes = array(
+            $candidateNodes = [
                 $this->server->tree->getNodeForPath($this->server->getRequestUri())
-            );
+            ];
+            if (!$candidateNodes[0] instanceof ICard) {
+                throw new ReportNotSupported('The addressbook-query report is not supported on this url with Depth: 0');
+            }
         } else {
             $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
         }

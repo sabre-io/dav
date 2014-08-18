@@ -13,6 +13,12 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
 
     function __construct(array $calendars = [], array $calendarData = [], array $notifications = []) {
 
+        foreach($calendars as &$calendar) {
+            if (!isset($calendar['id'])) {
+                $calendar['id'] = DAV\UUIDUtil::getUUID();
+            }
+        }
+
         $this->calendars = $calendars;
         $this->calendarData = $calendarData;
         $this->notifications = $notifications;
@@ -125,7 +131,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
         foreach($objects as $uri => &$object) {
             $object['calendarid'] = $calendarId;
             $object['uri'] = $uri;
-
+            $object['lastmodified'] = null;
         }
         return $objects;
 
@@ -151,6 +157,7 @@ class Mock extends AbstractBackend implements NotificationSupport, SharingSuppor
         $object = $this->calendarData[$calendarId][$objectUri];
         $object['calendarid'] = $calendarId;
         $object['uri'] = $objectUri;
+        $object['lastmodified'] = null;
         return $object;
 
     }

@@ -8,7 +8,8 @@ CREATE TABLE calendarobjects (
     size integer,
     componenttype text,
     firstoccurence integer,
-    lastoccurence integer
+    lastoccurence integer,
+    uid text
 );
 
 CREATE TABLE calendars (
@@ -48,6 +49,16 @@ CREATE TABLE calendarsubscriptions (
     stripalarms bool,
     stripattachments bool,
     lastmodified int
+);
+
+CREATE TABLE schedulingobjects (
+    id integer primary key asc,
+    principaluri text,
+    calendardata blob,
+    uri text,
+    lastmodified integer,
+    etag text,
+    size integer
 );
 
 CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);

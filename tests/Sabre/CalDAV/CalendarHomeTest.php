@@ -8,10 +8,10 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 
 /**
  */
-class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
+class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CalDAV\UserCalendars
+     * @var Sabre\CalDAV\CalendarHome
      */
     protected $usercalendars;
     /**
@@ -23,7 +23,7 @@ class UserCalendarsTest extends \PHPUnit_Framework_TestCase {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = TestUtil::getBackend();
-        $this->usercalendars = new UserCalendars($this->backend, array(
+        $this->usercalendars = new CalendarHome($this->backend, array(
             'uri' => 'principals/user1'
         ));
 

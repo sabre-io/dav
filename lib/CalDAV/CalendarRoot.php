@@ -10,11 +10,14 @@ use Sabre\DAVACL\PrincipalBackend;
  * This object is responsible for generating a list of calendar-homes for each
  * user.
  *
+ * This is the top-most node for the calendars tree. In most servers this class
+ * represents the "/calendars" path.
+ *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection {
+class CalendarRoot extends \Sabre\DAVACL\AbstractPrincipalCollection {
 
     /**
      * CalDAV backend
@@ -70,7 +73,7 @@ class CalendarRootNode extends \Sabre\DAVACL\AbstractPrincipalCollection {
      */
     public function getChildForPrincipal(array $principal) {
 
-        return new UserCalendars($this->caldavBackend, $principal);
+        return new CalendarHome($this->caldavBackend, $principal);
 
     }
 

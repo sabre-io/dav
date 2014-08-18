@@ -71,7 +71,7 @@ $nodes = [
     // /principals
     new \Sabre\CalDAV\Principal\Collection($principalBackend),
     // /calendars
-    new \Sabre\CalDAV\CalendarRootNode($principalBackend, $caldavBackend),
+    new \Sabre\CalDAV\CalendarRoot($principalBackend, $caldavBackend),
     // /addressbook
     new \Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend),
 ];

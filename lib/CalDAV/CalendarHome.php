@@ -8,13 +8,18 @@ use
     Sabre\HTTP\URLUtil;
 
 /**
- * The UserCalendars class contains all calendars associated to one user
+ * The CalendarHome represents a node that is usually in a users'
+ * calendar-homeset.
+ *
+ * It contains all the users' calendars, and can optionally contain a
+ * notifications collection, calendar subscriptions, a users' inbox, and a
+ * users' outbox.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
+class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
     /**
      * CalDAV backend
@@ -174,7 +179,11 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
                 $objs[] = new Calendar($this->caldavBackend, $calendar);
             }
         }
-        $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
+
+        if ($this->caldavBackend instanceof Backend\SchedulingSupport) {
+            $objs[] = new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
+            $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
+        }
 
         // We're adding a notifications node, if it's supported by the backend.
         if ($this->caldavBackend instanceof Backend\NotificationSupport) {
@@ -359,6 +368,30 @@ class UserCalendars implements DAV\IExtendedCollection, DAVACL\IACL {
         }
 
         return $this->caldavBackend->shareReply($href, $status, $calendarUri, $inReplyTo, $summary);
+
+    }
+
+    /**
+     * Searches through all of a users calendars and calendar objects to find
+     * an object with a specific UID.
+     *
+     * This method should return the path to this object, relative to the
+     * calendar home, so this path usually only contains two parts:
+     *
+     * calendarpath/objectpath.ics
+     *
+     * If the uid is not found, return null.
+     *
+     * This method should only consider * objects that the principal owns, so
+     * any calendars owned by other principals that also appear in this
+     * collection should be ignored.
+     *
+     * @param string $uid
+     * @return string|null
+     */
+    public function getCalendarObjectByUID($uid) {
+
+        return $this->caldavBackend->getCalendarObjectByUID($this->principalInfo['uri'], $uid);
 
     }
 

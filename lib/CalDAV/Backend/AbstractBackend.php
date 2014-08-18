@@ -139,13 +139,78 @@ abstract class AbstractBackend implements BackendInterface {
             $object = $this->getCalendarObject($object['calendarid'], $object['uri']);
         }
 
-        $data = is_resource($object['calendardata'])?stream_get_contents($object['calendardata']):$object['calendardata'];
-        $vObject = VObject\Reader::read($data);
+        $vObject = VObject\Reader::read($object['calendardata']);
 
         $validator = new CalDAV\CalendarQueryValidator();
         return $validator->validate($vObject, $filters);
 
     }
 
+    /**
+     * Searches through all of a users calendars and calendar objects to find
+     * an object with a specific UID.
+     *
+     * This method should return the path to this object, relative to the
+     * calendar home, so this path usually only contains two parts:
+     *
+     * calendarpath/objectpath.ics
+     *
+     * If the uid is not found, return null.
+     *
+     * This method should only consider * objects that the principal owns, so
+     * any calendars owned by other principals that also appear in this
+     * collection should be ignored.
+     *
+     * @param string $principalUri
+     * @param string $uid
+     * @return string|null
+     */
+    public function getCalendarObjectByUID($principalUri, $uid) {
+
+        // Note: this is a super slow naive implementation of this method. You
+        // are highly recommended to optimize it, if your backend allows it.
+        foreach($this->getCalendarsForUser($principalUri) as $calendar) {
+
+            // We must ignore calendars owned by other principals.
+            if ($calendar['principaluri']!==$principalUri) {
+                continue;
+            }
+
+            $results = $this->calendarQuery(
+                $calendar['id'],
+                [
+                    'name' => 'VCALENDAR',
+                    'prop-filters' => [],
+                    'comp-filters' => [
+                        [
+                            'name' => 'VEVENT',
+                            'is-not-defined' => false,
+                            'time-range' => null,
+                            'comp-filters' => [],
+                            'prop-filters' => [
+                                [
+                                    'name' => 'UID',
+                                    'is-not-defined' => false,
+                                    'time-range' => null,
+                                    'text-match' => [
+                                        'value' => $uid,
+                                        'negate-condition' => false,
+                                        'collation' => 'i;octet',
+                                    ],
+                                    'param-filters' => [],
+                                ],
+                            ]
+                        ]
+                    ],
+                ]
+            );
+            if ($results) {
+                // We have a match
+                return $calendar['uri'] . '/' . $results[0];
+            }
+
+        }
+
+    }
 
 }

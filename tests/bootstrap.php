@@ -3,7 +3,12 @@
 set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATOR . get_include_path());
 
 $autoLoader = include __DIR__ . '/../vendor/autoload.php';
+
+// SabreDAV tests auto loading
 $autoLoader->add('Sabre\\', __DIR__);
+// VObject tests auto loadiong
+$autoLoader->addPsr4('Sabre\\VObject\\',__DIR__ . '/../vendor/sabre/vobject/tests/VObject');
+
 
 date_default_timezone_set('UTC');
 

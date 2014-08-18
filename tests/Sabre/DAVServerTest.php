@@ -23,8 +23,14 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCardDAV = false;
     protected $setupACL = false;
     protected $setupCalDAVSharing = false;
+    protected $setupCalDAVScheduling = false;
     protected $setupCalDAVSubscriptions = false;
 
+    /**
+     * An array with calendars. Every calendar should have
+     *   - principaluri
+     *   - uri
+     */
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
 
@@ -62,6 +68,13 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavSharingPlugin;
 
     /**
+     * CalDAV scheduling plugin
+     *
+     * @var CalDAV\Schedule\Plugin
+     */
+    protected $caldavSchedulePlugin;
+
+    /**
      * @var Sabre\DAV\Auth\Plugin
      */
     protected $authPlugin;
@@ -88,6 +101,10 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupCalDAVSharing) {
             $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
+        }
+        if ($this->setupCalDAVScheduling) {
+            $this->caldavSchedulePlugin = new CalDAV\Schedule\Plugin();
+            $this->server->addPlugin($this->caldavSchedulePlugin);
         }
         if ($this->setupCalDAVSubscriptions) {
             $this->server->addPlugin(new CalDAV\Subscriptions\Plugin());
@@ -140,7 +157,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function setUpTree() {
 
         if ($this->setupCalDAV) {
-            $this->tree[] = new CalDAV\CalendarRootNode(
+            $this->tree[] = new CalDAV\CalendarRoot(
                 $this->principalBackend,
                 $this->caldavBackend
             );
@@ -166,7 +183,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->caldavBackend = new CalDAV\Backend\MockSubscriptionSupport($this->caldavCalendars, $this->caldavCalendarObjects);
         }
         if ($this->setupCalDAV && is_null($this->caldavBackend)) {
-            $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+            if ($this->setupCalDAVScheduling) {
+                $this->caldavBackend = new CalDAV\Backend\MockScheduling($this->caldavCalendars, $this->caldavCalendarObjects);
+            } else {
+                $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+            }
         }
         if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);

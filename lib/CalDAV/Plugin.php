@@ -215,15 +215,15 @@ class Plugin extends DAV\ServerPlugin {
     public function report($reportName,$dom) {
 
         switch($reportName) {
-            case '{'.self::NS_CALDAV.'}calendar-multiget' :
+            case '{' . self::NS_CALDAV . '}calendar-multiget' :
                 $this->server->transactionType = 'report-calendar-multiget';
                 $this->calendarMultiGetReport($dom);
                 return false;
-            case '{'.self::NS_CALDAV.'}calendar-query' :
+            case '{' . self::NS_CALDAV . '}calendar-query' :
                 $this->server->transactionType = 'report-calendar-query';
                 $this->calendarQueryReport($dom);
                 return false;
-            case '{'.self::NS_CALDAV.'}free-busy-query' :
+            case '{' . self::NS_CALDAV . '}free-busy-query' :
                 $this->server->transactionType = 'report-free-busy-query';
                 $this->freeBusyQueryReport($dom);
                 return false;

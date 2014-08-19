@@ -37,6 +37,11 @@ ChangeLog
   instead of 501, as per RFC7231.
 * Added: Browser plugin can now display the contents of the
   `{DAV:}supported-privilege-set` property.
+* Added: Now reporting `CALDAV:max-resource-size`, but we're not actively
+  restricting it yet.
+* Changed: CalDAV plugin is now responsible for reporting
+  `CALDAV:supported-collation-set` and `CALDAV:supported-calendar-data`
+  properties.
 
 2.0.4 (????-??-??)
 ------------------

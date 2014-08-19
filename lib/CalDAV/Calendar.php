@@ -85,20 +85,10 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
 
         $response = [];
 
-        foreach($requestedProperties as $prop) switch($prop) {
+        foreach($requestedProperties as $prop) {
 
-            case '{urn:ietf:params:xml:ns:caldav}supported-calendar-data' :
-                $response[$prop] = new Property\SupportedCalendarData();
-                break;
-            case '{urn:ietf:params:xml:ns:caldav}supported-collation-set' :
-                $response[$prop] =  new Property\SupportedCollationSet();
-                break;
-            case '{DAV:}owner' :
-                $response[$prop] = new DAVACL\Property\Principal(DAVACL\Property\Principal::HREF,$this->calendarInfo['principaluri']);
-                break;
-            default :
-                if (isset($this->calendarInfo[$prop])) $response[$prop] = $this->calendarInfo[$prop];
-                break;
+            if (isset($this->calendarInfo[$prop]))
+                $response[$prop] = $this->calendarInfo[$prop];
 
         }
         return $response;

@@ -42,6 +42,13 @@ ChangeLog
 * Changed: CalDAV plugin is now responsible for reporting
   `CALDAV:supported-collation-set` and `CALDAV:supported-calendar-data`
   properties.
+* Added: Now reporting `CARDDAV:max-resource-size`, but we're not actively
+  restricting it yet.
+* Added: Support for `CARDDAV:supported-collation-set`.
+* Changed: CardDAV plugin is now responsible for reporting
+  `CARDDAV:supported-address-data`. This functionality has been removed from
+  the CardDAV PDO backend.
+
 
 2.0.4 (????-??-??)
 ------------------

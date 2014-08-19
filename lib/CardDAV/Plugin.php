@@ -43,6 +43,13 @@ class Plugin extends DAV\ServerPlugin {
     protected $server;
 
     /**
+     * The default PDO storage uses a MySQL MEDIUMBLOB for iCalendar data,
+     * which can hold up to 2^24 = 16777216 bytes. This is plenty. We're
+     * capping it to 10M here.
+     */
+    protected $maxResourceSize = 10000000;
+
+    /**
      * Initializes the plugin
      *
      * @param DAV\Server $server
@@ -125,6 +132,19 @@ class Plugin extends DAV\ServerPlugin {
      */
     public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
 
+        $ns = '{' . self::NS_CARDDAV . '}';
+
+        if ($node instanceof IAddressBook) {
+
+            $propFind->handle($ns . 'max-resource-size', $this->maxResourceSize);
+            $propFind->handle($ns . 'supported-address-data', function() {
+                return new Property\SupportedAddressData();
+            });
+            $propFind->handle($ns . 'supported-collation-set', function() {
+                return new Property\SupportedCollationSet();
+            });
+
+        }
         if ($node instanceof DAVACL\IPrincipal) {
 
             $path = $propFind->getPath();

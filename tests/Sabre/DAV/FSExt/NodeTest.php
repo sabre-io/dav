@@ -1,7 +1,9 @@
 <?php
 
 namespace Sabre\DAV\FSExt;
+
 use Sabre\DAV;
+use Sabre\DAV\PropPatch;
 
 require_once 'Sabre/TestUtil.php';
 
@@ -29,13 +31,11 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test2' => 'bar',
         );
 
-        $result = $file->updateProperties($properties);
-        $expected = true;
-
-        $this->assertEquals($expected, $result);
+        $propPatch = new PropPatch($properties);
+        $file->propPatch($propPatch);
+        $propPatch->commit();
 
         $getProperties = $file->getProperties(array_keys($properties));
-
         $this->assertEquals($properties, $getProperties);
 
     }
@@ -51,7 +51,9 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test2' => 'bar',
         );
 
-        $result = $file->updateProperties($mutations);
+        $propPatch = new PropPatch($mutations);
+        $file->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
 
@@ -60,7 +62,9 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test3' => 'baz',
         );
 
-        $result = $file->updateProperties($mutations);
+        $propPatch = new PropPatch($mutations);
+        $file->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
     }
@@ -77,7 +81,9 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test2' => 'bar',
         );
 
-        $result = $file->updateProperties($mutations);
+        $propPatch = new PropPatch($mutations);
+        $file->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
 
@@ -86,7 +92,10 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test3' => null
         );
 
-        $result = $file->updateProperties($mutations);
+
+        $propPatch = new PropPatch($mutations);
+        $file->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
 
@@ -109,7 +118,9 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test2' => 'bar',
         );
 
-        $result = $file->updateProperties($mutations);
+        $propPatch = new PropPatch($mutations);
+        $file->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
 
@@ -149,7 +160,9 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
             '{http://sabredav.org/NS/2010}test2' => 'bar',
         );
 
-        $result = $file->updateProperties($mutations);
+        $propPatch = new PropPatch($mutations);
+        $file->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
 

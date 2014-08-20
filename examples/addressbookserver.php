@@ -37,7 +37,7 @@ $carddavBackend   = new Sabre\CardDAV\Backend\PDO($pdo);
 // Setting up the directory tree //
 $nodes = [
     new Sabre\DAVACL\PrincipalCollection($principalBackend),
-//    new Sabre\CalDAV\CalendarRootNode($authBackend, $caldavBackend),
+//    new Sabre\CalDAV\CalendarRoot($authBackend, $caldavBackend),
     new Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend),
 ];
 
@@ -51,6 +51,7 @@ $server->addPlugin(new Sabre\DAV\Browser\Plugin());
 //$server->addPlugin(new Sabre\CalDAV\Plugin());
 $server->addPlugin(new Sabre\CardDAV\Plugin());
 $server->addPlugin(new Sabre\DAVACL\Plugin());
+$server->addPlugin(new Sabre\DAV\Sync\Plugin());
 
 // And off we go!
 $server->exec();

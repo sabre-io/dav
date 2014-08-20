@@ -17,15 +17,11 @@ class ServerTest extends DAV\AbstractServer{
 
     function testGet() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'GET',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $request = new HTTP\Request('GET', '/test.txt');
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
+        $this->assertEquals(200, $this->response->getStatus(), 'Invalid status code received.');
         $this->assertEquals(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
@@ -35,7 +31,7 @@ class ServerTest extends DAV\AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals(200, $this->response->status);
+
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
 
     }

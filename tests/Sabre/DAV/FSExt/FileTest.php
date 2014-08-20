@@ -34,9 +34,9 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 
        $file = new File(SABRE_TEMPDIR . '/file.txt');
        $file->put('0000000');
-       $file->putRange('111',3);
+       $file->patch('111', 2, 3);
 
-       $this->assertEquals('0011100',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
+       $this->assertEquals('0001110',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
 
     }
 
@@ -48,9 +48,9 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 
        $file = new File(SABRE_TEMPDIR . '/file.txt');
        $file->put('0000000');
-       $file->putRange($stream,3);
+       $file->patch($stream, 2, 3);
 
-       $this->assertEquals('0022200',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
+       $this->assertEquals('0002220',file_get_contents(SABRE_TEMPDIR . '/file.txt'));
 
     }
 

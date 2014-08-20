@@ -12,17 +12,17 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
     function getServer() {
 
         $tree = array(
-            new MockPropertyNode('node1', array(
+            new DAV\Mock\PropertiesCollection('node1', [], array(
                 '{http://sabredav.org/ns}simple' => 'foo',
                 '{http://sabredav.org/ns}href'   => new DAV\Property\Href('node2'),
                 '{DAV:}displayname'     => 'Node 1',
             )),
-            new MockPropertyNode('node2', array(
+            new DAV\Mock\PropertiesCollection('node2', [], array(
                 '{http://sabredav.org/ns}simple' => 'simple',
                 '{http://sabredav.org/ns}hreflist' => new DAV\Property\HrefList(array('node1','node3')),
                 '{DAV:}displayname'     => 'Node 2',
             )),
-            new MockPropertyNode('node3', array(
+            new DAV\Mock\PropertiesCollection('node3', [], array(
                 '{http://sabredav.org/ns}simple' => 'simple',
                 '{DAV:}displayname'     => 'Node 3',
             )),
@@ -303,57 +303,4 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         }
 
     }
-}
-class MockPropertyNode implements DAV\INode, DAV\IProperties {
-
-    function __construct($name, array $properties) {
-
-        $this->name = $name;
-        $this->properties = $properties;
-
-    }
-
-    function getName() {
-
-        return $this->name;
-
-    }
-
-    function getProperties($requestedProperties) {
-
-        $returnedProperties = array();
-        foreach($requestedProperties as $requestedProperty) {
-            if (isset($this->properties[$requestedProperty])) {
-                $returnedProperties[$requestedProperty] =
-                    $this->properties[$requestedProperty];
-            }
-        }
-        return $returnedProperties;
-
-    }
-
-    function delete() {
-
-        throw new DAV\Exception('Not implemented');
-
-    }
-
-    function setName($name) {
-
-        throw new DAV\Exception('Not implemented');
-
-    }
-
-    function getLastModified() {
-
-        return null;
-
-    }
-
-    function updateProperties($properties) {
-
-        throw new DAV\Exception('Not implemented');
-
-    }
-
 }

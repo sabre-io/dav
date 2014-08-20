@@ -2,13 +2,6 @@
 
 namespace Sabre;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/CalDAV/Backend/MockSubscriptionSupport.php';
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-require_once 'Sabre/DAVACL/PrincipalBackend/Mock.php';
-require_once 'Sabre/DAV/Auth/Backend/Mock.php';
-
 use
     Sabre\HTTP\Request,
     Sabre\HTTP\Response,
@@ -22,7 +15,7 @@ use
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
@@ -30,7 +23,15 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCardDAV = false;
     protected $setupACL = false;
     protected $setupCalDAVSharing = false;
+    protected $setupCalDAVScheduling = false;
+    protected $setupCalDAVSubscriptions = false;
+    protected $setupLocks = false;
 
+    /**
+     * An array with calendars. Every calendar should have
+     *   - principaluri
+     *   - uri
+     */
     protected $caldavCalendars = array();
     protected $caldavCalendarObjects = array();
 
@@ -46,6 +47,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavBackend;
     protected $carddavBackend;
     protected $principalBackend;
+    protected $locksBackend;
 
     /**
      * @var Sabre\CalDAV\Plugin
@@ -68,9 +70,21 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavSharingPlugin;
 
     /**
+     * CalDAV scheduling plugin
+     *
+     * @var CalDAV\Schedule\Plugin
+     */
+    protected $caldavSchedulePlugin;
+
+    /**
      * @var Sabre\DAV\Auth\Plugin
      */
     protected $authPlugin;
+
+    /**
+     * @var Sabre\DAV\Locks\Plugin
+     */
+    protected $locksPlugin;
 
     /**
      * If this string is set, we will automatically log in the user with this
@@ -95,6 +109,13 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
         }
+        if ($this->setupCalDAVScheduling) {
+            $this->caldavSchedulePlugin = new CalDAV\Schedule\Plugin();
+            $this->server->addPlugin($this->caldavSchedulePlugin);
+        }
+        if ($this->setupCalDAVSubscriptions) {
+            $this->server->addPlugin(new CalDAV\Subscriptions\Plugin());
+        }
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new CardDAV\Plugin();
             $this->server->addPlugin($this->carddavPlugin);
@@ -102,6 +123,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupACL) {
             $this->aclPlugin = new DAVACL\Plugin();
             $this->server->addPlugin($this->aclPlugin);
+        }
+        if ($this->setupLocks) {
+            $this->locksPlugin = new DAV\Locks\Plugin(
+                $this->locksBackend
+            );
+            $this->server->addPlugin($this->locksPlugin);
         }
         if ($this->autoLogin) {
             $authBackend = new DAV\Auth\Backend\Mock();
@@ -143,7 +170,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function setUpTree() {
 
         if ($this->setupCalDAV) {
-            $this->tree[] = new CalDAV\CalendarRootNode(
+            $this->tree[] = new CalDAV\CalendarRoot(
                 $this->principalBackend,
                 $this->caldavBackend
             );
@@ -165,14 +192,24 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
+        if ($this->setupCalDAVSubscriptions && is_null($this->caldavBackend)) {
+            $this->caldavBackend = new CalDAV\Backend\MockSubscriptionSupport($this->caldavCalendars, $this->caldavCalendarObjects);
+        }
         if ($this->setupCalDAV && is_null($this->caldavBackend)) {
-            $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+            if ($this->setupCalDAVScheduling) {
+                $this->caldavBackend = new CalDAV\Backend\MockScheduling($this->caldavCalendars, $this->caldavCalendarObjects);
+            } else {
+                $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
+            }
         }
         if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);
         }
         if ($this->setupCardDAV || $this->setupCalDAV) {
             $this->principalBackend = new DAVACL\PrincipalBackend\Mock();
+        }
+        if ($this->setupLocks) {
+            $this->locksBackend = new DAV\Locks\Backend\Mock();
         }
 
     }

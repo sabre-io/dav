@@ -64,7 +64,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             'uri' => 'principals/admin/calendar-proxy-write',
         ));
 
-        $calendars = new CalendarRootNode($principalBackend,$this->caldavBackend);
+        $calendars = new CalendarRoot($principalBackend,$this->caldavBackend);
         $principals = new Principal\Collection($principalBackend);
 
         $root = new DAV\SimpleCollection('root');
@@ -436,8 +436,6 @@ END:VCALENDAR';
 
         $props = $this->server->getPropertiesForPath('/principals/user1',array(
             '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
-            '{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',
-            '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
             '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
@@ -452,21 +450,10 @@ END:VCALENDAR';
         $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/',$prop->getHref());
 
-        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',$props[0][200]);
-        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL'];
-        $this->assertTrue($prop instanceof DAV\Property\Href);
-        $this->assertEquals('calendars/user1/outbox',$prop->getHref());
-
         $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
         $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
         $this->assertTrue($prop instanceof DAV\Property\Href);
-        $this->assertEquals('calendars/user1/notifications/',$prop->getHref());
 
-
-        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
-        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
-        $this->assertTrue($prop instanceof DAV\Property\HrefList);
-        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1/'),$prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
@@ -1075,23 +1062,21 @@ END:VCALENDAR';
 
     function testNotificationProperties() {
 
-        $request = array(
-            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
-        );
-        $result = array();
         $notification = new Notifications\Node(
             $this->caldavBackend,
             'principals/user1',
             new Notifications\Notification\SystemStatus('foo','"1"')
         );
-        $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
+        $propFind = new DAV\PropFind('calendars/user1/notifications', [
+            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
+        ]);
+
+        $this->plugin->propFind($propFind, $notification);
 
         $this->assertEquals(
-            array(
-                200 => array(
-                    '{' . Plugin::NS_CALENDARSERVER . '}notificationtype' => $notification->getNotificationType()
-                )
-            ), $result);
+            $notification->getNotificationType(),
+            $propFind->get('{' . Plugin::NS_CALENDARSERVER . '}notificationtype')
+        );
 
     }
 

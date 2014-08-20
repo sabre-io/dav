@@ -1,6 +1,8 @@
 <?php
 
 namespace Sabre\CalDAV;
+
+use Sabre\DAV\PropPatch;
 use Sabre\DAVACL;
 
 require_once 'Sabre/CalDAV/TestUtil.php';
@@ -51,9 +53,12 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
      */
     function testUpdateProperties() {
 
-        $result = $this->calendar->updateProperties(array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'NewName',
-        ));
+        ]);
+
+        $result = $this->calendar->propPatch($propPatch);
+        $result = $propPatch->commit();
 
         $this->assertEquals(true, $result);
 
@@ -69,9 +74,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
         $question = array(
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
-            '{urn:ietf:params:xml:ns:caldav}supported-calendar-data',
-            '{urn:ietf:params:xml:ns:caldav}supported-collation-set',
-            '{DAV:}owner',
         );
 
         $result = $this->calendar->getProperties($question);
@@ -79,11 +81,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
         foreach($question as $q) $this->assertArrayHasKey($q,$result);
 
         $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
-
-        $this->assertTrue($result['{urn:ietf:params:xml:ns:caldav}supported-collation-set'] instanceof Property\SupportedCollationSet);
-
-        $this->assertTrue($result['{DAV:}owner'] instanceof DAVACL\Property\Principal);
-        $this->assertEquals('principals/user1', $result['{DAV:}owner']->getHref());
 
     }
 

@@ -128,41 +128,4 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testAfterGetProperties() {
-
-        $properties = array(
-            'href' => 'foo',
-            '200' => array(
-                '{DAV:}displayname' => 'foo',
-                '{DAV:}getcontentlength' => 500,
-            ),
-            '404' => array(
-                '{DAV:}bar' => null,
-            ),
-            '403' => array(
-                '{DAV:}owner' => null,
-            ),
-        );
-
-        $expected = array(
-            'href' => 'foo',
-            '200' => array(
-                '{DAV:}displayname' => 'foo',
-                '{DAV:}getcontentlength' => 500,
-            ),
-            '404' => array(
-                '{DAV:}bar' => null,
-            ),
-            '403' => array(
-                '{DAV:}owner' => null,
-            ),
-        );
-
-        $r = $this->server->emit('afterGetProperties', ['testdir',&$properties]);
-        $this->assertTrue($r);
-
-        $this->assertEquals($expected, $properties);
-
-    }
-
 }

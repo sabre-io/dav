@@ -2,12 +2,20 @@
 
 namespace Sabre\CalDAV\Backend;
 
+use
+    Sabre\DAV\PropPatch;
+
 class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateCalendar() {
 
         $abstract = new AbstractMock();
-        $this->assertEquals(false, $abstract->updateCalendar('randomid', array('{DAV:}displayname' => 'anything')));
+        $propPatch = new PropPatch( ['{DAV:}displayname' => 'anything'] );
+
+        $abstract->updateCalendar('randomid', $propPatch);
+        $result = $propPatch->commit();
+
+        $this->assertFalse($result);
 
     }
 
@@ -36,14 +44,68 @@ class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetCalendarObjectByUID() {
+
+        $abstract = new AbstractMock();
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal1', 'zim')
+        );
+        $this->assertEquals(
+            'cal1/event1.ics',
+            $abstract->getCalendarObjectByUID('principal1', 'foo')
+        );
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal22', 'foo')
+        );
+
+    }
+
+    function testGetMultipleCalendarObjects() {
+
+        $abstract = new AbstractMock();
+        $result = $abstract->getMultipleCalendarObjects(1, [
+            'event1.ics',
+            'task1.ics',
+        ]);
+
+        $expected = [
+            array(
+                'id' => 1,
+                'calendarid' => 1,
+                'uri' => 'event1.ics',
+                'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+            ),
+            array(
+                'id' => 2,
+                'calendarid' => 1,
+                'uri' => 'task1.ics',
+                'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
+            ),
+        ];
+
+        $this->assertEquals($expected, $result);
+
+
+    }
+
 }
 
 class AbstractMock extends AbstractBackend {
 
-    function getCalendarsForUser($principalUri) { }
+    function getCalendarsForUser($principalUri) {
+
+        return array(
+            array(
+                'id' => 1,
+                'principaluri' => 'principal1',
+                'uri' => 'cal1',
+            ),
+        );
+
+    }
     function createCalendar($principalUri,$calendarUri,array $properties) { }
     function deleteCalendar($calendarId) { }
-    function getCalendarObjects($calendarId) { 
+    function getCalendarObjects($calendarId) {
 
         return array(
             array(
@@ -59,7 +121,7 @@ class AbstractMock extends AbstractBackend {
         );
 
     }
-    function getCalendarObject($calendarId,$objectUri) { 
+    function getCalendarObject($calendarId, $objectUri) {
 
         switch($objectUri) {
 
@@ -68,13 +130,13 @@ class AbstractMock extends AbstractBackend {
                     'id' => 1,
                     'calendarid' => 1,
                     'uri' => 'event1.ics',
-                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
                 );
             case 'task1.ics' :
                 return array(
-                    'id' => 1,
+                    'id' => 2,
                     'calendarid' => 1,
-                    'uri' => 'event1.ics',
+                    'uri' => 'task1.ics',
                     'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
                 );
 

@@ -75,8 +75,12 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $result = $principal->updateProperties(array('{DAV:}yourmom'=>'test'));
-        $this->assertEquals(true,$result);
+
+        $propPatch = new DAV\PropPatch(array('{DAV:}yourmom' => 'test'));
+
+        $result = $principal->propPatch($propPatch);
+        $result = $propPatch->commit();
+        $this->assertTrue($result);
 
     }
 
@@ -175,7 +179,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(
             array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/admin',
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             )
         ),$principal->getACL());

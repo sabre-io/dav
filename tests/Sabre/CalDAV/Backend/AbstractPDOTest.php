@@ -1,8 +1,10 @@
 <?php
 
 namespace Sabre\CalDAV\Backend;
+
 use Sabre\CalDAV;
 use Sabre\DAV;
+use Sabre\DAV\PropPatch;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
@@ -69,14 +71,17 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         //Creating a new calendar
         $newId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        // Updating the calendar
-        $result = $backend->updateCalendar($newId,array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'myCalendar',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp('transparent'),
-        ));
+        ]);
+
+        // Updating the calendar
+        $backend->updateCalendar($newId, $propPatch);
+        $result = $propPatch->commit();
 
         // Verifying the result of the update
-        $this->assertEquals(true, $result);
+        $this->assertTrue($result);
 
         // Fetching all calendars from this user
         $calendars = $backend->getCalendarsForUser('principals/user2');
@@ -88,7 +93,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}displayname' => 'myCalendar',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
-            '{http://calendarserver.org/ns/}getctag' => 'http://sabredav.org/ns/sync/2',
+            '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/2',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp('transparent'),
         );
 
@@ -114,17 +119,20 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         //Creating a new calendar
         $newId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        // Updating the calendar
-        $result = $backend->updateCalendar($newId,array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'myCalendar',
             '{DAV:}yourmom'     => 'wittycomment',
-        ));
+        ]);
+
+        // Updating the calendar
+        $backend->updateCalendar($newId, $propPatch);
+        $propPatch->commit();
 
         // Verifying the result of the update
-        $this->assertEquals(array(
-            '403' => array('{DAV:}yourmom' => null),
-            '424' => array('{DAV:}displayname' => null),
-        ), $result);
+        $this->assertEquals([
+            '{DAV:}yourmom' => 403,
+            '{DAV:}displayname' => 424,
+        ], $propPatch->getResult());
 
     }
 
@@ -325,7 +333,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nRRULE:FREQ=DAILY\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nRRULE:FREQ=DAILY\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
@@ -349,7 +357,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
 
-        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nRRULE:FREQ=DAILY;COUNT=1000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nUID:foo\r\nRRULE:FREQ=DAILY;COUNT=1000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
@@ -723,7 +731,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
         ];
 
-        $result = $backend->updateSubscription(1, $newProps);
+        $propPatch = new DAV\PropPatch($newProps);
+        $backend->updateSubscription(1, $propPatch);
+        $result = $propPatch->commit();
 
         $this->assertTrue($result);
 
@@ -759,23 +769,20 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
         $backend->createSubscription('principals/user1', 'sub1', $props);
 
-        $newProps = [
+        $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'new displayname',
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
             '{DAV:}unknown' => 'foo',
-        ];
+        ]);
 
-        $result = $backend->updateSubscription(1, $newProps);
+        $backend->updateSubscription(1, $propPatch);
+        $propPatch->commit();
 
         $this->assertEquals([
-            403 => [
-                '{DAV:}unknown' => null,
-            ],
-            424 => [
-                '{DAV:}displayname' => null,
-                '{http://calendarserver.org/ns/}source' => null,
-            ],
-        ], $result);
+            '{DAV:}unknown' => 403,
+            '{DAV:}displayname' => 424,
+            '{http://calendarserver.org/ns/}source' => 424,
+        ], $propPatch->getResult());
 
     }
 
@@ -804,4 +811,45 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $subs = $backend->getSubscriptionsForUser('principals/user1');
         $this->assertEquals(0, count($subs));
     }
+
+    function testSchedulingMethods() {
+
+        $backend = new PDO($this->pdo);
+
+        $calData = "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n";
+
+        $backend->createSchedulingObject(
+            'principals/user1',
+            'schedule1.ics',
+            $calData
+        );
+
+        $expected = [
+            'calendardata' => $calData,
+            'uri' => 'schedule1.ics',
+            'etag' => '"' . md5($calData) . '"',
+            'size' => strlen($calData)
+        ];
+
+        $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
+        foreach($expected as $k=>$v) {
+            $this->assertArrayHasKey($k, $result);
+            $this->assertEquals($v, $result[$k]);
+        }
+
+        $results = $backend->getSchedulingObjects('principals/user1');
+
+        $this->assertEquals(1, count($results));
+        $result = $results[0];
+        foreach($expected as $k=>$v) {
+            $this->assertEquals($v, $result[$k]);
+        }
+
+        $backend->deleteSchedulingObject('principals/user1', 'schedule1.ics');
+        $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
+
+        $this->assertNull($result);
+
+    }
+
 }

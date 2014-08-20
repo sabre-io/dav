@@ -35,6 +35,8 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
             'id' => 1,
+            '{DAV:}displayname' => 'Hello!',
+            '{http://apple.com/ns/ical/}calendar-color' => '#AA0000FF',
         ];
         $tree = [
             new Calendar($cbackend,$props),
@@ -63,13 +65,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
+        $this->assertEquals(7,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
         $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION)!==false);
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals("Hello!", $obj->{"X-WR-CALNAME"});
+        $this->assertEquals("#AA0000FF", $obj->{"X-APPLE-CALENDAR-COLOR"});
 
     }
     function testBeforeMethodNoVersion() {

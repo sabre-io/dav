@@ -24,7 +24,6 @@ class ServerPluginTest extends AbstractServer {
     }
 
     /**
-     * @covers \Sabre\DAV\ServerPlugin
      */
     function testBaseClass() {
 

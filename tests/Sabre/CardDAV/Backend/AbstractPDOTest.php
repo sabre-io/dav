@@ -3,6 +3,7 @@
 namespace Sabre\CardDAV\Backend;
 
 use Sabre\CardDAV;
+use Sabre\DAV\PropPatch;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
@@ -22,7 +23,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $pdo = $this->getPDO();
         $this->backend = new PDO($pdo);
         $pdo->exec('INSERT INTO addressbooks (principaluri, displayname, uri, description, synctoken) VALUES ("principals/user1", "book1", "book1", "addressbook 1", 1)');
-        $pdo->exec('INSERT INTO cards (addressbookid, carddata, uri, lastmodified) VALUES (1, "card1", "card1", 0)');
+        $pdo->exec('INSERT INTO cards (addressbookid, carddata, uri, lastmodified, etag, size) VALUES (1, "card1", "card1", 0, "' . md5('card1') . '", 5)');
 
     }
 
@@ -38,7 +39,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1
             )
         );
@@ -49,11 +49,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateAddressBookInvalidProp() {
 
-        $result = $this->backend->updateAddressBook(1, array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'updated',
             '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
             '{DAV:}foo' => 'bar',
-        ));
+        ]);
+
+        $this->backend->updateAddressBook(1, $propPatch);
+        $result = $propPatch->commit();
 
         $this->assertFalse($result);
 
@@ -67,7 +70,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1
             )
         );
@@ -78,9 +80,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateAddressBookNoProps() {
 
-        $result = $this->backend->updateAddressBook(1, array());
+        $propPatch = new PropPatch([
+        ]);
 
-        $this->assertFalse($result);
+        $this->backend->updateAddressBook(1, $propPatch);
+        $result = $propPatch->commit();
+        $this->assertTrue($result);
 
         $result = $this->backend->getAddressBooksForUser('principals/user1');
 
@@ -92,7 +97,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1
             )
         );
@@ -104,10 +108,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     public function testUpdateAddressBookSuccess() {
 
-        $result = $this->backend->updateAddressBook(1, array(
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'updated',
             '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
-        ));
+        ]);
+
+        $this->backend->updateAddressBook(1, $propPatch);
+        $result = $propPatch->commit();
 
         $this->assertTrue($result);
 
@@ -121,7 +128,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'updated',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
                 '{http://calendarserver.org/ns/}getctag' => 2,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 2
             )
         );
@@ -165,7 +171,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1,
             ),
             array(
@@ -175,7 +180,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book2',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 2',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1,
             )
         );
@@ -192,8 +196,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             array(
                 'id' => 1,
                 'uri' => 'card1',
-                'carddata' => 'card1',
                 'lastmodified' => 0,
+                'etag' => '"' . md5('card1') . '"',
+                'size' => 5
             )
         );
 
@@ -210,6 +215,8 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'uri' => 'card1',
             'carddata' => 'card1',
             'lastmodified' => 0,
+            'etag' => '"' . md5('card1') . '"',
+            'size' => 5
         );
 
         $this->assertEquals($expected, $result);

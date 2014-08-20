@@ -35,16 +35,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     private function sendRequest($body) {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'PROPFIND',
-            'HTTP_DEPTH'          => 'infinity',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('PROPFIND', '/', ['Depth' => 'infinity']);
         $request->setBody($body);
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
     }
@@ -54,21 +48,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $hasFired = false;
 
         $self = $this;
-        // Also testing the beforeGetPropertiesForPath event.
-        $this->server->on('beforeGetPropertiesForPath', function($path, $properties, $depth) use ($self, &$hasFired) {
-
-            $hasFired = true;
-            $self->assertEquals('', $path);
-            $self->assertEquals([], $properties);
-            $self->assertEquals(-1, $depth);
-
-        });
 
         $this->sendRequest("");
 
-        $this->assertTrue($hasFired);
-
-        $this->assertEquals(207, $this->response->status);
+        $this->assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->getBodyAsString());
 
         $this->assertEquals(array(
                 'Content-Type' => 'application/xml; charset=utf-8',
@@ -177,7 +160,6 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
     }
 
     /**
-     * @covers Sabre\DAV\Server::parsePropPatchRequest
      */
     public function testParsePropPatchRequest() {
 
@@ -195,219 +177,6 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
             '{http://sabredav.org/NS/test}someprop2' => null,
             '{http://sabredav.org/NS/test}someprop3' => null,
             ), $result);
-
-    }
-
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     */
-    public function testUpdateProperties() {
-
-        $props = array(
-            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
-        );
-
-        $result = $this->server->updateProperties('/test2.txt',$props);
-
-        $this->assertEquals(array(
-            '200' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/test2.txt',
-        ), $result);
-
-    }
-
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
-    public function testUpdatePropertiesProtected() {
-
-        $props = array(
-            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
-            '{DAV:}getcontentlength' => 50,
-        );
-
-        $result = $this->server->updateProperties('/test2.txt',$props);
-
-        $this->assertEquals(array(
-            '424' => array('{http://sabredav.org/NS/test}someprop' => null),
-            '403' => array('{DAV:}getcontentlength' => null),
-            'href' => '/test2.txt',
-        ), $result);
-
-    }
-
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
-    public function testUpdatePropertiesFail1() {
-
-        $dir = new PropInfiniteDepthTestDirMock('updatepropsfalse');
-        $objectTree = new ObjectTree($dir);
-        $this->server->tree = $objectTree;
-
-        $props = array(
-            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
-        );
-
-        $result = $this->server->updateProperties('/',$props);
-
-        $this->assertEquals(array(
-            '403' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/',
-        ), $result);
-
-    }
-
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     */
-    public function testUpdatePropertiesFail2() {
-
-        $dir = new PropInfiniteDepthTestDirMock('updatepropsarray');
-        $objectTree = new ObjectTree($dir);
-        $this->server->tree = $objectTree;
-
-        $props = array(
-            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
-        );
-
-        $result = $this->server->updateProperties('/',$props);
-
-        $this->assertEquals(array(
-            '402' => array('{http://sabredav.org/NS/test}someprop' => null),
-            'href' => '/',
-        ), $result);
-
-    }
-
-    /**
-     * @covers Sabre\DAV\Server::updateProperties
-     * @depends testUpdateProperties
-     * @expectedException Sabre\DAV\Exception
-     */
-    public function testUpdatePropertiesFail3() {
-
-        $dir = new PropInfiniteDepthTestDirMock('updatepropsobj');
-        $objectTree = new ObjectTree($dir);
-        $this->server->tree = $objectTree;
-
-        $props = array(
-            '{http://sabredav.org/NS/test}someprop' => 'somevalue',
-        );
-
-        $result = $this->server->updateProperties('/',$props);
-
-    }
-
-    /**
-     * @depends testParsePropPatchRequest
-     * @depends testUpdateProperties
-     */
-    public function testPropPatch() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'PROPPATCH',
-        );
-
-        $body = '<?xml version="1.0"?>
-<d:propertyupdate xmlns:d="DAV:" xmlns:s="http://www.rooftopsolutions.nl/testnamespace">
-  <d:set><d:prop><s:someprop>somevalue</s:someprop></d:prop></d:set>
-</d:propertyupdate>';
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($body);
-
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-                'Content-Type' => 'application/xml; charset=utf-8',
-                'Vary' => 'Brief,Prefer',
-            ),
-            $this->response->headers
-         );
-
-        $this->assertEquals(207, $this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);
-
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
-        $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('bla','http://www.rooftopsolutions.nl/testnamespace');
-
-        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop');
-        $this->assertEquals(1,count($data),'We expected one \'d:prop\' element. Response body: ' . $body);
-
-        $data = $xml->xpath('//bla:someprop');
-        $this->assertEquals(1,count($data),'We expected one \'s:someprop\' element. Response body: ' . $body);
-
-        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(1,count($data),'We expected one \'s:status\' element. Response body: ' . $body);
-
-        $this->assertEquals('HTTP/1.1 200 OK',(string)$data[0]);
-
-    }
-
-    /**
-     * @depends testPropPatch
-     */
-    public function testPropPatchAndFetch() {
-
-        $this->testPropPatch();
-        $xml = '<?xml version="1.0"?>
-<d:propfind xmlns:d="DAV:" xmlns:s="http://www.rooftopsolutions.nl/testnamespace">
-  <d:prop>
-    <s:someprop />
-  </d:prop>
-</d:propfind>';
-
-        $this->sendRequest($xml);
-
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
-        $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('bla','http://www.rooftopsolutions.nl/testnamespace');
-
-        $xpath='//bla:someprop';
-        $result = $xml->xpath($xpath);
-        $this->assertEquals(8,count($result),'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
-        $this->assertEquals('somevalue',(string)$result[0],'We couldn\'t find our new property in the response. Full response body:' . "\n" . $body);
-
-    }
-
-}
-
-class PropInfiniteDepthTestDirMock extends SimpleCollection implements IProperties {
-
-    public $type;
-
-    function __construct($type) {
-
-        $this->type =$type;
-        parent::__construct('root');
-
-    }
-
-    function updateProperties($updateProperties) {
-
-        switch($this->type) {
-            case 'updatepropsfalse' : return false;
-            case 'updatepropsarray' :
-                $r = array(402 => array());
-                foreach($updateProperties as $k=>$v) $r[402][$k] = null;
-                return $r;
-            case 'updatepropsobj' :
-                return new \STDClass();
-        }
-
-    }
-
-    function getProperties($requestedPropeties) {
-
-        return array();
 
     }
 

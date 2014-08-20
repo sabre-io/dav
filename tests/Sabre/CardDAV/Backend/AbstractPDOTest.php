@@ -39,7 +39,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1
             )
         );
@@ -71,7 +70,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1
             )
         );
@@ -99,7 +97,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1
             )
         );
@@ -131,7 +128,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'updated',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'updated',
                 '{http://calendarserver.org/ns/}getctag' => 2,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 2
             )
         );
@@ -175,7 +171,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1,
             ),
             array(
@@ -185,7 +180,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book2',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 2',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{' . CardDAV\Plugin::NS_CARDDAV . '}supported-address-data' => new CardDAV\Property\SupportedAddressData(),
                 '{DAV:}sync-token' => 1,
             )
         );

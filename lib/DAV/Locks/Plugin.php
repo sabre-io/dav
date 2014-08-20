@@ -63,6 +63,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('method:UNLOCK',  [$this, 'httpUnlock']);
         $server->on('validateTokens', [$this, 'validateTokens']);
         $server->on('propFind',       [$this, 'propFind']);
+        $server->on('afterUnbind',    [$this, 'afterUnbind']);
 
     }
 
@@ -311,6 +312,23 @@ class Plugin extends DAV\ServerPlugin {
 
         // If we got here, it means the locktoken was invalid
         throw new DAV\Exception\LockTokenMatchesRequestUri();
+
+    }
+
+    /**
+     * This method is called after a node is deleted.
+     *
+     * We use this event to clean up any locks that still exist on the node.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function afterUnbind($path) {
+
+        $locks = $this->getLocks($path, $includeChildren = true);
+        foreach($locks as $lock) {
+            $this->unlockNode($path, $lock);
+        }
 
     }
 

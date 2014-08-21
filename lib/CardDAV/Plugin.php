@@ -6,6 +6,9 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\VObject;
 
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+
 /**
  * CardDAV plugin
  *
@@ -66,6 +69,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
+        $server->on('afterMethod:GET',     [$this, 'httpAfterGet']);
 
         /* Namespaces */
         $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
@@ -674,10 +678,10 @@ class Plugin extends DAV\ServerPlugin {
             return;
         }
         $contentType = $propFind->get('{DAV:}getcontenttype');
-        if (!$contentType || strpos($contentType, 'text/x-vcard')!==0) {
-            return;
+        list($part) = explode(';', $contentType);
+        if ($part === 'text/x-vcard' || $contentType === 'text/vcard') {
+            $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
         }
-        $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
 
     }
 
@@ -705,6 +709,77 @@ class Plugin extends DAV\ServerPlugin {
             </td></tr>';
 
         return false;
+
+    }
+
+    /**
+     * This event is triggered after GET requests.
+     *
+     * This is used to transform data into jCal, if this was requested.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return void
+     */
+    public function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
+
+        if (strpos($response->getHeader('Content-Type'),'text/vcard')===false) {
+            return;
+        }
+
+        $result = HTTP\Util::negotiate(
+            $request->getHeader('Accept'),
+            [
+                // Most often used mime-type. Version 3
+                'text/x-vcard',
+                // The correct standard mime-type. Defaults to version 3 as
+                // well.
+                'text/vcard',
+                // vCard 4
+                'text/vcard; version=4.0',
+                // vCard 3
+                'text/vcard; version=3.0',
+                // jCard
+                'application/vcard+json',
+            ]
+        );
+
+        if (is_null($result)) {
+            // If no accept header was specified, we default to this.
+            $result = 'text/vcard; version=3.0';
+        }
+
+        // Transforming.
+        $vobj = VObject\Reader::read($response->getBody());
+
+        switch($result) {
+
+            case 'text/x-vcard' :
+            case 'text/vcard' :
+            case 'text/vcard; version=3.0' :
+                if ($vobj->getDocumentType() === VObject\Document::VCARD30) {
+                    return;
+                }
+                $vobj = $vobj->convert(VObject\Document::VCARD30);
+                $newBody = $vobj->serialize();
+                break;
+            case 'text/vcard; version=4.0' :
+                if ($vobj->getDocumentType() === VObject\Document::VCARD40) {
+                    return;
+                }
+                $vobj = $vobj->convert(VObject\Document::VCARD40);
+                $newBody = $vobj->serialize();
+                break;
+            case 'application/vcard+json' :
+                $vobj = $vobj->convert(VObject\Document::VCARD40);
+                $newBody = json_encode($vobj->jsonSerialize());
+                break;
+
+        }
+
+        $response->setBody($newBody);
+        $response->setHeader('Content-Type', $result . '; charset=utf-8');
+        $response->setHeader('Content-Length', strlen($body));
 
     }
 

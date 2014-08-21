@@ -6,8 +6,10 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\VObject;
 
+use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
+
 
 /**
  * CardDAV plugin
@@ -299,9 +301,30 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $propertyList = array_values(
-            $this->server->getPropertiesForMultiplePaths($uris, $properties)
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
+        $xpath->registerNameSpace('dav','urn:DAV');
+
+        $requestedContentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data[@content-type])");
+
+        $vcardType = $this->negotiateVCard(
+            $requestedContentType
         );
+
+        $propertyList = [];
+        foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $props) {
+
+            if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
+
+                $props['200']['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
+                    $props[200]['{' . self::NS_CARDDAV . '}address-data'],
+                    $vcardType
+                );
+
+            }
+            $propertyList[] = $props;
+
+        }
 
         $prefer = $this->server->getHTTPPRefer();
 
@@ -442,6 +465,17 @@ class Plugin extends DAV\ServerPlugin {
             $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
         }
 
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
+        $xpath->registerNameSpace('dav','urn:DAV');
+
+        $requestedContentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data[@content-type])");
+
+        $vcardType = $this->negotiateVCard(
+            $requestedContentType
+        );
+
+
         $validNodes = [];
         foreach($candidateNodes as $node) {
 
@@ -475,7 +509,17 @@ class Plugin extends DAV\ServerPlugin {
                 $href = $this->server->getRequestUri() . '/' . $validNode->getName();
             }
 
-            list($result[]) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+            list($props) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+
+            if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
+
+                $props['200']['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
+                    $props[200]['{' . self::NS_CARDDAV . '}address-data'],
+                    $vcardType
+                );
+
+            }
+            $result[] = $props;
 
         }
 
@@ -738,51 +782,12 @@ class Plugin extends DAV\ServerPlugin {
             return;
         }
 
-        $result = HTTP\Util::negotiate(
-            $request->getHeader('Accept'),
-            [
-                // Most often used mime-type. Version 3
-                'text/x-vcard',
-                // The correct standard mime-type. Defaults to version 3 as
-                // well.
-                'text/vcard',
-                // vCard 4
-                'text/vcard; version=4.0',
-                // vCard 3
-                'text/vcard; version=3.0',
-                // jCard
-                'application/vcard+json',
-            ]
+        $target = $this->negotiateVCard($request->getHeader('Accept'));
+
+        $newBody = $this->convertVCard(
+            $response->getBody(),
+            $target
         );
-
-        // Transforming.
-        $vobj = VObject\Reader::read($response->getBody());
-
-        switch($result) {
-
-            default :
-            case 'text/x-vcard' :
-            case 'text/vcard' :
-            case 'text/vcard; version=3.0' :
-                if ($vobj->getDocumentType() === VObject\Document::VCARD30) {
-                    return;
-                }
-                $vobj = $vobj->convert(VObject\Document::VCARD30);
-                $newBody = $vobj->serialize();
-                break;
-            case 'text/vcard; version=4.0' :
-                if ($vobj->getDocumentType() === VObject\Document::VCARD40) {
-                    return;
-                }
-                $vobj = $vobj->convert(VObject\Document::VCARD40);
-                $newBody = $vobj->serialize();
-                break;
-            case 'application/vcard+json' :
-                $vobj = $vobj->convert(VObject\Document::VCARD40);
-                $newBody = json_encode($vobj->jsonSerialize());
-                break;
-
-        }
 
         $response->setBody($newBody);
         $response->setHeader('Content-Type', $result . '; charset=utf-8');
@@ -813,4 +818,77 @@ class Plugin extends DAV\ServerPlugin {
         return false;
 
     }
+
+    /**
+     * This helper function performs the content-type negotiation for vcards.
+     *
+     * It will return one of the following strings:
+     * 1. vcard3
+     * 2. vcard4
+     * 3. jcard
+     *
+     * It defaults to vcard3.
+     *
+     * @return string
+     */
+    protected function negotiateVCard($input) {
+
+        $result = HTTP\Util::negotiate(
+            $input,
+            [
+                // Most often used mime-type. Version 3
+                'text/x-vcard',
+                // The correct standard mime-type. Defaults to version 3 as
+                // well.
+                'text/vcard',
+                // vCard 4
+                'text/vcard; version=4.0',
+                // vCard 3
+                'text/vcard; version=3.0',
+                // jCard
+                'application/vcard+json',
+            ]
+        );
+
+        switch($result) {
+
+            default :
+            case 'text/x-vcard' :
+            case 'text/vcard' :
+            case 'text/vcard; version=3.0' :
+                return 'vcard3';
+            case 'text/vcard; version=4.0' :
+                return 'vcard4';
+            case 'application/vcard+json' :
+                return 'jcard';
+
+        }
+
+    }
+
+    /**
+     * Converts a vcard blob to a different version, or jcard.
+     *
+     * @param string $data
+     * @param string $target
+     * @return string
+     */
+    protected function convertVCard($data, $target) {
+
+        $data = VObject\Reader::read($data);
+        switch($data) {
+            default :
+            case 'vcard3' :
+                $data = $data->convert(VObject\Document::VCARD30);
+                return $data->serialize();
+            case 'vcard4' :
+                $data = $data->convert(VObject\Document::VCARD40);
+                return $data->serialize();
+            case 'jcard' :
+                $data = $data->convert(VObject\Document::VCARD40);
+                return json_encode($vcard->jsonSerialize());
+        }
+
+    }
+
 }

@@ -45,7 +45,7 @@ class MultiGetTest extends AbstractPluginTest {
             '/addressbooks/user1/book1/card1' => array(
                 200 => array(
                     '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD") . '"',
-                    '{urn:ietf:params:xml:ns:carddav}address-data' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
+                    '{urn:ietf:params:xml:ns:carddav}address-data' => "BEGIN:VCARD\r\nVERSION:3.0\r\nUID:12345\r\nEND:VCARD\r\n",
                 )
             )
         ), $result);

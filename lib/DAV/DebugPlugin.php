@@ -25,17 +25,14 @@ class DebugPlugin extends ServerPlugin {
     protected $logger;
     protected $startTime;
 
-    protected $redactAuthHeader;
-
     protected $contentTypeWhiteList = array(
         '#^text/(?!html|css)#',
         '#^application/xml#',
     );
 
-    public function __construct(LoggerInterface $logger, $redactAuthHeader = true) {
+    public function __construct(LoggerInterface $logger) {
 
         $this->logger = $logger;
-        $this->redactAuthHeader = $redactAuthHeader;
         $this->startTime = time();
 
     }
@@ -55,9 +52,9 @@ class DebugPlugin extends ServerPlugin {
     public function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('beforeMethod', [$this, 'beforeMethod'], 5);
-        $server->on('exception', [$this, 'exception'], 200);
-        $server->on('afterMethod', [$this, 'afterMethod'], 200);
+        $server->on('beforeMethod', [$this, 'logRequest'], 5);
+        $server->on('exception', [$this, 'logResponse'], 200);
+        $server->on('afterMethod', [$this, 'logResponse'], 200);
         $this->log(LogLevel::INFO, 'Initialized plugin. Request time ' . $this->startTime . ' (' . date(DateTime::RFC2822, $this->startTime) . '). Version: ' . Version::VERSION);
 
     }
@@ -70,7 +67,7 @@ class DebugPlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
+    public function logRequest(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath()?:'(root)';
         $this->log(LogLevel::INFO, 'REQUEST: ' . $request->getMethod() . ' ' . $path);
@@ -80,12 +77,12 @@ class DebugPlugin extends ServerPlugin {
             $this->log(LogLevel::DEBUG,'  ' . $pluginName . ' (' . get_class($plugin) . ')');
         }
         $this->log(LogLevel::DEBUG, 'SabreDAV server Base URI: ' . $this->server->getBaseUri());
-        $this->log(LogLevel::DEBUG,'Headers:');
+        $this->log(LogLevel::DEBUG, 'Headers:');
         foreach($request->getHeaders() as $key=>$value) {
-            if(strtolower($key) == 'authorization' && $this->redactAuthHeader) {
-                $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . '<REDACTED>');
+            if(strtolower($key) == 'authorization') {
+                $this->log(LogLevel::DEBUG, '  '  . $key . ': ' . '<REDACTED>');
             } else {
-                $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
+                $this->log(LogLevel::DEBUG, '  '  . $key . ': ' . $value);
             }
         }
 
@@ -133,13 +130,13 @@ class DebugPlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function afterMethod(RequestInterface $request, ResponseInterface $response) {
+    public function logResponse(RequestInterface $request, ResponseInterface $response) {
 
         $this->log(LogLevel::INFO, 'RESPONSE: ' . $response->getStatus() . ' ' . $response->getStatusText());
 
-        $this->log(LogLevel::DEBUG,'Headers:');
+        $this->log(LogLevel::DEBUG, 'Headers:');
         foreach($response->getHeaders() as $key=>$value) {
-            $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
+            $this->log(LogLevel::DEBUG, '  '  . $key . ': ' . $value);
         }
 
         // We're only going to show the request body if it's text-based. The
@@ -163,59 +160,6 @@ class DebugPlugin extends ServerPlugin {
             $strBody = fread($body, 10240);
 
             $this->log(LogLevel::DEBUG, 'Response body:');
-            $this->log(LogLevel::DEBUG, $strBody);
-
-            // Writing the bytes we already read
-            fwrite($newBody, $strBody);
-
-            // Writing the remainder of the input body, if there's anything
-            // left.
-            stream_copy_to_stream($body, $newBody);
-            rewind($newBody);
-
-            $response->setBody($newBody, true);
-
-        }
-
-    }
-
-    /**
-     * Triggered on exceptions. This allows us to log HTTP responses when exceptions happen.
-     *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return void
-     */
-    public function exception(RequestInterface $request, ResponseInterface $response) {
-
-        $this->log(LogLevel::INFO, 'RESPONSE: ' . $response->getStatus() . ' ' . $response->getStatusText());
-
-        $this->log(LogLevel::DEBUG,'Headers:');
-        foreach($response->getHeaders() as $key=>$value) {
-            $this->log(LogLevel::DEBUG,'  '  . $key . ': ' . $value);
-        }
-
-        // We're only going to show the request body if it's text-based. The
-        // maximum size will be 10k.
-        $contentType = $response->getHeader('Content-Type');
-        $showBody = false;
-        foreach($this->contentTypeWhiteList as $wl) {
-
-            if (preg_match($wl, $contentType)) {
-                $showBody = true;
-                break;
-            }
-
-        }
-        if ($showBody) {
-            // We need to grab the body, and put it in an intermediate stream.
-            $newBody = fopen('php://temp','r+');
-            $body = $response->getBodyAsStream();
-
-            // Only grabbing the first 10kb
-            $strBody = fread($body, 10240);
-
-            $this->log(LogLevel::DEBUG, 'Exception response body:');
             $this->log(LogLevel::DEBUG, $strBody);
 
             // Writing the bytes we already read

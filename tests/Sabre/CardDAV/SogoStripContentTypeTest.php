@@ -25,7 +25,7 @@ class SogoStripContentType extends \Sabre\DAVServerTest {
 
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf',array('{DAV:}getcontenttype'));
         $this->assertEquals(array(
-            '{DAV:}getcontenttype' => 'text/x-vcard; charset=utf-8'
+            '{DAV:}getcontenttype' => 'text/vcard; charset=utf-8'
         ), $result);
 
     }

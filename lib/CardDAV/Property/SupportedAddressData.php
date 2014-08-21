@@ -22,20 +22,21 @@ class SupportedAddressData extends DAV\Property {
      *
      * @var array
      */
-    protected $supportedData = array();
+    protected $supportedData = [];
 
     /**
      * Creates the property
      *
      * @param array|null $supportedData
      */
-    public function __construct(array $supportedData = null) {
+    function __construct(array $supportedData = null) {
 
         if (is_null($supportedData)) {
-            $supportedData = array(
-                array('contentType' => 'text/vcard', 'version' => '3.0'),
-                // array('contentType' => 'text/vcard', 'version' => '4.0'),
-            );
+            $supportedData = [
+                ['contentType' => 'text/vcard',             'version' => '3.0'],
+                ['contentType' => 'text/vcard',             'version' => '4.0'],
+                ['contentType' => 'application/vcard+json', 'version' => '4.0'],
+            ];
         }
 
         $this->supportedData = $supportedData;
@@ -49,7 +50,7 @@ class SupportedAddressData extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $node) {
+    function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
 

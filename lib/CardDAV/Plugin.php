@@ -744,16 +744,12 @@ class Plugin extends DAV\ServerPlugin {
             ]
         );
 
-        if (is_null($result)) {
-            // If no accept header was specified, we default to this.
-            $result = 'text/vcard; version=3.0';
-        }
-
         // Transforming.
         $vobj = VObject\Reader::read($response->getBody());
 
         switch($result) {
 
+            default :
             case 'text/x-vcard' :
             case 'text/vcard' :
             case 'text/vcard; version=3.0' :

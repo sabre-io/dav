@@ -118,7 +118,7 @@ class Card extends DAV\File implements ICard, DAVACL\IACL {
      */
     public function getContentType() {
 
-        return 'text/x-vcard; charset=utf-8';
+        return 'text/vcard; charset=utf-8';
 
     }
 

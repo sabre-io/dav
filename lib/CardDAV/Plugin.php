@@ -36,7 +36,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @var array
      */
-    public $directories = array();
+    public $directories = [];
 
     /**
      * Server class
@@ -58,7 +58,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         /* Events */
         $server->on('propFind',            [$this, 'propFindEarly']);
@@ -97,7 +97,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return array
      */
-    public function getFeatures() {
+    function getFeatures() {
 
         return ['addressbook'];
 
@@ -113,16 +113,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getSupportedReportSet($uri) {
+    function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof IAddressBook || $node instanceof ICard) {
-            return array(
+            return [
                  '{' . self::NS_CARDDAV . '}addressbook-multiget',
                  '{' . self::NS_CARDDAV . '}addressbook-query',
-            );
+            ];
         }
-        return array();
+        return [];
 
     }
 
@@ -134,7 +134,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\INode $node
      * @return void
      */
-    public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
+    function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
 
         $ns = '{' . self::NS_CARDDAV . '}';
 
@@ -205,7 +205,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\PropPatch $propPatch
      * @return bool
      */
-    public function propPatch($path, DAV\PropPatch $propPatch) {
+    function propPatch($path, DAV\PropPatch $propPatch) {
 
         $node = $this->server->tree->getNodeForPath($path);
         if (!$node instanceof UserAddressBooks) {
@@ -225,9 +225,9 @@ class Plugin extends DAV\ServerPlugin {
 
             $innerResult = $this->server->updateProperties(
                 $node->getOwner(),
-                array(
+                [
                     '{http://sabredav.org/ns}vcard-url' => $value,
-                )
+                ]
             );
 
             return $innerResult['{http://sabredav.org/ns}vcard-url'];
@@ -243,7 +243,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return bool
      */
-    public function report($reportName,$dom) {
+    function report($reportName,$dom) {
 
         switch($reportName) {
             case '{'.self::NS_CARDDAV.'}addressbook-multiget' :
@@ -285,12 +285,12 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return void
      */
-    public function addressbookMultiGetReport($dom) {
+    function addressbookMultiGetReport($dom) {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
-        $propertyList = array();
+        $propertyList = [];
 
         $uris = [];
         foreach($hrefElems as $elem) {
@@ -325,7 +325,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
+    function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICard)
             return;
@@ -347,7 +347,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
+    function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
         if (!$parentNode instanceof IAddressBook)
             return;
@@ -431,7 +431,7 @@ class Plugin extends DAV\ServerPlugin {
             $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
         }
 
-        $validNodes = array();
+        $validNodes = [];
         foreach($candidateNodes as $node) {
 
             if (!$node instanceof ICard)
@@ -455,7 +455,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $result = array();
+        $result = [];
         foreach($validNodes as $validNode) {
 
             if ($depth==0) {
@@ -485,7 +485,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $test anyof or allof (which means OR or AND)
      * @return bool
      */
-    public function validateFilters($vcardData, array $filters, $test) {
+    function validateFilters($vcardData, array $filters, $test) {
 
         $vcard = VObject\Reader::read($vcardData);
 
@@ -509,12 +509,12 @@ class Plugin extends DAV\ServerPlugin {
 
                 $vProperties = $vcard->select($filter['name']);
 
-                $results = array();
+                $results = [];
                 if ($filter['param-filters']) {
                     $results[] = $this->validateParamFilters($vProperties, $filter['param-filters'], $filter['test']);
                 }
                 if ($filter['text-matches']) {
-                    $texts = array();
+                    $texts = [];
                     foreach($vProperties as $vProperty)
                         $texts[] = $vProperty->getValue();
 
@@ -668,7 +668,7 @@ class Plugin extends DAV\ServerPlugin {
      * This event is scheduled late in the process, after most work for
      * propfind has been done.
      */
-    public function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
+    function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 
         // If the request was made using the SOGO connector, we must rewrite
         // the content-type property. By default SabreDAV will send back
@@ -694,7 +694,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $output
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output) {
+    function htmlActionsPanel(DAV\INode $node, &$output) {
 
         if (!$node instanceof UserAddressBooks)
             return;
@@ -721,7 +721,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
+    function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
 
         if (strpos($response->getHeader('Content-Type'),'text/vcard')===false) {
             return;
@@ -788,13 +788,13 @@ class Plugin extends DAV\ServerPlugin {
      * @param array $postVars
      * @return bool
      */
-    public function browserPostAction($uri, $action, array $postVars) {
+    function browserPostAction($uri, $action, array $postVars) {
 
         if ($action!=='mkaddressbook')
             return;
 
-        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:carddav}addressbook');
-        $properties = array();
+        $resourceType = ['{DAV:}collection','{urn:ietf:params:xml:ns:carddav}addressbook'];
+        $properties = [];
         if (isset($postVars['{DAV:}displayname'])) {
             $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
         }

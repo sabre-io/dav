@@ -64,7 +64,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->exec();
 
-        $this->assertEquals(403, $fakeServer->httpResponse->status);
+        $this->assertEquals(415, $fakeServer->httpResponse->status);
 
     }
 

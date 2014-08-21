@@ -6,6 +6,8 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\VObject;
 
+use Sabre\DAV\Exception\ReportNotSupported;
+
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
@@ -305,10 +307,14 @@ class Plugin extends DAV\ServerPlugin {
         $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
         $xpath->registerNameSpace('dav','urn:DAV');
 
-        $requestedContentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data[@content-type])");
+        $contentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data/@content-type)");
+        $version = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data/@version)");
+        if ($version) {
+            $contentType.='; version=' . $version;
+        }
 
         $vcardType = $this->negotiateVCard(
-            $requestedContentType
+            $contentType
         );
 
         $propertyList = [];
@@ -469,10 +475,14 @@ class Plugin extends DAV\ServerPlugin {
         $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
         $xpath->registerNameSpace('dav','urn:DAV');
 
-        $requestedContentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data[@content-type])");
+        $contentType = $xpath->evaluate("string(/card:addressbook-query/dav:prop/card:address-data/@content-type)");
+        $version = $xpath->evaluate("string(/card:addressbook-query/dav:prop/card:address-data/@version)");
+        if ($version) {
+            $contentType.='; version=' . $version;
+        }
 
         $vcardType = $this->negotiateVCard(
-            $requestedContentType
+            $contentType
         );
 
 
@@ -511,9 +521,9 @@ class Plugin extends DAV\ServerPlugin {
 
             list($props) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
 
-            if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
+            if (isset($props[200]['{' . self::NS_CARDDAV . '}address-data'])) {
 
-                $props['200']['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
+                $props[200]['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
                     $props[200]['{' . self::NS_CARDDAV . '}address-data'],
                     $vcardType
                 );
@@ -876,7 +886,7 @@ class Plugin extends DAV\ServerPlugin {
     protected function convertVCard($data, $target) {
 
         $data = VObject\Reader::read($data);
-        switch($data) {
+        switch($target) {
             default :
             case 'vcard3' :
                 $data = $data->convert(VObject\Document::VCARD30);
@@ -886,7 +896,7 @@ class Plugin extends DAV\ServerPlugin {
                 return $data->serialize();
             case 'jcard' :
                 $data = $data->convert(VObject\Document::VCARD40);
-                return json_encode($vcard->jsonSerialize());
+                return json_encode($data->jsonSerialize());
         }
 
     }

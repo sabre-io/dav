@@ -346,7 +346,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(403, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(415, $response->status, 'Full response body:' . $response->body);
 
     }
 
@@ -375,7 +375,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(403, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(415, $response->status, 'Full response body:' . $response->body);
 
     }
 

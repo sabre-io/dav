@@ -5,6 +5,10 @@ ChangeLog
 -------------------------
 
 * Added: Support for [rfc6638][rfc6638], also known as CalDAV Scheduling.
+* Added: Automatically converting between vCard 3, 4 and jCard using the
+  `Accept:` header, in CardDAV reports, and automatically converting from
+  jCard to vCard upon `PUT`. It's important to note that your backends _may_
+  now recieve both vCard 3.0 and 4.0.
 * Changed: PropertyStorage backends now have a `move` method.
 * Added: `beforeMove`, and `afterMove` events.
 * Changed: A few database changes for the CalDAV PDO backend. Make sure you
@@ -48,6 +52,7 @@ ChangeLog
 * Changed: CardDAV plugin is now responsible for reporting
   `CARDDAV:supported-address-data`. This functionality has been removed from
   the CardDAV PDO backend.
+* When a REPORT is not supported, we now emit HTTP error 415, instead of 403.
 
 
 2.0.4 (????-??-??)

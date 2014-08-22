@@ -792,7 +792,7 @@ class Plugin extends DAV\ServerPlugin {
             return;
         }
 
-        $target = $this->negotiateVCard($request->getHeader('Accept'));
+        $target = $this->negotiateVCard($request->getHeader('Accept'), $mimeType);
 
         $newBody = $this->convertVCard(
             $response->getBody(),
@@ -800,8 +800,8 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $response->setBody($newBody);
-        $response->setHeader('Content-Type', $result . '; charset=utf-8');
-        $response->setHeader('Content-Length', strlen($body));
+        $response->setHeader('Content-Type', $mimeType . '; charset=utf-8');
+        $response->setHeader('Content-Length', strlen($newBody));
 
     }
 
@@ -839,9 +839,11 @@ class Plugin extends DAV\ServerPlugin {
      *
      * It defaults to vcard3.
      *
+     * @param string $input
+     * @param string $mimeType
      * @return string
      */
-    protected function negotiateVCard($input) {
+    protected function negotiateVCard($input, &$mimeType = null) {
 
         $result = HTTP\Util::negotiate(
             $input,
@@ -860,19 +862,23 @@ class Plugin extends DAV\ServerPlugin {
             ]
         );
 
+        $mimeType = $result;
         switch($result) {
 
             default :
             case 'text/x-vcard' :
             case 'text/vcard' :
             case 'text/vcard; version=3.0' :
+                $mimeType = 'text/vcard';
                 return 'vcard3';
             case 'text/vcard; version=4.0' :
                 return 'vcard4';
             case 'application/vcard+json' :
                 return 'jcard';
 
+        // @codeCoverageIgnoreStart
         }
+        // @codeCoverageIgnoreEnd
 
     }
 
@@ -897,7 +903,10 @@ class Plugin extends DAV\ServerPlugin {
             case 'jcard' :
                 $data = $data->convert(VObject\Document::VCARD40);
                 return json_encode($data->jsonSerialize());
+
+        // @codeCoverageIgnoreStart
         }
+        // @codeCoverageIgnoreEnd
 
     }
 

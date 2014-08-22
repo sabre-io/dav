@@ -35,7 +35,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $this->server->on('method:GET', [$this,'httpGet'], 90);
@@ -49,7 +49,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $response) {
+    function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $queryParams = $request->getQueryParameters();
         if (!array_key_exists('export', $queryParams)) return;
@@ -70,9 +70,9 @@ class VCFExportPlugin extends DAV\ServerPlugin {
         $response->setHeader('Content-Type','text/directory');
         $response->setStatus(200);
 
-        $nodes = $this->server->getPropertiesForPath($path, array(
+        $nodes = $this->server->getPropertiesForPath($path, [
             '{' . Plugin::NS_CARDDAV . '}address-data',
-        ),1);
+        ],1);
 
         $response->setBody($this->generateVCF($nodes));
 
@@ -87,7 +87,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
      * @param array $nodes
      * @return string
      */
-    public function generateVCF(array $nodes) {
+    function generateVCF(array $nodes) {
 
         $output = "";
 

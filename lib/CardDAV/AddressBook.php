@@ -36,7 +36,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param Backend\BackendInterface $carddavBackend
      * @param array $addressBookInfo
      */
-    public function __construct(Backend\BackendInterface $carddavBackend, array $addressBookInfo) {
+    function __construct(Backend\BackendInterface $carddavBackend, array $addressBookInfo) {
 
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;
@@ -48,7 +48,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->addressBookInfo['uri'];
 
@@ -60,7 +60,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param string $name
      * @return \ICard
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'],$name);
         if (!$obj) throw new DAV\Exception\NotFound('Card not found');
@@ -73,7 +73,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return array
      */
-    public function getChildren() {
+    function getChildren() {
 
         $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
         $children = [];
@@ -93,7 +93,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return array
      */
-    public function getMultipleChildren(array $paths) {
+    function getMultipleChildren(array $paths) {
 
         $objs = $this->carddavBackend->getMultipleCards($this->addressBookInfo['id'], $paths);
         $children = [];
@@ -113,7 +113,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param string $name
      * @return void
      */
-    public function createDirectory($name) {
+    function createDirectory($name) {
 
         throw new DAV\Exception\MethodNotAllowed('Creating collections in addressbooks is not allowed');
 
@@ -130,7 +130,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param resource $vcardData
      * @return string|null
      */
-    public function createFile($name,$vcardData = null) {
+    function createFile($name,$vcardData = null) {
 
         if (is_resource($vcardData)) {
             $vcardData = stream_get_contents($vcardData);
@@ -147,7 +147,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         $this->carddavBackend->deleteAddressBook($this->addressBookInfo['id']);
 
@@ -159,7 +159,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param string $newName
      * @return void
      */
-    public function setName($newName) {
+    function setName($newName) {
 
         throw new DAV\Exception\MethodNotAllowed('Renaming addressbooks is not yet supported');
 
@@ -170,7 +170,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return void
      */
-    public function getLastModified() {
+    function getLastModified() {
 
         return null;
 
@@ -188,7 +188,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param DAV\PropPatch $propPatch
      * @return void
      */
-    public function propPatch(DAV\PropPatch $propPatch) {
+    function propPatch(DAV\PropPatch $propPatch) {
 
         return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $propPatch);
 
@@ -205,7 +205,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param array $properties
      * @return array
      */
-    public function getProperties($properties) {
+    function getProperties($properties) {
 
         $response = [];
         foreach($properties as $propertyName) {
@@ -229,7 +229,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return string|null
      */
-    public function getOwner() {
+    function getOwner() {
 
         return $this->addressBookInfo['principaluri'];
 
@@ -242,7 +242,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return string|null
      */
-    public function getGroup() {
+    function getGroup() {
 
         return null;
 
@@ -260,7 +260,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return array
      */
-    public function getACL() {
+    function getACL() {
 
         return [
             [
@@ -285,7 +285,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return array
      */
-    public function getChildACL() {
+    function getChildACL() {
 
         return [
             [
@@ -310,7 +310,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param array $acl
      * @return void
      */
-    public function setACL(array $acl) {
+    function setACL(array $acl) {
 
         throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
@@ -328,7 +328,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return array|null
      */
-    public function getSupportedPrivilegeSet() {
+    function getSupportedPrivilegeSet() {
 
         return null;
 
@@ -343,7 +343,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * @return string|null
      */
-    public function getSyncToken() {
+    function getSyncToken() {
 
         if (
             $this->carddavBackend instanceof Backend\SyncSupport &&
@@ -409,7 +409,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param int $limit
      * @return array
      */
-    public function getChanges($syncToken, $syncLevel, $limit = null) {
+    function getChanges($syncToken, $syncLevel, $limit = null) {
 
         if (!$this->carddavBackend instanceof Backend\SyncSupport) {
             return null;

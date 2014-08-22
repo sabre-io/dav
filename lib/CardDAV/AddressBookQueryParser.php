@@ -68,7 +68,7 @@ class AddressBookQueryParser {
      *
      * @param \DOMDocument $dom
      */
-    public function __construct(\DOMDocument $dom) {
+    function __construct(\DOMDocument $dom) {
 
         $this->dom = $dom;
 
@@ -82,7 +82,7 @@ class AddressBookQueryParser {
      *
      * @return void
      */
-    public function parse() {
+    function parse() {
 
         $filterNode = null;
 
@@ -111,7 +111,7 @@ class AddressBookQueryParser {
             throw new DAV\Exception\BadRequest('The test attribute must either hold "anyof" or "allof"');
         }
 
-        $propFilters = array();
+        $propFilters = [];
 
         if (!is_null($filter)) {
             $propFilterNodes = $this->xpath->query('card:prop-filter', $filter);
@@ -138,7 +138,7 @@ class AddressBookQueryParser {
      */
     protected function parsePropFilterNode(\DOMElement $propFilterNode) {
 
-        $propFilter = array();
+        $propFilter = [];
         $propFilter['name'] = $propFilterNode->getAttribute('name');
         $propFilter['test'] = $propFilterNode->getAttribute('test');
         if (!$propFilter['test']) $propFilter['test'] = 'anyof';
@@ -147,7 +147,7 @@ class AddressBookQueryParser {
 
         $paramFilterNodes = $this->xpath->query('card:param-filter', $propFilterNode);
 
-        $propFilter['param-filters'] = array();
+        $propFilter['param-filters'] = [];
 
 
         for($ii=0;$ii<$paramFilterNodes->length;$ii++) {
@@ -155,7 +155,7 @@ class AddressBookQueryParser {
             $propFilter['param-filters'][] = $this->parseParamFilterNode($paramFilterNodes->item($ii));
 
         }
-        $propFilter['text-matches'] = array();
+        $propFilter['text-matches'] = [];
         $textMatchNodes = $this->xpath->query('card:text-match', $propFilterNode);
 
         for($ii=0;$ii<$textMatchNodes->length;$ii++) {
@@ -174,9 +174,9 @@ class AddressBookQueryParser {
      * @param \DOMElement $paramFilterNode
      * @return array
      */
-    public function parseParamFilterNode(\DOMElement $paramFilterNode) {
+    function parseParamFilterNode(\DOMElement $paramFilterNode) {
 
-        $paramFilter = array();
+        $paramFilter = [];
         $paramFilter['name'] = $paramFilterNode->getAttribute('name');
         $paramFilter['is-not-defined'] = $this->xpath->query('card:is-not-defined', $paramFilterNode)->length>0;
         $paramFilter['text-match'] = null;
@@ -196,12 +196,12 @@ class AddressBookQueryParser {
      * @param \DOMElement $textMatchNode
      * @return array
      */
-    public function parseTextMatchNode(\DOMElement $textMatchNode) {
+    function parseTextMatchNode(\DOMElement $textMatchNode) {
 
         $matchType = $textMatchNode->getAttribute('match-type');
         if (!$matchType) $matchType = 'contains';
 
-        if (!in_array($matchType, array('contains', 'equals', 'starts-with', 'ends-with'))) {
+        if (!in_array($matchType, ['contains', 'equals', 'starts-with', 'ends-with'])) {
             throw new DAV\Exception\BadRequest('Unknown match-type: ' . $matchType);
         }
 
@@ -210,12 +210,12 @@ class AddressBookQueryParser {
         $collation = $textMatchNode->getAttribute('collation');
         if (!$collation) $collation = 'i;unicode-casemap';
 
-        return array(
+        return [
             'negate-condition' => $negateCondition,
             'collation' => $collation,
             'match-type' => $matchType,
             'value' => $textMatchNode->nodeValue
-        );
+        ];
 
 
     }

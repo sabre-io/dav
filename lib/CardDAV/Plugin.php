@@ -6,6 +6,13 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\VObject;
 
+use Sabre\DAV\Exception\ReportNotSupported;
+
+use Sabre\HTTP;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+
+
 /**
  * CardDAV plugin
  *
@@ -33,7 +40,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @var array
      */
-    public $directories = array();
+    public $directories = [];
 
     /**
      * Server class
@@ -55,7 +62,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         /* Events */
         $server->on('propFind',            [$this, 'propFindEarly']);
@@ -66,6 +73,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
+        $server->on('afterMethod:GET',     [$this, 'httpAfterGet']);
 
         /* Namespaces */
         $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
@@ -93,7 +101,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return array
      */
-    public function getFeatures() {
+    function getFeatures() {
 
         return ['addressbook'];
 
@@ -109,16 +117,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getSupportedReportSet($uri) {
+    function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof IAddressBook || $node instanceof ICard) {
-            return array(
+            return [
                  '{' . self::NS_CARDDAV . '}addressbook-multiget',
                  '{' . self::NS_CARDDAV . '}addressbook-query',
-            );
+            ];
         }
-        return array();
+        return [];
 
     }
 
@@ -130,7 +138,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\INode $node
      * @return void
      */
-    public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
+    function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
 
         $ns = '{' . self::NS_CARDDAV . '}';
 
@@ -201,7 +209,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\PropPatch $propPatch
      * @return bool
      */
-    public function propPatch($path, DAV\PropPatch $propPatch) {
+    function propPatch($path, DAV\PropPatch $propPatch) {
 
         $node = $this->server->tree->getNodeForPath($path);
         if (!$node instanceof UserAddressBooks) {
@@ -221,9 +229,9 @@ class Plugin extends DAV\ServerPlugin {
 
             $innerResult = $this->server->updateProperties(
                 $node->getOwner(),
-                array(
+                [
                     '{http://sabredav.org/ns}vcard-url' => $value,
-                )
+                ]
             );
 
             return $innerResult['{http://sabredav.org/ns}vcard-url'];
@@ -239,7 +247,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return bool
      */
-    public function report($reportName,$dom) {
+    function report($reportName,$dom) {
 
         switch($reportName) {
             case '{'.self::NS_CARDDAV.'}addressbook-multiget' :
@@ -281,12 +289,12 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return void
      */
-    public function addressbookMultiGetReport($dom) {
+    function addressbookMultiGetReport($dom) {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
 
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
-        $propertyList = array();
+        $propertyList = [];
 
         $uris = [];
         foreach($hrefElems as $elem) {
@@ -295,9 +303,34 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $propertyList = array_values(
-            $this->server->getPropertiesForMultiplePaths($uris, $properties)
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
+        $xpath->registerNameSpace('dav','urn:DAV');
+
+        $contentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data/@content-type)");
+        $version = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data/@version)");
+        if ($version) {
+            $contentType.='; version=' . $version;
+        }
+
+        $vcardType = $this->negotiateVCard(
+            $contentType
         );
+
+        $propertyList = [];
+        foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $props) {
+
+            if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
+
+                $props['200']['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
+                    $props[200]['{' . self::NS_CARDDAV . '}address-data'],
+                    $vcardType
+                );
+
+            }
+            $propertyList[] = $props;
+
+        }
 
         $prefer = $this->server->getHTTPPRefer();
 
@@ -321,7 +354,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
+    function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICard)
             return;
@@ -343,7 +376,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
+    function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
         if (!$parentNode instanceof IAddressBook)
             return;
@@ -378,11 +411,22 @@ class Plugin extends DAV\ServerPlugin {
 
         try {
 
-            $vobj = VObject\Reader::read($data);
+            // If the data starts with a [, we can reasonably assume we're dealing
+            // with a jCal object.
+            if (substr($data,0,1)==='[') {
+                $vobj = VObject\Reader::readJson($data);
+
+                // Converting $data back to iCalendar, as that's what we
+                // technically support everywhere.
+                $data = $vobj->serialize();
+                $modified = true;
+            } else {
+                $vobj = VObject\Reader::read($data);
+            }
 
         } catch (VObject\ParseException $e) {
 
-            throw new DAV\Exception\UnsupportedMediaType('This resource only supports valid vcard data. Parse error: ' . $e->getMessage());
+            throw new DAV\Exception\UnsupportedMediaType('This resource only supports valid vCard or jCard data. Parse error: ' . $e->getMessage());
 
         }
 
@@ -427,7 +471,22 @@ class Plugin extends DAV\ServerPlugin {
             $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
         }
 
-        $validNodes = array();
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
+        $xpath->registerNameSpace('dav','urn:DAV');
+
+        $contentType = $xpath->evaluate("string(/card:addressbook-query/dav:prop/card:address-data/@content-type)");
+        $version = $xpath->evaluate("string(/card:addressbook-query/dav:prop/card:address-data/@version)");
+        if ($version) {
+            $contentType.='; version=' . $version;
+        }
+
+        $vcardType = $this->negotiateVCard(
+            $contentType
+        );
+
+
+        $validNodes = [];
         foreach($candidateNodes as $node) {
 
             if (!$node instanceof ICard)
@@ -451,7 +510,7 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $result = array();
+        $result = [];
         foreach($validNodes as $validNode) {
 
             if ($depth==0) {
@@ -460,7 +519,17 @@ class Plugin extends DAV\ServerPlugin {
                 $href = $this->server->getRequestUri() . '/' . $validNode->getName();
             }
 
-            list($result[]) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+            list($props) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+
+            if (isset($props[200]['{' . self::NS_CARDDAV . '}address-data'])) {
+
+                $props[200]['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
+                    $props[200]['{' . self::NS_CARDDAV . '}address-data'],
+                    $vcardType
+                );
+
+            }
+            $result[] = $props;
 
         }
 
@@ -481,7 +550,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $test anyof or allof (which means OR or AND)
      * @return bool
      */
-    public function validateFilters($vcardData, array $filters, $test) {
+    function validateFilters($vcardData, array $filters, $test) {
 
         $vcard = VObject\Reader::read($vcardData);
 
@@ -505,12 +574,12 @@ class Plugin extends DAV\ServerPlugin {
 
                 $vProperties = $vcard->select($filter['name']);
 
-                $results = array();
+                $results = [];
                 if ($filter['param-filters']) {
                     $results[] = $this->validateParamFilters($vProperties, $filter['param-filters'], $filter['test']);
                 }
                 if ($filter['text-matches']) {
-                    $texts = array();
+                    $texts = [];
                     foreach($vProperties as $vProperty)
                         $texts[] = $vProperty->getValue();
 
@@ -664,7 +733,7 @@ class Plugin extends DAV\ServerPlugin {
      * This event is scheduled late in the process, after most work for
      * propfind has been done.
      */
-    public function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
+    function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 
         // If the request was made using the SOGO connector, we must rewrite
         // the content-type property. By default SabreDAV will send back
@@ -674,10 +743,10 @@ class Plugin extends DAV\ServerPlugin {
             return;
         }
         $contentType = $propFind->get('{DAV:}getcontenttype');
-        if (!$contentType || strpos($contentType, 'text/x-vcard')!==0) {
-            return;
+        list($part) = explode(';', $contentType);
+        if ($part === 'text/x-vcard' || $part === 'text/vcard') {
+            $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
         }
-        $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
 
     }
 
@@ -690,7 +759,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $output
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output) {
+    function htmlActionsPanel(DAV\INode $node, &$output) {
 
         if (!$node instanceof UserAddressBooks)
             return;
@@ -709,6 +778,34 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
+     * This event is triggered after GET requests.
+     *
+     * This is used to transform data into jCal, if this was requested.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return void
+     */
+    function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
+
+        if (strpos($response->getHeader('Content-Type'),'text/vcard')===false) {
+            return;
+        }
+
+        $target = $this->negotiateVCard($request->getHeader('Accept'), $mimeType);
+
+        $newBody = $this->convertVCard(
+            $response->getBody(),
+            $target
+        );
+
+        $response->setBody($newBody);
+        $response->setHeader('Content-Type', $mimeType . '; charset=utf-8');
+        $response->setHeader('Content-Length', strlen($newBody));
+
+    }
+
+    /**
      * This method allows us to intercept the 'mkaddressbook' sabreAction. This
      * action enables the user to create new addressbooks from the browser plugin.
      *
@@ -717,13 +814,13 @@ class Plugin extends DAV\ServerPlugin {
      * @param array $postVars
      * @return bool
      */
-    public function browserPostAction($uri, $action, array $postVars) {
+    function browserPostAction($uri, $action, array $postVars) {
 
         if ($action!=='mkaddressbook')
             return;
 
-        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:carddav}addressbook');
-        $properties = array();
+        $resourceType = ['{DAV:}collection','{urn:ietf:params:xml:ns:carddav}addressbook'];
+        $properties = [];
         if (isset($postVars['{DAV:}displayname'])) {
             $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
         }
@@ -731,4 +828,86 @@ class Plugin extends DAV\ServerPlugin {
         return false;
 
     }
+
+    /**
+     * This helper function performs the content-type negotiation for vcards.
+     *
+     * It will return one of the following strings:
+     * 1. vcard3
+     * 2. vcard4
+     * 3. jcard
+     *
+     * It defaults to vcard3.
+     *
+     * @param string $input
+     * @param string $mimeType
+     * @return string
+     */
+    protected function negotiateVCard($input, &$mimeType = null) {
+
+        $result = HTTP\Util::negotiate(
+            $input,
+            [
+                // Most often used mime-type. Version 3
+                'text/x-vcard',
+                // The correct standard mime-type. Defaults to version 3 as
+                // well.
+                'text/vcard',
+                // vCard 4
+                'text/vcard; version=4.0',
+                // vCard 3
+                'text/vcard; version=3.0',
+                // jCard
+                'application/vcard+json',
+            ]
+        );
+
+        $mimeType = $result;
+        switch($result) {
+
+            default :
+            case 'text/x-vcard' :
+            case 'text/vcard' :
+            case 'text/vcard; version=3.0' :
+                $mimeType = 'text/vcard';
+                return 'vcard3';
+            case 'text/vcard; version=4.0' :
+                return 'vcard4';
+            case 'application/vcard+json' :
+                return 'jcard';
+
+        // @codeCoverageIgnoreStart
+        }
+        // @codeCoverageIgnoreEnd
+
+    }
+
+    /**
+     * Converts a vcard blob to a different version, or jcard.
+     *
+     * @param string $data
+     * @param string $target
+     * @return string
+     */
+    protected function convertVCard($data, $target) {
+
+        $data = VObject\Reader::read($data);
+        switch($target) {
+            default :
+            case 'vcard3' :
+                $data = $data->convert(VObject\Document::VCARD30);
+                return $data->serialize();
+            case 'vcard4' :
+                $data = $data->convert(VObject\Document::VCARD40);
+                return $data->serialize();
+            case 'jcard' :
+                $data = $data->convert(VObject\Document::VCARD40);
+                return json_encode($data->jsonSerialize());
+
+        // @codeCoverageIgnoreStart
+        }
+        // @codeCoverageIgnoreEnd
+
+    }
+
 }

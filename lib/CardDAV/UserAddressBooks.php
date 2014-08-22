@@ -38,7 +38,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @param Backend\BackendInterface $carddavBackend
      * @param string $principalUri
      */
-    public function __construct(Backend\BackendInterface $carddavBackend, $principalUri) {
+    function __construct(Backend\BackendInterface $carddavBackend, $principalUri) {
 
         $this->carddavBackend = $carddavBackend;
         $this->principalUri = $principalUri;
@@ -50,7 +50,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         list(,$name) = URLUtil::splitPath($this->principalUri);
         return $name;
@@ -63,7 +63,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @param string $name
      * @return void
      */
-    public function setName($name) {
+    function setName($name) {
 
         throw new DAV\Exception\MethodNotAllowed();
 
@@ -74,7 +74,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         throw new DAV\Exception\MethodNotAllowed();
 
@@ -85,7 +85,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return int
      */
-    public function getLastModified() {
+    function getLastModified() {
 
         return null;
 
@@ -100,7 +100,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @param resource $data
      * @return void
      */
-    public function createFile($filename, $data=null) {
+    function createFile($filename, $data=null) {
 
         throw new DAV\Exception\MethodNotAllowed('Creating new files in this collection is not supported');
 
@@ -114,7 +114,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @param string $filename
      * @return void
      */
-    public function createDirectory($filename) {
+    function createDirectory($filename) {
 
         throw new DAV\Exception\MethodNotAllowed('Creating new collections in this collection is not supported');
 
@@ -127,7 +127,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @todo needs optimizing
      * @return \AddressBook
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         foreach($this->getChildren() as $child) {
             if ($name==$child->getName())
@@ -143,10 +143,10 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return array
      */
-    public function getChildren() {
+    function getChildren() {
 
         $addressbooks = $this->carddavBackend->getAddressBooksForUser($this->principalUri);
-        $objs = array();
+        $objs = [];
         foreach($addressbooks as $addressbook) {
             $objs[] = new AddressBook($this->carddavBackend, $addressbook);
         }
@@ -162,7 +162,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @param array $properties
      * @return void
      */
-    public function createExtendedCollection($name, array $resourceType, array $properties) {
+    function createExtendedCollection($name, array $resourceType, array $properties) {
 
         if (!in_array('{'.Plugin::NS_CARDDAV.'}addressbook',$resourceType) || count($resourceType)!==2) {
             throw new DAV\Exception\InvalidResourceType('Unknown resourceType for this collection');
@@ -178,7 +178,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return string|null
      */
-    public function getOwner() {
+    function getOwner() {
 
         return $this->principalUri;
 
@@ -191,7 +191,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return string|null
      */
-    public function getGroup() {
+    function getGroup() {
 
         return null;
 
@@ -209,21 +209,20 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return array
      */
-    public function getACL() {
+    function getACL() {
 
-        return array(
-            array(
+        return [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->principalUri,
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->principalUri,
                 'protected' => true,
-            ),
-
-        );
+            ],
+        ];
 
     }
 
@@ -235,7 +234,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      * @param array $acl
      * @return void
      */
-    public function setACL(array $acl) {
+    function setACL(array $acl) {
 
         throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
@@ -253,7 +252,7 @@ class UserAddressBooks extends DAV\Collection implements DAV\IExtendedCollection
      *
      * @return array|null
      */
-    public function getSupportedPrivilegeSet() {
+    function getSupportedPrivilegeSet() {
 
         return null;
 

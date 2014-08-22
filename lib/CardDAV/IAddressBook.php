@@ -15,6 +15,4 @@ use Sabre\DAV;
  */
 interface IAddressBook extends DAV\ICollection {
 
-
-
 }

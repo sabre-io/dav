@@ -5,12 +5,12 @@ namespace Sabre\CardDAV\Property;
 use Sabre\CardDAV;
 use Sabre\DAV;
 
-class SupportedAddressDataDataTest extends \PHPUnit_Framework_TestCase {
+class SupportedCollationSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $property = new SupportedAddressData();
-        $this->assertInstanceOf('Sabre\CardDAV\Property\SupportedAddressData', $property);
+        $property = new SupportedCollationSet();
+        $this->assertInstanceOf('Sabre\CardDAV\Property\SupportedCollationSet', $property);
 
     }
 
@@ -19,7 +19,7 @@ class SupportedAddressDataDataTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerialize() {
 
-        $property = new SupportedAddressData();
+        $property = new SupportedCollationSet();
 
         $doc = new \DOMDocument();
         $root = $doc->createElementNS(CardDAV\Plugin::NS_CARDDAV, 'card:root');
@@ -35,9 +35,9 @@ class SupportedAddressDataDataTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
 '<?xml version="1.0"?>
 <card:root xmlns:card="' . CardDAV\Plugin::NS_CARDDAV . '" xmlns:d="DAV:">' .
-'<card:address-data-type content-type="text/vcard" version="3.0"/>' .
-'<card:address-data-type content-type="text/vcard" version="4.0"/>' .
-'<card:address-data-type content-type="application/vcard+json" version="4.0"/>' .
+'<card:supported-collation>i;ascii-casemap</card:supported-collation>' .
+'<card:supported-collation>i;octet</card:supported-collation>' .
+'<card:supported-collation>i;unicode-casemap</card:supported-collation>' .
 '</card:root>
 ', $xml);
 

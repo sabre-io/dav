@@ -572,7 +572,7 @@ class ServerSimpleTest extends AbstractServer{
             $this->response->headers
          );
 
-        $this->assertEquals(403, $this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals(415, $this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
 
     }
 

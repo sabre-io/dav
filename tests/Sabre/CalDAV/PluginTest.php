@@ -130,7 +130,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(403, $this->response->status);
+        $this->assertEquals(415, $this->response->status);
 
     }
 

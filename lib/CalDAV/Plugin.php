@@ -64,7 +64,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getHTTPMethods($uri) {
+    function getHTTPMethods($uri) {
 
         // The MKCALENDAR is only available on unmapped uri's, whose
         // parents extend IExtendedCollection
@@ -76,10 +76,10 @@ class Plugin extends DAV\ServerPlugin {
             try {
                 $node->getChild($name);
             } catch (DAV\Exception\NotFound $e) {
-                return array('MKCALENDAR');
+                return ['MKCALENDAR'];
             }
         }
-        return array();
+        return [];
 
     }
 
@@ -91,7 +91,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $principalUrl
      * @return string
      */
-    public function getCalendarHomeForPrincipal($principalUrl) {
+    function getCalendarHomeForPrincipal($principalUrl) {
 
         // The default is a bit naive, but it can be overwritten.
         list(, $nodeName) = URLUtil::splitPath($principalUrl);
@@ -105,9 +105,9 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return array
      */
-    public function getFeatures() {
+    function getFeatures() {
 
-        return array('calendar-access', 'calendar-proxy');
+        return ['calendar-access', 'calendar-proxy'];
 
     }
 
@@ -119,7 +119,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return 'caldav';
 
@@ -135,11 +135,11 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getSupportedReportSet($uri) {
+    function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
 
-        $reports = array();
+        $reports = [];
         if ($node instanceof ICalendarObjectContainer || $node instanceof ICalendarObject) {
             $reports[] = '{' . self::NS_CALDAV . '}calendar-multiget';
             $reports[] = '{' . self::NS_CALDAV . '}calendar-query';
@@ -163,7 +163,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
 
@@ -219,7 +219,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return bool
      */
-    public function report($reportName,$dom) {
+    function report($reportName,$dom) {
 
         switch($reportName) {
             case '{' . self::NS_CALDAV . '}calendar-multiget' :
@@ -248,7 +248,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpMkCalendar(RequestInterface $request, ResponseInterface $response) {
+    function httpMkCalendar(RequestInterface $request, ResponseInterface $response) {
 
         // Due to unforgivable bugs in iCal, we're completely disabling MKCALENDAR support
         // for clients matching iCal in the user agent
@@ -260,7 +260,7 @@ class Plugin extends DAV\ServerPlugin {
         $body = $request->getBodyAsString();
         $path = $request->getPath();
 
-        $properties = array();
+        $properties = [];
 
         if ($body) {
 
@@ -308,7 +308,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\INode $node
      * @return void
      */
-    public function propFind(DAV\PropFind $propFind, DAV\INode $node) {
+    function propFind(DAV\PropFind $propFind, DAV\INode $node) {
 
         $ns = '{' . self::NS_CALDAV . '}';
 
@@ -436,7 +436,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return void
      */
-    public function calendarMultiGetReport($dom) {
+    function calendarMultiGetReport($dom) {
 
         $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
         $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
@@ -511,7 +511,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return void
      */
-    public function calendarQueryReport($dom) {
+    function calendarQueryReport($dom) {
 
         $parser = new CalendarQueryParser($dom);
         $parser->parse();
@@ -526,7 +526,7 @@ class Plugin extends DAV\ServerPlugin {
         $depth = $this->server->getHTTPDepth(0);
 
         // The default result is an empty array
-        $result = array();
+        $result = [];
 
         // The calendarobject was requested directly. In this case we handle
         // this locally.
@@ -580,7 +580,7 @@ class Plugin extends DAV\ServerPlugin {
                         }
                     }
 
-                    $result = array($properties);
+                    $result = [$properties];
 
                 }
 
@@ -672,24 +672,24 @@ class Plugin extends DAV\ServerPlugin {
 
         // Doing a calendar-query first, to make sure we get the most
         // performance.
-        $urls = $calendar->calendarQuery(array(
+        $urls = $calendar->calendarQuery([
             'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
+            'comp-filters' => [
+                [
                     'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+                    'comp-filters' => [],
+                    'prop-filters' => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range' => [
                         'start' => $start,
                         'end' => $end,
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
             'is-not-defined' => false,
             'time-range' => null,
-        ));
+        ]);
 
         $objects = array_map(function($url) use ($calendar) {
             $obj = $calendar->getChild($url)->get();
@@ -722,7 +722,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
+    function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICalendarObject)
             return;
@@ -744,7 +744,7 @@ class Plugin extends DAV\ServerPlugin {
      *                       changed &$data.
      * @return void
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
+    function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
         if (!$parentNode instanceof Calendar)
             return;
@@ -763,7 +763,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $response) {
+    function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -908,7 +908,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $output
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output) {
+    function htmlActionsPanel(DAV\INode $node, &$output) {
 
         if (!$node instanceof CalendarHome)
             return;
@@ -935,13 +935,13 @@ class Plugin extends DAV\ServerPlugin {
      * @param array $postVars
      * @return bool
      */
-    public function browserPostAction($uri, $action, array $postVars) {
+    function browserPostAction($uri, $action, array $postVars) {
 
         if ($action!=='mkcalendar')
             return;
 
-        $resourceType = array('{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar');
-        $properties = array();
+        $resourceType = ['{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar'];
+        $properties = [];
         if (isset($postVars['{DAV:}displayname'])) {
             $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
         }
@@ -959,7 +959,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
+    function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
 
         if (strpos($response->getHeader('Content-Type'),'text/calendar')===false) {
             return;

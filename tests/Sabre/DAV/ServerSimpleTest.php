@@ -254,12 +254,7 @@ class ServerSimpleTest extends AbstractServer{
 
     function testHEADOnCollection() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'HEAD',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('HEAD', '/');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 

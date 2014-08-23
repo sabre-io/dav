@@ -190,7 +190,7 @@ class Server extends EventEmitter {
      *
      * @param Tree|INode|array|null $treeOrNode The tree object
      */
-    public function __construct($treeOrNode = null) {
+    function __construct($treeOrNode = null) {
 
         if ($treeOrNode instanceof Tree) {
             $this->tree = $treeOrNode;
@@ -228,7 +228,7 @@ class Server extends EventEmitter {
      *
      * @return void
      */
-    public function exec() {
+    function exec() {
 
         try {
 
@@ -320,7 +320,7 @@ class Server extends EventEmitter {
      * @param string $uri
      * @return void
      */
-    public function setBaseUri($uri) {
+    function setBaseUri($uri) {
 
         // If the baseUri does not end with a slash, we must add it
         if ($uri[strlen($uri)-1]!=='/')
@@ -335,7 +335,7 @@ class Server extends EventEmitter {
      *
      * @return string
      */
-    public function getBaseUri() {
+    function getBaseUri() {
 
         if (is_null($this->baseUri)) $this->baseUri = $this->guessBaseUri();
         return $this->baseUri;
@@ -350,7 +350,7 @@ class Server extends EventEmitter {
      *
      * @return string
      */
-    public function guessBaseUri() {
+    function guessBaseUri() {
 
         $pathInfo = $this->httpRequest->getRawServerValue('PATH_INFO');
         $uri = $this->httpRequest->getRawServerValue('REQUEST_URI');
@@ -392,7 +392,7 @@ class Server extends EventEmitter {
      * @param ServerPlugin $plugin
      * @return void
      */
-    public function addPlugin(ServerPlugin $plugin) {
+    function addPlugin(ServerPlugin $plugin) {
 
         $this->plugins[$plugin->getPluginName()] = $plugin;
         $plugin->initialize($this);
@@ -407,7 +407,7 @@ class Server extends EventEmitter {
      * @param string $name
      * @return ServerPlugin
      */
-    public function getPlugin($name) {
+    function getPlugin($name) {
 
         if (isset($this->plugins[$name]))
             return $this->plugins[$name];
@@ -426,7 +426,7 @@ class Server extends EventEmitter {
      *
      * @return array
      */
-    public function getPlugins() {
+    function getPlugins() {
 
         return $this->plugins;
 
@@ -439,7 +439,7 @@ class Server extends EventEmitter {
      * @param ResponseInterface $response
      * @return void
      */
-    public function invokeMethod(RequestInterface $request, ResponseInterface $response) {
+    function invokeMethod(RequestInterface $request, ResponseInterface $response) {
 
         $method = $request->getMethod();
 
@@ -474,7 +474,7 @@ class Server extends EventEmitter {
      * @param string $path
      * @return array
      */
-    public function getAllowedMethods($path) {
+    function getAllowedMethods($path) {
 
         $methods = [
             'OPTIONS',
@@ -509,7 +509,7 @@ class Server extends EventEmitter {
      *
      * @return string
      */
-    public function getRequestUri() {
+    function getRequestUri() {
 
         return $this->calculateUri($this->httpRequest->getUrl());
 
@@ -522,7 +522,7 @@ class Server extends EventEmitter {
      * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
      * @return string
      */
-    public function calculateUri($uri) {
+    function calculateUri($uri) {
 
         if ($uri[0]!='/' && strpos($uri,'://')) {
 
@@ -559,7 +559,7 @@ class Server extends EventEmitter {
      * @param mixed $default
      * @return int
      */
-    public function getHTTPDepth($default = self::DEPTH_INFINITY) {
+    function getHTTPDepth($default = self::DEPTH_INFINITY) {
 
         // If its not set, we'll grab the default
         $depth = $this->httpRequest->getHeader('Depth');
@@ -590,7 +590,7 @@ class Server extends EventEmitter {
      *
      * @return array|null
      */
-    public function getHTTPRange() {
+    function getHTTPRange() {
 
         $range = $this->httpRequest->getHeader('range');
         if (is_null($range)) return null;
@@ -634,7 +634,7 @@ class Server extends EventEmitter {
      *
      * @return array
      */
-    public function getHTTPPrefer() {
+    function getHTTPPrefer() {
 
         $result = [
             'return-asynch'         => false,
@@ -708,7 +708,7 @@ class Server extends EventEmitter {
      *         subtree.
      * @return array
      */
-    public function getCopyAndMoveInfo(RequestInterface $request) {
+    function getCopyAndMoveInfo(RequestInterface $request) {
 
         // Collecting the relevant HTTP headers
         if (!$request->getHeader('Destination')) throw new Exception\BadRequest('The destination header was not supplied');
@@ -773,7 +773,7 @@ class Server extends EventEmitter {
      * @param string $path
      * @param array $propertyNames
      */
-    public function getProperties($path, $propertyNames) {
+    function getProperties($path, $propertyNames) {
 
         $result = $this->getPropertiesForPath($path,$propertyNames,0);
         return $result[0][200];
@@ -792,7 +792,7 @@ class Server extends EventEmitter {
      * @param array $propertyNames
      * @return array
      */
-    public function getPropertiesForChildren($path, $propertyNames) {
+    function getPropertiesForChildren($path, $propertyNames) {
 
         $result = [];
         foreach($this->getPropertiesForPath($path,$propertyNames,1) as $k=>$row) {
@@ -819,7 +819,7 @@ class Server extends EventEmitter {
      * @param string $path
      * @return array
      */
-    public function getHTTPHeaders($path) {
+    function getHTTPHeaders($path) {
 
         $propertyMap = [
             '{DAV:}getcontenttype'   => 'Content-Type',
@@ -892,7 +892,7 @@ class Server extends EventEmitter {
      * @param int $depth
      * @return array
      */
-    public function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
+    function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
@@ -957,7 +957,7 @@ class Server extends EventEmitter {
      * @param array $propertyNames
      * @return array
      */
-    public function getPropertiesForMultiplePaths(array $paths, array $propertyNames = []) {
+    function getPropertiesForMultiplePaths(array $paths, array $propertyNames = []) {
 
         $result = [
         ];
@@ -999,7 +999,7 @@ class Server extends EventEmitter {
      * @param INode $node
      * @return bool
      */
-    public function getPropertiesByNode(PropFind $propFind, INode $node) {
+    function getPropertiesByNode(PropFind $propFind, INode $node) {
 
         return $this->emit('propFind', [$propFind, $node]);
 
@@ -1019,7 +1019,7 @@ class Server extends EventEmitter {
      * @param string   $etag
      * @return bool
      */
-    public function createFile($uri,$data, &$etag = null) {
+    function createFile($uri,$data, &$etag = null) {
 
         list($dir,$name) = URLUtil::splitPath($uri);
 
@@ -1060,7 +1060,7 @@ class Server extends EventEmitter {
      * @param string   $etag
      * @return bool
      */
-    public function updateFile($uri,$data, &$etag = null) {
+    function updateFile($uri,$data, &$etag = null) {
 
         $node = $this->tree->getNodeForPath($uri);
 
@@ -1087,7 +1087,7 @@ class Server extends EventEmitter {
      * @param string $uri
      * @return void
      */
-    public function createDirectory($uri) {
+    function createDirectory($uri) {
 
         $this->createCollection($uri,['{DAV:}collection'], []);
 
@@ -1106,7 +1106,7 @@ class Server extends EventEmitter {
      * @param array $properties A list of properties
      * @return array|null
      */
-    public function createCollection($uri, array $resourceType, array $properties) {
+    function createCollection($uri, array $resourceType, array $properties) {
 
         list($parentUri,$newName) = URLUtil::splitPath($uri);
 
@@ -1230,7 +1230,7 @@ class Server extends EventEmitter {
      * @param array $properties
      * @return array
      */
-    public function updateProperties($path, array $properties) {
+    function updateProperties($path, array $properties) {
 
         $propPatch = new PropPatch($properties);
         $this->emit('propPatch', [$path, $propPatch]);
@@ -1262,7 +1262,7 @@ class Server extends EventEmitter {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function checkPreconditions(RequestInterface $request, ResponseInterface $response) {
+    function checkPreconditions(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
         $node = null;
@@ -1545,7 +1545,7 @@ class Server extends EventEmitter {
      *
      * @return array
      */
-    public function getIfConditions(RequestInterface $request) {
+    function getIfConditions(RequestInterface $request) {
 
         $header = $request->getHeader('If');
         if (!$header) return [];
@@ -1601,7 +1601,7 @@ class Server extends EventEmitter {
      * @param INode $node
      * @return array
      */
-    public function getResourceTypeForNode(INode $node) {
+    function getResourceTypeForNode(INode $node) {
 
         $result = [];
         foreach($this->resourceTypeMapping as $className => $resourceType) {
@@ -1624,7 +1624,7 @@ class Server extends EventEmitter {
      * @param bool strip404s
      * @return string
      */
-    public function generateMultiStatus(array $fileProperties, $strip404s = false) {
+    function generateMultiStatus(array $fileProperties, $strip404s = false) {
 
         $dom = new \DOMDocument('1.0','utf-8');
         //$dom->formatOutput = true;
@@ -1669,7 +1669,7 @@ class Server extends EventEmitter {
      * @param string $body xml body
      * @return array list of properties in need of updating or deletion
      */
-    public function parsePropPatchRequest($body) {
+    function parsePropPatchRequest($body) {
 
         //We'll need to change the DAV namespace declaration to something else in order to make it parsable
         $dom = XMLUtil::loadDOMDocument($body);
@@ -1711,7 +1711,7 @@ class Server extends EventEmitter {
      * @param string $body
      * @return array
      */
-    public function parsePropFindRequest($body) {
+    function parsePropFindRequest($body) {
 
         // If the propfind body was empty, it means IE is requesting 'all' properties
         if (!$body) return [];

@@ -53,6 +53,7 @@ ChangeLog
   `CARDDAV:supported-address-data`. This functionality has been removed from
   the CardDAV PDO backend.
 * When a REPORT is not supported, we now emit HTTP error 415, instead of 403.
+* `HEAD` requests now work wherever `GET` also works.
 
 
 2.0.4 (????-??-??)

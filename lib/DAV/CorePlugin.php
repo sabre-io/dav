@@ -28,7 +28,7 @@ class CorePlugin extends ServerPlugin {
      * @param Server $server
      * @return void
      */
-    public function initialize(Server $server) {
+    function initialize(Server $server) {
 
         $this->server = $server;
         $server->on('method:GET',       [$this, 'httpGet']);
@@ -58,7 +58,7 @@ class CorePlugin extends ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return 'core';
 
@@ -71,7 +71,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $response) {
+    function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
         $node = $this->server->tree->getNodeForPath($path,0);
@@ -206,7 +206,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpOptions(RequestInterface $request, ResponseInterface $response) {
+    function httpOptions(RequestInterface $request, ResponseInterface $response) {
 
         $methods = $this->server->getAllowedMethods($request->getPath());
 
@@ -235,31 +235,36 @@ class CorePlugin extends ServerPlugin {
     /**
      * HTTP HEAD
      *
-     * This method is normally used to take a peak at a url, and only get the HTTP response headers, without the body
-     * This is used by clients to determine if a remote file was changed, so they can use a local cached version, instead of downloading it again
+     * This method is normally used to take a peak at a url, and only get the
+     * HTTP response headers, without the body. This is used by clients to
+     * determine if a remote file was changed, so they can use a local cached
+     * version, instead of downloading it again
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpHead(RequestInterface $request, ResponseInterface $response) {
+    function httpHead(RequestInterface $request, ResponseInterface $response) {
 
-        $path = $request->getPath();
+        // This is implemented by changing the HEAD request to a GET request,
+        // and dropping the response body.
+        $subRequest = clone $request;
+        $subRequest->setMethod('GET');
 
-        $node = $this->server->tree->getNodeForPath($path);
-
-        /* This information is only collection for File objects.
-         * Ideally we want to throw 405 Method Not Allowed for every
-         * non-file, but MS Office does not like this
-         */
-        if ($node instanceof IFile) {
-            $headers = $this->server->getHTTPHeaders($path);
-            if (!isset($headers['Content-Type'])) {
-                $headers['Content-Type'] = 'application/octet-stream';
-            }
-            $response->addHeaders($headers);
+        try {
+            $this->server->invokeMethod($subRequest, $response);
+            $response->setBody('');
+        } catch (Exception\NotImplemented $e) {
+            // Some clients may do HEAD requests on collections, however, GET
+            // requests and HEAD requests _may_ not be defined on a collection,
+            // which would trigger a 501.
+            // This breaks some clients though, so we're transforming these
+            // 501s into 200s.
+            $response->setStatus(200);
+            $response->setBody('');
+            $response->setHeader('Content-Type', 'text/plain');
+            $response->setHeader('X-Sabre-Real-Status', $e->getHTTPCode());
         }
-        $response->setStatus(200);
 
         // Sending back false will interupt the event chain and tell the server
         // we've handled this method.
@@ -276,7 +281,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function httpDelete(RequestInterface $request, ResponseInterface $response) {
+    function httpDelete(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -309,7 +314,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function httpPropfind(RequestInterface $request, ResponseInterface $response) {
+    function httpPropfind(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -359,7 +364,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpPropPatch(RequestInterface $request, ResponseInterface $response) {
+    function httpPropPatch(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -429,7 +434,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpPut(RequestInterface $request, ResponseInterface $response) {
+    function httpPut(RequestInterface $request, ResponseInterface $response) {
 
         $body = $request->getBodyAsStream();
         $path = $request->getPath();
@@ -535,7 +540,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpMkcol(RequestInterface $request, ResponseInterface $response) {
+    function httpMkcol(RequestInterface $request, ResponseInterface $response) {
 
         $requestBody = $request->getBodyAsString();
         $path = $request->getPath();
@@ -608,7 +613,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpMove(RequestInterface $request, ResponseInterface $response) {
+    function httpMove(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -655,7 +660,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpCopy(RequestInterface $request, ResponseInterface $response) {
+    function httpCopy(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -691,7 +696,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpReport(RequestInterface $request, ResponseInterface $response) {
+    function httpReport(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -723,7 +728,7 @@ class CorePlugin extends ServerPlugin {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatchProtectedPropertyCheck($path, PropPatch $propPatch) {
+    function propPatchProtectedPropertyCheck($path, PropPatch $propPatch) {
 
         // Comparing the mutation list to the list of propetected properties.
         $mutations = $propPatch->getMutations();
@@ -749,7 +754,7 @@ class CorePlugin extends ServerPlugin {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatchNodeUpdate($path, PropPatch $propPatch) {
+    function propPatchNodeUpdate($path, PropPatch $propPatch) {
 
         // This should trigger a 404 if the node doesn't exist.
         $node = $this->server->tree->getNodeForPath($path);
@@ -769,7 +774,7 @@ class CorePlugin extends ServerPlugin {
      * @param INode $node
      * @return void
      */
-    public function propFind(PropFind $propFind, INode $node) {
+    function propFind(PropFind $propFind, INode $node) {
 
         $propFind->handle('{DAV:}getlastmodified', function() use ($node) {
             $lm = $node->getLastModified();
@@ -826,7 +831,7 @@ class CorePlugin extends ServerPlugin {
      * @param INode $node
      * @return void
      */
-    public function propFindNode(PropFind $propFind, INode $node) {
+    function propFindNode(PropFind $propFind, INode $node) {
 
         if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {
 

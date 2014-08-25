@@ -29,7 +29,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
     public function testAuthenticateUnknownUser() {
 
         $response = new HTTP\ResponseMock();
-        $tree = new DAV\ObjectTree(new DAV\SimpleCollection('bla'));
+        $tree = new DAV\Tree(new DAV\SimpleCollection('bla'));
         $server = new DAV\Server($tree);
         $server->httpResponse = $response;
 
@@ -47,7 +47,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
     public function testAuthenticate() {
 
         $response = new HTTP\ResponseMock();
-        $tree = new DAV\ObjectTree(new DAV\SimpleCollection('bla'));
+        $tree = new DAV\Tree(new DAV\SimpleCollection('bla'));
         $server = new DAV\Server($tree);
         $server->httpResponse = $response;
 

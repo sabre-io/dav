@@ -180,10 +180,10 @@ class Server extends EventEmitter {
      *
      * If a Sabre\DAV\Tree object is passed as an argument, it will
      * use it as the directory tree. If a Sabre\DAV\INode is passed, it
-     * will create a Sabre\DAV\ObjectTree and use the node as the root.
+     * will create a Sabre\DAV\Tree and use the node as the root.
      *
      * If nothing is passed, a Sabre\DAV\SimpleCollection is created in
-     * a Sabre\DAV\ObjectTree.
+     * a Sabre\DAV\Tree.
      *
      * If an array is passed, we automatically create a root node, and use
      * the nodes in the array as top-level children.
@@ -195,7 +195,7 @@ class Server extends EventEmitter {
         if ($treeOrNode instanceof Tree) {
             $this->tree = $treeOrNode;
         } elseif ($treeOrNode instanceof INode) {
-            $this->tree = new ObjectTree($treeOrNode);
+            $this->tree = new Tree($treeOrNode);
         } elseif (is_array($treeOrNode)) {
 
             // If it's an array, a list of nodes was passed, and we need to
@@ -207,11 +207,11 @@ class Server extends EventEmitter {
             }
 
             $root = new SimpleCollection('root', $treeOrNode);
-            $this->tree = new ObjectTree($root);
+            $this->tree = new Tree($root);
 
         } elseif (is_null($treeOrNode)) {
             $root = new SimpleCollection('root');
-            $this->tree = new ObjectTree($root);
+            $this->tree = new Tree($root);
         } else {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }

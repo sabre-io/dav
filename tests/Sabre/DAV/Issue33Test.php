@@ -47,7 +47,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
 
         $dir->createDirectory('bar');
 
-        $tree = new ObjectTree($dir);
+        $tree = new Tree($dir);
         $tree->move('bar',urldecode('%C3%A0fo%C3%B3'));
 
         $node = $tree->getNodeForPath(urldecode('%C3%A0fo%C3%B3'));
@@ -89,7 +89,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
 
         $dir->createDirectory('bar');
 
-        $tree = new ObjectTree($dir);
+        $tree = new Tree($dir);
 
         $server = new Server($tree);
         $server->setBaseUri('/webdav/');

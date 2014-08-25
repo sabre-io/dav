@@ -313,6 +313,7 @@ ICS;
 
     }
 
+    /*
     function testNoPrivilege() {
 
         $this->markTestIncomplete('Currently there\'s no "no privilege" situation');
@@ -359,6 +360,6 @@ ICS;
         }
 
 
-    }
+    }*/
 
 }

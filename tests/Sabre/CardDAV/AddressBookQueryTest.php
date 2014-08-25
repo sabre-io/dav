@@ -221,11 +221,13 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
         $result = $client->parseMultiStatus($response->body);
 
+        $vobjVersion = \Sabre\VObject\Version::VERSION;
+
         $this->assertEquals(array(
             '/addressbooks/user1/book1/card1' => array(
                 200 => array(
                     '{DAV:}getetag' => '"' . md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD"). '"',
-                    '{urn:ietf:params:xml:ns:carddav}address-data' => '["vcard",[["version",{},"text","4.0"],["prodid",{},"text","-\/\/Sabre\/\/Sabre VObject 3.3.1\/\/EN"],["uid",{},"text","12345"]]]',
+                    '{urn:ietf:params:xml:ns:carddav}address-data' => '["vcard",[["version",{},"text","4.0"],["prodid",{},"text","-\/\/Sabre\/\/Sabre VObject ' . $vobjVersion . '\/\/EN"],["uid",{},"text","12345"]]]',
                 ),
              ),
         ), $result);

@@ -130,6 +130,7 @@ class IMipPlugin extends DAV\ServerPlugin {
         if (DAV\Server::$exposeVersion) {
             $headers[] = 'X-Sabre-Version: ' . DAV\Version::VERSION;
         }
+        $headers = implode("\r\n", $headers);
         $this->mail(
             $recipient,
             $subject,

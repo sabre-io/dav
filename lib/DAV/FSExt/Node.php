@@ -30,7 +30,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatch(PropPatch $propPatch) {
+    function propPatch(PropPatch $propPatch) {
 
         $propPatch->handleRemaining(function(array $properties) {
 
@@ -61,7 +61,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      * @param array $properties
      * @return array
      */
-    public function getProperties($properties) {
+    function getProperties($properties) {
 
         $resourceData = $this->getResourceData();
 
@@ -165,7 +165,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
      * @param string $name The new name
      * @return void
      */
-    public function setName($name) {
+    function setName($name) {
 
         list($parentPath, ) = URLUtil::splitPath($this->path);
         list(, $newName) = URLUtil::splitPath($name);
@@ -217,7 +217,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         return true;
     }
 
-    public function delete() {
+    function delete() {
 
         return $this->deleteResourceData();
 

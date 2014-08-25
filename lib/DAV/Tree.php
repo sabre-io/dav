@@ -75,17 +75,27 @@ abstract class Tree {
      * @param string $destinationPath The full destination path, so not just the destination parent node
      * @return int
      */
-    public function move($sourcePath, $destinationPath) {
+    function move($sourcePath, $destinationPath) {
 
         list($sourceDir, $sourceName) = URLUtil::splitPath($sourcePath);
         list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
 
         if ($sourceDir===$destinationDir) {
-            $renameable = $this->getNodeForPath($sourcePath);
-            $renameable->setName($destinationName);
+            // If this is a 'local' rename, it means we can just trigger a rename.
+            $sourceNode = $this->getNodeForPath($sourcePath);
+            $sourceNode->setName($destinationName);
         } else {
-            $this->copy($sourcePath,$destinationPath);
-            $this->getNodeForPath($sourcePath)->delete();
+            $newParentNode = $this->getNodeForPath($destinationDir);
+            $moveSuccess = false;
+            if ($newParentNode instanceof IMoveTarget) {
+                // The target collection may be able to handle the move
+                $sourceNode = $this->getNodeForPath($sourcePath);
+                $moveSuccess = $newParentNode->moveInto($destinationName, $sourcePath, $sourceNode);
+            }
+            if (!$moveSuccess) {
+                $this->copy($sourcePath,$destinationPath);
+                $this->getNodeForPath($sourcePath)->delete();
+            }
         }
         $this->markDirty($sourceDir);
         $this->markDirty($destinationDir);

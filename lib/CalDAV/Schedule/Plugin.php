@@ -210,7 +210,7 @@ class Plugin extends ServerPlugin {
         $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL' , function() use ($principalUrl, $caldavPlugin) {
 
             $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-            $outboxPath = $calendarHomePath . '/outbox';
+            $outboxPath = $calendarHomePath . '/outbox/';
 
             return new Href($outboxPath);
 
@@ -219,7 +219,7 @@ class Plugin extends ServerPlugin {
         $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL' , function() use ($principalUrl, $caldavPlugin) {
 
             $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-            $inboxPath = $calendarHomePath . '/inbox';
+            $inboxPath = $calendarHomePath . '/inbox/';
 
             return new Href($inboxPath);
 

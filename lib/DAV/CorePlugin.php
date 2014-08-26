@@ -220,9 +220,6 @@ class CorePlugin extends ServerPlugin {
         $response->setHeader('DAV', implode(', ', $features));
         $response->setHeader('MS-Author-Via', 'DAV');
         $response->setHeader('Accept-Ranges', 'bytes');
-        if (Server::$exposeVersion) {
-            $response->setHeader('X-Sabre-Version', Version::VERSION);
-        }
         $response->setHeader('Content-Length', '0');
         $response->setStatus(200);
 

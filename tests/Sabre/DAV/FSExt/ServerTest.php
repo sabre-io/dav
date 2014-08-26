@@ -23,6 +23,7 @@ class ServerTest extends DAV\AbstractServer{
 
         $this->assertEquals(200, $this->response->getStatus(), 'Invalid status code received.');
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
@@ -48,6 +49,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
@@ -74,6 +76,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => 0,
             'ETag'           => '"' . md5('Testing new file') . '"',
         ), $this->response->headers);
@@ -98,6 +101,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
         ),$this->response->headers);
 
@@ -119,6 +123,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => '0',
         ),$this->response->headers);
 
@@ -160,6 +165,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => '0',
         ),$this->response->headers);
 
@@ -184,6 +190,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => '0',
         ),$this->response->headers);
         $this->assertEquals(204, $this->response->status);

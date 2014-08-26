@@ -47,6 +47,7 @@ class ServerPropsTest extends AbstractServer {
         $this->assertEquals(207, $this->response->status);
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
                 'DAV' => '1, 3, extended-mkcol, 2',
                 'Vary' => 'Brief,Prefer',
@@ -72,6 +73,7 @@ class ServerPropsTest extends AbstractServer {
         $this->assertEquals(207, $this->response->status);
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
                 'DAV' => '1, 3, extended-mkcol, 2',
                 'Vary' => 'Brief,Prefer',
@@ -311,6 +313,7 @@ class ServerPropsTest extends AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
                 'Vary' => 'Brief,Prefer',
             ),
@@ -365,4 +368,3 @@ class ServerPropsTest extends AbstractServer {
     }
 
 }
-

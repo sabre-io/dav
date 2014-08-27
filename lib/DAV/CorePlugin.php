@@ -47,6 +47,7 @@ class CorePlugin extends ServerPlugin {
         $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
         $server->on('propFind',  [$this, 'propFind']);
         $server->on('propFind',  [$this, 'propFindNode'], 120);
+        $server->on('propFind',  [$this, 'propFindLate'], 200);
 
     }
 
@@ -848,4 +849,23 @@ class CorePlugin extends ServerPlugin {
 
     }
 
+    /**
+     * This method is called when properties are retrieved.
+     *
+     * This specific handler is called very late in the process, because we
+     * want other systems to first have a chance to handle the properties.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    public function propFindLate(PropFind $propFind, INode $node) {
+
+        $propFind->handle('{http://calendarserver.org/ns/}getctag', function() use ($propFind) {
+
+            return $propFind->get('{http://sabredav.org/ns}sync-token');
+
+        });
+
+    }
 }

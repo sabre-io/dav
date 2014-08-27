@@ -863,7 +863,37 @@ class CorePlugin extends ServerPlugin {
 
         $propFind->handle('{http://calendarserver.org/ns/}getctag', function() use ($propFind) {
 
-            return $propFind->get('{http://sabredav.org/ns}sync-token');
+            // If we already have a sync-token from the current propFind
+            // request, we can re-use that.
+            $val = $propFind->get('{http://sabredav.org/ns}sync-token');
+            if ($val) return $val;
+
+            $val = $propFind->get('{DAV:}sync-token');
+            if ($val && is_scalar($val)) {
+                return $val;
+            }
+            if ($val && $val instanceof Property\IHref) {
+                return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
+            }
+
+            // If we got here, the earlier two properties may simply not have
+            // been part of the earlier request. We're going to fetch them.
+            $result = $this->server->getProperties($propFind->getPath(), [
+                '{http://sabredav.org/ns}sync-token',
+                '{DAV:}sync-token',
+            ]);
+
+            if (isset($result['{http://sabredav.org/ns}sync-token'])) {
+                return $result['{http://sabredav.org/ns}sync-token'];
+            }
+            if (isset($result['{DAV:}sync-token'])) {
+                $val = $result['{DAV:}sync-token'];
+                if (is_scalar($val)) {
+                    return $val;
+                } elseif ($val instanceof Property\IHref) {
+                    return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
+                }
+            }
 
         });
 

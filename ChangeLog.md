@@ -6,6 +6,8 @@ ChangeLog
 
 * #483: typo in calendars creation for PostgreSQL.
 * #487: Locks are now automatically removed after a node has been deleted.
+* #496: Improve CalDAV and CardDAV sync when there is no webdav-sync support.
+* Added: Automatically mapping internal sync-tokens to getctag.
 
 2.0.3 (2014-07-14)
 ------------------

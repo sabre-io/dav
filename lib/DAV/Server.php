@@ -129,6 +129,15 @@ class Server extends EventEmitter {
         '{DAV:}supported-method-set',
         '{DAV:}supported-report-set',
 
+        // RFC6578
+        '{DAV:}sync-token',
+
+        // calendarserver.org extensions
+        '{http://calendarserver.org/ns/}ctag',
+
+        // sabredav extensions
+        '{http://sabredav.org/ns}sync-token',
+
     ];
 
     /**

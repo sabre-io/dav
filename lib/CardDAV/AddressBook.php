@@ -351,6 +351,12 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
         ) {
             return $this->addressBookInfo['{DAV:}sync-token'];
         }
+        if (
+            $this->carddavBackend instanceof Backend\SyncSupport &&
+            isset($this->addressBookInfo['{http://sabredav.org/ns}sync-token'])
+        ) {
+            return $this->addressBookInfo['{http://sabredav.org/ns}sync-token'];
+        }
 
     }
 

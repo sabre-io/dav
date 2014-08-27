@@ -83,7 +83,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $node = $this->server->getProperties($path, [
             '{DAV:}resourcetype',
             '{DAV:}displayname',
-            '{DAV:}sync-token',
+            '{http://sabredav.org/ns}sync-token',
             '{http://apple.com/ns/ical/}calendar-color',
         ]);
 

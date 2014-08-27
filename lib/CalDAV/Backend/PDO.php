@@ -164,7 +164,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
                 'uri' => $row['uri'],
                 'principaluri' => $row['principaluri'],
                 '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => 'http://sabre.io/ns/sync/' . ($row['synctoken']?$row['synctoken']:'0'),
-                '{DAV:}sync-token' => $row['synctoken']?$row['synctoken']:'0',
+                '{http://sabredav.org/ns}sync-token' => $row['synctoken']?$row['synctoken']:'0',
                 '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet($components),
                 '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
             ];
@@ -757,8 +757,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      * ];
      *
      * The returned syncToken property should reflect the *current* syncToken
-     * of the calendar, as reported in the {DAV:}sync-token property This is
-     * needed here too, to ensure the operation is atomic.
+     * of the calendar, as reported in the {http://sabredav.org/ns}sync-token
+     * property this is needed here too, to ensure the operation is atomic.
      *
      * If the $syncToken argument is specified as null, this is an initial
      * sync, and all members should be reported.

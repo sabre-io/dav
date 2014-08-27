@@ -10,7 +10,7 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CalDAV\Backend_PDO
+     * @var Sabre\CalDAV\Backend\PDO
      */
     protected $backend;
     protected $principalBackend;
@@ -250,6 +250,14 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testGetSyncToken() {
 
+        $this->assertEquals(2, $this->calendar->getSyncToken());
+
+    }
+    function testGetSyncToken2() {
+
+        $calendar = new Calendar(new Backend\Mock([],[]), [
+            '{DAV:}sync-token' => 2
+        ]);
         $this->assertEquals(2, $this->calendar->getSyncToken());
 
     }

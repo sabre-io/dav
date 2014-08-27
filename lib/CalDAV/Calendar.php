@@ -436,6 +436,12 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
         ) {
             return $this->calendarInfo['{DAV:}sync-token'];
         }
+        if (
+            $this->caldavBackend instanceof Backend\SyncSupport &&
+            isset($this->calendarInfo['{http://sabredav.org/ns}sync-token'])
+        ) {
+            return $this->calendarInfo['{http://sabredav.org/ns}sync-token'];
+        }
 
     }
 

@@ -47,6 +47,7 @@ class CorePlugin extends ServerPlugin {
         $server->on('propPatch',        [$this, 'propPatchNodeUpdate'], 200);
         $server->on('propFind',         [$this, 'propFind']);
         $server->on('propFind',         [$this, 'propFindNode'], 120);
+        $server->on('propFind',         [$this, 'propFindLate'], 200);
 
     }
 
@@ -841,4 +842,53 @@ class CorePlugin extends ServerPlugin {
 
     }
 
+    /**
+     * This method is called when properties are retrieved.
+     *
+     * This specific handler is called very late in the process, because we
+     * want other systems to first have a chance to handle the properties.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    function propFindLate(PropFind $propFind, INode $node) {
+
+        $propFind->handle('{http://calendarserver.org/ns/}getctag', function() use ($propFind) {
+
+            // If we already have a sync-token from the current propFind
+            // request, we can re-use that.
+            $val = $propFind->get('{http://sabredav.org/ns}sync-token');
+            if ($val) return $val;
+
+            $val = $propFind->get('{DAV:}sync-token');
+            if ($val && is_scalar($val)) {
+                return $val;
+            }
+            if ($val && $val instanceof Property\IHref) {
+                return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
+            }
+
+            // If we got here, the earlier two properties may simply not have
+            // been part of the earlier request. We're going to fetch them.
+            $result = $this->server->getProperties($propFind->getPath(), [
+                '{http://sabredav.org/ns}sync-token',
+                '{DAV:}sync-token',
+            ]);
+
+            if (isset($result['{http://sabredav.org/ns}sync-token'])) {
+                return $result['{http://sabredav.org/ns}sync-token'];
+            }
+            if (isset($result['{DAV:}sync-token'])) {
+                $val = $result['{DAV:}sync-token'];
+                if (is_scalar($val)) {
+                    return $val;
+                } elseif ($val instanceof Property\IHref) {
+                    return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
+                }
+            }
+
+        });
+
+    }
 }

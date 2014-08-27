@@ -165,7 +165,6 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertNull(null, $this->ab->getSyncToken());
 
-
     }
     function testGetChangesNoSyncSupport() {
 
@@ -182,6 +181,14 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $ab->getSyncToken());
     }
 
+    function testGetSyncToken2() {
+
+        if (!SABRE_HASSQLITE) {
+            $this->markTestSkipped('Sqlite is required for this test to run');
+        }
+        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
+        $this->assertEquals(2, $ab->getSyncToken());
+    }
 
     function testGetChanges() {
 

@@ -78,7 +78,7 @@ class PDO extends AbstractBackend implements SyncSupport {
                 '{DAV:}displayname' => $row['displayname'],
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => $row['description'],
                 '{http://calendarserver.org/ns/}getctag' => $row['synctoken'],
-                '{DAV:}sync-token' => $row['synctoken']?$row['synctoken']:'0',
+                '{http://sabredav.org/ns}sync-token' => $row['synctoken']?$row['synctoken']:'0',
             ];
 
         }
@@ -431,8 +431,8 @@ class PDO extends AbstractBackend implements SyncSupport {
      * ];
      *
      * The returned syncToken property should reflect the *current* syncToken
-     * of the addressbook, as reported in the {DAV:}sync-token property This is
-     * needed here too, to ensure the operation is atomic.
+     * of the addressbook, as reported in the {http://sabredav.org/ns}sync-token
+     * property. This is needed here too, to ensure the operation is atomic.
      *
      * If the $syncToken argument is specified as null, this is an initial
      * sync, and all members should be reported.

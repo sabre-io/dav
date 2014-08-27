@@ -106,7 +106,7 @@ class Plugin extends ServerPlugin {
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
-        $server->on('schedule',            [$this, 'schedulelocaldelivery']);
+        $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 
         $ns = '{' . self::NS_CALDAV . '}';
 
@@ -363,11 +363,6 @@ class Plugin extends ServerPlugin {
      * @return void
      */
     public function deliver(ITip\Message $iTipMessage) {
-
-        /*
-        $iTipMessage->scheduleStatus =
-            $this->iMIPMessage($iTipMessage->sender, [$iTipMessage->recipient], $iTipMessage->message, '');
-        */
 
         $this->server->emit('schedule', [$iTipMessage]);
         if (!$iTipMessage->scheduleStatus) {

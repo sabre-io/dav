@@ -90,7 +90,7 @@ class Acl extends DAV\Property {
      */
     static public function unserialize(\DOMElement $dom, array $propertyMap) {
 
-        $privileges = array();
+        $privileges = [];
         $xaces = $dom->getElementsByTagNameNS('urn:DAV','ace');
         for($ii=0; $ii < $xaces->length; $ii++) {
 
@@ -148,11 +148,11 @@ class Acl extends DAV\Property {
                     throw new DAV\Exception\BadRequest('{DAV:}privilege elements must have a privilege element contained within them.');
                 }
 
-                $privileges[] = array(
+                $privileges[] = [
                     'principal' => $principal,
                     'protected' => $protected,
                     'privilege' => $privilegeName,
-                );
+                ];
 
             }
 

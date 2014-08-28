@@ -30,7 +30,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
      *
      * @param array $privileges
      */
-    public function __construct(array $privileges) {
+    function __construct(array $privileges) {
 
         $this->privileges = $privileges;
 
@@ -43,7 +43,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $node) {
+    function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         foreach($this->privileges as $privName) {
@@ -60,7 +60,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
      *
      * @return bool
      */
-    public function has($privilegeName) {
+    function has($privilegeName) {
 
         return in_array($privilegeName, $this->privileges);
 
@@ -71,7 +71,7 @@ class CurrentUserPrivilegeSet extends DAV\Property {
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->privileges;
 
@@ -104,9 +104,9 @@ class CurrentUserPrivilegeSet extends DAV\Property {
      * @param array $propertyMap
      * @return CurrentUserPrivilegeSet
      */
-    static public function unserialize(\DOMElement $node, array $propertyMap) {
+    static function unserialize(\DOMElement $node, array $propertyMap) {
 
-        $result = array();
+        $result = [];
 
         $xprivs = $node->getElementsByTagNameNS('urn:DAV','privilege');
 

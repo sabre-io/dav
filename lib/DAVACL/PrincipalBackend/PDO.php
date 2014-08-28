@@ -46,14 +46,14 @@ class PDO extends AbstractBackend {
      *
      * @var array
      */
-    protected $fieldMap = array(
+    protected $fieldMap = [
 
         /**
          * This property can be used to display the users' real name.
          */
-        '{DAV:}displayname' => array(
+        '{DAV:}displayname' => [
             'dbField' => 'displayname',
-        ),
+        ],
 
         /**
          * This property is actually used by the CardDAV plugin, where it gets
@@ -63,16 +63,16 @@ class PDO extends AbstractBackend {
          * me-card is defined as a property on the users' addressbook
          * collection.
          */
-        '{http://sabredav.org/ns}vcard-url' => array(
+        '{http://sabredav.org/ns}vcard-url' => [
             'dbField' => 'vcardurl',
-        ),
+        ],
         /**
          * This is the users' primary email-address.
          */
-        '{http://sabredav.org/ns}email-address' => array(
+        '{http://sabredav.org/ns}email-address' =>[
             'dbField' => 'email',
-        ),
-    );
+        ],
+    ];
 
     /**
      * Sets up the backend.
@@ -81,7 +81,7 @@ class PDO extends AbstractBackend {
      * @param string $tableName
      * @param string $groupMembersTableName
      */
-    public function __construct(\PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
+    function __construct(\PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
 
         $this->pdo = $pdo;
         $this->tableName = $tableName;
@@ -106,18 +106,18 @@ class PDO extends AbstractBackend {
      * @param string $prefixPath
      * @return array
      */
-    public function getPrincipalsByPrefix($prefixPath) {
+    function getPrincipalsByPrefix($prefixPath) {
 
-        $fields = array(
+        $fields = [
             'uri',
-        );
+        ];
 
         foreach($this->fieldMap as $key=>$value) {
             $fields[] = $value['dbField'];
         }
         $result = $this->pdo->query('SELECT '.implode(',', $fields).'  FROM '. $this->tableName);
 
-        $principals = array();
+        $principals = [];
 
         while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
 
@@ -125,9 +125,9 @@ class PDO extends AbstractBackend {
             list($rowPrefix) = URLUtil::splitPath($row['uri']);
             if ($rowPrefix !== $prefixPath) continue;
 
-            $principal = array(
+            $principal = [
                 'uri' => $row['uri'],
-            );
+            ];
             foreach($this->fieldMap as $key=>$value) {
                 if ($row[$value['dbField']]) {
                     $principal[$key] = $row[$value['dbField']];
@@ -149,26 +149,26 @@ class PDO extends AbstractBackend {
      * @param string $path
      * @return array
      */
-    public function getPrincipalByPath($path) {
+    function getPrincipalByPath($path) {
 
-        $fields = array(
+        $fields = [
             'id',
             'uri',
-        );
+        ];
 
         foreach($this->fieldMap as $key=>$value) {
             $fields[] = $value['dbField'];
         }
         $stmt = $this->pdo->prepare('SELECT '.implode(',', $fields).'  FROM '. $this->tableName . ' WHERE uri = ?');
-        $stmt->execute(array($path));
+        $stmt->execute([$path]);
 
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$row) return;
 
-        $principal = array(
+        $principal = [
             'id'  => $row['id'],
             'uri' => $row['uri'],
-        );
+        ];
         foreach($this->fieldMap as $key=>$value) {
             if ($row[$value['dbField']]) {
                 $principal[$key] = $row[$value['dbField']];
@@ -193,7 +193,7 @@ class PDO extends AbstractBackend {
      * @param string $path
      * @param \Sabre\DAV\PropPatch $propPatch
      */
-    public function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch) {
+    function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch) {
 
         $propPatch->handle(array_keys($this->fieldMap), function($properties) use ($path) {
 
@@ -255,10 +255,10 @@ class PDO extends AbstractBackend {
      * @param array $searchProperties
      * @return array
      */
-    public function searchPrincipals($prefixPath, array $searchProperties) {
+    function searchPrincipals($prefixPath, array $searchProperties) {
 
         $query = 'SELECT uri FROM ' . $this->tableName . ' WHERE 1=1 ';
-        $values = array();
+        $values = [];
         foreach($searchProperties as $property => $value) {
 
             switch($property) {
@@ -273,7 +273,7 @@ class PDO extends AbstractBackend {
                     break;
                 default :
                     // Unsupported property
-                    return array();
+                    return [];
 
             }
 
@@ -281,7 +281,7 @@ class PDO extends AbstractBackend {
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
 
-        $principals = array();
+        $principals = [];
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             // Checking if the principal is in the prefix
@@ -302,15 +302,15 @@ class PDO extends AbstractBackend {
      * @param string $principal
      * @return array
      */
-    public function getGroupMemberSet($principal) {
+    function getGroupMemberSet($principal) {
 
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) throw new DAV\Exception('Principal not found');
 
         $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM '.$this->groupMembersTableName.' AS groupmembers LEFT JOIN '.$this->tableName.' AS principals ON groupmembers.member_id = principals.id WHERE groupmembers.principal_id = ?');
-        $stmt->execute(array($principal['id']));
+        $stmt->execute([$principal['id']]);
 
-        $result = array();
+        $result = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $result[] = $row['uri'];
         }
@@ -324,15 +324,15 @@ class PDO extends AbstractBackend {
      * @param string $principal
      * @return array
      */
-    public function getGroupMembership($principal) {
+    function getGroupMembership($principal) {
 
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) throw new DAV\Exception('Principal not found');
 
         $stmt = $this->pdo->prepare('SELECT principals.uri as uri FROM '.$this->groupMembersTableName.' AS groupmembers LEFT JOIN '.$this->tableName.' AS principals ON groupmembers.principal_id = principals.id WHERE groupmembers.member_id = ?');
-        $stmt->execute(array($principal['id']));
+        $stmt->execute([$principal['id']]);
 
-        $result = array();
+        $result = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $result[] = $row['uri'];
         }
@@ -349,13 +349,13 @@ class PDO extends AbstractBackend {
      * @param array $members
      * @return void
      */
-    public function setGroupMemberSet($principal, array $members) {
+    function setGroupMemberSet($principal, array $members) {
 
         // Grabbing the list of principal id's.
         $stmt = $this->pdo->prepare('SELECT id, uri FROM '.$this->tableName.' WHERE uri IN (? ' . str_repeat(', ? ', count($members)) . ');');
-        $stmt->execute(array_merge(array($principal), $members));
+        $stmt->execute(array_merge([$principal], $members));
 
-        $memberIds = array();
+        $memberIds = [];
         $principalId = null;
 
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
@@ -369,12 +369,12 @@ class PDO extends AbstractBackend {
 
         // Wiping out old members
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->groupMembersTableName.' WHERE principal_id = ?;');
-        $stmt->execute(array($principalId));
+        $stmt->execute([$principalId]);
 
         foreach($memberIds as $memberId) {
 
             $stmt = $this->pdo->prepare('INSERT INTO '.$this->groupMembersTableName.' (principal_id, member_id) VALUES (?, ?);');
-            $stmt->execute(array($principalId, $memberId));
+            $stmt->execute([$principalId, $memberId]);
 
         }
 

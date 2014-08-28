@@ -63,7 +63,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      * @param int $type
      * @param string|null $href
      */
-    public function __construct($type, $href = null) {
+    function __construct($type, $href = null) {
 
         $this->type = $type;
 
@@ -79,7 +79,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      *
      * @return int
      */
-    public function getType() {
+    function getType() {
 
         return $this->type;
 
@@ -90,7 +90,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      *
      * @return string
      */
-    public function getHref() {
+    function getHref() {
 
         return $this->href;
 
@@ -103,7 +103,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $node) {
+    function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prefix = $server->xmlNamespaces['DAV:'];
         switch($this->type) {
@@ -135,7 +135,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
      * @param array $propertyMap
      * @return Principal
      */
-    static public function unserialize(\DOMElement $dom, array $propertyMap) {
+    static function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $parent = $dom->firstChild;
         while(!DAV\XMLUtil::toClarkNotation($parent)) {

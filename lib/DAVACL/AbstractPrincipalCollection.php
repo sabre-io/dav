@@ -54,7 +54,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * @param PrincipalBackend\BackendInterface $principalBackend
      * @param string $principalPrefix
      */
-    public function __construct(PrincipalBackend\BackendInterface $principalBackend, $principalPrefix = 'principals') {
+    function __construct(PrincipalBackend\BackendInterface $principalBackend, $principalPrefix = 'principals') {
 
         $this->principalPrefix = $principalPrefix;
         $this->principalBackend = $principalBackend;
@@ -78,7 +78,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         list(,$name) = URLUtil::splitPath($this->principalPrefix);
         return $name;
@@ -90,12 +90,12 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      *
      * @return array
      */
-    public function getChildren() {
+    function getChildren() {
 
         if ($this->disableListing)
             throw new DAV\Exception\MethodNotAllowed('Listing members of this collection is disabled');
 
-        $children = array();
+        $children = [];
         foreach($this->principalBackend->getPrincipalsByPrefix($this->principalPrefix) as $principalInfo) {
 
             $children[] = $this->getChildForPrincipal($principalInfo);
@@ -113,7 +113,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * @throws DAV\Exception\NotFound
      * @return IPrincipal
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         $principalInfo = $this->principalBackend->getPrincipalByPath($this->principalPrefix . '/' . $name);
         if (!$principalInfo) throw new DAV\Exception\NotFound('Principal with name ' . $name . ' not found');
@@ -142,10 +142,10 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * @param array $searchProperties
      * @return array
      */
-    public function searchPrincipals(array $searchProperties) {
+    function searchPrincipals(array $searchProperties) {
 
         $result = $this->principalBackend->searchPrincipals($this->principalPrefix, $searchProperties);
-        $r = array();
+        $r = [];
 
         foreach($result as $row) {
             list(, $r[]) = URLUtil::splitPath($row);

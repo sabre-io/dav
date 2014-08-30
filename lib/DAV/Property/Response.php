@@ -61,7 +61,7 @@ class Response extends DAV\Property implements IHref {
      * @param array $responseProperties
      * @param string $httpStatus
      */
-    public function __construct($href, array $responseProperties, $httpStatus = null) {
+    function __construct($href, array $responseProperties, $httpStatus = null) {
 
         $this->href = $href;
         $this->responseProperties = $responseProperties;
@@ -74,7 +74,7 @@ class Response extends DAV\Property implements IHref {
      *
      * @return string
      */
-    public function getHref() {
+    function getHref() {
 
         return $this->href;
 
@@ -85,7 +85,7 @@ class Response extends DAV\Property implements IHref {
      *
      * @return string
      */
-    public function getHttpStatus() {
+    function getHttpStatus() {
 
         return $this->httpStatus;
 
@@ -96,7 +96,7 @@ class Response extends DAV\Property implements IHref {
      *
      * @return array
      */
-    public function getResponseProperties() {
+    function getResponseProperties() {
 
         return $this->responseProperties;
 
@@ -109,7 +109,7 @@ class Response extends DAV\Property implements IHref {
      * @param \DOMElement $dom
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $dom) {
+    function serialize(DAV\Server $server, \DOMElement $dom) {
 
         $document = $dom->ownerDocument;
         $properties = $this->responseProperties;
@@ -207,7 +207,7 @@ class Response extends DAV\Property implements IHref {
      * @param array $propertyMap
      * @return DAV\IProperty
      */
-    public static function unserialize(\DOMElement $prop, array $propertyMap) {
+    static function unserialize(\DOMElement $prop, array $propertyMap) {
 
         // Delegating this to the ResponseList property. It does make more
         // sense there.

@@ -27,7 +27,7 @@ interface BackendInterface {
      * @param bool $returnChildLocks
      * @return array
      */
-    public function getLocks($uri, $returnChildLocks);
+    function getLocks($uri, $returnChildLocks);
 
     /**
      * Locks a uri
@@ -36,7 +36,7 @@ interface BackendInterface {
      * @param Locks\LockInfo $lockInfo
      * @return bool
      */
-    public function lock($uri,Locks\LockInfo $lockInfo);
+    function lock($uri,Locks\LockInfo $lockInfo);
 
     /**
      * Removes a lock from a uri
@@ -45,7 +45,7 @@ interface BackendInterface {
      * @param Locks\LockInfo $lockInfo
      * @return bool
      */
-    public function unlock($uri,Locks\LockInfo $lockInfo);
+    function unlock($uri,Locks\LockInfo $lockInfo);
 
 }
 

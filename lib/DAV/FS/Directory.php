@@ -91,7 +91,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      */
     function getChildren() {
 
-        $nodes = array();
+        $nodes = [];
         foreach(scandir($this->path) as $node) if($node!='.' && $node!='..') $nodes[] = $this->getChild($node);
         return $nodes;
 

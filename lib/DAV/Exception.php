@@ -28,7 +28,7 @@ class Exception extends \Exception {
      *
      * @return int
      */
-    public function getHTTPCode() {
+    function getHTTPCode() {
 
         return 500;
 
@@ -41,7 +41,7 @@ class Exception extends \Exception {
      * @param \DOMElement $errorNode
      * @return void
      */
-    public function serialize(Server $server,\DOMElement $errorNode) {
+    function serialize(Server $server,\DOMElement $errorNode) {
 
 
     }
@@ -54,9 +54,9 @@ class Exception extends \Exception {
      * @param Server $server
      * @return array
      */
-    public function getHTTPHeaders(Server $server) {
+    function getHTTPHeaders(Server $server) {
 
-        return array();
+        return [];
 
     }
 

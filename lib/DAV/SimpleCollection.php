@@ -19,7 +19,7 @@ class SimpleCollection extends Collection {
      *
      * @var INode[]
      */
-    protected $children = array();
+    protected $children = [];
 
     /**
      * Name of this resource
@@ -37,7 +37,7 @@ class SimpleCollection extends Collection {
      * @param string $name
      * @param INode[] $children
      */
-    public function __construct($name,array $children = array()) {
+    function __construct($name, array $children = []) {
 
         $this->name = $name;
         foreach($children as $child) {
@@ -55,7 +55,7 @@ class SimpleCollection extends Collection {
      * @param INode $child
      * @return void
      */
-    public function addChild(INode $child) {
+    function addChild(INode $child) {
 
         $this->children[$child->getName()] = $child;
 
@@ -66,7 +66,7 @@ class SimpleCollection extends Collection {
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->name;
 
@@ -85,7 +85,7 @@ class SimpleCollection extends Collection {
      * @throws Exception\NotFound
      * @return INode
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         if (isset($this->children[$name])) return $this->children[$name];
         throw new Exception\NotFound('File not found: ' . $name . ' in \'' . $this->getName() . '\'');
@@ -97,7 +97,7 @@ class SimpleCollection extends Collection {
      *
      * @return INode[]
      */
-    public function getChildren() {
+    function getChildren() {
 
         return array_values($this->children);
 

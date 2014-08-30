@@ -87,9 +87,9 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
      */
-    public function __construct(array $values) {
+    function __construct(array $values) {
 
-        $required = array(
+        $required = [
             'id',
             'etag',
             'href',
@@ -97,7 +97,7 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
             'inReplyTo',
             'type',
             'hostUrl',
-        );
+        ];
         foreach($required as $item) {
             if (!isset($values[$item])) {
                 throw new \InvalidArgumentException($item . ' is a required constructor option');
@@ -123,7 +123,7 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $node) {
+    function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prop = $node->ownerDocument->createElement('cs:invite-reply');
         $node->appendChild($prop);
@@ -138,7 +138,7 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      * @param \DOMElement $node
      * @return void
      */
-    public function serializeBody(DAV\Server $server, \DOMElement $node) {
+    function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
 
@@ -197,7 +197,7 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      *
      * @return string
      */
-    public function getId() {
+    function getId() {
 
         return $this->id;
 
@@ -210,7 +210,7 @@ class InviteReply extends DAV\Property implements CalDAV\Notifications\INotifica
      *
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         return $this->etag;
 

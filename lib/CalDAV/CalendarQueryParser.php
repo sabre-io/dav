@@ -64,7 +64,7 @@ class CalendarQueryParser {
      *
      * @param \DOMDocument $dom
      */
-    public function __construct(\DOMDocument $dom) {
+    function __construct(\DOMDocument $dom) {
 
         $this->dom = $dom;
         $this->xpath = new \DOMXPath($dom);
@@ -78,7 +78,7 @@ class CalendarQueryParser {
      *
      * @return void
      */
-    public function parse() {
+    function parse() {
 
         $filterNode = null;
 
@@ -112,26 +112,26 @@ class CalendarQueryParser {
     protected function parseCompFilters(\DOMElement $parentNode) {
 
         $compFilterNodes = $this->xpath->query('cal:comp-filter', $parentNode);
-        $result = array();
+        $result = [];
 
         for($ii=0; $ii < $compFilterNodes->length; $ii++) {
 
             $compFilterNode = $compFilterNodes->item($ii);
 
-            $compFilter = array();
+            $compFilter = [];
             $compFilter['name'] = $compFilterNode->getAttribute('name');
             $compFilter['is-not-defined'] = $this->xpath->query('cal:is-not-defined', $compFilterNode)->length>0;
             $compFilter['comp-filters'] = $this->parseCompFilters($compFilterNode);
             $compFilter['prop-filters'] = $this->parsePropFilters($compFilterNode);
             $compFilter['time-range'] = $this->parseTimeRange($compFilterNode);
 
-            if ($compFilter['time-range'] && !in_array($compFilter['name'],array(
+            if ($compFilter['time-range'] && !in_array($compFilter['name'], [
                 'VEVENT',
                 'VTODO',
                 'VJOURNAL',
                 'VFREEBUSY',
                 'VALARM',
-            ))) {
+            ])) {
                 throw new \Sabre\DAV\Exception\BadRequest('The time-range filter is not defined for the ' . $compFilter['name'] . ' component');
             };
 
@@ -152,12 +152,12 @@ class CalendarQueryParser {
     protected function parsePropFilters(\DOMElement $parentNode) {
 
         $propFilterNodes = $this->xpath->query('cal:prop-filter', $parentNode);
-        $result = array();
+        $result = [];
 
         for ($ii=0; $ii < $propFilterNodes->length; $ii++) {
 
             $propFilterNode = $propFilterNodes->item($ii);
-            $propFilter = array();
+            $propFilter = [];
             $propFilter['name'] = $propFilterNode->getAttribute('name');
             $propFilter['is-not-defined'] = $this->xpath->query('cal:is-not-defined', $propFilterNode)->length>0;
             $propFilter['param-filters'] = $this->parseParamFilters($propFilterNode);
@@ -181,12 +181,12 @@ class CalendarQueryParser {
     protected function parseParamFilters(\DOMElement $parentNode) {
 
         $paramFilterNodes = $this->xpath->query('cal:param-filter', $parentNode);
-        $result = array();
+        $result = [];
 
         for($ii=0;$ii<$paramFilterNodes->length;$ii++) {
 
             $paramFilterNode = $paramFilterNodes->item($ii);
-            $paramFilter = array();
+            $paramFilter = [];
             $paramFilter['name'] = $paramFilterNode->getAttribute('name');
             $paramFilter['is-not-defined'] = $this->xpath->query('cal:is-not-defined', $paramFilterNode)->length>0;
             $paramFilter['text-match'] = $this->parseTextMatch($paramFilterNode);
@@ -218,11 +218,11 @@ class CalendarQueryParser {
         $collation = $textMatchNode->getAttribute('collation');
         if (!$collation) $collation = 'i;ascii-casemap';
 
-        return array(
+        return [
             'negate-condition' => $negateCondition,
             'collation' => $collation,
             'value' => $textMatchNode->nodeValue
-        );
+        ];
 
     }
 
@@ -256,10 +256,10 @@ class CalendarQueryParser {
             throw new \Sabre\DAV\Exception\BadRequest('The end-date must be larger than the start-date in the time-range filter');
         }
 
-        return array(
+        return [
             'start' => $start,
             'end' => $end,
-        );
+        ];
 
     }
 
@@ -291,10 +291,10 @@ class CalendarQueryParser {
             throw new \Sabre\DAV\Exception\BadRequest('The end-date must be larger than the start-date in the expand element.');
         }
 
-        return array(
+        return [
             'start' => $start,
             'end' => $end,
-        );
+        ];
 
     }
 

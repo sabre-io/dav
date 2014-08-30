@@ -31,7 +31,7 @@ class ScheduleCalendarTransp extends DAV\Property {
      *
      * @param string $value
      */
-    public function __construct($value) {
+    function __construct($value) {
 
         if ($value !== self::TRANSPARENT && $value !== self::OPAQUE) {
             throw new \InvalidArgumentException('The value must either be specified as "transparent" or "opaque"');
@@ -45,7 +45,7 @@ class ScheduleCalendarTransp extends DAV\Property {
      *
      * @return string
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->value;
 
@@ -58,7 +58,7 @@ class ScheduleCalendarTransp extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $node) {
+    function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         switch($this->value) {

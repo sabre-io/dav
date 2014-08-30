@@ -24,7 +24,7 @@ abstract class ServerPlugin {
      * @param Server $server
      * @return void
      */
-    abstract public function initialize(Server $server);
+    abstract function initialize(Server $server);
 
     /**
      * This method should return a list of server-features.
@@ -34,7 +34,7 @@ abstract class ServerPlugin {
      *
      * @return array
      */
-    public function getFeatures() {
+    function getFeatures() {
 
         return [];
 
@@ -50,7 +50,7 @@ abstract class ServerPlugin {
      * @param string $path
      * @return array
      */
-    public function getHTTPMethods($path) {
+    function getHTTPMethods($path) {
 
         return [];
 
@@ -64,7 +64,7 @@ abstract class ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return get_class($this);
 
@@ -80,7 +80,7 @@ abstract class ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getSupportedReportSet($uri) {
+    function getSupportedReportSet($uri) {
 
         return [];
 

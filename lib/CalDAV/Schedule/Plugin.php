@@ -72,7 +72,7 @@ class Plugin extends ServerPlugin {
      *
      * @return array
      */
-    public function getFeatures() {
+    function getFeatures() {
 
         return ['calendar-auto-schedule'];
 
@@ -86,7 +86,7 @@ class Plugin extends ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return 'caldav-schedule';
 
@@ -98,7 +98,7 @@ class Plugin extends ServerPlugin {
      * @param Server $server
      * @return void
      */
-    public function initialize(Server $server) {
+    function initialize(Server $server) {
 
         $this->server = $server;
         $server->on('method:POST',         [$this, 'httpPost']);
@@ -139,7 +139,7 @@ class Plugin extends ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getHTTPMethods($uri) {
+    function getHTTPMethods($uri) {
 
         try {
             $node = $this->server->tree->getNodeForPath($uri);
@@ -162,7 +162,7 @@ class Plugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpPost(RequestInterface $request, ResponseInterface $response) {
+    function httpPost(RequestInterface $request, ResponseInterface $response) {
 
         // Checking if this is a text/calendar content type
         $contentType = $request->getHeader('Content-Type');
@@ -199,7 +199,7 @@ class Plugin extends ServerPlugin {
      * @param INode $node
      * @return void
      */
-    public function propFind(PropFind $propFind, INode $node) {
+    function propFind(PropFind $propFind, INode $node) {
 
         if (!$node instanceof DAVACL\IPrincipal) return;
 
@@ -264,7 +264,7 @@ class Plugin extends ServerPlugin {
      * @param bool $modified Wether or not the item's data was modified/
      * @return bool|null
      */
-    public function beforeCreateFile($path, &$data, $parentNode, &$modified) {
+    function beforeCreateFile($path, &$data, $parentNode, &$modified) {
 
         if (!$parentNode instanceof ICalendar) {
             return;
@@ -315,7 +315,7 @@ class Plugin extends ServerPlugin {
      * @param bool $modified
      * @return void
      */
-    public function beforeWriteContent($path, IFile $node, &$data, &$modified) {
+    function beforeWriteContent($path, IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICalendarObject || $node instanceof ISchedulingObject) {
             return;
@@ -362,7 +362,7 @@ class Plugin extends ServerPlugin {
      * @param ITip\Message $itipMessage
      * @return void
      */
-    public function deliver(ITip\Message $iTipMessage) {
+    function deliver(ITip\Message $iTipMessage) {
 
         $this->server->emit('schedule', [$iTipMessage]);
         if (!$iTipMessage->scheduleStatus) {
@@ -380,7 +380,7 @@ class Plugin extends ServerPlugin {
      * @param string $path
      * @return void
      */
-    public function beforeUnbind($path) {
+    function beforeUnbind($path) {
 
         $node = $this->server->tree->getNodeForPath($path);
 
@@ -414,7 +414,7 @@ class Plugin extends ServerPlugin {
      * @param ITip\Message $iTipMessage
      * @return void
      */
-    public function scheduleLocalDelivery(ITip\Message $iTipMessage) {
+    function scheduleLocalDelivery(ITip\Message $iTipMessage) {
 
         $aclPlugin = $this->server->getPlugin('acl');
 
@@ -623,7 +623,7 @@ class Plugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function outboxRequest(IOutbox $outboxNode, RequestInterface $request, ResponseInterface $response) {
+    function outboxRequest(IOutbox $outboxNode, RequestInterface $request, ResponseInterface $response) {
 
         $outboxPath = $request->getPath();
 

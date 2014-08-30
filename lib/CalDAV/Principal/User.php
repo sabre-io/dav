@@ -25,7 +25,7 @@ class User extends DAVACL\Principal implements DAV\ICollection {
      * @throws DAV\Exception\Forbidden
      * @return void
      */
-    public function createFile($name, $data = null) {
+    function createFile($name, $data = null) {
 
         throw new DAV\Exception\Forbidden('Permission denied to create file (filename ' . $name . ')');
 
@@ -38,7 +38,7 @@ class User extends DAVACL\Principal implements DAV\ICollection {
      * @throws DAV\Exception\Forbidden
      * @return void
      */
-    public function createDirectory($name) {
+    function createDirectory($name) {
 
         throw new DAV\Exception\Forbidden('Permission denied to create directory');
 
@@ -50,7 +50,7 @@ class User extends DAVACL\Principal implements DAV\ICollection {
      * @param string $name
      * @return DAV\INode
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         $principal = $this->principalBackend->getPrincipalByPath($this->getPrincipalURL() . '/' . $name);
         if (!$principal) {
@@ -71,9 +71,9 @@ class User extends DAVACL\Principal implements DAV\ICollection {
      *
     * @return DAV\INode[]
      */
-    public function getChildren() {
+    function getChildren() {
 
-        $r = array();
+        $r = [];
         if ($this->principalBackend->getPrincipalByPath($this->getPrincipalURL() . '/calendar-proxy-read')) {
             $r[] = new ProxyRead($this->principalBackend, $this->principalProperties);
         }
@@ -91,7 +91,7 @@ class User extends DAVACL\Principal implements DAV\ICollection {
      * @param string $name
      * @return bool
      */
-    public function childExists($name) {
+    function childExists($name) {
 
         try {
             $this->getChild($name);
@@ -114,19 +114,19 @@ class User extends DAVACL\Principal implements DAV\ICollection {
      *
      * @return array
      */
-    public function getACL() {
+    function getACL() {
 
         $acl = parent::getACL();
-        $acl[] = array(
+        $acl[] = [
             'privilege' => '{DAV:}read',
             'principal' => $this->principalProperties['uri'] . '/calendar-proxy-read',
             'protected' => true,
-        );
-        $acl[] = array(
+        ];
+        $acl[] = [
             'privilege' => '{DAV:}read',
             'principal' => $this->principalProperties['uri'] . '/calendar-proxy-write',
             'protected' => true,
-        );
+        ];
         return $acl;
 
     }

@@ -20,5 +20,4 @@ use Sabre\DAV;
  */
 interface ICollection extends DAV\ICollection {
 
-
 }

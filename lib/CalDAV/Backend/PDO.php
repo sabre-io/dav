@@ -114,7 +114,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarSubscriptionsTableName
      * @todo we have to do something about this signature. It's bullshit.
      */
-    public function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = "calendarsubscriptions", $schedulingObjectTableName = "schedulingobjects") {
+    function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = "calendarsubscriptions", $schedulingObjectTableName = "schedulingobjects") {
 
         $this->pdo = $pdo;
         $this->calendarTableName = $calendarTableName;
@@ -146,7 +146,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $principalUri
      * @return array
      */
-    public function getCalendarsForUser($principalUri) {
+    function getCalendarsForUser($principalUri) {
 
         $fields = array_values($this->propertyMap);
         $fields[] = 'id';
@@ -203,7 +203,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param array $properties
      * @return string
      */
-    public function createCalendar($principalUri, $calendarUri, array $properties) {
+    function createCalendar($principalUri, $calendarUri, array $properties) {
 
         $fieldNames = [
             'principaluri',
@@ -265,7 +265,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */
-    public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
+    function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
 
         $supportedProperties = array_keys($this->propertyMap);
         $supportedProperties[] = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
@@ -309,7 +309,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarId
      * @return void
      */
-    public function deleteCalendar($calendarId) {
+    function deleteCalendar($calendarId) {
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
         $stmt->execute([$calendarId]);
@@ -355,7 +355,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarId
      * @return array
      */
-    public function getCalendarObjects($calendarId) {
+    function getCalendarObjects($calendarId) {
 
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, componenttype FROM '.$this->calendarObjectTableName.' WHERE calendarid = ?');
         $stmt->execute([$calendarId]);
@@ -393,7 +393,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $objectUri
      * @return array|null
      */
-    public function getCalendarObject($calendarId,$objectUri) {
+    function getCalendarObject($calendarId,$objectUri) {
 
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarId, $objectUri]);
@@ -426,7 +426,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param array $uris
      * @return array
      */
-    public function getMultipleCalendarObjects($calendarId, array $uris) {
+    function getMultipleCalendarObjects($calendarId, array $uris) {
 
         $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri IN (';
         // Inserting a whole bunch of question marks
@@ -474,7 +474,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarData
      * @return string|null
      */
-    public function createCalendarObject($calendarId,$objectUri,$calendarData) {
+    function createCalendarObject($calendarId,$objectUri,$calendarData) {
 
         $extraData = $this->getDenormalizedData($calendarData);
 
@@ -515,7 +515,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarData
      * @return string|null
      */
-    public function updateCalendarObject($calendarId,$objectUri,$calendarData) {
+    function updateCalendarObject($calendarId,$objectUri,$calendarData) {
 
         $extraData = $this->getDenormalizedData($calendarData);
 
@@ -616,7 +616,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $objectUri
      * @return void
      */
-    public function deleteCalendarObject($calendarId,$objectUri) {
+    function deleteCalendarObject($calendarId,$objectUri) {
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarObjectTableName.' WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarId, $objectUri]);
@@ -677,7 +677,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param array $filters
      * @return array
      */
-    public function calendarQuery($calendarId, array $filters) {
+    function calendarQuery($calendarId, array $filters) {
 
         $componentType = null;
         $requirePostFilter = true;
@@ -807,7 +807,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param int $limit
      * @return array
      */
-    public function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
+    function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
 
         // Current synctoken
         $stmt = $this->pdo->prepare('SELECT synctoken FROM ' .$this->calendarTableName . ' WHERE id = ?');
@@ -924,7 +924,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $principalUri
      * @return array
      */
-    public function getSubscriptionsForUser($principalUri) {
+    function getSubscriptionsForUser($principalUri) {
 
         $fields = array_values($this->subscriptionPropertyMap);
         $fields[] = 'id';
@@ -976,7 +976,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param array $properties
      * @return mixed
      */
-    public function createSubscription($principalUri, $uri, array $properties) {
+    function createSubscription($principalUri, $uri, array $properties) {
 
         $fieldNames = [
             'principaluri',
@@ -1027,7 +1027,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */
-    public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
+    function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
 
         $supportedProperties = array_keys($this->subscriptionPropertyMap);
         $supportedProperties[] = '{http://calendarserver.org/ns/}source';
@@ -1070,7 +1070,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param mixed $subscriptionId
      * @return void
      */
-    public function deleteSubscription($subscriptionId) {
+    function deleteSubscription($subscriptionId) {
 
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarSubscriptionsTableName . ' WHERE id = ?');
         $stmt->execute([$subscriptionId]);
@@ -1093,7 +1093,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $objectUri
      * @return array
      */
-    public function getSchedulingObject($principalUri, $objectUri) {
+    function getSchedulingObject($principalUri, $objectUri) {
 
         $stmt = $this->pdo->prepare('SELECT uri, calendardata, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
@@ -1122,7 +1122,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $principalUri
      * @return array
      */
-    public function getSchedulingObjects($principalUri) {
+    function getSchedulingObjects($principalUri) {
 
         $stmt = $this->pdo->prepare('SELECT id, calendardata, uri, lastmodified, etag, size FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ?');
         $stmt->execute([$principalUri]);
@@ -1149,7 +1149,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $objectUri
      * @return void
      */
-    public function deleteSchedulingObject($principalUri, $objectUri) {
+    function deleteSchedulingObject($principalUri, $objectUri) {
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->schedulingObjectTableName.' WHERE principaluri = ? AND uri = ?');
         $stmt->execute([$principalUri, $objectUri]);
@@ -1164,7 +1164,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $objectData
      * @return void
      */
-    public function createSchedulingObject($principalUri, $objectUri, $objectData) {
+    function createSchedulingObject($principalUri, $objectUri, $objectData) {
 
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData) ]);

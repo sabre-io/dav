@@ -30,7 +30,7 @@ class Client extends HTTP\Client {
      *
      * @var array
      */
-    public $propertyMap = array();
+    public $propertyMap = [];
 
     protected $baseUri;
 
@@ -93,18 +93,18 @@ class Client extends HTTP\Client {
      *
      * @param array $settings
      */
-    public function __construct(array $settings) {
+    function __construct(array $settings) {
 
         if (!isset($settings['baseUri'])) {
             throw new \InvalidArgumentException('A baseUri must be provided');
         }
 
-        $validSettings = array(
+        $validSettings = [
             'baseUri',
             'userName',
             'password',
             'proxy',
-        );
+        ];
 
         parent::__construct();
 
@@ -167,7 +167,7 @@ class Client extends HTTP\Client {
      * @param string $certificates
      * @return void
      */
-    public function addTrustedCertificates($certificates) {
+    function addTrustedCertificates($certificates) {
         $this->addCurlSetting(CURLOPT_CAINFO, $certificates);
     }
 
@@ -179,7 +179,7 @@ class Client extends HTTP\Client {
      * @param bool $value
      * @return void
      */
-    public function setVerifyPeer($value) {
+    function setVerifyPeer($value) {
         $this->addCurlSetting(CURLOPT_SSL_VERIFYPEER, $value);
     }
 
@@ -204,7 +204,7 @@ class Client extends HTTP\Client {
      * @param int $depth
      * @return array
      */
-    public function propFind($url, array $properties, $depth = 0) {
+    function propFind($url, array $properties, $depth = 0) {
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
@@ -274,7 +274,7 @@ class Client extends HTTP\Client {
      * @param array $properties
      * @return void
      */
-    public function propPatch($url, array $properties) {
+    function propPatch($url, array $properties) {
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
@@ -342,14 +342,14 @@ class Client extends HTTP\Client {
      *
      * @return array
      */
-    public function options() {
+    function options() {
 
         $request = new HTTP\Request('OPTIONS', $this->getAbsoluteUrl(''));
         $response = $this->send($request);
 
         $dav = $response->getHeader('Dav');
         if (!$dav) {
-            return array();
+            return [];
         }
 
         $features = explode(',', $dav);
@@ -389,7 +389,7 @@ class Client extends HTTP\Client {
      * @throws ClientException, in case a curl error occurred.
      * @return array
      */
-    public function request($method, $url = '', $body = null, array $headers = []) {
+    function request($method, $url = '', $body = null, array $headers = []) {
 
         $url = $this->getAbsoluteUrl($url);
 
@@ -409,7 +409,7 @@ class Client extends HTTP\Client {
      * @param string $url
      * @return string
      */
-    public function getAbsoluteUrl($url) {
+    function getAbsoluteUrl($url) {
 
         // If the url starts with http:// or https://, the url is already absolute.
         if (preg_match('/^http(s?):\/\//', $url)) {
@@ -433,27 +433,27 @@ class Client extends HTTP\Client {
      *
      * This method returns an array with the following structure
      *
-     * array(
-     *   'url/to/resource' => array(
-     *     '200' => array(
+     * [
+     *   'url/to/resource' => [
+     *     '200' => [
      *        '{DAV:}property1' => 'value1',
      *        '{DAV:}property2' => 'value2',
-     *     ),
-     *     '404' => array(
+     *     ],
+     *     '404' => [
      *        '{DAV:}property1' => null,
      *        '{DAV:}property2' => null,
-     *     ),
-     *   )
-     *   'url/to/resource2' => array(
+     *     ],
+     *   ],
+     *   'url/to/resource2' => [
      *      .. etc ..
-     *   )
-     * )
+     *   ]
+     * ]
      *
      *
      * @param string $body xml body
      * @return array
      */
-    public function parseMultiStatus($body) {
+    function parseMultiStatus($body) {
 
         try {
             $dom = XMLUtil::loadDOMDocument($body);
@@ -466,7 +466,7 @@ class Client extends HTTP\Client {
             $this->propertyMap
         );
 
-        $result = array();
+        $result = [];
 
         foreach($responses->getResponses() as $response) {
 

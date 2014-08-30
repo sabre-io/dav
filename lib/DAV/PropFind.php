@@ -40,7 +40,7 @@ class PropFind {
      * @param int $depth
      * @param int $requestType
      */
-    public function __construct($path, array $properties, $depth = 0, $requestType = self::NORMAL) {
+    function __construct($path, array $properties, $depth = 0, $requestType = self::NORMAL) {
 
         $this->path = $path;
         $this->properties = $properties;
@@ -91,7 +91,7 @@ class PropFind {
      * @param mixed $valueOrCallBack
      * @return void
      */
-    public function handle($propertyName, $valueOrCallBack) {
+    function handle($propertyName, $valueOrCallBack) {
 
         if ($this->itemsLeft && isset($this->result[$propertyName]) && $this->result[$propertyName][0] === 404) {
             if (is_callable($valueOrCallBack)) {
@@ -118,7 +118,7 @@ class PropFind {
      * @param int $status
      * @return void
      */
-    public function set($propertyName, $value, $status = null) {
+    function set($propertyName, $value, $status = null) {
 
         if (is_null($status)) {
             $status = is_null($value) ? 404 : 200;
@@ -146,7 +146,7 @@ class PropFind {
      * @param string $propertyName
      * @return mixed
      */
-    public function get($propertyName) {
+    function get($propertyName) {
 
         return isset($this->result[$propertyName])?$this->result[$propertyName][1]:null;
 
@@ -161,7 +161,7 @@ class PropFind {
      * @param string $propertyName
      * @return int|null
      */
-    public function getStatus($propertyName) {
+    function getStatus($propertyName) {
 
         return isset($this->result[$propertyName])?$this->result[$propertyName][0]:null;
 
@@ -173,7 +173,7 @@ class PropFind {
      * @param string $path
      * @return void
      */
-    public function setPath($path) {
+    function setPath($path) {
 
         $this->path = $path;
 
@@ -184,7 +184,7 @@ class PropFind {
      *
      * @return string
      */
-    public function getPath() {
+    function getPath() {
 
         return $this->path;
 
@@ -195,7 +195,7 @@ class PropFind {
      *
      * @return int
      */
-    public function getDepth() {
+    function getDepth() {
 
         return $this->depth;
 
@@ -207,7 +207,7 @@ class PropFind {
      * @param int $depth
      * @return void
      */
-    public function setDepth($depth) {
+    function setDepth($depth) {
 
         $this->depth = $depth;
 
@@ -219,7 +219,7 @@ class PropFind {
      *
      * @return array
      */
-    public function get404Properties() {
+    function get404Properties() {
 
         if ($this->itemsLeft === 0) {
             return [];
@@ -241,7 +241,7 @@ class PropFind {
      *
      * @return array
      */
-    public function getRequestedProperties() {
+    function getRequestedProperties() {
 
         return $this->properties;
 
@@ -259,7 +259,7 @@ class PropFind {
      *
      * @return array
      */
-    public function getResultForMultiStatus() {
+    function getResultForMultiStatus() {
 
         $r = [
             200 => [],

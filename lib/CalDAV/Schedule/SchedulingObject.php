@@ -45,7 +45,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      * @param Backend\BackendInterface $caldavBackend
      * @param array $objectData
      */
-    public function __construct(Backend\SchedulingSupport $caldavBackend,array $objectData) {
+    function __construct(Backend\SchedulingSupport $caldavBackend,array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
 
@@ -62,7 +62,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->objectData['uri'];
 
@@ -73,7 +73,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return string
      */
-    public function get() {
+    function get() {
 
         // Pre-populating the 'calendardata' is optional, if we don't have it
         // already we fetch it from the backend.
@@ -90,7 +90,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      * @param string|resource $calendarData
      * @return string
      */
-    public function put($calendarData) {
+    function put($calendarData) {
 
         throw new MethodNotAllowed('Updating scheduling objects is not supported');
 
@@ -101,7 +101,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         $this->caldavBackend->deleteSchedulingObject($this->objectData['principaluri'],$this->objectData['uri']);
 
@@ -112,7 +112,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return string
      */
-    public function getContentType() {
+    function getContentType() {
 
         $mime = 'text/calendar; charset=utf-8';
         if (isset($this->objectData['component']) && $this->objectData['component']) {
@@ -129,7 +129,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         if (isset($this->objectData['etag'])) {
             return $this->objectData['etag'];
@@ -144,7 +144,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return int
      */
-    public function getLastModified() {
+    function getLastModified() {
 
         return $this->objectData['lastmodified'];
 
@@ -155,7 +155,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return int
      */
-    public function getSize() {
+    function getSize() {
 
         if (array_key_exists('size',$this->objectData)) {
             return $this->objectData['size'];
@@ -172,7 +172,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return string|null
      */
-    public function getOwner() {
+    function getOwner() {
 
         return $this->objectData['principaluri'];
 
@@ -185,7 +185,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return string|null
      */
-    public function getGroup() {
+    function getGroup() {
 
         return null;
 
@@ -203,7 +203,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return array
      */
-    public function getACL() {
+    function getACL() {
 
         // An alternative acl may be specified in the object data.
         //
@@ -213,34 +213,33 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
         }
 
         // The default ACL
-        return array(
-            array(
+        return [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->objectData['principaluri'],
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->objectData['principaluri'],
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->objectData['principaluri'] . '/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->objectData['principaluri'] . '/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->objectData['principaluri'] . '/calendar-proxy-read',
                 'protected' => true,
-            ),
-
-        );
+            ],
+        ];
 
     }
 
@@ -252,7 +251,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      * @param array $acl
      * @return void
      */
-    public function setACL(array $acl) {
+    function setACL(array $acl) {
 
         throw new \Sabre\DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
 
@@ -270,7 +269,7 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
      *
      * @return array|null
      */
-    public function getSupportedPrivilegeSet() {
+    function getSupportedPrivilegeSet() {
 
         return null;
 

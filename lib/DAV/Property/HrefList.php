@@ -35,7 +35,7 @@ class HrefList extends DAV\Property {
      * @param array $hrefs
      * @param bool $autoPrefix
      */
-    public function __construct(array $hrefs, $autoPrefix = true) {
+    function __construct(array $hrefs, $autoPrefix = true) {
 
         $this->hrefs = $hrefs;
         $this->autoPrefix = $autoPrefix;
@@ -47,7 +47,7 @@ class HrefList extends DAV\Property {
      *
      * @return array
      */
-    public function getHrefs() {
+    function getHrefs() {
 
         return $this->hrefs;
 
@@ -62,7 +62,7 @@ class HrefList extends DAV\Property {
      * @param \DOMElement $dom
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $dom) {
+    function serialize(DAV\Server $server,\DOMElement $dom) {
 
         $prefix = $server->xmlNamespaces['DAV:'];
 
@@ -93,7 +93,7 @@ class HrefList extends DAV\Property {
      */
     static function unserialize(\DOMElement $dom, array $propertyMap) {
 
-        $hrefs = array();
+        $hrefs = [];
         foreach($dom->childNodes as $child) {
             if (DAV\XMLUtil::toClarkNotation($child)==='{DAV:}href') {
                 $hrefs[] = $child->textContent;

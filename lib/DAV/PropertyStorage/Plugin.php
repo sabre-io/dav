@@ -27,7 +27,7 @@ class Plugin extends ServerPlugin {
      *
      * @param Backend\BackendInterface $backend
      */
-    public function __construct(Backend\BackendInterface $backend) {
+    function __construct(Backend\BackendInterface $backend) {
 
         $this->backend = $backend;
 
@@ -44,7 +44,7 @@ class Plugin extends ServerPlugin {
      * @param Server $server
      * @return void
      */
-    public function initialize(Server $server) {
+    function initialize(Server $server) {
 
         $server->on('propFind',    [$this, 'propFind'], 130);
         $server->on('propPatch',   [$this, 'propPatch'], 300);
@@ -63,7 +63,7 @@ class Plugin extends ServerPlugin {
      * @param INode $node
      * @return void
      */
-    public function propFind(PropFind $propFind, INode $node) {
+    function propFind(PropFind $propFind, INode $node) {
 
         $path = $propFind->getPath();
         $pathFilter = $this->pathFilter;
@@ -82,7 +82,7 @@ class Plugin extends ServerPlugin {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatch($path, PropPatch $propPatch) {
+    function propPatch($path, PropPatch $propPatch) {
 
         $pathFilter = $this->pathFilter;
         if ($pathFilter && !$pathFilter($path)) return;
@@ -99,7 +99,7 @@ class Plugin extends ServerPlugin {
      * @param string $path
      * @return void
      */
-    public function afterUnbind($path) {
+    function afterUnbind($path) {
 
         $pathFilter = $this->pathFilter;
         if ($pathFilter && !$pathFilter($path)) return;
@@ -116,7 +116,7 @@ class Plugin extends ServerPlugin {
      * @param string $destination
      * @return void
      */
-    public function afterMove($source, $destination) {
+    function afterMove($source, $destination) {
 
         $pathFilter = $this->pathFilter;
         if ($pathFilter && !$pathFilter($source)) return;

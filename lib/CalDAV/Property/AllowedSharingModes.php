@@ -43,7 +43,7 @@ class AllowedSharingModes extends DAV\Property {
      * @param bool $canBePublished
      * @return void
      */
-    public function __construct($canBeShared, $canBePublished) {
+    function __construct($canBeShared, $canBePublished) {
 
         $this->canBeShared = $canBeShared;
         $this->canBePublished = $canBePublished;
@@ -57,7 +57,7 @@ class AllowedSharingModes extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $node) {
+    function serialize(DAV\Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
         if ($this->canBeShared) {

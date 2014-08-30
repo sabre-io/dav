@@ -38,7 +38,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      *
      * @var array
      */
-    public $temporaryFilePatterns = array(
+    public $temporaryFilePatterns = [
         '/^\._(.*)$/',     // OS/X resource forks
         '/^.DS_Store$/',   // OS/X custom folder settings
         '/^desktop.ini$/', // Windows custom folder settings
@@ -46,7 +46,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         '/^.(.*).swp$/',   // ViM temporary files
         '/^\.dat(.*)$/',   // Smultron seems to create these
         '/^~lock.(.*)#$/', // Windows 7 lockfiles
-    );
+    ];
 
     /**
      * A reference to the main Server class
@@ -72,7 +72,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      *
      * @param string|null $dataDir
      */
-    public function __construct($dataDir = null) {
+    function __construct($dataDir = null) {
 
         if (!$dataDir) $dataDir = ini_get('session.save_path').'/sabredav/';
         if (!is_dir($dataDir)) mkdir($dataDir);
@@ -89,7 +89,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param Server $server
      * @return void
      */
-    public function initialize(Server $server) {
+    function initialize(Server $server) {
 
         $this->server = $server;
         $server->on('beforeMethod',    [$this,'beforeMethod']);
@@ -107,7 +107,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
+    function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
         if (!$tempLocation = $this->isTempFile($request->getPath()))
             return true;
@@ -136,7 +136,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param resource $data
      * @return bool
      */
-    public function beforeCreateFile($uri,$data) {
+    function beforeCreateFile($uri,$data) {
 
         if ($tempPath = $this->isTempFile($uri)) {
 
@@ -185,7 +185,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param string $tempLocation
      * @return bool
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
+    function httpGet(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         if (!file_exists($tempLocation)) return true;
 
@@ -206,7 +206,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param string $tempLocation
      * @return bool
      */
-    public function httpPut(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
+    function httpPut(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         $hR->setHeader('X-Sabre-Temp','true');
 
@@ -233,7 +233,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param string $tempLocation
      * @return bool
      */
-    public function httpDelete(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
+    function httpDelete(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         if (!file_exists($tempLocation)) return true;
 
@@ -256,7 +256,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      * @param string $tempLocation
      * @return bool
      */
-    public function httpPropfind(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
+    function httpPropfind(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
         if (!file_exists($tempLocation)) return true;
 

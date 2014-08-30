@@ -42,7 +42,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $server->on('method:PATCH', [$this,'httpPatch']);
@@ -57,7 +57,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return 'partialupdate';
 
@@ -70,24 +70,24 @@ class Plugin extends DAV\ServerPlugin {
      * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
      *
-     * We claim to support PATCH method (partial update) if and only if
+     * We claim to support PATCH method (partirl update) if and only if
      *     - the node exist
      *     - the node implements our partial update interface
      *
      * @param string $uri
      * @return array
      */
-    public function getHTTPMethods($uri) {
+    function getHTTPMethods($uri) {
 
         $tree = $this->server->tree;
 
         if ($tree->nodeExists($uri)) {
             $node = $tree->getNodeForPath($uri);
             if ($node instanceof IFile || $node instanceof IPatchSupport) {
-                return array('PATCH');
+                return ['PATCH'];
             }
         }
-        return array();
+        return [];
 
     }
 
@@ -96,9 +96,9 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return array
      */
-    public function getFeatures() {
+    function getFeatures() {
 
-        return array('sabredav-partialupdate');
+        return ['sabredav-partialupdate'];
 
     }
 
@@ -113,7 +113,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    public function httpPatch(RequestInterface $request, ResponseInterface $response) {
+    function httpPatch(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 
@@ -201,15 +201,15 @@ class Plugin extends DAV\ServerPlugin {
      * Examples:
      *
      * null - invalid
-     * array(1) - append
-     * array(2,10,15) - update bytes 10, 11, 12, 13, 14, 15
-     * array(2,10,null) - update bytes 10 until the end of the patch body
-     * array(3,-5) - update from 5 bytes from the end of the file.
+     * [1] - append
+     * [2,10,15] - update bytes 10, 11, 12, 13, 14, 15
+     * [2,10,null] - update bytes 10 until the end of the patch body
+     * [3,-5] - update from 5 bytes from the end of the file.
      *
      * @param RequestInterface $request
      * @return array|null
      */
-    public function getHTTPUpdateRange(RequestInterface $request) {
+    function getHTTPUpdateRange(RequestInterface $request) {
 
         $range = $request->getHeader('X-Update-Range');
         if (is_null($range)) return null;
@@ -219,11 +219,11 @@ class Plugin extends DAV\ServerPlugin {
         if (!preg_match('/^(append)|(?:bytes=([0-9]+)-([0-9]*))|(?:bytes=(-[0-9]+))$/i',$range,$matches)) return null;
 
         if ($matches[1]==='append') {
-            return array(self::RANGE_APPEND);
+            return [self::RANGE_APPEND];
         } elseif (strlen($matches[2])>0) {
-            return array(self::RANGE_START, $matches[2], $matches[3]?:null);
+            return [self::RANGE_START, $matches[2], $matches[3]?:null];
         } elseif ($matches[4]) {
-            return array(self::RANGE_END, $matches[4]);
+            return [self::RANGE_END, $matches[4]];
         } else {
             return null;
         }

@@ -34,7 +34,7 @@ interface ISyncCollection extends DAV\ICollection {
      *
      * This function should return an array, such as the following:
      *
-     * array(
+     * [
      *   'syncToken' => 'The current synctoken',
      *   'added'   => [
      *      'new.txt',
@@ -46,7 +46,7 @@ interface ISyncCollection extends DAV\ICollection {
      *      'foo.php.bak',
      *      'old.txt'
      *   )
-     * );
+     * ];
      *
      * The syncToken property should reflect the *current* syncToken of the
      * collection, as reported getSyncToken(). This is needed here too, to

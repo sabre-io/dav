@@ -34,7 +34,7 @@ class Apache implements BackendInterface {
      * @param string $realm
      * @return bool
      */
-    public function authenticate(DAV\Server $server, $realm) {
+    function authenticate(DAV\Server $server, $realm) {
 
         $remoteUser = $server->httpRequest->getRawServerValue('REMOTE_USER');
         if (is_null($remoteUser)) {
@@ -53,7 +53,7 @@ class Apache implements BackendInterface {
      *
      * @return array|null
      */
-    public function getCurrentUser() {
+    function getCurrentUser() {
 
         return $this->remoteUser;
 

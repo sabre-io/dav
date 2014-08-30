@@ -30,7 +30,7 @@ class EmailAddressSet extends DAV\Property {
      *
      * @param array $emails
      */
-    public function __construct(array $emails) {
+    function __construct(array $emails) {
 
         $this->emails = $emails;
 
@@ -41,7 +41,7 @@ class EmailAddressSet extends DAV\Property {
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->emails;
 
@@ -56,7 +56,7 @@ class EmailAddressSet extends DAV\Property {
      * @param \DOMElement $dom
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $dom) {
+    function serialize(DAV\Server $server,\DOMElement $dom) {
 
         $prefix = $server->xmlNamespaces['http://calendarserver.org/ns/'];
 

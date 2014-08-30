@@ -28,7 +28,7 @@ class SupportedLock extends DAV\Property {
      *
      * @param mixed $supportsLocks
      */
-    public function __construct($supportsLocks) {
+    function __construct($supportsLocks) {
 
         $this->supportsLocks = $supportsLocks;
 
@@ -41,7 +41,7 @@ class SupportedLock extends DAV\Property {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $prop) {
+    function serialize(DAV\Server $server,\DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
 

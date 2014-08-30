@@ -30,7 +30,7 @@ class ShareableCalendar extends Calendar implements IShareableCalendar {
      * @param array $remove
      * @return void
      */
-    public function updateShares(array $add, array $remove) {
+    function updateShares(array $add, array $remove) {
 
         $this->caldavBackend->updateShares($this->calendarInfo['id'], $add, $remove);
 
@@ -48,7 +48,7 @@ class ShareableCalendar extends Calendar implements IShareableCalendar {
      *
      * @return array
      */
-    public function getShares() {
+    function getShares() {
 
         return $this->caldavBackend->getShares($this->calendarInfo['id']);
 
@@ -63,7 +63,7 @@ class ShareableCalendar extends Calendar implements IShareableCalendar {
      * @param bool $value
      * @return void
      */
-    public function setPublishStatus($value) {
+    function setPublishStatus($value) {
 
         $this->caldavBackend->setPublishStatus($this->calendarInfo['id'], $value);
 

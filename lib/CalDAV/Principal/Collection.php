@@ -23,7 +23,7 @@ class Collection extends DAVACL\AbstractPrincipalCollection {
      * @param array $principalInfo
      * @return User
      */
-    public function getChildForPrincipal(array $principalInfo) {
+    function getChildForPrincipal(array $principalInfo) {
 
         return new User($this->principalBackend, $principalInfo);
 

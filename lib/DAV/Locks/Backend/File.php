@@ -31,7 +31,7 @@ class File extends AbstractBackend {
      *
      * @param string $locksFile path to file
      */
-    public function __construct($locksFile) {
+    function __construct($locksFile) {
 
         $this->locksFile = $locksFile;
 
@@ -50,9 +50,9 @@ class File extends AbstractBackend {
      * @param bool $returnChildLocks
      * @return array
      */
-    public function getLocks($uri, $returnChildLocks) {
+    function getLocks($uri, $returnChildLocks) {
 
-        $newLocks = array();
+        $newLocks = [];
 
         $locks = $this->getData();
 
@@ -86,7 +86,7 @@ class File extends AbstractBackend {
      * @param LockInfo $lockInfo
      * @return bool
      */
-    public function lock($uri, LockInfo $lockInfo) {
+    function lock($uri, LockInfo $lockInfo) {
 
         // We're making the lock timeout 30 minutes
         $lockInfo->timeout = 1800;
@@ -116,7 +116,7 @@ class File extends AbstractBackend {
      * @param LockInfo $lockInfo
      * @return bool
      */
-    public function unlock($uri, LockInfo $lockInfo) {
+    function unlock($uri, LockInfo $lockInfo) {
 
         $locks = $this->getData();
         foreach($locks as $k=>$lock) {
@@ -140,7 +140,7 @@ class File extends AbstractBackend {
      */
     protected function getData() {
 
-        if (!file_exists($this->locksFile)) return array();
+        if (!file_exists($this->locksFile)) return [];
 
         // opening up the file, and creating a shared lock
         $handle = fopen($this->locksFile,'r');
@@ -155,7 +155,7 @@ class File extends AbstractBackend {
 
         // Unserializing and checking if the resource file contains data for this file
         $data = unserialize($data);
-        if (!$data) return array();
+        if (!$data) return [];
         return $data;
 
     }

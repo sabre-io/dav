@@ -29,7 +29,7 @@ class CalendarQueryValidator {
      * @param array $filters
      * @return bool
      */
-    public function validate(VObject\Component\VCalendar $vObject,array $filters) {
+    function validate(VObject\Component\VCalendar $vObject,array $filters) {
 
         // The top level object is always a component filter.
         // We'll parse it manually, as it's pretty simple.

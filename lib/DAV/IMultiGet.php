@@ -30,6 +30,6 @@ interface IMultiGet extends ICollection {
      *
      * @return array
      */
-    public function getMultipleChildren(array $paths);
+    function getMultipleChildren(array $paths);
 
 }

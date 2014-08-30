@@ -61,7 +61,7 @@ class Invite extends DAV\Property {
      *
      * @param array $users
      */
-    public function __construct(array $users, array $organizer = null) {
+    function __construct(array $users, array $organizer = null) {
 
         $this->users = $users;
         $this->organizer = $organizer;
@@ -73,7 +73,7 @@ class Invite extends DAV\Property {
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->users;
 
@@ -86,7 +86,7 @@ class Invite extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $node) {
+    function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
 

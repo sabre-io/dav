@@ -35,7 +35,7 @@ abstract class AbstractDigest implements BackendInterface {
      * @param string $username
      * @return string|null
      */
-    abstract public function getDigestHash($realm, $username);
+    abstract function getDigestHash($realm, $username);
 
     /**
      * Authenticates the user based on the current request.
@@ -48,7 +48,7 @@ abstract class AbstractDigest implements BackendInterface {
      * @throws DAV\Exception\NotAuthenticated
      * @return bool
      */
-    public function authenticate(DAV\Server $server, $realm) {
+    function authenticate(DAV\Server $server, $realm) {
 
         $digest = new HTTP\Auth\Digest($realm, $server->httpRequest, $server->httpResponse);
         $digest->init();
@@ -87,7 +87,7 @@ abstract class AbstractDigest implements BackendInterface {
      *
      * @return string|null
      */
-    public function getCurrentUser() {
+    function getCurrentUser() {
 
         return $this->currentUser;
 

@@ -28,7 +28,7 @@ class InvalidSyncToken extends Forbidden {
      * @param \DOMElement $errorNode
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server,\DOMElement $errorNode) {
 
         $error = $errorNode->ownerDocument->createElementNS('DAV:','d:valid-sync-token');
         $errorNode->appendChild($error);

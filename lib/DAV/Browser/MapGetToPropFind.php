@@ -32,7 +32,7 @@ class MapGetToPropFind extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $this->server->on('method:GET', [$this,'httpGet'], 90);
@@ -45,7 +45,7 @@ class MapGetToPropFind extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $response) {
+    function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $node = $this->server->tree->getNodeForPath($request->getPath());
         if ($node instanceof DAV\IFile) return;

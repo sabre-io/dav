@@ -30,7 +30,7 @@ class SupportedCalendarComponentSet extends DAV\Property {
      *
      * @param array $components
      */
-    public function __construct(array $components) {
+    function __construct(array $components) {
 
         $this->components = $components;
 
@@ -41,7 +41,7 @@ class SupportedCalendarComponentSet extends DAV\Property {
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->components;
 
@@ -54,7 +54,7 @@ class SupportedCalendarComponentSet extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $node) {
+    function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         foreach($this->components as $component) {

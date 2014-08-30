@@ -30,7 +30,7 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @param string $principalUri
      */
-    public function __construct($principalUri) {
+    function __construct($principalUri) {
 
         $this->principalUri = $principalUri;
 
@@ -43,7 +43,7 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return 'outbox';
 
@@ -54,9 +54,9 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @return \Sabre\DAV\INode[]
      */
-    public function getChildren() {
+    function getChildren() {
 
-        return array();
+        return [];
 
     }
 
@@ -67,7 +67,7 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @return string|null
      */
-    public function getOwner() {
+    function getOwner() {
 
         return $this->principalUri;
 
@@ -80,7 +80,7 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @return string|null
      */
-    public function getGroup() {
+    function getGroup() {
 
         return null;
 
@@ -98,7 +98,7 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @return array
      */
-    public function getACL() {
+    function getACL() {
 
         return [
             [
@@ -148,7 +148,7 @@ class Outbox extends DAV\Collection implements IOutbox {
      * @param array $acl
      * @return void
      */
-    public function setACL(array $acl) {
+    function setACL(array $acl) {
 
         throw new DAV\Exception\MethodNotAllowed('You\'re not allowed to update the ACL');
 
@@ -166,15 +166,15 @@ class Outbox extends DAV\Collection implements IOutbox {
      *
      * @return array|null
      */
-    public function getSupportedPrivilegeSet() {
+    function getSupportedPrivilegeSet() {
 
         $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
-        $default['aggregates'][] = array(
+        $default['aggregates'][] = [
             'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
-        );
-        $default['aggregates'][] = array(
+        ];
+        $default['aggregates'][] = [
             'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
-        );
+        ];
 
         return $default;
 

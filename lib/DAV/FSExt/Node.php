@@ -68,7 +68,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         // if the array was empty, we need to return everything
         if (!$properties) return $resourceData['properties'];
 
-        $props = array();
+        $props = [];
         foreach($properties as $property) {
             if (isset($resourceData['properties'][$property])) $props[$property] = $resourceData['properties'][$property];
         }
@@ -97,7 +97,7 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
     protected function getResourceData() {
 
         $path = $this->getResourceInfoPath();
-        if (!file_exists($path)) return array('properties' => array());
+        if (!file_exists($path)) return ['properties' => []];
 
         // opening up the file, and creating a shared lock
         $handle = fopen($path,'r');
@@ -116,11 +116,11 @@ abstract class Node extends DAV\FS\Node implements DAV\IProperties {
         // Unserializing and checking if the resource file contains data for this file
         $data = unserialize($data);
         if (!isset($data[$this->getName()])) {
-            return array('properties' => array());
+            return ['properties' => []];
         }
 
         $data = $data[$this->getName()];
-        if (!isset($data['properties'])) $data['properties'] = array();
+        if (!isset($data['properties'])) $data['properties'] = [];
         return $data;
 
     }

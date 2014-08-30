@@ -21,7 +21,7 @@ class SupportedReportSet extends DAV\Property {
      *
      * @var array
      */
-    protected $reports = array();
+    protected $reports = [];
 
     /**
      * Creates the property
@@ -33,7 +33,7 @@ class SupportedReportSet extends DAV\Property {
      *
      * @param mixed $reports
      */
-    public function __construct($reports = null) {
+    function __construct($reports = null) {
 
         if (!is_null($reports))
             $this->addReport($reports);
@@ -49,9 +49,9 @@ class SupportedReportSet extends DAV\Property {
      * @param mixed $report
      * @return void
      */
-    public function addReport($report) {
+    function addReport($report) {
 
-        if (!is_array($report)) $report = array($report);
+        if (!is_array($report)) $report = [$report];
 
         foreach($report as $r) {
 
@@ -69,7 +69,7 @@ class SupportedReportSet extends DAV\Property {
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->reports;
 
@@ -81,7 +81,7 @@ class SupportedReportSet extends DAV\Property {
      * @param string $reportName
      * @return bool
      */
-    public function has($reportName) {
+    function has($reportName) {
 
         return in_array(
             $reportName,
@@ -97,7 +97,7 @@ class SupportedReportSet extends DAV\Property {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $prop) {
+    function serialize(DAV\Server $server, \DOMElement $prop) {
 
         foreach($this->reports as $reportName) {
 

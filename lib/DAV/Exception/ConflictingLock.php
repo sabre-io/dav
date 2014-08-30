@@ -23,7 +23,7 @@ class ConflictingLock extends Locked {
      * @param \DOMElement $errorNode
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
         if ($this->lock) {
             $error = $errorNode->ownerDocument->createElementNS('DAV:','d:no-conflicting-lock');

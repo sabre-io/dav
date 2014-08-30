@@ -45,7 +45,7 @@ class Acl extends DAV\Property {
      * @param bool $prefixBaseUrl
      * @param array $privileges
      */
-    public function __construct(array $privileges, $prefixBaseUrl = true) {
+    function __construct(array $privileges, $prefixBaseUrl = true) {
 
         $this->privileges = $privileges;
         $this->prefixBaseUrl = $prefixBaseUrl;
@@ -57,7 +57,7 @@ class Acl extends DAV\Property {
      *
      * @return array
      */
-    public function getPrivileges() {
+    function getPrivileges() {
 
         return $this->privileges;
 
@@ -70,7 +70,7 @@ class Acl extends DAV\Property {
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $node) {
+    function serialize(DAV\Server $server,\DOMElement $node) {
 
         $doc = $node->ownerDocument;
         foreach($this->privileges as $ace) {
@@ -88,7 +88,7 @@ class Acl extends DAV\Property {
      * @param array $propertyMap
      * @return Acl
      */
-    static public function unserialize(\DOMElement $dom, array $propertyMap) {
+    static function unserialize(\DOMElement $dom, array $propertyMap) {
 
         $privileges = [];
         $xaces = $dom->getElementsByTagNameNS('urn:DAV','ace');

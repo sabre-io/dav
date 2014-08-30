@@ -34,7 +34,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
      */
     function testRefetch($name, $value) {
 
-        $this->server->tree = new ObjectTree(
+        $this->server->tree = new Tree(
             new SimpleCollection('root', [
                 new Mock\PropertiesCollection(
                     'foo',
@@ -57,7 +57,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
 
     function testNoData() {
 
-        $this->server->tree = new ObjectTree(
+        $this->server->tree = new Tree(
             new SimpleCollection('root', [
                 new Mock\PropertiesCollection(
                     'foo',

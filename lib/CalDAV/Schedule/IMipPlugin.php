@@ -6,8 +6,6 @@ use Sabre\DAV;
 use Sabre\VObject;
 use Sabre\VObject\ITip;
 
-
-
 /**
  * iMIP handler.
  *
@@ -93,7 +91,7 @@ class IMipPlugin extends DAV\ServerPlugin {
     /**
      * Event handler for the 'schedule' event.
      *
-     * @param ITip\Mmessage $iTipMessage
+     * @param ITip\Message $iTipMessage
      * @return void
      */
     public function schedule(ITip\Message $iTipMessage) {

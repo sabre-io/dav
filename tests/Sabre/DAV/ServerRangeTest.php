@@ -26,6 +26,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
@@ -56,6 +57,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 11,
             'Content-Range' => 'bytes 2-12/13',
@@ -86,6 +88,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 8,
             'Content-Range' => 'bytes 5-12/13',
@@ -157,6 +160,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
@@ -190,6 +194,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
@@ -222,6 +227,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 4,
             'Content-Range' => 'bytes 2-5/13',
@@ -255,6 +261,7 @@ class ServerRangeTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/octet-stream',
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),

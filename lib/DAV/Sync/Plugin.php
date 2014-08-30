@@ -280,7 +280,7 @@ class Plugin extends DAV\ServerPlugin {
 
     /**
      * This method is triggered whenever properties are requested for a node.
-     * We intercept this to see if we can must return a {DAV:}sync-token.
+     * We intercept this to see if we must return a {DAV:}sync-token.
      *
      * @param DAV\PropFind $propFind
      * @param DAV\INode $node

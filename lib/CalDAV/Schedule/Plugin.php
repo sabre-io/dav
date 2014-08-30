@@ -106,7 +106,7 @@ class Plugin extends ServerPlugin {
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
-        $server->on('schedule',            [$this, 'schedulelocaldelivery']);
+        $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 
         $ns = '{' . self::NS_CALDAV . '}';
 
@@ -210,7 +210,7 @@ class Plugin extends ServerPlugin {
         $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL' , function() use ($principalUrl, $caldavPlugin) {
 
             $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-            $outboxPath = $calendarHomePath . '/outbox';
+            $outboxPath = $calendarHomePath . '/outbox/';
 
             return new Href($outboxPath);
 
@@ -219,7 +219,7 @@ class Plugin extends ServerPlugin {
         $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL' , function() use ($principalUrl, $caldavPlugin) {
 
             $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-            $inboxPath = $calendarHomePath . '/inbox';
+            $inboxPath = $calendarHomePath . '/inbox/';
 
             return new Href($inboxPath);
 
@@ -363,11 +363,6 @@ class Plugin extends ServerPlugin {
      * @return void
      */
     public function deliver(ITip\Message $iTipMessage) {
-
-        /*
-        $iTipMessage->scheduleStatus =
-            $this->iMIPMessage($iTipMessage->sender, [$iTipMessage->recipient], $iTipMessage->message, '');
-        */
 
         $this->server->emit('schedule', [$iTipMessage]);
         if (!$iTipMessage->scheduleStatus) {

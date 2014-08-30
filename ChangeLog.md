@@ -56,11 +56,15 @@ ChangeLog
 * `HEAD` requests now work wherever `GET` also works.
 
 
-2.0.4 (????-??-??)
+2.0.4 (2014-08-27)
 ------------------
 
 * #483: typo in calendars creation for PostgreSQL.
 * #487: Locks are now automatically removed after a node has been deleted.
+* #496: Improve CalDAV and CardDAV sync when there is no webdav-sync support.
+* Added: Automatically mapping internal sync-tokens to getctag.
+* The zip release ships with [sabre/vobject 3.3.1][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 
 2.0.3 (2014-07-14)

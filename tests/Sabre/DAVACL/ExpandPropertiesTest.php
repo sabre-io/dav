@@ -69,6 +69,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $server->httpResponse->status,'Incorrect status code received. Full body: ' . $server->httpResponse->body);
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
@@ -131,6 +132,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $server->httpResponse->status, 'Incorrect response status received. Full response body: ' . $server->httpResponse->body);
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
@@ -195,6 +197,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $server->httpResponse->status);
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 
@@ -262,6 +265,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $server->httpResponse->status);
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
         ), $server->httpResponse->headers);
 

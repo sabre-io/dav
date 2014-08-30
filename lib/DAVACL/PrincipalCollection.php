@@ -24,7 +24,7 @@ class PrincipalCollection extends AbstractPrincipalCollection {
      * @param array $principal
      * @return \Sabre\DAV\INode
      */
-    public function getChildForPrincipal(array $principal) {
+    function getChildForPrincipal(array $principal) {
 
         return new Principal($this->principalBackend, $principal);
 

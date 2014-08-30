@@ -61,14 +61,15 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(204, $this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals(204, $this->response->status, 'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Length' => '0',
             ),
             $this->response->headers
          );
 
-        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test2.txt'));
+        $this->assertEquals('Test contents', file_get_contents(SABRE_TEMPDIR. '/test2.txt'));
 
     }
 
@@ -84,8 +85,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(403, $this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
-        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test.txt'));
+        $this->assertEquals(403, $this->response->status, 'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals('Test contents', file_get_contents(SABRE_TEMPDIR. '/test.txt'));
 
     }
 
@@ -101,8 +102,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(403, $this->response->status,'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
-        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR. '/test.txt'));
+        $this->assertEquals(403, $this->response->status, 'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
+        $this->assertEquals('Test contents', file_get_contents(SABRE_TEMPDIR. '/test.txt'));
 
     }
 
@@ -119,14 +120,15 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Length' => 0,
             ),
             $this->response->headers
          );
 
         $this->assertEquals(204, $this->response->status);
-        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
-        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/test.txt'),'The sourcefile test.txt should no longer exist at this point');
+        $this->assertEquals('Test contents', file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
+        $this->assertFalse(file_exists(SABRE_TEMPDIR . '/test.txt'), 'The sourcefile test.txt should no longer exist at this point');
 
     }
 
@@ -144,13 +146,14 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
             ),
             $this->response->headers
          );
 
         $this->assertEquals(412, $this->response->status);
-        $this->assertEquals('Test contents2',file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
+        $this->assertEquals('Test contents2', file_get_contents(SABRE_TEMPDIR . '/test2.txt'));
 
 
     }
@@ -169,6 +172,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
             ),
             $this->response->headers
@@ -207,14 +211,14 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status,'Full response: ' . $this->response->getBody(true));
+        $this->assertEquals(201, $this->response->status, 'Full response: ' . $this->response->getBody(true));
 
         $this->assertEquals(array(
+                'X-Sabre-Version' => Version::VERSION,
                 'Content-Length' => '0',
             ),
             $this->response->headers
          );
-
 
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/col2/test.txt'));
 
@@ -233,13 +237,14 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Length' => '0',
             ),
             $this->response->headers
          );
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/test3.txt'));
+        $this->assertEquals('Test contents', file_get_contents(SABRE_TEMPDIR . '/test3.txt'));
 
     }
 
@@ -255,9 +260,10 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status,'Incorrect status received. Full response body: ' . $this->response->body);
+        $this->assertEquals(201, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->body);
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => Version::VERSION,
             'Content-Length' => '0',
             ),
             $this->response->headers

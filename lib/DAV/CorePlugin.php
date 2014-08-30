@@ -43,10 +43,11 @@ class CorePlugin extends ServerPlugin {
         $server->on('method:COPY',      [$this, 'httpCopy']);
         $server->on('method:REPORT',    [$this, 'httpReport']);
 
-        $server->on('propPatch', [$this, 'propPatchProtectedPropertyCheck'], 90);
-        $server->on('propPatch', [$this, 'propPatchNodeUpdate'], 200);
-        $server->on('propFind',  [$this, 'propFind']);
-        $server->on('propFind',  [$this, 'propFindNode'], 120);
+        $server->on('propPatch',        [$this, 'propPatchProtectedPropertyCheck'], 90);
+        $server->on('propPatch',        [$this, 'propPatchNodeUpdate'], 200);
+        $server->on('propFind',         [$this, 'propFind']);
+        $server->on('propFind',         [$this, 'propFindNode'], 120);
+        $server->on('propFind',         [$this, 'propFindLate'], 200);
 
     }
 
@@ -151,17 +152,17 @@ class CorePlugin extends ServerPlugin {
             if (!is_null($range[0])) {
 
                 $start = $range[0];
-                $end = $range[1]?$range[1]:$nodeSize-1;
+                $end = $range[1] ? $range[1] : $nodeSize - 1;
                 if($start >= $nodeSize)
                     throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeSize . ')');
 
                 if($end < $start) throw new Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end >= $nodeSize) $end = $nodeSize-1;
+                if($end >= $nodeSize) $end = $nodeSize - 1;
 
             } else {
 
-                $start = $nodeSize-$range[1];
-                $end  = $nodeSize-1;
+                $start = $nodeSize - $range[1];
+                $end  = $nodeSize - 1;
 
                 if ($start<0) $start = 0;
 
@@ -174,21 +175,21 @@ class CorePlugin extends ServerPlugin {
             // for a seekable $body stream we set the pointer write before copying it
             // for a non-seekable $body stream we set the pointer on the copy
             if ((fseek($body, $start, SEEK_SET)) === 0) {
-                stream_copy_to_stream($body, $newStream, $end-$start+1, $start);
+                stream_copy_to_stream($body, $newStream, $end - $start + 1, $start);
                 rewind($newStream);
             } else {
-                stream_copy_to_stream($body, $newStream, $end+1);
+                stream_copy_to_stream($body, $newStream, $end + 1);
                 fseek($newStream,$start, SEEK_SET);
             }
 
-            $response->setHeader('Content-Length', $end-$start+1);
+            $response->setHeader('Content-Length', $end - $start + 1);
             $response->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
             $response->setStatus(206);
             $response->setBody($newStream);
 
         } else {
 
-            if ($nodeSize) $response->setHeader('Content-Length',$nodeSize);
+            if ($nodeSize) $response->setHeader('Content-Length', $nodeSize);
             $response->setStatus(200);
             $response->setBody($body);
 
@@ -210,20 +211,17 @@ class CorePlugin extends ServerPlugin {
 
         $methods = $this->server->getAllowedMethods($request->getPath());
 
-        $response->setHeader('Allow',strtoupper(implode(', ',$methods)));
-        $features = ['1','3', 'extended-mkcol'];
+        $response->setHeader('Allow', strtoupper(implode(', ', $methods)));
+        $features = ['1', '3', 'extended-mkcol'];
 
         foreach($this->server->getPlugins() as $plugin) {
-            $features = array_merge($features,$plugin->getFeatures());
+            $features = array_merge($features, $plugin->getFeatures());
         }
 
-        $response->setHeader('DAV',implode(', ',$features));
-        $response->setHeader('MS-Author-Via','DAV');
-        $response->setHeader('Accept-Ranges','bytes');
-        if (Server::$exposeVersion) {
-            $response->setHeader('X-Sabre-Version',Version::VERSION);
-        }
-        $response->setHeader('Content-Length',0);
+        $response->setHeader('DAV', implode(', ', $features));
+        $response->setHeader('MS-Author-Via', 'DAV');
+        $response->setHeader('Accept-Ranges', 'bytes');
+        $response->setHeader('Content-Length', '0');
         $response->setStatus(200);
 
         // Sending back false will interupt the event chain and tell the server
@@ -285,12 +283,12 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        if (!$this->server->emit('beforeUnbind',[$path])) return false;
+        if (!$this->server->emit('beforeUnbind', [$path])) return false;
         $this->server->tree->delete($path);
-        $this->server->emit('afterUnbind',[$path]);
+        $this->server->emit('afterUnbind', [$path]);
 
         $response->setStatus(204);
-        $response->setHeader('Content-Length','0');
+        $response->setHeader('Content-Length', '0');
 
         // Sending back false will interupt the event chain and tell the server
         // we've handled this method.
@@ -326,21 +324,21 @@ class CorePlugin extends ServerPlugin {
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->server->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
-        $newProperties = $this->server->getPropertiesForPath($path,$requestedProperties,$depth);
+        $newProperties = $this->server->getPropertiesForPath($path, $requestedProperties, $depth);
 
         // This is a multi-status response
         $response->setStatus(207);
-        $response->setHeader('Content-Type','application/xml; charset=utf-8');
-        $response->setHeader('Vary','Brief,Prefer');
+        $response->setHeader('Content-Type', 'application/xml; charset=utf-8');
+        $response->setHeader('Vary', 'Brief,Prefer');
 
         // Normally this header is only needed for OPTIONS responses, however..
         // iCal seems to also depend on these being set for PROPFIND. Since
         // this is not harmful, we'll add it.
         $features = ['1', '3', 'extended-mkcol'];
         foreach($this->server->getPlugins() as $plugin) {
-            $features = array_merge($features,$plugin->getFeatures());
+            $features = array_merge($features, $plugin->getFeatures());
         }
-        $response->setHeader('DAV',implode(', ',$features));
+        $response->setHeader('DAV',implode(', ', $features));
 
         $prefer = $this->server->getHTTPPrefer();
         $minimal = $prefer['return-minimal'];
@@ -375,7 +373,7 @@ class CorePlugin extends ServerPlugin {
         $result = $this->server->updateProperties($path, $newProperties);
 
         $prefer = $this->server->getHTTPPrefer();
-        $response->setHeader('Vary','Brief,Prefer');
+        $response->setHeader('Vary', 'Brief,Prefer');
 
         if ($prefer['return-minimal']) {
 
@@ -399,7 +397,7 @@ class CorePlugin extends ServerPlugin {
         }
 
         $response->setStatus(207);
-        $response->setHeader('Content-Type','application/xml; charset=utf-8');
+        $response->setHeader('Content-Type', 'application/xml; charset=utf-8');
 
 
         // Reorganizing the result for generateMultiStatus
@@ -447,7 +445,6 @@ class CorePlugin extends ServerPlugin {
                Content-Range header field.
 
                Reference: http://tools.ietf.org/html/rfc7231#section-4.3.4
-
             */
             throw new Exception\BadRequest('Content-Range on PUT requests are forbidden.');
         }
@@ -477,7 +474,7 @@ class CorePlugin extends ServerPlugin {
             */
 
             // Only reading first byte
-            $firstByte = fread($body,1);
+            $firstByte = fread($body, 1);
             if (strlen($firstByte)!==1) {
                 throw new Exception\Forbidden('This server is not compatible with OS/X finder. Consider using a different WebDAV client or webserver.');
             }
@@ -486,7 +483,7 @@ class CorePlugin extends ServerPlugin {
             // temporary stream.
 
             $newBody = fopen('php://temp','r+');
-            fwrite($newBody,$firstByte);
+            fwrite($newBody, $firstByte);
             stream_copy_to_stream($body, $newBody);
             rewind($newBody);
 
@@ -506,7 +503,7 @@ class CorePlugin extends ServerPlugin {
             }
 
             $response->setHeader('Content-Length','0');
-            if ($etag) $response->setHeader('ETag',$etag);
+            if ($etag) $response->setHeader('ETag', $etag);
             $response->setStatus(204);
 
         } else {
@@ -518,7 +515,7 @@ class CorePlugin extends ServerPlugin {
                 return false;
             }
 
-            $response->setHeader('Content-Length','0');
+            $response->setHeader('Content-Length', '0');
             if ($etag) $response->setHeader('ETag', $etag);
             $response->setStatus(201);
 
@@ -548,7 +545,7 @@ class CorePlugin extends ServerPlugin {
         if ($requestBody) {
 
             $contentType = $request->getHeader('Content-Type');
-            if (strpos($contentType,'application/xml')!==0 && strpos($contentType,'text/xml')!==0) {
+            if (strpos($contentType, 'application/xml')!==0 && strpos($contentType, 'text/xml')!==0) {
 
                 // We must throw 415 for unsupported mkcol bodies
                 throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must have an xml Content-Type');
@@ -587,14 +584,14 @@ class CorePlugin extends ServerPlugin {
 
         if (is_array($result)) {
             $response->setStatus(207);
-            $response->setHeader('Content-Type','application/xml; charset=utf-8');
+            $response->setHeader('Content-Type', 'application/xml; charset=utf-8');
 
             $response->setBody(
                 $this->server->generateMultiStatus([$result])
             );
 
         } else {
-            $response->setHeader('Content-Length','0');
+            $response->setHeader('Content-Length', '0');
             $response->setStatus(201);
         }
 
@@ -621,14 +618,14 @@ class CorePlugin extends ServerPlugin {
 
         if ($moveInfo['destinationExists']) {
 
-            if (!$this->server->emit('beforeUnbind',[$moveInfo['destination']])) return false;
+            if (!$this->server->emit('beforeUnbind', [$moveInfo['destination']])) return false;
             $this->server->tree->delete($moveInfo['destination']);
-            $this->server->emit('afterUnbind',[$moveInfo['destination']]);
+            $this->server->emit('afterUnbind', [$moveInfo['destination']]);
 
         }
 
-        if (!$this->server->emit('beforeUnbind',[$path])) return false;
-        if (!$this->server->emit('beforeBind',[$moveInfo['destination']])) return false;
+        if (!$this->server->emit('beforeUnbind', [$path])) return false;
+        if (!$this->server->emit('beforeBind', [$moveInfo['destination']])) return false;
         if (!$this->server->emit('beforeMove', [$path, $moveInfo['destination']])) return false;
         $this->server->tree->move($path, $moveInfo['destination']);
 
@@ -637,12 +634,12 @@ class CorePlugin extends ServerPlugin {
         // PropertyStorage uses this. If afterUnbind was first, it would clean
         // up all the properties before it has a chance.
         $this->server->emit('afterMove', [$path, $moveInfo['destination']]);
-        $this->server->emit('afterUnbind',[$path]);
-        $this->server->emit('afterBind',[$moveInfo['destination']]);
+        $this->server->emit('afterUnbind', [$path]);
+        $this->server->emit('afterBind', [$moveInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
-        $response->setHeader('Content-Length','0');
-        $response->setStatus($moveInfo['destinationExists']?204:201);
+        $response->setHeader('Content-Length', '0');
+        $response->setStatus($moveInfo['destinationExists'] ? 204 : 201);
 
         // Sending back false will interupt the event chain and tell the server
         // we've handled this method.
@@ -667,17 +664,17 @@ class CorePlugin extends ServerPlugin {
         $copyInfo = $this->server->getCopyAndMoveInfo($request);
 
         if ($copyInfo['destinationExists']) {
-            if (!$this->server->emit('beforeUnbind',[$copyInfo['destination']])) return false;
+            if (!$this->server->emit('beforeUnbind', [$copyInfo['destination']])) return false;
             $this->server->tree->delete($copyInfo['destination']);
 
         }
-        if (!$this->server->emit('beforeBind',[$copyInfo['destination']])) return false;
+        if (!$this->server->emit('beforeBind', [$copyInfo['destination']])) return false;
         $this->server->tree->copy($path, $copyInfo['destination']);
-        $this->server->emit('afterBind',[$copyInfo['destination']]);
+        $this->server->emit('afterBind', [$copyInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
-        $response->setHeader('Content-Length','0');
-        $response->setStatus($copyInfo['destinationExists']?204:201);
+        $response->setHeader('Content-Length', '0');
+        $response->setStatus($copyInfo['destinationExists'] ? 204 : 201);
 
         // Sending back false will interupt the event chain and tell the server
         // we've handled this method.
@@ -705,7 +702,7 @@ class CorePlugin extends ServerPlugin {
 
         $reportName = XMLUtil::toClarkNotation($dom->firstChild);
 
-        if ($this->server->emit('report',[$reportName, $dom, $path])) {
+        if ($this->server->emit('report', [$reportName, $dom, $path])) {
 
             // If emit returned true, it means the report was not supported
             throw new Exception\ReportNotSupported();
@@ -845,4 +842,53 @@ class CorePlugin extends ServerPlugin {
 
     }
 
+    /**
+     * This method is called when properties are retrieved.
+     *
+     * This specific handler is called very late in the process, because we
+     * want other systems to first have a chance to handle the properties.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    function propFindLate(PropFind $propFind, INode $node) {
+
+        $propFind->handle('{http://calendarserver.org/ns/}getctag', function() use ($propFind) {
+
+            // If we already have a sync-token from the current propFind
+            // request, we can re-use that.
+            $val = $propFind->get('{http://sabredav.org/ns}sync-token');
+            if ($val) return $val;
+
+            $val = $propFind->get('{DAV:}sync-token');
+            if ($val && is_scalar($val)) {
+                return $val;
+            }
+            if ($val && $val instanceof Property\IHref) {
+                return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
+            }
+
+            // If we got here, the earlier two properties may simply not have
+            // been part of the earlier request. We're going to fetch them.
+            $result = $this->server->getProperties($propFind->getPath(), [
+                '{http://sabredav.org/ns}sync-token',
+                '{DAV:}sync-token',
+            ]);
+
+            if (isset($result['{http://sabredav.org/ns}sync-token'])) {
+                return $result['{http://sabredav.org/ns}sync-token'];
+            }
+            if (isset($result['{DAV:}sync-token'])) {
+                $val = $result['{DAV:}sync-token'];
+                if (is_scalar($val)) {
+                    return $val;
+                } elseif ($val instanceof Property\IHref) {
+                    return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
+                }
+            }
+
+        });
+
+    }
 }

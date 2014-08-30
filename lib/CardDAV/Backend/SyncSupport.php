@@ -11,8 +11,8 @@ namespace Sabre\CardDAV\Backend;
  * Implementing this can result in a significant reduction of bandwidth and CPU
  * time.
  *
- * For this to work, you _must_ return a {DAV:}sync-token property from
- * getAddressBooksForUser.
+ * For this to work, you _must_ return a {http://sabredav.org/ns}sync-token
+ * property from getAddressBooksForUser.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
@@ -41,8 +41,8 @@ interface SyncSupport extends BackendInterface {
      * ];
      *
      * The returned syncToken property should reflect the *current* syncToken
-     * of the calendar, as reported in the {DAV:}sync-token property This is
-     * needed here too, to ensure the operation is atomic.
+     * of the calendar, as reported in the {http://sabredav.org/ns}sync-token
+     * property. This is needed here too, to ensure the operation is atomic.
      *
      * If the $syncToken argument is specified as null, this is an initial
      * sync, and all members should be reported.

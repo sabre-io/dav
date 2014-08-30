@@ -57,6 +57,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
             ),
             $this->response->headers
@@ -239,6 +240,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
             ),
             $this->response->headers
@@ -264,12 +266,13 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
             ),
             $this->response->headers
          );
 
-        $this->assertEquals(409, $this->response->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
+        $this->assertEquals(409, $this->response->status, 'Got an incorrect status code. Full response body: ' . $this->response->body);
 
     }
 
@@ -354,6 +357,7 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(204,$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => '0',
             ),
             $this->server->httpResponse->headers
@@ -401,6 +405,7 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(204, $this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
+            'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => '0',
             ),
             $this->server->httpResponse->headers

@@ -129,6 +129,15 @@ class Server extends EventEmitter {
         '{DAV:}supported-method-set',
         '{DAV:}supported-report-set',
 
+        // RFC6578
+        '{DAV:}sync-token',
+
+        // calendarserver.org extensions
+        '{http://calendarserver.org/ns/}ctag',
+
+        // sabredav extensions
+        '{http://sabredav.org/ns}sync-token',
+
     ];
 
     /**
@@ -443,8 +452,12 @@ class Server extends EventEmitter {
 
         $method = $request->getMethod();
 
-        if (!$this->emit('beforeMethod:' . $method,[$request, $response])) return;
-        if (!$this->emit('beforeMethod',[$request, $response])) return;
+        if (!$this->emit('beforeMethod:' . $method, [$request, $response])) return;
+        if (!$this->emit('beforeMethod', [$request, $response])) return;
+
+        if (Server::$exposeVersion) {
+            $response->setHeader('X-Sabre-Version', Version::VERSION);
+        }
 
         $this->transactionType = strtolower($method);
 
@@ -453,13 +466,13 @@ class Server extends EventEmitter {
         }
 
         if ($this->emit('method:' . $method, [$request, $response])) {
-            if ($this->emit('method',[$request, $response])) {
+            if ($this->emit('method', [$request, $response])) {
                 // Unsupported method
                 throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
             }
         }
 
-        if (!$this->emit('afterMethod:' . $method,[$request, $response])) return;
+        if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
         if (!$this->emit('afterMethod', [$request, $response])) return;
 
         $this->sapi->sendResponse($response);
@@ -1727,4 +1740,3 @@ class Server extends EventEmitter {
     // }}}
 
 }
-

@@ -28,7 +28,7 @@ interface SchedulingSupport extends BackendInterface {
      * @param string $objectUri
      * @return array
      */
-    public function getSchedulingObject($principalUri, $objectUri);
+    function getSchedulingObject($principalUri, $objectUri);
 
     /**
      * Returns all scheduling objects for the inbox collection.
@@ -41,7 +41,7 @@ interface SchedulingSupport extends BackendInterface {
      * @param string $principalUri
      * @return array
      */
-    public function getSchedulingObjects($principalUri);
+    function getSchedulingObjects($principalUri);
 
     /**
      * Deletes a scheduling object from the inbox collection.
@@ -50,7 +50,7 @@ interface SchedulingSupport extends BackendInterface {
      * @param string $objectUri
      * @return void
      */
-    public function deleteSchedulingObject($principalUri, $objectUri);
+    function deleteSchedulingObject($principalUri, $objectUri);
 
     /**
      * Creates a new scheduling object. This should land in a users' inbox.
@@ -60,6 +60,6 @@ interface SchedulingSupport extends BackendInterface {
      * @param string $objectData
      * @return void
      */
-    public function createSchedulingObject($principalUri, $objectUri, $objectData);
+    function createSchedulingObject($principalUri, $objectUri, $objectData);
 
 }

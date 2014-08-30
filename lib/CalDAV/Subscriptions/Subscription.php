@@ -43,7 +43,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * @param SubscriptionSupport $caldavBackend
      * @param array $calendarInfo
      */
-    public function __construct(SubscriptionSupport $caldavBackend, array $subscriptionInfo) {
+    function __construct(SubscriptionSupport $caldavBackend, array $subscriptionInfo) {
 
         $this->caldavBackend = $caldavBackend;
         $this->subscriptionInfo = $subscriptionInfo;
@@ -70,7 +70,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->subscriptionInfo['uri'];
 
@@ -81,7 +81,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return int
      */
-    public function getLastModified() {
+    function getLastModified() {
 
         if (isset($this->subscriptionInfo['lastmodified'])) {
             return $this->subscriptionInfo['lastmodified'];
@@ -94,7 +94,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         $this->caldavBackend->deleteSubscription(
             $this->subscriptionInfo['id']
@@ -107,7 +107,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return DAV\INode[]
      */
-    public function getChildren() {
+    function getChildren() {
 
         return [];
 
@@ -125,7 +125,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatch(PropPatch $propPatch) {
+    function propPatch(PropPatch $propPatch) {
 
         return $this->caldavBackend->updateSubscription(
             $this->subscriptionInfo['id'],
@@ -149,7 +149,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * @param array $properties
      * @return void
      */
-    public function getProperties($properties) {
+    function getProperties($properties) {
 
         $r = [];
 
@@ -179,7 +179,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return string|null
      */
-    public function getOwner() {
+    function getOwner() {
 
         return $this->subscriptionInfo['principaluri'];
 
@@ -192,7 +192,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return string|null
      */
-    public function getGroup() {
+    function getGroup() {
 
         return null;
 
@@ -210,7 +210,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return array
      */
-    public function getACL() {
+    function getACL() {
 
         return [
             [
@@ -250,7 +250,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * @param array $acl
      * @return void
      */
-    public function setACL(array $acl) {
+    function setACL(array $acl) {
 
         throw new MethodNotAllowed('Changing ACL is not yet supported');
 
@@ -268,7 +268,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      *
      * @return array|null
      */
-    public function getSupportedPrivilegeSet() {
+    function getSupportedPrivilegeSet() {
 
         return null;
 

@@ -32,7 +32,7 @@ abstract class AbstractBackend implements BackendInterface {
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */
-    public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
+    function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
 
     }
 
@@ -48,7 +48,7 @@ abstract class AbstractBackend implements BackendInterface {
      * @param array $uris
      * @return array
      */
-    public function getMultipleCalendarObjects($calendarId, array $uris) {
+    function getMultipleCalendarObjects($calendarId, array $uris) {
 
         return array_map(function($uri) use ($calendarId) {
             return $this->getCalendarObject($calendarId, $uri);
@@ -105,9 +105,9 @@ abstract class AbstractBackend implements BackendInterface {
      * @param array $filters
      * @return array
      */
-    public function calendarQuery($calendarId, array $filters) {
+    function calendarQuery($calendarId, array $filters) {
 
-        $result = array();
+        $result = [];
         $objects = $this->getCalendarObjects($calendarId);
 
         foreach($objects as $object) {
@@ -165,7 +165,7 @@ abstract class AbstractBackend implements BackendInterface {
      * @param string $uid
      * @return string|null
      */
-    public function getCalendarObjectByUID($principalUri, $uid) {
+    function getCalendarObjectByUID($principalUri, $uid) {
 
         // Note: this is a super slow naive implementation of this method. You
         // are highly recommended to optimize it, if your backend allows it.

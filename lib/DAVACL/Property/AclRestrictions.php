@@ -22,7 +22,7 @@ class AclRestrictions extends DAV\Property {
      * @param \DOMElement $elem
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $elem) {
+    function serialize(DAV\Server $server,\DOMElement $elem) {
 
         $doc = $elem->ownerDocument;
 

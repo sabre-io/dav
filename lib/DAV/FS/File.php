@@ -19,7 +19,7 @@ class File extends Node implements DAV\IFile {
      * @param resource $data
      * @return void
      */
-    public function put($data) {
+    function put($data) {
 
         file_put_contents($this->path,$data);
 
@@ -30,7 +30,7 @@ class File extends Node implements DAV\IFile {
      *
      * @return string
      */
-    public function get() {
+    function get() {
 
         return fopen($this->path,'r');
 
@@ -41,7 +41,7 @@ class File extends Node implements DAV\IFile {
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         unlink($this->path);
 
@@ -52,7 +52,7 @@ class File extends Node implements DAV\IFile {
      *
      * @return int
      */
-    public function getSize() {
+    function getSize() {
 
         return filesize($this->path);
 
@@ -68,7 +68,7 @@ class File extends Node implements DAV\IFile {
      *
      * @return mixed
      */
-    public function getETag() {
+    function getETag() {
 
         return null;
 
@@ -81,7 +81,7 @@ class File extends Node implements DAV\IFile {
      *
      * @return mixed
      */
-    public function getContentType() {
+    function getContentType() {
 
         return null;
 

@@ -134,9 +134,9 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
      *
      * @param array $values All the options
      */
-    public function __construct(array $values) {
+    function __construct(array $values) {
 
-        $required = array(
+        $required = [
             'id',
             'etag',
             'href',
@@ -145,7 +145,7 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
             'readOnly',
             'hostUrl',
             'organizer',
-        );
+        ];
         foreach($required as $item) {
             if (!isset($values[$item])) {
                 throw new \InvalidArgumentException($item . ' is a required constructor option');
@@ -171,7 +171,7 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $node) {
+    function serialize(DAV\Server $server, \DOMElement $node) {
 
         $prop = $node->ownerDocument->createElement('cs:invite-notification');
         $node->appendChild($prop);
@@ -186,7 +186,7 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
      * @param \DOMElement $node
      * @return void
      */
-    public function serializeBody(DAV\Server $server, \DOMElement $node) {
+    function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         $doc = $node->ownerDocument;
 
@@ -302,7 +302,7 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
      *
      * @return string
      */
-    public function getId() {
+    function getId() {
 
         return $this->id;
 
@@ -315,7 +315,7 @@ class Invite extends DAV\Property implements CalDAV\Notifications\INotificationT
      *
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         return $this->etag;
 

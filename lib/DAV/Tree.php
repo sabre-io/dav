@@ -32,7 +32,7 @@ abstract class Tree {
      * @param string $path
      * @return bool
      */
-    public function nodeExists($path) {
+    function nodeExists($path) {
 
         try {
 
@@ -54,7 +54,7 @@ abstract class Tree {
      * @param string $destinationPath The full destination path
      * @return void
      */
-    public function copy($sourcePath, $destinationPath) {
+    function copy($sourcePath, $destinationPath) {
 
         $sourceNode = $this->getNodeForPath($sourcePath);
 
@@ -75,7 +75,7 @@ abstract class Tree {
      * @param string $destinationPath The full destination path, so not just the destination parent node
      * @return int
      */
-    public function move($sourcePath, $destinationPath) {
+    function move($sourcePath, $destinationPath) {
 
         list($sourceDir, $sourceName) = URLUtil::splitPath($sourcePath);
         list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
@@ -98,7 +98,7 @@ abstract class Tree {
      * @param string $path
      * @return void
      */
-    public function delete($path) {
+    function delete($path) {
 
         $node = $this->getNodeForPath($path);
         $node->delete();
@@ -114,7 +114,7 @@ abstract class Tree {
      * @param string $path
      * @return array
      */
-    public function getChildren($path) {
+    function getChildren($path) {
 
         $node = $this->getNodeForPath($path);
         return $node->getChildren();
@@ -139,7 +139,7 @@ abstract class Tree {
      * @param string $path
      * @return void
      */
-    public function markDirty($path) {
+    function markDirty($path) {
 
 
     }
@@ -158,7 +158,7 @@ abstract class Tree {
      * @param array $paths List of nodes that must be fetched.
      * @return array
      */
-    public function getMultipleNodes($paths) {
+    function getMultipleNodes($paths) {
 
         $result = [];
         foreach($paths as $path) {
@@ -209,7 +209,7 @@ abstract class Tree {
         }
         if ($source instanceof IProperties && $destination instanceof IProperties) {
 
-            $props = $source->getProperties(array());
+            $props = $source->getProperties([]);
             $propPatch = new PropPatch($props);
             $destination->propPatch($propPatch);
             $propPatch->commit();

@@ -46,7 +46,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param bool $enablePost
      */
-    public function __construct($enablePost=true) {
+    function __construct($enablePost=true) {
 
         $this->enablePost = $enablePost;
 
@@ -58,7 +58,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $this->server->on('method:GET', [$this,'httpGet'], 200);
@@ -73,7 +73,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $response) {
+    function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         // We're not using straight-up $_GET, because we want everything to be
         // unit testable.
@@ -113,7 +113,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpPOST(RequestInterface $request, ResponseInterface $response) {
+    function httpPOST(RequestInterface $request, ResponseInterface $response) {
 
         $contentType = $request->getHeader('Content-Type');
         list($contentType) = explode(';', $contentType);
@@ -174,7 +174,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $value
      * @return string
      */
-    public function escapeHTML($value) {
+    function escapeHTML($value) {
 
         return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
 
@@ -186,7 +186,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @return string
      */
-    public function generateDirectoryIndex($path) {
+    function generateDirectoryIndex($path) {
 
         $version = '';
         if (DAV\Server::$exposeVersion) {
@@ -344,7 +344,7 @@ HTML;
      * @param mixed $output
      * @return void
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output) {
+    function htmlActionsPanel(DAV\INode $node, &$output) {
 
         if (!$node instanceof DAV\ICollection)
             return;

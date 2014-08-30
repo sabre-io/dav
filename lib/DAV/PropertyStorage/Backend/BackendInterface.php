@@ -21,7 +21,7 @@ interface BackendInterface {
      * @param PropFind $propFind
      * @return void
      */
-    public function propFind($path, PropFind $propFind);
+    function propFind($path, PropFind $propFind);
 
     /**
      * Updates properties for a path
@@ -36,14 +36,14 @@ interface BackendInterface {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatch($path, PropPatch $propPatch);
+    function propPatch($path, PropPatch $propPatch);
 
     /**
      * This method is called after a node is deleted.
      *
      * This allows a backend to clean up all associated properties.
      */
-    public function delete($path);
+    function delete($path);
 
     /**
      * This method is called after a successful MOVE
@@ -56,6 +56,6 @@ interface BackendInterface {
      * @param string $destination
      * @return void
      */
-    public function move($source, $destination);
+    function move($source, $destination);
 
 }

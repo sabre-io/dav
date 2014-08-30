@@ -36,7 +36,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      * @param resource|string $data Initial payload
      * @return null|string
      */
-    public function createFile($name, $data = null) {
+    function createFile($name, $data = null) {
 
         $newPath = $this->path . '/' . $name;
         file_put_contents($newPath,$data);
@@ -49,7 +49,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      * @param string $name
      * @return void
      */
-    public function createDirectory($name) {
+    function createDirectory($name) {
 
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
@@ -66,7 +66,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      * @throws DAV\Exception\NotFound
      * @return DAV\INode
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         $path = $this->path . '/' . $name;
 
@@ -89,9 +89,9 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      *
      * @return DAV\INode[]
      */
-    public function getChildren() {
+    function getChildren() {
 
-        $nodes = array();
+        $nodes = [];
         foreach(scandir($this->path) as $node) if($node!='.' && $node!='..') $nodes[] = $this->getChild($node);
         return $nodes;
 
@@ -103,7 +103,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      * @param string $name
      * @return bool
      */
-    public function childExists($name) {
+    function childExists($name) {
 
         $path = $this->path . '/' . $name;
         return file_exists($path);
@@ -115,7 +115,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         foreach($this->getChildren() as $child) $child->delete();
         rmdir($this->path);
@@ -127,12 +127,12 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      *
      * @return array
      */
-    public function getQuotaInfo() {
+    function getQuotaInfo() {
 
-        return array(
+        return [
             disk_total_space($this->path)-disk_free_space($this->path),
             disk_free_space($this->path)
-            );
+        ];
 
     }
 

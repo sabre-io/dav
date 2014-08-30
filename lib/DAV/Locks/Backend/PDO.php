@@ -36,7 +36,7 @@ class PDO extends AbstractBackend {
      * @param PDO $pdo
      * @param string $tableName
      */
-    public function __construct(\PDO $pdo, $tableName = 'locks') {
+    function __construct(\PDO $pdo, $tableName = 'locks') {
 
         $this->pdo = $pdo;
         $this->tableName = $tableName;
@@ -56,13 +56,13 @@ class PDO extends AbstractBackend {
      * @param bool $returnChildLocks
      * @return array
      */
-    public function getLocks($uri, $returnChildLocks) {
+    function getLocks($uri, $returnChildLocks) {
 
         // NOTE: the following 10 lines or so could be easily replaced by
         // pure sql. MySQL's non-standard string concatenation prevents us
         // from doing this though.
         $query = 'SELECT owner, token, timeout, created, scope, depth, uri FROM '.$this->tableName.' WHERE ((created + timeout) > CAST(? AS UNSIGNED INTEGER)) AND ((uri = ?)';
-        $params = array(time(),$uri);
+        $params = [time(),$uri];
 
         // We need to check locks for every part in the uri.
         $uriParts = explode('/',$uri);
@@ -94,7 +94,7 @@ class PDO extends AbstractBackend {
         $stmt->execute($params);
         $result = $stmt->fetchAll();
 
-        $lockList = array();
+        $lockList = [];
         foreach($result as $row) {
 
             $lockInfo = new LockInfo();
@@ -120,7 +120,7 @@ class PDO extends AbstractBackend {
      * @param LockInfo $lockInfo
      * @return bool
      */
-    public function lock($uri, LockInfo $lockInfo) {
+    function lock($uri, LockInfo $lockInfo) {
 
         // We're making the lock timeout 30 minutes
         $lockInfo->timeout = 30*60;
@@ -135,10 +135,26 @@ class PDO extends AbstractBackend {
 
         if ($exists) {
             $stmt = $this->pdo->prepare('UPDATE '.$this->tableName.' SET owner = ?, timeout = ?, scope = ?, depth = ?, uri = ?, created = ? WHERE token = ?');
-            $stmt->execute(array($lockInfo->owner,$lockInfo->timeout,$lockInfo->scope,$lockInfo->depth,$uri,$lockInfo->created,$lockInfo->token));
+            $stmt->execute([
+                $lockInfo->owner,
+                $lockInfo->timeout,
+                $lockInfo->scope,
+                $lockInfo->depth,
+                $uri,
+                $lockInfo->created,
+                $lockInfo->token
+            ]);
         } else {
             $stmt = $this->pdo->prepare('INSERT INTO '.$this->tableName.' (owner,timeout,scope,depth,uri,created,token) VALUES (?,?,?,?,?,?,?)');
-            $stmt->execute(array($lockInfo->owner,$lockInfo->timeout,$lockInfo->scope,$lockInfo->depth,$uri,$lockInfo->created,$lockInfo->token));
+            $stmt->execute([
+                $lockInfo->owner,
+                $lockInfo->timeout,
+                $lockInfo->scope,
+                $lockInfo->depth,
+                $uri,
+                $lockInfo->created,
+                $lockInfo->token
+            ]);
         }
 
         return true;
@@ -154,10 +170,10 @@ class PDO extends AbstractBackend {
      * @param LockInfo $lockInfo
      * @return bool
      */
-    public function unlock($uri, LockInfo $lockInfo) {
+    function unlock($uri, LockInfo $lockInfo) {
 
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->tableName.' WHERE uri = ? AND token = ?');
-        $stmt->execute(array($uri,$lockInfo->token));
+        $stmt->execute([$uri, $lockInfo->token]);
 
         return $stmt->rowCount()===1;
 

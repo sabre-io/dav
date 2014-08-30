@@ -36,7 +36,7 @@ class LockDiscovery extends DAV\Property {
      * @param array $locks
      * @param bool $revealLockToken
      */
-    public function __construct($locks) {
+    function __construct($locks) {
 
         $this->locks = $locks;
 
@@ -49,7 +49,7 @@ class LockDiscovery extends DAV\Property {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $prop) {
+    function serialize(DAV\Server $server, \DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
 

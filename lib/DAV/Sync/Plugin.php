@@ -36,7 +36,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return 'sync';
 
@@ -50,7 +50,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
 
@@ -81,16 +81,16 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $uri
      * @return array
      */
-    public function getSupportedReportSet($uri) {
+    function getSupportedReportSet($uri) {
 
         $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof ISyncCollection && $node->getSyncToken()) {
-            return array(
+            return [
                 '{DAV:}sync-collection',
-            );
+            ];
         }
 
-        return array();
+        return [];
 
     }
 
@@ -102,7 +102,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMDocument $dom
      * @return void
      */
-    public function syncCollection($uri, \DOMDocument $dom) {
+    function syncCollection($uri, \DOMDocument $dom) {
 
         // rfc3253 specifies 0 is the default value for Depth:
         $depth = $this->server->getHTTPDepth(0);
@@ -208,12 +208,12 @@ class Plugin extends DAV\ServerPlugin {
             DAV\XMLUtil::parseProperties($dom->documentElement)
         );
 
-        return array(
+        return [
             $syncToken,
             $syncLevel,
             $limit,
             $properties,
-        );
+        ];
 
     }
 
@@ -264,7 +264,7 @@ class Plugin extends DAV\ServerPlugin {
         foreach($deleted as $item) {
 
             $fullPath = $collectionUrl . '/' . $item;
-            $response = new DAV\Property\Response($fullPath, array(), 404);
+            $response = new DAV\Property\Response($fullPath, [], 404);
             $response->serialize($this->server, $multiStatus);
 
         }
@@ -286,7 +286,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\INode $node
      * @return void
      */
-    public function propFind(DAV\PropFind $propFind, DAV\INode $node) {
+    function propFind(DAV\PropFind $propFind, DAV\INode $node) {
 
         $propFind->handle('{DAV:}sync-token', function() use ($node) {
             if (!$node instanceof ISyncCollection || !$token = $node->getSyncToken()) {
@@ -306,7 +306,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param mixed $conditions
      * @return void
      */
-    public function validateTokens( RequestInterface $request, &$conditions ) {
+    function validateTokens( RequestInterface $request, &$conditions ) {
 
         foreach($conditions as $kk=>$condition) {
 

@@ -21,7 +21,7 @@ class ServiceUnavailable extends DAV\Exception {
      *
      * @return int
      */
-    public function getHTTPCode() {
+    function getHTTPCode() {
 
         return 503;
 

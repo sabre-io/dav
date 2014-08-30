@@ -46,7 +46,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * @return string
      */
-    public function getRealm() {
+    function getRealm() {
         return $this->realm;
     }
 
@@ -56,7 +56,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param Backend\BackendInterface $authBackend
      * @param string $realm
      */
-    public function __construct(Backend\BackendInterface $authBackend, $realm) {
+    function __construct(Backend\BackendInterface $authBackend, $realm) {
 
         $this->authBackend = $authBackend;
         $this->realm = $realm;
@@ -69,10 +69,10 @@ class Plugin extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('beforeMethod',array($this,'beforeMethod'),10);
+        $this->server->on('beforeMethod', [$this,'beforeMethod'], 10);
 
     }
 
@@ -84,7 +84,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return string
      */
-    public function getPluginName() {
+    function getPluginName() {
 
         return 'auth';
 
@@ -97,7 +97,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @return string|null
      */
-    public function getCurrentUser() {
+    function getCurrentUser() {
 
         $userInfo = $this->authBackend->getCurrentUser();
         if (!$userInfo) return null;
@@ -113,7 +113,7 @@ class Plugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function beforeMethod(RequestInterface $request, ResponseInterface $response) {
+    function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
         $this->authBackend->authenticate($this->server,$this->getRealm());
 

@@ -60,10 +60,10 @@ class XMLUtil {
             throw new \InvalidArgumentException('\'' . $str . '\' is not a valid clark-notation formatted string');
         }
 
-        return array(
+        return [
             $matches[1],
             $matches[2]
-        );
+        ];
 
     }
 
@@ -165,9 +165,9 @@ class XMLUtil {
      * @param array $propertyMap
      * @return array
      */
-    static function parseProperties(\DOMElement $parentNode, array $propertyMap = array()) {
+    static function parseProperties(\DOMElement $parentNode, array $propertyMap = []) {
 
-        $propList = array();
+        $propList = [];
         foreach($parentNode->childNodes as $propNode) {
 
             if (self::toClarkNotation($propNode)!=='{DAV:}prop') continue;
@@ -179,7 +179,7 @@ class XMLUtil {
 
                 $propertyName = self::toClarkNotation($propNodeData);
                 if (isset($propertyMap[$propertyName])) {
-                    $propList[$propertyName] = call_user_func(array($propertyMap[$propertyName],'unserialize'),$propNodeData, $propertyMap);
+                    $propList[$propertyName] = call_user_func([$propertyMap[$propertyName],'unserialize'],$propNodeData, $propertyMap);
                 } else {
                     $propList[$propertyName] = $propNodeData->textContent;
                 }

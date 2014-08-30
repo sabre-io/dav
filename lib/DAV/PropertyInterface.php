@@ -20,7 +20,7 @@ interface PropertyInterface {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(Server $server, \DOMElement $prop);
+    function serialize(Server $server, \DOMElement $prop);
 
     /**
      * This method unserializes the property FROM an xml document.
@@ -33,7 +33,7 @@ interface PropertyInterface {
      * @param array $propertyMap
      * @return mixed
      */
-    static public function unserialize(\DOMElement $prop, array $propertyMap);
+    static function unserialize(\DOMElement $prop, array $propertyMap);
 
 }
 

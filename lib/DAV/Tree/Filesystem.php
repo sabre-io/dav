@@ -33,7 +33,7 @@ class Filesystem extends DAV\Tree {
      *
      * @param string $basePath
      */
-    public function __construct($basePath) {
+    function __construct($basePath) {
 
         $this->basePath = $basePath;
 
@@ -45,7 +45,7 @@ class Filesystem extends DAV\Tree {
      * @param string $path
      * @return DAV\FS\Node
      */
-    public function getNodeForPath($path) {
+    function getNodeForPath($path) {
 
         $realPath = $this->getRealPath($path);
         if (!file_exists($realPath)) {
@@ -81,7 +81,7 @@ class Filesystem extends DAV\Tree {
      * @param string $destination
      * @return void
      */
-    public function copy($source,$destination) {
+    function copy($source,$destination) {
 
         $source = $this->getRealPath($source);
         $destination = $this->getRealPath($destination);
@@ -121,7 +121,7 @@ class Filesystem extends DAV\Tree {
      * @param string $destination
      * @return void
      */
-    public function move($source,$destination) {
+    function move($source,$destination) {
 
         $source = $this->getRealPath($source);
         $destination = $this->getRealPath($destination);

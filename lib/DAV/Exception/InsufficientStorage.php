@@ -18,7 +18,7 @@ class InsufficientStorage extends \Sabre\DAV\Exception {
      *
      * @return int
      */
-    public function getHTTPCode() {
+    function getHTTPCode() {
 
         return 507;
 

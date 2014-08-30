@@ -29,7 +29,7 @@ class SupportedMethodSet extends DAV\Property {
      *
      * @param string[] $methods
      */
-    public function __construct(array $method) {
+    function __construct(array $method) {
 
         $this->methods = $method;
 
@@ -40,7 +40,7 @@ class SupportedMethodSet extends DAV\Property {
      *
      * @return string[]
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->methods;
 
@@ -53,7 +53,7 @@ class SupportedMethodSet extends DAV\Property {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $prop) {
+    function serialize(DAV\Server $server, \DOMElement $prop) {
 
         foreach($this->methods as $method) {
 

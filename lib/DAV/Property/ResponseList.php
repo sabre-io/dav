@@ -30,7 +30,7 @@ class ResponseList extends DAV\Property {
      *
      * @param array $responses;
      */
-    public function __construct($responses) {
+    function __construct($responses) {
 
         foreach($responses as $response) {
             if (!($response instanceof Response)) {
@@ -46,7 +46,7 @@ class ResponseList extends DAV\Property {
      *
      * @return Response[]
      */
-    public function getResponses() {
+    function getResponses() {
 
         return $this->responses;
 
@@ -59,7 +59,7 @@ class ResponseList extends DAV\Property {
      * @param \DOMElement $dom
      * @return void
      */
-    public function serialize(DAV\Server $server,\DOMElement $dom) {
+    function serialize(DAV\Server $server,\DOMElement $dom) {
 
         foreach($this->responses as $response) {
             $response->serialize($server, $dom);
@@ -76,7 +76,7 @@ class ResponseList extends DAV\Property {
      * @param array $propertyMap
      * @return DAV\IProperty
      */
-    public static function unserialize(\DOMElement $prop, array $propertyMap) {
+    static function unserialize(\DOMElement $prop, array $propertyMap) {
 
         $xpath = new \DOMXPath( $prop->ownerDocument );
         $xpath->registerNamespace('d','urn:DAV');
@@ -87,7 +87,7 @@ class ResponseList extends DAV\Property {
             $prop
         );
 
-        $result = array();
+        $result = [];
 
         for($jj=0; $jj < $xResponses->length; $jj++) {
 

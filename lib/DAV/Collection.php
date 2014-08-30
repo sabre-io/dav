@@ -28,7 +28,7 @@ abstract class Collection extends Node implements ICollection {
      * @throws Exception\NotFound
      * @return INode
      */
-    public function getChild($name) {
+    function getChild($name) {
 
         foreach($this->getChildren() as $child) {
 
@@ -47,7 +47,7 @@ abstract class Collection extends Node implements ICollection {
      * @param string $name
      * @return bool
      */
-    public function childExists($name) {
+    function childExists($name) {
 
         try {
 
@@ -86,7 +86,7 @@ abstract class Collection extends Node implements ICollection {
      * @param resource|string $data Initial payload
      * @return null|string
      */
-    public function createFile($name, $data = null) {
+    function createFile($name, $data = null) {
 
         throw new Exception\Forbidden('Permission denied to create file (filename ' . $name . ')');
 
@@ -99,7 +99,7 @@ abstract class Collection extends Node implements ICollection {
      * @throws Exception\Forbidden
      * @return void
      */
-    public function createDirectory($name) {
+    function createDirectory($name) {
 
         throw new Exception\Forbidden('Permission denied to create directory');
 

@@ -22,7 +22,7 @@ abstract class File extends Node implements IFile {
      * @param resource $data
      * @return void
      */
-    public function put($data) {
+    function put($data) {
 
         throw new Exception\Forbidden('Permission denied to change data');
 
@@ -35,7 +35,7 @@ abstract class File extends Node implements IFile {
      *
      * @return mixed
      */
-    public function get() {
+    function get() {
 
         throw new Exception\Forbidden('Permission denied to read this file');
 
@@ -46,7 +46,7 @@ abstract class File extends Node implements IFile {
      *
      * @return int
      */
-    public function getSize() {
+    function getSize() {
 
         return 0;
 
@@ -62,7 +62,7 @@ abstract class File extends Node implements IFile {
      *
      * @return string|null
      */
-    public function getETag() {
+    function getETag() {
 
         return null;
 
@@ -75,7 +75,7 @@ abstract class File extends Node implements IFile {
      *
      * @return string|null
      */
-    public function getContentType() {
+    function getContentType() {
 
         return null;
 

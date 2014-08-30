@@ -23,7 +23,7 @@ class InvalidComponentType extends DAV\Exception\Forbidden {
      * @param \DOMElement $errorNode
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
         $doc = $errorNode->ownerDocument;
 

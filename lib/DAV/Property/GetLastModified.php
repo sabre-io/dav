@@ -32,7 +32,7 @@ class GetLastModified extends DAV\Property {
      *
      * @param int|DateTime $time
      */
-    public function __construct($time) {
+    function __construct($time) {
 
         if ($time instanceof \DateTime) {
             $this->time = $time;
@@ -54,7 +54,7 @@ class GetLastModified extends DAV\Property {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $prop) {
+    function serialize(DAV\Server $server, \DOMElement $prop) {
 
         $doc = $prop->ownerDocument;
         //$prop->setAttribute('xmlns:b','urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/');
@@ -68,7 +68,7 @@ class GetLastModified extends DAV\Property {
      *
      * @return \DateTime
      */
-    public function getTime() {
+    function getTime() {
 
         return $this->time;
 

@@ -31,7 +31,7 @@ interface NotificationSupport extends BackendInterface {
      * @param string $principalUri
      * @return array
      */
-    public function getNotificationsForPrincipal($principalUri);
+    function getNotificationsForPrincipal($principalUri);
 
     /**
      * This deletes a specific notifcation.
@@ -42,6 +42,6 @@ interface NotificationSupport extends BackendInterface {
      * @param \Sabre\CalDAV\Notifications\INotificationType $notification
      * @return void
      */
-    public function deleteNotification($principalUri, \Sabre\CalDAV\Notifications\INotificationType $notification);
+    function deleteNotification($principalUri, \Sabre\CalDAV\Notifications\INotificationType $notification);
 
 }

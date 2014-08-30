@@ -45,7 +45,7 @@ abstract class AbstractBasic implements BackendInterface {
      *
      * @return string|null
      */
-    public function getCurrentUser() {
+    function getCurrentUser() {
         return $this->currentUser;
     }
 
@@ -61,7 +61,7 @@ abstract class AbstractBasic implements BackendInterface {
      * @throws DAV\Exception\NotAuthenticated
      * @return bool
      */
-    public function authenticate(DAV\Server $server, $realm) {
+    function authenticate(DAV\Server $server, $realm) {
 
         $auth = new HTTP\Auth\Basic($realm, $server->httpRequest, $server->httpResponse);
         $userpass = $auth->getCredentials($server->httpRequest);

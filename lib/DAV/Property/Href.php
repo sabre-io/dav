@@ -36,7 +36,7 @@ class Href extends DAV\Property implements IHref {
      * @param string $href
      * @param bool $autoPrefix
      */
-    public function __construct($href, $autoPrefix = true) {
+    function __construct($href, $autoPrefix = true) {
 
         $this->href = $href;
         $this->autoPrefix = $autoPrefix;
@@ -48,7 +48,7 @@ class Href extends DAV\Property implements IHref {
      *
      * @return string
      */
-    public function getHref() {
+    function getHref() {
 
         return $this->href;
 
@@ -63,7 +63,7 @@ class Href extends DAV\Property implements IHref {
      * @param \DOMElement $dom
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $dom) {
+    function serialize(DAV\Server $server, \DOMElement $dom) {
 
         $prefix = $server->xmlNamespaces['DAV:'];
         $elem = $dom->ownerDocument->createElement($prefix . ':href');

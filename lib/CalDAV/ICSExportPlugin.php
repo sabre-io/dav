@@ -59,7 +59,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      * @param \Sabre\DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         $this->server = $server;
         $this->server->on('method:GET', [$this,'httpGet'], 90);
@@ -73,7 +73,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      * @param ResponseInterface $response
      * @return bool
      */
-    public function httpGet(RequestInterface $request, ResponseInterface $response) {
+    function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $queryParams = $request->getQueryParameters();
         if (!array_key_exists('export', $queryParams)) return;
@@ -236,7 +236,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      * @param array $inputObjects
      * @return VObject\Component\VCalendar
      */
-    public function mergeObjects(array $properties, array $inputObjects) {
+    function mergeObjects(array $properties, array $inputObjects) {
 
         $calendar = new VObject\Component\VCalendar();
         $calendar->version = '2.0';

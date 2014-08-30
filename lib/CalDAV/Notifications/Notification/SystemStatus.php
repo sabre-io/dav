@@ -68,7 +68,7 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
      * @param string $description
      * @param string $href
      */
-    public function __construct($id, $etag, $type = self::TYPE_HIGH, $description = null, $href = null) {
+    function __construct($id, $etag, $type = self::TYPE_HIGH, $description = null, $href = null) {
 
         $this->id = $id;
         $this->type = $type;
@@ -88,7 +88,7 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
      * @param \DOMElement $node
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $node) {
+    function serialize(DAV\Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :
@@ -118,7 +118,7 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
      * @param \DOMElement $node
      * @return void
      */
-    public function serializeBody(DAV\Server $server, \DOMElement $node) {
+    function serializeBody(DAV\Server $server, \DOMElement $node) {
 
         switch($this->type) {
             case self::TYPE_LOW :
@@ -161,7 +161,7 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
      *
      * @return string
      */
-    public function getId() {
+    function getId() {
 
         return $this->id;
 
@@ -174,7 +174,7 @@ class SystemStatus extends DAV\Property implements CalDAV\Notifications\INotific
      *
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         return $this->etag;
 

@@ -25,7 +25,7 @@ interface IProperties extends INode {
      * @param PropPatch $propPatch
      * @return void
      */
-    public function propPatch(PropPatch $propPatch);
+    function propPatch(PropPatch $propPatch);
 
     /**
      * Returns a list of properties for this nodes.
@@ -42,7 +42,7 @@ interface IProperties extends INode {
      * @param array $properties
      * @return array
      */
-    public function getProperties($properties);
+    function getProperties($properties);
 
 }
 

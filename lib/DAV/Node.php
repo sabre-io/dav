@@ -20,7 +20,7 @@ abstract class Node implements INode {
      *
      * @return int
      */
-    public function getLastModified() {
+    function getLastModified() {
 
         return time();
 
@@ -32,7 +32,7 @@ abstract class Node implements INode {
      * @throws Sabre\DAV\Exception\Forbidden
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         throw new Exception\Forbidden('Permission denied to delete node');
 
@@ -45,7 +45,7 @@ abstract class Node implements INode {
      * @param string $name The new name
      * @return void
      */
-    public function setName($name) {
+    function setName($name) {
 
         throw new Exception\Forbidden('Permission denied to rename file');
 

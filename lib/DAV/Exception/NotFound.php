@@ -18,7 +18,7 @@ class NotFound extends \Sabre\DAV\Exception {
      *
      * @return int
      */
-    public function getHTTPCode() {
+    function getHTTPCode() {
 
         return 404;
 

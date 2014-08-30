@@ -20,7 +20,7 @@ class SimpleFile extends File {
      *
      * @var string
      */
-    protected $contents = array();
+    protected $contents = [];
 
     /**
      * Name of this resource
@@ -46,7 +46,7 @@ class SimpleFile extends File {
      * @param string $contents
      * @param string|null $mimeType
      */
-    public function __construct($name, $contents, $mimeType = null) {
+    function __construct($name, $contents, $mimeType = null) {
 
         $this->name = $name;
         $this->contents = $contents;
@@ -61,7 +61,7 @@ class SimpleFile extends File {
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->name;
 
@@ -74,7 +74,7 @@ class SimpleFile extends File {
      *
      * @return mixed
      */
-    public function get() {
+    function get() {
 
         return $this->contents;
 
@@ -85,7 +85,7 @@ class SimpleFile extends File {
      *
      * @return int
      */
-    public function getSize() {
+    function getSize() {
 
         return strlen($this->contents);
 
@@ -100,7 +100,7 @@ class SimpleFile extends File {
      * Return null if the ETag can not effectively be determined
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         return '"' . md5($this->contents) . '"';
 
@@ -112,7 +112,7 @@ class SimpleFile extends File {
      * If null is returned, we'll assume application/octet-stream
      * @return string
      */
-    public function getContentType() {
+    function getContentType() {
 
         return $this->mimeType;
 

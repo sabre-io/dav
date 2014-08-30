@@ -21,7 +21,7 @@ class RequestedRangeNotSatisfiable extends DAV\Exception {
      *
      * @return int
      */
-    public function getHTTPCode() {
+    function getHTTPCode() {
 
         return 416;
 

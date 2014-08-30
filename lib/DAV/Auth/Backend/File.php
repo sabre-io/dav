@@ -20,7 +20,7 @@ class File extends AbstractDigest {
      *
      * @var array
      */
-    protected $users = array();
+    protected $users = [];
 
     /**
      * Creates the backend object.
@@ -29,7 +29,7 @@ class File extends AbstractDigest {
      *
      * @param string|null $filename
      */
-    public function __construct($filename=null) {
+    function __construct($filename=null) {
 
         if (!is_null($filename))
             $this->loadFile($filename);
@@ -43,7 +43,7 @@ class File extends AbstractDigest {
      * @param string $filename
      * @return void
      */
-    public function loadFile($filename) {
+    function loadFile($filename) {
 
         foreach(file($filename,FILE_IGNORE_NEW_LINES) as $line) {
 
@@ -68,7 +68,7 @@ class File extends AbstractDigest {
      * @param string $username
      * @return string
      */
-    public function getDigestHash($realm, $username) {
+    function getDigestHash($realm, $username) {
 
         return isset($this->users[$realm . ':' . $username])?$this->users[$realm . ':' . $username]:false;
 

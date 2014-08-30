@@ -32,7 +32,7 @@ class GuessContentType extends DAV\ServerPlugin {
      *
      * @var array
      */
-    public $extensionMap = array(
+    public $extensionMap = [
 
         // images
         'jpg' => 'image/jpeg',
@@ -46,7 +46,7 @@ class GuessContentType extends DAV\ServerPlugin {
         // text
         'txt' => 'text/plain',
 
-    );
+    ];
 
     /**
      * Initializes the plugin
@@ -54,7 +54,7 @@ class GuessContentType extends DAV\ServerPlugin {
      * @param DAV\Server $server
      * @return void
      */
-    public function initialize(DAV\Server $server) {
+    function initialize(DAV\Server $server) {
 
         // Using a relatively low priority (200) to allow other extensions
         // to set the content-type first.
@@ -71,7 +71,7 @@ class GuessContentType extends DAV\ServerPlugin {
      * @param INode $node
      * @return void
      */
-    public function propFind(PropFind $propFind, INode $node) {
+    function propFind(PropFind $propFind, INode $node) {
 
         $propFind->handle('{DAV:}getcontenttype', function() use ($propFind) {
 

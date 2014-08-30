@@ -21,19 +21,19 @@ class ResourceType extends DAV\Property {
      *
      * @var array
      */
-    public $resourceType = array();
+    public $resourceType = [];
 
     /**
      * __construct
      *
      * @param mixed $resourceType
      */
-    public function __construct($resourceType = []) {
+    function __construct($resourceType = []) {
 
         if (is_array($resourceType))
             $this->resourceType = $resourceType;
         else
-            $this->resourceType = array($resourceType);
+            $this->resourceType = [$resourceType];
 
     }
 
@@ -44,7 +44,7 @@ class ResourceType extends DAV\Property {
      * @param \DOMElement $prop
      * @return void
      */
-    public function serialize(DAV\Server $server, \DOMElement $prop) {
+    function serialize(DAV\Server $server, \DOMElement $prop) {
 
         $propName = null;
         $rt = $this->resourceType;
@@ -66,11 +66,11 @@ class ResourceType extends DAV\Property {
     /**
      * Returns the values in clark-notation
      *
-     * For example array('{DAV:}collection')
+     * For example ['{DAV:}collection']
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->resourceType;
 
@@ -82,7 +82,7 @@ class ResourceType extends DAV\Property {
      * @param string $type
      * @return bool
      */
-    public function is($type) {
+    function is($type) {
 
         return in_array($type, $this->resourceType);
 
@@ -94,7 +94,7 @@ class ResourceType extends DAV\Property {
      * @param string $type
      * @return void
      */
-    public function add($type) {
+    function add($type) {
 
         $this->resourceType[] = $type;
         $this->resourceType = array_unique($this->resourceType);
@@ -108,9 +108,9 @@ class ResourceType extends DAV\Property {
      * @param array $propertyMap
      * @return DAV\Property\ResourceType
      */
-    static public function unserialize(\DOMElement $dom, array $propertyMap) {
+    static function unserialize(\DOMElement $dom, array $propertyMap) {
 
-        $value = array();
+        $value = [];
         foreach($dom->childNodes as $child) {
 
             $value[] = DAV\XMLUtil::toClarkNotation($child);

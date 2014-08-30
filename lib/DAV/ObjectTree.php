@@ -27,7 +27,7 @@ class ObjectTree extends Tree {
      *
      * @var array
      */
-    protected $cache = array();
+    protected $cache = [];
 
     /**
      * Creates the object
@@ -36,7 +36,7 @@ class ObjectTree extends Tree {
      *
      * @param ICollection $rootNode
      */
-    public function __construct(ICollection $rootNode) {
+    function __construct(ICollection $rootNode) {
 
         $this->rootNode = $rootNode;
 
@@ -48,7 +48,7 @@ class ObjectTree extends Tree {
      * @param string $path
      * @return INode
      */
-    public function getNodeForPath($path) {
+    function getNodeForPath($path) {
 
         $path = trim($path,'/');
         if (isset($this->cache[$path])) return $this->cache[$path];
@@ -86,7 +86,7 @@ class ObjectTree extends Tree {
      * @param string $path
      * @return bool
      */
-    public function nodeExists($path) {
+    function nodeExists($path) {
 
         try {
 
@@ -113,7 +113,7 @@ class ObjectTree extends Tree {
      * @param string $path
      * @return array
      */
-    public function getChildren($path) {
+    function getChildren($path) {
 
         $node = $this->getNodeForPath($path);
         $children = $node->getChildren();
@@ -144,7 +144,7 @@ class ObjectTree extends Tree {
      * @param string $path
      * @return void
      */
-    public function markDirty($path) {
+    function markDirty($path) {
 
         // We don't care enough about sub-paths
         // flushing the entire cache
@@ -171,7 +171,7 @@ class ObjectTree extends Tree {
      * @param array $paths List of nodes that must be fetched.
      * @return array
      */
-    public function getMultipleNodes($paths) {
+    function getMultipleNodes($paths) {
 
         // Finding common parents
         $parents = [];

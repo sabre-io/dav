@@ -57,6 +57,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -107,6 +108,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_PROXY => 'http://localhost:8000/',
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -156,6 +158,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_CAINFO => 'bla',
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
     }
@@ -196,7 +199,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'sillybody',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
-            CURLOPT_SSL_VERIFYPEER => true
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
     }
@@ -238,7 +242,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC | CURLAUTH_DIGEST,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -289,7 +294,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -340,7 +346,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
             CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
-            CURLOPT_USERPWD => 'user:password'
+            CURLOPT_USERPWD => 'user:password',
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
         $this->assertEquals(array(
@@ -905,6 +912,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
             CURLOPT_POSTFIELDS => null,
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
     }
@@ -943,6 +951,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
             CURLOPT_POSTFIELDS => 'newcontent',
             CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array(),
+            CURLOPT_USERAGENT => 'SabreDAV DAV client',
         ), $client->curlSettings);
 
     }

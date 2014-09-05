@@ -864,7 +864,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
      */
     protected function addChange($calendarId, $objectUri, $operation) {
 
-        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, operation) SELECT ?, synctoken, ?, ? FROM calendars WHERE id = ?');
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, operation) SELECT ?, synctoken, ?, ? FROM ' . $this->calendarTableName .' WHERE id = ?');
         $stmt->execute([
             $objectUri,
             $calendarId,

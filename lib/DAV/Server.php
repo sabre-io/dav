@@ -458,6 +458,7 @@ class Server extends EventEmitter {
         $this->transactionType = strtolower($method);
 
         if (!$this->checkPreconditions($request, $response)) {
+            $this->sapi->sendResponse($response);
             return;
         }
 

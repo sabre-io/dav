@@ -185,8 +185,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
     /**
      * Creates a new calendar for a principal.
      *
-     * If the creation was a success, an id must be returned that can be used to reference
-     * this calendar in other methods, such as updateCalendar
+     * If the creation was a success, an id must be returned that can be used
+     * to reference this calendar in other methods, such as updateCalendar.
      *
      * @param string $principalUri
      * @param string $calendarUri

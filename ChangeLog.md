@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+2.0.5 (????-??-??)
+------------------
+
+* #514: CalDAV PDO backend didn't work when overriding the 'calendar changes'
+  database table name.
+
+
 2.0.4 (2014-08-27)
 ------------------
 
@@ -10,6 +17,7 @@ ChangeLog
 * Added: Automatically mapping internal sync-tokens to getctag.
 * The zip release ships with [sabre/vobject 3.3.1][vobj],
   [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
+
 
 2.0.3 (2014-07-14)
 ------------------

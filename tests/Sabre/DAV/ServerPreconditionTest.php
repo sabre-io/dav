@@ -175,6 +175,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * This was a test written for issue #515.
+     */
     public function testNoneMatchCorrectEtagEnsureSapiSent() {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
@@ -189,7 +192,10 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
         $this->assertEquals(304, $server->httpResponse->getStatus());
-        $this->assertEquals(['ETag' => '"abc123"'], $server->httpResponse->getHeaders());
+        $this->assertEquals([
+            'ETag' => '"abc123"',
+            'X-Sabre-Version' => Version::VERSION,
+        ], $server->httpResponse->getHeaders());
         $this->assertEquals(1, HTTP\SapiMock::$sent);
 
     }

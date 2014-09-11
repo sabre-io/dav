@@ -192,6 +192,7 @@ ChangeLog
 -------------------
 
 * Updated: MySQL database schema optimized by using more efficient column types.
+* #516: The DAV client will now only redirect to HTTP and HTTPS urls.
 
 1.8.10 (2014-05-15)
 -------------------

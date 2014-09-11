@@ -55,6 +55,12 @@ ChangeLog
 * When a REPORT is not supported, we now emit HTTP error 415, instead of 403.
 * `HEAD` requests now work wherever `GET` also works.
 
+2.0.5 (????-??-??)
+------------------
+
+* #514: CalDAV PDO backend didn't work when overriding the 'calendar changes'
+  database table name.
+* #515: 304 status code was not being sent when checking preconditions.
 
 2.0.4 (2014-08-27)
 ------------------

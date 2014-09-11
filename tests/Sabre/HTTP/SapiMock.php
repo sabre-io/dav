@@ -13,12 +13,16 @@ namespace Sabre\HTTP;
  */
 class SapiMock extends Sapi {
 
+    static $sent = 0;
+
     /**
      * Overriding this so nothing is ever echo'd.
      *
      * @return void
      */
-    static public function sendResponse(\Sabre\HTTP\ResponseInterface $r) {
+    static function sendResponse(\Sabre\HTTP\ResponseInterface $r) {
+
+        self::$sent++;
 
     }
 

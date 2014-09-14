@@ -80,3 +80,13 @@ CREATE INDEX calendarchanges_calendarid_synctoken_ix
 ALTER TABLE ONLY calendarchanges
     ADD CONSTRAINT calendarchanges_calendar_fk FOREIGN KEY (calendarid) REFERENCES calendars(id)
         ON DELETE CASCADE;
+
+CREATE TABLE schedulingobjects (
+    id SERIAL NOT NULL,
+    principaluri VARCHAR(255),
+    calendardata BYTEA,
+    uri VARCHAR(200),
+    lastmodified INTEGER,
+    etag VARCHAR(32),
+    size INTEGER NOT NULL
+);

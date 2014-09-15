@@ -172,7 +172,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      *
      * @param string $targetName New local file/collection name.
      * @param string $sourcePath Full path to source node
-     * @param INode $sourceNode Source node itself
+     * @param DAV\INode $sourceNode Source node itself
      * @return bool
      */
     function moveInto($targetName, $sourcePath, DAV\INode $sourceNode) {

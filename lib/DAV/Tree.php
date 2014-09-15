@@ -24,11 +24,12 @@ class Tree {
     protected $rootNode;
 
     /**
-     * This is the node cache. Accessed nodes are stored here
+     * This is the node cache. Accessed nodes are stored here.
+     * Arrays keys are path names, values are the actual nodes.
      *
      * @var array
      */
-    protected $cache = array();
+    protected $cache = [];
 
     /**
      * Creates the object
@@ -192,9 +193,10 @@ class Tree {
 
         $node = $this->getNodeForPath($path);
         $children = $node->getChildren();
+        $basePath = trim($path,'/') . '/';
         foreach($children as $child) {
 
-            $this->cache[trim($path,'/') . '/' . $child->getName()] = $child;
+            $this->cache[$basePath . $child->getName()] = $child;
 
         }
         return $children;

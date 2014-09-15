@@ -264,12 +264,12 @@ class PDO extends AbstractBackend {
             switch($property) {
 
                 case '{DAV:}displayname' :
-                    $query.=' AND displayname LIKE ?';
-                    $values[] = '%' . $value . '%';
+                    $query.=' AND LOWER(displayname) LIKE ?';
+                    $values[] = '%' . mb_strtolower($value, 'UTF-8') . '%';
                     break;
                 case '{http://sabredav.org/ns}email-address' :
-                    $query.=' AND email LIKE ?';
-                    $values[] = '%' . $value . '%';
+                    $query.=' AND LOWER(email) LIKE ?';
+                    $values[] = '%' . mb_strtolower($value, 'UTF-8') . '%';
                     break;
                 default :
                     // Unsupported property

@@ -9,8 +9,7 @@ CREATE TABLE calendars (
     calendarcolor VARCHAR(10),
     timezone TEXT,
     components VARCHAR(20),
-    uid VARCHAR(200),
-    transparent SMALLINT NOT NULL DEFAULT '0'
+    transparent SMALLINT NOT NULL DEFAULT 0
 );
 
 ALTER TABLE ONLY calendars
@@ -29,7 +28,8 @@ CREATE TABLE calendarobjects (
     size INTEGER NOT NULL,
     componenttype VARCHAR(8),
     firstoccurence INTEGER,
-    lastoccurence INTEGER
+    lastoccurence INTEGER,
+    uid VARCHAR(200)
 );
 
 ALTER TABLE ONLY calendarobjects

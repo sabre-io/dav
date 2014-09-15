@@ -295,7 +295,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             }
 
             $stmt = $this->pdo->prepare("UPDATE " . $this->calendarTableName . " SET " . implode(', ',$valuesSql) . " WHERE id = ?");
-            $newValues['id'] = $calendarId;
+            $newValues['id'] = intval($calendarId);
             $stmt->execute(array_values($newValues));
 
             $this->addChange($calendarId, "", 2);
@@ -483,7 +483,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, uid) VALUES (?,?,?,?,?,?,?,?,?,?)');
         $stmt->execute([
-            $calendarId,
+            intval($calendarId),
             $objectUri,
             $calendarData,
             time(),
@@ -814,7 +814,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
         // Current synctoken
         $stmt = $this->pdo->prepare('SELECT synctoken FROM ' .$this->calendarTableName . ' WHERE id = ?');
-        $stmt->execute([ $calendarId ]);
+        $stmt->execute([ intval($calendarId) ]);
         $currentToken = $stmt->fetchColumn(0);
 
         if (is_null($currentToken)) return null;
@@ -833,7 +833,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
             // Fetching all changes
             $stmt = $this->pdo->prepare($query);
-            $stmt->execute([$syncToken, $currentToken, $calendarId]);
+            $stmt->execute([$syncToken, $currentToken, intval($calendarId)]);
 
             $changes = [];
 
@@ -864,7 +864,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             // No synctoken supplied, this is the initial sync.
             $query = "SELECT uri FROM " . $this->calendarObjectTableName . " WHERE calendarid = ?";
             $stmt = $this->pdo->prepare($query);
-            $stmt->execute([$calendarId]);
+            $stmt->execute([intval($calendarId)]);
 
             $result['added'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }
@@ -885,13 +885,13 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->calendarChangesTableName .' (uri, synctoken, calendarid, operation) SELECT ?, synctoken, ?, ? FROM ' . $this->calendarTableName .' WHERE id = ?');
         $stmt->execute([
             $objectUri,
-            $calendarId,
+            intval($calendarId),
             $operation,
-            $calendarId
+            intval($calendarId)
         ]);
         $stmt = $this->pdo->prepare('UPDATE ' . $this->calendarTableName . ' SET synctoken = synctoken + 1 WHERE id = ?');
         $stmt->execute([
-            $calendarId
+            intval($calendarId)
         ]);
 
     }

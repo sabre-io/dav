@@ -73,19 +73,38 @@ class PDO implements BackendInterface {
 
         $propPatch->handleRemaining(function($properties) use ($path) {
 
-            $updateStmt = $this->pdo->prepare("REPLACE INTO propertystorage (path, name, value) VALUES (?, ?, ?)");
-            $deleteStmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? AND name = ?");
+            if ($this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) == "pgsql") {
+                $updateStmt = $this->pdo->prepare("WITH upsert AS (UPDATE propertystorage SET value=? WHERE path=? AND name=? RETURNING *) INSERT INTO propertystorage (path, name, value) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT * FROM upsert)");
+                $deleteStmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? AND name = ?");
 
-            foreach($properties as $name=>$value) {
+                foreach($properties as $name=>$value) {
 
-                if (!is_null($value)) {
-                    $updateStmt->execute([$path, $name, $value]);
-                } else {
-                    $deleteStmt->execute([$path, $name]);
+                    if (!is_null($value)) {
+                        $this->pdo->beginTransaction();
+                        $this->pdo->exec("LOCK TABLE propertystorage IN SHARE ROW EXCLUSIVE MODE");
+                        $updateStmt->execute([$value, $path, $name, $path, $name, $value]);
+                        $this->pdo->commit();
+                    } else {
+                        $deleteStmt->execute([$path, $name]);
+                    }
+
                 }
 
-            }
+            } else {
+                $updateStmt = $this->pdo->prepare("REPLACE INTO propertystorage (path, name, value) VALUES (?, ?, ?)");
+                $deleteStmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? AND name = ?");
 
+                foreach($properties as $name=>$value) {
+
+                    if (!is_null($value)) {
+                        $updateStmt->execute([$path, $name, $value]);
+                    } else {
+                        $deleteStmt->execute([$path, $name]);
+                    }
+
+                }
+            }
+            
             return true;
 
         });

@@ -133,7 +133,7 @@ class PDO extends AbstractBackend implements SyncSupport {
                 } else {
                     $query.=', ';
                 }
-                $query.=' `' . $key . '` = :' . $key . ' ';
+                $query.='' . $key . ' = :' . $key . ' ';
             }
             $query.=' WHERE id = :addressbookid';
 
@@ -470,7 +470,7 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         // Current synctoken
         $stmt = $this->pdo->prepare('SELECT synctoken FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
-        $stmt->execute([ $addressBookId ]);
+        $stmt->execute([ intval($addressBookId) ]);
         $currentToken = $stmt->fetchColumn(0);
 
         if (is_null($currentToken)) return null;
@@ -520,7 +520,7 @@ class PDO extends AbstractBackend implements SyncSupport {
             // No synctoken supplied, this is the initial sync.
             $query = "SELECT uri FROM " . $this->cardsTableName . " WHERE addressbookid = ?";
             $stmt = $this->pdo->prepare($query);
-            $stmt->execute([$addressBookId]);
+            $stmt->execute([intval($addressBookId)]);
 
             $result['added'] = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }

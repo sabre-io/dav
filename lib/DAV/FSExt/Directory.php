@@ -177,9 +177,9 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      */
     function moveInto($targetName, $sourcePath, DAV\INode $sourceNode) {
 
-        // We only support FSExt\ICollection or FSExt\IFile objects, so
+        // We only support FSExt\Directory or FSExt\File objects, so
         // anything else we want to quickly reject.
-        if (!$sourceNode instanceof INode) {
+        if (!$sourceNode instanceof Node) {
             return false;
         }
 

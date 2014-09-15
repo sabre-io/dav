@@ -15,26 +15,23 @@ class PluginTest extends DAV\AbstractServer{
 
         parent::setUp();
         $this->server->addPlugin($this->plugin = new Plugin());
+        $this->server->tree->getNodeForPath('')->createDirectory('dir2');
 
     }
 
     function testCollectionGet() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/dir',
-            'REQUEST_METHOD' => 'GET',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $request = new HTTP\Request('GET', '/dir');
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->status, "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
-        $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'text/html; charset=utf-8',
-            'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
-            ),
+        $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
+        $this->assertEquals(
+            [
+                'X-Sabre-Version' => DAV\Version::VERSION,
+                'Content-Type' => 'text/html; charset=utf-8',
+                'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
+            ],
             $this->response->headers
         );
 
@@ -44,21 +41,17 @@ class PluginTest extends DAV\AbstractServer{
     }
     function testCollectionGetRoot() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'GET',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('GET', '/');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals(200, $this->response->status, "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
-        $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'text/html; charset=utf-8',
-            'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
-            ),
+        $this->assertEquals(
+            [
+                'X-Sabre-Version' => DAV\Version::VERSION,
+                'Content-Type' => 'text/html; charset=utf-8',
+                'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
+            ],
             $this->response->headers
         );
 
@@ -80,12 +73,7 @@ class PluginTest extends DAV\AbstractServer{
 
     function testPostOtherContentType() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'POST',
-            'CONTENT_TYPE' => 'text/xml',
-        );
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('POST', '/', ['Content-Type' => 'text/xml']);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -95,14 +83,8 @@ class PluginTest extends DAV\AbstractServer{
 
     function testPostNoSabreAction() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'POST',
-            'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
-        );
-        $postVars = array();
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars,$postVars);
+        $request = new HTTP\Request('POST', '/', ['Content-Type' => 'application/x-www-form-urlencoded']);
+        $request->setPostData([]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 

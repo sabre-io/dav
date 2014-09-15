@@ -53,8 +53,14 @@ ChangeLog
   `CARDDAV:supported-address-data`. This functionality has been removed from
   the CardDAV PDO backend.
 * When a REPORT is not supported, we now emit HTTP error 415, instead of 403.
-* `HEAD` requests now work wherever `GET` also works.
+* #348: `HEAD` requests now work wherever `GET` also works.
 
+2.0.5 (????-??-??)
+------------------
+
+* #514: CalDAV PDO backend didn't work when overriding the 'calendar changes'
+  database table name.
+* #515: 304 status code was not being sent when checking preconditions.
 
 2.0.4 (2014-08-27)
 ------------------
@@ -241,6 +247,7 @@ ChangeLog
 -------------------
 
 * Updated: MySQL database schema optimized by using more efficient column types.
+* #516: The DAV client will now only redirect to HTTP and HTTPS urls.
 
 1.8.10 (2014-05-15)
 -------------------

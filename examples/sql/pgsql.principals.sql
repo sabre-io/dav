@@ -28,10 +28,9 @@ ALTER TABLE ONLY groupmembers
     ADD CONSTRAINT groupmembers_principal_id_fkey FOREIGN KEY (principal_id) REFERENCES principals(id)
         ON DELETE CASCADE;
 
--- Is this correct correct link ... or not?
--- ALTER TABLE ONLY groupmembers
---     ADD CONSTRAINT groupmembers_member_id_id_fkey FOREIGN KEY (member_id) REFERENCES users(id)
---         ON DELETE CASCADE;
+ALTER TABLE ONLY groupmembers
+    ADD CONSTRAINT groupmembers_member_id_id_fkey FOREIGN KEY (member_id) REFERENCES principals(id)
+        ON DELETE CASCADE;
 
 INSERT INTO principals (uri,email,displayname) VALUES
 ('principals/admin', 'admin@example.org','Administrator'),

@@ -147,4 +147,35 @@ ICS;
 
     }
 
+    function testDeliverInsignificantRequest() {
+
+        $message = new Message();
+        $message->sender = 'sender@example.org';
+        $message->senderName = 'Sender';
+        $message->recipient = 'recipient@example.org';
+        $message->recipientName = 'Recipient';
+        $message->method = 'REQUEST';
+        $message->significantChange = false;
+
+        $ics = <<<ICS
+BEGIN:VCALENDAR\r
+METHOD:REQUEST\r
+BEGIN:VEVENT\r
+SUMMARY:Birthday party\r
+END:VEVENT\r
+END:VCALENDAR\r
+
+ICS;
+
+
+        $message->message = Reader::read($ics);
+
+        $result = $this->schedule($message);
+
+        $expected = [];
+        $this->assertEquals($expected, $result);
+        $this->assertEquals('1.0', $message->getScheduleStatus()[0]);
+
+    }
+
 }

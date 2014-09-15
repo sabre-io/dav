@@ -96,6 +96,15 @@ class IMipPlugin extends DAV\ServerPlugin {
      */
     function schedule(ITip\Message $iTipMessage) {
 
+        // Not sending any emails if the system considers the update
+        // insignificant.
+        if (!$iTipMessage->significantChange) {
+            if (!$iTipMessage->scheduleStatus) {
+                $iTipMessage->scheduleStatus = '1.0;We got the message, but it\'s not significant enough to warrant an email';
+            }
+            return;
+        }
+
         $summary = $iTipMessage->message->VEVENT->SUMMARY;
 
         $sender = $iTipMessage->sender;

@@ -899,7 +899,7 @@ class PluginTest extends DAV\AbstractServer {
     function testPutWithCorrectETag() {
 
         // We need an etag-enabled file node.
-        $tree = new DAV\ObjectTree(new DAV\FSExt\Directory(SABRE_TEMPDIR));
+        $tree = new DAV\Tree(new DAV\FSExt\Directory(SABRE_TEMPDIR));
         $this->server->tree = $tree;
 
         $etag = md5(file_get_contents(SABRE_TEMPDIR . '/test.txt'));

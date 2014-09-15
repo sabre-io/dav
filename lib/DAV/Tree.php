@@ -5,23 +5,81 @@ namespace Sabre\DAV;
 use Sabre\HTTP\URLUtil;
 
 /**
- * Abstract tree object
+ * The tree object is responsible for basic tree operations.
+ *
+ * It allows for fetching nodes by path, facilitates deleting, copying and
+ * moving.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-abstract class Tree {
+class Tree {
 
     /**
-     * This function must return an INode object for a path
-     * If a Path doesn't exist, thrown a Exception_NotFound
+     * The root node
+     *
+     * @var ICollection
+     */
+    protected $rootNode;
+
+    /**
+     * This is the node cache. Accessed nodes are stored here
+     *
+     * @var array
+     */
+    protected $cache = array();
+
+    /**
+     * Creates the object
+     *
+     * This method expects the rootObject to be passed as a parameter
+     *
+     * @param ICollection $rootNode
+     */
+    function __construct(ICollection $rootNode) {
+
+        $this->rootNode = $rootNode;
+
+    }
+
+    /**
+     * Returns the INode object for the requested path
      *
      * @param string $path
-     * @throws Exception\NotFound
      * @return INode
      */
-    abstract function getNodeForPath($path);
+    function getNodeForPath($path) {
+
+        $path = trim($path,'/');
+        if (isset($this->cache[$path])) return $this->cache[$path];
+
+        // Is it the root node?
+        if (!strlen($path)) {
+            return $this->rootNode;
+        }
+
+        // Attempting to fetch its parent
+        list($parentName, $baseName) = URLUtil::splitPath($path);
+
+        // If there was no parent, we must simply ask it from the root node.
+        if ($parentName==="") {
+            $node = $this->rootNode->getChild($baseName);
+        } else {
+            // Otherwise, we recursively grab the parent and ask him/her.
+            $parent = $this->getNodeForPath($parentName);
+
+            if (!($parent instanceof ICollection))
+                throw new Exception\NotFound('Could not find node at path: ' . $path);
+
+            $node = $parent->getChild($baseName);
+
+        }
+
+        $this->cache[$path] = $node;
+        return $node;
+
+    }
 
     /**
      * This function allows you to check if a node exists.
@@ -36,8 +94,14 @@ abstract class Tree {
 
         try {
 
-            $this->getNodeForPath($path);
-            return true;
+            // The root always exists
+            if ($path==='') return true;
+
+            list($parent, $base) = URLUtil::splitPath($path);
+
+            $parentNode = $this->getNodeForPath($parent);
+            if (!$parentNode instanceof ICollection) return false;
+            return $parentNode->childExists($base);
 
         } catch (Exception\NotFound $e) {
 
@@ -81,11 +145,21 @@ abstract class Tree {
         list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
 
         if ($sourceDir===$destinationDir) {
-            $renameable = $this->getNodeForPath($sourcePath);
-            $renameable->setName($destinationName);
+            // If this is a 'local' rename, it means we can just trigger a rename.
+            $sourceNode = $this->getNodeForPath($sourcePath);
+            $sourceNode->setName($destinationName);
         } else {
-            $this->copy($sourcePath,$destinationPath);
-            $this->getNodeForPath($sourcePath)->delete();
+            $newParentNode = $this->getNodeForPath($destinationDir);
+            $moveSuccess = false;
+            if ($newParentNode instanceof IMoveTarget) {
+                // The target collection may be able to handle the move
+                $sourceNode = $this->getNodeForPath($sourcePath);
+                $moveSuccess = $newParentNode->moveInto($destinationName, $sourcePath, $sourceNode);
+            }
+            if (!$moveSuccess) {
+                $this->copy($sourcePath,$destinationPath);
+                $this->getNodeForPath($sourcePath)->delete();
+            }
         }
         $this->markDirty($sourceDir);
         $this->markDirty($destinationDir);
@@ -117,7 +191,13 @@ abstract class Tree {
     function getChildren($path) {
 
         $node = $this->getNodeForPath($path);
-        return $node->getChildren();
+        $children = $node->getChildren();
+        foreach($children as $child) {
+
+            $this->cache[trim($path,'/') . '/' . $child->getName()] = $child;
+
+        }
+        return $children;
 
     }
 
@@ -141,6 +221,14 @@ abstract class Tree {
      */
     function markDirty($path) {
 
+        // We don't care enough about sub-paths
+        // flushing the entire cache
+        $path = trim($path,'/');
+        foreach($this->cache as $nodePath=>$node) {
+            if ($nodePath == $path || strpos($nodePath,$path.'/')===0)
+                unset($this->cache[$nodePath]);
+
+        }
 
     }
 
@@ -160,10 +248,37 @@ abstract class Tree {
      */
     function getMultipleNodes($paths) {
 
-        $result = [];
+        // Finding common parents
+        $parents = [];
         foreach($paths as $path) {
-            $result[$path] = $this->getNodeForPath($path);
+            list($parent, $node) = URLUtil::splitPath($path);
+            if (!isset($parents[$parent])) {
+                $parents[$parent] = [$node];
+            } else {
+                $parents[$parent][] = $node;
+            }
         }
+
+        $result = [];
+
+        foreach($parents as $parent=>$children) {
+
+            $parentNode = $this->getNodeForPath($parent);
+            if ($parentNode instanceof IMultiGet) {
+                foreach($parentNode->getMultipleChildren($children) as $childNode) {
+                    $fullPath = $parent . '/' . $childNode->getName();
+                    $result[$fullPath] = $childNode;
+                    $this->cache[$fullPath] = $childNode;
+                }
+            } else {
+                foreach($children as $child) {
+                    $fullPath = $parent . '/' . $child;
+                    $result[$fullPath] = $this->getNodeForPath($fullPath);
+                }
+            }
+
+        }
+
         return $result;
 
     }

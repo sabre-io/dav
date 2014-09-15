@@ -18,7 +18,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
 
         $this->response = new HTTP\ResponseMock();
         $dir = new FS\Directory(SABRE_TEMPDIR);
-        $tree = new ObjectTree($dir);
+        $tree = new Tree($dir);
         $this->server = new Server($tree);
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;

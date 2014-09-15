@@ -11,7 +11,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Directory extends Node implements DAV\ICollection, DAV\IQuota {
+class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTarget {
 
     /**
      * Creates a new file in the directory
@@ -152,6 +152,43 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
             disk_total_space($this->path)-disk_free_space($this->path),
             disk_free_space($this->path)
         ];
+
+    }
+
+    /**
+     * Moves a node into this collection.
+     *
+     * It is up to the implementors to:
+     *   1. Create the new resource.
+     *   2. Remove the old resource.
+     *   3. Transfer any properties or other data.
+     *
+     * Generally you should make very sure that your collection can easily move
+     * the move.
+     *
+     * If you don't, just return false, which will trigger sabre/dav to handle
+     * the move itself. If you return true from this function, the assumption
+     * is that the move was successful.
+     *
+     * @param string $targetName New local file/collection name.
+     * @param string $sourcePath Full path to source node
+     * @param DAV\INode $sourceNode Source node itself
+     * @return bool
+     */
+    function moveInto($targetName, $sourcePath, DAV\INode $sourceNode) {
+
+        // We only support FSExt\Directory or FSExt\File objects, so
+        // anything else we want to quickly reject.
+        if (!$sourceNode instanceof Node) {
+            return false;
+        }
+
+        // PHP allows us to access protected properties from other objects, as
+        // long as they are defined in a class that has a shared inheritence
+        // with the current class.
+        rename($sourceNode->path, $this->path . '/' . $targetName);
+
+        return true;
 
     }
 

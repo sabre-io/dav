@@ -17,7 +17,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
         $principals = new PrincipalCollection($backend);
         $dir->addChild($principals);
 
-        $fakeServer = new DAV\Server(new DAV\ObjectTree($dir));
+        $fakeServer = new DAV\Server($dir);
         $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin($backend,'realm');

@@ -45,8 +45,8 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new DAV\ObjectTree(new DAV\SimpleCollection('rootdir'));
-        $server = new DAV\Server($objectTree);
+        $node = new DAV\SimpleCollection('rootdir');
+        $server = new DAV\Server($node);
 
         $prin->serialize($server, $root);
 
@@ -74,7 +74,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new DAV\ObjectTree(new DAV\SimpleCollection('rootdir'));
+        $objectTree = new DAV\Tree(new DAV\SimpleCollection('rootdir'));
         $server = new DAV\Server($objectTree);
 
         $prin->serialize($server, $root);
@@ -103,7 +103,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $root->setAttribute('xmlns:d','DAV:');
 
         $doc->appendChild($root);
-        $objectTree = new DAV\ObjectTree(new DAV\SimpleCollection('rootdir'));
+        $objectTree = new DAV\Tree(new DAV\SimpleCollection('rootdir'));
         $server = new DAV\Server($objectTree);
 
         $prin->serialize($server, $root);

@@ -71,8 +71,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $root->addChild($calendars);
         $root->addChild($principals);
 
-        $objectTree = new DAV\ObjectTree($root);
-        $this->server = new DAV\Server($objectTree);
+        $this->server = new DAV\Server($root);
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');

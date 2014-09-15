@@ -16,7 +16,7 @@ class ObjectTreeTest extends \PHPUnit_Framework_TestCase {
         file_put_contents(SABRE_TEMPDIR . '/root/file.txt','contents');
         file_put_contents(SABRE_TEMPDIR . '/root/subdir/subfile.txt','subcontents');
         $rootNode = new FSExt\Directory(SABRE_TEMPDIR . '/root');
-        $this->tree = new ObjectTree($rootNode);
+        $this->tree = new Tree($rootNode);
 
     }
 

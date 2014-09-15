@@ -9,6 +9,7 @@ ChangeLog
   `Accept:` header, in CardDAV reports, and automatically converting from
   jCard to vCard upon `PUT`. It's important to note that your backends _may_
   now recieve both vCard 3.0 and 4.0.
+* Added: #444. Collections can now opt-in to support high-speed `MOVE`.
 * Changed: PropertyStorage backends now have a `move` method.
 * Added: `beforeMove`, and `afterMove` events.
 * Changed: A few database changes for the CalDAV PDO backend. Make sure you
@@ -24,6 +25,8 @@ ChangeLog
   support, it is no longer needed. It's functionality has been replaced by
   `Sabre\CalDAV\Schedule\IMipPlugin`, which can now send emails for clients
   other than iCal.
+* Removed: `Sabre\DAV\ObjectTree` and `Sabre\DAV\Tree\FileSystem`. All this
+  functionality has been merged into `Sabre\DAV\Tree`.
 * Added: Support for the `{http://calendarserver.org/ns/}email-address-set`
   property.
 * #460: PropertyStorage must move properties during `MOVE` requests.

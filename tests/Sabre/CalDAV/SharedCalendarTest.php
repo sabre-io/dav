@@ -115,23 +115,23 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ),
-            array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ),
-            array(
-                'privilege' => '{DAV:}write',
                 'principal' => 'principals/owner/calendar-proxy-write',
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/owner/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/owner',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/owner/calendar-proxy-write',
                 'protected' => true,
             ),
             array(
@@ -159,17 +159,7 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ),
-            array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ),
-            array(
-                'privilege' => '{DAV:}write',
                 'principal' => 'principals/owner/calendar-proxy-write',
                 'protected' => true,
             ),

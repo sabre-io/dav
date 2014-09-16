@@ -66,7 +66,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
                 'X-Sabre-Version' => Version::VERSION,
                 'Content-Length' => '0',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals('Test contents', file_get_contents(SABRE_TEMPDIR. '/test2.txt'));
@@ -123,7 +123,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
                 'X-Sabre-Version' => Version::VERSION,
                 'Content-Length' => 0,
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(204, $this->response->status);
@@ -149,7 +149,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
                 'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(412, $this->response->status);
@@ -175,7 +175,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
                 'X-Sabre-Version' => Version::VERSION,
                 'Content-Type' => 'application/xml; charset=utf-8',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(409, $this->response->status);
@@ -217,7 +217,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
                 'X-Sabre-Version' => Version::VERSION,
                 'Content-Length' => '0',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals('Test contents',file_get_contents(SABRE_TEMPDIR . '/col2/test.txt'));
@@ -240,7 +240,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'X-Sabre-Version' => Version::VERSION,
             'Content-Length' => '0',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(201, $this->response->status);
@@ -266,7 +266,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
             'X-Sabre-Version' => Version::VERSION,
             'Content-Length' => '0',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
 

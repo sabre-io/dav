@@ -28,7 +28,7 @@ class TemporaryFileFilterTest extends AbstractServer {
 
         $this->assertEquals('', $this->response->body);
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('0', $this->response->headers['Content-Length']);
+        $this->assertEquals('0', $this->response->getHeader('Content-Length'));
 
         $this->assertEquals('Testing new file',file_get_contents(SABRE_TEMPDIR . '/testput.txt'));
 
@@ -51,7 +51,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
 
@@ -75,7 +75,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'),'._testput.txt should not exist in the regular file structure.');
 
@@ -86,7 +86,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
             'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
     }
 
@@ -107,7 +107,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $serverVars = array(
             'REQUEST_URI'    => '/._testput.txt',
@@ -123,7 +123,7 @@ class TemporaryFileFilterTest extends AbstractServer {
             'X-Sabre-Temp' => 'true',
             'Content-Length' => 16,
             'Content-Type' => 'application/octet-stream',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals('Testing new file',stream_get_contents($this->response->body));
 
@@ -157,9 +157,9 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('application/xml; charset=utf-8',$this->response->headers['Content-Type']);
-        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->headers['Lock-Token'])===1,'We did not get a valid Locktoken back (' . $this->response->headers['Lock-Token'] . ')');
-        $this->assertEquals('true',$this->response->headers['X-Sabre-Temp']);
+        $this->assertEquals('application/xml; charset=utf-8',$this->response->getHeader('Content-Type'));
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/',$this->response->getHeader('Lock-Token'))===1,'We did not get a valid Locktoken back (' . $this->response->getHeader('Lock-Token') . ')');
+        $this->assertEquals('true',$this->response->getHeader('X-Sabre-Temp'));
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testlock.txt'),'._testlock.txt should not exist in the regular file structure.');
 
@@ -182,7 +182,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $serverVars = array(
             'REQUEST_URI'    => '/._testput.txt',
@@ -196,7 +196,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(204, $this->response->status, "Incorrect status code received. Full body:\n". $this->response->body);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals('',$this->response->body);
 
@@ -219,7 +219,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $serverVars = array(
             'REQUEST_URI'    => '/._testput.txt',
@@ -235,7 +235,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->assertEquals(array(
             'X-Sabre-Temp' => 'true',
             'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
         $xml = simplexml_load_string($body);

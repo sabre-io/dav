@@ -93,7 +93,7 @@ XML;
         $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
 
         $this->assertEquals(200, $this->server->httpResponse->status);
-        $this->assertEquals('text/calendar', $this->server->httpResponse->headers['Content-Type']);
+        $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
         $this->assertTrue(strpos($this->server->httpResponse->body,'BEGIN:VFREEBUSY')!==false);
 
     }

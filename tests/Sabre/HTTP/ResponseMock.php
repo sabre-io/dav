@@ -18,6 +18,5 @@ class ResponseMock extends Response {
      */
     public $body;
     public $status;
-    public $headers = [];
 
 }

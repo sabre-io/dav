@@ -92,7 +92,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
             'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Length' => '0',
             'ETag' => '"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"',
-        ), $response->headers);
+        ), $response->getHeaders());
 
         $expected = array(
             'uri'          => 'blabla.ics',

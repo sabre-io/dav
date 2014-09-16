@@ -275,7 +275,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
-        $this->assertFalse(isset($response->headers['ETag']));
+        $this->assertNull($response->getHeader('ETag'));
 
     }
 }

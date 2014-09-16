@@ -70,7 +70,7 @@ class IMipPlugin extends DAV\ServerPlugin {
      */
     function initialize(DAV\Server $server) {
 
-        $server->on('schedule', [$this, 'schedule']);
+        $server->on('schedule', [$this, 'schedule'], 120);
 
     }
 

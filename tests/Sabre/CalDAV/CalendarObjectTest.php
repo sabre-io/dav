@@ -180,23 +180,23 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ),
-            array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1/calendar-proxy-write',
-                'protected' => true,
-            ),
-            array(
-                'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ),
             array(
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ),
         );

@@ -199,17 +199,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ),
-            array(
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1/calendar-proxy-write',
-                'protected' => true,
-            ),
-            array(
-                'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ),
@@ -221,6 +211,16 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
             array(
                 'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ),
         );

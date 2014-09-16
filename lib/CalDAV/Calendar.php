@@ -275,24 +275,14 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      */
     function getACL() {
 
-        return [
+        $acl = [
             [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->getOwner(),
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->getOwner(),
-                'protected' => true,
-            ],
-            [
                 'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner() . '/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
                 'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
             ],
@@ -308,6 +298,20 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
             ],
 
         ];
+        if (empty($this->calendarInfo['{http://sabredav.org/ns}read-only'])) {
+            $acl[] = [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ];
+            $acl[] = [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->getOwner() . '/calendar-proxy-write',
+                'protected' => true,
+            ];
+        }
+
+        return $acl;
 
     }
 

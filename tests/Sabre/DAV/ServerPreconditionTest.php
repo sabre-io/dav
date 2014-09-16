@@ -216,7 +216,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(304, $server->httpResponse->status);
         $this->assertEquals(array(
             'Last-Modified' => 'Sat, 06 Apr 1985 23:30:00 GMT',
-        ), $server->httpResponse->headers);
+        ), $server->httpResponse->getHeaders());
 
     }
 

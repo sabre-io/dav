@@ -289,7 +289,7 @@ ICS;
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals(array(
             'Content-Type' => 'application/xml',
-        ), $this->response->headers);
+        ), $this->response->getHeaders());
 
         $strings = array(
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
@@ -345,7 +345,7 @@ ICS;
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals([
             'Content-Type' => 'application/xml',
-        ], $this->response->headers);
+        ], $this->response->getHeaders());
 
         $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',

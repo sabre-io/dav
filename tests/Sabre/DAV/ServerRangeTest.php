@@ -33,7 +33,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(206, $this->response->status);
@@ -64,7 +64,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(206, $this->response->status);
@@ -95,7 +95,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(206, $this->response->status);
@@ -167,7 +167,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(206, $this->response->status);
@@ -200,7 +200,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);
@@ -234,7 +234,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(206, $this->response->status);
@@ -267,7 +267,7 @@ class ServerRangeTest extends AbstractServer{
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             'ETag'          => '"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);

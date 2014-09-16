@@ -61,7 +61,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
             'Content-Type' => 'text/calendar',
-        ], $s->httpResponse->headers);
+        ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
@@ -112,7 +112,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
             'Content-Type' => 'text/calendar',
-        ], $s->httpResponse->headers);
+        ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
@@ -219,7 +219,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(
             'X-Sabre-Version' => DAV\Version::VERSION,
             'Content-Type' => 'text/calendar',
-        ), $s->httpResponse->headers);
+        ), $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 

@@ -1104,7 +1104,7 @@ END:VCALENDAR';
         $this->assertEquals(array(
             'Content-Type' => 'application/xml',
             'ETag'         => '"1"',
-        ), $httpResponse->headers);
+        ), $httpResponse->getHeaders());
 
         $expected =
 '<?xml version="1.0" encoding="UTF-8"?>

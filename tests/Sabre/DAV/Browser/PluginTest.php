@@ -32,7 +32,7 @@ class PluginTest extends DAV\AbstractServer{
                 'Content-Type' => 'text/html; charset=utf-8',
                 'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
             ],
-            $this->response->headers
+            $this->response->getHeaders()
         );
 
         $this->assertTrue(strpos($this->response->body, '<title>dir/') !== false);
@@ -52,7 +52,7 @@ class PluginTest extends DAV\AbstractServer{
                 'Content-Type' => 'text/html; charset=utf-8',
                 'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
             ],
-            $this->response->headers
+            $this->response->getHeaders()
         );
 
         $this->assertTrue(strpos($this->response->body, '<title>/') !== false);
@@ -113,7 +113,7 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(array(
             'X-Sabre-Version' => DAV\Version::VERSION,
             'Location' => '/',
-        ), $this->response->headers);
+        ), $this->response->getHeaders());
 
         $this->assertTrue(is_dir(SABRE_TEMPDIR . '/new_collection'));
 

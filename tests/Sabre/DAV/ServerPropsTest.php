@@ -52,7 +52,7 @@ class ServerPropsTest extends AbstractServer {
                 'DAV' => '1, 3, extended-mkcol, 2',
                 'Vary' => 'Brief,Prefer',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
@@ -78,7 +78,7 @@ class ServerPropsTest extends AbstractServer {
                 'DAV' => '1, 3, extended-mkcol, 2',
                 'Vary' => 'Brief,Prefer',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
@@ -317,7 +317,7 @@ class ServerPropsTest extends AbstractServer {
                 'Content-Type' => 'application/xml; charset=utf-8',
                 'Vary' => 'Brief,Prefer',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(207, $this->response->status,'We got the wrong status. Full XML response: ' . $this->response->body);

@@ -49,7 +49,7 @@ class HttpPutTest extends DAVServerTest {
                 'Content-Length' => '0',
                 'ETag' => '"' . md5('hello') . '"'
             ],
-            $response->headers
+            $response->getHeaders()
         );
 
     }
@@ -78,7 +78,7 @@ class HttpPutTest extends DAVServerTest {
                 'Content-Length' => '0',
                 'ETag' => '"' . md5('bar') . '"'
             ],
-            $response->headers
+            $response->getHeaders()
         );
 
     }
@@ -112,7 +112,7 @@ class HttpPutTest extends DAVServerTest {
                 'Content-Length' => '0',
                 'ETag' => '"' . md5('hello') . '"'
             ],
-            $response->headers
+            $response->getHeaders()
         );
 
     }

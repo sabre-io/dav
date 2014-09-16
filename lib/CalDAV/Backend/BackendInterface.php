@@ -30,6 +30,9 @@ interface BackendInterface {
      * For this property, you can just return an instance of
      * Sabre\CalDAV\Property\SupportedCalendarComponentSet.
      *
+     * If you return {http://sabredav.org/ns}read-only and set the value to 1,
+     * ACL will automatically be put in read-only mode.
+     *
      * @param string $principalUri
      * @return array
      */

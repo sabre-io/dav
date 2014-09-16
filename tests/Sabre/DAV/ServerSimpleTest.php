@@ -57,7 +57,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);
@@ -82,7 +82,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);
@@ -142,7 +142,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);
@@ -168,7 +168,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' .  filemtime($this->tempDir . '/test.txt'))),
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);
@@ -189,7 +189,7 @@ class ServerSimpleTest extends AbstractServer{
             'Accept-Ranges'  => 'bytes',
             'Content-Length' => '0',
             'X-Sabre-Version' => Version::VERSION,
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('', $this->response->body);
@@ -210,7 +210,7 @@ class ServerSimpleTest extends AbstractServer{
             'Accept-Ranges'  => 'bytes',
             'Content-Length' => '0',
             'X-Sabre-Version' => Version::VERSION,
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('', $this->response->body);
@@ -231,7 +231,7 @@ class ServerSimpleTest extends AbstractServer{
         $this->assertEquals(array(
             'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals(501, $this->response->status);
 
@@ -252,7 +252,7 @@ class ServerSimpleTest extends AbstractServer{
         $this->assertEquals(array(
             'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals(501, $this->response->status);
 
@@ -287,7 +287,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Length' => 13,
             'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(200, $this->response->status);
@@ -544,7 +544,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $this->assertEquals(array(
             'Content-Type' => 'application/xml; charset=utf-8',
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals(500, $this->response->status);
 
@@ -572,7 +572,7 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => Version::VERSION,
             'Content-Type' => 'application/xml; charset=utf-8',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
         $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: ' . $this->response->body);
@@ -596,7 +596,7 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => Version::VERSION,
             'testheader' => 'testvalue',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
         );
 
         $this->assertEquals(418, $this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);

@@ -35,7 +35,7 @@ class MapGetToPropFindTest extends DAV\AbstractServer {
             'DAV' => '1, 3, extended-mkcol',
             'Vary' => 'Brief,Prefer',
             ),
-            $this->response->headers
+            $this->response->getHeaders()
          );
 
     }

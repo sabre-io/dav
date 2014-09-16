@@ -51,7 +51,7 @@ class ServerPluginTest extends AbstractServer {
             'Accept-Ranges'  => 'bytes',
             'Content-Length' =>  '0',
             'X-Sabre-Version' => Version::VERSION,
-        ),$this->response->headers);
+        ),$this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('', $this->response->body);

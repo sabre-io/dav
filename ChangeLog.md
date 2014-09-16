@@ -57,6 +57,7 @@ ChangeLog
   the CardDAV PDO backend.
 * When a REPORT is not supported, we now emit HTTP error 415, instead of 403.
 * #348: `HEAD` requests now work wherever `GET` also works.
+* Changed: Lower priority for the iMip plugins `schedule` event listener.
 
 2.0.5 (????-??-??)
 ------------------

@@ -238,6 +238,34 @@ ICS;
 
     }
 
+    /**
+     * A MOVE request will trigger an unbind on a scheduling resource.
+     *
+     * However, we must not treat it as a cancellation, it just got moved to a
+     * different calendar.
+     */
+    function testUnbindIgnoredOnMove() {
+
+        $newObject = null;
+
+        $oldObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+DTSTART:20140811T230000Z
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+
+        $this->server->httpRequest->setMethod('MOVE');
+        $this->deliver($oldObject, $newObject);
+        $this->assertItemsInInbox('user2', 0);
+
+    }
+
     function testDeletedInviteWrongUrl() {
 
         $newObject = null;
@@ -362,7 +390,7 @@ END:VCALENDAR
 ICS;
 
         $this->server->on('propFind', function($propFind) {
-            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-inbox-URL', null, 403); 
+            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-inbox-URL', null, 403);
         });
         $this->deliver(null, $newObject);
 
@@ -398,7 +426,7 @@ END:VCALENDAR
 ICS;
 
         $this->server->on('propFind', function($propFind) {
-            $propFind->set('{' . Plugin::NS_CALDAV . '}calendar-home-set', null, 403); 
+            $propFind->set('{' . Plugin::NS_CALDAV . '}calendar-home-set', null, 403);
         });
         $this->deliver(null, $newObject);
 
@@ -433,7 +461,7 @@ END:VCALENDAR
 ICS;
 
         $this->server->on('propFind', function($propFind) {
-            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-default-calendar-URL', null, 403); 
+            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-default-calendar-URL', null, 403);
         });
         $this->deliver(null, $newObject);
 

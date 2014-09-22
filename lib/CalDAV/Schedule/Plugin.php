@@ -103,8 +103,8 @@ class Plugin extends ServerPlugin {
         $this->server = $server;
         $server->on('method:POST',         [$this, 'httpPost']);
         $server->on('propFind',            [$this, 'propFind']);
-        $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
-        $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
+        $server->on('beforeCreateFile',    [$this, 'beforeCreateFile'], 110);
+        $server->on('beforeWriteContent',  [$this, 'beforeWriteContent'], 110);
         $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
         $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
 

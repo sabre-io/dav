@@ -173,8 +173,8 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('propFind',            [$this,'propFind']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
         $server->on('onBrowserPostAction', [$this,'browserPostAction']);
-        $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
+        $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
         $server->on('afterMethod:GET',     [$this,'httpAfterGET']);
 
         $server->xmlNamespaces[self::NS_CALDAV] = 'cal';

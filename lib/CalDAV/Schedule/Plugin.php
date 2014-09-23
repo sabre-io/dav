@@ -672,10 +672,9 @@ class Plugin extends ServerPlugin {
             throw new BadRequest('A METHOD property must be specified in iTIP messages');
         }
 
-        // So we support two types of requests:
+        // So we support one type of request:
         //
         // REQUEST with a VFREEBUSY component
-        // REQUEST, REPLY, ADD, CANCEL on VEVENT components
 
         $acl = $this->server->getPlugin('acl');
 

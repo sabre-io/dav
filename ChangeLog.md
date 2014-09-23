@@ -64,6 +64,8 @@ ChangeLog
 * #348: `HEAD` requests now work wherever `GET` also works.
 * Changed: Lower priority for the iMip plugins `schedule` event listener.
 * Added: #523 Custom CalDAV backends can now mark any calendar as read-only.
+* The zip release ships with [sabre/vobject 3.3.3][vobj],
+  [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
 
 2.0.5 (????-??-??)
 ------------------

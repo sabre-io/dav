@@ -429,8 +429,22 @@ class Plugin extends ServerPlugin {
 
         $caldavNS = '{' . Plugin::NS_CALDAV . '}';
 
-        $result = $aclPlugin->principalSearch(
-            ['{http://sabredav.org/ns}email-address' => substr($iTipMessage->recipient, 7)],
+        $principalUri = $aclPlugin->getPrincipalByUri($iTipMessage->recipient);
+        if (!$principalUri) {
+            $iTipMessage->scheduleStatus = '3.7;Could not find principal.';
+            return;
+        }
+
+        // We found a principal URL, now we need to find its inbox.
+        // Unfortunately we may not have sufficient privileges to find this, so
+        // we are temporarily turning off ACL to let this come through.
+        //
+        // Once we support PHP 5.5, this should be wrapped in a try..finally
+        // block so we can ensure that this privilege gets added again after.
+        $this->server->removeListener('propFind', [$aclPlugin, 'propFind']);
+
+        $result = $this->server->getProperties(
+            $principalUri,
             [
                 '{DAV:}principal-URL',
                  $caldavNS . 'calendar-home-set',
@@ -440,27 +454,25 @@ class Plugin extends ServerPlugin {
             ]
         );
 
-        if (!count($result)) {
-            $iTipMessage->scheduleStatus = '3.7;Could not find principal.';
-            return;
-        }
+        // Re-registering the ACL event
+        $this->server->on('propFind', [$aclPlugin, 'propFind'], 20);
 
-        if (!isset($result[0][200][$caldavNS . 'schedule-inbox-URL'])) {
+        if (!isset($result[$caldavNS . 'schedule-inbox-URL'])) {
             $iTipMessage->scheduleStatus = '5.2;Could not find local inbox';
             return;
         }
-        if (!isset($result[0][200][$caldavNS . 'calendar-home-set'])) {
+        if (!isset($result[$caldavNS . 'calendar-home-set'])) {
             $iTipMessage->scheduleStatus = '5.2;Could not locate a calendar-home-set';
             return;
         }
-        if (!isset($result[0][200][$caldavNS . 'schedule-default-calendar-URL'])) {
+        if (!isset($result[$caldavNS . 'schedule-default-calendar-URL'])) {
             $iTipMessage->scheduleStatus = '5.2;Could not find a schedule-default-calendar-URL property';
             return;
         }
 
-        $calendarPath = $result[0][200][$caldavNS . 'schedule-default-calendar-URL']->getHref();
-        $homePath = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
-        $inboxPath = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
+        $calendarPath = $result[$caldavNS . 'schedule-default-calendar-URL']->getHref();
+        $homePath = $result[$caldavNS . 'calendar-home-set']->getHref();
+        $inboxPath = $result[$caldavNS . 'schedule-inbox-URL']->getHref();
 
         if ($iTipMessage->method === 'REPLY') {
             $privilege = 'schedule-deliver-reply';

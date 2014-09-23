@@ -596,22 +596,38 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This method returns false if the principal could not be found.
      *
-     * @return string|null
+     * @deprecated use getPrincipalByUri instead.
+     * @return string|bool
      */
     function getPrincipalByEmail($email) {
 
-        $result = null;
-        $uris = $this->principalCollectionSet;
-        foreach($uris as $uri) {
+        $result = $this->getPrincipalByUri('mailto:' . $email);
+        return $result?:false;
 
-            $principalCollection = $this->server->tree->getNodeForPath($uri);
+    }
+
+    /**
+     * Returns a principal based on its uri.
+     *
+     * Returns null if the principal could not be found.
+     *
+     * @param string $uri
+     * @return null|string
+     */
+    function getPrincipalByUri($uri) {
+
+        $result = null;
+        $collections = $this->principalCollectionSet;
+        foreach($collections as $collection) {
+
+            $principalCollection = $this->server->tree->getNodeForPath($collection);
             if (!$principalCollection instanceof IPrincipalCollection) {
                 // Not a principal collection, we're simply going to ignore
                 // this.
                 continue;
             }
 
-            $result = $principalCollection->findByUri('mailto:' . $email);
+            $result = $principalCollection->findByUri($uri);
             if ($result) {
                 return $result;
             }
@@ -725,7 +741,6 @@ class Plugin extends DAV\ServerPlugin {
         $server->propertyMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Property\\HrefList';
 
     }
-
 
     /* {{{ Event handlers */
 

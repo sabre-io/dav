@@ -32,12 +32,13 @@ class Mock extends AbstractBackend {
 
     function getPrincipalsByPrefix($prefix) {
 
-        $prefix = trim($prefix,'/') . '/';
+        $prefix = trim($prefix,'/');
+        if ($prefix) $prefix.='/';
         $return = array();
 
         foreach($this->principals as $principal) {
 
-            if (strpos($principal['uri'], $prefix)!==0) continue;
+            if ($prefix && strpos($principal['uri'], $prefix)!==0) continue;
 
             $return[] = $principal;
 

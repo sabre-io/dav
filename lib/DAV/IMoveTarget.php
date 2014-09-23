@@ -27,17 +27,17 @@ interface IMoveTarget extends ICollection {
      *   2. Remove the old resource.
      *   3. Transfer any properties or other data.
      *
-     * Generally you should make very sure that your collection can easily move 
+     * Generally you should make very sure that your collection can easily move
      * the move.
      *
-     * If you don't, just return false, which will trigger sabre/dav to handle 
-     * the move itself. If you return true from this function, the assumption 
-     * is that the move was successful. 
-     * 
+     * If you don't, just return false, which will trigger sabre/dav to handle
+     * the move itself. If you return true from this function, the assumption
+     * is that the move was successful.
+     *
      * @param string $targetName New local file/collection name.
      * @param string $sourcePath Full path to source node
      * @param INode $sourceNode Source node itself
-     * @return bool 
+     * @return bool
      */
     function moveInto($targetName, $sourcePath, INode $sourceNode);
 

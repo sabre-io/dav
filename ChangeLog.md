@@ -27,11 +27,16 @@ ChangeLog
   other than iCal.
 * Removed: `Sabre\DAV\ObjectTree` and `Sabre\DAV\Tree\FileSystem`. All this
   functionality has been merged into `Sabre\DAV\Tree`.
+* Changed: PrincipalBackend now has a findByUri method.
+* Changed: `PrincipalBackend::searchPrincipals` has a new optional `test`
+  argument.
 * Added: Support for the `{http://calendarserver.org/ns/}email-address-set`
   property.
 * #460: PropertyStorage must move properties during `MOVE` requests.
 * Changed: Restructured the zip distribution to be a little bit more lean
   and consistent.
+* #524: Full support for the `test="anyof"` attribute in principal-search
+  `REPORT`.
 * #472: Always returning lock tokens in the lockdiscovery property.
 * Directory entries in the Browser plugin are sorted by type and name.
   (@aklomp)

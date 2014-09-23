@@ -32,12 +32,13 @@ class Mock extends AbstractBackend {
 
     function getPrincipalsByPrefix($prefix) {
 
-        $prefix = trim($prefix,'/') . '/';
+        $prefix = trim($prefix,'/');
+        if ($prefix) $prefix.='/';
         $return = array();
 
         foreach($this->principals as $principal) {
 
-            if (strpos($principal['uri'], $prefix)!==0) continue;
+            if ($prefix && strpos($principal['uri'], $prefix)!==0) continue;
 
             $return[] = $principal;
 
@@ -61,7 +62,7 @@ class Mock extends AbstractBackend {
 
     }
 
-    function searchPrincipals($prefixPath, array $searchProperties) {
+    function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof') {
 
         $matches = array();
         foreach($this->getPrincipalsByPrefix($prefixPath) as $principal) {
@@ -73,6 +74,13 @@ class Mock extends AbstractBackend {
                 }
                 if (mb_stripos($principal[$key],$value, 0, 'UTF-8')===false) {
                     continue 2;
+                }
+
+                // We have a match for this searchProperty!
+                if ($test === 'allof') {
+                    continue;
+                } else {
+                    break;
                 }
 
             }

@@ -15,4 +15,38 @@ namespace Sabre\DAVACL\PrincipalBackend;
  */
 abstract class AbstractBackend implements BackendInterface {
 
+    /**
+     * Finds a principal by its URI.
+     *
+     * This method may receive any type of uri, but mailto: addresses will be
+     * the most common.
+     *
+     * Implementation of this API is optional. It is currently used by the
+     * CalDAV system to find principals based on their email addresses. If this
+     * API is not implemented, some features may not work correctly.
+     *
+     * This method must return a relative principal path, or null, if the
+     * principal was not found or you refuse to find it.
+     *
+     * @param string $uri
+     * @return string
+     */
+    function findByUri($uri) {
+
+        // Note that the default implementation here is a bit slow and could
+        // likely be optimized.
+        if (substr($uri,0,7)!=='mailto:') {
+            return;
+        }
+        $result = $this->searchPrincipals(
+            '',
+            ['{http://sabredav.org/ns}email-address' => substr($uri,7)]
+        );
+
+        if ($result) {
+            return $result[0];
+        }
+
+    }
+
 }

@@ -596,20 +596,43 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This method returns false if the principal could not be found.
      *
+     * @deprecated use getPrincipalByUri instead.
      * @return string|bool
      */
     function getPrincipalByEmail($email) {
 
-        $result = $this->principalSearch(
-            ['{http://sabredav.org/ns}email-address' => $email],
-            ['{DAV:}principal-URL']
-        );
+        $result = $this->getPrincipalByUri('mailto:' . $email);
+        return $result?:false;
 
-        if (!count($result)) {
-            return false;
+    }
+
+    /**
+     * Returns a principal based on its uri.
+     *
+     * Returns null if the principal could not be found.
+     *
+     * @param string $uri
+     * @return null|string
+     */
+    function getPrincipalByUri($uri) {
+
+        $result = null;
+        $collections = $this->principalCollectionSet;
+        foreach($collections as $collection) {
+
+            $principalCollection = $this->server->tree->getNodeForPath($collection);
+            if (!$principalCollection instanceof IPrincipalCollection) {
+                // Not a principal collection, we're simply going to ignore
+                // this.
+                continue;
+            }
+
+            $result = $principalCollection->findByUri($uri);
+            if ($result) {
+                return $result;
+            }
+
         }
-
-        return $result[0][200]['{DAV:}principal-URL'];
 
     }
 
@@ -630,12 +653,14 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $collectionUri      The principal collection to search on.
      *                                   If this is ommitted, the standard
      *                                   principal collection-set will be used.
+     * @param string $test               "allof" to use AND to search the
+     *                                   properties. 'anyof' for OR.
      * @return array     This method returns an array structure similar to
      *                  Sabre\DAV\Server::getPropertiesForPath. Returned
      *                  properties are index by a HTTP status code.
      *
      */
-    function principalSearch(array $searchProperties, array $requestedProperties, $collectionUri = null) {
+    function principalSearch(array $searchProperties, array $requestedProperties, $collectionUri = null, $test = 'allof') {
 
         if (!is_null($collectionUri)) {
             $uris = [$collectionUri];
@@ -653,7 +678,7 @@ class Plugin extends DAV\ServerPlugin {
                 continue;
             }
 
-            $results = $principalCollection->searchPrincipals($searchProperties);
+            $results = $principalCollection->searchPrincipals($searchProperties, $test);
             foreach($results as $result) {
                 $lookupResults[] = rtrim($uri,'/') . '/' . $result;
             }
@@ -716,7 +741,6 @@ class Plugin extends DAV\ServerPlugin {
         $server->propertyMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Property\\HrefList';
 
     }
-
 
     /* {{{ Event handlers */
 
@@ -1299,13 +1323,18 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function principalPropertySearchReport(\DOMDocument $dom) {
 
-        list($searchProperties, $requestedProperties, $applyToPrincipalCollectionSet) = $this->parsePrincipalPropertySearchReportRequest($dom);
+        list(
+            $searchProperties,
+            $requestedProperties,
+            $applyToPrincipalCollectionSet,
+            $test
+        ) = $this->parsePrincipalPropertySearchReportRequest($dom);
 
         $uri = null;
         if (!$applyToPrincipalCollectionSet) {
             $uri = $this->server->getRequestUri();
         }
-        $result = $this->principalSearch($searchProperties, $requestedProperties, $uri);
+        $result = $this->principalSearch($searchProperties, $requestedProperties, $uri, $test);
 
         $prefer = $this->server->getHTTPPRefer();
 
@@ -1339,6 +1368,8 @@ class Plugin extends DAV\ServerPlugin {
         $searchProperties = [];
 
         $applyToPrincipalCollectionSet = false;
+
+        $test = $dom->firstChild->getAttribute('test') === 'anyof' ? 'anyof' : 'allof';
 
         // Parsing the search request
         foreach($dom->firstChild->childNodes as $searchNode) {
@@ -1382,7 +1413,8 @@ class Plugin extends DAV\ServerPlugin {
         return [
             $searchProperties,
             array_keys(DAV\XMLUtil::parseProperties($dom->firstChild)),
-            $applyToPrincipalCollectionSet
+            $applyToPrincipalCollectionSet,
+            $test
         ];
 
     }

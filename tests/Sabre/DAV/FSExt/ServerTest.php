@@ -23,11 +23,11 @@ class ServerTest extends DAV\AbstractServer{
 
         $this->assertEquals(200, $this->response->getStatus(), 'Invalid status code received.');
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
-            'ETag' => '"'  .md5_file($this->tempDir . '/test.txt') . '"',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [13],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"'  .md5_file($this->tempDir . '/test.txt') . '"'],
             ],
             $this->response->getHeaders()
          );
@@ -44,11 +44,11 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
-            'ETag' => '"' . md5_file($this->tempDir . '/test.txt') . '"',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [13],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . md5_file($this->tempDir . '/test.txt') . '"'],
             ],
             $this->response->getHeaders()
          );
@@ -66,9 +66,9 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => 0,
-            'ETag'           => '"' . md5('Testing new file') . '"',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => [0],
+            'ETag'           => ['"' . md5('Testing new file') . '"'],
         ], $this->response->getHeaders());
 
         $this->assertEquals(201, $this->response->status);
@@ -85,8 +85,8 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ],$this->response->getHeaders());
 
         $this->assertEquals(412, $this->response->status);
@@ -101,8 +101,8 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
         ],$this->response->getHeaders());
 
         $this->assertEquals(201, $this->response->status);
@@ -133,8 +133,8 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
         ],$this->response->getHeaders());
 
         $this->assertEquals(204, $this->response->status);
@@ -153,8 +153,8 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
         ],$this->response->getHeaders());
         $this->assertEquals(204, $this->response->status);
         $this->assertEquals('', $this->response->body);
@@ -169,12 +169,12 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'DAV'            => '1, 3, extended-mkcol',
-            'MS-Author-Via'  => 'DAV',
-            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT',
-            'Accept-Ranges'  => 'bytes',
-            'Content-Length' => '0',
-            'X-Sabre-Version'=> DAV\Version::VERSION,
+            'DAV'            => ['1, 3, extended-mkcol'],
+            'MS-Author-Via'  => ['DAV'],
+            'Allow'          => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
+            'Accept-Ranges'  => ['bytes'],
+            'Content-Length' => ['0'],
+            'X-Sabre-Version'=> [DAV\Version::VERSION],
         ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
@@ -194,8 +194,8 @@ class ServerTest extends DAV\AbstractServer{
         $this->assertEquals('', $this->response->body);
 
         $this->assertEquals([
-            'Content-Length' => '0',
-            'X-Sabre-Version'=> DAV\Version::VERSION,
+            'Content-Length' => ['0'],
+            'X-Sabre-Version'=> [DAV\Version::VERSION],
         ],$this->response->getHeaders());
 
         $this->assertTrue(
@@ -232,8 +232,8 @@ class ServerTest extends DAV\AbstractServer{
         $this->assertEquals('', $this->response->body);
 
         $this->assertEquals([
-            'Content-Length' => '0',
-            'X-Sabre-Version'=> DAV\Version::VERSION,
+            'Content-Length' => ['0'],
+            'X-Sabre-Version'=> [DAV\Version::VERSION],
         ],$this->response->getHeaders());
 
         $this->assertTrue(

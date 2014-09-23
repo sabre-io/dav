@@ -89,9 +89,9 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => '0',
-            'ETag' => '"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
+            'ETag' => ['"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"'],
         ), $response->getHeaders());
 
         $expected = array(

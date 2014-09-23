@@ -45,12 +45,12 @@ class ServerPluginTest extends AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'            => '1, 3, extended-mkcol, drinking',
-            'MS-Author-Via'  => 'DAV',
-            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE',
-            'Accept-Ranges'  => 'bytes',
-            'Content-Length' =>  '0',
-            'X-Sabre-Version' => Version::VERSION,
+            'DAV'             => ['1, 3, extended-mkcol, drinking'],
+            'MS-Author-Via'   => ['DAV'],
+            'Allow'           => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE'],
+            'Accept-Ranges'   => ['bytes'],
+            'Content-Length'  => ['0'],
+            'X-Sabre-Version' => [Version::VERSION],
         ),$this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);

@@ -28,9 +28,9 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
         $this->assertEquals(
             [
-                'X-Sabre-Version' => DAV\Version::VERSION,
-                'Content-Type' => 'text/html; charset=utf-8',
-                'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
+                'X-Sabre-Version' => [DAV\Version::VERSION],
+                'Content-Type' => ['text/html; charset=utf-8'],
+                'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
             ],
             $this->response->getHeaders()
         );
@@ -48,9 +48,9 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $this->response->status, "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
         $this->assertEquals(
             [
-                'X-Sabre-Version' => DAV\Version::VERSION,
-                'Content-Type' => 'text/html; charset=utf-8',
-                'Content-Security-Policy' => "img-src 'self'; style-src 'self';"
+                'X-Sabre-Version' => [DAV\Version::VERSION],
+                'Content-Type' => ['text/html; charset=utf-8'],
+                'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
             ],
             $this->response->getHeaders()
         );
@@ -111,8 +111,8 @@ class PluginTest extends DAV\AbstractServer{
 
         $this->assertEquals(302, $this->response->status);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Location' => '/',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Location' => ['/'],
         ), $this->response->getHeaders());
 
         $this->assertTrue(is_dir(SABRE_TEMPDIR . '/new_collection'));
@@ -127,10 +127,10 @@ class PluginTest extends DAV\AbstractServer{
 
         $this->assertEquals(200, $this->response->getStatus(), 'Error: ' . $this->response->body);
         $this->assertEquals([
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'image/vnd.microsoft.icon',
-            'Content-Length' => '4286',
-            'Cache-Control' => 'public, max-age=1209600',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['image/vnd.microsoft.icon'],
+            'Content-Length' => ['4286'],
+            'Cache-Control' => ['public, max-age=1209600'],
         ], $this->response->getHeaders());
 
     }

@@ -63,8 +63,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(204, $this->response->status, 'Received an incorrect HTTP status. Full body inspection: ' . $this->response->body);
         $this->assertEquals(array(
-                'X-Sabre-Version' => Version::VERSION,
-                'Content-Length' => '0',
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
             ),
             $this->response->getHeaders()
          );
@@ -120,8 +120,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
-                'X-Sabre-Version' => Version::VERSION,
-                'Content-Length' => 0,
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => [0],
             ),
             $this->response->getHeaders()
          );
@@ -146,8 +146,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
-                'X-Sabre-Version' => Version::VERSION,
-                'Content-Type' => 'application/xml; charset=utf-8',
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Type' => ['application/xml; charset=utf-8'],
             ),
             $this->response->getHeaders()
          );
@@ -172,8 +172,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
-                'X-Sabre-Version' => Version::VERSION,
-                'Content-Type' => 'application/xml; charset=utf-8',
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Type' => ['application/xml; charset=utf-8'],
             ),
             $this->response->getHeaders()
          );
@@ -214,8 +214,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(201, $this->response->status, 'Full response: ' . $this->response->getBody(true));
 
         $this->assertEquals(array(
-                'X-Sabre-Version' => Version::VERSION,
-                'Content-Length' => '0',
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
             ),
             $this->response->getHeaders()
          );
@@ -237,8 +237,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Length' => ['0'],
             ),
             $this->response->getHeaders()
          );
@@ -263,8 +263,8 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(201, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->body);
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Length' => ['0'],
             ),
             $this->response->getHeaders()
          );

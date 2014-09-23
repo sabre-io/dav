@@ -143,8 +143,8 @@ XML;
         $this->assertEquals('PROPFIND', $request->getMethod());
         $this->assertEquals('/foo', $request->getUrl());
         $this->assertEquals([
-            'Depth' => '0',
-            'Content-Type' => 'application/xml',
+            'Depth' => ['0'],
+            'Content-Type' => ['application/xml'],
         ], $request->getHeaders());
 
     }
@@ -197,8 +197,8 @@ XML;
         $this->assertEquals('PROPFIND', $request->getMethod());
         $this->assertEquals('/foo', $request->getUrl());
         $this->assertEquals([
-            'Depth' => '1',
-            'Content-Type' => 'application/xml',
+            'Depth' => ['1'],
+            'Content-Type' => ['application/xml'],
         ], $request->getHeaders());
 
     }
@@ -230,7 +230,7 @@ XML;
         $this->assertEquals('PROPPATCH', $request->getMethod());
         $this->assertEquals('/foo', $request->getUrl());
         $this->assertEquals([
-            'Content-Type' => 'application/xml',
+            'Content-Type' => ['application/xml'],
         ], $request->getHeaders());
 
     }

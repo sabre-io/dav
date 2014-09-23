@@ -171,7 +171,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
         $this->assertEquals(304, $server->httpResponse->getStatus());
-        $this->assertEquals(['ETag' => '"abc123"'], $server->httpResponse->getHeaders());
+        $this->assertEquals(['ETag' => ['"abc123"']], $server->httpResponse->getHeaders());
 
     }
 
@@ -193,8 +193,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
         $this->assertEquals(304, $server->httpResponse->getStatus());
         $this->assertEquals([
-            'ETag' => '"abc123"',
-            'X-Sabre-Version' => Version::VERSION,
+            'ETag' => ['"abc123"'],
+            'X-Sabre-Version' => [Version::VERSION],
         ], $server->httpResponse->getHeaders());
         $this->assertEquals(1, HTTP\SapiMock::$sent);
 
@@ -215,7 +215,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(304, $server->httpResponse->status);
         $this->assertEquals(array(
-            'Last-Modified' => 'Sat, 06 Apr 1985 23:30:00 GMT',
+            'Last-Modified' => ['Sat, 06 Apr 1985 23:30:00 GMT'],
         ), $server->httpResponse->getHeaders());
 
     }

@@ -52,10 +52,10 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [13],
+            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
             ),
             $this->response->getHeaders()
          );
@@ -77,10 +77,10 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [13],
+            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
             ),
             $this->response->getHeaders()
          );
@@ -137,10 +137,10 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [13],
+            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
             ),
             $this->response->getHeaders()
          );
@@ -163,10 +163,10 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' .  filemtime($this->tempDir . '/test.txt'))),
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [13],
+            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' .  filemtime($this->tempDir . '/test.txt')))],
             ),
             $this->response->getHeaders()
          );
@@ -183,12 +183,12 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'            => '1, 3, extended-mkcol',
-            'MS-Author-Via'  => 'DAV',
-            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT',
-            'Accept-Ranges'  => 'bytes',
-            'Content-Length' => '0',
-            'X-Sabre-Version' => Version::VERSION,
+            'DAV'            => ['1, 3, extended-mkcol'],
+            'MS-Author-Via'  => ['DAV'],
+            'Allow'          => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
+            'Accept-Ranges'  => ['bytes'],
+            'Content-Length' => ['0'],
+            'X-Sabre-Version' => [Version::VERSION],
         ),$this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
@@ -204,12 +204,12 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'DAV'            => '1, 3, extended-mkcol',
-            'MS-Author-Via'  => 'DAV',
-            'Allow'          => 'OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, MKCOL',
-            'Accept-Ranges'  => 'bytes',
-            'Content-Length' => '0',
-            'X-Sabre-Version' => Version::VERSION,
+            'DAV'            => ['1, 3, extended-mkcol'],
+            'MS-Author-Via'  => ['DAV'],
+            'Allow'          => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, MKCOL'],
+            'Accept-Ranges'  => ['bytes'],
+            'Content-Length' => ['0'],
+            'X-Sabre-Version' => [Version::VERSION],
         ),$this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
@@ -229,8 +229,8 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ),$this->response->getHeaders());
 
         $this->assertEquals(501, $this->response->status);
@@ -250,8 +250,8 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ),$this->response->getHeaders());
 
         $this->assertEquals(501, $this->response->status);
@@ -282,10 +282,10 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => 13,
-            'Last-Modified' => HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt'))),
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [13],
+            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
             ),
             $this->response->getHeaders()
          );
@@ -543,7 +543,7 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ),$this->response->getHeaders());
 
         $this->assertEquals(500, $this->response->status);
@@ -569,8 +569,8 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
             ),
             $this->response->getHeaders()
          );
@@ -593,8 +593,8 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => Version::VERSION,
-            'testheader' => 'testvalue',
+            'X-Sabre-Version' => [Version::VERSION],
+            'testheader' => ['testvalue'],
             ),
             $this->response->getHeaders()
         );

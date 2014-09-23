@@ -60,7 +60,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
-            'Content-Type' => 'text/calendar',
+            'Content-Type' => ['text/calendar'],
         ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
@@ -111,7 +111,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
-            'Content-Type' => 'text/calendar',
+            'Content-Type' => ['text/calendar'],
         ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
@@ -217,8 +217,8 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'text/calendar',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['text/calendar'],
         ), $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);

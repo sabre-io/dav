@@ -288,7 +288,7 @@ ICS;
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals(array(
-            'Content-Type' => 'application/xml',
+            'Content-Type' => ['application/xml'],
         ), $this->response->getHeaders());
 
         $strings = array(

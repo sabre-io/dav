@@ -1102,8 +1102,8 @@ END:VCALENDAR';
 
         $this->assertEquals(200, $httpResponse->status);
         $this->assertEquals(array(
-            'Content-Type' => 'application/xml',
-            'ETag'         => '"1"',
+            'Content-Type' => ['application/xml'],
+            'ETag'         => ['"1"'],
         ), $httpResponse->getHeaders());
 
         $expected =

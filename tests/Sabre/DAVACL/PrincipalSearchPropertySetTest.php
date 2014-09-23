@@ -50,8 +50,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(400, $server->httpResponse->status);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ), $server->httpResponse->getHeaders());
 
     }
@@ -77,8 +77,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ), $server->httpResponse->getHeaders());
 
     }
@@ -104,8 +104,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ), $server->httpResponse->getHeaders());
 
 

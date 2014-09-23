@@ -57,8 +57,8 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
             ),
             $this->response->getHeaders()
          );
@@ -240,8 +240,8 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
             ),
             $this->response->getHeaders()
          );
@@ -266,8 +266,8 @@ class PluginTest extends DAV\AbstractServer {
         $this->server->exec();
 
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Type' => 'application/xml; charset=utf-8',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
             ),
             $this->response->getHeaders()
          );
@@ -357,8 +357,8 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(204,$this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
             ),
             $this->server->httpResponse->getHeaders()
          );
@@ -405,8 +405,8 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(204, $this->server->httpResponse->status,'Got an incorrect status code. Full response body: ' . $this->response->body);
         $this->assertEquals(array(
-            'X-Sabre-Version' => DAV\Version::VERSION,
-            'Content-Length' => '0',
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
             ),
             $this->server->httpResponse->getHeaders()
          );

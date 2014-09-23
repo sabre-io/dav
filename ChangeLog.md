@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.1.0-alpha1 (2014-??-??)
+2.1.0-alpha1 (2014-09-23)
 -------------------------
 
 * Added: Support for [rfc6638][rfc6638], also known as CalDAV Scheduling.

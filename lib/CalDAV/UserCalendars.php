@@ -6,7 +6,7 @@ namespace Sabre\CalDAV;
  * This class is deprecated!
  *
  * It has been renamed to Sabre\CalDAV\CalendarHome.
- * 
+ *
  * This stub class will be removed in a future version of sabredav.
  *
  * @deprecated

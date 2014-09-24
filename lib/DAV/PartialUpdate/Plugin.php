@@ -189,7 +189,7 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-   /**
+    /**
      * Returns the HTTP custom range update header
      *
      * This method returns null if there is no well-formed HTTP range request

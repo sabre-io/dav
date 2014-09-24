@@ -5,14 +5,14 @@ namespace Sabre\DAV\Exception;
 use Sabre\DAV;
 
 /**
- * InvalidSyncToken 
+ * InvalidSyncToken
  *
  * This exception is emited for the {DAV:}valid-sync-token pre-condition, as
  * defined in rfc6578, section 3.2.
  *
  * http://tools.ietf.org/html/rfc6578#section-3.2
  *
- * This is emitted in cases where the the sync-token, supplied by a client is 
+ * This is emitted in cases where the the sync-token, supplied by a client is
  * either completely unknown, or has expired.
  *
  * @author Evert Pot (http://evertpot.com/)

@@ -584,7 +584,7 @@ class Plugin extends ServerPlugin {
 
             } else {
 
-                foreach($newObject->VEVENT->ATTENDEE as $attendee) {
+                if (isset($newObject->VEVENT->ATTENDEE)) foreach($newObject->VEVENT->ATTENDEE as $attendee) {
 
                     if ($attendee->getNormalizedValue() === $message->recipient) {
                         $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;

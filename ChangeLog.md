@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+2.1.0-alpha2 (????-??-??)
+-------------------------
+
+* Added: calendar-user-address-set to default principal search properties
+  list. This should fix iOS attendee autocomplete support.
+
 2.1.0-alpha1 (2014-09-23)
 -------------------------
 

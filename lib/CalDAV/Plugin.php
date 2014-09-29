@@ -210,6 +210,10 @@ class Plugin extends DAV\ServerPlugin {
             '{' . self::NS_CALENDARSERVER . '}notificationtype'
 
         );
+
+        if ($aclPlugin = $server->getPlugin('acl')) {
+            $aclPlugin->principalSearchPropertySet['{' . self::NS_CALDAV . '}calendar-user-address-set'] = 'Calendar address';
+        }
     }
 
     /**

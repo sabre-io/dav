@@ -6,6 +6,9 @@ ChangeLog
 
 * Added: calendar-user-address-set to default principal search properties
   list. This should fix iOS attendee autocomplete support.
+* Changed: Moved all 'notifications' functionality from `Sabre\CalDAV\Plugin`
+  to a new plugin: `Sabre\CalDAV\Notifications\Plugin`. If you want to use
+  notifications-related functionality, just add this plugin.
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

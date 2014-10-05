@@ -449,11 +449,6 @@ END:VCALENDAR';
         $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/',$prop->getHref());
 
-        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
-        $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
-        $this->assertTrue($prop instanceof DAV\Property\Href);
-
-
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
         $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
@@ -1058,78 +1053,5 @@ END:VCALENDAR';
         $this->assertEquals(400, $this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
     }
-
-    function testNotificationProperties() {
-
-        $notification = new Notifications\Node(
-            $this->caldavBackend,
-            'principals/user1',
-            new Notifications\Notification\SystemStatus('foo','"1"')
-        );
-        $propFind = new DAV\PropFind('calendars/user1/notifications', [
-            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
-        ]);
-
-        $this->plugin->propFind($propFind, $notification);
-
-        $this->assertEquals(
-            $notification->getNotificationType(),
-            $propFind->get('{' . Plugin::NS_CALENDARSERVER . '}notificationtype')
-        );
-
-    }
-
-    function testNotificationGet() {
-
-        $notification = new Notifications\Node(
-            $this->caldavBackend,
-            'principals/user1',
-            new Notifications\Notification\SystemStatus('foo','"1"')
-        );
-
-        $server = new DAV\Server(array($notification));
-        $caldav = new Plugin();
-
-        $server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_URI' => '/foo.xml',
-        ));
-        $httpResponse = new HTTP\ResponseMock();
-        $server->httpResponse = $httpResponse;
-
-        $server->addPlugin($caldav);
-
-        $caldav->httpGet($server->httpRequest, $server->httpResponse);
-
-        $this->assertEquals(200, $httpResponse->status);
-        $this->assertEquals(array(
-            'Content-Type' => ['application/xml'],
-            'ETag'         => ['"1"'],
-        ), $httpResponse->getHeaders());
-
-        $expected =
-'<?xml version="1.0" encoding="UTF-8"?>
-<cs:notification xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">
-  <cs:systemstatus type="high"/>
-</cs:notification>
-';
-
-        $this->assertEquals($expected, $httpResponse->body);
-
-    }
-
-    function testGETPassthrough() {
-
-        $server = new DAV\Server();
-        $caldav = new Plugin();
-
-        $httpResponse = new HTTP\ResponseMock();
-        $server->httpResponse = $httpResponse;
-
-        $server->addPlugin($caldav);
-
-        $this->assertNull($caldav->httpGet(new HTTP\Request('GET','/foozz'), $server->httpResponse));
-
-    }
-
 
 }

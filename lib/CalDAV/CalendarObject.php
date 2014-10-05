@@ -54,9 +54,6 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
 
         $this->caldavBackend = $caldavBackend;
 
-        if (!isset($objectData['calendarid'])) {
-            throw new \InvalidArgumentException('The objectData argument must contain a \'calendarid\' property');
-        }
         if (!isset($objectData['uri'])) {
             throw new \InvalidArgumentException('The objectData argument must contain an \'uri\' property');
         }
@@ -87,7 +84,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
         // Pre-populating the 'calendardata' is optional, if we don't have it
         // already we fetch it from the backend.
         if (!isset($this->objectData['calendardata'])) {
-            $this->objectData = $this->caldavBackend->getCalendarObject($this->objectData['calendarid'], $this->objectData['uri']);
+            $this->objectData = $this->caldavBackend->getCalendarObject($this->calendarInfo['id'], $this->objectData['uri']);
         }
         return $this->objectData['calendardata'];
 

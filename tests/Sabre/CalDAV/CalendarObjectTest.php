@@ -314,7 +314,7 @@ END:VCALENDAR";
                 ),
             )
         ));
-        $obj = new CalendarObject($backend, array(), array('calendarid' => 1, 'uri' => 'foo'));
+        $obj = new CalendarObject($backend, array('id' => 1), array('uri' => 'foo'));
 
         $this->assertEquals('foo', $obj->get());
 

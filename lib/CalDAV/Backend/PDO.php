@@ -329,7 +329,6 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * Returns all calendar objects within a calendar.
      *
      * Every item contains an array with the following keys:
-     *   * id - unique identifier which will be used for subsequent updates
      *   * calendardata - The iCalendar-compatible calendar data
      *   * uri - a unique key which will be used to construct the uri. This can
      *     be any arbitrary string, but making sure it ends with '.ics' is a
@@ -338,7 +337,6 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      *   * lastmodified - a timestamp of the last modification time
      *   * etag - An arbitrary string, surrounded by double-quotes. (e.g.:
      *   '  "abcdef"')
-     *   * calendarid - The calendarid as it was passed to this function.
      *   * size - The size of the calendar objects, in bytes.
      *   * component - optional, a string containing the type of object, such
      *     as 'vevent' or 'vtodo'. If specified, this will be used to populate

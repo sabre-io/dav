@@ -332,7 +332,7 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         $etag = md5($cardData);
 
-        $result = $stmt->execute([
+        $stmt->execute([
             $cardData,
             $cardUri,
             time(),

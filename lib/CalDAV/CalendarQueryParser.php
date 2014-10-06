@@ -80,8 +80,6 @@ class CalendarQueryParser {
      */
     function parse() {
 
-        $filterNode = null;
-
         $filter = $this->xpath->query('/cal:calendar-query/cal:filter');
         if ($filter->length !== 1) {
             throw new \Sabre\DAV\Exception\BadRequest('Only one filter element is allowed');

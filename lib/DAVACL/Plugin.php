@@ -4,7 +4,6 @@ namespace Sabre\DAVACL;
 
 use
     Sabre\DAV,
-    Sabre\DAV\IFile,
     Sabre\DAV\INode,
     Sabre\HTTP\URLUtil,
     Sabre\HTTP\RequestInterface,
@@ -821,7 +820,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeBind($uri) {
 
-        list($parentUri,$nodeName) = URLUtil::splitPath($uri);
+        list($parentUri) = URLUtil::splitPath($uri);
         $this->checkPrivileges($parentUri,'{DAV:}bind');
 
     }
@@ -837,7 +836,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeUnbind($uri) {
 
-        list($parentUri,$nodeName) = URLUtil::splitPath($uri);
+        list($parentUri) = URLUtil::splitPath($uri);
         $this->checkPrivileges($parentUri,'{DAV:}unbind',self::R_RECURSIVEPARENTS);
 
     }

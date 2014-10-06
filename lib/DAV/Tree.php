@@ -142,7 +142,7 @@ class Tree {
      */
     function move($sourcePath, $destinationPath) {
 
-        list($sourceDir, $sourceName) = URLUtil::splitPath($sourcePath);
+        list($sourceDir) = URLUtil::splitPath($sourcePath);
         list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
 
         if ($sourceDir===$destinationDir) {

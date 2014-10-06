@@ -99,13 +99,6 @@ class Client extends HTTP\Client {
             throw new \InvalidArgumentException('A baseUri must be provided');
         }
 
-        $validSettings = [
-            'baseUri',
-            'userName',
-            'password',
-            'proxy',
-        ];
-
         parent::__construct();
 
         $this->baseUri = $settings['baseUri'];

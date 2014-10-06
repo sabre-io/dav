@@ -3,7 +3,6 @@
 namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 
 /**
  * Extremely simply HTTP Basic auth backend.

@@ -84,8 +84,6 @@ class AddressBookQueryParser {
      */
     function parse() {
 
-        $filterNode = null;
-
         $limit = $this->xpath->evaluate('number(/card:addressbook-query/card:limit/card:nresults)');
         if (is_nan($limit)) $limit = null;
 

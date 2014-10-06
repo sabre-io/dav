@@ -88,7 +88,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         try {
-            $node = $this->server->tree->getNodeForPath($request->getPath());
+            $this->server->tree->getNodeForPath($request->getPath());
         } catch (DAV\Exception\NotFound $e) {
             // We're simply stopping when the file isn't found to not interfere
             // with other plugins.

@@ -786,7 +786,7 @@ class Plugin extends DAV\ServerPlugin {
         $sCCS = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
 
         // Get the Supported Components for the target calendar
-        list($parentPath,$object) = URLUtil::splitPath($path);
+        list($parentPath) = URLUtil::splitPath($path);
         $calendarProperties = $this->server->getProperties($parentPath, [$sCCS]);
 
         if (isset($calendarProperties[$sCCS])) {

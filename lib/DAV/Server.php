@@ -771,7 +771,7 @@ class Server extends EventEmitter {
         // These are the three relevant properties we need to return
         return [
             'destination'       => $destination,
-            'destinationExists' => $destinationNode==true,
+            'destinationExists' => !!$destinationNode,
             'destinationNode'   => $destinationNode,
         ];
 
@@ -917,9 +917,6 @@ class Server extends EventEmitter {
         $propFind = new PropFind($path, $propertyNames, $depth, $propFindType);
 
         $parentNode = $this->tree->getNodeForPath($path);
-        $nodes = [
-            $path => $parentNode
-        ];
 
         $propFindRequests = [[
             $propFind,

@@ -2,8 +2,6 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL;
-
 /**
  * This object represents a CalDAV calendar that is shared by a different user.
  *

@@ -176,8 +176,6 @@ class Plugin extends DAV\ServerPlugin {
      */
     function httpLock(RequestInterface $request, ResponseInterface $response) {
 
-        $lastLock = null;
-
         $uri = $request->getPath();
 
         $existingLocks = $this->getLocks($uri);

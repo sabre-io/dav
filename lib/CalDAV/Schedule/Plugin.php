@@ -6,7 +6,6 @@ use
     Sabre\DAV\Server,
     Sabre\DAV\ServerPlugin,
     Sabre\DAV\Property\Href,
-    Sabre\DAV\Property\HrefList,
     Sabre\DAV\PropFind,
     Sabre\DAV\INode,
     Sabre\DAV\IFile,

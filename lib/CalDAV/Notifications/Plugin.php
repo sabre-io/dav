@@ -96,7 +96,6 @@ class Plugin extends ServerPlugin {
             // notification-URL property
             $propFind->handle('{' . self::NS_CALENDARSERVER . '}notification-URL', function() use ($node, $principalUrl, $caldavPlugin) {
 
-                $principalId = $node->getName();
                 $notificationPath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl) . '/notifications/';
                 return new DAV\Property\Href($notificationPath);
 

@@ -11,9 +11,9 @@ class Mock extends AbstractBackend {
 
     function __construct(array $calendars = [], array $calendarData = []) {
 
-        foreach($calendars as &$calendar) {
+        foreach($calendars as $k => $calendar) {
             if (!isset($calendar['id'])) {
-                $calendar['id'] = DAV\UUIDUtil::getUUID();
+                $calendars[$k]['id'] = DAV\UUIDUtil::getUUID();
             }
         }
 

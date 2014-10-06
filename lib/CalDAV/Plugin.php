@@ -168,7 +168,6 @@ class Plugin extends DAV\ServerPlugin {
         $this->server = $server;
 
         $server->on('method:MKCALENDAR',   [$this,'httpMkcalendar']);
-        $server->on('method:GET',          [$this,'httpGet'], 90);
         $server->on('report',              [$this,'report']);
         $server->on('propFind',            [$this,'propFind']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
@@ -187,7 +186,6 @@ class Plugin extends DAV\ServerPlugin {
 
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
 
@@ -205,9 +203,7 @@ class Plugin extends DAV\ServerPlugin {
             // CalendarServer extensions
             '{' . self::NS_CALENDARSERVER . '}getctag',
             '{' . self::NS_CALENDARSERVER . '}calendar-proxy-read-for',
-            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for',
-            '{' . self::NS_CALENDARSERVER . '}notification-URL',
-            '{' . self::NS_CALENDARSERVER . '}notificationtype'
+            '{' . self::NS_CALENDARSERVER . '}calendar-proxy-write-for'
 
         );
 
@@ -391,26 +387,7 @@ class Plugin extends DAV\ServerPlugin {
 
             }
 
-            // notification-URL property
-            $propFind->handle('{' . self::NS_CALENDARSERVER . '}notification-URL', function() use ($node, $principalUrl) {
-
-                $principalId = $node->getName();
-                $notificationPath = $this->getCalendarHomeForPrincipal($principalUrl) . '/notifications/';
-                return new DAV\Property\Href($notificationPath);
-
-            });
-
         } // instanceof IPrincipal
-
-        if ($node instanceof Notifications\INode) {
-
-            $propFind->handle(
-                '{' . self::NS_CALENDARSERVER . '}notificationtype',
-                [$node, 'getNotificationType']
-            );
-
-        } // instanceof Notifications_INode
-
 
         if ($node instanceof ICalendarObject) {
 
@@ -754,51 +731,6 @@ class Plugin extends DAV\ServerPlugin {
             return;
 
         $this->validateICalendar($data, $path, $modified);
-
-    }
-
-    /**
-     * This event is triggered before the usual GET request handler.
-     *
-     * We use this to intercept GET calls to notification nodes, and return the
-     * proper response.
-     *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return void
-     */
-    function httpGet(RequestInterface $request, ResponseInterface $response) {
-
-        $path = $request->getPath();
-
-        try {
-            $node = $this->server->tree->getNodeForPath($path);
-        } catch (DAV\Exception\NotFound $e) {
-            return;
-        }
-
-        if (!$node instanceof Notifications\INode)
-            return;
-
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-
-        $dom->formatOutput = true;
-
-        $root = $dom->createElement('cs:notification');
-        foreach($this->server->xmlNamespaces as $namespace => $prefix) {
-            $root->setAttribute('xmlns:' . $prefix, $namespace);
-        }
-
-        $dom->appendChild($root);
-        $node->getNotificationType()->serializeBody($this->server, $root);
-
-        $response->setHeader('Content-Type','application/xml');
-        $response->setHeader('ETag',$node->getETag());
-        $response->setStatus(200);
-        $response->setBody($dom->saveXML());
-
-        // Return false to break the event chain.
-        return false;
 
     }
 

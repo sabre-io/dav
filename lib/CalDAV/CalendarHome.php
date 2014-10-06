@@ -4,6 +4,7 @@ namespace Sabre\CalDAV;
 
 use
     Sabre\DAV,
+    Sabre\DAV\Exception\NotFound,
     Sabre\DAVACL,
     Sabre\HTTP\URLUtil;
 
@@ -127,17 +128,46 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      * Returns a single calendar, by name
      *
      * @param string $name
-     * @todo needs optimizing
      * @return Calendar
      */
     function getChild($name) {
 
-        foreach($this->getChildren() as $child) {
-            if ($name==$child->getName())
-                return $child;
+        // Special nodes
+        if ($name === 'inbox' && $this->caldavBackend instanceof Backend\SchedulingSupport) {
+            return new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
+        }
+        if ($name === 'outbox' && $this->caldavBackend instanceof Backend\SchedulingSupport) {
+            return new Schedule\Outbox($this->principalInfo['uri']);
+        }
+        if ($name === 'notifications' && $this->caldavBackend instanceof Backend\NotificationSupport) {
+            return new Notifications\Collection($this->caldavBackend, $this->principalInfo['uri']);
+        }
+
+        // Calendars
+        foreach($this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']) as $calendar) {
+            if ($calendar['uri'] === $name) {
+                if ($this->caldavBackend instanceof Backend\SharingSupport) {
+                    if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
+                        return new SharedCalendar($this->caldavBackend, $calendar);
+                    } else {
+                        return new ShareableCalendar($this->caldavBackend, $calendar);
+                    }
+                } else {
+                    return new Calendar($this->caldavBackend, $calendar);
+                }
+            }
+        }
+
+        if ($this->caldavBackend instanceof Backend\SubscriptionSupport) {
+            foreach($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
+                if ($subscription['uri'] === $name) {
+                    return new Subscriptions\Subscription($this->caldavBackend, $subscription);
+                }
+            }
 
         }
-        throw new DAV\Exception\NotFound('Calendar with name \'' . $name . '\' could not be found');
+
+        throw new NotFound('Node with name \'' . $name . '\' could not be found');
 
     }
 
@@ -145,17 +175,15 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      * Checks if a calendar exists.
      *
      * @param string $name
-     * @todo needs optimizing
      * @return bool
      */
     function childExists($name) {
 
-        foreach($this->getChildren() as $child) {
-            if ($name==$child->getName())
-                return true;
-
+        try {
+            return !!$this->getChild($name);
+        } catch (NotFound $e) {
+            return false;
         }
-        return false;
 
     }
 

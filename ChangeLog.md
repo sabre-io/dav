@@ -9,6 +9,8 @@ ChangeLog
 * Changed: Moved all 'notifications' functionality from `Sabre\CalDAV\Plugin`
   to a new plugin: `Sabre\CalDAV\Notifications\Plugin`. If you want to use
   notifications-related functionality, just add this plugin.
+* Changed: Accessing the caldav inbox, outbox or notification collection no
+  longer triggers getCalendarsForUser() on backends.
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

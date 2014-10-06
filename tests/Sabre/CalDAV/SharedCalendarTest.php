@@ -20,7 +20,7 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
             );
         }
 
-        $this->backend = new Backend\Mock(
+        $this->backend = new Backend\MockSharing(
             array($props),
             array(),
             array()

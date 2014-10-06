@@ -28,7 +28,7 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
             ),
         );
 
-        $this->backend = new Backend\Mock(
+        $this->backend = new Backend\MockSharing(
             $calendars,
             array(),
             array()

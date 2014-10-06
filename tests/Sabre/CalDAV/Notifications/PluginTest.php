@@ -24,7 +24,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function setup() {
 
-        $this->caldavBackend = new CalDAV\Backend\Mock();
+        $this->caldavBackend = new CalDAV\Backend\MockSharing();
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
         $calendars = new CalDAV\CalendarRoot($principalBackend,$this->caldavBackend);
         $principals = new CalDAV\Principal\Collection($principalBackend);

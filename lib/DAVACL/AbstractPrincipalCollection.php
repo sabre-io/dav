@@ -21,18 +21,18 @@ use
 abstract class AbstractPrincipalCollection extends DAV\Collection implements IPrincipalCollection {
 
     /**
-     * Node or 'directory' name.
-     *
-     * @var string
-     */
-    protected $path;
-
-    /**
      * Principal backend
      *
      * @var PrincipalBackend\BackendInterface
      */
     protected $principalBackend;
+
+    /**
+     * The path to the principals we're listing from.
+     *
+     * @var string
+     */
+    protected $principalPrefix;
 
     /**
      * If this value is set to true, it effectively disables listing of users

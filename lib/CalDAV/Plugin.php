@@ -312,7 +312,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $ns = '{' . self::NS_CALDAV . '}';
 
-        if ($node instanceof ICalendarContainer) {
+        if ($node instanceof ICalendarObjectContainer) {
 
             $propFind->handle($ns . 'max-resource-size', $this->maxResourceSize);
             $propFind->handle($ns . 'supported-calendar-data', function() {

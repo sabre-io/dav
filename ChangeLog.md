@@ -1,12 +1,14 @@
 ChangeLog
 =========
 
-2.0.5 (????-??-??)
+2.0.5 (2014-10-14)
 ------------------
 
 * #514: CalDAV PDO backend didn't work when overriding the 'calendar changes'
   database table name.
 * #515: 304 status code was not being sent when checking preconditions.
+* The zip release ships with [sabre/vobject 3.3.3][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 2.0.4 (2014-08-27)
 ------------------

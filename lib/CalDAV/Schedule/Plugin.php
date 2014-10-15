@@ -230,16 +230,23 @@ class Plugin extends ServerPlugin {
             // meantime we just grab the first calendar in the home-set.
             $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
 
-            $nodes = $this->server->tree->getNodeForPath($calendarHomePath)->getChildren();
+            $sccs = '{' . self::NS_CALDAV . '}supported-calendar-component-set';
 
-            foreach($nodes as $node) {
+            $result = $this->server->getPropertiesForPath($calendarHomePath, [
+                '{DAV:}resourcetype',
+                $sccs,
+            ], 1);
 
-                if ($node instanceof ICalendar) {
-
-                    return new Href($calendarHomePath . '/' . $node->getName());
-
+            foreach($result as $child) {
+                if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar')) {
+                    // Node is not a calendar.
+                    continue;
                 }
-
+                if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {
+                    // Either there is no supported-calendar-component-set
+                    // (which is fine) or we found one that supports VEVENT.
+                    return new Href($child['href']);
+                }
             }
 
         });

@@ -11,6 +11,7 @@ ChangeLog
   notifications-related functionality, just add this plugin.
 * Changed: Accessing the caldav inbox, outbox or notification collection no
   longer triggers getCalendarsForUser() on backends.
+* #533: New invites are no longer delivered to taks-only calendars.
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

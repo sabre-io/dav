@@ -708,7 +708,14 @@ class Plugin extends DAV\ServerPlugin {
         if (!$node instanceof ICalendarObject)
             return;
 
-        $this->validateICalendar($data, $path, $modified);
+        $this->validateICalendar(
+            $data,
+            $path,
+            $modified,
+            $this->server->httpRequest,
+            $this->server->httpResponse,
+            false
+        );
 
     }
 
@@ -727,10 +734,17 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified) {
 
-        if (!$parentNode instanceof Calendar)
+        if (!$parentNode instanceof ICalendar)
             return;
 
-        $this->validateICalendar($data, $path, $modified);
+        $this->validateICalendar(
+            $data,
+            $path,
+            $modified,
+            $this->server->httpRequest,
+            $this->server->httpResponse,
+            true
+        );
 
     }
 
@@ -743,9 +757,10 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @param bool $modified Should be set to true, if this event handler
      *                       changed &$data.
+     * @param bool $isNew Is the item a new one, or an update.
      * @return void
      */
-    protected function validateICalendar(&$data, $path, &$modified) {
+    protected function validateICalendar(&$data, $path, &$modified, RequestInterface $request, ResponseInterface $response, $isNew) {
 
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
@@ -830,9 +845,36 @@ class Plugin extends DAV\ServerPlugin {
         if (!$foundType)
             throw new DAV\Exception\BadRequest('iCalendar object must contain at least 1 of VEVENT, VTODO or VJOURNAL');
 
+        // We use an extra variable to allow event handles to tell us wether
+        // the object was modified or not.
+        //
+        // This helps us determine if we need to re-serialize the object.
+        $subModified = false;
+
+        $this->server->emit(
+            'calendarObjectChange',
+            [
+                $request,
+                $response,
+                $vobj,
+                $parentPath,
+                &$subModified,
+                $isNew
+            ]
+        );
+
+        if ($subModified) {
+            // An event handler told us that it modified the object.
+            $data = $vobj->serialize();
+
+            // Using md5 to figure out if there was an *actual* change.
+            if (!$modified && $before !== md5($data)) {
+                $modified = true;
+            }
+
+        }
+
     }
-
-
 
 
     /**

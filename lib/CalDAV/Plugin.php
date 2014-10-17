@@ -757,6 +757,8 @@ class Plugin extends DAV\ServerPlugin {
      * @param string $path
      * @param bool $modified Should be set to true, if this event handler
      *                       changed &$data.
+     * @param RequestInterface $request The http request.
+     * @param ResponseInterface $response The http response.
      * @param bool $isNew Is the item a new one, or an update.
      * @return void
      */

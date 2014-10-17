@@ -555,6 +555,7 @@ ICS;
 
     function deliver($oldObject, &$newObject, $disableScheduling = false) {
 
+        $this->server->httpRequest->setUrl($this->calendarObjectUri);
         if ($disableScheduling) {
             $this->server->httpRequest->setHeader('Schedule-Reply','F');
         }
@@ -568,12 +569,12 @@ ICS;
             rewind($stream);
             $modified = false;
 
-            $this->caldavSchedulePlugin->beforeWriteContent(
+            $this->server->emit('beforeWriteContent', [
                 $this->calendarObjectUri,
                 $this->server->tree->getNodeForPath($this->calendarObjectUri),
-                $stream,
-                $modified
-            );
+                &$stream,
+                &$modified
+            ]);
             if ($modified) {
                 $newObject = $stream;
             }
@@ -586,17 +587,18 @@ ICS;
                 $this->calendarObjectUri
             );
         } else {
+
             // create
             $stream = fopen('php://memory','r+');
             fwrite($stream, $newObject);
             rewind($stream);
             $modified = false;
-            $this->caldavSchedulePlugin->beforeCreateFile(
+            $this->server->emit('beforeCreateFile', [
                 $this->calendarObjectUri,
-                $stream,
+                &$stream,
                 $this->server->tree->getNodeForPath(dirname($this->calendarObjectUri)),
-                $modified
-            );
+                &$modified
+            ]);
 
             if ($modified) {
                 $newObject = $stream;

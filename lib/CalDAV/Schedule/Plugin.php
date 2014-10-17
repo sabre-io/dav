@@ -100,12 +100,11 @@ class Plugin extends ServerPlugin {
     function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('method:POST',         [$this, 'httpPost']);
-        $server->on('propFind',            [$this, 'propFind']);
-        $server->on('beforeCreateFile',    [$this, 'beforeCreateFile'], 110);
-        $server->on('beforeWriteContent',  [$this, 'beforeWriteContent'], 110);
-        $server->on('beforeUnbind',        [$this, 'beforeUnbind']);
-        $server->on('schedule',            [$this, 'scheduleLocalDelivery']);
+        $server->on('method:POST',          [$this, 'httpPost']);
+        $server->on('propFind',             [$this, 'propFind']);
+        $server->on('calendarObjectChange', [$this, 'calendarObjectChange']);
+        $server->on('beforeUnbind',         [$this, 'beforeUnbind']);
+        $server->on('schedule',             [$this, 'scheduleLocalDelivery']);
 
         $ns = '{' . self::NS_CALDAV . '}';
 
@@ -262,104 +261,41 @@ class Plugin extends ServerPlugin {
     }
 
     /**
-     * This method is called before a new node is created.
+     * This method is triggered whenever there was a calendar object gets
+     * created or updated.
      *
-     * @param string $path path to new object.
-     * @param string|resource $data Contents of new object.
-     * @param \Sabre\DAV\INode $parentNode Parent object
-     * @param bool $modified Wether or not the item's data was modified/
-     * @return bool|null
-     */
-    function beforeCreateFile($path, &$data, $parentNode, &$modified) {
-
-        if (!$parentNode instanceof ICalendar) {
-            return;
-        }
-
-        if (!$this->scheduleReply($this->server->httpRequest)) {
-            return;
-        }
-
-        // It's a calendar, so the contents are most likely an iCalendar
-        // object. It's time to start processing this.
-        //
-        // This step also ensures that $data is re-propagated with a string
-        // version of the object.
-        if (is_resource($data)) {
-            $data = stream_get_contents($data);
-        }
-
-        $vObj = Reader::read($data);
-
-        $addresses = $this->getAddressesForPrincipal(
-            $parentNode->getOwner()
-        );
-
-        $this->processICalendarChange(null, $vObj, $addresses);
-
-        // After all this exciting action we set $data to the updated event
-        // that contains all the new status information (if any).
-        $newData = $vObj->serialize();
-        if ($newData !== $data) {
-            $data = $newData;
-
-            // Setting $modified tells sabredav that the object has changed,
-            // and that no ETag must be sent back.
-            $modified = true;
-        }
-
-    }
-
-    /**
-     * This method is triggered before a file gets updated with new content.
-     *
-     * We use this event to process any changes to scheduling objects.
-     *
-     * @param string $path
-     * @param IFile $node
-     * @param resource|string $data
-     * @param bool $modified
+     * @param RequestInterface $request HTTP request
+     * @param ResponseInterface $response HTTP Response
+     * @param VCalendar $vCal Parsed iCalendar object
+     * @param mixed $calendarPath Path to calendar collection
+     * @param mixed $modified The iCalendar object has been touched.
+     * @param mixed $isNew Whether this was a new item or we're updating one
      * @return void
      */
-    function beforeWriteContent($path, IFile $node, &$data, &$modified) {
-
-        if (!$node instanceof ICalendarObject || $node instanceof ISchedulingObject) {
-            return;
-        }
+    function calendarObjectChange(RequestInterface $request, ResponseInterface $response, VCalendar $vCal, $calendarPath, &$modified, $isNew) {
 
         if (!$this->scheduleReply($this->server->httpRequest)) {
             return;
         }
 
-        // It's a calendar, so the contents are most likely an iCalendar
-        // object. It's time to start processing this.
-        //
-        // This step also ensures that $data is re-propagated with a string
-        // version of the object.
-        if (is_resource($data)) {
-            $data = stream_get_contents($data);
-        }
-
-        $vObj = Reader::read($data);
+        $calendarNode = $this->server->tree->getNodeForPath($calendarPath);
 
         $addresses = $this->getAddressesForPrincipal(
-            $node->getOwner()
+            $calendarNode->getOwner()
         );
 
-        $oldObj = Reader::read($node->get());
+        $broker = new ITip\Broker();
 
-        $this->processICalendarChange($oldObj, $vObj, $addresses);
-
-        // After all this exciting action we set $data to the updated event
-        // that contains all the new status information (if any).
-        $newData = $vObj->serialize();
-        if ($newData !== $data) {
-            $data = $newData;
-
-            // Setting $modified tells sabredav that the object has changed,
-            // and that no ETag must be sent back.
-            $modified = true;
+        if (!$isNew) {
+            $node = $this->server->tree->getNodeForPath($request->getPath());
+            $oldObj = Reader::read($node->get());
+        } else {
+            $oldObj = null;
         }
+
+        $this->processICalendarChange($oldObj, $vCal, $addresses);
+        $modified = true;
+
     }
 
     /**

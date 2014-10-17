@@ -12,6 +12,8 @@ ChangeLog
 * Changed: Accessing the caldav inbox, outbox or notification collection no
   longer triggers getCalendarsForUser() on backends.
 * #533: New invites are no longer delivered to taks-only calendars.
+* #538: Added `calendarObjectChange` event.
+* Scheduling speedups.
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

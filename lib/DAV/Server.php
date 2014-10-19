@@ -477,6 +477,7 @@ class Server extends EventEmitter {
         if (!$this->emit('afterMethod', [$request, $response])) return;
 
         $this->sapi->sendResponse($response);
+        if (!$this->emit('afterResponse', [$request, $response])) return;
 
     }
 

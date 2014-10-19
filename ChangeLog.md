@@ -14,6 +14,7 @@ ChangeLog
 * #533: New invites are no longer delivered to taks-only calendars.
 * #538: Added `calendarObjectChange` event.
 * Scheduling speedups.
+* #539: added `afterResponse` event. (@joserobleda)
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

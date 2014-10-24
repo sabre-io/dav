@@ -21,6 +21,8 @@ ChangeLog
   be accessed as a public property on the respective backends.
 * #529: Added getCalendarObjectByUID to PDO backend, speeding up scheduling
   operations on large calendars.
+* The zip release ships with [sabre/vobject 3.3.3][vobj],
+  [sabre/http 3.0.2][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.0-alpha1 (2014-09-23)

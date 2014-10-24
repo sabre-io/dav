@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.1.0-alpha2 (????-??-??)
+2.1.0-alpha2 (2014-10-23)
 -------------------------
 
 * Added: calendar-user-address-set to default principal search properties

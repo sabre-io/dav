@@ -587,23 +587,6 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-    /**
-     * Returns a principal url based on an email address.
-     *
-     * Note that wether or not this works may depend on wether a search
-     * facility is built into the server.
-     *
-     * This method returns false if the principal could not be found.
-     *
-     * @deprecated use getPrincipalByUri instead.
-     * @return string|bool
-     */
-    function getPrincipalByEmail($email) {
-
-        $result = $this->getPrincipalByUri('mailto:' . $email);
-        return $result?:false;
-
-    }
 
     /**
      * Returns a principal based on its uri.

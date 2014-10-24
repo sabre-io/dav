@@ -44,18 +44,10 @@ class PDO extends AbstractBackend implements SyncSupport {
      * Sets up the object
      *
      * @param \PDO $pdo
-     * @param string $addressBooksTableName
-     * @param string $cardsTableName
-     * @deprecated We are going to remove all the tableName arguments in a
-     *             future version, and rely on the public properties instead.
-     *             Stop relying on them!
      */
-    function __construct(\PDO $pdo, $addressBooksTableName = 'addressbooks', $cardsTableName = 'cards', $addressBookChangesTableName = 'addressbookchanges') {
+    function __construct(\PDO $pdo) {
 
         $this->pdo = $pdo;
-        $this->addressBooksTableName = $addressBooksTableName;
-        $this->cardsTableName = $cardsTableName;
-        $this->addressBookChangesTableName = $addressBookChangesTableName;
 
     }
 

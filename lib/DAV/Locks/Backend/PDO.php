@@ -34,14 +34,10 @@ class PDO extends AbstractBackend {
      * Constructor
      *
      * @param PDO $pdo
-     * @param string $tableName
-     * @deprecated We are removing the tableName property in a future version
-     *             of sabredav. Use the public property instead.
      */
-    function __construct(\PDO $pdo, $tableName = 'locks') {
+    function __construct(\PDO $pdo) {
 
         $this->pdo = $pdo;
-        $this->tableName = $tableName;
 
     }
 

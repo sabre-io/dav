@@ -107,22 +107,10 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * Creates the backend
      *
      * @param \PDO $pdo
-     * @param string $calendarTableName
-     * @param string $calendarObjectTableName
-     * @param string $calendarChangesTable
-     * @param string $schedulingObjectTable
-     * @param string $calendarSubscriptionsTableName
-     * @deprecated We are going to remove all the 'tableName' arguments and
-     *             move to public properties for those. Stop relying on them!
      */
-    function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = "calendarsubscriptions", $schedulingObjectTableName = "schedulingobjects") {
+    function __construct(\PDO $pdo) {
 
         $this->pdo = $pdo;
-        $this->calendarTableName = $calendarTableName;
-        $this->calendarObjectTableName = $calendarObjectTableName;
-        $this->calendarChangesTableName = $calendarChangesTableName;
-        $this->schedulingObjectTableName = $schedulingObjectTableName;
-        $this->calendarSubscriptionsTableName = $calendarSubscriptionsTableName;
 
     }
 

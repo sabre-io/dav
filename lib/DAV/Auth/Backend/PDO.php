@@ -32,14 +32,10 @@ class PDO extends AbstractDigest {
      * If the filename argument is passed in, it will parse out the specified file fist.
      *
      * @param PDO $pdo
-     * @param string $tableName The PDO table name to use
-     * @deprecated The tableName argument will be removed from a future version
-     *             of sabredav. Use the public property instead.
      */
-    function __construct(\PDO $pdo, $tableName = 'users') {
+    function __construct(\PDO $pdo) {
 
         $this->pdo = $pdo;
-        $this->tableName = $tableName;
 
     }
 

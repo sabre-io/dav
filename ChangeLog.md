@@ -4,6 +4,9 @@ ChangeLog
 2.2.0-alpha1 (????-??-??)
 -------------------------
 
+* Removed: all `$tableName` arguments from every PDO backend. This was already
+  deprecated, but has now been fully removed. All of these have been replaced
+  with public properties.
 
 2.1.0-alpha2 (2014-10-23)
 -------------------------

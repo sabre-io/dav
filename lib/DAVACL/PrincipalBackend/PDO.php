@@ -78,16 +78,10 @@ class PDO extends AbstractBackend {
      * Sets up the backend.
      *
      * @param PDO $pdo
-     * @param string $tableName
-     * @param string $groupMembersTableName
-     * @deprecated We are removing the tableName arguments in a future version
-     *             of sabredav. Use the public properties instead.
      */
-    function __construct(\PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
+    function __construct(\PDO $pdo) {
 
         $this->pdo = $pdo;
-        $this->tableName = $tableName;
-        $this->groupMembersTableName = $groupMembersTableName;
 
     }
 

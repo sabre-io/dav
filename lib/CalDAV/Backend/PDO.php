@@ -63,14 +63,14 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      *
      * @var string
      */
-    public $schedulingObjectTableName = 'calendarsubscriptions';
+    public $schedulingObjectTableName = 'schedulingobjects';
 
     /**
      * The table name that will be used for calendar subscriptions.
      *
      * @var string
      */
-    public $calendarSubscriptionsTableName = 'schedulingobjects';
+    public $calendarSubscriptionsTableName = 'calendarsubscriptions';
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames

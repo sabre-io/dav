@@ -91,28 +91,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-
-    function testCAInfo() {
-
-        $client = new ClientMock([
-            'baseUri' => '/',
-        ]);
-        $client->addTrustedCertificates('foo.txt');
-        $this->assertEquals("foo.txt", $client->curlSettings[CURLOPT_CAINFO]);
-
-    }
-
-
-    function testSetVerifyPeer() {
-
-        $client = new ClientMock([
-            'baseUri' => '/',
-        ]);
-        $client->setVerifyPeer(false);
-        $this->assertEquals(false, $client->curlSettings[CURLOPT_SSL_VERIFYPEER]);
-
-    }
-
     function testPropFind() {
 
         $client = new ClientMock([

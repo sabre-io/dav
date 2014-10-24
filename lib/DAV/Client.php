@@ -148,34 +148,6 @@ class Client extends HTTP\Client {
 
     }
 
-
-    /**
-     * Add trusted root certificates to the webdav client.
-     *
-     * The parameter certificates should be a absolute path to a file
-     * which contains all trusted certificates
-     *
-     * @deprecated This method will be removed in the future, use
-     *             addCurlSetting instead.
-     * @param string $certificates
-     * @return void
-     */
-    function addTrustedCertificates($certificates) {
-        $this->addCurlSetting(CURLOPT_CAINFO, $certificates);
-    }
-
-    /**
-     * Enables/disables SSL peer verification
-     *
-     * @deprecated This method will be removed in the future, use
-     *             addCurlSetting instead.
-     * @param bool $value
-     * @return void
-     */
-    function setVerifyPeer($value) {
-        $this->addCurlSetting(CURLOPT_SSL_VERIFYPEER, $value);
-    }
-
     /**
      * Does a PROPFIND request
      *

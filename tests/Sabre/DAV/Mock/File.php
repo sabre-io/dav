@@ -91,6 +91,19 @@ class File extends DAV\File {
     }
 
     /**
+     * Changes the name of the node.
+     *
+     * @return void
+     */
+    public function setName($newName) {
+
+        $this->parent->deleteChild($this->name);
+        $this->name = $newName;
+        $this->parent->createFile($newName, $this->contents);
+
+    }
+
+    /**
      * Returns the ETag for a file
      *
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.

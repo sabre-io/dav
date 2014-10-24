@@ -26,6 +26,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCalDAVScheduling = false;
     protected $setupCalDAVSubscriptions = false;
     protected $setupLocks = false;
+    protected $setupFiles = false;
 
     /**
      * An array with calendars. Every calendar should have
@@ -186,6 +187,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->tree[] = new DAVACL\PrincipalCollection(
                 $this->principalBackend
             );
+        }
+        if ($this->setupFiles) {
+
+            $this->tree[] = new DAV\Mock\Collection('files');
+
         }
 
     }

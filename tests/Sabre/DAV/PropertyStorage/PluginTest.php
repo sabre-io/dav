@@ -5,8 +5,9 @@ namespace Sabre\DAV\PropertyStorage;
 class PluginTest extends \Sabre\DAVServerTest {
 
     protected $backend;
-
     protected $plugin;
+
+    protected $setupFiles = true;
 
     function setUp() {
 
@@ -53,6 +54,27 @@ class PluginTest extends \Sabre\DAVServerTest {
         $this->testSetProperty();
         $this->server->emit('afterUnbind', ['']);
         $this->assertEquals([],$this->backend->data);
+
+    }
+
+    function testMove() {
+
+        $this->server->tree->getNodeForPath('files')->createFile('source');
+        $this->server->updateProperties('files/source', ['{DAV:}displayname' => 'hi']);
+
+        $request = new \Sabre\HTTP\Request('MOVE', '/files/source', ['Destination' => '/files/dest']);
+        $this->assertHTTPStatus(201, $request);
+
+        $result = $this->server->getProperties('/files/dest', ['{DAV:}displayname']);
+
+        $this->assertEquals([
+            '{DAV:}displayname' => 'hi',
+        ], $result);
+
+        $this->server->tree->getNodeForPath('files')->createFile('source');
+        $result = $this->server->getProperties('/files/source', ['{DAV:}displayname']);
+
+        $this->assertEquals([], $result);
 
     }
 

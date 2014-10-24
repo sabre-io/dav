@@ -23,7 +23,7 @@ class PDO extends AbstractDigest {
      *
      * @var string
      */
-    protected $tableName;
+    public $tableName = 'users';
 
 
     /**
@@ -33,6 +33,8 @@ class PDO extends AbstractDigest {
      *
      * @param PDO $pdo
      * @param string $tableName The PDO table name to use
+     * @deprecated The tableName argument will be removed from a future version
+     *             of sabredav. Use the public property instead.
      */
     function __construct(\PDO $pdo, $tableName = 'users') {
 

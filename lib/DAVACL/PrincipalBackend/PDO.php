@@ -21,25 +21,25 @@ use
 class PDO extends AbstractBackend {
 
     /**
-     * pdo
-     *
-     * @var PDO
-     */
-    protected $pdo;
-
-    /**
      * PDO table name for 'principals'
      *
      * @var string
      */
-    protected $tableName;
+    public $tableName = 'principals';
 
     /**
      * PDO table name for 'group members'
      *
      * @var string
      */
-    protected $groupMembersTableName;
+    public $groupMembersTableName = 'groupmembers';
+
+    /**
+     * pdo
+     *
+     * @var PDO
+     */
+    protected $pdo;
 
     /**
      * A list of additional fields to support
@@ -80,6 +80,8 @@ class PDO extends AbstractBackend {
      * @param PDO $pdo
      * @param string $tableName
      * @param string $groupMembersTableName
+     * @deprecated We are removing the tableName arguments in a future version
+     *             of sabredav. Use the public properties instead.
      */
     function __construct(\PDO $pdo, $tableName = 'principals', $groupMembersTableName = 'groupmembers') {
 

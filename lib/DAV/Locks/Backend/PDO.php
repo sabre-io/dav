@@ -17,24 +17,26 @@ use Sabre\DAV\Locks\LockInfo;
 class PDO extends AbstractBackend {
 
     /**
-     * The PDO connection object
-     *
-     * @var pdo
-     */
-    private $pdo;
-
-    /**
      * The PDO tablename this backend uses.
      *
      * @var string
      */
-    protected $tableName;
+    public $tableName = 'locks';
+
+    /**
+     * The PDO connection object
+     *
+     * @var pdo
+     */
+    protected $pdo;
 
     /**
      * Constructor
      *
      * @param PDO $pdo
      * @param string $tableName
+     * @deprecated We are removing the tableName property in a future version
+     *             of sabredav. Use the public property instead.
      */
     function __construct(\PDO $pdo, $tableName = 'locks') {
 

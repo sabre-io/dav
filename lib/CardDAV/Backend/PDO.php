@@ -26,19 +26,19 @@ class PDO extends AbstractBackend implements SyncSupport {
     /**
      * The PDO table name used to store addressbooks
      */
-    protected $addressBooksTableName;
+    public $addressBooksTableName = 'addressbooks';
 
     /**
      * The PDO table name used to store cards
      */
-    protected $cardsTableName;
+    public $cardsTableName = 'cards';
 
     /**
      * The table name that will be used for tracking changes in address books.
      *
      * @var string
      */
-    protected $addressBookChangesTableName;
+    public $addressBookChangesTableName = 'addressbookchanges';
 
     /**
      * Sets up the object
@@ -46,6 +46,9 @@ class PDO extends AbstractBackend implements SyncSupport {
      * @param \PDO $pdo
      * @param string $addressBooksTableName
      * @param string $cardsTableName
+     * @deprecated We are going to remove all the tableName arguments in a
+     *             future version, and rely on the public properties instead.
+     *             Stop relying on them!
      */
     function __construct(\PDO $pdo, $addressBooksTableName = 'addressbooks', $cardsTableName = 'cards', $addressBookChangesTableName = 'addressbookchanges') {
 

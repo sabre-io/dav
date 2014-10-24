@@ -15,6 +15,10 @@ ChangeLog
 * #538: Added `calendarObjectChange` event.
 * Scheduling speedups.
 * #539: added `afterResponse` event. (@joserobleda)
+* Deprecated: All the "tableName" constructor arguments for all the PDO
+  backends are now deprecated. They still work, but will be removed in the
+  next major sabredav version. Every argument that is now deprecated can now
+  be accessed as a public property on the respective backends.
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

@@ -42,35 +42,35 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      *
      * @var string
      */
-    protected $calendarTableName;
+    public $calendarTableName = 'calendars';
 
     /**
      * The table name that will be used for calendar objects
      *
      * @var string
      */
-    protected $calendarObjectTableName;
+    public $calendarObjectTableName = 'calendarobjects';
 
     /**
      * The table name that will be used for tracking changes in calendars.
      *
      * @var string
      */
-    protected $calendarChangesTableName;
+    public $calendarChangesTableName = 'calendarchanges';
 
     /**
      * The table name that will be used inbox items.
      *
      * @var string
      */
-    protected $schedulingObjectTableName;
+    public $schedulingObjectTableName = 'calendarsubscriptions';
 
     /**
      * The table name that will be used for calendar subscriptions.
      *
      * @var string
      */
-    protected $calendarSubscriptionsTableName;
+    public $calendarSubscriptionsTableName = 'schedulingobjects';
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
@@ -112,7 +112,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @param string $calendarChangesTable
      * @param string $schedulingObjectTable
      * @param string $calendarSubscriptionsTableName
-     * @todo we have to do something about this signature. It's bullshit.
+     * @deprecated We are going to remove all the 'tableName' arguments and
+     *             move to public properties for those. Stop relying on them!
      */
     function __construct(\PDO $pdo, $calendarTableName = 'calendars', $calendarObjectTableName = 'calendarobjects', $calendarChangesTableName = 'calendarchanges', $calendarSubscriptionsTableName = "calendarsubscriptions", $schedulingObjectTableName = "schedulingobjects") {
 

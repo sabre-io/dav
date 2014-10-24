@@ -421,11 +421,6 @@ class Server extends EventEmitter {
         if (isset($this->plugins[$name]))
             return $this->plugins[$name];
 
-        // This is a fallback and deprecated.
-        foreach($this->plugins as $plugin) {
-            if (get_class($plugin)===$name) return $plugin;
-        }
-
         return null;
 
     }

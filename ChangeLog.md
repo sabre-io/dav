@@ -16,6 +16,8 @@ ChangeLog
   * `Sabre\DAV\URLUtil`
 * Removed: `Sabre\DAV\Client::addTrustedCertificates` and
   `Sabre\DAV\Client::setVerifyPeer`.
+* Removed: `Sabre\DAV\Plugin::getPlugin()` can now no longer return plugins
+  based on its class name.
 
 2.1.0-alpha2 (2014-10-23)
 -------------------------

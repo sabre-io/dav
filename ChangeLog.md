@@ -19,6 +19,9 @@ ChangeLog
   backends are now deprecated. They still work, but will be removed in the
   next major sabredav version. Every argument that is now deprecated can now
   be accessed as a public property on the respective backends.
+* #529: Added getCalendarObjectByUID to PDO backend, speeding up scheduling
+  operations on large calendars.
+
 
 2.1.0-alpha1 (2014-09-23)
 -------------------------

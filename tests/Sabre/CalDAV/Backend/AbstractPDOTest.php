@@ -419,6 +419,26 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
 
     }
+    /**
+     * @depends testCreateCalendarObject
+     */
+    function testGetCalendarObjectByUID() {
+
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2','somerandomid',[]);
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $this->assertNull(
+            $backend->getCalendarObjectByUID('principals/user2', 'bar')
+        );
+        $this->assertEquals(
+            'somerandomid/random-id',
+            $backend->getCalendarObjectByUID('principals/user2', 'foo')
+        );
+
+    }
 
     /**
      * @depends testCreateCalendarObject

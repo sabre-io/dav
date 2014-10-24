@@ -754,6 +754,50 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     }
 
     /**
+     * Searches through all of a users calendars and calendar objects to find
+     * an object with a specific UID.
+     *
+     * This method should return the path to this object, relative to the
+     * calendar home, so this path usually only contains two parts:
+     *
+     * calendarpath/objectpath.ics
+     *
+     * If the uid is not found, return null.
+     *
+     * This method should only consider * objects that the principal owns, so
+     * any calendars owned by other principals that also appear in this
+     * collection should be ignored.
+     *
+     * @param string $principalUri
+     * @param string $uid
+     * @return string|null
+     */
+    function getCalendarObjectByUID($principalUri, $uid) {
+
+        $query = <<<SQL
+SELECT
+    calendars.uri AS calendaruri, calendarobjects.uri as objecturi
+FROM
+    calendarobjects
+LEFT JOIN
+    calendars
+    ON calendarobjects.calendarid = calendars.id
+WHERE
+    calendars.principaluri = ?
+    AND
+    calendarobjects.uid = ?
+SQL;
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$principalUri, $uid]);
+
+        if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            return $row['calendaruri'] . '/' . $row['objecturi'];
+        }
+
+    }
+
+    /**
      * The getChanges method returns all the changes that have happened, since
      * the specified syncToken in the specified calendar.
      *

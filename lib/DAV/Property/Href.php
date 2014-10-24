@@ -3,6 +3,7 @@
 namespace Sabre\DAV\Property;
 
 use Sabre\DAV;
+use Sabre\HTTP\URLUtil;
 
 /**
  * Href property
@@ -69,7 +70,7 @@ class Href extends DAV\Property implements IHref {
         $elem = $dom->ownerDocument->createElement($prefix . ':href');
 
         if ($this->autoPrefix) {
-            $value = $server->getBaseUri() . DAV\URLUtil::encodePath($this->href);
+            $value = $server->getBaseUri() . URLUtil::encodePath($this->href);
         } else {
             $value = $this->href;
         }

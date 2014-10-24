@@ -7,6 +7,13 @@ ChangeLog
 * Removed: all `$tableName` arguments from every PDO backend. This was already
   deprecated, but has now been fully removed. All of these have been replaced
   with public properties.
+* Deleted several classes that were already deprecated much earlier:
+  * `Sabre\CalDAV\CalendarRootNode`
+  * `Sabre\CalDAV\UserCalendars`
+  * `Sabre\DAV\Exception\FileNotFound`
+  * `Sabre\DAV\Locks\Backend\FS`
+  * `Sabre\DAV\PartialUpdate\IFile`
+  * `Sabre\DAV\URLUtil`
 
 2.1.0-alpha2 (2014-10-23)
 -------------------------

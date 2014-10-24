@@ -2,9 +2,9 @@
 
 namespace Sabre\DAV;
 
-use
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP\URLUtil;
 
 /**
  * Temporary File Filter Plugin

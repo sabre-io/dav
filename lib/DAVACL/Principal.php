@@ -2,9 +2,8 @@
 
 namespace Sabre\DAVACL;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP\URLUtil;
+use Sabre\DAV;
+use Sabre\HTTP\URLUtil;
 
 /**
  * Principal class

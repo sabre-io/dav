@@ -1,7 +1,9 @@
 <?php
 
 namespace Sabre\DAVACL\Property;
+
 use Sabre\DAV;
+use Sabre\HTTP\URLUtil;
 
 /**
  * Principal property
@@ -120,7 +122,7 @@ class Principal extends DAV\Property implements DAV\Property\IHref {
                 break;
             case self::HREF :
                 $href = $node->ownerDocument->createElement($prefix . ':href');
-                $href->nodeValue = $server->getBaseUri() . DAV\URLUtil::encodePath($this->href);
+                $href->nodeValue = $server->getBaseUri() . URLUtil::encodePath($this->href);
                 $node->appendChild($href);
                 break;
 

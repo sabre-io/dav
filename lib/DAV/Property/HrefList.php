@@ -3,6 +3,7 @@
 namespace Sabre\DAV\Property;
 
 use Sabre\DAV;
+use Sabre\HTTP\URLUtil;
 
 /**
  * HrefList property
@@ -70,7 +71,7 @@ class HrefList extends DAV\Property {
 
             $elem = $dom->ownerDocument->createElement($prefix . ':href');
             if ($this->autoPrefix) {
-                $value = $server->getBaseUri() . DAV\URLUtil::encodePath($href);
+                $value = $server->getBaseUri() . URLUtil::encodePath($href);
             } else {
                 $value = $href;
             }

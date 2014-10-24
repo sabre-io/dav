@@ -132,7 +132,7 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testLockNonExistant() {
 
         mkdir(SABRE_TEMPDIR . '/locksdir');
-        $locksBackend = new Locks\Backend\FS(SABRE_TEMPDIR . '/locksdir');
+        $locksBackend = new Locks\Backend\File(SABRE_TEMPDIR . '/locks');
         $locksPlugin = new Locks\Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
 

@@ -310,6 +310,12 @@ class Plugin extends ServerPlugin {
         if (!$iTipMessage->scheduleStatus) {
             $iTipMessage->scheduleStatus='5.2;There was no system capable of delivering the scheduling message';
         }
+        // In case the change was considered 'insignificant', we are going to
+        // remove any error statuses, if any. See ticket #525.
+        list($baseCode) = explode('.', $iTipMessage->scheduleStatus);
+        if (!$iTipMessage->significantChange && in_array($baseCode,['3','5'])) {
+            $iTipMessage->scheduleStatus = null;
+        }
 
     }
 
@@ -521,7 +527,9 @@ class Plugin extends ServerPlugin {
             $this->deliver($message);
 
             if (isset($newObject->VEVENT->ORGANIZER) && ($newObject->VEVENT->ORGANIZER->getNormalizedValue() === $message->recipient)) {
-                $newObject->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                if ($message->scheduleStatus) {
+                    $newObject->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                }
                 unset($newObject->VEVENT->ORGANIZER['SCHEDULE-FORCE-SEND']);
 
             } else {
@@ -529,7 +537,9 @@ class Plugin extends ServerPlugin {
                 if (isset($newObject->VEVENT->ATTENDEE)) foreach($newObject->VEVENT->ATTENDEE as $attendee) {
 
                     if ($attendee->getNormalizedValue() === $message->recipient) {
-                        $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                        if ($message->scheduleStatus) {
+                            $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                        }
                         unset($attendee['SCHEDULE-FORCE-SEND']);
                         break;
                     }

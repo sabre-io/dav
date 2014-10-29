@@ -351,7 +351,7 @@ class CalendarQueryValidator {
                     return $component->isInTimeRange($start, $end);
                 }
 
-            case 'VFREEBUSY' :
+                case 'VFREEBUSY' :
                 throw new \Sabre\DAV\Exception\NotImplemented('time-range filters are currently not supported on ' . $component->name . ' components');
 
             case 'COMPLETED' :

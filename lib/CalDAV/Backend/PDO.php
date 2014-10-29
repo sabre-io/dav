@@ -778,7 +778,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 SELECT
     calendars.uri AS calendaruri, calendarobjects.uri as objecturi
 FROM
-    calendarobjects
+    $this->calendarObjectTableName
 LEFT JOIN
     calendars
     ON calendarobjects.calendarid = calendars.id

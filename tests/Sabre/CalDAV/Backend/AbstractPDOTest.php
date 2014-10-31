@@ -684,6 +684,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'added'     => ["todo3.ics"],
         ], $result);
 
+        $result = $backend->getChangesForCalendar($id, null, 1);
+
+        $this->assertEquals([
+            'syncToken' => 6,
+            'modified' => [],
+            'deleted' => [],
+            'added' => ["todo1.ics", "todo3.ics"],
+        ], $result);
     }
 
     function testCreateSubscriptions() {

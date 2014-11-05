@@ -5,7 +5,7 @@ use Sabre\HTTP;
 use Sabre\VObject;
 
 /**
- * This unittest is created to check if expan() works correctly with
+ * This unittest is created to check if expand() works correctly with
  * floating times (using calendar-timezone information).
  */
 class ExpandEventsFloatingTimeTest extends \Sabre\DAVServerTest {

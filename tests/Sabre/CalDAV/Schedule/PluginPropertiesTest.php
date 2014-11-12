@@ -11,6 +11,19 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest {
     protected $setupCalDAV = true;
     protected $setupCalDAVScheduling = true;
 
+    function setUp() {
+
+        parent::setUp();
+        $this->caldavBackend->createCalendar(
+            'principals/user1',
+            'default',
+            [
+
+            ]
+        );
+
+    }
+
     function testPrincipalProperties() {
 
         $props = $this->server->getPropertiesForPath('/principals/user1',array(
@@ -42,6 +55,10 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest {
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-type',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-type'];
         $this->assertEquals('INDIVIDUAL',$prop);
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-default-calendar-URL',$props[0][200]);
+        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}schedule-default-calendar-URL'];
+        $this->assertEquals('calendars/user1/default/',$prop->getHref());
 
     }
 

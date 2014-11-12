@@ -6,14 +6,24 @@ use Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginPropertiesTest extends \Sabre\DAVServerTest {
+class PluginPropertiesWithSharedCalendarTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
     protected $setupCalDAVScheduling = true;
+    protected $setupCalDAVSharing = true;
 
     function setUp() {
 
         parent::setUp();
+        $this->caldavBackend->createCalendar(
+            'principals/user1',
+            'shared',
+            [
+                '{http://calendarserver.org/ns/}shared-url' => new DAV\Property\Href('calendars/user2/default/'),
+                '{http://sabredav.org/ns}read-only' => false,
+                '{http://sabredav.org/ns}owner-principal' => 'principals/user2',
+            ]
+        );
         $this->caldavBackend->createCalendar(
             'principals/user1',
             'default',

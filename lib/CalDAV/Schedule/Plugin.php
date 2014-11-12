@@ -237,8 +237,8 @@ class Plugin extends ServerPlugin {
             ], 1);
 
             foreach($result as $child) {
-                if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar')) {
-                    // Node is not a calendar.
+                if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar') || $child[200]['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared')) {
+                    // Node is either not a calendar or a shared instance.
                     continue;
                 }
                 if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {

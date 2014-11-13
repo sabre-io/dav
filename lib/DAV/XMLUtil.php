@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\DAV;
+use Sabre\XML;
 
 /**
  * XML utilities for WebDAV
@@ -10,6 +11,34 @@ namespace Sabre\DAV;
  * @license http://sabre.io/license/ Modified BSD License
  */
 class XMLUtil {
+
+    /**
+     * This is a list of XML elements that we automatically map to PHP classes.
+     *
+     * For instance, this list may contain an entry `{DAV:}propfind` that would
+     * be mapped to Sabre\DAV\XML\Request\PropFind
+     */
+    public $elementMap = [];
+
+    /**
+     * Parses an XML file.
+     * This method parses an xml file and maps all known properties to their
+     * respective objects.
+     *
+     * @param string|resource|\Sabre\HTTP\MessageInterface $input
+     * @return mixed
+     */
+    function parse($input) {
+
+        $reader = new XML\Reader();
+        if ($input instanceof \Sabre\HTTP\MessageInterface) {
+            $reader->xml($input->getBodyAsString());
+        } else {
+            $reader->xml($input);
+        }
+        return $reader->parse();
+
+    }
 
     /**
      * Returns the 'clark notation' for an element.

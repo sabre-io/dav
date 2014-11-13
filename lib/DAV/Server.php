@@ -175,6 +175,13 @@ class Server extends EventEmitter {
     public $enablePropfindDepthInfinity = false;
 
     /**
+     * Reference to the XML utility object.
+     *
+     * @var XMLUtil
+     */
+    public $xml;
+
+    /**
      * If this setting is turned off, SabreDAV's version number will be hidden
      * from various places.
      *
@@ -225,6 +232,7 @@ class Server extends EventEmitter {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
 
+        $this->xml = new XMLUtil();
         $this->sapi = new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = $this->sapi->getRequest();

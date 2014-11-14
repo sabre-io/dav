@@ -684,20 +684,32 @@ class Plugin extends DAV\ServerPlugin {
             $end = VObject\DateTimeParser::parseDateTime($end);
         }
 
+        $uri = $this->server->getRequestUri();
         if (!$start && !$end) {
             throw new DAV\Exception\BadRequest('The freebusy report must have a time-range filter');
         }
-        $acl = $this->server->getPlugin('acl');
 
-        if (!$acl) {
-            throw new DAV\Exception('The ACL plugin must be loaded for free-busy queries to work');
+        $acl = $this->server->getPlugin('acl');
+        if ($acl) {
+            $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
         }
-        $uri = $this->server->getRequestUri();
-        $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
 
         $calendar = $this->server->tree->getNodeForPath($uri);
         if (!$calendar instanceof ICalendar) {
             throw new DAV\Exception\NotImplemented('The free-busy-query REPORT is only implemented on calendars');
+        }
+
+        $tzProp = '{' . self::NS_CALDAV . '}calendar-timezone';
+
+        // Figuring out the default timezone for the calendar, for floating
+        // times.
+        $calendarProps = $this->server->getProperties($uri, [$tzProp]);
+
+        if (isset($calendarProps[$tzProp])) {
+            $vtimezoneObj = VObject\Reader::read($calendarProps[$tzProp]);
+            $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+        } else {
+            $calendarTimeZone = new DateTimeZone('UTC');
         }
 
         // Doing a calendar-query first, to make sure we get the most
@@ -729,6 +741,7 @@ class Plugin extends DAV\ServerPlugin {
         $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
+        $generator->setTimeZone($calendarTimeZone);
         $result = $generator->getResult();
         $result = $result->serialize();
 

@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.4.1",
-        "sabre/vobject": "~3.3.2",
+        "sabre/vobject": "~3.3@dev",
         "sabre/event" : "~2.0.0",
         "sabre/http" : "~3.0.0",
         "ext-dom": "*",

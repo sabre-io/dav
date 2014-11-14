@@ -7,6 +7,12 @@ ChangeLog
 * #541: CalDAV PDO backend didn't respect overridden PDO table names.
 * #550: Scheduling invites are no longer delivered into shared calendars.
 * #554: `calendar-multiget` `REPORT` did not work on inbox items.
+* #555: The `calendar-timezone` property is now respected for floating times
+  and all-day events in the `calendar-query`, `calendar-multiget` and
+  `free-busy-query` REPORTs.
+* #555: The `calendar-timezone` property is also respected for scheduling
+  free-busy requests.
+
 
 2.1.0-alpha2 (2014-10-23)
 -------------------------

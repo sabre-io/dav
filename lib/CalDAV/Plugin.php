@@ -708,6 +708,15 @@ class Plugin extends DAV\ServerPlugin {
         if (!$node instanceof ICalendarObject)
             return;
 
+        // We're onyl interested in ICalendarObject nodes that are inside of a
+        // real calendar. This is to avoid triggering validation and scheduling
+        // for non-calendars (such as an inbox).
+        list($parent) = URLUtil::splitPath($path);
+        $parentNode = $this->server->tree->getNodeForPath($parent);
+
+        if (!$parentNode instanceof ICalendar)
+            return;
+
         $this->validateICalendar(
             $data,
             $path,

@@ -12,7 +12,7 @@ use Sabre\DAV\Exception\MethodNotAllowed;
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  */
-class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sabre\DAVACL\IACL {
+class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements ISchedulingObject {
 
     /**
      /* The CalDAV backend
@@ -58,17 +58,6 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
     }
 
     /**
-     * Returns the uri for this object
-     *
-     * @return string
-     */
-    function getName() {
-
-        return $this->objectData['uri'];
-
-    }
-
-    /**
      * Returns the ICalendar-formatted object
      *
      * @return string
@@ -108,64 +97,6 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
     }
 
     /**
-     * Returns the mime content-type
-     *
-     * @return string
-     */
-    function getContentType() {
-
-        $mime = 'text/calendar; charset=utf-8';
-        if (isset($this->objectData['component']) && $this->objectData['component']) {
-            $mime.='; component=' . $this->objectData['component'];
-        }
-        return $mime;
-
-    }
-
-    /**
-     * Returns an ETag for this object.
-     *
-     * The ETag is an arbitrary string, but MUST be surrounded by double-quotes.
-     *
-     * @return string
-     */
-    function getETag() {
-
-        if (isset($this->objectData['etag'])) {
-            return $this->objectData['etag'];
-        } else {
-            return '"' . md5($this->get()). '"';
-        }
-
-    }
-
-    /**
-     * Returns the last modification date as a unix timestamp
-     *
-     * @return int
-     */
-    function getLastModified() {
-
-        return $this->objectData['lastmodified'];
-
-    }
-
-    /**
-     * Returns the size of this object in bytes
-     *
-     * @return int
-     */
-    function getSize() {
-
-        if (array_key_exists('size',$this->objectData)) {
-            return $this->objectData['size'];
-        } else {
-            return strlen($this->get());
-        }
-
-    }
-
-    /**
      * Returns the owner principal
      *
      * This must be a url to a principal, or null if there's no owner
@@ -178,18 +109,6 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
 
     }
 
-    /**
-     * Returns a group principal
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getGroup() {
-
-        return null;
-
-    }
 
     /**
      * Returns a list of ACE's for this node.
@@ -243,37 +162,4 @@ class SchedulingObject extends \Sabre\DAV\File implements ISchedulingObject, \Sa
 
     }
 
-    /**
-     * Updates the ACL
-     *
-     * This method will receive a list of new ACE's.
-     *
-     * @param array $acl
-     * @return void
-     */
-    function setACL(array $acl) {
-
-        throw new \Sabre\DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
-
-    }
-
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See \Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        return null;
-
-    }
-
 }
-

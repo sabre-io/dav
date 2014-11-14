@@ -18,7 +18,7 @@ class ExpandEventsFloatingTimeTest extends \Sabre\DAVServerTest {
             'name' => 'Calendar',
             'principaluri' => 'principals/user1',
             'uri' => 'calendar1',
-            'timezone' => 'BEGIN:VCALENDAR
+            '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => 'BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
 BEGIN:VTIMEZONE
@@ -64,13 +64,11 @@ END:VCALENDAR
         ),
     );
 
-    function testExpand() {
+    function testExpandCalendarQuery() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_CONTENT_TYPE' => 'application/xml',
-            'REQUEST_URI' => '/calendars/user1/calendar1',
-            'HTTP_DEPTH' => '1',
+        $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
+            'Depth' => 1,
+            'Content-Type' => 'application/xml',
         ]);
 
         $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
@@ -91,6 +89,55 @@ END:VCALENDAR
 </C:calendar-query>');
 
         $response = $this->request($request);
+
+        // Everts super awesome xml parser.
+        $body = substr(
+            $response->body,
+            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
+            strpos($response->body, 'END:VCALENDAR') - $start + 13
+        );
+        $body = str_replace('&#13;','',$body);
+
+        $vObject = VObject\Reader::read($body);
+
+        // check if DTSTARTs and DTENDs are correct
+        foreach ($vObject->VEVENT as $vevent) {
+            /** @var $vevent Sabre\VObject\Component\VEvent */
+            foreach ($vevent->children as $child) {
+                /** @var $child Sabre\VObject\Property */
+
+                if ($child->name == 'DTSTART') {
+                    // DTSTART should be the UTC equivalent of given floating time
+                    $this->assertEquals($child->getValue(), '20141108T043000Z');
+                } elseif ($child->name == 'DTEND') {
+                    // DTEND should be the UTC equivalent of given floating time
+                    $this->assertEquals($child->getValue(), '20141108T063000Z');
+                }
+            }
+        }
+    }
+
+    function testExpandMultiGet() {
+
+        $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
+            'Depth' => 1,
+            'Content-Type' => 'application/xml',
+        ]);
+
+        $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
+<C:calendar-multiget xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+    <D:prop>
+        <C:calendar-data>
+            <C:expand start="20141107T230000Z" end="20141108T225959Z"/>
+        </C:calendar-data>
+        <D:getetag/>
+    </D:prop>
+    <D:href>/calendars/user1/calendar1/event.ics</D:href>
+</C:calendar-multiget>');
+
+        $response = $this->request($request);
+
+        $this->assertEquals(207, $response->getStatus());
 
         // Everts super awesome xml parser.
         $body = substr(

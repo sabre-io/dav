@@ -276,11 +276,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      */
     function getMultipleCards($addressBookId, array $uris) {
 
-        return array_map(function($uri) use ($addressBookId) {
-            return $this->getCard($addressBookId, $uri);
-        }, $uris);
-
-        $query = 'SELECT id, uri, lastmodified, etag, size FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = IN (';
+        $query = 'SELECT id, uri, lastmodified, etag, size, carddata FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri IN (';
         // Inserting a whole bunch of question marks
         $query.=implode(',', array_fill(0, count($uris), '?'));
         $query.=')';

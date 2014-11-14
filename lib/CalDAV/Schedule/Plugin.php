@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV\Schedule;
 
 use
+    DateTimeZone,
     Sabre\DAV\Server,
     Sabre\DAV\ServerPlugin,
     Sabre\DAV\Property\Href,
@@ -236,8 +237,8 @@ class Plugin extends ServerPlugin {
             ], 1);
 
             foreach($result as $child) {
-                if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar')) {
-                    // Node is not a calendar.
+                if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar') || $child[200]['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared')) {
+                    // Node is either not a calendar or a shared instance.
                     continue;
                 }
                 if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {
@@ -787,13 +788,23 @@ class Plugin extends ServerPlugin {
             }
 
             $sct = $caldavNS . 'schedule-calendar-transp';
-            $props = $node->getProperties([$sct]);
+            $ctz = $caldavNS . 'calendar-timezone';
+            $props = $node->getProperties([$sct, $ctz]);
 
             if (isset($props[$sct]) && $props[$sct]->getValue() == ScheduleCalendarTransp::TRANSPARENT) {
+                // If a calendar is marked as 'transparent', it means we must
+                // ignore it for free-busy purposes.
                 continue;
             }
 
             $aclPlugin->checkPrivileges($homeSet . $node->getName() ,$caldavNS . 'read-free-busy');
+
+            if (isset($props[$ctz])) {
+                $vtimezoneObj = VObject\Reader::read($props[$ctz]);
+                $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+            } else {
+                $calendarTimeZone = new DateTimeZone('UTC');
+            }
 
             // Getting the list of object uris within the time-range
             $urls = $node->calendarQuery([
@@ -831,6 +842,7 @@ class Plugin extends ServerPlugin {
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
         $generator->setBaseObject($vcalendar);
+        $generator->setTimeZone($calendarTimeZone);
 
         $result = $generator->getResult();
 

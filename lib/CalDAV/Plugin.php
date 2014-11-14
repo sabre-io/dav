@@ -2,15 +2,15 @@
 
 namespace Sabre\CalDAV;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\Property\HrefList,
-    Sabre\DAVACL,
-    Sabre\VObject,
-    Sabre\HTTP,
-    Sabre\HTTP\URLUtil,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use DateTimeZone;
+use Sabre\DAV;
+use Sabre\DAV\Property\HrefList;
+use Sabre\DAVACL;
+use Sabre\VObject;
+use Sabre\HTTP;
+use Sabre\HTTP\URLUtil;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * CalDAV plugin
@@ -456,12 +456,36 @@ class Plugin extends DAV\ServerPlugin {
             $uris[] = $this->server->calculateUri($elem->nodeValue);
         }
 
+        $tz = null;
+
+        $timeZones = [];
+
         foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $uri=>$objProps) {
 
             if (($needsJson || $expand) && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
                 $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);
+
                 if ($expand) {
-                    $vObject->expand($start, $end);
+                    // We're expanding, and for that we need to figure out the
+                    // calendar's timezone.
+                    list($calendarPath) = URLUtil::splitPath($uri);
+                    if (!isset($timeZones[$calendarPath])) {
+                        // Checking the calendar-timezone property.
+                        $tzProp = '{' . self::NS_CALDAV . '}calendar-timezone';
+                        $tzResult = $this->server->getProperties($calendarPath, [$tzProp]);
+                        if (isset($tzResult[$tzProp])) {
+                            // This property contains a VCALENDAR with a single
+                            // VTIMEZONE.
+                            $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
+                            $timeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+                        } else {
+                            // Defaulting to UTC.
+                            $timeZone = new DateTimeZone('UTC');
+                        }
+                        $timeZones[$calendarPath] = $timeZone;
+                    }
+
+                    $vObject->expand($start, $end, $timeZones[$calendarPath]);
                 }
                 if ($needsJson) {
                     $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
@@ -497,6 +521,8 @@ class Plugin extends DAV\ServerPlugin {
         $parser = new CalendarQueryParser($dom);
         $parser->parse();
 
+        $path = $this->server->getRequestUri();
+
         // TODO: move this into CalendarQueryParser
         $xpath = new \DOMXPath($dom);
         $xpath->registerNameSpace('cal',Plugin::NS_CALDAV);
@@ -508,6 +534,24 @@ class Plugin extends DAV\ServerPlugin {
 
         // The default result is an empty array
         $result = [];
+
+        $calendarTimeZone = null;
+        if ($parser->expand) {
+            // We're expanding, and for that we need to figure out the
+            // calendar's timezone.
+            $tzProp = '{' . self::NS_CALDAV . '}calendar-timezone';
+            $tzResult = $this->server->getProperties($path, [$tzProp]);
+            if (isset($tzResult[$tzProp])) {
+                // This property contains a VCALENDAR with a single
+                // VTIMEZONE.
+                $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
+                $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+                unset($vtimezoneObj);
+            } else {
+                // Defaulting to UTC.
+                $calendarTimeZone = new DateTimeZone('UTC');
+            }
+        }
 
         // The calendarobject was requested directly. In this case we handle
         // this locally.
@@ -527,7 +571,7 @@ class Plugin extends DAV\ServerPlugin {
             }
 
             $properties = $this->server->getPropertiesForPath(
-                $this->server->getRequestUri(),
+                $path,
                 $requestedProperties,
                 0
             );
@@ -550,9 +594,10 @@ class Plugin extends DAV\ServerPlugin {
                     if (!$requestedCalendarData) {
                         unset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);
                     } else {
-                        if ($parser->expand) {
-                            $vObject->expand($parser->expand['start'], $parser->expand['end']);
 
+
+                        if ($parser->expand) {
+                            $vObject->expand($parser->expand['start'], $parser->expand['end'], $calendarTimeZone);
                         }
                         if ($needsJson) {
                             $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
@@ -575,6 +620,8 @@ class Plugin extends DAV\ServerPlugin {
 
             $nodePaths = $node->calendarQuery($parser->filters);
 
+            $timeZones = [];
+
             foreach($nodePaths as $path) {
 
                 list($properties) =
@@ -582,9 +629,11 @@ class Plugin extends DAV\ServerPlugin {
 
                 if (($needsJson || $parser->expand)) {
                     $vObject = VObject\Reader::read($properties[200]['{' . self::NS_CALDAV . '}calendar-data']);
+
                     if ($parser->expand) {
-                        $vObject->expand($parser->expand['start'], $parser->expand['end']);
+                        $vObject->expand($parser->expand['start'], $parser->expand['end'], $calendarTimeZone);
                     }
+
                     if ($needsJson) {
                         $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
                     } else {
@@ -635,20 +684,32 @@ class Plugin extends DAV\ServerPlugin {
             $end = VObject\DateTimeParser::parseDateTime($end);
         }
 
+        $uri = $this->server->getRequestUri();
         if (!$start && !$end) {
             throw new DAV\Exception\BadRequest('The freebusy report must have a time-range filter');
         }
-        $acl = $this->server->getPlugin('acl');
 
-        if (!$acl) {
-            throw new DAV\Exception('The ACL plugin must be loaded for free-busy queries to work');
+        $acl = $this->server->getPlugin('acl');
+        if ($acl) {
+            $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
         }
-        $uri = $this->server->getRequestUri();
-        $acl->checkPrivileges($uri,'{' . self::NS_CALDAV . '}read-free-busy');
 
         $calendar = $this->server->tree->getNodeForPath($uri);
         if (!$calendar instanceof ICalendar) {
             throw new DAV\Exception\NotImplemented('The free-busy-query REPORT is only implemented on calendars');
+        }
+
+        $tzProp = '{' . self::NS_CALDAV . '}calendar-timezone';
+
+        // Figuring out the default timezone for the calendar, for floating
+        // times.
+        $calendarProps = $this->server->getProperties($uri, [$tzProp]);
+
+        if (isset($calendarProps[$tzProp])) {
+            $vtimezoneObj = VObject\Reader::read($calendarProps[$tzProp]);
+            $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+        } else {
+            $calendarTimeZone = new DateTimeZone('UTC');
         }
 
         // Doing a calendar-query first, to make sure we get the most
@@ -680,6 +741,7 @@ class Plugin extends DAV\ServerPlugin {
         $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
         $generator->setTimeRange($start, $end);
+        $generator->setTimeZone($calendarTimeZone);
         $result = $generator->getResult();
         $result = $result->serialize();
 
@@ -706,6 +768,15 @@ class Plugin extends DAV\ServerPlugin {
     function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified) {
 
         if (!$node instanceof ICalendarObject)
+            return;
+
+        // We're onyl interested in ICalendarObject nodes that are inside of a
+        // real calendar. This is to avoid triggering validation and scheduling
+        // for non-calendars (such as an inbox).
+        list($parent) = URLUtil::splitPath($path);
+        $parentNode = $this->server->tree->getNodeForPath($parent);
+
+        if (!$parentNode instanceof ICalendar)
             return;
 
         $this->validateICalendar(

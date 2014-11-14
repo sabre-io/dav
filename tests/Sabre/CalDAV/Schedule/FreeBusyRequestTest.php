@@ -24,6 +24,7 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
                 'principaluri' => 'principals/user2',
                 'id'           => 1,
                 'uri'          => 'calendar1',
+                '{' . CalDAV\Plugin::NS_CALDAV . '}calendar-timezone' => "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nEND:VTIMEZONE\r\nEND:VCALENDAR",
             ),
             array(
                 'principaluri' => 'principals/user2',
@@ -296,7 +297,7 @@ ICS;
             '<d:href>mailto:user3.sabredav@sabredav.org</d:href>',
             '<cal:request-status>2.0;Success</cal:request-status>',
             '<cal:request-status>3.7;Could not find principal</cal:request-status>',
-            'FREEBUSY;FBTYPE=BUSY:20110101T130000Z/20110101T140000Z',
+            'FREEBUSY;FBTYPE=BUSY:20110101T120000Z/20110101T130000Z',
         );
 
         foreach($strings as $string) {

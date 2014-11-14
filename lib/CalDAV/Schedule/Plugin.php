@@ -8,7 +8,6 @@ use
     Sabre\DAV\Property\Href,
     Sabre\DAV\PropFind,
     Sabre\DAV\INode,
-    Sabre\DAV\IFile,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
@@ -283,8 +282,6 @@ class Plugin extends ServerPlugin {
         $addresses = $this->getAddressesForPrincipal(
             $calendarNode->getOwner()
         );
-
-        $broker = new ITip\Broker();
 
         if (!$isNew) {
             $node = $this->server->tree->getNodeForPath($request->getPath());

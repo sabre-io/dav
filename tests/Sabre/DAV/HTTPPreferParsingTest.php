@@ -131,10 +131,12 @@ BLA
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus(), $response->getBodyAsString());
+        $body = $response->getBodyAsString();
 
-        $this->assertTrue(strpos($response->body, 'resourcetype')!==false);
-        $this->assertTrue(strpos($response->body, 'something')===false);
+        $this->assertEquals(207, $response->getStatus(), $body);
+
+        $this->assertTrue(strpos($body, 'resourcetype')!==false, $body);
+        $this->assertTrue(strpos($body, 'something')===false, $body);
 
     }
 
@@ -193,9 +195,11 @@ BLA
 
         $response = $this->request($request);
 
+        $body = $response->getBodyAsString();
+
         $this->assertEquals(207, $response->status);
-        $this->assertTrue(strpos($response->body, 'something')!==false);
-        $this->assertTrue(strpos($response->body, '403 Forbidden')!==false);
+        $this->assertTrue(strpos($body, 'something')!==false);
+        $this->assertTrue(strpos($body, '403 Forbidden')!==false, $body);
 
     }
 }

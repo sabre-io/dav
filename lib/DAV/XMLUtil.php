@@ -21,6 +21,19 @@ class XMLUtil {
     public $elementMap = [];
 
     /**
+     * This is a default list of namespaces.
+     *
+     * If you are defining your own custom namespace, add it here to reduce
+     * bandwidth and improve legibility of xml bodies.
+     *
+     * @var array
+     */
+    public $namespaceMap = [
+        'DAV:' => 'd',
+        'http://sabredav.org/ns' => 's',
+    ];
+
+    /**
      * Parses an XML file.
      * This method parses an xml file and maps all known properties to their
      * respective objects.
@@ -38,6 +51,22 @@ class XMLUtil {
             $reader->xml($input);
         }
         return $reader->parse();
+
+    }
+
+    /**
+     * Generates an XML document and returns the output as a string.
+     *
+     * @param mixed $output
+     * @return string
+     */
+    function write($output) {
+
+        $writer = new XML\Writer();
+        $writer->namespaceMap = $this->namespaceMap;
+        $writer->openMemory('1.0');
+        $writer->write($output);
+        return $writer->outputMemory();
 
     }
 

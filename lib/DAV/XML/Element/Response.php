@@ -122,7 +122,7 @@ class Response implements Element {
     public function serializeXml(Writer $writer) {
 
         if ($status = $this->getHTTPStatus()) {
-            $writer->writeElement('{DAV:}status', \Sabre\HTTP\Response::getStatusMessage($status));
+            $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
         $writer->writeElement('{DAV:}href', $writer->baseUri . $this->getHref());
         foreach($this->getResponseProperties() as $status => $properties) {
@@ -133,7 +133,7 @@ class Response implements Element {
             }
             $writer->startElement('{DAV:}propstat');
             $writer->writeElement('{DAV:}prop', $properties);
-            $writer->writeElement('{DAV:}status', \Sabre\HTTP\Response::getStatusMessage($status));
+            $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
             $writer->endElement(); // {DAV:}propstat
 
         }

@@ -790,7 +790,7 @@ class CorePlugin extends ServerPlugin {
         $propFind->handle('{DAV:}getlastmodified', function() use ($node) {
             $lm = $node->getLastModified();
             if ($lm) {
-                return new Property\GetLastModified($lm);
+                return new XML\Property\GetLastModified($lm);
             }
         });
 
@@ -819,13 +819,13 @@ class CorePlugin extends ServerPlugin {
             foreach($this->server->getPlugins() as $plugin) {
                 $reports = array_merge($reports, $plugin->getSupportedReportSet($propFind->getPath()));
             }
-            return new Property\SupportedReportSet($reports);
+            return new XML\Property\SupportedReportSet($reports);
         });
         $propFind->handle('{DAV:}resourcetype', function() use ($node) {
-            return new Property\ResourceType($this->server->getResourceTypeForNode($node));
+            return new XML\Property\ResourceType($this->server->getResourceTypeForNode($node));
         });
         $propFind->handle('{DAV:}supported-method-set', function() use ($propFind) {
-            return new Property\SupportedMethodSet(
+            return new XML\Property\SupportedMethodSet(
                 $this->server->getAllowedMethods($propFind->getPath())
             );
         });

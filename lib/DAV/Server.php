@@ -91,10 +91,7 @@ class Server extends EventEmitter {
      *
      * @var array
      */
-    public $xmlNamespaces = [
-        'DAV:' => 'd',
-        'http://sabredav.org/ns' => 's',
-    ];
+    public $xmlNamespaces = null;
 
     /**
      * The propertymap can be used to map properties from
@@ -233,6 +230,7 @@ class Server extends EventEmitter {
         }
 
         $this->xml = new XMLUtil();
+        $this->xmlNamespaces =& $this->xml->namespaceMap;
         $this->sapi = new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = $this->sapi->getRequest();
@@ -859,7 +857,7 @@ class Server extends EventEmitter {
                 $headers[$header] = $properties[$property];
 
             // GetLastModified gets special cased
-            } elseif ($properties[$property] instanceof Property\GetLastModified) {
+            } elseif ($properties[$property] instanceof XML\Property\GetLastModified) {
                 $headers[$header] = HTTP\Util::toHTTPDate($properties[$property]->getTime());
             }
 
@@ -1644,33 +1642,26 @@ class Server extends EventEmitter {
      */
     function generateMultiStatus(array $fileProperties, $strip404s = false) {
 
-        $dom = new \DOMDocument('1.0','utf-8');
-        //$dom->formatOutput = true;
-        $multiStatus = $dom->createElement('d:multistatus');
-        $dom->appendChild($multiStatus);
-
-        // Adding in default namespaces
-        foreach($this->xmlNamespaces as $namespace=>$prefix) {
-
-            $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
+        $xml = [];
 
         foreach($fileProperties as $entry) {
 
             $href = $entry['href'];
             unset($entry['href']);
-
-            if ($strip404s && isset($entry[404])) {
+            if ($strip404s) {
                 unset($entry[404]);
             }
-
-            $response = new Property\Response($href,$entry);
-            $response->serialize($this,$multiStatus);
+            $response = new XML\Element\Response(
+                '/' . ltrim($href,'/'),
+                $entry
+            );
+            $xml[] = [
+                'name'  => '{DAV:}response',
+                'value' => $response
+            ];
 
         }
-
-        return $dom->saveXML();
+        return $this->xml->write(['{DAV:}multistatus' => $xml]);
 
     }
 

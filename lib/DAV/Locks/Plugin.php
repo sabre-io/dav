@@ -92,10 +92,10 @@ class Plugin extends DAV\ServerPlugin {
     function propFind(DAV\PropFind $propFind, DAV\INode $node) {
 
         $propFind->handle('{DAV:}supportedlock', function() {
-            return new DAV\Property\SupportedLock(!!$this->locksBackend);
+            return new DAV\XML\Property\SupportedLock(!!$this->locksBackend);
         });
         $propFind->handle('{DAV:}lockdiscovery', function() use ($propFind) {
-            return new DAV\Property\LockDiscovery(
+            return new DAV\XML\Property\LockDiscovery(
                 $this->getLocks( $propFind->getPath() )
             );
         });

@@ -86,7 +86,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
         $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = $this->response->getBodyAsString();
+        $this->assertEquals(207, $this->response->getStatus(), $body);
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d','urn:DAV');
 

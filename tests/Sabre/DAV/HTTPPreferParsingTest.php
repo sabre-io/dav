@@ -131,6 +131,8 @@ BLA
 
         $response = $this->request($request);
 
+        $this->assertEquals(207, $response->getStatus(), $response->getBodyAsString());
+
         $this->assertTrue(strpos($response->body, 'resourcetype')!==false);
         $this->assertTrue(strpos($response->body, 'something')===false);
 

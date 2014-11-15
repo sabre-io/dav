@@ -1719,29 +1719,6 @@ class Server extends EventEmitter {
         return $newProperties;
 
     }
-
-    /**
-     * This method parses the PROPFIND request and returns its information
-     *
-     * This will either be a list of properties, or an empty array; in which case
-     * an {DAV:}allprop was requested.
-     *
-     * @param string $body
-     * @return array
-     */
-    function parsePropFindRequest($body) {
-
-        // If the propfind body was empty, it means IE is requesting 'all' properties
-        if (!$body) return [];
-
-        $dom = XMLUtil::loadDOMDocument($body);
-        $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
-        if (is_null($elem)) throw new Exception\UnsupportedMediaType('We could not find a {DAV:}propfind element in the xml request body');
-
-        return array_keys(XMLUtil::parseProperties($elem));
-
-    }
-
     // }}}
 
 }

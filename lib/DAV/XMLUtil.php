@@ -31,6 +31,7 @@ class XMLUtil {
     function parse($input) {
 
         $reader = new XML\Reader();
+        $reader->elementMap = $this->elementMap;
         if ($input instanceof \Sabre\HTTP\MessageInterface) {
             $reader->xml($input->getBodyAsString());
         } else {

@@ -49,8 +49,9 @@ class CorePlugin extends ServerPlugin {
         $server->on('propFind',         [$this, 'propFindNode'], 120);
         $server->on('propFind',         [$this, 'propFindLate'], 200);
 
-        $server->xml->elementMap += [
-            '{DAV:}propfind' => 'Sabre\\XML\\Request\\PropFind',
+        $server->xml->elementMap = [
+            '{DAV:}propfind' => 'Sabre\\DAV\\XML\\Request\\PropFind',
+            '{DAV:}prop'     => 'Sabre\\XML\\Element\\Elements',
         ];
 
     }
@@ -323,17 +324,21 @@ class CorePlugin extends ServerPlugin {
         $requestBody = $request->getBodyAsString();
         if (strlen($requestBody)) {
             $propFindXml = $this->server->xml->parse($requestBody);
-            print_r($propFindXml);
-            $properties = $propFindXml['{DAV:}prop'];
+            if ($propFindXml['name'] !== '{DAV:}propfind') {
+                throw new Exception\UnsupportedMediaType('The root element of this request must be {DAV:}propfind');
+            }
+            $propFindXml = $propFindXml['value'];
         } else {
-            $properties = [];
+            $propFindXml = new XML\Request\PropFind();
+            $propFindXml->allProp = true;
+            $propFindXml->properties = [];
         }
 
         $depth = $this->server->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->server->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
-        $newProperties = $this->server->getPropertiesForPath($path, $properties, $depth);
+        $newProperties = $this->server->getPropertiesForPath($path, $propFindXml->properties, $depth);
 
         // This is a multi-status response
         $response->setStatus(207);

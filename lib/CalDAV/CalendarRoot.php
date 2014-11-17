@@ -12,7 +12,4 @@ namespace Sabre\CalDAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class CalendarRoot extends CalendarRootNode {
-
-}
-
+class_alias('Sabre\\CalDAV\\CalendarRootNode', 'Sabre\\CalDAV\\CalendarRoot');

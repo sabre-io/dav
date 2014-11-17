@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+2.0.6 (????-??-??)
+------------------
+
+* Added `Sabre\CalDAV\CalendarRoot` as an alias for
+  `Sabre\CalDAV\CalendarRootNode`. The latter is going to be deprecated in 2.1,
+  so this makes it slightly easier to write code that works in both branches.
+
+
 2.0.5 (2014-10-14)
 ------------------
 

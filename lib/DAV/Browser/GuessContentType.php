@@ -41,7 +41,7 @@ class GuessContentType extends DAV\ServerPlugin {
 
         // groupware
         'ics' => 'text/calendar',
-        'vcf' => 'text/x-vcard',
+        'vcf' => 'text/vcard',
 
         // text
         'txt' => 'text/plain',

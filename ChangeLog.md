@@ -1,8 +1,8 @@
 ChangeLog
 =========
 
-2.1.0-beta1 (2014-??-??)
-------------------------
+2.1.0 (2014-??-??)
+------------------
 
 * #541: CalDAV PDO backend didn't respect overridden PDO table names.
 * #550: Scheduling invites are no longer delivered into shared calendars.

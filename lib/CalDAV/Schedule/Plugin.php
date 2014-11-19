@@ -291,8 +291,7 @@ class Plugin extends ServerPlugin {
             $oldObj = null;
         }
 
-        $this->processICalendarChange($oldObj, $vCal, $addresses);
-        $modified = true;
+        $this->processICalendarChange($oldObj, $vCal, $addresses, [], $modified);
 
     }
 
@@ -509,12 +508,16 @@ class Plugin extends ServerPlugin {
      * @param VCalendar $newObject
      * @param array $addresses
      * @param array $ignore Any addresses to not send messages to.
+     * @param boolean $modified A marker to indicate that the original object
+     *   modified by this process.
      * @return void
      */
-    protected function processICalendarChange($oldObject = null, VCalendar $newObject, array $addresses, array $ignore = []) {
+    protected function processICalendarChange($oldObject = null, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false) {
 
         $broker = new ITip\Broker();
         $messages = $broker->parseEvent($newObject, $addresses, $oldObject);
+
+        if ($messages) $modified = true;
 
         foreach($messages as $message) {
 

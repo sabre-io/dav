@@ -12,6 +12,8 @@ ChangeLog
   `free-busy-query` REPORTs.
 * #555: The `calendar-timezone` property is also respected for scheduling
   free-busy requests.
+* #547: CalDAV system too aggressively 'corrects' incoming iCalendar data, and
+  as a result doesn't return an etag for common cases.
 
 
 2.1.0-alpha2 (2014-10-23)

@@ -19,7 +19,8 @@ ChangeLog
 * Removed: `Sabre\DAV\Plugin::getPlugin()` can now no longer return plugins
   based on its class name.
 * Removed: `Sabre\DAVACL\Plugin::getPrincipalByEmail()`.
-
+* #560: GuessContentType plugin will now set content-type to
+  `application/octet-stream` if a better content-type could not be determined.
 
 2.1.0-beta1 (2014-??-??)
 ------------------------

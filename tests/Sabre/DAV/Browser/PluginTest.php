@@ -131,6 +131,7 @@ class PluginTest extends DAV\AbstractServer{
             'Content-Type' => ['image/vnd.microsoft.icon'],
             'Content-Length' => ['4286'],
             'Cache-Control' => ['public, max-age=1209600'],
+            'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
         ], $this->response->getHeaders());
 
     }

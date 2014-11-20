@@ -274,4 +274,25 @@ class Subscription extends Collection implements ISubscription, IACL {
 
     }
 
+    /**
+     * Returns a bunch of meta-data about the plugin.
+     *
+     * Providing this information is optional, and is mainly displayed by the
+     * Browser plugin.
+     *
+     * The description key in the returned array may contain html and will not
+     * be sanitized.
+     *
+     * @return array
+     */
+    function getPluginInfo() {
+
+        return [
+            'name'        => $this->getPluginName(),
+            'description' => 'This plugin allows users to store iCalendar subscriptions in their calendar-home.',
+            'link'        => null,
+        ];
+
+    }
+
 }

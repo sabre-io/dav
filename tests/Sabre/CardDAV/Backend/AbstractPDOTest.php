@@ -22,8 +22,8 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $pdo = $this->getPDO();
         $this->backend = new PDO($pdo);
-        $pdo->exec('INSERT INTO addressbooks (principaluri, displayname, uri, description, synctoken) VALUES ("principals/user1", "book1", "book1", "addressbook 1", 1)');
-        $pdo->exec('INSERT INTO cards (addressbookid, carddata, uri, lastmodified, etag, size) VALUES (1, "card1", "card1", 0, "' . md5('card1') . '", 5)');
+        $pdo->exec("INSERT INTO addressbooks (principaluri, displayname, uri, description, synctoken) VALUES ('principals/user1', 'book1', 'book1', 'addressbook 1', 1)");
+        $pdo->exec("INSERT INTO cards (addressbookid, carddata, uri, lastmodified, etag, size) VALUES (1, 'card1', 'card1', 0, '" . md5('card1') . "', 5)");
 
     }
 

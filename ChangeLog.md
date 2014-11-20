@@ -109,6 +109,16 @@ ChangeLog
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
 
 
+2.0.6 (????-??-??)
+------------------
+
+* Added `Sabre\CalDAV\CalendarRoot` as an alias for
+  `Sabre\CalDAV\CalendarRootNode`. The latter is going to be deprecated in 2.1,
+  so this makes it slightly easier to write code that works in both branches.
+* #497: Making sure we're initializing the sync-token field with a value after
+  migration.
+
+
 2.0.5 (2014-10-14)
 ------------------
 

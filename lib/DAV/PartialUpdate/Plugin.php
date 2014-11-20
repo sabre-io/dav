@@ -119,7 +119,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // Get the node. Will throw a 404 if not found
         $node = $this->server->tree->getNodeForPath($path);
-        if (!$node instanceof IFile && !$node instanceof IPatchSupport) {
+        if (!$node instanceof IPatchSupport) {
             throw new DAV\Exception\MethodNotAllowed('The target resource does not support the PATCH method.');
         }
 
@@ -162,21 +162,7 @@ class Plugin extends DAV\ServerPlugin {
         $body = $this->server->httpRequest->getBody();
 
 
-        if ($node instanceof IPatchSupport) {
-            $etag = $node->patch($body, $range[0], isset($range[1])?$range[1]:null);
-        } else {
-            // The old interface
-            switch($range[0]) {
-                case self::RANGE_APPEND :
-                    throw new DAV\Exception\NotImplemented('This node does not support the append syntax. Please upgrade it to IPatchSupport');
-                case self::RANGE_START :
-                    $etag = $node->putRange($body, $range[1]);
-                    break;
-                case self::RANGE_END :
-                    throw new DAV\Exception\NotImplemented('This node does not support the end-range syntax. Please upgrade it to IPatchSupport');
-                    break;
-            }
-        }
+        $etag = $node->patch($body, $range[0], isset($range[1])?$range[1]:null);
 
         $this->server->emit('afterWriteContent', [$path, $node]);
 

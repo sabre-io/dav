@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.1.0 (2014-??-??)
+2.1.0 (2014-11-19)
 ------------------
 
 * #541: CalDAV PDO backend didn't respect overridden PDO table names.

@@ -107,11 +107,18 @@ class IMipPlugin extends DAV\ServerPlugin {
 
         $summary = $iTipMessage->message->VEVENT->SUMMARY;
 
-        $sender = $iTipMessage->sender;
+        if (parse_url($iTipMessage->sender, PHP_URL_SCHEME)!=='mailto')
+            return;
+
+        if (parse_url($iTipMessage->recipient, PHP_URL_SCHEME)!=='mailto')
+            return;
+
+        $sender = substr($iTipMessage->sender,7);
+        $recipient = substr($iTipMessage->recipient,7);
+
         if ($iTipMessage->senderName) {
             $sender = $iTipMessage->senderName . ' <' . $sender . '>';
         }
-        $recipient = $iTipMessage->recipient;
         if ($iTipMessage->recipientName) {
             $recipient = $iTipMessage->recipientName . ' <' . $recipient . '>';
         }

@@ -4,6 +4,9 @@ ChangeLog
 2.2.0-alpha1 (????-??-??)
 -------------------------
 
+* The browser plugin now has a new page with information about your sabredav
+  server, and shows information about every plugin that's loaded in the
+  system.
 * Removed: all `$tableName` arguments from every PDO backend. This was already
   deprecated, but has now been fully removed. All of these have been replaced
   with public properties.

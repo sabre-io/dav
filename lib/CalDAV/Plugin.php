@@ -1037,4 +1037,25 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
+    /**
+     * Returns a bunch of meta-data about the plugin.
+     *
+     * Providing this information is optional, and is mainly displayed by the
+     * Browser plugin.
+     *
+     * The description key in the returned array may contain html and will not
+     * be sanitized.
+     *
+     * @return array
+     */
+    function getPluginInfo() {
+
+        return [
+            'name'        => $this->getPluginName(),
+            'description' => 'Adds support for CalDAV (rfc4791)',
+            'link'        => 'http://sabre.io/dav/caldav/',
+        ];
+
+    }
+
 }

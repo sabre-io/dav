@@ -874,4 +874,24 @@ class Plugin extends ServerPlugin {
 
     }
 
+    /**
+     * Returns a bunch of meta-data about the plugin.
+     *
+     * Providing this information is optional, and is mainly displayed by the
+     * Browser plugin.
+     *
+     * The description key in the returned array may contain html and will not
+     * be sanitized.
+     *
+     * @return array
+     */
+    function getPluginInfo() {
+
+        return [
+            'name'        => $this->getPluginName(),
+            'description' => 'Adds calendar-auto-schedule, as defined in rf6868',
+            'link'        => 'http://sabre.io/dav/scheduling/',
+        ];
+
+    }
 }

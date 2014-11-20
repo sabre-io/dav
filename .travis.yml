@@ -11,6 +11,8 @@ matrix:
 services:
   - mysql
 
+sudo: false
+
 before_script:
   - mysql -e 'create database sabredav'
 #  - composer self-update

@@ -187,11 +187,13 @@ foreach(['calendar', 'addressbook'] as $itemType) {
             switch($driver) {
 
                 case 'mysql' :
-                    $pdo->exec("ALTER TABLE $tableName ADD synctoken INT(11) UNSIGNED NOT NULL DEFAULT '0'");
+                    $pdo->exec("ALTER TABLE $tableName ADD synctoken INT(11) UNSIGNED NOT NULL DEFAULT '1'");
                     $pdo->exec("ALTER TABLE $tableName DROP ctag");
+                    $pdo->exec("UPDATE $tableName SET synctoken = '1'");
                     break;
                 case 'sqlite' :
                     $pdo->exec("ALTER TABLE $tableName ADD synctoken integer");
+                    $pdo->exec("UPDATE $tableName SET synctoken = '1'");
                     echo "Note: there's no easy way to remove fields in sqlite.\n";
                     echo "The ctag field is no longer used, but it's kept in place\n";
                     break;

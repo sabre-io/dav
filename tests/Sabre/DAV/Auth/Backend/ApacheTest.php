@@ -30,9 +30,9 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         $backend = new Apache();
 
         $server = new DAV\Server();
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REMOTE_USER' => 'username',
-        ));
+        ]);
         $server->httpRequest = $request;
 
         $this->assertTrue($backend->authenticate($server, 'Realm'));
@@ -43,4 +43,21 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testRedirectRemoteUser() {
+
+        $backend = new Apache();
+
+        $server = new DAV\Server();
+        $request = HTTP\Sapi::createFromServerArray([
+            'REDIRECT_REMOTE_USER' => 'username',
+        ]);
+        $server->httpRequest = $request;
+
+        $this->assertTrue($backend->authenticate($server, 'Realm'));
+
+        $userInfo = 'username';
+
+        $this->assertEquals($userInfo, $backend->getCurrentUser());
+
+    }
 }

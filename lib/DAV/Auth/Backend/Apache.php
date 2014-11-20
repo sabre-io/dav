@@ -38,6 +38,9 @@ class Apache implements BackendInterface {
 
         $remoteUser = $server->httpRequest->getRawServerValue('REMOTE_USER');
         if (is_null($remoteUser)) {
+            $remoteUser = $server->httpRequest->getRawServerValue('REDIRECT_REMOTE_USER');
+        }
+        if (is_null($remoteUser)) {
             throw new DAV\Exception('We did not receive the $_SERVER[REMOTE_USER] property. This means that apache might have been misconfigured');
         }
 

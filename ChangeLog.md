@@ -22,8 +22,9 @@ ChangeLog
 * #560: GuessContentType plugin will now set content-type to
   `application/octet-stream` if a better content-type could not be determined.
 
-2.1.0-beta1 (2014-??-??)
-------------------------
+
+2.1.0 (2014-??-??)
+------------------
 
 * #541: CalDAV PDO backend didn't respect overridden PDO table names.
 * #550: Scheduling invites are no longer delivered into shared calendars.
@@ -33,6 +34,10 @@ ChangeLog
   `free-busy-query` REPORTs.
 * #555: The `calendar-timezone` property is also respected for scheduling
   free-busy requests.
+* #547: CalDAV system too aggressively 'corrects' incoming iCalendar data, and
+  as a result doesn't return an etag for common cases.
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
+  [sabre/http 3.0.2][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.0-alpha2 (2014-10-23)

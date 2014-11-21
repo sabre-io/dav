@@ -26,6 +26,12 @@ ChangeLog
   `application/octet-stream` if a better content-type could not be determined.
 
 
+2.1.1 (2014-??-??)
+------------------
+
+* #561: IMip Plugin didn't strip mailto: from email addresses.
+
+
 2.1.0 (2014-11-19)
 ------------------
 

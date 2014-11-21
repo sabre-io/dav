@@ -92,7 +92,16 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     function getChildren() {
 
         $nodes = [];
-        foreach(scandir($this->path) as $node) if($node!='.' && $node!='..') $nodes[] = $this->getChild($node);
+        $iterator = new \FilesystemIterator(
+            $this->path,
+            \FilesystemIterator::CURRENT_AS_SELF
+          | \FilesystemIterator::SKIP_DOTS
+        );
+        foreach($iterator as $entry) {
+
+            $nodes[] = $this->getChild($entry->getFilename());
+
+        }
         return $nodes;
 
     }

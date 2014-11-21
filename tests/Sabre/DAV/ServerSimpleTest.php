@@ -56,6 +56,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag' => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ),
             $this->response->getHeaders()
          );
@@ -81,6 +82,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag' => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ),
             $this->response->getHeaders()
          );
@@ -141,6 +143,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag' => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ),
             $this->response->getHeaders()
          );
@@ -167,6 +170,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' .  filemtime($this->tempDir . '/test.txt')))],
+            'ETag' => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ),
             $this->response->getHeaders()
          );
@@ -286,6 +290,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag' => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ),
             $this->response->getHeaders()
          );

@@ -112,7 +112,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
      */
     function getETag() {
 
-        return '"' . md5_file($this->path). '"';
+        return '"' . sha1(filemtime($this->path)). '"';
 
     }
 

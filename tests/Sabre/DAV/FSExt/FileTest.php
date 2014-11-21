@@ -74,7 +74,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
     function testGetETag() {
 
        $file = new File(SABRE_TEMPDIR . '/file.txt');
-       $this->assertEquals('"' . md5('Contents') . '"',$file->getETag());
+       $this->assertEquals('"' . sha1(filemtime(SABRE_TEMPDIR . '/file.txt')) . '"',$file->getETag());
 
     }
 

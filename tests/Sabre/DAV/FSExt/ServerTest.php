@@ -27,7 +27,7 @@ class ServerTest extends DAV\AbstractServer{
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
             'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'            => ['"'  .md5_file($this->tempDir . '/test.txt') . '"'],
+            'ETag'            => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ],
             $this->response->getHeaders()
          );
@@ -48,7 +48,7 @@ class ServerTest extends DAV\AbstractServer{
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
             'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'            => ['"' . md5_file($this->tempDir . '/test.txt') . '"'],
+            'ETag'            => ['"' . sha1(filemtime($this->tempDir . '/test.txt')) . '"'],
             ],
             $this->response->getHeaders()
          );

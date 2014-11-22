@@ -84,6 +84,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             '{DAV:}resourcetype',
             '{DAV:}displayname',
             '{http://sabredav.org/ns}sync-token',
+            '{DAV:}sync-token',
             '{http://apple.com/ns/ical/}calendar-color',
         ]);
 

@@ -132,7 +132,7 @@ if ($addUid) {
             echo "Warning! Item with id $item[id] does NOT have a UID property and this is required.\n";
             goto yoyo;
         }
-        $uid = (string)$uid;
+        $uid = (string)$item->UID;
         $stmt->execute([$uid, $row['id']]);
         $counter++;
 

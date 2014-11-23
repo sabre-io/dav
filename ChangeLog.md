@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+2.1.2 (2014-??-??)
+------------------
+
+* #566: Another issue related to the migration script, which would cause
+  scheduling to not work well for events that were already added before the
+  migration.
+
+
 2.1.1 (2014-11-22)
 ------------------
 

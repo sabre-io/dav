@@ -209,7 +209,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         // Flattening the arrays
         foreach($nodes as $node) {
             if (isset($node[200][$calDataProp])) {
-                $blobs[] = $node[200][$calDataProp];
+                $blobs[$node['href']] = $node[200][$calDataProp];
             }
         }
         unset($nodes);

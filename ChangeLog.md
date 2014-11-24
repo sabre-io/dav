@@ -26,10 +26,24 @@ ChangeLog
   `application/octet-stream` if a better content-type could not be determined.
 
 
-2.1.1 (2014-??-??)
+2.1.2 (2014-??-??)
+------------------
+
+* #566: Another issue related to the migration script, which would cause
+  scheduling to not work well for events that were already added before the
+  migration.
+* #567: Doing freebusy requests on accounts that had 0 calendars would throw
+  a `E_NOTICE`.
+
+
+2.1.1 (2014-11-22)
 ------------------
 
 * #561: IMip Plugin didn't strip mailto: from email addresses.
+* #566: Migration process had 2 problems related to adding the `uid` field
+  to the `calendarobjects` table.
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
+  [sabre/http 3.0.2][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.0 (2014-11-19)

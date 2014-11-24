@@ -785,6 +785,8 @@ class Plugin extends ServerPlugin {
 
         // Grabbing the calendar list
         $objects = [];
+        $calendarTimeZone = new DateTimeZone('UTC');
+
         foreach($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
             if (!$node instanceof ICalendar) {
                 continue;
@@ -805,8 +807,6 @@ class Plugin extends ServerPlugin {
             if (isset($props[$ctz])) {
                 $vtimezoneObj = VObject\Reader::read($props[$ctz]);
                 $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
-            } else {
-                $calendarTimeZone = new DateTimeZone('UTC');
             }
 
             // Getting the list of object uris within the time-range

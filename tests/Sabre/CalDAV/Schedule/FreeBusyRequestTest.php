@@ -16,6 +16,7 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
     protected $aclPlugin;
     protected $request;
     protected $authPlugin;
+    protected $caldavBackend;
 
     function setUp() {
 
@@ -58,11 +59,11 @@ END:VCALENDAR',
         );
 
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
-        $caldavBackend = new CalDAV\Backend\MockScheduling($calendars, $calendarobjects);
+        $this->caldavBackend = new CalDAV\Backend\MockScheduling($calendars, $calendarobjects);
 
         $tree = array(
             new DAVACL\PrincipalCollection($principalBackend),
-            new CalDAV\CalendarRoot($principalBackend, $caldavBackend),
+            new CalDAV\CalendarRoot($principalBackend, $this->caldavBackend),
         );
 
         $this->request = HTTP\Sapi::createFromServerArray([
@@ -94,11 +95,11 @@ END:VCALENDAR',
 
     function testWrongContentType() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/plain',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/plain']
+        );
 
         $this->assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
@@ -108,11 +109,11 @@ END:VCALENDAR',
 
     function testNotFound() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/blabla',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/blabla',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $this->assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
@@ -122,11 +123,11 @@ END:VCALENDAR',
 
     function testNotOutbox() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/inbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/inbox',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $this->assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
@@ -139,11 +140,11 @@ END:VCALENDAR',
      */
     function testNoItipMethod() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -162,11 +163,11 @@ ICS;
      */
     function testNoVFreeBusy() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -186,11 +187,12 @@ ICS;
      */
     function testIncorrectOrganizer() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
+
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -211,11 +213,11 @@ ICS;
      */
     function testNoAttendees() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -236,11 +238,11 @@ ICS;
      */
     function testNoDTStart() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -259,11 +261,11 @@ ICS;
 
     function testSucceed() {
 
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -311,6 +313,62 @@ ICS;
             strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z')==false,
             'The response body did contain free busy info from a transparent calendar.'
         );
+
+    }
+
+    /**
+     * Testing if the freebusy request still works, even if there are no
+     * calendars in the target users' account.
+     */
+    function testSucceedNoCalendars() {
+
+        // Deleting calendars
+        $this->caldavBackend->deleteCalendar(1);
+        $this->caldavBackend->deleteCalendar(2);
+
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
+
+        $body = <<<ICS
+BEGIN:VCALENDAR
+METHOD:REQUEST
+BEGIN:VFREEBUSY
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+DTSTART:20110101T080000Z
+DTEND:20110101T180000Z
+END:VFREEBUSY
+END:VCALENDAR
+ICS;
+
+        $this->server->httpRequest->setBody($body);
+
+        // Lazily making the current principal an admin.
+        $this->aclPlugin->adminPrincipals[] = 'principals/user1';
+
+        $this->assertFalse(
+            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+        );
+
+        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(array(
+            'Content-Type' => ['application/xml'],
+        ), $this->response->getHeaders());
+
+        $strings = array(
+            '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
+            '<cal:request-status>2.0;Success</cal:request-status>',
+        );
+
+        foreach($strings as $string) {
+            $this->assertTrue(
+                strpos($this->response->body, $string)!==false,
+                'The response body did not contain: ' . $string .'Full response: ' . $this->response->body
+            );
+        }
 
     }
 

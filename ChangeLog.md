@@ -7,7 +7,8 @@ ChangeLog
 * #566: Another issue related to the migration script, which would cause
   scheduling to not work well for events that were already added before the
   migration.
-
+* #567: Doing freebusy requests on accounts that had 0 calendars would throw
+  a `E_NOTICE`.
 
 2.1.1 (2014-11-22)
 ------------------

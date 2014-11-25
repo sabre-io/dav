@@ -267,7 +267,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $timezones = [];
         $objects = [];
 
-        foreach($inputObjects as $inputObject) {
+        foreach($inputObjects as $href => $inputObject) {
 
             $nodeComp = VObject\Reader::read($inputObject);
 

@@ -28,7 +28,7 @@ class File extends Node implements DAV\IFile {
     /**
      * Returns the data
      *
-     * @return string
+     * @return resource
      */
     function get() {
 

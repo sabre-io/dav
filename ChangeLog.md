@@ -24,6 +24,8 @@ ChangeLog
 * Removed: `Sabre\DAVACL\Plugin::getPrincipalByEmail()`.
 * #560: GuessContentType plugin will now set content-type to
   `application/octet-stream` if a better content-type could not be determined.
+* #568: Added a `componentType` argument to `ICSExportPlugin`, allowing you to
+  specifically fetch `VEVENT`, `VTODO` or `VJOURNAL`.
 
 
 2.1.2 (2014-??-??)

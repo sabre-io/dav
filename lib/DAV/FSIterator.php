@@ -40,7 +40,9 @@ class FSIterator extends CallbackFilterIterator {
         $this->setCollection($collection);
 
         if (is_null($filter)) {
-            $filter = function ( ) { return true; };
+            $filter = function ( ) {
+                return true;
+            };
         }
 
         parent::__construct(

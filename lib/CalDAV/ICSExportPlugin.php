@@ -99,6 +99,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $start = null;
         $end = null;
         $expand = false;
+        $componentType = false;
         if (isset($queryParams['start'])) {
             if (!ctype_digit($queryParams['start'])) {
                 throw new BadRequest('The start= parameter must contain a unix timestamp');
@@ -116,6 +117,13 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                 throw new BadRequest('If you\'d like to expand recurrences, you must specify both a start= and end= parameter.');
             }
             $expand = true;
+            $componentType = 'VEVENT';
+        }
+        if (isset($queryParams['componentType'])) {
+            if (!in_array($queryParams['componentType'], ['VEVENT', 'VTODO', 'VJOURNAL'])) {
+                throw new BadRequest('You are not allowed to search for components of type: ' . $queryParams['componentType'] . ' here');
+            }
+            $componentType = $queryParams['componentType'];
         }
 
         $format = \Sabre\HTTP\Util::Negotiate(
@@ -135,7 +143,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             $format = 'text/calendar';
         }
 
-        $this->generateResponse($path, $start, $end, $expand, $format, $properties, $response);
+        $this->generateResponse($path, $start, $end, $expand, $componentType, $format, $properties, $response);
 
         // Returning false to break the event chain
         return false;
@@ -149,16 +157,17 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      * @param DateTime|null $start
      * @param DateTime|null $end
      * @param bool $expand
+     * @param string $componentType
      * @param string $format
      * @param array $properties
      * @param ResponseInterface $response
      */
-    protected function generateResponse($path, $start, $end, $expand, $format, $properties, ResponseInterface $response) {
+    protected function generateResponse($path, $start, $end, $expand, $componentType, $format, $properties, ResponseInterface $response) {
 
         $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
 
         $blobs = [];
-        if ($start || $end) {
+        if ($start || $end || $componentType) {
 
             // If there was a start or end filter, we need to enlist
             // calendarQuery for speed.
@@ -167,7 +176,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                 'name' => 'VCALENDAR',
                 'comp-filters' => [
                     [
-                        'name' => 'VEVENT',
+                        'name' => $componentType,
                         'comp-filters' => [],
                         'prop-filters' => [],
                         'is-not-defined' => false,
@@ -200,7 +209,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         // Flattening the arrays
         foreach($nodes as $node) {
             if (isset($node[200][$calDataProp])) {
-                $blobs[] = $node[200][$calDataProp];
+                $blobs[$node['href']] = $node[200][$calDataProp];
             }
         }
         unset($nodes);
@@ -258,7 +267,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $timezones = [];
         $objects = [];
 
-        foreach($inputObjects as $inputObject) {
+        foreach($inputObjects as $href => $inputObject) {
 
             $nodeComp = VObject\Reader::read($inputObject);
 

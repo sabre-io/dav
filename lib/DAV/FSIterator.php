@@ -68,6 +68,11 @@ class FSIterator extends CallbackFilterIterator {
 
     }
 
+    public function accept() {
+
+        return parent::accept();
+    }
+
     /**
      * Set the collection handler.
      *

@@ -195,7 +195,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             // calendar path.
             $queryResult = array_map(
                 function($item) use ($path) {
-                    return $path . $item;
+                    return $path . '/' . $item;
                 },
                 $queryResult
             );

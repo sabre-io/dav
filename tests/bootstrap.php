@@ -6,7 +6,7 @@ $autoLoader = include __DIR__ . '/../vendor/autoload.php';
 
 // SabreDAV tests auto loading
 $autoLoader->add('Sabre\\', __DIR__);
-// VObject tests auto loadiong
+// VObject tests auto loading
 $autoLoader->addPsr4('Sabre\\VObject\\',__DIR__ . '/../vendor/sabre/vobject/tests/VObject');
 
 

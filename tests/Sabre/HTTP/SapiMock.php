@@ -20,7 +20,7 @@ class SapiMock extends Sapi {
      *
      * @return void
      */
-    static function sendResponse(\Sabre\HTTP\ResponseInterface $r) {
+    static function sendResponse(ResponseInterface $response) {
 
         self::$sent++;
 

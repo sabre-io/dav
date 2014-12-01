@@ -9,6 +9,8 @@ ChangeLog
   migration.
 * #567: Doing freebusy requests on accounts that had 0 calendars would throw
   a `E_NOTICE`.
+* #572: `HEAD` requests trigger a PHP warning.
+
 
 2.1.1 (2014-11-22)
 ------------------

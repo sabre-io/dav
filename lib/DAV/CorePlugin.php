@@ -250,7 +250,7 @@ class CorePlugin extends ServerPlugin {
         $subRequest->setMethod('GET');
 
         try {
-            $this->server->invokeMethod($subRequest, $response);
+            $this->server->invokeMethod($subRequest, $response, false);
             $response->setBody('');
         } catch (Exception\NotImplemented $e) {
             // Some clients may do HEAD requests on collections, however, GET

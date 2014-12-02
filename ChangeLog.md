@@ -9,6 +9,9 @@ ChangeLog
   migration.
 * #567: Doing freebusy requests on accounts that had 0 calendars would throw
   a `E_NOTICE`.
+* #579: Browser plugin can throw exception for a few resourcetypes that didn't
+  have an icon defined.
+
 
 2.1.1 (2014-11-22)
 ------------------

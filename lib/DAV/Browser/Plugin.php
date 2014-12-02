@@ -572,9 +572,11 @@ HTML;
             ],
             '{http://calendarserver.org/ns/}shared-owner' => [
                 'string' => 'Shared',
+                'icon'   => 'calendar',
             ],
             '{http://calendarserver.org/ns/}subscribed' => [
                 'string' => 'Subscription',
+                'icon'   => 'calendar',
             ],
             '{urn:ietf:params:xml:ns:carddav}directory' => [
                 'string' => 'Directory',

@@ -441,7 +441,7 @@ class Server extends EventEmitter {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param $sendResponse Wether to send the HTTP response to the DAV client.
+     * @param $sendResponse Whether to send the HTTP response to the DAV client.
      * @return void
      */
     function invokeMethod(RequestInterface $request, ResponseInterface $response, $sendResponse = true) {

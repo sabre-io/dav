@@ -11,6 +11,8 @@ class Mock implements BackendInterface {
 
     public $fail = false;
 
+    public $invalidCheckResponse = false;
+
     public $principal;
     public $defaultPrincipal = 'principals/admin';
 
@@ -50,6 +52,9 @@ class Mock implements BackendInterface {
      */
     function check(RequestInterface $request, ResponseInterface $response) {
 
+        if ($this->invalidCheckResponse) {
+            return 'incorrect!';
+        }
         if ($this->fail) {
             return [false, "fail!"];
         }

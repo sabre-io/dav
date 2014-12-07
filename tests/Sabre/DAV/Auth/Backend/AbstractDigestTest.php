@@ -109,6 +109,22 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testRequireAuth() {
+
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
+
+        $backend = new AbstractDigestMock();
+        $backend->setRealm('writing unittests on a saturday night');
+        $backend->requireAuth($request, $response);
+
+        $this->assertStringStartsWith(
+            'Digest realm="writing unittests on a saturday night"',
+            $response->getHeader('WWW-Authenticate')
+        );
+
+    }
+
 }
 
 

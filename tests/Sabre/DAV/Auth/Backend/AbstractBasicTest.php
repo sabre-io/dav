@@ -38,7 +38,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testAuthenticate() {
+    function testCheckSuccess() {
 
         $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_USER' => 'username',
@@ -50,6 +50,22 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             [true, 'principals/username'],
             $backend->check($request, $response)
+        );
+
+    }
+
+    function testRequireAuth() {
+
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
+
+        $backend = new AbstractBasicMock();
+        $backend->setRealm('writing unittests on a saturday night');
+        $backend->requireAuth($request, $response);
+
+        $this->assertEquals(
+            'Basic realm="writing unittests on a saturday night"',
+            $response->getHeader('WWW-Authenticate')
         );
 
     }

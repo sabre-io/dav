@@ -55,4 +55,18 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         );
 
     }
+
+    function testRequireAuth() {
+
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
+
+        $backend = new Apache();
+        $backend->requireAuth($request, $response);
+
+        $this->assertNull(
+            $response->getHeader('WWW-Authenticate')
+        );
+
+    }
 }

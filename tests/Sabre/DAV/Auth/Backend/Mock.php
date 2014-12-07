@@ -13,8 +13,7 @@ class Mock implements BackendInterface {
 
     public $invalidCheckResponse = false;
 
-    public $principal;
-    public $defaultPrincipal = 'principals/admin';
+    public $principal = 'principals/admin';
 
     function setPrincipal($principal) {
 
@@ -58,7 +57,6 @@ class Mock implements BackendInterface {
         if ($this->fail) {
             return [false, "fail!"];
         }
-        $this->principal = $this->defaultPrincipal;
         return [true, $this->principal];
 
     }

@@ -3,29 +3,29 @@
 namespace Sabre\DAV\Auth;
 
 use
-    Sabre\DAV,
     Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+    Sabre\HTTP\ResponseInterface,
+    Sabre\HTTP\URLUtil,
+    Sabre\DAV\Exception\NotAuthenticated,
+    Sabre\DAV\Server,
+    Sabre\DAV\ServerPlugin;
+
 
 /**
  * This plugin provides Authentication for a WebDAV server.
  *
  * It relies on a Backend object, which provides user information.
  *
- * Additionally, it provides support for:
- *  * {DAV:}current-user-principal property from RFC5397
- *  * {DAV:}principal-collection-set property from RFC3744
- *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Plugin extends DAV\ServerPlugin {
+class Plugin extends ServerPlugin {
 
     /**
      * Reference to main server object
      *
-     * @var Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
 
@@ -37,39 +37,31 @@ class Plugin extends DAV\ServerPlugin {
     protected $authBackend;
 
     /**
-     * The authentication realm.
+     * The currently logged in principal. Will be `null` if nobody is currently
+     * logged in.
      *
-     * @var string
+     * @var string|null
      */
-    private $realm;
+    protected $currentPrincipal;
 
     /**
-     * @return string
-     */
-    function getRealm() {
-        return $this->realm;
-    }
-
-    /**
-     * __construct
+     * Creates the authentication plugin
      *
      * @param Backend\BackendInterface $authBackend
-     * @param string $realm
      */
-    function __construct(Backend\BackendInterface $authBackend, $realm) {
+    function __construct(Backend\BackendInterface $authBackend) {
 
         $this->authBackend = $authBackend;
-        $this->realm = $realm;
 
     }
 
     /**
      * Initializes the plugin. This function is automatically called by the server
      *
-     * @param DAV\Server $server
+     * @param Server $server
      * @return void
      */
-    function initialize(DAV\Server $server) {
+    function initialize(Server $server) {
 
         $this->server = $server;
         $this->server->on('beforeMethod', [$this,'beforeMethod'], 10);
@@ -91,18 +83,41 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * Returns the current users' principal uri.
+     * Returns the currently logged-in principal.
      *
-     * If nobody is logged in, this will return null.
+     * This will return a string such as:
      *
+     * principals/username
+     * principals/users/username
+     *
+     * This method will return null if nobody is logged in.
+     *
+     * @return string|null
+     */
+    function getCurrentPrincipal() {
+
+        return $this->currentPrincipal;
+
+    }
+
+    /**
+     * Returns the current username.
+     *
+     * This method is deprecated and is only kept for backwards compatibility
+     * purposes. Please switch to getCurrentPrincipal().
+     *
+     * @deprecated Will be removed in a future version!
      * @return string|null
      */
     function getCurrentUser() {
 
-        $userInfo = $this->authBackend->getCurrentUser();
-        if (!$userInfo) return null;
+        // We just do a 'basename' on the principal to give back a sane value
+        // here.
+        list(, $userName) = URLUtil::splitPath(
+            $this->getCurrentPrincipal()
+        );
 
-        return $userInfo;
+        return $userName;
 
     }
 
@@ -115,7 +130,19 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $this->authBackend->authenticate($this->server,$this->getRealm());
+        $this->currentPrincipal = $this->authBackend->check(
+            $request,
+            $response
+        );
+
+        if (!$this->currentPrincipal) {
+            $this->authBackend->requireAuth($request, $response);
+            if (!$request->hasHeader('Authorization')) {
+                throw new NotAuthenticated('Authentication failed. We didn\'t see an Authorization header, this means that the client didn\'t try to authenticate, or that the server is mis-configured');
+            } else {
+                throw new NotAuthenticated('Authentication failed.');
+            }
+        }
 
     }
 

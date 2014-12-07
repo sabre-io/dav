@@ -1,7 +1,11 @@
 <?php
 
 namespace Sabre\DAV\Auth\Backend;
-use Sabre\DAV;
+
+use
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Apache authenticator
@@ -18,47 +22,75 @@ use Sabre\DAV;
 class Apache implements BackendInterface {
 
     /**
-     * Current apache user
+     * This is the prefix that will be used to generate principal urls.
      *
      * @var string
      */
-    protected $remoteUser;
+    protected $principalPrefix = 'principals/';
 
     /**
-     * Authenticates the user based on the current request.
+     * When this method is called, the backend must check if authentication was
+     * successful.
      *
-     * If authentication is successful, true must be returned.
-     * If authentication fails, an exception must be thrown.
+     * This method should simply return null if authentication was not
+     * successful.
      *
-     * @param DAV\Server $server
-     * @param string $realm
-     * @return bool
+     * If authentication was successful, it's expected that the authentication
+     * backend returns a so-called principal url.
+     *
+     * Examples of a principal url:
+     *
+     * principals/admin
+     * principals/user1
+     * principals/users/joe
+     * principals/uid/123457
+     *
+     * If you don't use WebDAV ACL (RFC3744) we recommend that you simply
+     * return a string such as:
+     *
+     * principals/users/[username]
+     *
+     * But literally any non-null value will be accepted as a 'succesful
+     * authentication'.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return null|string
      */
-    function authenticate(DAV\Server $server, $realm) {
+    function check(RequestInterface $request, ResponseInterface $response) {
 
-        $remoteUser = $server->httpRequest->getRawServerValue('REMOTE_USER');
+        $remoteUser = $request->getRawServerValue('REMOTE_USER');
         if (is_null($remoteUser)) {
-            $remoteUser = $server->httpRequest->getRawServerValue('REDIRECT_REMOTE_USER');
+            $remoteUser = $request->getRawServerValue('REDIRECT_REMOTE_USER');
         }
         if (is_null($remoteUser)) {
-            throw new DAV\Exception('We did not receive the $_SERVER[REMOTE_USER] property. This means that apache might have been misconfigured');
+            return null;
         }
 
-        $this->remoteUser = $remoteUser;
-        return true;
+        return $this->principalPrefix . $remoteUser;
 
     }
 
     /**
-     * Returns information about the currently logged in user.
+     * This method is called when a user could not be authenticated, and
+     * authentication was required for the current request.
      *
-     * If nobody is currently logged in, this method should return null.
+     * This gives you the oppurtunity to set authentication headers. The 401
+     * status code will already be set.
      *
-     * @return array|null
+     * In this case of Basic Auth, this would for example mean that the
+     * following header needs to be set:
+     *
+     * $response->addHeader('WWW-Authenticate', 'Basic realm=SabreDAV');
+     *
+     * Keep in mind that in the case of multiple authentication backends, other
+     * WWW-Authenticate headers may already have been set, and you'll want to
+     * append your own WWW-Authenticate header instead of overwriting the
+     * existing one.
+     *
+     * @return void
      */
-    function getCurrentUser() {
-
-        return $this->remoteUser;
+    function requireAuth(RequestInterface $request, ResponseInterface $response) {
 
     }
 

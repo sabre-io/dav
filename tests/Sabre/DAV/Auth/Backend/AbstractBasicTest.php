@@ -9,63 +9,50 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
-    /**
-     * @expectedException Sabre\DAV\Exception\NotAuthenticated
-     */
-    public function testAuthenticateNoHeaders() {
+    function testCheckNoHeaders() {
 
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
-        $backend->authenticate($server,'myRealm');
+
+        $this->assertNull(
+            $backend->check($request, $response)
+        );
 
     }
 
-    /**
-     * @expectedException Sabre\DAV\Exception\NotAuthenticated
-     */
-    public function testAuthenticateUnknownUser() {
-
-        $response = new HTTP\ResponseMock();
-        $tree = new DAV\Tree(new DAV\SimpleCollection('bla'));
-        $server = new DAV\Server($tree);
-        $server->httpResponse = $response;
+    function testCheckUnknownUser() {
 
         $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_USER' => 'username',
             'PHP_AUTH_PW' => 'wrongpassword',
         ));
-        $server->httpRequest = $request;
+        $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
-        $backend->authenticate($server,'myRealm');
+
+        $this->assertNull(
+            $backend->check($request, $response)
+        );
 
     }
 
-    public function testAuthenticate() {
-
-        $response = new HTTP\ResponseMock();
-        $tree = new DAV\Tree(new DAV\SimpleCollection('bla'));
-        $server = new DAV\Server($tree);
-        $server->httpResponse = $response;
+    function testAuthenticate() {
 
         $request = HTTP\Sapi::createFromServerArray(array(
             'PHP_AUTH_USER' => 'username',
             'PHP_AUTH_PW' => 'password',
         ));
-        $server->httpRequest = $request;
+        $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
-        $this->assertTrue($backend->authenticate($server,'myRealm'));
-
-        $result = $backend->getCurrentUser();
-
-        $this->assertEquals('username', $result);
+        $this->assertEquals(
+            'principals/username',
+            $backend->check($request, $response)
+        );
 
     }
-
 
 }
 

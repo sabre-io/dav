@@ -4,7 +4,9 @@ namespace Sabre\DAV\Auth\Backend;
 
 use
     Sabre\HTTP,
-    Sabre\DAV;
+    Sabre\DAV,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * HTTP Digest authentication backend class
@@ -20,11 +22,21 @@ use
 abstract class AbstractDigest implements BackendInterface {
 
     /**
-     * This variable holds the currently logged in username.
+     * Authentication Realm.
      *
-     * @var array|null
+     * The realm is often displayed by browser clients when showing the
+     * authentication dialog.
+     *
+     * @var string
      */
-    protected $currentUser;
+    protected $realm = 'SabreDAV';
+
+    /**
+     * This is the prefix that will be used to generate principal urls.
+     *
+     * @var string
+     */
+    protected $principalPrefix = 'principals/';
 
     /**
      * Returns a users digest hash based on the username and realm.
@@ -38,34 +50,54 @@ abstract class AbstractDigest implements BackendInterface {
     abstract function getDigestHash($realm, $username);
 
     /**
-     * Authenticates the user based on the current request.
+     * When this method is called, the backend must check if authentication was
+     * successful.
      *
-     * If authentication is successful, true must be returned.
-     * If authentication fails, an exception must be thrown.
+     * This method should simply return null if authentication was not
+     * successful.
      *
-     * @param DAV\Server $server
-     * @param string $realm
-     * @throws DAV\Exception\NotAuthenticated
-     * @return bool
+     * If authentication was successful, it's expected that the authentication
+     * backend returns a so-called principal url.
+     *
+     * Examples of a principal url:
+     *
+     * principals/admin
+     * principals/user1
+     * principals/users/joe
+     * principals/uid/123457
+     *
+     * If you don't use WebDAV ACL (RFC3744) we recommend that you simply
+     * return a string such as:
+     *
+     * principals/users/[username]
+     *
+     * But literally any non-null value will be accepted as a 'succesful
+     * authentication'.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return null|string
      */
-    function authenticate(DAV\Server $server, $realm) {
+    function check(RequestInterface $request, ResponseInterface $response) {
 
-        $digest = new HTTP\Auth\Digest($realm, $server->httpRequest, $server->httpResponse);
+        $digest = new HTTP\Auth\Digest(
+            $this->realm,
+            $request,
+            $response
+        );
         $digest->init();
 
         $username = $digest->getUsername();
 
         // No username was given
         if (!$username) {
-            $digest->requireLogin();
-            throw new DAV\Exception\NotAuthenticated('No digest authentication headers were found');
+            return null;
         }
 
-        $hash = $this->getDigestHash($realm, $username);
+        $hash = $this->getDigestHash($this->realm, $username);
         // If this was false, the user account didn't exist
         if ($hash===false || is_null($hash)) {
-            $digest->requireLogin();
-            throw new DAV\Exception\NotAuthenticated('The supplied username was not on file');
+            return null;
         }
         if (!is_string($hash)) {
             throw new DAV\Exception('The returned value from getDigestHash must be a string or null');
@@ -73,23 +105,41 @@ abstract class AbstractDigest implements BackendInterface {
 
         // If this was false, the password or part of the hash was incorrect.
         if (!$digest->validateA1($hash)) {
-            $digest->requireLogin();
-            throw new DAV\Exception\NotAuthenticated('Incorrect username');
+            return null;
         }
 
-        $this->currentUser = $username;
-        return true;
+        return $this->principalPrefix . $username;
 
     }
 
     /**
-     * Returns the currently logged in username.
+     * This method is called when a user could not be authenticated, and
+     * authentication was required for the current request.
      *
-     * @return string|null
+     * This gives you the oppurtunity to set authentication headers. The 401
+     * status code will already be set.
+     *
+     * In this case of Basic Auth, this would for example mean that the
+     * following header needs to be set:
+     *
+     * $response->addHeader('WWW-Authenticate', 'Basic realm=SabreDAV');
+     *
+     * Keep in mind that in the case of multiple authentication backends, other
+     * WWW-Authenticate headers may already have been set, and you'll want to
+     * append your own WWW-Authenticate header instead of overwriting the
+     * existing one.
+     *
+     * @return void
      */
-    function getCurrentUser() {
+    function requireAuth(RequestInterface $request, ResponseInterface $response) {
 
-        return $this->currentUser;
+        $auth = new HTTP\Auth\Digest(
+            $this->realm,
+            $request,
+            $response
+        );
+        $auth->init();
+        $auth->requireLogin();
 
     }
 

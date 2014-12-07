@@ -14,7 +14,12 @@ use
 /**
  * This plugin provides Authentication for a WebDAV server.
  *
- * It relies on a Backend object, which provides user information.
+ * It works by providing a Auth\Backend class. Several examples of these
+ * classes can be found in the Backend directory.
+ *
+ * It's possible to provide more than one backend to this plugin. If more than
+ * one backend was provided, each backend will attempt to authenticate. Only if
+ * all backends fail, we throw a 401.
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
@@ -23,18 +28,9 @@ use
 class Plugin extends ServerPlugin {
 
     /**
-     * Reference to main server object
-     *
-     * @var Server
+     * authentication backends
      */
-    protected $server;
-
-    /**
-     * Authentication backend
-     *
-     * @var Backend\BackendInterface
-     */
-    protected $authBackend;
+    protected $backends;
 
     /**
      * The currently logged in principal. Will be `null` if nobody is currently
@@ -49,9 +45,23 @@ class Plugin extends ServerPlugin {
      *
      * @param Backend\BackendInterface $authBackend
      */
-    function __construct(Backend\BackendInterface $authBackend) {
+    function __construct(Backend\BackendInterface $authBackend = null) {
 
-        $this->authBackend = $authBackend;
+        if (!is_null($authBackend)) {
+            $this->addBackend($authBackend);
+        }
+
+    }
+
+    /**
+     * Adds an authentication backend to the plugin.
+     *
+     * @param Backend\BackendInterface $authBackend
+     * @return void
+     */
+    function addBackend(Backend\BackendInterface $authBackend) {
+
+        $this->backends[] = $authBackend;
 
     }
 
@@ -63,8 +73,7 @@ class Plugin extends ServerPlugin {
      */
     function initialize(Server $server) {
 
-        $this->server = $server;
-        $this->server->on('beforeMethod', [$this,'beforeMethod'], 10);
+        $server->on('beforeMethod', [$this,'beforeMethod'], 10);
 
     }
 
@@ -130,21 +139,38 @@ class Plugin extends ServerPlugin {
      */
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $result = $this->authBackend->check(
-            $request,
-            $response
-        );
+        if (!$this->backends) {
+            throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
+        }
+        $reasons = [];
+        foreach($this->backends as $backend) {
 
-        if (!is_array($result) || count($result)!==2 || !is_bool($result[0]) || !is_string($result[1])) {
-            throw new \Sabre\DAV\Exception('The authentication backend did not return a correct value from the check() method.');
+            $result = $backend->check(
+                $request,
+                $response
+            );
+
+            if (!is_array($result) || count($result)!==2 || !is_bool($result[0]) || !is_string($result[1])) {
+                throw new \Sabre\DAV\Exception('The authentication backend did not return a correct value from the check() method.');
+            }
+
+            if ($result[0]) {
+                $this->currentPrincipal = $result[1];
+                // Exit early
+                return;
+            }
+            $reasons[] = $result[1];
+
         }
-        if ($result[0]) {
-            $this->currentPrincipal = $result[1];
-        } else {
-            $this->currentPrincipal = null;
-            $this->authBackend->requireAuth($request, $response);
-            throw new NotAuthenticated('Authentication failed. Reason: ' . $result[1]);
+
+        // If we got here, it means that no authentication backend was
+        // successful in authenticating the user.
+        $this->currentPrincipal = null;
+
+        foreach($this->backends as $backend) {
+            $backend->requireAuth($request, $response);
         }
+        throw new NotAuthenticated(implode(', ', $reasons));
 
     }
 

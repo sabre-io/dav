@@ -52,6 +52,18 @@ abstract class AbstractBasic implements BackendInterface {
     abstract protected function validateUserPass($username, $password);
 
     /**
+     * Sets the authentication realm for this backend.
+     *
+     * @param string $realm
+     * @return void
+     */
+    function setRealm($realm) {
+
+        $this->realm = $realm;
+
+    }
+
+    /**
      * When this method is called, the backend must check if authentication was
      * successful.
      *

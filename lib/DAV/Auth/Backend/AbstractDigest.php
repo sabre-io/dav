@@ -39,6 +39,22 @@ abstract class AbstractDigest implements BackendInterface {
     protected $principalPrefix = 'principals/';
 
     /**
+     * Sets the authentication realm for this backend.
+     *
+     * Be aware that for Digest authentication, the realm influences the digest
+     * hash. Choose the realm wisely, because if you change it later, all the
+     * existing hashes will break and nobody can authenticate.
+     *
+     * @param string $realm
+     * @return void
+     */
+    function setRealm($realm) {
+
+        $this->realm = $realm;
+
+    }
+
+    /**
      * Returns a users digest hash based on the username and realm.
      *
      * If the user was not known, null must be returned.

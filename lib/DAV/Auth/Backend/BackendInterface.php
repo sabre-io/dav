@@ -19,8 +19,10 @@ interface BackendInterface {
      * When this method is called, the backend must check if authentication was
      * successful.
      *
-     * This method should simply return null if authentication was not
-     * successful.
+     * The returned value must be one of the following
+     *
+     * [true, "principals/username"]
+     * [false, "reason for failure"]
      *
      * If authentication was successful, it's expected that the authentication
      * backend returns a so-called principal url.
@@ -37,12 +39,9 @@ interface BackendInterface {
      *
      * principals/users/[username]
      *
-     * But literally any non-null value will be accepted as a 'succesful
-     * authentication'.
-     *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return null|string
+     * @return array
      */
     function check(RequestInterface $request, ResponseInterface $response);
 

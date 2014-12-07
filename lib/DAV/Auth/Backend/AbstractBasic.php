@@ -55,8 +55,10 @@ abstract class AbstractBasic implements BackendInterface {
      * When this method is called, the backend must check if authentication was
      * successful.
      *
-     * This method should simply return null if authentication was not
-     * successful.
+     * The returned value must be one of the following
+     *
+     * [true, "principals/username"]
+     * [false, "reason for failure"]
      *
      * If authentication was successful, it's expected that the authentication
      * backend returns a so-called principal url.
@@ -73,12 +75,9 @@ abstract class AbstractBasic implements BackendInterface {
      *
      * principals/users/[username]
      *
-     * But literally any non-null value will be accepted as a 'succesful
-     * authentication'.
-     *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return null|string
+     * @return array
      */
     function check(RequestInterface $request, ResponseInterface $response) {
 
@@ -90,12 +89,12 @@ abstract class AbstractBasic implements BackendInterface {
 
         $userpass = $auth->getCredentials($request);
         if (!$userpass) {
-            return null;
+            return [false, "No 'Authorization: Basic' header found. Either the client didn't send one, or the server is mis-configured"];
         }
         if (!$this->validateUserPass($userpass[0],$userpass[1])) {
-            return null;
+            return [false, "Username or password was incorrect"];
         }
-        return $this->principalPrefix . $userpass[0];
+        return [true, $this->principalPrefix . $userpass[0]];
 
     }
 

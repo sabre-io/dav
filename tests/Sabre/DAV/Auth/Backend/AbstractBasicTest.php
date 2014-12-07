@@ -16,8 +16,8 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new AbstractBasicMock();
 
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
 
     }
@@ -32,8 +32,8 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new AbstractBasicMock();
 
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
 
     }
@@ -48,7 +48,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new AbstractBasicMock();
         $this->assertEquals(
-            'principals/username',
+            [true, 'principals/username'],
             $backend->check($request, $response)
         );
 

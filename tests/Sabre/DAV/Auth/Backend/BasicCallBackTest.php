@@ -27,7 +27,7 @@ class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
         $response = new Response();
 
         $this->assertEquals(
-            'principals/foo',
+            [true, 'principals/foo'],
             $backend->check($request, $response)
         );
 

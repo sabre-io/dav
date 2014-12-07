@@ -13,8 +13,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
 
     }
@@ -28,12 +28,9 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
-
-        $backend = new AbstractDigestMock();
-        $backend->check($request, $response);
 
     }
 
@@ -69,8 +66,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
 
     }
@@ -86,8 +83,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
 
     }
@@ -106,7 +103,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new AbstractDigestMock();
         $this->assertEquals(
-            'principals/user',
+            [true, 'principals/user'],
             $backend->check($request, $response)
         );
 

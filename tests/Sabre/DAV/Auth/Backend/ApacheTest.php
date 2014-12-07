@@ -20,8 +20,8 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
         $backend = new Apache();
 
-        $this->assertNull(
-            $backend->check($request, $response)
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
         );
 
     }
@@ -35,7 +35,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         $backend = new Apache();
 
         $this->assertEquals(
-            'principals/username',
+            [true, 'principals/username'],
             $backend->check($request, $response)
         );
 
@@ -50,7 +50,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         $backend = new Apache();
 
         $this->assertEquals(
-            'principals/username',
+            [true, 'principals/username'],
             $backend->check($request, $response)
         );
 

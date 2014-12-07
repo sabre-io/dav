@@ -53,8 +53,10 @@ abstract class AbstractDigest implements BackendInterface {
      * When this method is called, the backend must check if authentication was
      * successful.
      *
-     * This method should simply return null if authentication was not
-     * successful.
+     * The returned value must be one of the following
+     *
+     * [true, "principals/username"]
+     * [false, "reason for failure"]
      *
      * If authentication was successful, it's expected that the authentication
      * backend returns a so-called principal url.
@@ -71,12 +73,9 @@ abstract class AbstractDigest implements BackendInterface {
      *
      * principals/users/[username]
      *
-     * But literally any non-null value will be accepted as a 'succesful
-     * authentication'.
-     *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return null|string
+     * @return array
      */
     function check(RequestInterface $request, ResponseInterface $response) {
 
@@ -91,13 +90,13 @@ abstract class AbstractDigest implements BackendInterface {
 
         // No username was given
         if (!$username) {
-            return null;
+            return [false, "No 'Authorization: Digest' header found. Either the client didn't send one, or the server is mis-configured"];
         }
 
         $hash = $this->getDigestHash($this->realm, $username);
         // If this was false, the user account didn't exist
         if ($hash===false || is_null($hash)) {
-            return null;
+            return [false, "Username or password was incorrect"];
         }
         if (!is_string($hash)) {
             throw new DAV\Exception('The returned value from getDigestHash must be a string or null');
@@ -105,10 +104,10 @@ abstract class AbstractDigest implements BackendInterface {
 
         // If this was false, the password or part of the hash was incorrect.
         if (!$digest->validateA1($hash)) {
-            return null;
+            return [false, "Username or password was incorrect"];
         }
 
-        return $this->principalPrefix . $username;
+        return [true, $this->principalPrefix . $username];
 
     }
 

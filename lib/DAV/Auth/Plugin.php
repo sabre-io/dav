@@ -130,18 +130,20 @@ class Plugin extends ServerPlugin {
      */
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        $this->currentPrincipal = $this->authBackend->check(
+        $result = $this->authBackend->check(
             $request,
             $response
         );
 
-        if (!$this->currentPrincipal) {
+        if (!is_array($result) || count($result)!==2 || !is_bool($result[0]) || !is_string($result[1])) {
+            throw new \Sabre\DAV\Exception('The authentication backend did not return a correct value from the check() method.');
+        }
+        if ($result[0]) {
+            $this->currentPrincipal = $result[1];
+        } else {
+            $this->currentPrincipal = null;
             $this->authBackend->requireAuth($request, $response);
-            if (!$request->hasHeader('Authorization')) {
-                throw new NotAuthenticated('Authentication failed. We didn\'t see an Authorization header, this means that the client didn\'t try to authenticate, or that the server is mis-configured');
-            } else {
-                throw new NotAuthenticated('Authentication failed.');
-            }
+            throw new NotAuthenticated('Authentication failed. Reason: ' . $result[1]);
         }
 
     }

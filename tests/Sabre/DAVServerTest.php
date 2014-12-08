@@ -133,8 +133,8 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
         if ($this->autoLogin) {
             $authBackend = new DAV\Auth\Backend\Mock();
-            $authBackend->defaultUser = $this->autoLogin;
-            $this->authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+            $authBackend->setPrincipal('principals/' . $this->autoLogin);
+            $this->authPlugin = new DAV\Auth\Plugin($authBackend);
             $this->server->addPlugin($this->authPlugin);
 
             // This will trigger the actual login procedure

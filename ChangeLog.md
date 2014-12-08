@@ -7,6 +7,8 @@ ChangeLog
 * The browser plugin now has a new page with information about your sabredav
   server, and shows information about every plugin that's loaded in the
   system.
+* #191: The Authentication system can now support multiple authentication
+  backends.
 * Removed: all `$tableName` arguments from every PDO backend. This was already
   deprecated, but has now been fully removed. All of these have been replaced
   with public properties.
@@ -26,6 +28,11 @@ ChangeLog
   `application/octet-stream` if a better content-type could not be determined.
 * #568: Added a `componentType` argument to `ICSExportPlugin`, allowing you to
   specifically fetch `VEVENT`, `VTODO` or `VJOURNAL`.
+* #582: Authentication backend interface changed to be stateless. If you
+  implemented your own authentication backend, make sure you upgrade your class
+  to the latest API!
+* #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
+  `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 
 
 2.1.2 (2014-??-??)

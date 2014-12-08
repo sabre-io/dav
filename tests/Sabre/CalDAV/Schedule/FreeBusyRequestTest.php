@@ -79,8 +79,10 @@ END:VCALENDAR',
         $this->server->addPlugin($this->aclPlugin);
 
         $authBackend = new DAV\Auth\Backend\Mock();
-        $authBackend->setCurrentUser('user1');
+        $authBackend->setPrincipal('principals/user1');
         $this->authPlugin = new DAV\Auth\Plugin($authBackend,'SabreDAV');
+        // Forcing authentication to work.
+        $this->authPlugin->beforeMethod($this->request, $this->response);
         $this->server->addPlugin($this->authPlugin);
 
         // CalDAV plugin

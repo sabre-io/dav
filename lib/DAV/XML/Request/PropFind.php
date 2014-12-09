@@ -51,7 +51,7 @@ class PropFind implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    public function xmlSerialize(Writer $writer) {
 
         throw new CannotSerialize('This element cannot be serialized.');
 
@@ -78,7 +78,7 @@ class PropFind implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static public function xmlDeserialize(Reader $reader) {
 
         $self = new self();
 
@@ -95,7 +95,7 @@ class PropFind implements Element {
                         $self->allProp = true;
                         break;
                     case '{DAV:}prop' :
-                        $self->properties = Elements::deserializeXml($reader);
+                        $self->properties = Elements::xmlDeserialize($reader);
                         break;
                 }
                 $reader->next();

@@ -102,7 +102,7 @@ class ResourceType extends Element\Elements {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static public function xmlDeserialize(Reader $reader) {
 
         return
             new self(parent::deserializeXml($reader));

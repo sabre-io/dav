@@ -113,7 +113,7 @@ class SupportedReportSet implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    public function xmlSerialize(Writer $writer) {
 
         foreach($this->getValue() as $val) {
             $writer->startElement('{DAV:}supported-report');
@@ -146,7 +146,7 @@ class SupportedReportSet implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static public function xmlDeserialize(Reader $reader) {
 
         throw new CannotDeserialize('This element does not have a deserializer');
 

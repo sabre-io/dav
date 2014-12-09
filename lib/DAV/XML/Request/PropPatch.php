@@ -45,7 +45,7 @@ class PropPatch implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    public function xmlSerialize(Writer $writer) {
 
         throw new CannotSerialize('This element cannot be serialized.');
 
@@ -72,7 +72,7 @@ class PropPatch implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static public function xmlDeserialize(Reader $reader) {
 
         $self = new self();
 

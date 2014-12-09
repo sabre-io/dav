@@ -86,7 +86,7 @@ class MultiStatus implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    public function xmlSerialize(Writer $writer) {
 
         foreach($this->getResponses() as $response) {
             $writer->writeElement('{DAV:}response', $response);
@@ -118,7 +118,7 @@ class MultiStatus implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static public function xmlDeserialize(Reader $reader) {
 
         $elements = $reader->parseInnerTree();
 

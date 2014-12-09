@@ -79,7 +79,7 @@ class GetLastModified implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    public function xmlSerialize(Writer $writer) {
 
         $writer->write(
             HTTP\Util::toHTTPDate($this->time)
@@ -108,7 +108,7 @@ class GetLastModified implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static public function xmlDeserialize(Reader $reader) {
 
         return
             new self($reader->parseInnerTree());

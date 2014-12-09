@@ -88,7 +88,7 @@ class SupportedMethodSet implements Element {
      * @param Writer $writer
      * @return void
      */
-    function serializeXml(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         foreach($this->getValue() as $val) {
             $writer->startElement('{DAV:}supported-method');
@@ -119,7 +119,7 @@ class SupportedMethodSet implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         throw new CannotDeserialize('This element does not have a deserializer');
 

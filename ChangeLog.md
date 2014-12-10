@@ -9,7 +9,7 @@ ChangeLog
   so this makes it slightly easier to write code that works in both branches.
 * #497: Making sure we're initializing the sync-token field with a value after
   migration.
-* The zip release ships with [sabre/vobject 3.3.3][vobj],
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
   [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 

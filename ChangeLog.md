@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.1.2 (2014-??-??)
+2.1.2 (2014-12-10)
 ------------------
 
 * #566: Another issue related to the migration script, which would cause

@@ -1,5 +1,5 @@
 1.8.11-stable (2014-12-10)
-	* The zip release ships with sabre/vobject 2.1.5.
+	* The zip release ships with sabre/vobject 2.1.6.
 	* Updated: MySQL database schema optimized by using more efficient column
 	  types.
 	* #516: The DAV client will now only redirect to HTTP and HTTPS urls.

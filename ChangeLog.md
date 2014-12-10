@@ -11,6 +11,8 @@ ChangeLog
   a `E_NOTICE`.
 * #579: Browser plugin can throw exception for a few resourcetypes that didn't
   have an icon defined.
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
+  [sabre/http 3.0.4][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.1 (2014-11-22)

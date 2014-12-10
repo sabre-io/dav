@@ -203,17 +203,20 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
-1.8.11 (2014-??-??)
+1.8.11 (2014-12-10)
 -------------------
 
+* The zip release ships with sabre/vobject 2.1.6.
 * Updated: MySQL database schema optimized by using more efficient column types.
 * #516: The DAV client will now only redirect to HTTP and HTTPS urls.
+
 
 1.8.10 (2014-05-15)
 -------------------
 
 * The zip release ships with sabre/vobject 2.1.4.
 * includes changes from version 1.7.12.
+
 
 1.8.9 (2014-02-26)
 ------------------

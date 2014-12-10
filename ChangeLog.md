@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.2.0-alpha1 (????-??-??)
+2.2.0-alpha1 (2014-12-10)
 -------------------------
 
 * The browser plugin now has a new page with information about your sabredav

@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.0.6 (????-??-??)
+2.0.6 (2014-12-10)
 ------------------
 
 * Added `Sabre\CalDAV\CalendarRoot` as an alias for
@@ -9,6 +9,8 @@ ChangeLog
   so this makes it slightly easier to write code that works in both branches.
 * #497: Making sure we're initializing the sync-token field with a value after
   migration.
+* The zip release ships with [sabre/vobject 3.3.3][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 
 2.0.5 (2014-10-14)
@@ -19,6 +21,7 @@ ChangeLog
 * #515: 304 status code was not being sent when checking preconditions.
 * The zip release ships with [sabre/vobject 3.3.3][vobj],
   [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
+
 
 2.0.4 (2014-08-27)
 ------------------

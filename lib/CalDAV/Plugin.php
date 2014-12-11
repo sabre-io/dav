@@ -456,8 +456,6 @@ class Plugin extends DAV\ServerPlugin {
             $uris[] = $this->server->calculateUri($elem->nodeValue);
         }
 
-        $tz = null;
-
         $timeZones = [];
 
         foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $uri=>$objProps) {
@@ -619,8 +617,6 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof ICalendarObjectContainer && $depth == 1) {
 
             $nodePaths = $node->calendarQuery($parser->filters);
-
-            $timeZones = [];
 
             foreach($nodePaths as $path) {
 

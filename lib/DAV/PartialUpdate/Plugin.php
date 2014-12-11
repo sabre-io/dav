@@ -83,7 +83,7 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($tree->nodeExists($uri)) {
             $node = $tree->getNodeForPath($uri);
-            if ($node instanceof IFile || $node instanceof IPatchSupport) {
+            if ($node instanceof IPatchSupport) {
                 return ['PATCH'];
             }
         }

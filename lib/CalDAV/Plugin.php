@@ -182,6 +182,9 @@ class Plugin extends DAV\ServerPlugin {
         $server->propertyMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Property\\SupportedCalendarComponentSet';
         $server->propertyMap['{' . self::NS_CALDAV . '}schedule-calendar-transp'] = 'Sabre\\CalDAV\\Property\\ScheduleCalendarTransp';
 
+        $server->xml->elementMap['{' . self::NS_CALDAV . '}mkcalendar'] = 'Sabre\\CalDAV\\Xml\\Request\\MkCalendar';
+        $server->xml->elementMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet';
+
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
 
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
@@ -250,13 +253,6 @@ class Plugin extends DAV\ServerPlugin {
      */
     function httpMkCalendar(RequestInterface $request, ResponseInterface $response) {
 
-        // Due to unforgivable bugs in iCal, we're completely disabling MKCALENDAR support
-        // for clients matching iCal in the user agent
-        //$ua = $this->server->httpRequest->getHeader('User-Agent');
-        //if (strpos($ua,'iCal/')!==false) {
-        //    throw new \Sabre\DAV\Exception\Forbidden('iCal has major bugs in it\'s RFC3744 support. Therefore we are left with no other choice but disabling this feature.');
-        //}
-
         $body = $request->getBodyAsString();
         $path = $request->getPath();
 
@@ -264,16 +260,9 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($body) {
 
-            $dom = DAV\XMLUtil::loadDOMDocument($body);
+            $mkcalendar = $this->server->xml->parse($body);
+            $properties = $mkcalendar['value']->getProperties();
 
-            foreach($dom->firstChild->childNodes as $child) {
-
-                if (DAV\XMLUtil::toClarkNotation($child)!=='{DAV:}set') continue;
-                foreach(DAV\XMLUtil::parseProperties($child,$this->server->propertyMap) as $k=>$prop) {
-                    $properties[$k] = $prop;
-                }
-
-            }
         }
 
         // iCal abuses MKCALENDAR since iCal 10.9.2 to create server-stored

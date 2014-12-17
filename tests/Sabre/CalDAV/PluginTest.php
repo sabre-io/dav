@@ -376,7 +376,7 @@ END:VCALENDAR';
 
         }
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $this->assertTrue($newCalendar[$sccs] instanceof Property\SupportedCalendarComponentSet);
+        $this->assertTrue($newCalendar[$sccs] instanceof Xml\Property\SupportedCalendarComponentSet);
         $this->assertEquals(array('VEVENT'),$newCalendar[$sccs]->getValue());
 
     }

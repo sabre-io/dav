@@ -561,21 +561,20 @@ class CorePlugin extends ServerPlugin {
 
             }
 
-            $dom = XMLUtil::loadDOMDocument($requestBody);
-            if (XMLUtil::toClarkNotation($dom->firstChild)!=='{DAV:}mkcol') {
+            try {
+                $mkcol = $this->server->xml->parse($requestBody);
+            } catch (\Sabre\Xml\ParseException $e) {
+                throw new Exception\BadRequest($e->getMessage(), null, $e);
+            }
+            if ($mkcol['name']!=='{DAV:}mkcol') {
 
                 // We must throw 415 for unsupported mkcol bodies
                 throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must be a {DAV:}mkcol request construct.');
 
             }
 
-            $properties = [];
-            foreach($dom->firstChild->childNodes as $childNode) {
+            $properties = $mkcol['value']->getProperties();
 
-                if (XMLUtil::toClarkNotation($childNode)!=='{DAV:}set') continue;
-                $properties = array_merge($properties, XMLUtil::parseProperties($childNode, $this->server->propertyMap));
-
-            }
             if (!isset($properties['{DAV:}resourcetype']))
                 throw new Exception\BadRequest('The mkcol request must include a {DAV:}resourcetype property');
 

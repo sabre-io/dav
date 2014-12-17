@@ -74,7 +74,7 @@ class ServerMKCOLTest extends AbstractServer {
             'Content-Type' => ['application/xml; charset=utf-8'],
         ),$this->response->getHeaders());
 
-        $this->assertEquals(400, $this->response->status);
+        $this->assertEquals(400, $this->response->getStatus(), $this->response->getBodyAsString() );
 
     }
 

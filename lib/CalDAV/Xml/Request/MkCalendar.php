@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabre\DAV\Xml\Request;
+namespace Sabre\CalDAV\Xml\Request;
 
 use
     Sabre\Xml\Element,
@@ -9,28 +9,27 @@ use
     Sabre\DAV\Exception\CannotSerialize;
 
 /**
- * WebDAV Extended MKCOL request parser.
+ * MKCALENDAR parser.
  *
- * This class parses the {DAV:}mkol request, as defined in:
+ * This class parses the MKCALENDAR request, as defined in:
  *
- * https://tools.ietf.org/html/rfc5689#section-5.1
+ * https://tools.ietf.org/html/rfc4791#section-5.3.1
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class MkCol implements Element {
+class MkCalendar implements Element {
 
     /**
      * The list of properties that will be set.
      *
      * @var array
      */
-    protected $properties = [];
+    public $properties = [];
 
     /**
-     * Returns a key=>value array with properties that are supposed to get set
-     * during creation of the new collection.
+     * Returns the list of properties the calendar will be initialized with.
      *
      * @return array
      */

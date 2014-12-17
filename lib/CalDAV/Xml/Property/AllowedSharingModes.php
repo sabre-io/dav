@@ -1,43 +1,57 @@
 <?php
 
-namespace Sabre\DAV\Xml\Property;
+namespace Sabre\CalDAV\Xml\Property;
 
 use
-    Sabre\DAV,
     Sabre\Xml\Element,
     Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+    Sabre\Xml\Writer,
+    Sabre\DAV\Exception\CannotDeserialize,
+    Sabre\CalDAV\Plugin;
 
 /**
- * This class represents the {DAV:}supportedlock property.
+ * AllowedSharingModes
  *
- * This property is defined here:
- * http://tools.ietf.org/html/rfc4918#section-15.10
+ * This property encodes the 'allowed-sharing-modes' property, as defined by
+ * the 'caldav-sharing-02' spec, in the http://calendarserver.org/ns/
+ * namespace.
  *
- * This property contains information about what kind of locks
- * this server supports.
+ * This property is a representation of the supported-calendar_component-set
+ * property in the CalDAV namespace. It simply requires an array of components,
+ * such as VEVENT, VTODO
  *
+ * @see https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing-02.txt
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class SupportedLock implements Element {
+class AllowedSharingModes implements Element {
 
     /**
-     * supportsLocks
+     * Whether or not a calendar can be shared with another user
      *
      * @var bool
      */
-    public $supportsLocks = false;
+    protected $canBeShared;
 
     /**
-     * __construct
+     * Whether or not the calendar can be placed on a public url.
      *
-     * @param bool $supportsLocks
+     * @var bool
      */
-    public function __construct($supportsLocks) {
+    protected $canBePublished;
 
-        $this->supportsLocks = $supportsLocks;
+    /**
+     * Constructor
+     *
+     * @param bool $canBeShared
+     * @param bool $canBePublished
+     * @return void
+     */
+    public function __construct($canBeShared, $canBePublished) {
+
+        $this->canBeShared = $canBeShared;
+        $this->canBePublished = $canBePublished;
 
     }
 
@@ -56,18 +70,14 @@ class SupportedLock implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function xmlSerialize(Writer $writer) {
+    public function serializeXml(Writer $writer) {
 
-        if (!$this->supportsLocks) return null;
-
-        $writer->writeElement('{DAV:}lockentry', [
-            '{DAV:}lockscope' => ['{DAV:}exclusive' => null],
-            '{DAV:}locktype' =>  ['{DAV:}write' => null],
-        ]);
-        $writer->writeElement('{DAV:}lockentry', [
-            '{DAV:}lockscope' => ['{DAV:}shared' => null],
-            '{DAV:}locktype' =>  ['{DAV:}write' => null],
-        ]);
+        if ($this->canBeShared) {
+            $writer->writeElement('{' . Plugin::NS_CALENDARSERVER . '}can-be-shared');
+        }
+        if ($this->canBePublished) {
+            $writer->writeElement('{' . Plugin::NS_CALENDARSERVER . '}can-be-published');
+        }
 
     }
 
@@ -92,10 +102,9 @@ class SupportedLock implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function xmlDeserialize(Reader $reader) {
+    static public function deserializeXml(Reader $reader) {
 
         throw new CannotDeserialize('This element does not have a deserializer');
 
     }
 }
-

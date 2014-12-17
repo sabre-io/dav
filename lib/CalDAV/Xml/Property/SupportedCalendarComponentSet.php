@@ -1,42 +1,56 @@
 <?php
 
-namespace Sabre\DAV\Xml\Request;
+namespace Sabre\CalDAV\Xml\Property;
 
 use
     Sabre\Xml\Element,
     Sabre\Xml\Reader,
     Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+    Sabre\CalDAV\Plugin;
 
 /**
- * WebDAV Extended MKCOL request parser.
+ * SupportedCalendarComponentSet property.
  *
- * This class parses the {DAV:}mkol request, as defined in:
+ * This class represents the
+ * {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set property, as
+ * defined in:
  *
- * https://tools.ietf.org/html/rfc5689#section-5.1
+ * https://tools.ietf.org/html/rfc4791#section-5.2.3
  *
  * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class MkCol implements Element {
+class SupportedCalendarComponentSet implements Element {
 
     /**
-     * The list of properties that will be set.
+     * List of supported components.
+     *
+     * This array will contain values such as VEVENT, VTODO and VJOURNAL.
      *
      * @var array
      */
-    protected $properties = [];
+    protected $components = [];
 
     /**
-     * Returns a key=>value array with properties that are supposed to get set
-     * during creation of the new collection.
+     * Creates the property.
+     *
+     * @param array $components
+     */
+    function __construct(array $components) {
+
+        $this->components = $components;
+
+    }
+
+    /**
+     * Returns the list of supported components
      *
      * @return array
      */
-    function getProperties() {
+    function getValue() {
 
-        return $this->properties;
+        return $this->components;
 
     }
 
@@ -57,7 +71,13 @@ class MkCol implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
-        throw new CannotSerialize('This element cannot be serialized.');
+       foreach($this->components as $component) {
+
+            $writer->startElement('{' . Plugin::NS_CALDAV . '}comp');
+            $writer->writeAttributes(['name' => $component]);
+            $writer->endElement();
+
+       }
 
     }
 
@@ -84,17 +104,17 @@ class MkCol implements Element {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $self = new self();
-
         $elems = $reader->parseInnerTree();
 
+        $components = [];
+
         foreach($elems as $elem) {
-            if ($elem['name'] === '{DAV:}set') {
-                $self->properties = array_merge($self->properties, $elem['value']['{DAV:}prop']);
+            if ($elem['name'] === '{'.Plugin::NS_CALDAV . '}comp') {
+                $components[] = $elem['attributes']['name'];
             }
         }
 
-        return $self;
+        return new self($components);
 
     }
 

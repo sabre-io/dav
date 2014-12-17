@@ -160,7 +160,7 @@ class Subscription extends Collection implements ISubscription, IACL {
                     $r[$prop] = new Href($this->subscriptionInfo['source'], false);
                     break;
                 default :
-                    if (isset($this->subscriptionInfo[$prop])) {
+                    if (array_key_exists($prop,$this->subscriptionInfo)) {
                         $r[$prop] = $this->subscriptionInfo[$prop];
                     }
                     break;

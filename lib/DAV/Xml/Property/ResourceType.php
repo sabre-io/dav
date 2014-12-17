@@ -13,11 +13,11 @@ use
  *
  * This class represents the {DAV:}resourcetype property, as defined in:
  *
- * https://tools.ietf.org/html/rfc4918#section-15.9 
+ * https://tools.ietf.org/html/rfc4918#section-15.9
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class ResourceType extends Element\Elements {
 
@@ -31,7 +31,7 @@ class ResourceType extends Element\Elements {
      *
      * @param array|string|null $resourceType
      */
-    public function __construct($resourceTypes = null) {
+    function __construct($resourceTypes = null) {
 
         if (is_null($resourceTypes)) {
             parent::__construct([]);
@@ -50,7 +50,7 @@ class ResourceType extends Element\Elements {
      *
      * @return array
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->value;
 
@@ -62,7 +62,7 @@ class ResourceType extends Element\Elements {
      * @param string $type
      * @return bool
      */
-    public function is($type) {
+    function is($type) {
 
         return in_array($type, $this->value);
 
@@ -74,7 +74,7 @@ class ResourceType extends Element\Elements {
      * @param string $type
      * @return void
      */
-    public function add($type) {
+    function add($type) {
 
         $this->value[] = $type;
         $this->value = array_unique($this->value);
@@ -102,10 +102,10 @@ class ResourceType extends Element\Elements {
      * @param Reader $reader
      * @return mixed
      */
-    static public function xmlDeserialize(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         return
-            new self(parent::deserializeXml($reader));
+            new self(parent::xmlDeserialize($reader));
 
     }
 

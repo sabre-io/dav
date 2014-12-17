@@ -631,7 +631,7 @@ HTML;
         $view = 'unknown';
         if (is_string($value)) {
             $view = 'string';
-        } elseif($value instanceof DAV\Property) {
+        } elseif($value instanceof \Sabre\Xml\XmlSerializable) {
 
             $mapping = [
                 'Sabre\\DAV\\Property\\IHref' => 'href',

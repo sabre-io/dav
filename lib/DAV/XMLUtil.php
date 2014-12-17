@@ -23,9 +23,16 @@ class XMLUtil {
         '{DAV:}response'    => 'Sabre\\DAV\\Xml\\Element\\Response',
         '{DAV:}propstat'    => 'Sabre\\Xml\\Element\\KeyValue',
         '{DAV:}prop'        => 'Sabre\\Xml\\Element\\KeyValue',
+        '{DAV:}set'         => 'Sabre\\Xml\\Element\\KeyValue',
+        '{DAV:}remove'      => 'Sabre\\Xml\\Element\\KeyValue',
 
         // Requests
         '{DAV:}propfind' => 'Sabre\\DAV\\Xml\\Request\\PropFind',
+        '{DAV:}mkcol'    => 'Sabre\\DAV\\Xml\\Request\\MkCol',
+
+        // Properties
+        '{DAV:}resourcetype' => 'Sabre\\DAV\\Xml\\Property\\ResourceType',
+
     ];
 
     /**

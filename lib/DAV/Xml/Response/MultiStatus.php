@@ -17,9 +17,9 @@ use
  * And it also adds the {DAV:}synctoken change from:
  * http://tools.ietf.org/html/rfc6578#section-6.4
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class MultiStatus implements Element {
 
@@ -42,7 +42,7 @@ class MultiStatus implements Element {
      *
      * @param \Sabre\DAV\Xml\Element\Response[] $responses
      */
-    public function __construct(array $responses, $syncToken = null) {
+    function __construct(array $responses, $syncToken = null) {
 
         $this->responses = $responses;
         $this->syncToken = $syncToken;
@@ -54,7 +54,7 @@ class MultiStatus implements Element {
      *
      * @return \Sabre\DAV\Xml\Element\Response[]
      */
-    public function getResponses() {
+    function getResponses() {
 
         return $this->responses;
 
@@ -65,7 +65,7 @@ class MultiStatus implements Element {
      *
      * @return string|null
      */
-    public function getSyncToken() {
+    function getSyncToken() {
 
         return $this->syncToken;
 
@@ -86,7 +86,7 @@ class MultiStatus implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function xmlSerialize(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         foreach($this->getResponses() as $response) {
             $writer->writeElement('{DAV:}response', $response);
@@ -118,7 +118,7 @@ class MultiStatus implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function xmlDeserialize(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         $elements = $reader->parseInnerTree();
 

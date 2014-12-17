@@ -1,44 +1,28 @@
 <?php
 
-namespace Sabre\DAV\Xml\Request;
+namespace Sabre\CalDAV\Xml\Property;
 
 use
     Sabre\Xml\Element,
     Sabre\Xml\Reader,
     Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+    Sabre\DAV\Exception\CannotDeserialize,
+    Sabre\CalDAV\Plugin;
 
 /**
- * WebDAV Extended MKCOL request parser.
+ * supported-collation-set property
  *
- * This class parses the {DAV:}mkol request, as defined in:
+ * This property is a representation of the supported-collation-set property
+ * in the CalDAV namespace.
  *
- * https://tools.ietf.org/html/rfc5689#section-5.1
+ * This property is defined in:
+ * http://tools.ietf.org/html/rfc4791#section-7.5.1
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
- * @author Evert Pot (http://evertpot.com/)
- * @license http://sabre.io/license/ Modified BSD License
+ * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class MkCol implements Element {
-
-    /**
-     * The list of properties that will be set.
-     *
-     * @var array
-     */
-    protected $properties = [];
-
-    /**
-     * Returns a key=>value array with properties that are supposed to get set
-     * during creation of the new collection.
-     *
-     * @return array
-     */
-    function getProperties() {
-
-        return $this->properties;
-
-    }
+class SupportedCollationSet implements Element {
 
     /**
      * The serialize method is called during xml writing.
@@ -55,9 +39,17 @@ class MkCol implements Element {
      * @param Writer $writer
      * @return void
      */
-    function xmlSerialize(Writer $writer) {
+    public function serializeXml(Writer $writer) {
 
-        throw new CannotSerialize('This element cannot be serialized.');
+        $collations = [
+            'i;ascii-casemap',
+            'i;octet',
+            'i;unicode-casemap'
+        ];
+
+        foreach($collations as $collation) {
+            $writer->writeElement('{' . Plugin::NS_CALDAV . '}supported-collation', $collation);
+        }
 
     }
 
@@ -82,19 +74,9 @@ class MkCol implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static function xmlDeserialize(Reader $reader) {
+    static public function deserializeXml(Reader $reader) {
 
-        $self = new self();
-
-        $elems = $reader->parseInnerTree();
-
-        foreach($elems as $elem) {
-            if ($elem['name'] === '{DAV:}set') {
-                $self->properties = array_merge($self->properties, $elem['value']['{DAV:}prop']);
-            }
-        }
-
-        return $self;
+        throw new CannotDeserialize('This element does not have a deserializer');
 
     }
 

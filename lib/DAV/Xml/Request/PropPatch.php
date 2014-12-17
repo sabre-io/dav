@@ -1,68 +1,34 @@
 <?php
 
-namespace Sabre\DAV\XML\Property;
+namespace Sabre\DAV\Xml\Request;
 
 use
-    Sabre\XML\Element,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer,
-    Sabre\HTTP;
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer,
+    Sabre\DAV\Exception\CannotSerialize;
 
 /**
- * This property represents the {DAV:}getlastmodified property.
+ * WebDAV PROPPATCH request parser.
  *
- * Defined in:
- * http://tools.ietf.org/html/rfc4918#section-15.7
+ * This class parses the {DAV:}propertyupdate request, as defined in:
  *
- * Although this is normally a simple property, windows requires us to add
- * some new attributes.
- *
- * This class uses unix timestamps internally, and converts them to RFC 1123 times for
- * serialization
+ * https://tools.ietf.org/html/rfc4918#section-14.20
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class GetLastModified implements Element {
+class PropPatch implements Element {
 
     /**
-     * time
+     * The list of properties that will be updated and removed.
      *
-     * @var \DateTime
-     */
-    public $time;
-
-    /**
-     * Constructor 
+     * If a property will be removed, it's value will be set to null.
      *
-     * @param int|DateTime $time
+     * @var array
      */
-    public function __construct($time) {
-
-        if ($time instanceof \DateTime) {
-            $this->time = $time;
-        } elseif (is_int($time) || ctype_digit($time)) {
-            $this->time = new \DateTime('@' . $time);
-        } else {
-            $this->time = new \DateTime($time);
-        }
-
-        // Setting timezone to UTC
-        $this->time->setTimezone(new \DateTimeZone('UTC'));
-
-    }
-
-    /**
-     * getTime
-     *
-     * @return \DateTime
-     */
-    public function getTime() {
-
-        return $this->time;
-
-    }
+    public $properties = [];
 
     /**
      * The serialize method is called during xml writing.
@@ -81,9 +47,7 @@ class GetLastModified implements Element {
      */
     public function xmlSerialize(Writer $writer) {
 
-        $writer->write(
-            HTTP\Util::toHTTPDate($this->time)
-        );
+        throw new CannotSerialize('This element cannot be serialized.');
 
     }
 
@@ -110,9 +74,26 @@ class GetLastModified implements Element {
      */
     static public function xmlDeserialize(Reader $reader) {
 
-        return
-            new self($reader->parseInnerTree());
+        $self = new self();
+
+        $elems = $reader->parseInnerTree();
+
+        foreach($elems as $elem) {
+            if ($elem['name'] === '{DAV:}set') {
+                $self->properties = array_merge($self->properties, $elem['value']['{DAV:}prop']);
+            }
+            if ($elem['name'] === '{DAV:}remove') {
+
+                // Ensuring there are no values.
+                foreach($elem['value']['{DAV:}prop'] as $remove=>$value) {
+                    $self->properties[$remove] = null;
+                }
+
+            }
+        }
+
+        return $self;
 
     }
-}
 
+}

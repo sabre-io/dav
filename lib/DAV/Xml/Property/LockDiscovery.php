@@ -1,12 +1,12 @@
 <?php
 
-namespace Sabre\DAV\XML\Property;
+namespace Sabre\DAV\Xml\Property;
 
 use
     Sabre\DAV,
-    Sabre\XML\Element,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer;
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer;
 
 /**
  * Represents {DAV:}lockdiscovery property.

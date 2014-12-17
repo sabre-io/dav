@@ -1,11 +1,11 @@
 <?php
 
-namespace Sabre\DAV\XML\Element;
+namespace Sabre\DAV\Xml\Element;
 
 use
-    Sabre\XML\Element,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer,
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer,
     Sabre\DAV\Exception\CannotSerialize;
 
 /**

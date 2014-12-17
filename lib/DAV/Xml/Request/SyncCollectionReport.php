@@ -1,34 +1,55 @@
 <?php
 
-namespace Sabre\DAV\XML\Request;
+namespace Sabre\DAV\Xml\Request;
 
 use
-    Sabre\XML\Element,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer,
+    Sabre\Xml\Element\KeyValue,
+    Sabre\DAV\Exception\CannotSerialize,
+    Sabre\DAV\Exception\BadRequest;
 
 /**
- * WebDAV PROPPATCH request parser.
+ * SyncCollection request parser.
  *
- * This class parses the {DAV:}propertyupdate request, as defined in:
+ * This class parses the {DAV:}sync-collection reprot, as defined in:
  *
- * https://tools.ietf.org/html/rfc4918#section-14.20
+ * http://tools.ietf.org/html/rfc6578#section-3.2
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PropPatch implements Element {
+class SyncCollectionReport implements Element {
 
     /**
-     * The list of properties that will be updated and removed.
+     * The sync-token the client supplied for the report.
      *
-     * If a property will be removed, it's value will be set to null.
-     *
-     * @var array
+     * @var string|null
      */
-    public $properties = [];
+    public $syncToken;
+
+    /**
+     * The 'depth' of the sync the client is interested in.
+     *
+     * @var int
+     */
+    public $syncLevel;
+
+    /**
+     * Maximum amount of items returned.
+     *
+     * @var int|null
+     */
+    public $limit;
+
+    /**
+     * The list of properties that are being requested for every change.
+     *
+     * @var null|array
+     */
+    public $properties;
 
     /**
      * The serialize method is called during xml writing.
@@ -76,20 +97,41 @@ class PropPatch implements Element {
 
         $self = new self();
 
-        $elems = $reader->parseInnerTree();
+        $elems = KeyValue::deserializeXml($reader);
 
-        foreach($elems as $elem) {
-            if ($elem['name'] === '{DAV:}set') {
-                $self->properties = array_merge($self->properties, $elem['value']['{DAV:}prop']);
+        $required = [
+            '{DAV:}sync-token',
+            '{DAV:}prop',
+            ];
+
+        foreach($required as $elem) {
+            if (!array_key_exists($elem, $elems)) {
+                throw new BadRequest('The '.$elem.' element in the {DAV:}sync-collection report is required');
             }
-            if ($elem['name'] === '{DAV:}remove') {
+        }
 
-                // Ensuring there are no values.
-                foreach($elem['value']['{DAV:}prop'] as $remove=>$value) {
-                    $self->properties[$remove] = null;
+
+        $self->properties = array_keys($elems['{DAV:}prop']);
+        $self->syncToken = $elems['{DAV:}sync-token'];
+
+        if (isset($elems['{DAV:}limit'])) {
+            $nresults = null;
+            foreach($elems['{DAV:}limit'] as $child) {
+                if ($child['name'] === '{DAV:}nresults') {
+                    $nresults = (int)$child['value'];
                 }
-
             }
+            $self->limit = $nresults;
+        }
+
+        if (isset($elems['{DAV:}sync-level'])) {
+
+            $value = $elems['{DAV:}sync-level'];
+            if ($value==='infinity') {
+                $value = \Sabre\DAV\Server::DEPTH_INFINITY;
+            }
+            $self->syncLevel = $value;
+
         }
 
         return $self;

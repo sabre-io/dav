@@ -857,7 +857,7 @@ class Server extends EventEmitter {
                 $headers[$header] = $properties[$property];
 
             // GetLastModified gets special cased
-            } elseif ($properties[$property] instanceof XML\Property\GetLastModified) {
+            } elseif ($properties[$property] instanceof Xml\Property\GetLastModified) {
                 $headers[$header] = HTTP\Util::toHTTPDate($properties[$property]->getTime());
             }
 
@@ -1651,7 +1651,7 @@ class Server extends EventEmitter {
             if ($strip404s) {
                 unset($entry[404]);
             }
-            $response = new XML\Element\Response(
+            $response = new Xml\Element\Response(
                 '/' . ltrim($href,'/'),
                 $entry
             );

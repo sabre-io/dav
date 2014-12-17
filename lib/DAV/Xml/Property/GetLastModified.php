@@ -1,40 +1,68 @@
 <?php
 
-namespace Sabre\DAV\XML\Request;
+namespace Sabre\DAV\Xml\Property;
 
 use
-    Sabre\XML\Element,
-    Sabre\XML\Element\Elements,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer,
+    Sabre\HTTP;
 
 /**
- * WebDAV PROPFIND request parser.
+ * This property represents the {DAV:}getlastmodified property.
  *
- * This class parses the {DAV:}propfind request, as defined in:
+ * Defined in:
+ * http://tools.ietf.org/html/rfc4918#section-15.7
  *
- * https://tools.ietf.org/html/rfc4918#section-14.20
+ * Although this is normally a simple property, windows requires us to add
+ * some new attributes.
+ *
+ * This class uses unix timestamps internally, and converts them to RFC 1123 times for
+ * serialization
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PropFind implements Element {
+class GetLastModified implements Element {
 
     /**
-     * If this is set to true, this was an 'allprop' request.
+     * time
      *
-     * @var bool
+     * @var \DateTime
      */
-    public $allProp = false;
+    public $time;
 
     /**
-     * The property list
+     * Constructor 
      *
-     * @var null|array
+     * @param int|DateTime $time
      */
-    public $properties;
+    public function __construct($time) {
+
+        if ($time instanceof \DateTime) {
+            $this->time = $time;
+        } elseif (is_int($time) || ctype_digit($time)) {
+            $this->time = new \DateTime('@' . $time);
+        } else {
+            $this->time = new \DateTime($time);
+        }
+
+        // Setting timezone to UTC
+        $this->time->setTimezone(new \DateTimeZone('UTC'));
+
+    }
+
+    /**
+     * getTime
+     *
+     * @return \DateTime
+     */
+    public function getTime() {
+
+        return $this->time;
+
+    }
 
     /**
      * The serialize method is called during xml writing.
@@ -53,7 +81,9 @@ class PropFind implements Element {
      */
     public function xmlSerialize(Writer $writer) {
 
-        throw new CannotSerialize('This element cannot be serialized.');
+        $writer->write(
+            HTTP\Util::toHTTPDate($this->time)
+        );
 
     }
 
@@ -80,35 +110,9 @@ class PropFind implements Element {
      */
     static public function xmlDeserialize(Reader $reader) {
 
-        $self = new self();
-
-        $reader->read();
-
-        do {
-
-            if ($reader->nodeType === Reader::ELEMENT) {
-
-                $clark = $reader->getClark();
-                switch($reader->getClark()) {
-
-                    case '{DAV:}allprop' :
-                        $self->allProp = true;
-                        break;
-                    case '{DAV:}prop' :
-                        $self->properties = Elements::xmlDeserialize($reader);
-                        break;
-                }
-                $reader->next();
-
-            } else {
-                $reader->read();
-            }
-
-        } while ($reader->nodeType !== Reader::END_ELEMENT);
-
-        $reader->read();
-        return $self;
+        return
+            new self($reader->parseInnerTree());
 
     }
-
 }
+

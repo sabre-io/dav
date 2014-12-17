@@ -636,9 +636,9 @@ HTML;
             $mapping = [
                 'Sabre\\DAV\\Property\\IHref' => 'href',
                 'Sabre\\DAV\\Property\\HrefList' => 'hreflist',
-                'Sabre\\DAV\\XML\\Property\\SupportedMethodSet' => 'valuelist',
-                'Sabre\\DAV\\XML\\Property\\ResourceType' => 'xmlvaluelist',
-                'Sabre\\DAV\\XML\\Property\\SupportedReportSet' => 'xmlvaluelist',
+                'Sabre\\DAV\\Xml\\Property\\SupportedMethodSet' => 'valuelist',
+                'Sabre\\DAV\\Xml\\Property\\ResourceType' => 'xmlvaluelist',
+                'Sabre\\DAV\\Xml\\Property\\SupportedReportSet' => 'xmlvaluelist',
                 'Sabre\\DAVACL\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
                 'Sabre\\DAVACL\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
             ];

@@ -1,83 +1,73 @@
 <?php
 
-namespace Sabre\DAV\XML\Property;
+namespace Sabre\DAV\Xml\Response;
 
 use
-    Sabre\XML\Element,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer;
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer,
+    Sabre\DAV\Exception\CannotSerialize;
 
 /**
- * Href property
+ * WebDAV MultiStatus parser
  *
- * This class represents any WebDAV property that contains a {DAV:}href
- * element, and there are many.
+ * This class parses the {DAV:}multistatus response, as defined in:
+ * https://tools.ietf.org/html/rfc4918#section-14.16
  *
- * It can support either 1 or more hrefs. If while unserializing no valid
- * {DAV:}href elements were found, this property will unserialize itself as
- * null.
+ * And it also adds the {DAV:}synctoken change from:
+ * http://tools.ietf.org/html/rfc6578#section-6.4
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class Href implements Element {
+class MultiStatus implements Element {
 
     /**
-     * List of uris
+     * The responses
      *
-     * @var array
+     * @var \Sabre\DAV\Xml\Element\Response[]
      */
-    protected $hrefs;
+    protected $responses;
 
     /**
-     * Automatically prefix the url with the server base directory
+     * A sync token (from RFC6578).
      *
-     * @var bool
+     * @var string
      */
-    protected $autoPrefix = true;
+    protected $syncToken;
 
     /**
      * Constructor
      *
-     * You must either pass a string for a single href, or an array of hrefs.
-     *
-     * If auto-prefix is set to false, the hrefs will be treated as absolute
-     * and not relative to the servers base uri.
-     *
-     * @param string|string[] $href
-     * @param bool $autoPrefix
+     * @param \Sabre\DAV\Xml\Element\Response[] $responses
      */
-    public function __construct($hrefs, $autoPrefix = true) {
+    public function __construct(array $responses, $syncToken = null) {
 
-        if (is_string($hrefs)) {
-            $hrefs = [$hrefs];
-        }
-        $this->hrefs = $hrefs;
-        $this->autoPrefix = $autoPrefix;
-
+        $this->responses = $responses;
+        $this->syncToken = $syncToken;
 
     }
 
     /**
-     * Returns the first Href.
+     * Returns the response list.
      *
-     * @return string
+     * @return \Sabre\DAV\Xml\Element\Response[]
      */
-    public function getHref() {
+    public function getResponses() {
 
-        return $this->hrefs[0];
+        return $this->responses;
 
     }
 
     /**
-     * Returns the hrefs as an array
+     * Returns the sync-token, if available.
      *
-     * @return array
+     * @return string|null
      */
-    public function getHrefs() {
+    public function getSyncToken() {
 
-        return $this->hrefs;
+        return $this->syncToken;
 
     }
 
@@ -98,11 +88,11 @@ class Href implements Element {
      */
     public function xmlSerialize(Writer $writer) {
 
-        foreach($this->getHrefs() as $href) {
-            if ($this->autoPrefix) {
-                $href = $writer->baseUri . $href;
-            }
-            $writer->writeElement('{DAV:}href', $href);
+        foreach($this->getResponses() as $response) {
+            $writer->writeElement('{DAV:}response', $response);
+        }
+        if ($syncToken = $this->getSyncToken()) {
+            $writer->writeElement('{DAV:}sync-token', $syncToken);
         }
 
     }
@@ -130,17 +120,21 @@ class Href implements Element {
      */
     static public function xmlDeserialize(Reader $reader) {
 
-        $hrefs = [];
-        foreach($reader->parseInnerTree() as $elem) {
-            if ($elem['name'] !== '{DAV:}href')
-                continue;
+        $elements = $reader->parseInnerTree();
 
-            $hrefs[] = $elem['value'];
+        $responses = [];
+        $syncToken = null;
 
+        if ($elements) foreach($elements as $elem) {
+            if ($elem['name'] === '{DAV:}response') {
+                $responses[] = $elem['value'];
+            }
+            if ($elem['name'] === '{DAV:}sync-token') {
+                $syncToken = $elem['value'];
+            }
         }
-        if ($hrefs) {
-            return new self($hrefs);
-        }
+
+        return new self($responses, $syncToken);
 
     }
 

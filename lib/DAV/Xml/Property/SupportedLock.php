@@ -1,32 +1,45 @@
 <?php
 
-namespace Sabre\DAV\XML\Request;
+namespace Sabre\DAV\Xml\Property;
 
 use
-    Sabre\XML\Element,
-    Sabre\XML\Reader,
-    Sabre\XML\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+    Sabre\DAV,
+    Sabre\Xml\Element,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer;
 
 /**
- * WebDAV Extended MKCOL request parser.
+ * This class represents the {DAV:}supportedlock property.
  *
- * This class parses the {DAV:}mkol request, as defined in:
+ * This property is defined here:
+ * http://tools.ietf.org/html/rfc4918#section-15.10
  *
- * https://tools.ietf.org/html/rfc5689#section-5.1
+ * This property contains information about what kind of locks
+ * this server supports.
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class MkCol implements Element {
+class SupportedLock implements Element {
 
     /**
-     * The list of properties that will be set.
+     * supportsLocks
      *
-     * @var array
+     * @var bool
      */
-    public $properties = [];
+    public $supportsLocks = false;
+
+    /**
+     * __construct
+     *
+     * @param bool $supportsLocks
+     */
+    public function __construct($supportsLocks) {
+
+        $this->supportsLocks = $supportsLocks;
+
+    }
 
     /**
      * The serialize method is called during xml writing.
@@ -45,7 +58,16 @@ class MkCol implements Element {
      */
     public function xmlSerialize(Writer $writer) {
 
-        throw new CannotSerialize('This element cannot be serialized.');
+        if (!$this->supportsLocks) return null;
+
+        $writer->writeElement('{DAV:}lockentry', [
+            '{DAV:}lockscope' => ['{DAV:}exclusive' => null],        
+            '{DAV:}locktype' =>  ['{DAV:}write' => null],        
+        ]);
+        $writer->writeElement('{DAV:}lockentry', [
+            '{DAV:}lockscope' => ['{DAV:}shared' => null],        
+            '{DAV:}locktype' =>  ['{DAV:}write' => null],        
+        ]);
 
     }
 
@@ -72,18 +94,8 @@ class MkCol implements Element {
      */
     static public function xmlDeserialize(Reader $reader) {
 
-        $self = new self();
-
-        $elems = $reader->parseInnerTree();
-
-        foreach($elems as $elem) {
-            if ($elem['name'] === '{DAV:}set') {
-                $self->properties = array_merge($self->properties, $elem['value']['{DAV:}prop']);
-            }
-        }
-
-        return $self;
+        throw new CannotDeserialize('This element does not have a deserializer');
 
     }
-
 }
+

@@ -1,7 +1,7 @@
 <?php
 
 namespace Sabre\DAV;
-use Sabre\XML;
+use Sabre\Xml;
 
 /**
  * XML utilities for WebDAV
@@ -16,7 +16,7 @@ class XMLUtil {
      * This is a list of XML elements that we automatically map to PHP classes.
      *
      * For instance, this list may contain an entry `{DAV:}propfind` that would
-     * be mapped to Sabre\DAV\XML\Request\PropFind
+     * be mapped to Sabre\DAV\Xml\Request\PropFind
      */
     public $elementMap = [
         '{DAV:}multistatus' => 'Sabre\\DAV\\Xml\\Response\\MultiStatus',

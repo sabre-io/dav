@@ -708,7 +708,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // Mapping the group-member-set property to the HrefList property
         // class.
-        $server->propertyMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Property\\HrefList';
+        $server->propertyMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
 
     }
 
@@ -863,24 +863,24 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof IPrincipal) {
 
             $propFind->handle('{DAV:}alternate-URI-set', function() use ($node) {
-                return new DAV\Property\HrefList($node->getAlternateUriSet());
+                return new DAV\Xml\Property\Href($node->getAlternateUriSet());
             });
             $propFind->handle('{DAV:}principal-URL', function() use ($node) {
-                return new DAV\Property\Href($node->getPrincipalUrl() . '/');
+                return new DAV\Xml\Property\Href($node->getPrincipalUrl() . '/');
             });
             $propFind->handle('{DAV:}group-member-set', function() use ($node) {
                 $members = $node->getGroupMemberSet();
                 foreach($members as $k=>$member) {
                     $members[$k] = rtrim($member,'/') . '/';
                 }
-                return new DAV\Property\HrefList($members);
+                return new DAV\Xml\Property\Href($members);
             });
             $propFind->handle('{DAV:}group-membership', function() use ($node) {
                 $members = $node->getGroupMembership();
                 foreach($members as $k=>$member) {
                     $members[$k] = rtrim($member,'/') . '/';
                 }
-                return new DAV\Property\HrefList($members);
+                return new DAV\Xml\Property\Href($members);
             });
             $propFind->handle('{DAV:}displayname', [$node, 'getDisplayName']);
 
@@ -891,7 +891,7 @@ class Plugin extends DAV\ServerPlugin {
             $val = $this->principalCollectionSet;
             // Ensuring all collections end with a slash
             foreach($val as $k=>$v) $val[$k] = $v . '/';
-            return new DAV\Property\HrefList($val);
+            return new DAV\Xml\Property\Href($val);
 
         });
         $propFind->handle('{DAV:}current-user-principal', function() {
@@ -951,7 +951,7 @@ class Plugin extends DAV\ServerPlugin {
         $propPatch->handle('{DAV:}group-member-set', function($value) use ($path) {
             if (is_null($value)) {
                 $memberSet = [];
-            } elseif ($value instanceof DAV\Property\HrefList) {
+            } elseif ($value instanceof DAV\Xml\Property\Href) {
                 $memberSet = array_map(
                     [$this->server,'calculateUri'],
                     $value->getHrefs()
@@ -1112,23 +1112,11 @@ class Plugin extends DAV\ServerPlugin {
 
         $result = $this->expandProperties($requestUri,$requestedProperties,$depth);
 
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $multiStatus = $dom->createElement('d:multistatus');
-        $dom->appendChild($multiStatus);
-
-        // Adding in default namespaces
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
-
-        foreach($result as $response) {
-            $response->serialize($this->server, $multiStatus);
-        }
-
-        $xml = $dom->saveXML();
+        $xml = $this->server->xml->write([
+            '{DAV:}multistatus' => new DAV\Xml\Response\MultiStatus(
+                $result
+            )
+        ]);
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setBody($xml);
@@ -1197,20 +1185,26 @@ class Plugin extends DAV\ServerPlugin {
                 // and it contains an href element.
                 if (!array_key_exists($propertyName,$node[200])) continue;
 
-                if ($node[200][$propertyName] instanceof DAV\Property\IHref) {
-                    $hrefs = [$node[200][$propertyName]->getHref()];
-                } elseif ($node[200][$propertyName] instanceof DAV\Property\HrefList) {
-                    $hrefs = $node[200][$propertyName]->getHrefs();
+                if (!$node[200][$propertyName] instanceof DAV\Xml\Property\Href) {
+                    continue;
                 }
 
+                $childHrefs = $node[200][$propertyName]->getHrefs();
                 $childProps = [];
-                foreach($hrefs as $href) {
-                    $childProps = array_merge($childProps, $this->expandProperties($href, $childRequestedProperties, 0));
+
+                foreach($childHrefs as $href) {
+                    // Gathering the result of the children
+                    $childProps[] = [
+                        'name' => '{DAV:}response',
+                        'value' => $this->expandProperties($href, $childRequestedProperties, 0)[0]
+                    ];
                 }
-                $node[200][$propertyName] = new DAV\Property\ResponseList($childProps);
+
+                // Replacing the property with its expannded form.
+                $node[200][$propertyName] = $childProps;
 
             }
-            $result[] = new DAV\Property\Response($node['href'], $node);
+            $result[] = new DAV\Xml\Element\Response($node['href'], $node);
 
         }
 

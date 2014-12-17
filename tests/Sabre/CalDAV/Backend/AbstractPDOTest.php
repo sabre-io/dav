@@ -697,7 +697,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateSubscriptions() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -742,7 +742,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testUpdateSubscriptions() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -756,7 +756,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $newProps = [
             '{DAV:}displayname' => 'new displayname',
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics', false),
         ];
 
         $propPatch = new DAV\PropPatch($newProps);
@@ -785,7 +785,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testUpdateSubscriptionsFail() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -799,7 +799,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'new displayname',
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics', false),
             '{DAV:}unknown' => 'foo',
         ]);
 
@@ -817,7 +817,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testDeleteSubscriptions() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -831,7 +831,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $newProps = [
             '{DAV:}displayname' => 'new displayname',
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Property\Href('http://example.org/cal2.ics', false),
+            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics', false),
         ];
 
         $backend->deleteSubscription(1);

@@ -12,6 +12,7 @@ use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
+use Sabre\DAV\Xml\Property\Href;
 
 /**
  * CardDAV plugin
@@ -88,7 +89,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}addressbook-home-set';
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-collation-set';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Property\\Href';
+        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Xml\\Property\\Href';
 
         $this->server = $server;
 
@@ -158,11 +159,11 @@ class Plugin extends DAV\ServerPlugin {
             $path = $propFind->getPath();
 
             $propFind->handle('{' . self::NS_CARDDAV . '}addressbook-home-set', function() use ($path) {
-                return new DAV\Property\Href($this->getAddressBookHomeForPrincipal($path) . '/');
+                return new Href($this->getAddressBookHomeForPrincipal($path) . '/');
             });
 
             if ($this->directories) $propFind->handle('{' . self::NS_CARDDAV . '}directory-gateway', function() {
-                return new DAV\Property\HrefList($this->directories);
+                return new Href($this->directories);
             });
 
         }
@@ -190,7 +191,7 @@ class Plugin extends DAV\ServerPlugin {
                 $props = $this->server->getProperties($node->getOwner(), ['{http://sabredav.org/ns}vcard-url']);
                 if (isset($props['{http://sabredav.org/ns}vcard-url'])) {
 
-                    return new DAV\Property\Href(
+                    return new Href(
                         $props['{http://sabredav.org/ns}vcard-url']
                     );
 
@@ -220,7 +221,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $propPatch->handle($meCard, function($value) use ($node) {
 
-            if ($value instanceof DAV\Property\IHref) {
+            if ($value instanceof Href) {
                 $value = $value->getHref();
                 $value = $this->server->calculateUri($value);
             } elseif (!is_null($value)) {

@@ -92,22 +92,15 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
-        $dom = DAV\XMLUtil::loadDOMDocument(
-            $response->body
-        );
+        $multiStatus = $this->server->xml->parse($response->getBodyAsString())['value'];
 
         // Checking the sync-token
         $this->assertEquals(
             'http://sabre.io/ns/sync/1',
-            $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
+            $multiStatus->getSyncToken()
         );
 
-        $responses = DAV\Property\ResponseList::unserialize(
-            $dom->documentElement,
-            []
-        );
-
-        $responses = $responses->getResponses();
+        $responses = $multiStatus->getResponses();
         $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
 
         $response = $responses[0];
@@ -162,22 +155,15 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
-        $dom = DAV\XMLUtil::loadDOMDocument(
-            $response->body
-        );
+        $multiStatus = $this->server->xml->parse($response->getBodyAsString())['value'];
 
         // Checking the sync-token
         $this->assertEquals(
             'http://sabre.io/ns/sync/2',
-            $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
+            $multiStatus->getSyncToken()
         );
 
-        $responses = DAV\Property\ResponseList::unserialize(
-            $dom->documentElement,
-            []
-        );
-
-        $responses = $responses->getResponses();
+        $responses = $multiStatus->getResponses();
         $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
 
         $response = $responses[0];
@@ -229,22 +215,17 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
-        $dom = DAV\XMLUtil::loadDOMDocument(
-            $response->body
-        );
+        $multiStatus = $this->server->xml->parse(
+            $response->getBodyAsString()
+        )['value'];
 
         // Checking the sync-token
         $this->assertEquals(
             'http://sabre.io/ns/sync/2',
-            $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
+            $multiStatus->getSyncToken()
         );
 
-        $responses = DAV\Property\ResponseList::unserialize(
-            $dom->documentElement,
-            []
-        );
-
-        $responses = $responses->getResponses();
+        $responses = $multiStatus->getResponses();
         $this->assertEquals(1, count($responses), 'We expected exactly 1 {DAV:}response');
 
         $response = $responses[0];
@@ -285,22 +266,17 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
-        $dom = DAV\XMLUtil::loadDOMDocument(
-            $response->body
-        );
+        $multiStatus = $this->server->xml->parse(
+            $response->getBodyAsString()
+        )['value'];
 
         // Checking the sync-token
         $this->assertEquals(
             'http://sabre.io/ns/sync/2',
-            $dom->getElementsByTagNameNS('urn:DAV', 'sync-token')->item(0)->nodeValue
+            $multiStatus->getSyncToken()
         );
 
-        $responses = DAV\Property\ResponseList::unserialize(
-            $dom->documentElement,
-            []
-        );
-
-        $responses = $responses->getResponses();
+        $responses = $multiStatus->getResponses();
         $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
 
         $response = $responses[0];

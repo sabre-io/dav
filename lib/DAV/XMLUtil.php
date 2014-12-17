@@ -18,7 +18,15 @@ class XMLUtil {
      * For instance, this list may contain an entry `{DAV:}propfind` that would
      * be mapped to Sabre\DAV\XML\Request\PropFind
      */
-    public $elementMap = [];
+    public $elementMap = [
+        '{DAV:}multistatus' => 'Sabre\\DAV\\Xml\\Response\\MultiStatus',
+        '{DAV:}response'    => 'Sabre\\DAV\\Xml\\Element\\Response',
+        '{DAV:}propstat'    => 'Sabre\\Xml\\Element\\KeyValue',
+        '{DAV:}prop'        => 'Sabre\\Xml\\Element\\KeyValue',
+
+        // Requests
+        '{DAV:}propfind' => 'Sabre\\DAV\\Xml\\Request\\PropFind',
+    ];
 
     /**
      * This is a default list of namespaces.

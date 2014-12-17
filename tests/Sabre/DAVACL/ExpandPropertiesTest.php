@@ -14,12 +14,12 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = array(
             new DAV\Mock\PropertiesCollection('node1', [], array(
                 '{http://sabredav.org/ns}simple' => 'foo',
-                '{http://sabredav.org/ns}href'   => new DAV\Property\Href('node2'),
+                '{http://sabredav.org/ns}href'   => new DAV\Xml\Property\Href('node2'),
                 '{DAV:}displayname'     => 'Node 1',
             )),
             new DAV\Mock\PropertiesCollection('node2', [], array(
                 '{http://sabredav.org/ns}simple' => 'simple',
-                '{http://sabredav.org/ns}hreflist' => new DAV\Property\HrefList(array('node1','node3')),
+                '{http://sabredav.org/ns}hreflist' => new DAV\Xml\Property\Href(['node1','node3']),
                 '{DAV:}displayname'     => 'Node 2',
             )),
             new DAV\Mock\PropertiesCollection('node3', [], array(
@@ -163,7 +163,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count,count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result));
+            $this->assertEquals($count,count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . ' Full response body: ' . $server->httpResponse->getBodyAsString());
 
         }
 

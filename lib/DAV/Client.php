@@ -420,20 +420,16 @@ class Client extends HTTP\Client {
      */
     function parseMultiStatus($body) {
 
-        try {
-            $dom = XMLUtil::loadDOMDocument($body);
-        } catch (Exception\BadRequest $e) {
-            throw new \InvalidArgumentException('The body passed to parseMultiStatus could not be parsed. Is it really xml?');
-        }
-
-        $responses = Property\ResponseList::unserialize(
-            $dom->documentElement,
-            $this->propertyMap
-        );
+        $xmlUtil = new XMLUtil();
+        $multistatus = $xmlUtil->parse($body)['value'];
 
         $result = [];
 
-        foreach($responses->getResponses() as $response) {
+        if (!$multistatus instanceof Xml\Response\MultiStatus) {
+            throw new \InvalidArgumentException('Xml could not be parsed into a {DAV:}multistatus document');
+        }
+
+        foreach($multistatus->getResponses() as $response) {
 
             $result[$response->getHref()] = $response->getResponseProperties();
 

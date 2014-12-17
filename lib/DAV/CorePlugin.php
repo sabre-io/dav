@@ -49,11 +49,6 @@ class CorePlugin extends ServerPlugin {
         $server->on('propFind',         [$this, 'propFindNode'], 120);
         $server->on('propFind',         [$this, 'propFindLate'], 200);
 
-        $server->xml->elementMap = [
-            '{DAV:}propfind' => 'Sabre\\DAV\\XML\\Request\\PropFind',
-            '{DAV:}prop'     => 'Sabre\\XML\\Element\\Elements',
-        ];
-
     }
 
     /**
@@ -879,7 +874,7 @@ class CorePlugin extends ServerPlugin {
             if ($val && is_scalar($val)) {
                 return $val;
             }
-            if ($val && $val instanceof Property\IHref) {
+            if ($val && $val instanceof Xml\Property\Href) {
                 return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
             }
 
@@ -897,7 +892,7 @@ class CorePlugin extends ServerPlugin {
                 $val = $result['{DAV:}sync-token'];
                 if (is_scalar($val)) {
                     return $val;
-                } elseif ($val instanceof Property\IHref) {
+                } elseif ($val instanceof Xml\Property\Href) {
                     return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
                 }
             }

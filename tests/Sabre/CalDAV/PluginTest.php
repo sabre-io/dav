@@ -447,17 +447,17 @@ END:VCALENDAR';
 
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set',$props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
-        $this->assertTrue($prop instanceof DAV\Property\Href);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
         $this->assertEquals('calendars/user1/',$prop->getHref());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
         $this->assertEquals(array('principals/admin'), $prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $prop);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
         $this->assertEquals(array('principals/admin'), $prop->getHrefs());
 
 
@@ -475,7 +475,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertInstanceOf('\\Sabre\\DAV\\Property\\SupportedReportSet', $prop);
+        $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = array(
             '{DAV:}expand-property',
             '{DAV:}principal-property-search',
@@ -500,7 +500,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertTrue($prop instanceof \Sabre\DAV\Property\SupportedReportSet);
+        $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = array(
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
@@ -527,7 +527,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertTrue($prop instanceof \Sabre\DAV\Property\SupportedReportSet);
+        $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = array(
             '{DAV:}sync-collection',
             '{DAV:}expand-property',

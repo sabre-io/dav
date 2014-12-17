@@ -77,15 +77,11 @@ XML;
 
         $this->assertEquals(207, $response->getStatus(), 'Full rsponse: ' . $response->getBodyAsString());
 
-        $body = $response->getBodyAsString();
+        $multiStatus = $this->server->xml->parse(
+            $response->getBodyAsString()
+        )['value'];
 
-        // Getting from the xml body to the actual returned data is
-        // unfortunately very convoluted.
-        $responses = \Sabre\DAV\Property\ResponseList::unserialize(
-            \Sabre\DAV\XMLUtil::loadDOMDocument($body)->firstChild
-        , $this->server->propertyMap);
-
-        $responses = $responses->getResponses();
+        $responses = $multiStatus->getResponses();
         $this->assertEquals(1, count($responses));
 
         $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];
@@ -134,15 +130,12 @@ XML;
 
         $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $response->getBodyAsString());
 
-        $body = $response->getBodyAsString();
+        $multiStatus = $this->server->xml->parse(
+            $response->getBodyAsString()
+        )['value'];
 
-        // Getting from the xml body to the actual returned data is
-        // unfortunately very convoluted.
-        $responses = \Sabre\DAV\Property\ResponseList::unserialize(
-            \Sabre\DAV\XMLUtil::loadDOMDocument($body)->firstChild
-        , $this->server->propertyMap);
+        $responses = $multiStatus->getResponses();
 
-        $responses = $responses->getResponses();
         $this->assertEquals(1, count($responses));
 
         $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];
@@ -190,15 +183,12 @@ XML;
 
         $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $response->getBodyAsString());
 
-        $body = $response->getBodyAsString();
+        $multiStatus = $this->server->xml->parse(
+            $response->getBodyAsString()
+        )['value'];
 
-        // Getting from the xml body to the actual returned data is
-        // unfortunately very convoluted.
-        $responses = \Sabre\DAV\Property\ResponseList::unserialize(
-            \Sabre\DAV\XMLUtil::loadDOMDocument($body)->firstChild
-        , $this->server->propertyMap);
+        $responses = $multiStatus->getResponses();
 
-        $responses = $responses->getResponses();
         $this->assertEquals(1, count($responses));
 
         $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];

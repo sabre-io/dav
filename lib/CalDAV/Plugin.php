@@ -4,7 +4,7 @@ namespace Sabre\CalDAV;
 
 use DateTimeZone;
 use Sabre\DAV;
-use Sabre\DAV\Property\HrefList;
+use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAVACL;
 use Sabre\VObject;
 use Sabre\HTTP;
@@ -331,7 +331,7 @@ class Plugin extends DAV\ServerPlugin {
             $propFind->handle('{' . self::NS_CALDAV . '}calendar-home-set', function() use ($principalUrl) {
 
                 $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl) . '/';
-                return new DAV\Property\Href($calendarHomePath);
+                return new Href($calendarHomePath);
 
             });
             // The calendar-user-address-set property is basically mapped to
@@ -339,7 +339,7 @@ class Plugin extends DAV\ServerPlugin {
             $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-address-set', function() use ($node) {
                 $addresses = $node->getAlternateUriSet();
                 $addresses[] = $this->server->getBaseUri() . $node->getPrincipalUrl() . '/';
-                return new HrefList($addresses, false);
+                return new Href($addresses, false);
             });
             // For some reason somebody thought it was a good idea to add
             // another one of these properties. We're supporting it too.
@@ -382,8 +382,8 @@ class Plugin extends DAV\ServerPlugin {
 
                 }
 
-                $propFind->set($propRead, new HrefList($readList));
-                $propFind->set($propWrite, new HrefList($writeList));
+                $propFind->set($propRead, new Href($readList));
+                $propFind->set($propWrite, new Href($writeList));
 
             }
 

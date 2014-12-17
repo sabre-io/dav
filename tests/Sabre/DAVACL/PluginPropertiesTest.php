@@ -27,7 +27,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1,count($result[200]));
         $this->assertArrayHasKey('{DAV:}principal-collection-set',$result[200]);
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $result[200]['{DAV:}principal-collection-set']);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $result[200]['{DAV:}principal-collection-set']);
 
         $expected = [
             'principals1/',
@@ -238,7 +238,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue(isset($result[200]));
         $this->assertTrue(isset($result[200]['{DAV:}alternate-URI-set']));
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $result[200]['{DAV:}alternate-URI-set']);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $result[200]['{DAV:}alternate-URI-set']);
 
         $this->assertEquals([], $result[200]['{DAV:}alternate-URI-set']->getHrefs());
 
@@ -267,7 +267,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue(isset($result[200]));
         $this->assertTrue(isset($result[200]['{DAV:}principal-URL']));
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\Href', $result[200]['{DAV:}principal-URL']);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $result[200]['{DAV:}principal-URL']);
 
         $this->assertEquals('principals/user/', $result[200]['{DAV:}principal-URL']->getHref());
 
@@ -296,7 +296,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue(isset($result[200]));
         $this->assertTrue(isset($result[200]['{DAV:}group-member-set']));
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $result[200]['{DAV:}group-member-set']);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $result[200]['{DAV:}group-member-set']);
 
         $this->assertEquals([], $result[200]['{DAV:}group-member-set']->getHrefs());
 
@@ -323,7 +323,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue(isset($result[200]));
         $this->assertTrue(isset($result[200]['{DAV:}group-membership']));
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\HrefList', $result[200]['{DAV:}group-membership']);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $result[200]['{DAV:}group-membership']);
 
         $this->assertEquals([], $result[200]['{DAV:}group-membership']->getHrefs());
 

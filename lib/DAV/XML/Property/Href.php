@@ -60,6 +60,17 @@ class Href implements Element {
     }
 
     /**
+     * Returns the first Href.
+     *
+     * @return string
+     */
+    public function getHref() {
+
+        return $this->hrefs[0];
+
+    }
+
+    /**
      * Returns the hrefs as an array
      *
      * @return array

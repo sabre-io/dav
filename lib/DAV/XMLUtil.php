@@ -79,7 +79,7 @@ class XMLUtil {
 
         $writer = new XML\Writer();
         $writer->namespaceMap = $this->namespaceMap;
-        $writer->openMemory('1.0');
+        $writer->openMemory();
         $writer->write($output);
         return $writer->outputMemory();
 

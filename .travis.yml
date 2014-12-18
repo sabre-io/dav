@@ -10,8 +10,8 @@ matrix:
 
 env:
   matrix:
-    - LOWEST_DEPS=""
-    - LOWEST_DEPS="--prefer-lowest"
+    - LOWEST_DEPS="" TEST_DEPS=""
+    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="Sabre/"
 
 services:
   - mysql
@@ -23,7 +23,7 @@ before_script:
   - composer update --prefer-source $LOWEST_DEPS
 
 script:
-  - ./bin/phpunit --configuration tests/phpunit.xml
+  - ./bin/phpunit --configuration tests/phpunit.xml $TEST_DEPS
 
 notifications:
   irc:

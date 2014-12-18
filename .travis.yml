@@ -13,11 +13,14 @@ matrix:
     - php: hhvm
 
 env:
-  matrix:
-    - VOBJECT=2 LOWEST_DEPS=""
-    - VOBJECT=2 LOWEST_DEPS="--prefer-lowest"
-    - VOBJECT=3 LOWEST_DEPS=""
-    - VOBJECT=3 LOWEST_DEPS="--prefer-lowest"
+  - VOBJECT=2
+    LOWEST_DEPS=""
+  - VOBJECT=2
+    LOWEST_DEPS="--prefer-lowest"
+  - VOBJECT=3
+    LOWEST_DEPS=""
+  - VOBJECT=3
+    LOWEST_DEPS="--prefer-lowest"
 
 services:
   - mysql

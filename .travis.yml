@@ -22,8 +22,6 @@ env:
 services:
   - mysql
 
-env:
-
 
 before_script:
   - mysql -e 'create database sabredav'

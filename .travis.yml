@@ -4,21 +4,23 @@ php:
   - 5.5
   - 5.6
   - hhvm
-  - hhvm-nightly
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - php: hhvm-nightly
+
+env:
+  matrix:
+    - LOWEST_DEPS=""
+    - LOWEST_DEPS="--prefer-lowest"
 
 services:
   - mysql
 
+
 before_script:
   - mysql -e 'create database sabredav'
-#  - composer self-update
-  - composer install --prefer-source
-#  - echo "zend.enable_gc=0" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - composer self-update
+  - composer update --prefer-source $LOWEST_DEPS
 
 script:
   - ./bin/phpunit --configuration tests/phpunit.xml

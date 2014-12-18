@@ -22,7 +22,7 @@ env:
 before_script:
   - mysql -e 'create database sabredav'
   - composer self-update
-  - composer update $LOWEST_DEPS
+  - composer update --prefer-source $LOWEST_DEPS
 
 script:
   - phpunit --configuration tests/phpunit.xml

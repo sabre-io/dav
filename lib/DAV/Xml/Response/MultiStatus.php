@@ -17,7 +17,7 @@ use
  * And it also adds the {DAV:}synctoken change from:
  * http://tools.ietf.org/html/rfc6578#section-6.4
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

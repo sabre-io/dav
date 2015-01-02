@@ -8,6 +8,11 @@ php:
 matrix:
   fast_finish: true
 
+env:
+  matrix:
+    - LOWEST_DEPS="" TEST_DEPS=""
+    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/"
+
 services:
   - mysql
 
@@ -15,12 +20,11 @@ sudo: false
 
 before_script:
   - mysql -e 'create database sabredav'
-#  - composer self-update
-  - composer install
-#  - echo "zend.enable_gc=0" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - composer self-update
+  - composer update --prefer-source $LOWEST_DEPS
 
 script:
-  - ./bin/phpunit --configuration tests/phpunit.xml
+  - ./bin/phpunit --configuration tests/phpunit.xml $TEST_DEPS
   - ./bin/phpcs  -p --standard=tests/phpcs/ruleset.xml lib/
 
 notifications:

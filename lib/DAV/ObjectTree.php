@@ -9,7 +9,7 @@ use Sabre\HTTP\URLUtil;
  *
  * This implementation of the Tree class makes use of the INode, IFile and ICollection API's
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

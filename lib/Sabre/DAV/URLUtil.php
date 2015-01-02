@@ -17,7 +17,7 @@ namespace Sabre\DAV;
  * It was also discovered that versions of the SOGO connector for thunderbird
  * has issues with urlencoded colons.
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

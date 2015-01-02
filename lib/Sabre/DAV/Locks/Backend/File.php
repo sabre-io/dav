@@ -12,7 +12,7 @@ use Sabre\DAV\Locks\LockInfo;
  * Note that this is not nearly as robust as a database, you are encouraged
  * to use the PDO backend instead.
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

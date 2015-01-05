@@ -30,13 +30,6 @@ class IMipPlugin extends DAV\ServerPlugin {
     protected $senderEmail;
 
     /**
-     * Server class
-     *
-     * @var DAV\Server
-     */
-    protected $server;
-
-    /**
      * ITipMessage
      *
      * @var ITip\Message

@@ -151,7 +151,7 @@ class IMipPlugin extends DAV\ServerPlugin {
     // This is deemed untestable in a reasonable manner
 
     /**
-     * This function is reponsible for sending the actual email.
+     * This function is responsible for sending the actual email.
      *
      * @param string $to Recipient email address
      * @param string $subject Subject of the email

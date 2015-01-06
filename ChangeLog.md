@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+2.1.3 (2015-??-??)
+------------------
+
+* #586: SCHEDULE-STATUS should not contain a reason-phrase.
+
+
 2.1.2 (2014-12-10)
 ------------------
 

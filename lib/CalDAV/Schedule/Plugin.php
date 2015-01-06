@@ -532,7 +532,7 @@ class Plugin extends ServerPlugin {
 
             if (isset($newObject->VEVENT->ORGANIZER) && ($newObject->VEVENT->ORGANIZER->getNormalizedValue() === $message->recipient)) {
                 if ($message->scheduleStatus) {
-                    $newObject->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                    $newObject->VEVENT->ORGANIZER['SCHEDULE-STATUS'] = $message->getScheduleStatus();
                 }
                 unset($newObject->VEVENT->ORGANIZER['SCHEDULE-FORCE-SEND']);
 
@@ -542,7 +542,7 @@ class Plugin extends ServerPlugin {
 
                     if ($attendee->getNormalizedValue() === $message->recipient) {
                         if ($message->scheduleStatus) {
-                            $attendee['SCHEDULE-STATUS'] = $message->scheduleStatus;
+                            $attendee['SCHEDULE-STATUS'] = $message->getScheduleStatus();
                         }
                         unset($attendee['SCHEDULE-FORCE-SEND']);
                         break;

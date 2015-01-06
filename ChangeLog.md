@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+2.2.0-alpha2 (2015-??-??)
+-------------------------
+
+* Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to
+  `challenge`, which is a more correct and better sounding name.
+
+
 2.2.0-alpha1 (2014-12-10)
 -------------------------
 

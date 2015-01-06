@@ -144,9 +144,11 @@ abstract class AbstractDigest implements BackendInterface {
      * append your own WWW-Authenticate header instead of overwriting the
      * existing one.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $request
      * @return void
      */
-    function requireAuth(RequestInterface $request, ResponseInterface $response) {
+    function challenge(RequestInterface $request, ResponseInterface $response) {
 
         $auth = new HTTP\Auth\Digest(
             $this->realm,

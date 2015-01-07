@@ -120,8 +120,8 @@ class Apache implements BackendInterface {
      * Example of authorized paths:
      *
      * [
-     *     '/signup',
-     *     '/signin'
+     *     'signup',
+     *     'signin'
      * ]
      *
      * @param RequestInterface $request

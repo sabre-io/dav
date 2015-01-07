@@ -139,7 +139,7 @@ class Plugin extends ServerPlugin {
      */
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        if (!$this->backends) {
+        if (empty($this->backends)) {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
 

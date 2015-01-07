@@ -174,6 +174,12 @@ class Plugin extends ServerPlugin {
         // successful in authenticating the user.
         $this->currentPrincipal = null;
 
+        if (empty($backends)) {
+            // If we got here, it means that all backends have whitelisted the
+            // current path. So, no need for an exception.
+            return;
+        }
+
         foreach($backends as $backend) {
             $backend->challenge($request, $response);
         }

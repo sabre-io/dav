@@ -70,6 +70,30 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testInitializeWhiteList() {
+
+        $backend = new AbstractBasicMock();
+
+        $this->assertEquals(
+            $backend->getWhiteList(new HTTP\Request()),
+            []
+        );
+
+    }
+
+    function testWhiteList() {
+
+        $backend = new AbstractBasicMock();
+        $list    = ['/signin'];
+        $backend->setWhiteList($list);
+
+        $this->assertEquals(
+            $backend->getWhiteList(new HTTP\Request()),
+            $list
+        );
+
+    }
+
 }
 
 

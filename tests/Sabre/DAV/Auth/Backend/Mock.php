@@ -13,6 +13,8 @@ class Mock implements BackendInterface {
 
     public $invalidCheckResponse = false;
 
+    public $whiteList = [];
+
     public $principal = 'principals/admin';
 
     function setPrincipal($principal) {
@@ -99,7 +101,7 @@ class Mock implements BackendInterface {
      */
     function getWhiteList(RequestInterface $request) {
 
-        return [];
+        return $this->whiteList;
 
     }
 

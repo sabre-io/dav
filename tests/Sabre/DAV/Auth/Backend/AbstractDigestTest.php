@@ -125,6 +125,30 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testInitializeWhiteList() {
+
+        $backend = new AbstractDigestMock();
+
+        $this->assertEquals(
+            $backend->getWhiteList(new HTTP\Request()),
+            []
+        );
+
+    }
+
+    function testWhiteList() {
+
+        $backend = new AbstractDigestMock();
+        $list    = ['/signin'];
+        $backend->setWhiteList($list);
+
+        $this->assertEquals(
+            $backend->getWhiteList(new HTTP\Request()),
+            $list
+        );
+
+    }
+
 }
 
 

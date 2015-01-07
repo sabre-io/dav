@@ -69,4 +69,29 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         );
 
     }
+
+    function testInitializeWhiteList() {
+
+        $backend = new Apache();
+
+        $this->assertEquals(
+            $backend->getWhiteList(new HTTP\Request()),
+            []
+        );
+
+    }
+
+    function testWhiteList() {
+
+        $backend = new Apache();
+        $list    = ['/signin'];
+        $backend->setWhiteList($list);
+
+        $this->assertEquals(
+            $backend->getWhiteList(new HTTP\Request()),
+            $list
+        );
+
+    }
+
 }

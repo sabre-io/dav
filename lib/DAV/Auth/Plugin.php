@@ -142,8 +142,15 @@ class Plugin extends ServerPlugin {
         if (!$this->backends) {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
+
         $reasons = [];
-        foreach($this->backends as $backend) {
+        $backends = $this->backends;
+        foreach($backends as $i => $backend) {
+
+            if (in_array($request->getPath(), $backend->getWhiteList($request))) {
+                unset($backends[$i]);
+                continue;
+            }
 
             $result = $backend->check(
                 $request,
@@ -167,7 +174,7 @@ class Plugin extends ServerPlugin {
         // successful in authenticating the user.
         $this->currentPrincipal = null;
 
-        foreach($this->backends as $backend) {
+        foreach($backends as $backend) {
             $backend->challenge($request, $response);
         }
         throw new NotAuthenticated(implode(', ', $reasons));

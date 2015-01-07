@@ -32,6 +32,13 @@ abstract class AbstractDigest implements BackendInterface {
     protected $realm = 'SabreDAV';
 
     /**
+     * Whitelist of authorized paths.
+     *
+     * @var array
+     */
+    protected $whiteList = [];
+
+    /**
      * This is the prefix that will be used to generate principal urls.
      *
      * @var string
@@ -55,6 +62,18 @@ abstract class AbstractDigest implements BackendInterface {
     }
 
     /**
+     * Sets the whitelist of authorized paths.
+     *
+     * @param array $paths
+     * @return void
+     */
+    function setWhiteList(array $paths) {
+
+        $this->whiteList = $paths;
+
+    }
+
+    /**
      * Returns a users digest hash based on the username and realm.
      *
      * If the user was not known, null must be returned.
@@ -69,10 +88,10 @@ abstract class AbstractDigest implements BackendInterface {
      * When this method is called, the backend must check if authentication was
      * successful.
      *
-     * The returned value must be one of the following
+     * The returned value must be one of the following:
      *
-     * [true, "principals/username"]
-     * [false, "reason for failure"]
+     * [true, 'principals/username']
+     * [false, 'reason for failure']
      *
      * If authentication was successful, it's expected that the authentication
      * backend returns a so-called principal url.
@@ -157,6 +176,25 @@ abstract class AbstractDigest implements BackendInterface {
         );
         $auth->init();
         $auth->requireLogin();
+
+    }
+
+    /**
+     * Get a list of de-facto authorized paths.
+     *
+     * Example of authorized paths:
+     *
+     * [
+     *     '/signup',
+     *     '/signin'
+     * ]
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    function getWhiteList(RequestInterface $request) {
+
+        return $this->whiteList;
 
     }
 

@@ -19,10 +19,10 @@ interface BackendInterface {
      * When this method is called, the backend must check if authentication was
      * successful.
      *
-     * The returned value must be one of the following
+     * The returned value must be one of the following:
      *
-     * [true, "principals/username"]
-     * [false, "reason for failure"]
+     * [true, 'principals/username']
+     * [false, 'reason for failure']
      *
      * If authentication was successful, it's expected that the authentication
      * backend returns a so-called principal url.
@@ -68,5 +68,19 @@ interface BackendInterface {
      */
     function challenge(RequestInterface $request, ResponseInterface $response);
 
-}
+    /**
+     * Get a list of de-facto authorized paths.
+     *
+     * Example of authorized paths:
+     *
+     * [
+     *     '/signup',
+     *     '/signin'
+     * ]
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    function getWhiteList(RequestInterface $request);
 
+}

@@ -33,6 +33,13 @@ abstract class AbstractBasic implements BackendInterface {
     protected $realm = 'sabre/dav';
 
     /**
+     * Whitelist of authorized paths.
+     *
+     * @var array
+     */
+    protected $whiteList = [];
+
+    /**
      * This is the prefix that will be used to generate principal urls.
      *
      * @var string
@@ -64,13 +71,25 @@ abstract class AbstractBasic implements BackendInterface {
     }
 
     /**
+     * Sets the whitelist of authorized paths.
+     *
+     * @param array $paths
+     * @return void
+     */
+    function setWhiteList(array $paths) {
+
+        $this->whiteList = $paths;
+
+    }
+
+    /**
      * When this method is called, the backend must check if authentication was
      * successful.
      *
-     * The returned value must be one of the following
+     * The returned value must be one of the following:
      *
-     * [true, "principals/username"]
-     * [false, "reason for failure"]
+     * [true, 'principals/username']
+     * [false, 'reason for failure']
      *
      * If authentication was successful, it's expected that the authentication
      * backend returns a so-called principal url.
@@ -142,5 +161,23 @@ abstract class AbstractBasic implements BackendInterface {
 
     }
 
-}
+    /**
+     * Get a list of de-facto authorized paths.
+     *
+     * Example of authorized paths:
+     *
+     * [
+     *     '/signup',
+     *     '/signin'
+     * ]
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    function getWhiteList(RequestInterface $request) {
 
+        return $this->whiteList;
+
+    }
+
+}

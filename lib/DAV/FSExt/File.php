@@ -15,7 +15,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
     /**
      * Updates the data
      *
-     * data is a readable stream resource.
+     * Data is a readable stream resource.
      *
      * @param resource|string $data
      * @return string
@@ -112,7 +112,11 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
      */
     function getETag() {
 
-        return '"' . sha1(filemtime($this->path)). '"';
+        return '"' . sha1(
+            fileinode($this->path) .
+            filesize($this->path) .
+            filemtime($this->path)
+        ). '"';
 
     }
 

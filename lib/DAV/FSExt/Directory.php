@@ -44,7 +44,11 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         $newPath = $this->path . '/' . $name;
         file_put_contents($newPath,$data);
 
-        return '"' . md5_file($newPath) . '"';
+        return '"' . sha1(
+            fileinode($newPath) .
+            filesize($newPath) .
+            filemtime($newPath)
+        ). '"';
 
     }
 

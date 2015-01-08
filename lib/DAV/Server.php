@@ -1046,7 +1046,7 @@ class Server extends EventEmitter {
         // body, before it gets written. If this is the case, $modified
         // should be set to true.
         //
-        // If $modified is true, we must not send back an etag.
+        // If $modified is true, we must not send back an ETag.
         $modified = false;
         if (!$this->emit('beforeCreateFile',[$uri, &$data, $parent, &$modified])) return false;
 
@@ -1080,7 +1080,7 @@ class Server extends EventEmitter {
         // body, before it gets written. If this is the case, $modified
         // should be set to true.
         //
-        // If $modified is true, we must not send back an etag.
+        // If $modified is true, we must not send back an ETag.
         $modified = false;
         if (!$this->emit('beforeWriteContent',[$uri, $node, &$data, &$modified])) return false;
 
@@ -1296,7 +1296,7 @@ class Server extends EventEmitter {
             // Only need to check entity tags if they are not *
             if ($ifMatch!=='*') {
 
-                // There can be multiple etags
+                // There can be multiple ETags
                 $ifMatch = explode(',',$ifMatch);
                 $haveMatch = false;
                 foreach($ifMatch as $ifMatchItem) {
@@ -1325,7 +1325,7 @@ class Server extends EventEmitter {
 
         if ($ifNoneMatch = $request->getHeader('If-None-Match')) {
 
-            // The If-None-Match header contains an etag.
+            // The If-None-Match header contains an ETag.
             // Only if the ETag does not match the current ETag, the request will succeed
             // The header can also contain *, in which case the request
             // will only succeed if the entity does not exist at all.
@@ -1342,7 +1342,7 @@ class Server extends EventEmitter {
                 if ($ifNoneMatch==='*') $haveMatch = true;
                 else {
 
-                    // There might be multiple etags
+                    // There might be multiple ETags
                     $ifNoneMatch = explode(',', $ifNoneMatch);
                     $etag = $node->getETag();
 
@@ -1419,7 +1419,7 @@ class Server extends EventEmitter {
         }
 
         // Now the hardest, the If: header. The If: header can contain multiple
-        // urls, etags and so-called 'state tokens'.
+        // urls, ETags and so-called 'state tokens'.
         //
         // Examples of state tokens include lock-tokens (as defined in rfc4918)
         // and sync-tokens (as defined in rfc6578).
@@ -1457,12 +1457,12 @@ class Server extends EventEmitter {
                 if (!$token['etag']) {
                     $etagValid = true;
                 }
-                // Checking the etag, only if the token was already deamed
+                // Checking the ETag, only if the token was already deamed
                 // valid and there is one.
                 if ($token['etag'] && $tokenValid) {
 
-                    // The token was valid, and there was an etag.. We must
-                    // grab the current etag and check it.
+                    // The token was valid, and there was an ETag. We must
+                    // grab the current ETag and check it.
                     $node = $this->tree->getNodeForPath($uri);
                     $etagValid = $node instanceof IFile && $node->getETag() == $token['etag'];
 
@@ -1477,7 +1477,7 @@ class Server extends EventEmitter {
 
             }
 
-            // If we ended here, it means there was no valid etag + token
+            // If we ended here, it means there was no valid ETag + token
             // combination found for the current condition. This means we fail!
             throw new Exception\PreconditionFailed('Failed to find a valid token/etag combination for ' . $uri, 'If');
 

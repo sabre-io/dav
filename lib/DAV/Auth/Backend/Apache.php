@@ -22,30 +22,11 @@ use
 class Apache implements BackendInterface {
 
     /**
-     * Whitelist of authorized paths.
-     *
-     * @var array
-     */
-    protected $whiteList = [];
-
-    /**
      * This is the prefix that will be used to generate principal urls.
      *
      * @var string
      */
     protected $principalPrefix = 'principals/';
-
-    /**
-     * Sets the whitelist of authorized paths.
-     *
-     * @param array $paths
-     * @return void
-     */
-    function setWhiteList(array $paths) {
-
-        $this->whiteList = $paths;
-
-    }
 
     /**
      * When this method is called, the backend must check if authentication was
@@ -111,25 +92,6 @@ class Apache implements BackendInterface {
      * @return void
      */
     function challenge(RequestInterface $request, ResponseInterface $response) {
-
-    }
-
-    /**
-     * Get a list of de-facto authorized paths.
-     *
-     * Example of authorized paths:
-     *
-     * [
-     *     'signup',
-     *     'signin'
-     * ]
-     *
-     * @param RequestInterface $request
-     * @return array
-     */
-    function getWhiteList(RequestInterface $request) {
-
-        return $this->whiteList;
 
     }
 

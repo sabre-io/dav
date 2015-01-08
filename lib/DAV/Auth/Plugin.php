@@ -33,6 +33,13 @@ class Plugin extends ServerPlugin {
     protected $backends;
 
     /**
+     * Whitelist of authorized paths.
+     *
+     * @var array
+     */
+    protected $whiteList = [];
+
+    /**
      * The currently logged in principal. Will be `null` if nobody is currently
      * logged in.
      *
@@ -92,6 +99,37 @@ class Plugin extends ServerPlugin {
     }
 
     /**
+     * Sets the whitelist of authorized paths.
+     *
+     * @param array $paths
+     * @return void
+     */
+    function setWhiteList(array $paths) {
+
+        $this->whiteList = $paths;
+
+    }
+
+    /**
+     * Get a list of de-facto authorized paths.
+     *
+     * Example of authorized paths:
+     *
+     * [
+     *     'signup',
+     *     'signin'
+     * ]
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    function getWhiteList(RequestInterface $request) {
+
+        return $this->whiteList;
+
+    }
+
+    /**
      * Returns the currently logged-in principal.
      *
      * This will return a string such as:
@@ -143,14 +181,13 @@ class Plugin extends ServerPlugin {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
 
-        $reasons = [];
-        $backends = $this->backends;
-        foreach($backends as $i => $backend) {
+        if (in_array($request->getPath(), $this->getWhiteList($request))) {
+            return;
+        }
 
-            if (in_array($request->getPath(), $backend->getWhiteList($request))) {
-                unset($backends[$i]);
-                continue;
-            }
+        $reasons = [];
+
+        foreach($this->backends as $i => $backend) {
 
             $result = $backend->check(
                 $request,
@@ -174,13 +211,7 @@ class Plugin extends ServerPlugin {
         // successful in authenticating the user.
         $this->currentPrincipal = null;
 
-        if (empty($backends)) {
-            // If we got here, it means that all backends have whitelisted the
-            // current path. So, no need for an exception.
-            return;
-        }
-
-        foreach($backends as $backend) {
+        foreach($this->backends as $backend) {
             $backend->challenge($request, $response);
         }
         throw new NotAuthenticated(implode(', ', $reasons));

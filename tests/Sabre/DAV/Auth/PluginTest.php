@@ -133,9 +133,8 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testWhiteList() {
 
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
-        $backend = new Backend\Mock();
-        $backend->whiteList = ['signup', 'signin'];
-        $plugin = new Plugin($backend);
+        $plugin = new Plugin(new Backend\Mock());
+        $plugin->setWhiteList(['signup', 'signin']);
         $fakeServer->addPlugin($plugin);
 
         $this->assertTrue(
@@ -157,9 +156,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testWhiteListMultipleBackends() {
 
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
-        $backend    = new Backend\Mock();
-        $backend->whiteList = ['signup', 'signin'];
-        $fakeServer->addPlugin($plugin1 = new Plugin($backend));
+        $plugin1 = new Plugin(new Backend\Mock());
+        $plugin1->setWhiteList(['signup', 'signin']);
+        $fakeServer->addPlugin($plugin1);
         $fakeServer->addPlugin($plugin2 = new Plugin(new Backend\Mock()));
 
         $this->assertTrue(

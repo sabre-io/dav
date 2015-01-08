@@ -68,19 +68,4 @@ interface BackendInterface {
      */
     function challenge(RequestInterface $request, ResponseInterface $response);
 
-    /**
-     * Get a list of de-facto authorized paths.
-     *
-     * Example of authorized paths:
-     *
-     * [
-     *     'signup',
-     *     'signin'
-     * ]
-     *
-     * @param RequestInterface $request
-     * @return array
-     */
-    function getWhiteList(RequestInterface $request);
-
 }

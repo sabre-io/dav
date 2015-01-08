@@ -32,13 +32,6 @@ abstract class AbstractDigest implements BackendInterface {
     protected $realm = 'SabreDAV';
 
     /**
-     * Whitelist of authorized paths.
-     *
-     * @var array
-     */
-    protected $whiteList = [];
-
-    /**
      * This is the prefix that will be used to generate principal urls.
      *
      * @var string
@@ -58,18 +51,6 @@ abstract class AbstractDigest implements BackendInterface {
     function setRealm($realm) {
 
         $this->realm = $realm;
-
-    }
-
-    /**
-     * Sets the whitelist of authorized paths.
-     *
-     * @param array $paths
-     * @return void
-     */
-    function setWhiteList(array $paths) {
-
-        $this->whiteList = $paths;
 
     }
 
@@ -176,25 +157,6 @@ abstract class AbstractDigest implements BackendInterface {
         );
         $auth->init();
         $auth->requireLogin();
-
-    }
-
-    /**
-     * Get a list of de-facto authorized paths.
-     *
-     * Example of authorized paths:
-     *
-     * [
-     *     'signup',
-     *     'signin'
-     * ]
-     *
-     * @param RequestInterface $request
-     * @return array
-     */
-    function getWhiteList(RequestInterface $request) {
-
-        return $this->whiteList;
 
     }
 

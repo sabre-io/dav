@@ -13,8 +13,6 @@ class Mock implements BackendInterface {
 
     public $invalidCheckResponse = false;
 
-    public $whiteList = [];
-
     public $principal = 'principals/admin';
 
     function setPrincipal($principal) {
@@ -83,25 +81,6 @@ class Mock implements BackendInterface {
      * @return void
      */
     function challenge(RequestInterface $request, ResponseInterface $response) {
-
-    }
-
-    /**
-     * Get a list of de-facto authorized paths.
-     *
-     * Example of authorized paths:
-     *
-     * [
-     *     'signup',
-     *     'signin'
-     * ]
-     *
-     * @param RequestInterface $request
-     * @return array
-     */
-    function getWhiteList(RequestInterface $request) {
-
-        return $this->whiteList;
 
     }
 

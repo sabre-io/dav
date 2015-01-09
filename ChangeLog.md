@@ -5,6 +5,7 @@ ChangeLog
 ------------------
 
 * #586: SCHEDULE-STATUS should not contain a reason-phrase.
+* #539: Fixed a bug related to scheduling in shared calendars.
 
 
 2.1.2 (2014-12-10)

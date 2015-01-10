@@ -42,6 +42,13 @@ ChangeLog
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 
 
+2.1.3 (2015-??-??)
+------------------
+
+* #586: SCHEDULE-STATUS should not contain a reason-phrase.
+* #539: Fixed a bug related to scheduling in shared calendars.
+
+
 2.1.2 (2014-12-10)
 ------------------
 

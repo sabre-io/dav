@@ -176,6 +176,11 @@ abstract class AbstractBackend implements BackendInterface {
                 continue;
             }
 
+            // Ignore calendars that are shared.
+            if (isset($calendar['{http://sabredav.org/ns}owner-principal']) && $calendar['{http://sabredav.org/ns}owner-principal']!==$principalUri) {
+                continue;
+            }
+
             $results = $this->calendarQuery(
                 $calendar['id'],
                 [

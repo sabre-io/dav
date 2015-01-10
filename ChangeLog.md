@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.2.0-alpha2 (2015-??-??)
+2.2.0-alpha2 (2015-01-09)
 -------------------------
 
 * Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to

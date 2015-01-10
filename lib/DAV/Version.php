@@ -14,6 +14,6 @@ class Version {
     /**
      * Full version number
      */
-    const VERSION = '2.2.0-alpha1';
+    const VERSION = '2.2.0-alpha2';
 
 }

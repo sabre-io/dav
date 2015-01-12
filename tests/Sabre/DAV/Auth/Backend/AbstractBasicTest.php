@@ -61,7 +61,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new AbstractBasicMock();
         $backend->setRealm('writing unittests on a saturday night');
-        $backend->requireAuth($request, $response);
+        $backend->challenge($request, $response);
 
         $this->assertEquals(
             'Basic realm="writing unittests on a saturday night"',

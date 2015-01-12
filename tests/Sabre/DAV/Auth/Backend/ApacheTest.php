@@ -62,7 +62,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
 
         $backend = new Apache();
-        $backend->requireAuth($request, $response);
+        $backend->challenge($request, $response);
 
         $this->assertNull(
             $response->getHeader('WWW-Authenticate')

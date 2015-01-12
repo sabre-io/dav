@@ -114,7 +114,7 @@ abstract class AbstractBasic implements BackendInterface {
      * This method is called when a user could not be authenticated, and
      * authentication was required for the current request.
      *
-     * This gives you the oppurtunity to set authentication headers. The 401
+     * This gives you the opportunity to set authentication headers. The 401
      * status code will already be set.
      *
      * In this case of Basic Auth, this would for example mean that the
@@ -127,9 +127,11 @@ abstract class AbstractBasic implements BackendInterface {
      * append your own WWW-Authenticate header instead of overwriting the
      * existing one.
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $request
      * @return void
      */
-    function requireAuth(RequestInterface $request, ResponseInterface $response) {
+    function challenge(RequestInterface $request, ResponseInterface $response) {
 
         $auth = new HTTP\Auth\Basic(
             $this->realm,

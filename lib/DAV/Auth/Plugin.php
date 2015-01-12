@@ -168,7 +168,7 @@ class Plugin extends ServerPlugin {
         $this->currentPrincipal = null;
 
         foreach($this->backends as $backend) {
-            $backend->requireAuth($request, $response);
+            $backend->challenge($request, $response);
         }
         throw new NotAuthenticated(implode(', ', $reasons));
 

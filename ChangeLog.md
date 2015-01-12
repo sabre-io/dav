@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+2.2.0-alpha2 (2015-01-09)
+-------------------------
+
+* Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to
+  `challenge`, which is a more correct and better sounding name.
+
+
 2.2.0-alpha1 (2014-12-10)
 -------------------------
 
@@ -33,6 +40,13 @@ ChangeLog
   to the latest API!
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
+
+
+2.1.3 (2015-??-??)
+------------------
+
+* #586: SCHEDULE-STATUS should not contain a reason-phrase.
+* #539: Fixed a bug related to scheduling in shared calendars.
 
 
 2.1.2 (2014-12-10)

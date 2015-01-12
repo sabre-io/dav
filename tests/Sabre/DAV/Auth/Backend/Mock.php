@@ -80,7 +80,7 @@ class Mock implements BackendInterface {
      *
      * @return void
      */
-    function requireAuth(RequestInterface $request, ResponseInterface $response) {
+    function challenge(RequestInterface $request, ResponseInterface $response) {
 
     }
 

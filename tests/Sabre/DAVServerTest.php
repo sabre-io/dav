@@ -25,6 +25,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCalDAVSharing = false;
     protected $setupCalDAVScheduling = false;
     protected $setupCalDAVSubscriptions = false;
+    protected $setupCalDAVICSExport = false;
     protected $setupLocks = false;
     protected $setupFiles = false;
 
@@ -116,6 +117,10 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
         if ($this->setupCalDAVSubscriptions) {
             $this->server->addPlugin(new CalDAV\Subscriptions\Plugin());
+        }
+        if ($this->setupCalDAVICSExport) {
+            $this->caldavICSExportPlugin = new CalDAV\ICSExportPlugin();
+            $this->server->addPlugin($this->caldavICSExportPlugin);
         }
         if ($this->setupCardDAV) {
             $this->carddavPlugin = new CardDAV\Plugin();

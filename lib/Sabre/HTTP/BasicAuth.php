@@ -27,7 +27,7 @@ class BasicAuth extends AbstractAuth {
     public function getUserPass() {
 
         // Apache and mod_php
-        if (($user = $this->httpRequest->getRawServerValue('PHP_AUTH_USER')) && ($pass = $this->httpRequest->getRawServerValue('PHP_AUTH_PW'))) {
+        if (($user = $this->httpRequest->getRawServerValue('PHP_AUTH_USER'))!==null && ($pass = $this->httpRequest->getRawServerValue('PHP_AUTH_PW'))!==null) {
 
             return array($user,$pass);
 

@@ -43,6 +43,26 @@ class BasicAuthTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetUserPassPasswordEmpty() {
+
+        $server = array(
+            'PHP_AUTH_USER' => 'admin',
+            'PHP_AUTH_PW'   => '',
+        );
+
+        $request = new Request($server);
+        $this->basicAuth->setHTTPRequest($request);
+
+        $userPass = $this->basicAuth->getUserPass();
+
+        $this->assertEquals(
+            array('admin',''),
+            $userPass,
+            'We did not get the username and password we expected'
+        );
+
+    }
+
     function testGetUserPassIIS() {
 
         $server = array(

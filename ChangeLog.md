@@ -203,6 +203,13 @@ ChangeLog
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
 
+
+1.8.12-stable (????-??-??)
+--------------------------
+
+* #568: Support empty usernams and passwords in basic auth.
+
+
 1.8.11 (2014-12-10)
 -------------------
 

@@ -1,3 +1,6 @@
+1.8.12-stable (????-??-??)
+    * #568: Support empty usernams and passwords in basic auth.
+
 1.8.11-stable (2014-12-10)
 	* The zip release ships with sabre/vobject 2.1.6.
 	* Updated: MySQL database schema optimized by using more efficient column

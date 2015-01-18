@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV;
 
 use
+    DateTimeZone,
     Sabre\DAV,
     Sabre\VObject,
     Sabre\HTTP\RequestInterface,
@@ -220,7 +221,23 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         );
 
         if ($expand) {
-            $mergedCalendar->expand($start, $end);
+            $calendarTimeZone = null;
+            // We're expanding, and for that we need to figure out the
+            // calendar's timezone.
+            $tzProp = '{' . Plugin::NS_CALDAV . '}calendar-timezone';
+            $tzResult = $this->server->getProperties($path, [$tzProp]);
+            if (isset($tzResult[$tzProp])) {
+                // This property contains a VCALENDAR with a single
+                // VTIMEZONE.
+                $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
+                $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+                unset($vtimezoneObj);
+            } else {
+                // Defaulting to UTC.
+                $calendarTimeZone = new DateTimeZone('UTC');
+            }
+
+            $mergedCalendar->expand($start, $end, $calendarTimeZone);
         }
 
         $response->setHeader('Content-Type', $format);

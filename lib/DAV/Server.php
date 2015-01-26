@@ -7,7 +7,8 @@ use
     Sabre\HTTP,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
-    Sabre\HTTP\URLUtil;
+    Sabre\HTTP\URLUtil,
+    Sabre\Uri;
 
 /**
  * Main DAV server class
@@ -543,15 +544,16 @@ class Server extends EventEmitter {
 
         }
 
-        $uri = str_replace('//','/',$uri);
+        $uri = Uri\normalize(str_replace('//','/',$uri));
+        $baseUri = Uri\normalize($this->getBaseUri());
 
-        if (strpos($uri,$this->getBaseUri())===0) {
+        if (strpos($uri,$baseUri)===0) {
 
-            return trim(URLUtil::decodePath(substr($uri,strlen($this->getBaseUri()))),'/');
+            return trim(URLUtil::decodePath(substr($uri,strlen($baseUri))),'/');
 
         // A special case, if the baseUri was accessed without a trailing
         // slash, we'll accept it as well.
-        } elseif ($uri.'/' === $this->getBaseUri()) {
+        } elseif ($uri.'/' === $baseUri) {
 
             return '';
 

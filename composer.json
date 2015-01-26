@@ -18,6 +18,7 @@
         "sabre/vobject": "~3.3.4",
         "sabre/event" : "~2.0.0",
         "sabre/http" : "~3.0.4",
+        "sabre/uri" : "dev-normalize as 0.0.2",
         "ext-dom": "*",
         "ext-pcre": "*",
         "ext-spl": "*",

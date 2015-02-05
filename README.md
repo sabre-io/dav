@@ -1,5 +1,5 @@
-SabreDAV
-========
+![sabre's logo](http://sabre.io/img/logo.png) SabreDAV
+======================================================
 
 Introduction
 ------------

@@ -2,11 +2,11 @@
 
 namespace Sabre\DAV\Browser;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP\URLUtil,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\HTTP\URLUtil;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\Xml\Writer as XmlWriter;
 
 /**
  * Browser Plugin
@@ -639,8 +639,9 @@ HTML;
                 'Sabre\\DAV\\Xml\\Property\\SupportedMethodSet' => 'valuelist',
                 'Sabre\\DAV\\Xml\\Property\\ResourceType' => 'xmlvaluelist',
                 'Sabre\\DAV\\Xml\\Property\\SupportedReportSet' => 'xmlvaluelist',
-                'Sabre\\DAVACL\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
-                'Sabre\\DAVACL\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
+                'Sabre\\DAVACL\\Xml\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
+                'Sabre\\DAVACL\\Xml\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
+                'Sabre\\Xml\\XmlSerializable' => 'xml',
             ];
 
             $view = 'complex';
@@ -717,6 +718,13 @@ HTML;
                 break;
             case 'string' :
                 echo $this->escapeHTML($value);
+                break;
+            case 'xml' :
+                $writer = new XmlWriter();
+                $writer->openMemory();
+                $writer->namespaceMap = $this->server->xml->namespaceMap;
+                $writer->write($value);
+                echo $this->escapeHtml($writer->outputMemory());
                 break;
             case 'complex' :
                 echo '<em title="' . get_class($value) . '">complex</em>';

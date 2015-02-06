@@ -1,11 +1,12 @@
 <?php
 
-namespace Sabre\CalDAV\Notifications\Notification;
+namespace Sabre\CalDAV\Xml\Notification;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
+use Sabre\Xml\Writer;
 
-class InviteTest extends \PHPUnit_Framework_TestCase {
+class InviteTest extends DAV\Xml\XmlTest {
 
     /**
      * @dataProvider dataProvider
@@ -17,24 +18,17 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('foo', $notification->getId());
         $this->assertEquals('"1"', $notification->getETag());
 
-        $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-notification/></cs:root>' . "\n";
+        $simpleExpected = '<cs:invite-notification xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" />' . "\n";
+        $this->namespaceMap['http://calendarserver.org/ns/'] = 'cs';
 
-        $dom = new \DOMDocument('1.0','UTF-8');
-        $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
-        $dom->appendChild($elem);
-        $notification->serialize(new DAV\Server(), $elem);
-        $this->assertEquals($simpleExpected, $dom->saveXML());
+        $xml = $this->write($notification);
 
-        $dom = new \DOMDocument('1.0','UTF-8');
-        $dom->formatOutput = true;
-        $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
-        $elem->setAttribute('xmlns:d','DAV:');
-        $elem->setAttribute('xmlns:cal',CalDAV\Plugin::NS_CALDAV);
-        $dom->appendChild($elem);
-        $notification->serializeBody(new DAV\Server(), $elem);
-        $this->assertEquals($expected, $dom->saveXML());
+        $this->assertXmlStringEqualsXmlString($simpleExpected, $xml);
+        
+        $this->namespaceMap['urn:ietf:params:xml:ns:caldav'] = 'cal';
+        $xml = $this->writeFull($notification);
+
+        $this->assertXmlStringEqualsXmlString($expected, $xml);
 
 
     }
@@ -67,15 +61,15 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
     <cs:hosturl>
       <d:href>/calendar</d:href>
     </cs:hosturl>
+    <cs:summary>Awesome stuff!</cs:summary>
     <cs:access>
       <cs:read/>
     </cs:access>
-    <cs:organizer-cn>John Doe</cs:organizer-cn>
     <cs:organizer>
       <d:href>/principal/user1</d:href>
       <cs:common-name>John Doe</cs:common-name>
     </cs:organizer>
-    <cs:summary>Awesome stuff!</cs:summary>
+    <cs:organizer-cn>John Doe</cs:organizer-cn>
   </cs:invite-notification>
 </cs:root>
 
@@ -107,14 +101,13 @@ FOO
     <cs:access>
       <cs:read/>
     </cs:access>
-    <cs:organizer-cn>John Doe</cs:organizer-cn>
     <cs:organizer>
       <d:href>/principal/user1</d:href>
       <cs:common-name>John Doe</cs:common-name>
     </cs:organizer>
+    <cs:organizer-cn>John Doe</cs:organizer-cn>
   </cs:invite-notification>
 </cs:root>
-
 FOO
             ),
             array(
@@ -144,13 +137,13 @@ FOO
     <cs:access>
       <cs:read/>
     </cs:access>
-    <cs:organizer-first>Foo</cs:organizer-first>
-    <cs:organizer-last>Bar</cs:organizer-last>
     <cs:organizer>
       <d:href>/principal/user1</d:href>
       <cs:first-name>Foo</cs:first-name>
       <cs:last-name>Bar</cs:last-name>
     </cs:organizer>
+    <cs:organizer-first>Foo</cs:organizer-first>
+    <cs:organizer-last>Bar</cs:organizer-last>
   </cs:invite-notification>
 </cs:root>
 
@@ -225,6 +218,19 @@ FOO
             'hostUrl' => 'jkl',
             'organizer' => 'mno',
         ));
+
+    }
+
+    function writeFull($input) {
+
+        $writer = new Writer();
+        $writer->baseUri = '/';
+        $writer->namespaceMap = $this->namespaceMap;
+        $writer->openMemory();
+        $writer->startElement('{http://calendarserver.org/ns/}root');
+        $input->xmlSerializeFull($writer);
+        $writer->endElement();
+        return $writer->outputMemory();
 
     }
 }

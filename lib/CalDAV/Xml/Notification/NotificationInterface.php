@@ -2,9 +2,8 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Writer;
 
 /**
  * This interface reflects a single notification type.
@@ -13,7 +12,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-interface NotificationInterface extends Element {
+interface NotificationInterface extends XmlSerializable {
 
     /**
      * This method serializes the entire notification, as it is used in the
@@ -22,7 +21,7 @@ interface NotificationInterface extends Element {
      * @param Writer $writer
      * @return void
      */
-    function serializeFullXml(Writer $writer);
+    function xmlSerializeFull(Writer $writer);
 
     /**
      * Returns a unique id for this notification

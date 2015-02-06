@@ -84,7 +84,7 @@ class Principal extends DAV\Xml\Property\Href {
 
     }
 
-   
+
     /**
      * The xmlSerialize metod is called during xml writing.
      *
@@ -159,7 +159,7 @@ class Principal extends DAV\Xml\Property\Href {
             case '{DAV:}all':
                 return new self(self::ALL);
             default :
-                throw new BadRequest('Unknown or unsupported principal type: ' . $tree['name']); 
+                throw new BadRequest('Unknown or unsupported principal type: ' . $tree['name']);
         }
 
     }

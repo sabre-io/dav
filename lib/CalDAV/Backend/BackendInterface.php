@@ -17,7 +17,7 @@ interface BackendInterface {
      * Every project is an array with the following keys:
      *  * id, a unique id that will be used by other functions to modify the
      *    calendar. This can be the same as the uri or a database key.
-     *  * uri, which the basename of the uri with which the calendar is
+     *  * uri, which is the basename of the uri with which the calendar is
      *    accessed.
      *  * principaluri. The owner of the calendar. Almost always the same as
      *    principalUri passed to this method.

@@ -130,7 +130,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * Many clients also require:
      * {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set
      * For this property, you can just return an instance of
-     * Sabre\CalDAV\Property\SupportedCalendarComponentSet.
+     * Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet.
      *
      * If you return {http://sabredav.org/ns}read-only and set the value to 1,
      * ACL will automatically be put in read-only mode.
@@ -167,8 +167,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
                 'principaluri' => $row['principaluri'],
                 '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag' => 'http://sabre.io/ns/sync/' . ($row['synctoken']?$row['synctoken']:'0'),
                 '{http://sabredav.org/ns}sync-token' => $row['synctoken']?$row['synctoken']:'0',
-                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet($components),
-                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new CalDAV\Property\ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
+                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet($components),
+                '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp($row['transparent']?'transparent':'opaque'),
             ];
 
 
@@ -216,8 +216,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         if (!isset($properties[$sccs])) {
             $values[':components'] = 'VEVENT,VTODO';
         } else {
-            if (!($properties[$sccs] instanceof CalDAV\Property\SupportedCalendarComponentSet)) {
-                throw new DAV\Exception('The ' . $sccs . ' property must be of type: \Sabre\CalDAV\Property\SupportedCalendarComponentSet');
+            if (!($properties[$sccs] instanceof CalDAV\Xml\Property\SupportedCalendarComponentSet)) {
+                throw new DAV\Exception('The ' . $sccs . ' property must be of type: \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet');
             }
             $values[':components'] = implode(',',$properties[$sccs]->getValue());
         }
@@ -982,7 +982,7 @@ SQL;
                 'source'       => $row['source'],
                 'lastmodified' => $row['lastmodified'],
 
-                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet(['VTODO', 'VEVENT']),
+                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VTODO', 'VEVENT']),
             ];
 
             foreach($this->subscriptionPropertyMap as $xmlName=>$dbName) {

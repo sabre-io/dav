@@ -166,7 +166,7 @@ FOO
                     'readOnly' => false,
                     'hostUrl' => 'calendar',
                     'organizer' => 'mailto:user1@fruux.com',
-                    'supportedComponents' => new CalDAV\Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+                    'supportedComponents' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT','VTODO']),
                 ),
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>

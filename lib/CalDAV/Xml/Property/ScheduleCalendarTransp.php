@@ -42,7 +42,7 @@ class ScheduleCalendarTransp implements Element {
      *
      * @param string $value
      */
-    public function __construct($value) {
+    function __construct($value) {
 
         if ($value !== self::TRANSPARENT && $value !== self::OPAQUE) {
             throw new \InvalidArgumentException('The value must either be specified as "transparent" or "opaque"');
@@ -56,28 +56,32 @@ class ScheduleCalendarTransp implements Element {
      *
      * @return string
      */
-    public function getValue() {
+    function getValue() {
 
         return $this->value;
 
     }
 
     /**
-     * The serialize method is called during xml writing.
+     * The xmlSerialize metod is called during xml writing.
      *
-     * It should use the $writer argument to encode this object into XML.
+     * Use the $writer argument to write its own xml serialization.
      *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
+     * An important note: do _not_ create a parent element. Any element
+     * implementing XmlSerializble should only ever write what's considered
+     * its 'inner xml'.
      *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
+     * The parent of the current element is responsible for writing a
+     * containing element.
+     *
+     * This allows serializers to be re-used for different element names.
+     *
+     * If you are opening new elements, you must also close them again.
      *
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         switch($this->value) {
             case self::TRANSPARENT :
@@ -99,8 +103,8 @@ class ScheduleCalendarTransp implements Element {
      * Often you want to return an instance of the current class, but you are
      * free to return other data as well.
      *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
      *
      * If you just want to skip parsing for this element altogether, you can
      * just call $reader->next();
@@ -111,9 +115,9 @@ class ScheduleCalendarTransp implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
-        $elems = Elements::deserializeXml($reader);
+        $elems = Elements::xmlDeserialize($reader);
 
         $value = null;
 

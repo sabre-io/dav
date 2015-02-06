@@ -933,7 +933,7 @@ class Plugin extends DAV\ServerPlugin {
         /* Adding ACL properties */
         if ($node instanceof IACL) {
             $propFind->handle('{DAV:}owner', function() use ($node) {
-                return new DAV\Property\Href($node->getOwner() . '/');
+                return new DAV\Xml\Property\Href($node->getOwner() . '/');
             });
         }
 

@@ -52,7 +52,7 @@ class LockDiscovery implements Element {
      * @param \Sabre\DAV\Locks\LockInfo[] $locks
      * @param bool $revealLockToken
      */
-    public function __construct($locks, $revealLockToken = false) {
+    function __construct($locks, $revealLockToken = false) {
 
         $this->locks = $locks;
         $this->revealLockToken = $revealLockToken;
@@ -74,7 +74,7 @@ class LockDiscovery implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function xmlSerialize(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         foreach($this->locks as $lock) {
 
@@ -136,7 +136,7 @@ class LockDiscovery implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function xmlDeserialize(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         throw new CannotDeserialize('This element does not have a deserializer');
 

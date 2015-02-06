@@ -1,28 +1,23 @@
 <?php
 
-namespace Sabre\DAVACL\Property;
+namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\DAV\XMLUtil;
 use Sabre\HTTP;
+use Sabre\Xml\Reader;
 
 
 class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
-        $privileges = array(
+        $privileges = [ 
             '{DAV:}read',
             '{DAV:}write',
-        );
+        ];
         $prop = new CurrentUserPrivilegeSet($privileges);
-
-        $server = new DAV\Server();
-        $dom = new \DOMDocument('1.0','utf-8');
-        $root = $dom->createElementNS('DAV:','d:root');
-        $dom->appendChild($root);
-
-        $prop->serialize($server, $root);
+        $xml = (new DAV\Server())->xml->write(['{DAV:}root' => $prop]);
 
         $xpaths = array(
             '/d:root' => 1,
@@ -31,8 +26,7 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
             '/d:root/d:privilege/d:write' => 1,
         );
 
-        // Reloading because PHP DOM sucks
-        $dom2 = XMLUtil::loadDOMDocument($dom->saveXML());
+        $dom2 = XMLUtil::loadDOMDocument($xml);
 
         $dxpath = new \DOMXPath($dom2);
         $dxpath->registerNamespace('d','urn:DAV');
@@ -56,11 +50,20 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = DAV\XMLUtil::loadDOMDocument($source);
-        $result = CurrentUserPrivilegeSet::unserialize($dom->firstChild, array());
+        $result = $this->parse($source);
         $this->assertTrue($result->has('{DAV:}read'));
         $this->assertTrue($result->has('{DAV:}write-properties'));
         $this->assertFalse($result->has('{DAV:}bind'));
+
+    }
+
+    function parse($xml) {
+
+        $reader = new Reader();
+        $reader->elementMap['{DAV:}root'] = 'Sabre\\DAVACL\\Xml\\Property\\CurrentUserPrivilegeSet';
+        $reader->xml($xml);
+        $result = $reader->parse();
+        return $result['value'];
 
     }
 

@@ -1,67 +1,52 @@
 <?php
 
-namespace Sabre\DAVACL\Property;
+namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\HTTP;
-
 
 class ACLTest extends \PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
         $acl = new Acl(array());
-        $this->assertInstanceOf('Sabre\DAVACL\Property\ACL', $acl);
+        $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\ACL', $acl);
 
     }
 
     function testSerializeEmpty() {
 
-        $dom = new \DOMDocument('1.0');
-        $root = $dom->createElementNS('DAV:','d:root');
-
-        $dom->appendChild($root);
-
         $acl = new Acl(array());
-        $acl->serialize(new DAV\Server(), $root);
+        $xml = (new DAV\Server())->xml->write(['{DAV:}root' => $acl]);
 
-        $xml = $dom->saveXML();
         $expected = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:"/>
-';
-        $this->assertEquals($expected, $xml);
+<d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" />';
+
+        $this->assertXmlStringEqualsXmlString($expected, $xml);
 
     }
 
     function testSerialize() {
 
-        $dom = new \DOMDocument('1.0');
-        $root = $dom->createElementNS('DAV:','d:root');
-
-        $dom->appendChild($root);
-
-        $privileges = array(
-            array(
+        $privileges = [  
+            [ 
                 'principal' => 'principals/evert',
                 'privilege' => '{DAV:}write',
                 'uri'       => 'articles',
-            ),
-            array(
+            ],
+            [ 
                 'principal' => 'principals/foo',
                 'privilege' => '{DAV:}read',
                 'uri'       => 'articles',
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
 
         $acl = new Acl($privileges);
-        $acl->serialize(new DAV\Server(), $root);
+        $xml = (new DAV\Server())->xml->write(['{DAV:}root' => $acl], '/');
 
-        $dom->formatOutput = true;
-
-        $xml = $dom->saveXML();
         $expected = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:">
+<d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
   <d:ace>
     <d:principal>
       <d:href>/principals/evert/</d:href>
@@ -85,16 +70,11 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
   </d:ace>
 </d:root>
 ';
-        $this->assertEquals($expected, $xml);
+        $this->assertXmlStringEqualsXmlString($expected, $xml);
 
     }
 
     function testSerializeSpecialPrincipals() {
-
-        $dom = new \DOMDocument('1.0');
-        $root = $dom->createElementNS('DAV:','d:root');
-
-        $dom->appendChild($root);
 
         $privileges = array(
             array(
@@ -116,13 +96,10 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
         );
 
         $acl = new Acl($privileges);
-        $acl->serialize(new DAV\Server(), $root);
+        $xml = (new DAV\Server())->xml->write(['{DAV:}root' => $acl], '/');
 
-        $dom->formatOutput = true;
-
-        $xml = $dom->saveXML();
         $expected = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:">
+<d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
   <d:ace>
     <d:principal>
       <d:authenticated/>
@@ -155,7 +132,7 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
   </d:ace>
 </d:root>
 ';
-        $this->assertEquals($expected, $xml);
+        $this->assertXmlStringEqualsXmlString($expected, $xml);
 
     }
 
@@ -187,10 +164,14 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = DAV\XMLUtil::loadDOMDocument($source);
-        $result = Acl::unserialize($dom->firstChild, array());
+        $reader = new \Sabre\Xml\Reader();
+        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->xml($source);
 
-        $this->assertInstanceOf('Sabre\\DAVACL\\Property\\ACL', $result);
+        $result = $reader->parse();
+        $result = $result['value'];
+
+        $this->assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
 
         $expected = array(
             array(
@@ -227,8 +208,12 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = DAV\XMLUtil::loadDOMDocument($source);
-        Acl::unserialize($dom->firstChild, array());
+
+        $reader = new \Sabre\Xml\Reader();
+        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->xml($source);
+
+        $result = $reader->parse();
 
     }
 
@@ -263,31 +248,34 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = DAV\XMLUtil::loadDOMDocument($source);
-        $result = Acl::unserialize($dom->firstChild, array());
+        $reader = new \Sabre\Xml\Reader();
+        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->xml($source);
 
-        $this->assertInstanceOf('Sabre\\DAVACL\\Property\\Acl', $result);
+        $result = $reader->parse();
+        $result = $result['value'];
 
-        $expected = array(
-            array(
+        $this->assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
+
+        $expected = [ 
+            [
                 'principal' => '{DAV:}authenticated',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
-            ),
-            array(
+            ],
+            [ 
                 'principal' => '{DAV:}unauthenticated',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
-            ),
-            array(
+            ],
+            [ 
                 'principal' => '{DAV:}all',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
-            ),
-        );
+            ],
+        ];
 
         $this->assertEquals($expected, $result->getPrivileges());
-
 
     }
 
@@ -309,28 +297,12 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 </d:root>
 ';
 
-        $dom = DAV\XMLUtil::loadDOMDocument($source);
-        Acl::unserialize($dom->firstChild, array());
-    }
+        $reader = new \Sabre\Xml\Reader();
+        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->xml($source);
 
-    /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
-     */
-    function testUnserializeMissingPriv() {
-
-        $source = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:">
-  <d:ace>
-    <d:grant>
-      <d:privilege />
-    </d:grant>
-    <d:principal><d:href>/principals/evert</d:href></d:principal>
-  </d:ace>
-</d:root>
-';
-
-        $dom = DAV\XMLUtil::loadDOMDocument($source);
-        Acl::unserialize($dom->firstChild, array());
+        $result = $reader->parse();
 
     }
+
 }

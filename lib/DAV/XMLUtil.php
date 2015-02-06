@@ -73,11 +73,13 @@ class XMLUtil {
      * Generates an XML document and returns the output as a string.
      *
      * @param mixed $output
+     * @param string $baseUri // Specify the base URI of the document.
      * @return string
      */
-    function write($output) {
+    function write($output, $baseUri = null) {
 
         $writer = new XML\Writer();
+        $writer->baseUri = $baseUri;
         $writer->namespaceMap = $this->namespaceMap;
         $writer->openMemory();
         $writer->write($output);

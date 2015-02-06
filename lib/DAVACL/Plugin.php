@@ -708,7 +708,8 @@ class Plugin extends DAV\ServerPlugin {
 
         // Mapping the group-member-set property to the HrefList property
         // class.
-        $server->propertyMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
+        $server->xml->elementMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
+        $server->xml->elementMap['{DAV:}acl'] = 'Sabre\\DAVACL\\Xml\\Property\\Acl';
 
     }
 
@@ -896,13 +897,13 @@ class Plugin extends DAV\ServerPlugin {
         });
         $propFind->handle('{DAV:}current-user-principal', function() {
             if ($url = $this->getCurrentUserPrincipal()) {
-                return new Property\Principal(Property\Principal::HREF, $url . '/');
+                return new Xml\Property\Principal(Xml\Property\Principal::HREF, $url . '/');
             } else {
-                return new Property\Principal(Property\Principal::UNAUTHENTICATED);
+                return new Xml\Property\Principal(Xml\Property\Principal::UNAUTHENTICATED);
             }
         });
         $propFind->handle('{DAV:}supported-privilege-set', function() use ($node) {
-            return new Property\SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
+            return new Xml\Property\SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
         });
         $propFind->handle('{DAV:}current-user-privilege-set', function() use ($node, $propFind, $path) {
             if (!$this->checkPrivileges($path, '{DAV:}read-current-user-privilege-set', self::R_PARENT, false)) {
@@ -910,7 +911,7 @@ class Plugin extends DAV\ServerPlugin {
             } else {
                 $val = $this->getCurrentUserPrivilegeSet($node);
                 if (!is_null($val)) {
-                    return new Property\CurrentUserPrivilegeSet($val);
+                    return new Xml\Property\CurrentUserPrivilegeSet($val);
                 }
             }
         });
@@ -921,12 +922,12 @@ class Plugin extends DAV\ServerPlugin {
             } else {
                 $acl = $this->getACL($node);
                 if (!is_null($acl)) {
-                    return new Property\Acl($this->getACL($node));
+                    return new Xml\Property\Acl($this->getACL($node));
                 }
             }
         });
         $propFind->handle('{DAV:}acl-restrictions', function() {
-            return new Property\AclRestrictions();
+            return new Xml\Property\AclRestrictions();
         });
 
         /* Adding ACL properties */
@@ -1014,11 +1015,13 @@ class Plugin extends DAV\ServerPlugin {
 
         $path = $request->getPath();
         $body = $request->getBodyAsString();
-        $dom = DAV\XMLUtil::loadDOMDocument($body);
 
-        $newAcl =
-            Property\Acl::unserialize($dom->firstChild, $this->server->propertyMap)
-            ->getPrivileges();
+        if (!$body) {
+            throw new DAV\Exception\BadRequest('XML body expected in ACL request');
+        }
+
+        $acl = $this->server->xml->parse($body);
+        $newAcl = $acl['value']->getPrivileges();
 
         // Normalizing urls
         foreach($newAcl as $k=>$newAce) {
@@ -1026,7 +1029,7 @@ class Plugin extends DAV\ServerPlugin {
         }
         $node = $this->server->tree->getNodeForPath($path);
 
-        if (!($node instanceof IACL)) {
+        if (!$node instanceof IACL) {
             throw new DAV\Exception\MethodNotAllowed('This node does not support the ACL method');
         }
 

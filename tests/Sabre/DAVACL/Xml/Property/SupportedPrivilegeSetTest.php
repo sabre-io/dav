@@ -1,20 +1,18 @@
 <?php
 
-namespace Sabre\DAVACL\Property;
+namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\HTTP;
-
-
 
 class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSimple() {
 
-        $prop = new SupportedPrivilegeSet(array(
+        $prop = new SupportedPrivilegeSet([
             'privilege' => '{DAV:}all',
-        ));
-        $this->assertInstanceOf('Sabre\DAVACL\Property\SupportedPrivilegeSet', $prop);
+        ]);
+        $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\SupportedPrivilegeSet', $prop);
 
     }
 
@@ -24,30 +22,20 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerializeSimple() {
 
-        $prop = new SupportedPrivilegeSet(array(
+        $prop = new SupportedPrivilegeSet([
             'privilege' => '{DAV:}all',
-        ));
+        ]);
 
-        $doc = new \DOMDocument();
-        $root = $doc->createElementNS('DAV:', 'd:supported-privilege-set');
-
-        $doc->appendChild($root);
-
-        $server = new DAV\Server();
-        $prop->serialize($server, $root);
-
-        $xml = $doc->saveXML();
+        $xml = (new DAV\Server())->xml->write(['{DAV:}supported-privilege-set' => $prop]);
 
         $this->assertEquals(
-'<?xml version="1.0"?>
-<d:supported-privilege-set xmlns:d="DAV:">' .
+'<d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
 '<d:supported-privilege>' .
 '<d:privilege>' .
 '<d:all/>' .
 '</d:privilege>' .
 '</d:supported-privilege>' .
-'</d:supported-privilege-set>
-', $xml);
+'</d:supported-privilege-set>', $xml);
 
     }
 
@@ -56,33 +44,24 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerializeAggregate() {
 
-        $prop = new SupportedPrivilegeSet(array(
+        $prop = new SupportedPrivilegeSet([
             'privilege' => '{DAV:}all',
             'abstract'  => true,
-            'aggregates' => array(
-                array(
+            'aggregates' => [
+                [
                     'privilege' => '{DAV:}read',
-                ),
-                array(
+                ],
+                [
                     'privilege' => '{DAV:}write',
                     'description' => 'booh',
-                ),
-            ),
-        ));
+                ],
+            ],
+        ]);
 
-        $doc = new \DOMDocument();
-        $root = $doc->createElementNS('DAV:', 'd:supported-privilege-set');
-
-        $doc->appendChild($root);
-
-        $server = new DAV\Server();
-        $prop->serialize($server, $root);
-
-        $xml = $doc->saveXML();
+        $xml = (new DAV\Server())->xml->write(['{DAV:}supported-privilege-set' => $prop]);
 
         $this->assertEquals(
-'<?xml version="1.0"?>
-<d:supported-privilege-set xmlns:d="DAV:">' .
+'<d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
 '<d:supported-privilege>' .
 '<d:privilege>' .
 '<d:all/>' .
@@ -100,8 +79,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 '<d:description>booh</d:description>' .
 '</d:supported-privilege>' .
 '</d:supported-privilege>' .
-'</d:supported-privilege-set>
-', $xml);
+'</d:supported-privilege-set>', $xml);
 
     }
 }

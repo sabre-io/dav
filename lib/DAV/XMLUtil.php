@@ -82,6 +82,7 @@ class XMLUtil {
         $writer->baseUri = $baseUri;
         $writer->namespaceMap = $this->namespaceMap;
         $writer->openMemory();
+        $writer->setIndent(true);
         $writer->write($output);
         return $writer->outputMemory();
 

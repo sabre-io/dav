@@ -634,8 +634,7 @@ HTML;
         } elseif($value instanceof \Sabre\Xml\XmlSerializable) {
 
             $mapping = [
-                'Sabre\\DAV\\Property\\IHref' => 'href',
-                'Sabre\\DAV\\Property\\HrefList' => 'hreflist',
+                'Sabre\\DAV\\Xml\\Property\\Href' => 'href',
                 'Sabre\\DAV\\Xml\\Property\\SupportedMethodSet' => 'valuelist',
                 'Sabre\\DAV\\Xml\\Property\\ResourceType' => 'xmlvaluelist',
                 'Sabre\\DAV\\Xml\\Property\\SupportedReportSet' => 'xmlvaluelist',
@@ -676,9 +675,6 @@ HTML;
         switch($view) {
 
             case 'href' :
-                echo "<a href=\"" . $this->server->getBaseUri() . $value->getHref() . '">' . $this->server->getBaseUri() . $value->getHref() . '</a>';
-                break;
-            case 'hreflist' :
                 echo implode('<br />', array_map(function($href) {
                     if (stripos($href,'mailto:')===0 || stripos($href,'/')===0 || stripos($href,'http:')===0 || stripos($href,'https:') === 0) {
                         return "<a href=\"" . $this->escapeHTML($href) . '">' . $this->escapeHTML($href) . '</a>';
@@ -720,11 +716,13 @@ HTML;
                 echo $this->escapeHTML($value);
                 break;
             case 'xml' :
-                $writer = new XmlWriter();
-                $writer->openMemory();
-                $writer->namespaceMap = $this->server->xml->namespaceMap;
-                $writer->write($value);
-                echo $this->escapeHtml($writer->outputMemory());
+                $xml = $this->server->xml->write(['{DAV:}root' => $value], $this->server->getBaseUri());
+                // removing first and last line, as they contain our root
+                // element.
+                $xml = substr($xml, strpos($xml,"\n")+1);
+                $xml = substr($xml, 0, strrpos($xml,"\n"));
+                $xml = substr($xml, 0, strrpos($xml,"\n"));
+                echo "<pre>", $this->escapeHtml($xml), "</pre>";
                 break;
             case 'complex' :
                 echo '<em title="' . get_class($value) . '">complex</em>';

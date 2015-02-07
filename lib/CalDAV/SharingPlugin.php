@@ -183,7 +183,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 }
             }
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes', function() {
-                return new Property\AllowedSharingModes(true,false);
+                return new Xml\Property\AllowedSharingModes(true,false);
             });
 
         }

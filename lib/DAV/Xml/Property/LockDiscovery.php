@@ -30,13 +30,6 @@ class LockDiscovery implements Element {
     public $locks;
 
     /**
-     * Should we show the locktoken as well?
-     *
-     * @var bool
-     */
-    public $revealLockToken;
-
-    /**
      * Hides the {DAV:}lockroot element from the response.
      *
      * It was reported that showing the lockroot in the response can break
@@ -50,12 +43,10 @@ class LockDiscovery implements Element {
      * __construct
      *
      * @param \Sabre\DAV\Locks\LockInfo[] $locks
-     * @param bool $revealLockToken
      */
-    function __construct($locks, $revealLockToken = false) {
+    function __construct($locks) {
 
         $this->locks = $locks;
-        $this->revealLockToken = $revealLockToken;
 
     }
 
@@ -101,12 +92,9 @@ class LockDiscovery implements Element {
             $writer->writeElement('{DAV:}depth', ($lock->depth == DAV\Server::DEPTH_INFINITY?'infinity':$lock->depth));
             $writer->writeElement('{DAV:}timeout','Second-' . $lock->timeout);
 
-            if ($this->revealLockToken) {
-                $writer->startElement('{DAV:}locktoken');
-                $writer->writeElement('{DAV:}href', 'opaquelocktoken:' . $lock->token);
-                $writer->endElement(); // {DAV:}locktoken
-
-            }
+            $writer->startElement('{DAV:}locktoken');
+            $writer->writeElement('{DAV:}href', 'opaquelocktoken:' . $lock->token);
+            $writer->endElement(); // {DAV:}locktoken
 
             $writer->writeElement('{DAV:}owner', $lock->owner);
             $writer->endElement(); // {DAV:}activelock

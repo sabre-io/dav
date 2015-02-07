@@ -401,19 +401,12 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function generateLockResponse(LockInfo $lockInfo) {
 
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-
-        $prop = $dom->createElementNS('DAV:','d:prop');
-        $dom->appendChild($prop);
-
-        $lockDiscovery = $dom->createElementNS('DAV:','d:lockdiscovery');
-        $prop->appendChild($lockDiscovery);
-
-        $lockObj = new DAV\Property\LockDiscovery([$lockInfo]);
-        $lockObj->serialize($this->server,$lockDiscovery);
-
-        return $dom->saveXML();
+        return $this->server->xml->write([
+            '{DAV:}prop' => [
+                '{DAV:}lockdiscovery' =>
+                    new DAV\Xml\Property\LockDiscovery([$lockInfo])
+             ]
+        ]);
 
     }
 

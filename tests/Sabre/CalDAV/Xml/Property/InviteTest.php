@@ -1,16 +1,24 @@
 <?php
 
-namespace Sabre\CalDAV\Property;
+namespace Sabre\CalDAV\Xml\Property;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
 
-class InviteTest extends \PHPUnit_Framework_TestCase {
+class InviteTest extends DAV\Xml\XmlTest {
+
+    function setUp() {
+
+        $this->namespaceMap[CalDAV\Plugin::NS_CALDAV] = 'cal';
+        $this->namespaceMap[CalDAV\Plugin::NS_CALENDARSERVER] = 'cs';
+
+
+    }
 
     function testSimple() {
 
-        $sccs = new Invite(array());
-        $this->assertInstanceOf('Sabre\CalDAV\Property\Invite', $sccs);
+        $sccs = new Invite([]);
+        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\Invite', $sccs);
 
     }
 
@@ -19,53 +27,41 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerialize() {
 
-        $property = new Invite(array(
-            array(
+        $property = new Invite([
+            [
                 'href' => 'mailto:user1@example.org',
                 'status' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
                 'readOnly' => false,
-            ),
-            array(
+            ],
+            [
                 'href' => 'mailto:user2@example.org',
                 'commonName' => 'John Doe',
                 'status' => CalDAV\SharingPlugin::STATUS_DECLINED,
                 'readOnly' => true,
-            ),
-            array(
+            ],
+            [
                 'href' => 'mailto:user3@example.org',
                 'commonName' => 'Joe Shmoe',
                 'status' => CalDAV\SharingPlugin::STATUS_NORESPONSE,
                 'readOnly' => true,
                 'summary' => 'Something, something',
-            ),
-            array(
+            ],
+            [
                 'href' => 'mailto:user4@example.org',
                 'commonName' => 'Hoe Boe',
                 'status' => CalDAV\SharingPlugin::STATUS_INVALID,
                 'readOnly' => true,
-            ),
-        ), array(
+            ],
+        ], [
             'href' => 'mailto:thedoctor@example.org',
             'commonName' => 'The Doctor',
             'firstName' => 'The',
             'lastName' => 'Doctor',
-        ));
+        ]);
 
-        $doc = new \DOMDocument();
-        $doc->formatOutput = true;
-        $root = $doc->createElement('d:root');
-        $root->setAttribute('xmlns:d','DAV:');
-        $root->setAttribute('xmlns:cal',CalDAV\Plugin::NS_CALDAV);
-        $root->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
+        $xml = $this->write(['{DAV:}root' => $property]);
 
-        $doc->appendChild($root);
-        $server = new DAV\Server();
-
-        $property->serialize($server, $root);
-
-        $xml = $doc->saveXML();
-
-        $this->assertEquals(
+        $this->assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '" xmlns:cs="' . CalDAV\Plugin::NS_CALENDARSERVER . '">
   <cs:organizer>
@@ -114,67 +110,57 @@ class InviteTest extends \PHPUnit_Framework_TestCase {
     /**
      * @depends testSerialize
      */
-    public function testUnserialize() {
+    function testUnserialize() {
 
-        $input = array(
-            array(
+        $input = [
+            [
                 'href' => 'mailto:user1@example.org',
                 'status' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
                 'readOnly' => false,
                 'commonName' => '',
                 'summary' => '',
-            ),
-            array(
+            ],
+            [
                 'href' => 'mailto:user2@example.org',
                 'commonName' => 'John Doe',
                 'status' => CalDAV\SharingPlugin::STATUS_DECLINED,
                 'readOnly' => true,
                 'summary' => '',
-            ),
-            array(
+            ],
+            [
                 'href' => 'mailto:user3@example.org',
                 'commonName' => 'Joe Shmoe',
                 'status' => CalDAV\SharingPlugin::STATUS_NORESPONSE,
                 'readOnly' => true,
                 'summary' => 'Something, something',
-            ),
-            array(
+            ],
+            [
                 'href' => 'mailto:user4@example.org',
                 'commonName' => 'Hoe Boe',
                 'status' => CalDAV\SharingPlugin::STATUS_INVALID,
                 'readOnly' => true,
                 'summary' => '',
-            ),
-        );
+            ],
+        ];
 
         // Creating the xml
-        $doc = new \DOMDocument();
-        $doc->formatOutput = true;
-        $root = $doc->createElement('d:root');
-        $root->setAttribute('xmlns:d','DAV:');
-        $root->setAttribute('xmlns:cal',CalDAV\Plugin::NS_CALDAV);
-        $root->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
-
-        $doc->appendChild($root);
-        $server = new DAV\Server();
-
         $inputProperty = new Invite($input);
-        $inputProperty->serialize($server, $root);
-
-        $xml = $doc->saveXML();
-
+        $xml = $this->write(['{DAV:}root' => $inputProperty]);
         // Parsing it again
 
-        $doc2 = DAV\XMLUtil::loadDOMDocument($xml);
+        $doc2 = $this->parse(
+            $xml,
+            ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\Invite']
+        );
 
-        $outputProperty = Invite::unserialize($doc2->firstChild, array());
+        $outputProperty = $doc2['value'];
 
         $this->assertEquals($input, $outputProperty->getValue());
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException InvalidArgumentException
      */
     function testUnserializeNoStatus() {
 
@@ -189,8 +175,10 @@ $xml = '<?xml version="1.0"?>
   </cs:user>
 </d:root>';
 
-        $doc2 = DAV\XMLUtil::loadDOMDocument($xml);
-        $outputProperty = Invite::unserialize($doc2->firstChild, array());
+        $this->parse(
+            $xml,
+            ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\Invite']
+        );
 
     }
 

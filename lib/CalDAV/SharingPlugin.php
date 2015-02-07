@@ -2,10 +2,10 @@
 
 namespace Sabre\CalDAV;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\DAV\Xml\Property\Href;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * This plugin implements support for caldav sharing.
@@ -114,7 +114,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         if ($node instanceof IShareableCalendar) {
 
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
-                return new Property\Invite(
+                return new Xml\Property\Invite(
                     $node->getShares()
                 );
             });
@@ -124,7 +124,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         if ($node instanceof ISharedCalendar) {
 
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}shared-url', function() use ($node) {
-                return new DAV\Property\Href(
+                return new Href(
                     $node->getSharedUrl()
                 );
             });
@@ -154,7 +154,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 }
 
-                return new Property\Invite(
+                return new Xml\Property\Invite(
                     $node->getShares(),
                     $ownerInfo
                 );
@@ -331,20 +331,13 @@ class SharingPlugin extends DAV\ServerPlugin {
                 $response->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 if ($url) {
-                    $dom = new \DOMDocument('1.0', 'UTF-8');
-                    $dom->formatOutput = true;
-
-                    $root = $dom->createElement('cs:shared-as');
-                    foreach($this->server->xmlNamespaces as $namespace => $prefix) {
-                        $root->setAttribute('xmlns:' . $prefix, $namespace);
-                    }
-
-                    $dom->appendChild($root);
-                    $href = new DAV\Property\Href($url);
-
-                    $href->serialize($this->server, $root);
+                    $writer = $this->server->xml->getWriter($this->server->getBaseUri());
+                    $writer->startDocument();
+                    $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');
+                    $writer->write(new Href($url));
+                    $writer->endElement();
                     $response->setHeader('Content-Type','application/xml');
-                    $response->setBody($dom->saveXML());
+                    $response->setBody($writer->outputMemory());
 
                 }
 

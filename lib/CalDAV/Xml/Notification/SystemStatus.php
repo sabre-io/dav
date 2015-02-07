@@ -2,11 +2,9 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\CalDAV\Plugin,
-    Sabre\DAV\Exception\CannotSerialize;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
+use Sabre\CalDAV\Plugin;
 
 
 /**
@@ -72,7 +70,7 @@ class SystemStatus implements NotificationInterface {
      * @param string $description
      * @param string $href
      */
-    public function __construct($id, $etag, $type = self::TYPE_HIGH, $description = null, $href = null) {
+    function __construct($id, $etag, $type = self::TYPE_HIGH, $description = null, $href = null) {
 
         $this->id = $id;
         $this->type = $type;
@@ -97,7 +95,7 @@ class SystemStatus implements NotificationInterface {
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         switch($this->type) {
             case self::TYPE_LOW :
@@ -125,7 +123,7 @@ class SystemStatus implements NotificationInterface {
      * @param Writer $writer
      * @return void
      */
-    public function serializeFullXml(Writer $writer) {
+    function xmlSerializeFull(Writer $writer) {
 
         $cs = '{' . Plugin::NS_CALENDARSERVER .'}';
         switch($this->type) {
@@ -164,7 +162,7 @@ class SystemStatus implements NotificationInterface {
      *
      * @return string
      */
-    public function getId() {
+    function getId() {
 
         return $this->id;
 
@@ -177,7 +175,7 @@ class SystemStatus implements NotificationInterface {
      *
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         return $this->etag;
 
@@ -204,7 +202,7 @@ class SystemStatus implements NotificationInterface {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static function deserializeXml(Reader $reader) {
 
         throw new CannotDeserialize('This element does not have a deserializer');
 

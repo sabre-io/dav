@@ -13,13 +13,13 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
 
         $principalUri = 'principals/user1';
 
-        $this->systemStatus = new Notification\SystemStatus(1,'"1"');
+        $this->systemStatus = new CalDAV\Xml\Notification\SystemStatus(1,'"1"');
 
-        $this->caldavBackend = new CalDAV\Backend\MockSharing(array(),array(), array(
-            'principals/user1' => array(
+        $this->caldavBackend = new CalDAV\Backend\MockSharing([], [], [
+            'principals/user1' => [
                 $this->systemStatus
-            )
-        )); 
+            ]
+        ]);
 
         $node = new Node($this->caldavBackend, 'principals/user1', $this->systemStatus);
         return $node;

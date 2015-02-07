@@ -2,13 +2,12 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\DAV,
-    Sabre\CalDAV,
-    Sabre\CalDAV\SharingPlugin;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
+use Sabre\DAV;
+use Sabre\CalDAV;
+use Sabre\CalDAV\SharingPlugin;
 
 /**
  * This class represents the cs:invite-reply notification element.
@@ -91,9 +90,9 @@ class InviteReply implements NotificationInterface {
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
      */
-    public function __construct(array $values) {
+    function __construct(array $values) {
 
-        $required = array(
+        $required = [
             'id',
             'etag',
             'href',
@@ -101,7 +100,7 @@ class InviteReply implements NotificationInterface {
             'inReplyTo',
             'type',
             'hostUrl',
-        );
+        ];
         foreach($required as $item) {
             if (!isset($values[$item])) {
                 throw new \InvalidArgumentException($item . ' is a required constructor option');
@@ -118,21 +117,25 @@ class InviteReply implements NotificationInterface {
     }
 
     /**
-     * The serialize method is called during xml writing.
+     * The xmlSerialize metod is called during xml writing.
      *
-     * It should use the $writer argument to encode this object into XML.
+     * Use the $writer argument to write its own xml serialization.
      *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
+     * An important note: do _not_ create a parent element. Any element
+     * implementing XmlSerializble should only ever write what's considered
+     * its 'inner xml'.
      *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
+     * The parent of the current element is responsible for writing a
+     * containing element.
+     *
+     * This allows serializers to be re-used for different element names.
+     *
+     * If you are opening new elements, you must also close them again.
      *
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER .'}invite-reply');
 
@@ -145,7 +148,7 @@ class InviteReply implements NotificationInterface {
      * @param Writer $writer
      * @return void
      */
-    public function serializeFullXml(Writer $writer) {
+    function xmlSerializeFull(Writer $writer) {
 
         $cs = '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}';
 
@@ -188,7 +191,7 @@ class InviteReply implements NotificationInterface {
      *
      * @return string
      */
-    public function getId() {
+    function getId() {
 
         return $this->id;
 
@@ -201,7 +204,7 @@ class InviteReply implements NotificationInterface {
      *
      * @return string
      */
-    public function getETag() {
+    function getETag() {
 
         return $this->etag;
 
@@ -228,7 +231,7 @@ class InviteReply implements NotificationInterface {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static function deserializeXml(Reader $reader) {
 
         throw new CannotDeserialize('This element does not have a deserializer');
 

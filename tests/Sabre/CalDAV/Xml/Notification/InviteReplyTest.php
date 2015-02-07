@@ -1,9 +1,10 @@
 <?php
 
-namespace Sabre\CalDAV\Notifications\Notification;
+namespace Sabre\CalDAV\Xml\Notification;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
+use Sabre\Xml\Writer;
 
 class InviteReplyTest extends \PHPUnit_Framework_TestCase {
 
@@ -17,23 +18,33 @@ class InviteReplyTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('foo', $notification->getId());
         $this->assertEquals('"1"', $notification->getETag());
 
-        $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>' . "\n";
+        $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>';
 
-        $dom = new \DOMDocument('1.0','UTF-8');
-        $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
-        $dom->appendChild($elem);
-        $notification->serialize(new DAV\Server(), $elem);
-        $this->assertEquals($simpleExpected, $dom->saveXML());
+        $writer = new Writer();
+        $writer->namespaceMap = [
+            'http://calendarserver.org/ns/' => 'cs',
+        ];
+        $writer->openMemory();
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->startElement('{http://calendarserver.org/ns/}root');
+        $writer->write($notification);
+        $writer->endElement();
 
-        $dom = new \DOMDocument('1.0','UTF-8');
-        $dom->formatOutput = true;
-        $elem = $dom->createElement('cs:root');
-        $elem->setAttribute('xmlns:cs',CalDAV\Plugin::NS_CALENDARSERVER);
-        $elem->setAttribute('xmlns:d','DAV:');
-        $dom->appendChild($elem);
-        $notification->serializeBody(new DAV\Server(), $elem);
-        $this->assertEquals($expected, $dom->saveXML());
+        $this->assertEquals($simpleExpected, $writer->outputMemory());
+
+        $writer = new Writer();
+        $writer->baseUri = '/';
+        $writer->namespaceMap = [
+            'http://calendarserver.org/ns/' => 'cs',
+            'DAV:' => 'd',
+        ];
+        $writer->openMemory();
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->startElement('{http://calendarserver.org/ns/}root');
+        $notification->xmlSerializeFull($writer);
+        $writer->endElement();
+
+        $this->assertXmlStringEqualsXmlString($expected, $writer->outputMemory());
 
 
     }

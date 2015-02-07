@@ -14,7 +14,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
 
         $this->principalUri = 'principals/user1';
 
-        $this->notification = new Notification\SystemStatus(1,'"1"');
+        $this->notification = new CalDAV\Xml\Notification\SystemStatus(1,'"1"');
 
         $this->caldavBackend = new CalDAV\Backend\MockSharing(array(),array(), array(
             'principals/user1' => array(

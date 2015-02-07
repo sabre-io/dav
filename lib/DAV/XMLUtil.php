@@ -78,13 +78,27 @@ class XMLUtil {
      */
     function write($output, $baseUri = null) {
 
+        $writer = $this->getWriter($baseUri);
+        $writer->write($output);
+        return $writer->outputMemory();
+
+    }
+
+    /**
+     * Returns a fully configured xml writer, ready to start writing into
+     * memory.
+     *
+     * @parama string $baseUri
+     * @return XML\Writer
+     */
+    function getWriter($baseUri = null) {
+
         $writer = new XML\Writer();
         $writer->baseUri = $baseUri;
         $writer->namespaceMap = $this->namespaceMap;
         $writer->openMemory();
         $writer->setIndent(true);
-        $writer->write($output);
-        return $writer->outputMemory();
+        return $writer;
 
     }
 

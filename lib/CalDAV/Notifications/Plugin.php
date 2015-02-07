@@ -137,22 +137,16 @@ class Plugin extends ServerPlugin {
         if (!$node instanceof INode)
             return;
 
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-
-        $dom->formatOutput = true;
-
-        $root = $dom->createElement('cs:notification');
-        foreach($this->server->xmlNamespaces as $namespace => $prefix) {
-            $root->setAttribute('xmlns:' . $prefix, $namespace);
-        }
-
-        $dom->appendChild($root);
-        $node->getNotificationType()->serializeBody($this->server, $root);
+        $writer = $this->server->xml->getWriter();
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->startElement('{http://calendarserver.org/ns/}notification');
+        $node->getNotificationType()->xmlSerializeFull($writer);
+        $writer->endElement();
 
         $response->setHeader('Content-Type','application/xml');
         $response->setHeader('ETag',$node->getETag());
         $response->setStatus(200);
-        $response->setBody($dom->saveXML());
+        $response->setBody($writer->outputMemory());
 
         // Return false to break the event chain.
         return false;

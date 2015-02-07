@@ -79,6 +79,7 @@ class XMLUtil {
     function write($output, $baseUri = null) {
 
         $writer = $this->getWriter($baseUri);
+        $writer->startDocument();
         $writer->write($output);
         return $writer->outputMemory();
 

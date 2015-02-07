@@ -14,8 +14,15 @@ abstract class XmlTest extends \PHPUnit_Framework_TestCase {
         $writer->baseUri = '/';
         $writer->namespaceMap = $this->namespaceMap;
         $writer->openMemory();
+        $writer->setIndent(true);
         $writer->write($input);
         return $writer->outputMemory();
+
+    }
+
+    function cleanUp() {
+
+        libxml_clear_errors();
 
     }
 

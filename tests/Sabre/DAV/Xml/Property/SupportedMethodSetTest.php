@@ -1,6 +1,6 @@
 <?php
 
-namespace Sabre\DAV\Property;
+namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\HTTP;
@@ -10,7 +10,7 @@ require_once 'Sabre/DAV/AbstractServer.php';
 
 class SupportedMethodSetTest extends DAV\AbstractServer {
 
-    public function sendPROPFIND($body) {
+    function sendPROPFIND($body) {
 
         $request = new HTTP\Request('PROPFIND', '/', ['Depth' => '0' ]);
         $request->setBody($body);

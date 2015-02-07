@@ -28,14 +28,14 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
         $xml = (new DAV\Server())->xml->write(['{DAV:}supported-privilege-set' => $prop]);
 
-        $this->assertEquals(
-'<d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
-'<d:supported-privilege>' .
-'<d:privilege>' .
-'<d:all/>' .
-'</d:privilege>' .
-'</d:supported-privilege>' .
-'</d:supported-privilege-set>', $xml);
+        $this->assertXmlStringEqualsXmlString('
+<d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+  <d:supported-privilege>
+    <d:privilege>
+      <d:all/>
+    </d:privilege>
+  </d:supported-privilege>
+</d:supported-privilege-set>', $xml);
 
     }
 
@@ -60,26 +60,26 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
         $xml = (new DAV\Server())->xml->write(['{DAV:}supported-privilege-set' => $prop]);
 
-        $this->assertEquals(
-'<d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
-'<d:supported-privilege>' .
-'<d:privilege>' .
-'<d:all/>' .
-'</d:privilege>' .
-'<d:abstract/>' .
-'<d:supported-privilege>' .
-'<d:privilege>' .
-'<d:read/>' .
-'</d:privilege>' .
-'</d:supported-privilege>' .
-'<d:supported-privilege>' .
-'<d:privilege>' .
-'<d:write/>' .
-'</d:privilege>' .
-'<d:description>booh</d:description>' .
-'</d:supported-privilege>' .
-'</d:supported-privilege>' .
-'</d:supported-privilege-set>', $xml);
+        $this->assertXmlStringEqualsXmlString('
+<d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+ <d:supported-privilege>
+  <d:privilege>
+   <d:all/>
+  </d:privilege>
+  <d:abstract/>
+  <d:supported-privilege>
+   <d:privilege>
+    <d:read/>
+   </d:privilege>
+  </d:supported-privilege>
+  <d:supported-privilege>
+   <d:privilege>
+    <d:write/>
+   </d:privilege>
+  <d:description>booh</d:description>
+  </d:supported-privilege>
+ </d:supported-privilege>
+</d:supported-privilege-set>', $xml);
 
     }
 }

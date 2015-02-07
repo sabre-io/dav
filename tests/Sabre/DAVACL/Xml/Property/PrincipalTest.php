@@ -43,10 +43,10 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $xml = (new DAV\Server())->xml->write(['{DAV:}principal' => $prin]);
 
-        $this->assertEquals(
-'<d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
-'<d:unauthenticated/>' .
-'</d:principal>', $xml);
+        $this->assertXmlStringEqualsXmlString('
+<d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:unauthenticated/>
+</d:principal>', $xml);
 
     }
 
@@ -59,10 +59,10 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $prin = new Principal(Principal::AUTHENTICATED);
         $xml = (new DAV\Server())->xml->write(['{DAV:}principal' => $prin]);
 
-        $this->assertEquals(
-'<d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
-'<d:authenticated/>' .
-'</d:principal>', $xml);
+        $this->assertXmlStringEqualsXmlString('
+<d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:authenticated/>
+</d:principal>', $xml);
 
     }
 
@@ -75,10 +75,10 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $prin = new Principal(Principal::HREF,'principals/admin');
         $xml = (new DAV\Server())->xml->write(['{DAV:}principal' => $prin], '/');
 
-        $this->assertEquals(
-'<d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">' .
-'<d:href>/principals/admin/</d:href>' .
-'</d:principal>', $xml);
+        $this->assertXmlStringEqualsXmlString('
+<d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:href>/principals/admin/</d:href>
+</d:principal>', $xml);
 
     }
 

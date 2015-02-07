@@ -5,22 +5,19 @@ use Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/CalDAV/TestUtil.php';
-
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var Plugin
      */
     protected $plugin;
     protected $response;
     /**
-     * @var Sabre\CalDAV\Backend\PDO
+     * @var Backend\PDO
      */
     protected $caldavBackend;
 
@@ -35,7 +32,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
                 '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar description',
                 '{http://apple.com/ns/ical/}calendar-order' => '1',
                 '{http://apple.com/ns/ical/}calendar-color' => '#FF0000',
-                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Xml\Property\SupportedCalendarComponentSet(['VEVENT','VTODO']),
             ),
             array(
                 'id' => 2,
@@ -45,7 +42,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
                 '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar description',
                 '{http://apple.com/ns/ical/}calendar-order' => '1',
                 '{http://apple.com/ns/ical/}calendar-color' => '#FF0000',
-                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Xml\Property\SupportedCalendarComponentSet(['VEVENT','VTODO']),
             )
         ), array(
             1 => array(
@@ -422,7 +419,7 @@ END:VCALENDAR';
 
         }
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $this->assertTrue($newCalendar[$sccs] instanceof Property\SupportedCalendarComponentSet);
+        $this->assertTrue($newCalendar[$sccs] instanceof Xml\Property\SupportedCalendarComponentSet);
         $this->assertEquals(array('VEVENT','VTODO'),$newCalendar[$sccs]->getValue());
 
     }

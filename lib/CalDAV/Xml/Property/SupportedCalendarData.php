@@ -2,12 +2,10 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotDeserialize,
-    Sabre\CalDAV\Plugin;
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
+use Sabre\CalDAV\Plugin;
 
 /**
  * Supported-calendar-data property
@@ -23,24 +21,28 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class SupportedCalendarData implements Element {
+class SupportedCalendarData implements XmlSerializable {
 
     /**
-     * The serialize method is called during xml writing.
+     * The xmlSerialize metod is called during xml writing.
      *
-     * It should use the $writer argument to encode this object into XML.
+     * Use the $writer argument to write its own xml serialization.
      *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
+     * An important note: do _not_ create a parent element. Any element
+     * implementing XmlSerializble should only ever write what's considered
+     * its 'inner xml'.
      *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
+     * The parent of the current element is responsible for writing a
+     * containing element.
+     *
+     * This allows serializers to be re-used for different element names.
+     *
+     * If you are opening new elements, you must also close them again.
      *
      * @param Writer $writer
      * @return void
      */
-    public function serializeXml(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         $writer->startElement('{' . Plugin::NS_CALDAV . '}calendar-data');
         $writer->writeAttributes([
@@ -48,33 +50,12 @@ class SupportedCalendarData implements Element {
             'version' => '2.0',
         ]);
         $writer->endElement(); // calendar-data
+        $writer->startElement('{' . Plugin::NS_CALDAV . '}calendar-data');
+        $writer->writeAttributes([
+            'content-type' => 'application/calendar+json',
+        ]);
+        $writer->endElement(); // calendar-data
 
     }
 
-    /**
-     * The deserialize method is called during xml parsing.
-     *
-     * This method is called statictly, this is because in theory this method
-     * may be used as a type of constructor, or factory method.
-     *
-     * Often you want to return an instance of the current class, but you are
-     * free to return other data as well.
-     *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
-     *
-     * If you just want to skip parsing for this element altogether, you can
-     * just call $reader->next();
-     *
-     * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
-     * the next element.
-     *
-     * @param Reader $reader
-     * @return mixed
-     */
-    static public function deserializeXml(Reader $reader) {
-
-        throw new CannotDeserialize('This element does not have a deserializer');
-
-    }
 }

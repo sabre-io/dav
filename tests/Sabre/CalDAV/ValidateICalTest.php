@@ -26,22 +26,22 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
                 'id' => 'calendar1',
                 'principaluri' => 'principals/admin',
                 'uri' => 'calendar1',
-                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet( array('VEVENT','VTODO','VJOURNAL') ),
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Xml\Property\SupportedCalendarComponentSet( ['VEVENT','VTODO','VJOURNAL'] ),
             ),
             array(
                 'id' => 'calendar2',
                 'principaluri' => 'principals/admin',
                 'uri' => 'calendar2',
-                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Property\SupportedCalendarComponentSet( array('VTODO','VJOURNAL') ),
+                '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new Xml\Property\SupportedCalendarComponentSet( ['VTODO','VJOURNAL'] ),
             )
         );
 
-        $this->calBackend = new Backend\Mock($calendars,array());
+        $this->calBackend = new Backend\Mock($calendars, []);
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
-        $tree = array(
+        $tree = [
             new CalendarRoot($principalBackend, $this->calBackend),
-        );
+        ];
 
         $this->server = new DAV\Server($tree);
         $this->server->sapi = new HTTP\SapiMock();

@@ -19,7 +19,7 @@ use
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\CalDAV\ICalendarObject,
-    Sabre\CalDAV\Property\ScheduleCalendarTransp,
+    Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp,
     Sabre\DAV\Exception\NotFound,
     Sabre\DAV\Exception\Forbidden,
     Sabre\DAV\Exception\BadRequest,

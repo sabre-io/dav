@@ -1,8 +1,9 @@
 <?php
 
-namespace Sabre\CalDAV\Property;
+namespace Sabre\CalDAV\Xml\Property;
 
-use Sabre\DAV;
+use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * email-address-set property
@@ -16,7 +17,7 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class EmailAddressSet extends DAV\Property {
+class EmailAddressSet implements XmlSerializable {
 
     /**
      * emails
@@ -48,23 +49,29 @@ class EmailAddressSet extends DAV\Property {
     }
 
     /**
-     * Serializes this property.
+     * The xmlSerialize metod is called during xml writing.
      *
-     * It will additionally prepend the href property with the server's base uri.
+     * Use the $writer argument to write its own xml serialization.
      *
-     * @param DAV\Server $server
-     * @param \DOMElement $dom
+     * An important note: do _not_ create a parent element. Any element
+     * implementing XmlSerializble should only ever write what's considered
+     * its 'inner xml'.
+     *
+     * The parent of the current element is responsible for writing a
+     * containing element.
+     *
+     * This allows serializers to be re-used for different element names.
+     *
+     * If you are opening new elements, you must also close them again.
+     *
+     * @param Writer $writer
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $dom) {
-
-        $prefix = $server->xmlNamespaces['http://calendarserver.org/ns/'];
+    function xmlSerialize(Writer $writer) {
 
         foreach($this->emails as $email) {
 
-            $elem = $dom->ownerDocument->createElement($prefix . ':email-address');
-            $elem->appendChild($dom->ownerDocument->createTextNode($email));
-            $dom->appendChild($elem);
+            $writer->writeElement('{http://calendarserver.org/ns/}email-address', $email);
 
         }
 

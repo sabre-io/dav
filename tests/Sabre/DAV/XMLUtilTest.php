@@ -236,28 +236,6 @@ class XMLUtilTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testParsePropertiesMapHref() {
-
-        $xml='<?xml version="1.0"?>
-<root xmlns="DAV:">
-  <prop>
-    <displayname>Calendars</displayname>
-  </prop>
-  <prop>
-    <someprop><href>http://sabredav.org/</href></someprop>
-  </prop>
-</root>';
-
-        $dom = XMLUtil::loadDOMDocument($xml);
-        $properties = XMLUtil::parseProperties($dom->firstChild,array('{DAV:}someprop'=>'Sabre\\DAV\\Property\\Href'));
-
-        $this->assertEquals(array(
-            '{DAV:}displayname' => 'Calendars',
-            '{DAV:}someprop'    => new Property\Href('http://sabredav.org/',false),
-        ), $properties);
-
-    }
-
     function testParseClarkNotation() {
 
         $this->assertEquals(array(

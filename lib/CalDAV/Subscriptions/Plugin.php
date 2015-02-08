@@ -36,9 +36,6 @@ class Plugin extends ServerPlugin {
         $server->resourceTypeMapping['Sabre\\CalDAV\\Subscriptions\\ISubscription'] =
             '{http://calendarserver.org/ns/}subscribed';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}source'] =
-            'Sabre\\DAV\\Property\\Href';
-
         $server->xml->elementMap['{http://calendarserver.org/ns/}source'] =
             'Sabre\\DAV\\Xml\\Property\\Href';
 

@@ -18,8 +18,8 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             $server->resourceTypeMapping['Sabre\\CalDAV\\Subscriptions\\ISubscription']
         );
         $this->assertEquals(
-            'Sabre\\DAV\\Property\\Href',
-            $server->propertyMap['{http://calendarserver.org/ns/}source']
+            'Sabre\\DAV\\Xml\\Property\\Href',
+            $server->xml->elementMap['{http://calendarserver.org/ns/}source']
         );
 
         $this->assertEquals(
@@ -29,7 +29,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function testPropFind() {
+    function testPropFind() {
 
         $propName = '{http://calendarserver.org/ns/}subscribed-strip-alarms';
         $propFind = new PropFind('foo', [$propName]);

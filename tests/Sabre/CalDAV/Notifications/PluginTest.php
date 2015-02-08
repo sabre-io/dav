@@ -86,7 +86,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
         $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
-        $this->assertTrue($prop instanceof DAV\Property\Href);
+        $this->assertTrue($prop instanceof DAV\Xml\Property\Href);
         $this->assertEquals('calendars/user1/notifications/', $prop->getHref());
 
     }

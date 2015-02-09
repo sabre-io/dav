@@ -85,16 +85,15 @@ class Server extends EventEmitter {
     public $transactionType;
 
     /**
-     * This is a default list of namespaces.
+     * This is a list of properties that are always server-controlled, and
+     * must not get modified with PROPPATCH.
      *
-     * If you are defining your own custom namespace, add it here to reduce
-     * bandwidth and improve legibility of xml bodies.
+     * Plugins may add to this list.
      *
-     * @var array
+     * @var string[]
      */
-    public $xmlNamespaces = null;
-
     public $protectedProperties = [
+
         // RFC4918
         '{DAV:}getcontentlength',
         '{DAV:}getetag',

@@ -49,4 +49,13 @@ class PrincipalCollectionTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testFindByUri() {
+
+        $backend = new PrincipalBackend\Mock();
+        $pc = new PrincipalCollection($backend);
+        $this->assertEquals('principals/user1', $pc->findByUri('mailto:user1.sabredav@sabredav.org'));
+        $this->assertNull($pc->findByUri('mailto:fake.user.sabredav@sabredav.org'));
+        $this->assertNull($pc->findByUri(''));
+    }
+
 }

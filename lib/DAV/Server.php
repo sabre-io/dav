@@ -94,16 +94,6 @@ class Server extends EventEmitter {
      */
     public $xmlNamespaces = null;
 
-    /**
-     * The propertymap can be used to map properties from
-     * requests to property classes.
-     *
-     * @var array
-     */
-    public $propertyMap = [
-        '{DAV:}resourcetype' => 'Sabre\\DAV\\Property\\ResourceType',
-    ];
-
     public $protectedProperties = [
         // RFC4918
         '{DAV:}getcontentlength',
@@ -1666,52 +1656,5 @@ class Server extends EventEmitter {
         return $this->xml->write(['{DAV:}multistatus' => $xml]);
 
     }
-
-    /**
-     * This method parses a PropPatch request
-     *
-     * PropPatch changes the properties for a resource. This method
-     * returns a list of properties.
-     *
-     * The keys in the returned array contain the property name (e.g.: {DAV:}displayname,
-     * and the value contains the property value. If a property is to be removed the value
-     * will be null.
-     *
-     * @param string $body xml body
-     * @return array list of properties in need of updating or deletion
-     */
-    function parsePropPatchRequest($body) {
-
-        //We'll need to change the DAV namespace declaration to something else in order to make it parsable
-        $dom = XMLUtil::loadDOMDocument($body);
-
-        $newProperties = [];
-
-        foreach($dom->firstChild->childNodes as $child) {
-
-            if ($child->nodeType !== XML_ELEMENT_NODE) continue;
-
-            $operation = XMLUtil::toClarkNotation($child);
-
-            if ($operation!=='{DAV:}set' && $operation!=='{DAV:}remove') continue;
-
-            $innerProperties = XMLUtil::parseProperties($child, $this->propertyMap);
-
-            foreach($innerProperties as $propertyName=>$propertyValue) {
-
-                if ($operation==='{DAV:}remove') {
-                    $propertyValue = null;
-                }
-
-                $newProperties[$propertyName] = $propertyValue;
-
-            }
-
-        }
-
-        return $newProperties;
-
-    }
-    // }}}
 
 }

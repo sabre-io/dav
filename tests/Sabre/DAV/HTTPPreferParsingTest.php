@@ -142,27 +142,23 @@ BLA
 
     function testproppatchMinimal() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_METHOD' => 'PROPPATCH',
-            'REQUEST_URI'    => '/',
-            'HTTP_PREFER' => 'return-minimal',
-        ));
+        $request = new HTTP\Request('PROPPATCH','/', ['Prefer' => 'return-minimal']);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
-<d:proppatch xmlns:d="DAV:">
+<d:propertyupdate xmlns:d="DAV:">
     <d:set>
         <d:prop>
             <d:something>nope!</d:something>
         </d:prop>
     </d:set>
-</d:proppatch>
+</d:propertyupdate>
 BLA
         );
 
         $this->server->on('propPatch', function($path, PropPatch $propPatch) {
 
             $propPatch->handle('{DAV:}something', function($props) {
-                return true; 
+                return true;
             });
 
         });
@@ -176,20 +172,16 @@ BLA
 
     function testproppatchMinimalError() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_METHOD' => 'PROPPATCH',
-            'REQUEST_URI'    => '/',
-            'HTTP_PREFER' => 'return-minimal',
-        ));
+        $request = new HTTP\Request('PROPPATCH','/', ['Prefer' => 'return-minimal']);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
-<d:proppatch xmlns:d="DAV:">
+<d:propertyupdate xmlns:d="DAV:">
     <d:set>
         <d:prop>
             <d:something>nope!</d:something>
         </d:prop>
     </d:set>
-</d:proppatch>
+</d:propertyupdate>
 BLA
         );
 

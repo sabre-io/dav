@@ -41,7 +41,7 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    public function testPropFindEmptyBody() {
+    function testPropFindEmptyBody() {
 
         $this->sendRequest("");
         $this->assertEquals(207, $this->response->status);
@@ -67,7 +67,7 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    public function testPropFindEmptyBodyFile() {
+    function testPropFindEmptyBodyFile() {
 
         $this->sendRequest("", '/test2.txt', []);
         $this->assertEquals(207, $this->response->status);
@@ -178,7 +178,7 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    public function testParsePropPatchRequest() {
+    function testParsePropPatchRequest() {
 
         $body = '<?xml version="1.0"?>
 <d:propertyupdate xmlns:d="DAV:" xmlns:s="http://sabredav.org/NS/test">
@@ -188,16 +188,17 @@ class ServerPropsTest extends AbstractServer {
   <d:remove><d:prop><s:someprop3 /></d:prop></d:remove>
 </d:propertyupdate>';
 
-        $result = $this->server->parsePropPatchRequest($body);
-        $this->assertEquals(array(
+        $result = $this->server->xml->parse($body);
+        $result = $result['value']->properties;
+        $this->assertEquals([
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
             '{http://sabredav.org/NS/test}someprop2' => null,
             '{http://sabredav.org/NS/test}someprop3' => null,
-            ), $result);
+        ], $result);
 
     }
 
-    public function testUpdateProperties() {
+    function testUpdateProperties() {
 
         $props = array(
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
@@ -211,7 +212,7 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    public function testUpdatePropertiesProtected() {
+    function testUpdatePropertiesProtected() {
 
         $props = array(
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
@@ -227,7 +228,7 @@ class ServerPropsTest extends AbstractServer {
 
     }
 
-    public function testUpdatePropertiesFail1() {
+    function testUpdatePropertiesFail1() {
 
         $dir = new Mock\PropertiesCollection('root', []);
         $dir->failMode = 'updatepropsfalse';
@@ -250,7 +251,7 @@ class ServerPropsTest extends AbstractServer {
     /**
      * @depends testUpdateProperties
      */
-    public function testUpdatePropertiesFail2() {
+    function testUpdatePropertiesFail2() {
 
         $dir = new Mock\PropertiesCollection('root', []);
         $dir->failMode = 'updatepropsarray';
@@ -274,7 +275,7 @@ class ServerPropsTest extends AbstractServer {
      * @depends testUpdateProperties
      * @expectedException \UnexpectedValueException
      */
-    public function testUpdatePropertiesFail3() {
+    function testUpdatePropertiesFail3() {
 
         $dir = new Mock\PropertiesCollection('root', []);
         $dir->failMode = 'updatepropsobj';
@@ -294,7 +295,7 @@ class ServerPropsTest extends AbstractServer {
      * @depends testParsePropPatchRequest
      * @depends testUpdateProperties
      */
-    public function testPropPatch() {
+    function testPropPatch() {
 
         $serverVars = array(
             'REQUEST_URI'    => '/',
@@ -343,7 +344,7 @@ class ServerPropsTest extends AbstractServer {
     /**
      * @depends testPropPatch
      */
-    public function testPropPatchAndFetch() {
+    function testPropPatchAndFetch() {
 
         $this->testPropPatch();
         $xml = '<?xml version="1.0"?>

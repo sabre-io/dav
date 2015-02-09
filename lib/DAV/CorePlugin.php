@@ -375,9 +375,10 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $newProperties = $this->server->parsePropPatchRequest(
+        $propPatch = $this->server->xml->parse(
             $request->getBodyAsString()
-        );
+        )['value'];
+        $newProperties = $propPatch->properties;
 
         $result = $this->server->updateProperties($path, $newProperties);
 

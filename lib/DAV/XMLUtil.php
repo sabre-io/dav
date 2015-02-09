@@ -27,8 +27,9 @@ class XMLUtil {
         '{DAV:}remove'      => 'Sabre\\Xml\\Element\\KeyValue',
 
         // Requests
-        '{DAV:}propfind' => 'Sabre\\DAV\\Xml\\Request\\PropFind',
-        '{DAV:}mkcol'    => 'Sabre\\DAV\\Xml\\Request\\MkCol',
+        '{DAV:}propfind'        => 'Sabre\\DAV\\Xml\\Request\\PropFind',
+        '{DAV:}propertyupdate'  => 'Sabre\\DAV\\Xml\\Request\\PropPatch',
+        '{DAV:}mkcol'           => 'Sabre\\DAV\\Xml\\Request\\MkCol',
 
         // Properties
         '{DAV:}resourcetype' => 'Sabre\\DAV\\Xml\\Property\\ResourceType',

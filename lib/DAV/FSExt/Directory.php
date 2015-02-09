@@ -109,29 +109,20 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
     }
 
     /**
-     * Returns an array with all the child nodes
+     * Returns an iterator with all the child nodes
      *
-     * @return DAV\INode[]
+     * @return DAV\FSIterator
      */
     function getChildren() {
 
-        $nodes = [];
-        $iterator = new \FilesystemIterator(
+        return new DAV\FSIterator(
+            $this,
             $this->path,
-            \FilesystemIterator::CURRENT_AS_SELF
-          | \FilesystemIterator::SKIP_DOTS
+            function ( $current ) {
+
+                return '.sabredav' !== $current->getFilename();
+            }
         );
-        foreach($iterator as $entry) {
-
-            $node = $entry->getFilename();
-
-            if($node === '.sabredav')
-                continue;
-
-            $nodes[] = $this->getChild($node);
-
-        }
-        return $nodes;
 
     }
 

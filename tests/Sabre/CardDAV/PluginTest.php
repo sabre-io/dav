@@ -151,11 +151,11 @@ class PluginTest extends AbstractPluginTest {
         $this->plugin->propFindEarly($propFind, $node);
 
         $this->assertInstanceOf(
-            'Sabre\\CardDAV\\Property\\SupportedAddressData',
+            'Sabre\\CardDAV\\Xml\\Property\\SupportedAddressData',
             $propFind->get($ns . 'supported-address-data')
         );
         $this->assertInstanceOf(
-            'Sabre\\CardDAV\\Property\\SupportedCollationSet',
+            'Sabre\\CardDAV\\Xml\\Property\\SupportedCollationSet',
             $propFind->get($ns . 'supported-collation-set')
         );
 

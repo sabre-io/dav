@@ -147,10 +147,10 @@ class Plugin extends DAV\ServerPlugin {
 
             $propFind->handle($ns . 'max-resource-size', $this->maxResourceSize);
             $propFind->handle($ns . 'supported-address-data', function() {
-                return new Property\SupportedAddressData();
+                return new Xml\Property\SupportedAddressData();
             });
             $propFind->handle($ns . 'supported-collation-set', function() {
-                return new Property\SupportedCollationSet();
+                return new Xml\Property\SupportedCollationSet();
             });
 
         }

@@ -18,6 +18,8 @@ services:
 
 sudo: false
 
+cache: vendor
+
 before_script:
   - mysql -e 'create database sabredav'
   - composer self-update

@@ -44,7 +44,7 @@ class SupportedAddressData implements XmlSerializable {
             ];
         }
 
-       $this->supportedData = $supportedData;
+        $this->supportedData = $supportedData;
 
     }
 

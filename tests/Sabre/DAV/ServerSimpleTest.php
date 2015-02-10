@@ -388,23 +388,7 @@ class ServerSimpleTest extends AbstractServer{
     }
 
     /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testBaseUriCheck() {
-
-        $uris = [
-            'http://www.example.org/root/somepath',
-            '/root/somepath',
-            '/root/somepath/'
-        ];
-
-        $this->server->setBaseUri('root/');
-        $this->server->calculateUri('/root/testuri');
-
-        $this->fail('Expected an exception');
-
-    }
-
     function testGuessBaseUri() {
 
         $serverVars = [

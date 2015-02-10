@@ -23,6 +23,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
     function put($data) {
 
         file_put_contents($this->path,$data);
+        clearstatcache(true, $this->path);
         return $this->getETag();
 
     }
@@ -75,6 +76,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
             stream_copy_to_stream($data,$f);
         }
         fclose($f);
+        clearstatcache(true, $this->path);
         return $this->getETag();
 
     }

@@ -43,6 +43,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         file_put_contents($newPath,$data);
+        clearstatcache(true, $newPath);
 
         return '"' . sha1(
             fileinode($newPath) .
@@ -64,6 +65,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
+        clearstatcache(true, $newPath);
 
     }
 

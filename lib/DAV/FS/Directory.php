@@ -39,7 +39,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     function createFile($name, $data = null) {
 
         $newPath = $this->path . '/' . $name;
-        file_put_contents($newPath,$data);
+        file_put_contents($newPath, $data);
+        clearstatcache(true, $newPath);
 
     }
 
@@ -53,6 +54,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
 
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
+        clearstatcache(true, $newPath);
 
     }
 

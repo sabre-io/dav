@@ -123,7 +123,7 @@ abstract class AbstractBackend implements BackendInterface {
     }
 
     /**
-     * This method validates if a filters (as passed to calendarQuery) matches
+     * This method validates if a filter (as passed to calendarQuery) matches
      * the given object.
      *
      * @param array $object

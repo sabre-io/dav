@@ -125,11 +125,12 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
             \FilesystemIterator::CURRENT_AS_SELF
           | \FilesystemIterator::SKIP_DOTS
         );
+
         foreach($iterator as $entry) {
 
             $node = $entry->getFilename();
 
-            if($node === '.sabredav')
+            if ($node === '.sabredav')
                 continue;
 
             $nodes[] = $this->getChild($node);

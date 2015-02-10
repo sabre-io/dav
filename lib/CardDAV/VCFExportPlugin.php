@@ -99,8 +99,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
             $nodeData = $node[200]['{' . Plugin::NS_CARDDAV . '}address-data'];
 
             // Parsing this node so VObject can clean up the output.
-            $output .=
-               VObject\Reader::read($nodeData)->serialize();
+            $output .= VObject\Writer::write(VObject\Reader::read($nodeData));
 
         }
 

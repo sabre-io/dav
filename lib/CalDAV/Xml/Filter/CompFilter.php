@@ -2,14 +2,12 @@
 
 namespace Sabre\CalDAV\Xml\Filter;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotSerialize,
-    Sabre\DAV\Exception\BadRequest,
-    Sabre\CalDAV\Plugin,
-    Sabre\VObject\DateTimeParser;
+
+use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\CalDAV\Plugin;
+use Sabre\VObject\DateTimeParser;
 
 
 /**
@@ -26,28 +24,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class CompFilter implements Element {
-
-    /**
-     * The serialize method is called during xml writing.
-     *
-     * It should use the $writer argument to encode this object into XML.
-     *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
-     *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
-     *
-     * @param Writer $writer
-     * @return void
-     */
-    public function serializeXml(Writer $writer) {
-
-        throw new CannotSerialize('This element cannot be serialized.');
-
-    }
+class CompFilter implements XmlDeserializable {
 
     /**
      * The deserialize method is called during xml parsing.
@@ -58,8 +35,8 @@ class CompFilter implements Element {
      * Often you want to return an instance of the current class, but you are
      * free to return other data as well.
      *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
      *
      * If you just want to skip parsing for this element altogether, you can
      * just call $reader->next();
@@ -70,7 +47,7 @@ class CompFilter implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         $result = [
             'name' => null,

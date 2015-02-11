@@ -2,12 +2,10 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotSerialize,
-    Sabre\CalDAV\Plugin;
+use Sabre\Xml\XmlDeserializable;
+use Sabre\Xml\Reader;
+use Sabre\CalDAV\Plugin;
+use Sabre\Uri;
 
 /**
  * CalendarMultiGetReport request parser.
@@ -21,7 +19,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class CalendarMultiGetReport implements Element {
+class CalendarMultiGetReport implements XmlDeserializable {
 
     /**
      * An array with requested properties.
@@ -48,25 +46,20 @@ class CalendarMultiGetReport implements Element {
     public $expand = null;
 
     /**
-     * The serialize method is called during xml writing.
+     * The mimetype of the content that should be returend. Usually
+     * text/calendar.
      *
-     * It should use the $writer argument to encode this object into XML.
-     *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
-     *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
-     *
-     * @param Writer $writer
-     * @return void
+     * @var string
      */
-    public function serializeXml(Writer $writer) {
+    public $contentType = null;
 
-        throw new CannotSerialize('This element cannot be serialized.');
-
-    }
+    /**
+     * The version of calendar-data that should be returned. Usually '2.0',
+     * referring to iCalendar 2.0.
+     *
+     * @var string
+     */
+    public $version = null;
 
     /**
      * The deserialize method is called during xml parsing.
@@ -77,8 +70,8 @@ class CalendarMultiGetReport implements Element {
      * Often you want to return an instance of the current class, but you are
      * free to return other data as well.
      *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
      *
      * If you just want to skip parsing for this element altogether, you can
      * just call $reader->next();
@@ -89,27 +82,30 @@ class CalendarMultiGetReport implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
-        $elems = $reader->parseInnerTree();
-        $hrefs = [];
+        $elems = $reader->parseInnerTree([
+            '{urn:ietf:params:xml:ns:caldav}calendar-data' => 'Sabre\\CalDAV\\Xml\\Filter\\CalendarData',
+            '{DAV:}prop'                                   => 'Sabre\\Xml\\Element\\KeyValue',
+        ]);
 
-        $properties = null;
-
-        $expand = false;
+        $newProps = [
+            'hrefs' => [],
+            'properties' => [],
+        ];
 
         foreach($elems as $elem) {
 
             switch($elem['name']) {
 
                 case '{DAV:}prop' :
-                    if (isset($elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data']['expand'])) {
-                        $expand = $elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data']['expand'];
+                    $newProps['properties'] = array_keys($elem['value']);
+                    if (isset($elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data'])) {
+                        $newProps+=$elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data'];
                     }
-                    $properties = array_keys($elem['value']);
                     break;
                 case '{DAV:}href' :
-                    $hrefs[] = $elem['value'];
+                    $newProps['hrefs'][] = Uri\resolve($reader->baseUri, $elem['value']);
                     break;
 
             }
@@ -117,9 +113,9 @@ class CalendarMultiGetReport implements Element {
         }
 
         $obj = new self();
-        $obj->properties = $properties;
-        $obj->hrefs = $hrefs;
-        $obj->expand = $expand;
+        foreach($newProps as $key=>$value) {
+            $obj->$key = $value;
+        }
 
         return $obj;
 

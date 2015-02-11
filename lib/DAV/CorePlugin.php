@@ -706,12 +706,9 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $body = $request->getBodyAsString();
-        $dom = XMLUtil::loadDOMDocument($body);
+        $result = $this->server->xml->parse($request->getBody());
 
-        $reportName = XMLUtil::toClarkNotation($dom->firstChild);
-
-        if ($this->server->emit('report', [$reportName, $dom, $path])) {
+        if ($this->server->emit('report', [$result['name'], $result['value'], $path])) {
 
             // If emit returned true, it means the report was not supported
             throw new Exception\ReportNotSupported();

@@ -86,9 +86,9 @@ XML;
 
         $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];
 
-        $response = json_decode($response,true);
+        $jresponse = json_decode($response,true);
         if (json_last_error()) {
-            $this->fail('Json decoding error: ' . json_last_error_msg());
+            $this->fail('Json decoding error: ' . json_last_error_msg() . '. Full response: ' . $response);
         }
         $this->assertEquals(
             [
@@ -102,7 +102,7 @@ XML;
                     ],
                 ],
             ],
-            $response
+            $jresponse
         );
 
     }

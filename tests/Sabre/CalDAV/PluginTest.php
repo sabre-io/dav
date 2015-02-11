@@ -97,7 +97,6 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array('MKCALENDAR'), $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
         $this->assertEquals(array('calendar-access','calendar-proxy'), $this->plugin->getFeatures());
-        $this->assertArrayHasKey('urn:ietf:params:xml:ns:caldav', $this->server->xmlNamespaces);
 
     }
 

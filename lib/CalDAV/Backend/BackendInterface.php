@@ -17,7 +17,7 @@ interface BackendInterface {
      * Every project is an array with the following keys:
      *  * id, a unique id that will be used by other functions to modify the
      *    calendar. This can be the same as the uri or a database key.
-     *  * uri, which the basename of the uri with which the calendar is
+     *  * uri, which is the basename of the uri with which the calendar is
      *    accessed.
      *  * principaluri. The owner of the calendar. Almost always the same as
      *    principalUri passed to this method.
@@ -41,8 +41,8 @@ interface BackendInterface {
     /**
      * Creates a new calendar for a principal.
      *
-     * If the creation was a success, an id must be returned that can be used to reference
-     * this calendar in other methods, such as updateCalendar.
+     * If the creation was a success, an id must be returned that can be used to
+     * reference this calendar in other methods, such as updateCalendar.
      *
      * @param string $principalUri
      * @param string $calendarUri
@@ -61,7 +61,7 @@ interface BackendInterface {
      * Calling the handle method is like telling the PropPatch object "I
      * promise I can handle updating this property".
      *
-     * Read the PropPatch documenation for more info and examples.
+     * Read the PropPatch documentation for more info and examples.
      *
      * @param string $path
      * @param \Sabre\DAV\PropPatch $propPatch
@@ -70,7 +70,7 @@ interface BackendInterface {
     function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch);
 
     /**
-     * Delete a calendar and all it's objects
+     * Delete a calendar and all its objects
      *
      * @param mixed $calendarId
      * @return void
@@ -147,9 +147,9 @@ interface BackendInterface {
      *
      * The object uri is only the basename, or filename and not a full path.
      *
-     * It is possible return an etag from this function, which will be used in
-     * the response to this PUT request. Note that the ETag must be surrounded
-     * by double-quotes.
+     * It is possible to return an etag from this function, which will be used
+     * in the response to this PUT request. Note that the ETag must be
+     * surrounded by double-quotes.
      *
      * However, you should only really return this ETag if you don't mangle the
      * calendar-data. If the result of a subsequent GET to this object is not

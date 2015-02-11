@@ -29,9 +29,10 @@ abstract class AbstractBackend implements BackendInterface {
      * principal was not found or you refuse to find it.
      *
      * @param string $uri
+     * @param string $principalPrefix
      * @return string
      */
-    function findByUri($uri) {
+    function findByUri($uri, $principalPrefix) {
 
         // Note that the default implementation here is a bit slow and could
         // likely be optimized.
@@ -39,7 +40,7 @@ abstract class AbstractBackend implements BackendInterface {
             return;
         }
         $result = $this->searchPrincipals(
-            '',
+            $principalPrefix,
             ['{http://sabredav.org/ns}email-address' => substr($uri,7)]
         );
 

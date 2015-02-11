@@ -7,6 +7,8 @@ php:
 
 matrix:
   fast_finish: true
+  allow_failures:
+      - php: hhvm
 
 env:
   matrix:
@@ -22,7 +24,7 @@ cache: vendor
 
 before_script:
   - mysql -e 'create database sabredav'
-  - composer self-update
+  #  - composer self-update
   - composer update --prefer-source $LOWEST_DEPS
 
 script:

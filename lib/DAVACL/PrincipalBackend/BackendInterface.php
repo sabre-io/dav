@@ -106,9 +106,10 @@ interface BackendInterface {
      * principal was not found or you refuse to find it.
      *
      * @param string $uri
+     * @param string $principalPrefix
      * @return string
      */
-    function findByUri($uri);
+    function findByUri($uri, $principalPrefix);
 
     /**
      * Returns the list of members for a group-principal

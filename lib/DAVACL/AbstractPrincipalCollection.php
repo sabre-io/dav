@@ -174,7 +174,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      */
     function findByUri($uri) {
 
-        return $this->principalBackend->findByUri($uri);
+        return $this->principalBackend->findByUri($uri, $this->principalPrefix);
 
     }
 

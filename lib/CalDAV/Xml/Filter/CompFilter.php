@@ -87,8 +87,6 @@ class CompFilter implements XmlDeserializable {
                         throw new BadRequest('The end-date must be larger than the start-date');
                     }
                     break;
-                default :
-                    die('Unknown!' . $elem['name']);
 
             }
 

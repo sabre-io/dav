@@ -2,11 +2,9 @@
 
 namespace Sabre\DAV\Xml\Element;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * WebDAV {DAV:}response parser
@@ -62,7 +60,7 @@ class Response implements Element {
      * @param array $responseProperties
      * @param string $httpStatus
      */
-    public function __construct($href, array $responseProperties, $httpStatus = null) {
+    function __construct($href, array $responseProperties, $httpStatus = null) {
 
         $this->href = $href;
         $this->responseProperties = $responseProperties;
@@ -75,7 +73,7 @@ class Response implements Element {
      *
      * @return string
      */
-    public function getHref() {
+    function getHref() {
 
         return $this->href;
 
@@ -86,7 +84,7 @@ class Response implements Element {
      *
      * @return string
      */
-    public function getHttpStatus() {
+    function getHttpStatus() {
 
         return $this->httpStatus;
 
@@ -97,7 +95,7 @@ class Response implements Element {
      *
      * @return array
      */
-    public function getResponseProperties() {
+    function getResponseProperties() {
 
         return $this->responseProperties;
 
@@ -119,7 +117,7 @@ class Response implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function xmlSerialize(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         if ($status = $this->getHTTPStatus()) {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
@@ -149,8 +147,8 @@ class Response implements Element {
      * Often you want to return an instance of the current class, but you are
      * free to return other data as well.
      *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
      *
      * If you just want to skip parsing for this element altogether, you can
      * just call $reader->next();
@@ -161,7 +159,7 @@ class Response implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function xmlDeserialize(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         $elems = $reader->parseInnerTree();
 

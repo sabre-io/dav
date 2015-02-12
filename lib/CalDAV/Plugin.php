@@ -302,10 +302,10 @@ class Plugin extends DAV\ServerPlugin {
 
             $propFind->handle($ns . 'max-resource-size', $this->maxResourceSize);
             $propFind->handle($ns . 'supported-calendar-data', function() {
-                return new Property\SupportedCalendarData();
+                return new Xml\Property\SupportedCalendarData();
             });
             $propFind->handle($ns . 'supported-collation-set', function() {
-                return new Property\SupportedCollationSet();
+                return new Xml\Property\SupportedCollationSet();
             });
 
         }
@@ -337,7 +337,7 @@ class Plugin extends DAV\ServerPlugin {
                         $emails[] = substr($address,7);
                     }
                 }
-                return new Property\EmailAddressSet($emails);
+                return new Xml\Property\EmailAddressSet($emails);
             });
 
             // These two properties are shortcuts for ical to easily find

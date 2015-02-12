@@ -2,11 +2,8 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\DAV\Exception\CannotSerialize;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
 
 /**
  * {DAV:}resourcetype property

@@ -2,11 +2,8 @@
 
 namespace Sabre\DAVACL\Xml\Property;
 
-use
-    Sabre\DAV,
-    Sabre\Xml\XmlSerializable,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Writer;
 
 /**
  * SupportedPrivilegeSet property

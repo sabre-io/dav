@@ -2,11 +2,9 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\DAV,
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV;
+use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * This class represents the {DAV:}supportedlock property.
@@ -21,7 +19,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class SupportedLock implements Element {
+class SupportedLock implements XmlSerializable {
 
     /**
      * supportsLocks
@@ -35,28 +33,32 @@ class SupportedLock implements Element {
      *
      * @param bool $supportsLocks
      */
-    public function __construct($supportsLocks) {
+    function __construct($supportsLocks) {
 
         $this->supportsLocks = $supportsLocks;
 
     }
 
     /**
-     * The serialize method is called during xml writing.
+     * The xmlSerialize metod is called during xml writing.
      *
-     * It should use the $writer argument to encode this object into XML.
+     * Use the $writer argument to write its own xml serialization.
      *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
+     * An important note: do _not_ create a parent element. Any element
+     * implementing XmlSerializble should only ever write what's considered
+     * its 'inner xml'.
      *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
+     * The parent of the current element is responsible for writing a
+     * containing element.
+     *
+     * This allows serializers to be re-used for different element names.
+     *
+     * If you are opening new elements, you must also close them again.
      *
      * @param Writer $writer
      * @return void
      */
-    public function xmlSerialize(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         if (!$this->supportsLocks) return null;
 
@@ -68,33 +70,6 @@ class SupportedLock implements Element {
             '{DAV:}lockscope' => ['{DAV:}shared' => null],
             '{DAV:}locktype' =>  ['{DAV:}write' => null],
         ]);
-
-    }
-
-    /**
-     * The deserialize method is called during xml parsing.
-     *
-     * This method is called statictly, this is because in theory this method
-     * may be used as a type of constructor, or factory method.
-     *
-     * Often you want to return an instance of the current class, but you are
-     * free to return other data as well.
-     *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
-     *
-     * If you just want to skip parsing for this element altogether, you can
-     * just call $reader->next();
-     *
-     * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
-     * the next element.
-     *
-     * @param Reader $reader
-     * @return mixed
-     */
-    static public function xmlDeserialize(Reader $reader) {
-
-        throw new CannotDeserialize('This element does not have a deserializer');
 
     }
 }

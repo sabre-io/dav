@@ -2,11 +2,10 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\DAV,
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV;
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * Represents {DAV:}lockdiscovery property.
@@ -20,7 +19,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class LockDiscovery implements Element {
+class LockDiscovery implements XmlSerializable {
 
     /**
      * locks
@@ -103,31 +102,5 @@ class LockDiscovery implements Element {
 
     }
 
-    /**
-     * The deserialize method is called during xml parsing.
-     *
-     * This method is called statictly, this is because in theory this method
-     * may be used as a type of constructor, or factory method.
-     *
-     * Often you want to return an instance of the current class, but you are
-     * free to return other data as well.
-     *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
-     *
-     * If you just want to skip parsing for this element altogether, you can
-     * just call $reader->next();
-     *
-     * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
-     * the next element.
-     *
-     * @param Reader $reader
-     * @return mixed
-     */
-    static function xmlDeserialize(Reader $reader) {
-
-        throw new CannotDeserialize('This element does not have a deserializer');
-
-    }
 }
 

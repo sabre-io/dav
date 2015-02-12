@@ -2,7 +2,6 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
-use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
 use Sabre\Xml\XmlSerializable;
 use Sabre\CalDAV\Plugin;

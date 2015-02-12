@@ -2,12 +2,10 @@
 
 namespace Sabre\DAVACL\Xml\Property;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\Exception\BadRequest,
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * Principal property

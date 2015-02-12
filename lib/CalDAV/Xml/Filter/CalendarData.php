@@ -2,7 +2,6 @@
 
 namespace Sabre\CalDAV\Xml\Filter;
 
-use Sabre\Xml\Element\KeyValue;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 use Sabre\DAV\Exception\BadRequest;

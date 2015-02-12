@@ -6,7 +6,6 @@ use Sabre\DAV;
 use Sabre\HTTP\URLUtil;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\Xml\Writer as XmlWriter;
 
 /**
  * Browser Plugin

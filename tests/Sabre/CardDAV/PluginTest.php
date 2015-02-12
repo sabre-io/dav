@@ -9,7 +9,6 @@ class PluginTest extends AbstractPluginTest {
 
     function testConstruct() {
 
-        $this->assertEquals('card', $this->server->xmlNamespaces[Plugin::NS_CARDDAV]);
         $this->assertEquals('{' . Plugin::NS_CARDDAV . '}addressbook', $this->server->resourceTypeMapping['Sabre\\CardDAV\\IAddressBook']);
 
         $this->assertTrue(in_array('addressbook', $this->plugin->getFeatures()));

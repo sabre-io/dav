@@ -33,7 +33,7 @@ class AddressBookQueryReport implements XmlDeserializable {
      *
      * @var array
      */
-    public $filter;
+    public $filters;
 
     /**
      * The number of results the client wants
@@ -50,6 +50,23 @@ class AddressBookQueryReport implements XmlDeserializable {
      * @var string
      */
     public $test;
+
+    /**
+     * The mimetype of the content that should be returend. Usually
+     * text/vcard.
+     *
+     * @var string
+     */
+    public $contentType = null;
+
+    /**
+     * The version of vcard data that should be returned. Usually 3.0,
+     * referring to vCard 3.0.
+     *
+     * @var string
+     */
+    public $version = null;
+
 
     /**
      * The deserialize method is called during xml parsing.
@@ -74,12 +91,19 @@ class AddressBookQueryReport implements XmlDeserializable {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $elems = $reader->parseInnerTree();
+        $elems = $reader->parseInnerTree([
+            '{urn:ietf:params:xml:ns:carddav}prop-filter'  => 'Sabre\\CardDAV\\Xml\\Filter\\PropFilter',
+            '{urn:ietf:params:xml:ns:carddav}param-filter' => 'Sabre\\CardDAV\\Xml\\Filter\\ParamFilter',
+            '{urn:ietf:params:xml:ns:carddav}address-data' => 'Sabre\\CardDAV\\Xml\\Filter\\AddressData',
+            '{DAV:}prop'                                   => 'Sabre\\Xml\\Element\\KeyValue',
+        ]);
 
-        $properties = null;
-        $filter = null;
-        $test = 'anyof';
-        $limit = null;
+        $newProps = [
+            'filters' => null,
+            'properties' => [],
+            'test' => 'anyof',
+            'limit' => null,
+        ];
 
         if (!is_array($elems)) $elems = [];
 
@@ -88,33 +112,36 @@ class AddressBookQueryReport implements XmlDeserializable {
             switch($elem['name']) {
 
                 case '{DAV:}prop' :
-                    $properties = array_keys($elem['value']);
+                    $newProps['properties'] = array_keys($elem['value']);
+                    if (isset($elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'])) {
+                        $newProps+=$elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'];
+                    }
                     break;
                 case '{'.Plugin::NS_CARDDAV.'}filter' :
 
-                    if (!is_null($filter)) {
+                    if (!is_null($newProps['filters'])) {
                         throw new BadRequest('You can only include 1 {' . Plugin::NS_CARDDAV . '}filter element');
                     }
                     if (isset($elem['attributes']['test'])) {
-                        $test = $elem['attributes']['test'];
-                        if ($test!=='allof' && $test!=='anyof') {
+                        $newProps['test'] = $elem['attributes']['test'];
+                        if ($newProps['test']!=='allof' && $newProps['test']!=='anyof') {
                             throw new BadRequest('The "test" attribute must be one of "allof" or "anyof"');
                         }
                     }
 
                     foreach($elem['value'] as $subElem) {
                         if ($subElem['name'] === '{' . Plugin::NS_CARDDAV . '}prop-filter') {
-                            if (is_null($filter)) {
-                                $filter = [];
+                            if (is_null($newProps['filters'])) {
+                                $newProps['filters'] = [];
                             }
-                            $filter[] = $subElem['value'];
+                            $newProps['filters'][] = $subElem['value'];
                         }
                     }
                     break;
                 case '{'.Plugin::NS_CARDDAV.'}limit' :
                     foreach($elem['value'] as $child) {
                         if ($child['name'] === '{'. Plugin::NS_CARDDAV .'}nresults') {
-                            $limit = (int)$child['value'];
+                            $newProps['limit'] = (int)$child['value'];
                         }
                     }
                     break;
@@ -123,22 +150,21 @@ class AddressBookQueryReport implements XmlDeserializable {
 
         }
 
-        if (is_null($filter)) {
+        if (is_null($newProps['filters'])) {
             /**
              * We are supposed to throw this error, but KDE sometimes does not
              * include the filter element, and we need to treat it as if no
              * filters are supplied
              */
             //throw new BadRequest('The {' . Plugin::NS_CARDDAV . '}filter element is required for this request');
-            $filter = [];
+            $newProps['filters'] = [];
 
         }
 
         $obj = new self();
-        $obj->properties = $properties;
-        $obj->filter = $filter;
-        $obj->test = $test;
-        $obj->limit = $limit;
+        foreach($newProps as $key=>$value) {
+            $obj->$key = $value;
+        }
 
         return $obj;
 

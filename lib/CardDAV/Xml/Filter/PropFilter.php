@@ -2,8 +2,8 @@
 
 namespace Sabre\CardDAV\Xml\Filter;
 
-use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\CardDAV\Plugin;
 
@@ -22,7 +22,7 @@ use Sabre\CardDAV\Plugin;
  * @author Evert Pot (http://evertpot.com/) 
  * @license http://sabre.io/license/ Modified BSD License
  */
-abstract class PropFilter implements Element {
+class PropFilter implements XmlDeserializable {
 
     /**
      * The deserialize method is called during xml parsing.
@@ -45,7 +45,7 @@ abstract class PropFilter implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         $result = [
             'name' => null,

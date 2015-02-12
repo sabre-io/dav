@@ -2,6 +2,8 @@
 
 namespace Sabre\CardDAV\Xml\Request;
 
+use Sabre\CardDAV\Plugin;
+use Sabre\Uri;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 
@@ -34,6 +36,22 @@ class AddressBookMultiGetReport implements XmlDeserializable {
     public $hrefs;
 
     /**
+     * The mimetype of the content that should be returend. Usually
+     * text/vcard.
+     *
+     * @var string
+     */
+    public $contentType = null;
+
+    /**
+     * The version of vcard data that should be returned. Usually 3.0,
+     * referring to vCard 3.0.
+     *
+     * @var string
+     */
+    public $version = null;
+
+    /**
      * The deserialize method is called during xml parsing.
      *
      * This method is called statictly, this is because in theory this method
@@ -54,22 +72,30 @@ class AddressBookMultiGetReport implements XmlDeserializable {
      * @param Reader $reader
      * @return mixed
      */
-    static function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
-        $elems = $reader->parseInnerTree();
-        $hrefs = [];
+        $elems = $reader->parseInnerTree([
+            '{urn:ietf:params:xml:ns:carddav}address-data' => 'Sabre\\CardDAV\\Xml\\Filter\\AddressData',
+            '{DAV:}prop'                                   => 'Sabre\\Xml\\Element\\KeyValue',
+        ]);
 
-        $properties = null;
+        $newProps = [
+            'hrefs' => [],
+            'properties' => []
+        ];
 
         foreach($elems as $elem) {
 
             switch($elem['name']) {
 
                 case '{DAV:}prop' :
-                    $properties = array_keys($elem['value']);
+                    $newProps['properties'] = array_keys($elem['value']);
+                    if (isset($elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'])) {
+                        $newProps+=$elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'];
+                    }
                     break;
                 case '{DAV:}href' :
-                    $hrefs[] = $elem['value'];
+                    $newProps['hrefs'][] = Uri\resolve($reader->baseUri, $elem['value']);
                     break;
 
             }
@@ -77,9 +103,9 @@ class AddressBookMultiGetReport implements XmlDeserializable {
         }
 
         $obj = new self();
-        $obj->properties = $properties;
-        $obj->hrefs = $hrefs;
-
+        foreach($newProps as $key=>$value) {
+            $obj->$key = $value;
+        }
         return $obj;
 
     }

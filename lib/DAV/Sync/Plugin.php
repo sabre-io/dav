@@ -4,6 +4,7 @@ namespace Sabre\DAV\Sync;
 
 use Sabre\DAV;
 use Sabre\HTTP\RequestInterface;
+use Sabre\DAV\Xml\Request\SyncCollectionReport;
 
 /**
  * This plugin all WebDAV-sync capabilities to the Server.
@@ -53,6 +54,7 @@ class Plugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
+        $server->xml->elementMap['{DAV:}sync-collection'] = 'Sabre\\DAV\\Xml\\Request\\SyncCollectionReport';
 
         $self = $this;
 
@@ -99,20 +101,13 @@ class Plugin extends DAV\ServerPlugin {
      * This method handles the {DAV:}sync-collection HTTP REPORT.
      *
      * @param string $uri
-     * @param \DOMDocument $dom
+     * @param SyncCollectionReport $report
      * @return void
      */
-    function syncCollection($uri, \DOMDocument $dom) {
+    function syncCollection($uri, SyncCollectionReport $report) {
 
         // rfc3253 specifies 0 is the default value for Depth:
         $depth = $this->server->getHTTPDepth(0);
-
-        list(
-            $syncToken,
-            $syncLevel,
-            $limit,
-            $properties
-        ) = $this->parseSyncCollectionRequest($dom, $depth);
 
         // Getting the data
         $node = $this->server->tree->getNodeForPath($uri);
@@ -124,6 +119,7 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\ReportNotSupported('No sync information is available at this node');
         }
 
+        $syncToken = $report->syncToken;
         if (!is_null($syncToken)) {
             // Sync-token must start with our prefix
             if (substr($syncToken, 0, strlen(self::SYNCTOKEN_PREFIX)) !== self::SYNCTOKEN_PREFIX) {
@@ -133,7 +129,7 @@ class Plugin extends DAV\ServerPlugin {
             $syncToken = substr($syncToken, strlen(self::SYNCTOKEN_PREFIX));
 
         }
-        $changeInfo = $node->getChanges($syncToken, $syncLevel, $limit);
+        $changeInfo = $node->getChanges($syncToken, $report->syncLevel, $report->limit);
 
         if (is_null($changeInfo)) {
 
@@ -148,72 +144,8 @@ class Plugin extends DAV\ServerPlugin {
             $changeInfo['added'],
             $changeInfo['modified'],
             $changeInfo['deleted'],
-            $properties
+            $report->properties
         );
-
-    }
-
-    /**
-     * Parses the {DAV:}sync-collection REPORT request body.
-     *
-     * This method returns an array with 3 values:
-     *   0 - the value of the {DAV:}sync-token element
-     *   1 - the value of the {DAV:}sync-level element
-     *   2 - The value of the {DAV:}limit element
-     *   3 - A list of requested properties
-     *
-     * @param \DOMDocument $dom
-     * @param int $depth
-     * @return void
-     */
-    protected function parseSyncCollectionRequest(\DOMDocument $dom, $depth) {
-
-        $xpath = new \DOMXPath($dom);
-        $xpath->registerNamespace('d','urn:DAV');
-
-        $syncToken = $xpath->query("//d:sync-token");
-        if ($syncToken->length !== 1) {
-            throw new DAV\Exception\BadRequest('You must specify a {DAV:}sync-token element, and it must appear exactly once');
-        }
-        $syncToken = $syncToken->item(0)->nodeValue;
-        // Initial sync
-        if (!$syncToken) $syncToken = null;
-
-        $syncLevel = $xpath->query("//d:sync-level");
-        if ($syncLevel->length === 0) {
-            // In case there was no sync-level, it could mean that we're dealing
-            // with an old client. For these we must use the depth header
-            // instead.
-            $syncLevel = $depth;
-        } else {
-            $syncLevel = $syncLevel->item(0)->nodeValue;
-            if ($syncLevel === 'infinite') {
-                $syncLevel = DAV\Server::DEPTH_INFINITY;
-            }
-
-        }
-        $limit = $xpath->query("//d:limit/d:nresults");
-        if ($limit->length === 0) {
-            $limit = null;
-        } else {
-            $limit = $limit->item(0)->nodeValue;
-        }
-
-        $prop = $xpath->query('d:prop');
-        if ($prop->length !== 1) {
-            throw new DAV\Exception\BadRequest('The {DAV:}sync-collection must contain extactly 1 {DAV:}prop');
-        }
-
-        $properties = array_keys(
-            DAV\XMLUtil::parseProperties($dom->documentElement)
-        );
-
-        return [
-            $syncToken,
-            $syncLevel,
-            $limit,
-            $properties,
-        ];
 
     }
 

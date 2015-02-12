@@ -73,7 +73,7 @@ class SyncCollectionReport implements XmlDeserializable {
 
         $self = new self();
 
-        $elems = KeyValue::deserializeXml($reader);
+        $elems = KeyValue::xmlDeserialize($reader);
 
         $required = [
             '{DAV:}sync-token',

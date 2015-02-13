@@ -4,6 +4,7 @@ namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 use Sabre\DAV\INode;
+use Sabre\DAV\Exception\BadRequest;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
@@ -710,6 +711,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->xml->elementMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
         $server->xml->elementMap['{DAV:}acl'] = 'Sabre\\DAVACL\\Xml\\Property\\Acl';
         $server->xml->elementMap['{DAV:}expand-property'] = 'Sabre\\DAVACL\\Xml\\Request\\ExpandPropertyReport';
+        $server->xml->elementMap['{DAV:}principal-property-search'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalPropertySearchReport';
 
     }
 
@@ -980,24 +982,24 @@ class Plugin extends DAV\ServerPlugin {
      * This method handles HTTP REPORT requests
      *
      * @param string $reportName
-     * @param \DOMNode $dom
+     * @param mixed $report
      * @return bool
      */
-    function report($reportName, $dom) {
+    function report($reportName, $report) {
 
         switch($reportName) {
 
             case '{DAV:}principal-property-search' :
                 $this->server->transactionType = 'report-principal-property-search';
-                $this->principalPropertySearchReport($dom);
+                $this->principalPropertySearchReport($report);
                 return false;
             case '{DAV:}principal-search-property-set' :
                 $this->server->transactionType = 'report-principal-search-property-set';
-                $this->principalSearchPropertySetReport($dom);
+                $this->principalSearchPropertySetReport($report);
                 return false;
             case '{DAV:}expand-property' :
                 $this->server->transactionType = 'report-expand-property';
-                $this->expandPropertyReport($dom);
+                $this->expandPropertyReport($report);
                 return false;
 
         }
@@ -1104,16 +1106,15 @@ class Plugin extends DAV\ServerPlugin {
      * Other rfc's, such as ACL rely on this report, so it made sense to put
      * it in this plugin.
      *
-     * @param \DOMElement $dom
+     * @param Xml\Request\ExpandPropertyReport $report
      * @return void
      */
-    protected function expandPropertyReport($dom) {
+    protected function expandPropertyReport($report) {
 
-        $requestedProperties = $this->parseExpandPropertyReportRequest($dom->firstChild->firstChild);
         $depth = $this->server->getHTTPDepth(0);
         $requestUri = $this->server->getRequestUri();
 
-        $result = $this->expandProperties($requestUri,$requestedProperties,$depth);
+        $result = $this->expandProperties($requestUri, $report->properties, $depth);
 
         $xml = $this->server->xml->write([
             '{DAV:}multistatus' => new DAV\Xml\Response\MultiStatus(
@@ -1123,42 +1124,6 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setBody($xml);
-
-    }
-
-    /**
-     * This method is used by expandPropertyReport to parse
-     * out the entire HTTP request.
-     *
-     * @param \DOMElement $node
-     * @return array
-     */
-    protected function parseExpandPropertyReportRequest($node) {
-
-        $requestedProperties = [];
-        do {
-
-            if (DAV\XMLUtil::toClarkNotation($node)!=='{DAV:}property') continue;
-
-            if ($node->firstChild) {
-
-                $children = $this->parseExpandPropertyReportRequest($node->firstChild);
-
-            } else {
-
-                $children = [];
-
-            }
-
-            $namespace = $node->getAttribute('namespace');
-            if (!$namespace) $namespace = 'DAV:';
-
-            $propName = '{'.$namespace.'}' . $node->getAttribute('name');
-            $requestedProperties[$propName] = $children;
-
-        } while ($node = $node->nextSibling);
-
-        return $requestedProperties;
 
     }
 
@@ -1285,23 +1250,24 @@ class Plugin extends DAV\ServerPlugin {
      * clients to search for groups of principals, based on the value of one
      * or more properties.
      *
-     * @param \DOMDocument $dom
+     * @param Xml\Request\PrincipalPropertySearchReport $report
      * @return void
      */
-    protected function principalPropertySearchReport(\DOMDocument $dom) {
-
-        list(
-            $searchProperties,
-            $requestedProperties,
-            $applyToPrincipalCollectionSet,
-            $test
-        ) = $this->parsePrincipalPropertySearchReportRequest($dom);
+    protected function principalPropertySearchReport($report) {
 
         $uri = null;
-        if (!$applyToPrincipalCollectionSet) {
+        if (!$report->applyToPrincipalCollectionSet) {
             $uri = $this->server->getRequestUri();
         }
-        $result = $this->principalSearch($searchProperties, $requestedProperties, $uri, $test);
+        if ($this->server->getHttpDepth('0')!==0) {
+            throw new BadRequest('Depth must be 0');
+        }
+        $result = $this->principalSearch(
+            $report->searchProperties,
+            $report->properties,
+            $uri,
+            $report->test
+        );
 
         $prefer = $this->server->getHTTPPRefer();
 

@@ -2,12 +2,11 @@
 
 namespace Sabre\DAVACL;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\INode,
-    Sabre\HTTP\URLUtil,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\DAV\INode;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\Uri;
 
 /**
  * SabreDAV ACL Plugin
@@ -710,6 +709,7 @@ class Plugin extends DAV\ServerPlugin {
         // class.
         $server->xml->elementMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
         $server->xml->elementMap['{DAV:}acl'] = 'Sabre\\DAVACL\\Xml\\Property\\Acl';
+        $server->xml->elementMap['{DAV:}expand-property'] = 'Sabre\\DAVACL\\Xml\\Request\\ExpandPropertyReport';
 
     }
 
@@ -792,7 +792,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeBind($uri) {
 
-        list($parentUri) = URLUtil::splitPath($uri);
+        list($parentUri) = Uri\split($uri);
         $this->checkPrivileges($parentUri,'{DAV:}bind');
 
     }
@@ -808,7 +808,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeUnbind($uri) {
 
-        list($parentUri) = URLUtil::splitPath($uri);
+        list($parentUri) = Uri\split($uri);
         $this->checkPrivileges($parentUri,'{DAV:}unbind',self::R_RECURSIVEPARENTS);
 
     }

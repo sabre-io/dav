@@ -14,9 +14,9 @@ use Sabre\DAV\Exception\BadRequest;
  *
  * https://tools.ietf.org/html/rfc3744#section-9.4
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class PrincipalPropertySearchReport implements XmlDeserializable {
 

@@ -712,6 +712,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->xml->elementMap['{DAV:}acl'] = 'Sabre\\DAVACL\\Xml\\Property\\Acl';
         $server->xml->elementMap['{DAV:}expand-property'] = 'Sabre\\DAVACL\\Xml\\Request\\ExpandPropertyReport';
         $server->xml->elementMap['{DAV:}principal-property-search'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalPropertySearchReport';
+        $server->xml->elementMap['{DAV:}principal-search-property-set'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalSearchPropertySetReport';
 
     }
 
@@ -1188,57 +1189,46 @@ class Plugin extends DAV\ServerPlugin {
      * of properties the client may search on, using the
      * {DAV:}principal-property-search report.
      *
-     * @param \DOMDocument $dom
+     * @param Xml\Request\PrincipalSearchPropertySetReport $report
      * @return void
      */
-    protected function principalSearchPropertySetReport(\DOMDocument $dom) {
+    protected function principalSearchPropertySetReport($report) {
 
         $httpDepth = $this->server->getHTTPDepth(0);
         if ($httpDepth!==0) {
             throw new DAV\Exception\BadRequest('This report is only defined when Depth: 0');
         }
 
-        if ($dom->firstChild->hasChildNodes())
-            throw new DAV\Exception\BadRequest('The principal-search-property-set report element is not allowed to have child elements');
-
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $root = $dom->createElement('d:principal-search-property-set');
-        $dom->appendChild($root);
-        // Adding in default namespaces
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $root->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
-
-        $nsList = $this->server->xmlNamespaces;
+        $writer = $this->server->xml->getWriter();
+        $writer->startElement('{DAV:}principal-search-property-set');
 
         foreach($this->principalSearchPropertySet as $propertyName=>$description) {
 
-            $psp = $dom->createElement('d:principal-search-property');
-            $root->appendChild($psp);
+            $writer->startElement('{DAV:}principal-search-property');
+            $writer->startElement('{DAV:}prop');
 
-            $prop = $dom->createElement('d:prop');
-            $psp->appendChild($prop);
+            $writer->writeElement($propertyName);
 
-            $propName = null;
-            preg_match('/^{([^}]*)}(.*)$/',$propertyName,$propName);
+            $writer->endElement(); // prop
 
-            $currentProperty = $dom->createElement($nsList[$propName[1]] . ':' . $propName[2]);
-            $prop->appendChild($currentProperty);
+            if ($description) {
+                $writer->write([[
+                    'name' => '{DAV:}description',
+                    'value' => $description,
+                    'attributes' => ['xml:lang' => 'en']
+                ]]);
+            }
 
-            $descriptionElem = $dom->createElement('d:description');
-            $descriptionElem->setAttribute('xml:lang','en');
-            $descriptionElem->appendChild($dom->createTextNode($description));
-            $psp->appendChild($descriptionElem);
+            $writer->endElement(); // principal-search-property
 
 
         }
 
+        $writer->endElement(); // principal-search-property-set
+
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->setBody($dom->saveXML());
+        $this->server->httpResponse->setBody($writer->outputMemory());
 
     }
 
@@ -1278,83 +1268,7 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-    /**
-     * parsePrincipalPropertySearchReportRequest
-     *
-     * This method parses the request body from a
-     * {DAV:}principal-property-search report.
-     *
-     * This method returns an array with two elements:
-     *  1. an array with properties to search on, and their values
-     *  2. a list of propertyvalues that should be returned for the request.
-     *
-     * @param \DOMDocument $dom
-     * @return array
-     */
-    protected function parsePrincipalPropertySearchReportRequest($dom) {
-
-        $httpDepth = $this->server->getHTTPDepth(0);
-        if ($httpDepth!==0) {
-            throw new DAV\Exception\BadRequest('This report is only defined when Depth: 0');
-        }
-
-        $searchProperties = [];
-
-        $applyToPrincipalCollectionSet = false;
-
-        $test = $dom->firstChild->getAttribute('test') === 'anyof' ? 'anyof' : 'allof';
-
-        // Parsing the search request
-        foreach($dom->firstChild->childNodes as $searchNode) {
-
-            if (DAV\XMLUtil::toClarkNotation($searchNode) == '{DAV:}apply-to-principal-collection-set') {
-                $applyToPrincipalCollectionSet = true;
-            }
-
-            if (DAV\XMLUtil::toClarkNotation($searchNode)!=='{DAV:}property-search')
-                continue;
-
-            $propertyName = null;
-            $propertyValue = null;
-
-            foreach($searchNode->childNodes as $childNode) {
-
-                switch(DAV\XMLUtil::toClarkNotation($childNode)) {
-
-                    case '{DAV:}prop' :
-                        $property = DAV\XMLUtil::parseProperties($searchNode);
-                        reset($property);
-                        $propertyName = key($property);
-                        break;
-
-                    case '{DAV:}match' :
-                        $propertyValue = $childNode->textContent;
-                        break;
-
-                }
-
-
-            }
-
-            if (is_null($propertyName) || is_null($propertyValue))
-                throw new DAV\Exception\BadRequest('Invalid search request. propertyname: ' . $propertyName . '. propertvvalue: ' . $propertyValue);
-
-            $searchProperties[$propertyName] = $propertyValue;
-
-        }
-
-        return [
-            $searchProperties,
-            array_keys(DAV\XMLUtil::parseProperties($dom->firstChild)),
-            $applyToPrincipalCollectionSet,
-            $test
-        ];
-
-    }
-
-
     /* }}} */
-
 
     /**
      * Returns a bunch of meta-data about the plugin.

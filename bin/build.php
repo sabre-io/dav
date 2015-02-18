@@ -148,7 +148,7 @@ function buildzip() {
     echo "  Moving important files to the root of the project\n";
 
     $fileNames = [
-        'ChangeLog.md',
+        'CHANGELOG.md',
         'LICENSE',
         'README.md',
         'examples',

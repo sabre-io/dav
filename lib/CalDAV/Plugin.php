@@ -180,6 +180,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $server->xml->elementMap['{' . self::NS_CALDAV . '}calendar-query'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarQueryReport';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}calendar-multiget'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarMultiGetReport';
+        $server->xml->elementMap['{' . self::NS_CALDAV . '}free-busy-query'] = 'Sabre\\CalDAV\\Xml\\Request\\FreeBusyQueryReport';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}mkcalendar'] = 'Sabre\\CalDAV\\Xml\\Request\\MkCalendar';
 
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
@@ -216,23 +217,23 @@ class Plugin extends DAV\ServerPlugin {
      * This functions handles REPORT requests specific to CalDAV
      *
      * @param string $reportName
-     * @param \DOMNode $dom
+     * @param mixed $report
      * @return bool
      */
-    function report($reportName,$dom) {
+    function report($reportName, $report) {
 
         switch($reportName) {
             case '{' . self::NS_CALDAV . '}calendar-multiget' :
                 $this->server->transactionType = 'report-calendar-multiget';
-                $this->calendarMultiGetReport($dom);
+                $this->calendarMultiGetReport($report);
                 return false;
             case '{' . self::NS_CALDAV . '}calendar-query' :
                 $this->server->transactionType = 'report-calendar-query';
-                $this->calendarQueryReport($dom);
+                $this->calendarQueryReport($report);
                 return false;
             case '{' . self::NS_CALDAV . '}free-busy-query' :
                 $this->server->transactionType = 'report-free-busy-query';
-                $this->freeBusyQueryReport($dom);
+                $this->freeBusyQueryReport($report);
                 return false;
 
         }
@@ -599,35 +600,12 @@ class Plugin extends DAV\ServerPlugin {
      * This method is responsible for parsing the request and generating the
      * response for the CALDAV:free-busy-query REPORT.
      *
-     * @param \DOMNode $dom
+     * @param Xml\Request\FreeBusyQueryReport $report
      * @return void
      */
-    protected function freeBusyQueryReport(\DOMNode $dom) {
-
-        $start = null;
-        $end = null;
-
-        foreach($dom->firstChild->childNodes as $childNode) {
-
-            $clark = DAV\XMLUtil::toClarkNotation($childNode);
-            if ($clark == '{' . self::NS_CALDAV . '}time-range') {
-                $start = $childNode->getAttribute('start');
-                $end = $childNode->getAttribute('end');
-                break;
-            }
-
-        }
-        if ($start) {
-            $start = VObject\DateTimeParser::parseDateTime($start);
-        }
-        if ($end) {
-            $end = VObject\DateTimeParser::parseDateTime($end);
-        }
+    protected function freeBusyQueryReport(Xml\Request\FreeBusyQueryReport $report) {
 
         $uri = $this->server->getRequestUri();
-        if (!$start && !$end) {
-            throw new DAV\Exception\BadRequest('The freebusy report must have a time-range filter');
-        }
 
         $acl = $this->server->getPlugin('acl');
         if ($acl) {
@@ -663,8 +641,8 @@ class Plugin extends DAV\ServerPlugin {
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => $start,
-                        'end' => $end,
+                        'start' => $report->start,
+                        'end' => $report->end,
                     ],
                 ],
             ],
@@ -680,7 +658,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $generator = new VObject\FreeBusyGenerator();
         $generator->setObjects($objects);
-        $generator->setTimeRange($start, $end);
+        $generator->setTimeRange($report->start, $report->end);
         $generator->setTimeZone($calendarTimeZone);
         $result = $generator->getResult();
         $result = $result->serialize();

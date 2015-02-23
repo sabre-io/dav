@@ -11,6 +11,9 @@ ChangeLog
 * #610: Don't allow discovery of arbitrary files using `..` in the browser
   plugin (@LukasReschke).
 * Browser plugin now shows quota properties.
+* #612: PropertStorage didn't delete properties from nodes when a node's
+  parents get deleted.
+
 
 2.1.2 (2014-12-10)
 ------------------

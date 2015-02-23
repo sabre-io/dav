@@ -401,7 +401,7 @@ HTML;
 
         // Making sure people aren't trying to escape from the base path.
         $path = str_replace('\\', '/', $path);
-        if (strpos($path, '/../') !== FALSE || strrchr($path, '/') === '/..') {
+        if (strpos($path, '/../') !== false || strrchr($path, '/') === '/..') {
             throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
         }
         if (strpos(realpath($path), realpath($assetDir)) === 0 && file_exists($path)) {

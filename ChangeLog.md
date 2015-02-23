@@ -10,7 +10,7 @@ ChangeLog
 * #611: Escaping a bit more HTML output in the browser plugin. (@LukasReschke)
 * #610: Don't allow discovery of arbitrary files using `..` in the browser
   plugin (@LukasReschke).
-
+* Browser plugin now shows quota properties.
 
 2.1.2 (2014-12-10)
 ------------------

@@ -243,16 +243,16 @@ class Plugin extends DAV\ServerPlugin {
                 }
 
                 $html.= '<tr>';
-                $html.= '<td class="nameColumn"><a href="' . $this->escapeHTML($subProps['fullPath']) . '"><span class="oi" data-glyph="'.$type['icon'].'"></span> ' . $this->escapeHTML($subProps['displayPath']) . '</a></td>';
-                $html.= '<td class="typeColumn">' . $type['string'] . '</td>';
+                $html.= '<td class="nameColumn"><a href="' . $this->escapeHTML($subProps['fullPath']) . '"><span class="oi" data-glyph="'.$this->escapeHTML($type['icon']).'"></span> ' . $this->escapeHTML($subProps['displayPath']) . '</a></td>';
+                $html.= '<td class="typeColumn">' . $this->escapeHTML($type['string']) . '</td>';
                 $html.= '<td>';
                 if (isset($subProps['{DAV:}getcontentlength'])) {
-                    $html.=$subProps['{DAV:}getcontentlength'] . ' bytes';
+                    $html.=$this->escapeHTML($subProps['{DAV:}getcontentlength'] . ' bytes');
                 }
                 $html.= '</td><td>';
                 if (isset($subProps['{DAV:}getlastmodified'])) {
                     $lastMod = $subProps['{DAV:}getlastmodified']->getTime();
-                    $html.=$lastMod->format('F j, Y, g:i a');
+                    $html.=$this->escapeHTML($lastMod->format('F j, Y, g:i a'));
                 }
                 $html.= '</td></tr>';
             }
@@ -719,7 +719,7 @@ HTML;
                 echo $this->escapeHTML($value);
                 break;
             case 'complex' :
-                echo '<em title="' . get_class($value) . '">complex</em>';
+                echo '<em title="' . $this->escapeHTML(get_class($value)) . '">complex</em>';
                 break;
             default :
                 echo '<em>unknown</em>';

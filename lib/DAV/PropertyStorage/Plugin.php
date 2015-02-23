@@ -8,6 +8,21 @@ use Sabre\DAV\PropPatch;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\INode;
 
+/**
+ * PropertyStorage Plugin.
+ *
+ * Adding this plugin to your server allows clients to store any arbitrary
+ * WebDAV property.
+ *
+ * See:
+ *   http://sabre.io/dav/property-storage/
+ *
+ * for more information.
+ *
+ * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
+ */
 class Plugin extends ServerPlugin {
 
     /**

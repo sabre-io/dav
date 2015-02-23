@@ -5,6 +5,18 @@ namespace Sabre\DAV\PropertyStorage\Backend;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
 
+/**
+ * PropertyStorage PDO backend.
+ *
+ * This backend class uses a PDO-enabled database to store webdav properties.
+ * Both sqlite and mysql have been tested.
+ *
+ * The database structure can be found in the examples/sql/ directory.
+ *
+ * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
+ */
 class PDO implements BackendInterface {
 
     /**
@@ -96,11 +108,26 @@ class PDO implements BackendInterface {
      * This method is called after a node is deleted.
      *
      * This allows a backend to clean up all associated properties.
+     *
+     * The delete method will get called once for the deletion of an entire
+     * tree.
+     *
+     * @param string $path
+     * @return void
      */
     function delete($path) {
 
-        $stmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ?");
-        $stmt->execute([$path]);
+        $stmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? OR path LIKE ? ESCAPE '='");
+        $childPath = strtr(
+            $path,
+            [
+                '=' => '==',
+                '%' => '=%',
+                '_' => '=_'
+            ]
+        ) . '/%';
+
+        $stmt->execute([$path, $childPath]);
 
     }
 

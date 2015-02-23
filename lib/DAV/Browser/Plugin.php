@@ -634,7 +634,7 @@ HTML;
     private function drawPropertyRow($name, $value) {
 
         $view = 'unknown';
-        if (is_string($value)) {
+        if (is_scalar($value)) {
             $view = 'string';
         } elseif($value instanceof DAV\Property) {
 

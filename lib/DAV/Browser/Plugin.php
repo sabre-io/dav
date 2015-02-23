@@ -456,6 +456,7 @@ HTML;
      *
      * @param string $assetName
      * @return string
+     * @throws DAV\Exception\NotFound
      */
     protected function getLocalAssetPath($assetName) {
 
@@ -463,6 +464,10 @@ HTML;
         $path = $assetDir . $assetName;
 
         // Making sure people aren't trying to escape from the base path.
+        $path = str_replace('\\', '/', $path);
+        if (strpos($path, '/../') !== FALSE || strrchr($path, '/') === '/..') {
+            throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
+        }
         if (strpos(realpath($path), realpath($assetDir)) === 0 && file_exists($path)) {
             return $path;
         }

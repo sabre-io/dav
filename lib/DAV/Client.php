@@ -240,6 +240,10 @@ class Client extends HTTP\Client {
         $response = $this->send($request);
 
         if ((int)$response->getStatus() >= 400) {
+            if ((int)$response->getStatus() === 404) {
+                throw new Exception\NotFound($url . ' not found');
+            }
+
             throw new Exception('HTTP error: ' . $response->getStatus());
         }
 

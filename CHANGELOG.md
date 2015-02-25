@@ -6,6 +6,10 @@ ChangeLog
 
 * Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to
   `challenge`, which is a more correct and better sounding name.
+* Also contains all the changes introduced between 2.1.2 and 2.1.3.
+* The zip release ships with [sabre/vobject 3.4.2][vobj],
+  [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt] and
+  [sabre/uri 1.0.0][uri].
 
 
 2.2.0-alpha1 (2014-12-10)
@@ -1812,5 +1816,6 @@ ChangeLog
 [vobj]: http://sabre.io/vobject/
 [evnt]: http://sabre.io/event/
 [http]: http://sabre.io/http/
+[uri]: http://sabre.io/uri/
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"

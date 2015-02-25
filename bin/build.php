@@ -130,6 +130,12 @@ function buildzip() {
             "bin-dir" => "./bin",
         ]
     ];
+    unset(
+        $newComposer['require']['sabre/vobject'],
+        $newComposer['require']['sabre/uri'],
+        $newComposer['require']['sabre/http'],
+        $newComposer['require']['sabre/event']
+    );
     $newComposer['require']['sabre/dav'] = $version;
     mkdir('build/SabreDAV');
     file_put_contents('build/SabreDAV/composer.json', json_encode($newComposer));

@@ -13,6 +13,8 @@ ChangeLog
 * Browser plugin now shows quota properties.
 * #612: PropertyStorage didn't delete properties from nodes when a node's
   parents get deleted.
+* #581: Fixed problems related to finding attendee information during
+  scheduling.
 * The zip release ships with [sabre/vobject 3.4.2][vobj],
   [sabre/http 3.0.4][http], and [sabre/event 2.0.1][evnt].
 

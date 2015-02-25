@@ -1,18 +1,20 @@
 ChangeLog
 =========
 
-2.1.3 (2015-??-??)
+2.1.3 (2015-02-25)
 ------------------
 
-* #586: SCHEDULE-STATUS should not contain a reason-phrase.
+* #586: `SCHEDULE-STATUS` should not contain a reason-phrase.
 * #539: Fixed a bug related to scheduling in shared calendars.
 * #595: Support for calendar-timezone in iCalendar exports.
 * #611: Escaping a bit more HTML output in the browser plugin. (@LukasReschke)
 * #610: Don't allow discovery of arbitrary files using `..` in the browser
   plugin (@LukasReschke).
 * Browser plugin now shows quota properties.
-* #612: PropertStorage didn't delete properties from nodes when a node's
+* #612: PropertyStorage didn't delete properties from nodes when a node's
   parents get deleted.
+* The zip release ships with [sabre/vobject 3.4.2][vobj],
+  [sabre/http 3.0.4][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.2 (2014-12-10)

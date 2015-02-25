@@ -1,15 +1,20 @@
 ChangeLog
 =========
 
-2.2.0-alpha2 (2015-02-25)
+2.2.0-alpha3 (2015-02-25)
 -------------------------
 
-* Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to
-  `challenge`, which is a more correct and better sounding name.
 * Also contains all the changes introduced between 2.1.2 and 2.1.3.
 * The zip release ships with [sabre/vobject 3.4.2][vobj],
   [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt] and
   [sabre/uri 1.0.0][uri].
+
+
+2.2.0-alpha2 (2015-01-09)
+-------------------------
+
+* Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to
+  `challenge`, which is a more correct and better sounding name.
 
 
 2.2.0-alpha1 (2014-12-10)

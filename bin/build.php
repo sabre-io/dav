@@ -128,17 +128,19 @@ function buildzip() {
         "require" => $input['require'],
         "config"  => [
             "bin-dir" => "./bin",
-        ]
+        ],
+        "prefer-stable" => true,
+        "minimum-stability" => "alpha",
     ];
     unset(
         $newComposer['require']['sabre/vobject'],
-        $newComposer['require']['sabre/uri'],
         $newComposer['require']['sabre/http'],
+        $newComposer['require']['sabre/uri'],
         $newComposer['require']['sabre/event']
     );
     $newComposer['require']['sabre/dav'] = $version;
     mkdir('build/SabreDAV');
-    file_put_contents('build/SabreDAV/composer.json', json_encode($newComposer));
+    file_put_contents('build/SabreDAV/composer.json', json_encode($newComposer, JSON_PRETTY_PRINT));
 
     echo "  Downloading dependencies\n";
     system("cd build/SabreDAV; composer install -n --no-dev", $code);

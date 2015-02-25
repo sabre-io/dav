@@ -42,10 +42,10 @@ ChangeLog
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 
 
-2.1.3 (2015-??-??)
+2.1.3 (2015-02-25)
 ------------------
 
-* #586: SCHEDULE-STATUS should not contain a reason-phrase.
+* #586: `SCHEDULE-STATUS` should not contain a reason-phrase.
 * #539: Fixed a bug related to scheduling in shared calendars.
 * #595: Support for calendar-timezone in iCalendar exports.
 * #581: findByUri would send empty prefixes to the principal backend (@soydeedo)
@@ -53,8 +53,12 @@ ChangeLog
 * #610: Don't allow discovery of arbitrary files using `..` in the browser
   plugin (@LukasReschke).
 * Browser plugin now shows quota properties.
-* #612: PropertStorage didn't delete properties from nodes when a node's
+* #612: PropertyStorage didn't delete properties from nodes when a node's
   parents get deleted.
+* #581: Fixed problems related to finding attendee information during
+  scheduling.
+* The zip release ships with [sabre/vobject 3.4.2][vobj],
+  [sabre/http 3.0.4][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.2 (2014-12-10)
@@ -393,10 +397,11 @@ ChangeLog
   for calendar objects, if the caldav backend provides this info.
 
 
-1.8.12-stable (????-??-??)
+1.8.12-stable (2015-01-21)
 --------------------------
 
-* #568: Support empty usernams and passwords in basic auth.
+* The zip release ships with sabre/vobject 2.1.7.
+* #568: Support empty usernames and passwords in basic auth.
 
 
 1.8.11 (2014-12-10)

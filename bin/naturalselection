@@ -72,7 +72,7 @@ def run(cacheDir, threshold, sleep=5, simulate=False, min_erase = 0):
 
 def main():
     parser = OptionParser(
-        version="naturalselecton v0.3",
+        version="naturalselection v0.3",
         description="Cache directory manager. Deletes cache entries based on accesstime and free space thresholds.\n" +
             "This utility is distributed alongside SabreDAV.",
         usage="usage: %prog [options] cacheDirectory",

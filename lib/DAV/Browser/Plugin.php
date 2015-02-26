@@ -269,16 +269,16 @@ HTML;
                 }
 
                 $html.= '<tr>';
-                $html.= '<td class="nameColumn"><a href="' . $this->escapeHTML($subProps['fullPath']) . '"><span class="oi" data-glyph="'.$type['icon'].'"></span> ' . $this->escapeHTML($subProps['displayPath']) . '</a></td>';
-                $html.= '<td class="typeColumn">' . $type['string'] . '</td>';
+                $html.= '<td class="nameColumn"><a href="' . $this->escapeHTML($subProps['fullPath']) . '"><span class="oi" data-glyph="'.$this->escapeHTML($type['icon']).'"></span> ' . $this->escapeHTML($subProps['displayPath']) . '</a></td>';
+                $html.= '<td class="typeColumn">' . $this->escapeHTML($type['string']) . '</td>';
                 $html.= '<td>';
                 if (isset($subProps['{DAV:}getcontentlength'])) {
-                    $html.=$subProps['{DAV:}getcontentlength'] . ' bytes';
+                    $html.=$this->escapeHTML($subProps['{DAV:}getcontentlength'] . ' bytes');
                 }
                 $html.= '</td><td>';
                 if (isset($subProps['{DAV:}getlastmodified'])) {
                     $lastMod = $subProps['{DAV:}getlastmodified']->getTime();
-                    $html.=$lastMod->format('F j, Y, g:i a');
+                    $html.=$this->escapeHTML($lastMod->format('F j, Y, g:i a'));
                 }
                 $html.= '</td></tr>';
             }
@@ -392,6 +392,7 @@ HTML;
      *
      * @param string $assetName
      * @return string
+     * @throws DAV\Exception\NotFound
      */
     protected function getLocalAssetPath($assetName) {
 
@@ -399,6 +400,10 @@ HTML;
         $path = $assetDir . $assetName;
 
         // Making sure people aren't trying to escape from the base path.
+        $path = str_replace('\\', '/', $path);
+        if (strpos($path, '/../') !== false || strrchr($path, '/') === '/..') {
+            throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
+        }
         if (strpos(realpath($path), realpath($assetDir)) === 0 && file_exists($path)) {
             return $path;
         }
@@ -565,7 +570,7 @@ HTML;
     private function drawPropertyRow($name, $value) {
 
         $view = 'unknown';
-        if (is_string($value)) {
+        if (is_scalar($value)) {
             $view = 'string';
         } elseif($value instanceof DAV\Property) {
 
@@ -655,7 +660,7 @@ HTML;
                 echo $this->escapeHTML($value);
                 break;
             case 'complex' :
-                echo '<em title="' . get_class($value) . '">complex</em>';
+                echo '<em title="' . $this->escapeHTML(get_class($value)) . '">complex</em>';
                 break;
             default :
                 echo '<em>unknown</em>';

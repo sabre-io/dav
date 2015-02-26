@@ -8,6 +8,12 @@ ChangeLog
 * #539: Fixed a bug related to scheduling in shared calendars.
 * #595: Support for calendar-timezone in iCalendar exports.
 * #581: findByUri would send empty prefixes to the principal backend (@soydeedo)
+* #611: Escaping a bit more HTML output in the browser plugin. (@LukasReschke)
+* #610: Don't allow discovery of arbitrary files using `..` in the browser
+  plugin (@LukasReschke).
+* Browser plugin now shows quota properties.
+* #612: PropertStorage didn't delete properties from nodes when a node's
+  parents get deleted.
 
 
 2.1.2 (2014-12-10)
@@ -343,6 +349,13 @@ ChangeLog
 * Fixed: SabreDAV catches every exception again.
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
+
+
+1.8.12-stable (????-??-??)
+--------------------------
+
+* #568: Support empty usernams and passwords in basic auth.
+
 
 1.8.11 (2014-12-10)
 -------------------

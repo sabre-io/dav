@@ -127,4 +127,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('child', $propFind->get('{DAV:}displayname'));
     }
 
+    /**
+     * @depends testPropFind
+     */
+    function testDeepDelete() {
+
+        $backend = $this->getBackend();
+        $propPatch = new PropPatch(['{DAV:}displayname' => 'child']);
+        $backend->propPatch('dir/child', $propPatch);
+        $propPatch->commit();
+        $backend->delete('dir');
+
+        $propFind = new PropFind('dir/child', ['{DAV:}displayname']);
+        $backend->propFind('dir/child', $propFind);
+
+        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+
+    }
 }

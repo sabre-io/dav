@@ -144,4 +144,14 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->body);
 
     }
+
+    function testGetAssetEscapeBasePath() {
+
+        $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=./../assets/favicon.ico');
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->body);
+
+    }
 }

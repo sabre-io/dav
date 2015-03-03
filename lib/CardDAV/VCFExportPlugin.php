@@ -87,7 +87,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
      * @param array $nodes
      * @return string
      */
-    function generateVCF(array $nodes) {
+    function generateVCF($nodes) {
 
         $output = "";
 

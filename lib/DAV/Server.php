@@ -900,7 +900,7 @@ class Server extends EventEmitter {
      * @param string $path
      * @param array $propertyNames
      * @param int $depth
-     * @return array
+     * @return PropFindIterator
      */
     function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 

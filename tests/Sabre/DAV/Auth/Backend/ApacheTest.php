@@ -14,33 +14,59 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException Sabre\DAV\Exception
-     */
     function testNoHeader() {
 
-        $server = new DAV\Server();
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
         $backend = new Apache();
-        $backend->authenticate($server,'Realm');
+
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
+        );
 
     }
 
     function testRemoteUser() {
 
+        $request = HTTP\Sapi::createFromServerArray([
+            'REMOTE_USER' => 'username',
+        ]);
+        $response = new HTTP\Response();
         $backend = new Apache();
 
-        $server = new DAV\Server();
-        $request = HTTP\Sapi::createFromServerArray(array(
-            'REMOTE_USER' => 'username',
-        ));
-        $server->httpRequest = $request;
-
-        $this->assertTrue($backend->authenticate($server, 'Realm'));
-
-        $userInfo = 'username';
-
-        $this->assertEquals($userInfo, $backend->getCurrentUser());
+        $this->assertEquals(
+            [true, 'principals/username'],
+            $backend->check($request, $response)
+        );
 
     }
 
+    function testRedirectRemoteUser() {
+
+        $request = HTTP\Sapi::createFromServerArray([
+            'REDIRECT_REMOTE_USER' => 'username',
+        ]);
+        $response = new HTTP\Response();
+        $backend = new Apache();
+
+        $this->assertEquals(
+            [true, 'principals/username'],
+            $backend->check($request, $response)
+        );
+
+    }
+
+    function testRequireAuth() {
+
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
+
+        $backend = new Apache();
+        $backend->challenge($request, $response);
+
+        $this->assertNull(
+            $response->getHeader('WWW-Authenticate')
+        );
+
+    }
 }

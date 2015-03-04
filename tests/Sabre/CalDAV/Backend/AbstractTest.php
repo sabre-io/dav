@@ -44,30 +44,105 @@ class AbstractTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-}
+    function testGetCalendarObjectByUID() {
 
-class AbstractMock extends AbstractBackend {
+        $abstract = new AbstractMock();
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal1', 'zim')
+        );
+        $this->assertEquals(
+            'cal1/event1.ics',
+            $abstract->getCalendarObjectByUID('principal1', 'foo')
+        );
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal3', 'foo')
+        );
+        $this->assertNull(
+            $abstract->getCalendarObjectByUID('principal1', 'shared')
+        );
 
-    function getCalendarsForUser($principalUri) { }
-    function createCalendar($principalUri,$calendarUri,array $properties) { }
-    function deleteCalendar($calendarId) { }
-    function getCalendarObjects($calendarId) { 
+    }
 
-        return array(
+    function testGetMultipleCalendarObjects() {
+
+        $abstract = new AbstractMock();
+        $result = $abstract->getMultipleCalendarObjects(1, [
+            'event1.ics',
+            'task1.ics',
+        ]);
+
+        $expected = [
             array(
                 'id' => 1,
                 'calendarid' => 1,
                 'uri' => 'event1.ics',
+                'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
             ),
             array(
                 'id' => 2,
                 'calendarid' => 1,
                 'uri' => 'task1.ics',
+                'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
+            ),
+        ];
+
+        $this->assertEquals($expected, $result);
+
+
+    }
+
+}
+
+class AbstractMock extends AbstractBackend {
+
+    function getCalendarsForUser($principalUri) {
+
+        return array(
+            array(
+                'id' => 1,
+                'principaluri' => 'principal1',
+                'uri' => 'cal1',
+            ),
+            array(
+                'id' => 2,
+                'principaluri' => 'principal1',
+                '{http://sabredav.org/ns}owner-principal' => 'principal2',
+                'uri' => 'cal1',
             ),
         );
 
     }
-    function getCalendarObject($calendarId,$objectUri) { 
+    function createCalendar($principalUri,$calendarUri,array $properties) { }
+    function deleteCalendar($calendarId) { }
+    function getCalendarObjects($calendarId) {
+
+        switch($calendarId) {
+            case 1:
+                return [
+                    [
+                        'id' => 1,
+                        'calendarid' => 1,
+                        'uri' => 'event1.ics',
+                    ],
+                    [
+                        'id' => 2,
+                        'calendarid' => 1,
+                        'uri' => 'task1.ics',
+                    ],
+                ];
+            case 2:
+                return [
+                    [
+                        'id' => 3,
+                        'calendarid' => 2,
+                        'uri' => 'shared-event.ics',
+                    ]
+                ];
+        }
+
+    }
+
+    function getCalendarObject($calendarId, $objectUri) {
 
         switch($objectUri) {
 
@@ -76,14 +151,21 @@ class AbstractMock extends AbstractBackend {
                     'id' => 1,
                     'calendarid' => 1,
                     'uri' => 'event1.ics',
-                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
                 );
             case 'task1.ics' :
                 return array(
-                    'id' => 1,
+                    'id' => 2,
                     'calendarid' => 1,
-                    'uri' => 'event1.ics',
+                    'uri' => 'task1.ics',
                     'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
+                );
+            case 'shared-event.ics' :
+                return array(
+                    'id' => 3,
+                    'calendarid' => 2,
+                    'uri' => 'event1.ics',
+                    'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:shared\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
                 );
 
         }

@@ -4,8 +4,6 @@ namespace Sabre\CardDAV;
 
 use Sabre\DAV;
 
-require_once 'Sabre/CardDAV/AbstractPluginTest.php';
-
 class PluginTest extends AbstractPluginTest {
 
     function testConstruct() {
@@ -140,4 +138,37 @@ class PluginTest extends AbstractPluginTest {
         );
 
     }
+
+    function testAddressbookPluginProperties() {
+
+        $ns = '{' . Plugin::NS_CARDDAV . '}';
+        $propFind = new DAV\PropFind('addressbooks/user1/book1', [
+            $ns . 'supported-address-data',
+            $ns . 'supported-collation-set',
+        ]);
+        $node = $this->server->tree->getNodeForPath('addressbooks/user1/book1');
+        $this->plugin->propFindEarly($propFind, $node);
+
+        $this->assertInstanceOf(
+            'Sabre\\CardDAV\\Property\\SupportedAddressData',
+            $propFind->get($ns . 'supported-address-data')
+        );
+        $this->assertInstanceOf(
+            'Sabre\\CardDAV\\Property\\SupportedCollationSet',
+            $propFind->get($ns . 'supported-collation-set')
+        );
+
+
+    }
+
+    function testGetTransform() {
+
+        $request = new \Sabre\HTTP\Request('GET', '/addressbooks/user1/book1/card1', ['Accept: application/vcard+json']);
+        $response = new \Sabre\HTTP\ResponseMock();
+        $this->server->invokeMethod($request, $response);
+
+        $this->assertEquals(200, $response->getStatus());
+
+    }
+
 }

@@ -82,7 +82,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
     function testGetContentType() {
 
-        $this->assertEquals('text/x-vcard; charset=utf-8', $this->card->getContentType());
+        $this->assertEquals('text/vcard; charset=utf-8', $this->card->getContentType());
 
     }
 

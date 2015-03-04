@@ -15,7 +15,7 @@ use Sabre\DAV;
  *   * a string, for a file
  *   * An instance of \Sabre\DAV\INode.
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

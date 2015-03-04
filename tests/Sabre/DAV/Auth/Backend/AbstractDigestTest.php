@@ -5,110 +5,91 @@ namespace Sabre\DAV\Auth\Backend;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
-    /**
-     * @expectedException Sabre\DAV\Exception\NotAuthenticated
-     */
-    public function testAuthenticateNoHeaders() {
+    function testCheckNoHeaders() {
 
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $backend->authenticate($server,'myRealm');
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
+        );
 
     }
 
-    /**
-     * @expectedException Sabre\DAV\Exception
-     */
-    public function testAuthenticateBadGetUserInfoResponse() {
-
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+    function testCheckBadGetUserInfoResponse() {
 
         $header = 'username=null, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'PHP_AUTH_DIGEST' => $header,
-        ));
-        $server->httpRequest = $request;
+        ]);
+        $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $backend->authenticate($server,'myRealm');
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
+        );
 
     }
 
     /**
      * @expectedException Sabre\DAV\Exception
      */
-    public function testAuthenticateBadGetUserInfoResponse2() {
-
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+    function testCheckBadGetUserInfoResponse2() {
 
         $header = 'username=array, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'PHP_AUTH_DIGEST' => $header,
-        ));
-        $server->httpRequest = $request;
+        ]);
+
+        $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $backend->authenticate($server,'myRealm');
+        $this->assertNull(
+            $backend->check($request, $response)
+        );
+
+        $backend = new AbstractDigestMock();
+        $backend->check($request, $response);
 
     }
 
-    /**
-     * @expectedException Sabre\DAV\Exception\NotAuthenticated
-     */
-    public function testAuthenticateUnknownUser() {
-
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+    function testCheckUnknownUser() {
 
         $header = 'username=false, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'PHP_AUTH_DIGEST' => $header,
-        ));
-        $server->httpRequest = $request;
+        ]);
+
+        $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $backend->authenticate($server,'myRealm');
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
+        );
 
     }
 
-    /**
-     * @expectedException Sabre\DAV\Exception\NotAuthenticated
-     */
-    public function testAuthenticateBadPassword() {
-
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+    function testCheckBadPassword() {
 
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'PHP_AUTH_DIGEST' => $header,
             'REQUEST_METHOD'  => 'PUT',
-        ));
-        $server->httpRequest = $request;
+        ]);
+
+        $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $backend->authenticate($server,'myRealm');
+        $this->assertFalse(
+            $backend->check($request, $response)[0]
+        );
 
     }
 
-    public function testAuthenticate() {
-
-        $response = new HTTP\ResponseMock();
-        $server = new DAV\Server();
-        $server->httpResponse = $response;
+    function testCheck() {
 
         $digestHash = md5('HELLO:12345:1:1:auth:' . md5('GET:/'));
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response='.$digestHash.', opaque=1, qop=auth, nc=1, cnonce=1';
@@ -117,18 +98,32 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
             'PHP_AUTH_DIGEST' => $header,
             'REQUEST_URI'     => '/',
         ));
-        $server->httpRequest = $request;
+
+        $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertTrue($backend->authenticate($server,'myRealm'));
-
-        $result = $backend->getCurrentUser();
-
-        $this->assertEquals('user', $result);
-        $this->assertEquals('HELLO', $backend->getDigestHash('myRealm', $result));
+        $this->assertEquals(
+            [true, 'principals/user'],
+            $backend->check($request, $response)
+        );
 
     }
 
+    function testRequireAuth() {
+
+        $request = new HTTP\Request();
+        $response = new HTTP\Response();
+
+        $backend = new AbstractDigestMock();
+        $backend->setRealm('writing unittests on a saturday night');
+        $backend->challenge($request, $response);
+
+        $this->assertStringStartsWith(
+            'Digest realm="writing unittests on a saturday night"',
+            $response->getHeader('WWW-Authenticate')
+        );
+
+    }
 
 }
 

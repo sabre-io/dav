@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV\Subscriptions;
 
+use Sabre\DAV\PropFind;
+
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function testInit() {
@@ -24,6 +26,19 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             ['calendarserver-subscribed'],
             $plugin->getFeatures()
         );
+
+    }
+
+    public function testPropFind() {
+
+        $propName = '{http://calendarserver.org/ns/}subscribed-strip-alarms';
+        $propFind = new PropFind('foo', [$propName]);
+        $propFind->set($propName,null,200);
+
+        $plugin = new Plugin();
+        $plugin->propFind($propFind, new \Sabre\DAV\SimpleCollection('hi'));
+
+        $this->assertFalse(is_null($propFind->get($propName)));
 
     }
 

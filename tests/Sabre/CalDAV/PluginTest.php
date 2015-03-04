@@ -64,15 +64,14 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             'uri' => 'principals/admin/calendar-proxy-write',
         ));
 
-        $calendars = new CalendarRootNode($principalBackend,$this->caldavBackend);
+        $calendars = new CalendarRoot($principalBackend,$this->caldavBackend);
         $principals = new Principal\Collection($principalBackend);
 
         $root = new DAV\SimpleCollection('root');
         $root->addChild($calendars);
         $root->addChild($principals);
 
-        $objectTree = new DAV\ObjectTree($root);
-        $this->server = new DAV\Server($objectTree);
+        $this->server = new DAV\Server($root);
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');
@@ -84,8 +83,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         // Adding Auth plugin, and ensuring that we are logged in.
         $authBackend = new DAV\Auth\Backend\Mock();
-        $authBackend->defaultUser = 'user1';
+        $authBackend->setPrincipal('principals/user1');
         $authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+        $authPlugin->beforeMethod(new \Sabre\HTTP\Request(), new \Sabre\HTTP\Response());
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
@@ -130,7 +130,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(403, $this->response->status);
+        $this->assertEquals(415, $this->response->status);
 
     }
 
@@ -436,8 +436,6 @@ END:VCALENDAR';
 
         $props = $this->server->getPropertiesForPath('/principals/user1',array(
             '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
-            '{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',
-            '{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
             '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
@@ -451,22 +449,6 @@ END:VCALENDAR';
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
         $this->assertTrue($prop instanceof DAV\Property\Href);
         $this->assertEquals('calendars/user1/',$prop->getHref());
-
-        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL',$props[0][200]);
-        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}schedule-outbox-URL'];
-        $this->assertTrue($prop instanceof DAV\Property\Href);
-        $this->assertEquals('calendars/user1/outbox',$prop->getHref());
-
-        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
-        $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
-        $this->assertTrue($prop instanceof DAV\Property\Href);
-        $this->assertEquals('calendars/user1/notifications/',$prop->getHref());
-
-
-        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-user-address-set',$props[0][200]);
-        $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-user-address-set'];
-        $this->assertTrue($prop instanceof DAV\Property\HrefList);
-        $this->assertEquals(array('mailto:user1.sabredav@sabredav.org','/principals/user1/'),$prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
@@ -1072,80 +1054,5 @@ END:VCALENDAR';
         $this->assertEquals(400, $this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
     }
-
-    function testNotificationProperties() {
-
-        $request = array(
-            '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
-        );
-        $result = array();
-        $notification = new Notifications\Node(
-            $this->caldavBackend,
-            'principals/user1',
-            new Notifications\Notification\SystemStatus('foo','"1"')
-        );
-        $this->plugin->beforeGetProperties('foo', $notification, $request, $result);
-
-        $this->assertEquals(
-            array(
-                200 => array(
-                    '{' . Plugin::NS_CALENDARSERVER . '}notificationtype' => $notification->getNotificationType()
-                )
-            ), $result);
-
-    }
-
-    function testNotificationGet() {
-
-        $notification = new Notifications\Node(
-            $this->caldavBackend,
-            'principals/user1',
-            new Notifications\Notification\SystemStatus('foo','"1"')
-        );
-
-        $server = new DAV\Server(array($notification));
-        $caldav = new Plugin();
-
-        $server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_URI' => '/foo.xml',
-        ));
-        $httpResponse = new HTTP\ResponseMock();
-        $server->httpResponse = $httpResponse;
-
-        $server->addPlugin($caldav);
-
-        $caldav->httpGet($server->httpRequest, $server->httpResponse);
-
-        $this->assertEquals(200, $httpResponse->status);
-        $this->assertEquals(array(
-            'Content-Type' => 'application/xml',
-            'ETag'         => '"1"',
-        ), $httpResponse->headers);
-
-        $expected =
-'<?xml version="1.0" encoding="UTF-8"?>
-<cs:notification xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">
-  <cs:systemstatus type="high"/>
-</cs:notification>
-';
-
-        $this->assertEquals($expected, $httpResponse->body);
-
-    }
-
-    function testGETPassthrough() {
-
-        $server = new DAV\Server();
-        $caldav = new Plugin();
-
-        $httpResponse = new HTTP\ResponseMock();
-        $server->httpResponse = $httpResponse;
-
-        $server->addPlugin($caldav);
-
-        $this->assertNull($caldav->httpGet(new HTTP\Request('GET','/foozz'), $server->httpResponse));
-
-    }
-
 
 }

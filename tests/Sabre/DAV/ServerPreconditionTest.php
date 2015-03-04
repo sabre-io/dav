@@ -15,13 +15,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_MATCH' => '*',
-            'REQUEST_URI'   => '/bar'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpRequest = new HTTP\Request('GET', '/bar', ['If-Match' => '*']);
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
@@ -31,13 +27,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_MATCH' => '*',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '*']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -48,13 +40,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_MATCH' => '1234',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '1234']);
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
@@ -64,13 +52,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_MATCH' => '"abc123"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '"abc123"']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -83,13 +67,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_MATCH' => '\\"abc123\\"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '\\"abc123\\"']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -99,13 +79,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_MATCH' => '"hellothere", "abc123"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '"hellothere", "abc123"']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -115,13 +91,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '*',
-            'REQUEST_URI'   => '/bar'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('GET', '/bar', ['If-None-Match' => '*']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -132,13 +104,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '*',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '*']);
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
@@ -148,13 +116,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '"1234"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234"']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -164,13 +128,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '"1234", "5678"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $this->assertTrue($server->checkPreconditions());
+        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234", "5678"']);
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -181,13 +141,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '"abc123"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"abc123"']);
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
@@ -198,13 +154,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '"1234", "abc123"',
-            'REQUEST_URI'   => '/foo'
-        ));
-        $server->httpRequest = $httpRequest;
-
-        $server->checkPreconditions();
+        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234, "abc123"']);
+        $httpResponse = new HTTP\Response();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
@@ -214,15 +166,37 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'HTTP_IF_NONE_MATCH' => '"abc123"',
-            'REQUEST_URI'   => '/foo'
-        ));
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
+        $server->httpResponse = new HTTP\ResponseMock();
+
+        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
+        $this->assertEquals(304, $server->httpResponse->getStatus());
+        $this->assertEquals(['ETag' => ['"abc123"']], $server->httpResponse->getHeaders());
+
+    }
+
+    /**
+     * This was a test written for issue #515.
+     */
+    public function testNoneMatchCorrectEtagEnsureSapiSent() {
+
+        $root = new SimpleCollection('root',array(new ServerPreconditionsNode()));
+        $server = new Server($root);
+        $server->sapi = new HTTP\SapiMock();
+        HTTP\SapiMock::$sent = 0;
+        $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
         $server->httpRequest = $httpRequest;
         $server->httpResponse = new HTTP\ResponseMock();
 
-        $this->assertFalse($server->checkPreconditions(true));
-        $this->assertEquals(304, $server->httpResponse->status);
+        $server->exec();
+
+        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
+        $this->assertEquals(304, $server->httpResponse->getStatus());
+        $this->assertEquals([
+            'ETag' => ['"abc123"'],
+            'X-Sabre-Version' => [Version::VERSION],
+        ], $server->httpResponse->getHeaders());
+        $this->assertEquals(1, HTTP\SapiMock::$sent);
 
     }
 
@@ -236,14 +210,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
         $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertFalse($server->checkPreconditions());
+        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
 
         $this->assertEquals(304, $server->httpResponse->status);
         $this->assertEquals(array(
-            'Last-Modified' => 'Sat, 06 Apr 1985 23:30:00 GMT',
-        ), $server->httpResponse->headers);
+            'Last-Modified' => ['Sat, 06 Apr 1985 23:30:00 GMT'],
+        ), $server->httpResponse->getHeaders());
 
     }
 
@@ -258,9 +231,10 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions());
+
+        $httpRequest = $httpRequest;
+        $httpResponse = new HTTP\ResponseMock();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -274,11 +248,11 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
+        $httpRequest = $httpRequest;
+        $httpResponse = new HTTP\ResponseMock();
 
         // Invalid dates must be ignored, so this should return true
-        $this->assertTrue($server->checkPreconditions());
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -292,9 +266,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\ResponseMock();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -309,8 +282,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\Response();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 
@@ -326,9 +299,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $server->checkPreconditions();
+        $httpResponse = new HTTP\ResponseMock();
+        $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
 
@@ -342,9 +314,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',
             'REQUEST_URI'   => '/foo'
         ));
-        $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions());
+        $httpResponse = new HTTP\ResponseMock();
+        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
 

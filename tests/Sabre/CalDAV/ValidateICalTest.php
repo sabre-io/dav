@@ -40,7 +40,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = array(
-            new CalendarRootNode($principalBackend, $this->calBackend),
+            new CalendarRoot($principalBackend, $this->calBackend),
         );
 
         $this->server = new DAV\Server($tree);
@@ -89,13 +89,16 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $this->assertEquals(array(
-            'Content-Length' => '0',
-            'ETag' => '"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"',
-        ), $response->headers);
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Length' => ['0'],
+            'ETag' => ['"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"'],
+        ), $response->getHeaders());
+
         $expected = array(
             'uri'          => 'blabla.ics',
             'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
             'calendarid'   => 'calendar1',
+            'lastmodified' => null,
         );
 
         $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));
@@ -218,6 +221,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
             'uri'          => 'blabla.ics',
             'calendardata' => $body,
             'calendarid'   => 'calendar1',
+            'lastmodified' => null,
         );
 
         $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1','blabla.ics'));
@@ -271,7 +275,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $response = $this->request($request);
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
-        $this->assertFalse(isset($response->headers['ETag']));
+        $this->assertNull($response->getHeader('ETag'));
 
     }
 }

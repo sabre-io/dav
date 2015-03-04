@@ -35,6 +35,8 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
             'id' => 1,
+            '{DAV:}displayname' => 'Hello!',
+            '{http://apple.com/ns/ical/}calendar-color' => '#AA0000FF',
         ];
         $tree = [
             new Calendar($cbackend,$props),
@@ -58,18 +60,20 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
-            'Content-Type' => 'text/calendar',
-        ], $s->httpResponse->headers);
+            'Content-Type' => ['text/calendar'],
+        ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
+        $this->assertEquals(7,count($obj->children()));
         $this->assertEquals(1,count($obj->VERSION));
         $this->assertEquals(1,count($obj->CALSCALE));
         $this->assertEquals(1,count($obj->PRODID));
         $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION)!==false);
         $this->assertEquals(1,count($obj->VTIMEZONE));
         $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals("Hello!", $obj->{"X-WR-CALNAME"});
+        $this->assertEquals("#AA0000FF", $obj->{"X-APPLE-CALENDAR-COLOR"});
 
     }
     function testBeforeMethodNoVersion() {
@@ -107,8 +111,8 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status);
         $this->assertEquals([
-            'Content-Type' => 'text/calendar',
-        ], $s->httpResponse->headers);
+            'Content-Type' => ['text/calendar'],
+        ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
@@ -213,8 +217,9 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals(array(
-            'Content-Type' => 'text/calendar',
-        ), $s->httpResponse->headers);
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['text/calendar'],
+        ), $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
@@ -525,6 +530,94 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
         $this->assertEquals('text/calendar', $s->httpResponse->getHeader('Content-Type'));
+
+    }
+
+    function testFilterComponentVEVENT() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        // add a todo to the calendar (see /tests/Sabre/TestUtil)
+        $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
+
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Sapi::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&componentType=VEVENT',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
+
+        $this->assertEquals(1,count($obj->VTIMEZONE));
+        $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals(0,count($obj->VTODO));
+
+    }
+
+    function testFilterComponentVTODO() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = array(
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        );
+        // add a todo to the calendar (see /tests/Sabre/TestUtil)
+        $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
+
+        $tree = array(
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        );
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Sapi::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&componentType=VTODO',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $obj = VObject\Reader::read($s->httpResponse->body);
+
+        $this->assertEquals(0,count($obj->VTIMEZONE));
+        $this->assertEquals(0,count($obj->VEVENT));
+        $this->assertEquals(1,count($obj->VTODO));
 
     }
 }

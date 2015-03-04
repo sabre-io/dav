@@ -36,7 +36,7 @@ $principalBackend = new Sabre\DAVACL\PrincipalBackend\PDO($pdo);
 // Directory structure
 $tree = [
     new Sabre\CalDAV\Principal\Collection($principalBackend),
-    new Sabre\CalDAV\CalendarRootNode($principalBackend, $calendarBackend),
+    new Sabre\CalDAV\CalendarRoot($principalBackend, $calendarBackend),
 ];
 
 $server = new Sabre\DAV\Server($tree);
@@ -57,9 +57,16 @@ $server->addPlugin($caldavPlugin);
 
 /* Calendar subscription support */
 $server->addPlugin(
-    new Sabre\CalDAV\Subscription\Plugin()
+    new Sabre\CalDAV\Subscriptions\Plugin()
 );
 
+/* Calendar scheduling support */
+$server->addPlugin(
+    new Sabre\CalDAV\Schedule\Plugin()
+);
+
+/* WebDAV-Sync plugin */
+$server->addPlugin(new Sabre\DAV\Sync\Plugin());
 
 // Support for html frontend
 $browser = new Sabre\DAV\Browser\Plugin();

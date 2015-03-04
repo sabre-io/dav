@@ -8,7 +8,7 @@ use Sabre\HTTP;
 /**
  * Tests related to the PUT request.
  *
- * @copyright Copyright (C) 2007-2014 fruux GmbH. All rights reserved.
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -45,10 +45,11 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'Content-Length' => '0',
-                'ETag' => '"' . md5('hello') . '"'
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
+                'ETag' => ['"' . md5('hello') . '"']
             ],
-            $response->headers
+            $response->getHeaders()
         );
 
     }
@@ -73,10 +74,11 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'Content-Length' => '0',
-                'ETag' => '"' . md5('bar') . '"'
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
+                'ETag' => ['"' . md5('bar') . '"']
             ],
-            $response->headers
+            $response->getHeaders()
         );
 
     }
@@ -106,10 +108,11 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'Content-Length' => '0',
-                'ETag' => '"' . md5('hello') . '"'
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
+                'ETag' => ['"' . md5('hello') . '"']
             ],
-            $response->headers
+            $response->getHeaders()
         );
 
     }
@@ -139,8 +142,9 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'Content-Length' => '0',
-                'ETag' => '"' . md5('hello') . '"'
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
+                'ETag' => ['"' . md5('hello') . '"'],
             ],
             $response->getHeaders()
         );
@@ -162,7 +166,7 @@ class HttpPutTest extends DAVServerTest {
         );
 
         $response = $this->request($request);
-        $this->assertEquals(501, $response->getStatus());
+        $this->assertEquals(400, $response->getStatus());
 
     }
 
@@ -191,8 +195,9 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'Content-Length' => '0',
-                'ETag' => '"' . md5('hello') . '"'
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
+                'ETag' => ['"' . md5('hello') . '"']
             ],
             $response->getHeaders()
         );
@@ -285,8 +290,9 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'Content-Length' => '0',
-                'ETag' => '"' . md5('hello') . '"'
+                'X-Sabre-Version' => [Version::VERSION],
+                'Content-Length' => ['0'],
+                'ETag' => ['"' . md5('hello') . '"'],
             ],
             $response->getHeaders()
         );
@@ -334,7 +340,9 @@ class HttpPutTest extends DAVServerTest {
             $this->server->tree->nodeExists('file2')
         );
 
-        $this->assertEquals([], $response->getHeaders());
+        $this->assertEquals([
+            'X-Sabre-Version' => [Version::VERSION],
+        ], $response->getHeaders());
 
     }
 

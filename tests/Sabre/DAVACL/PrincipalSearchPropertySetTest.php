@@ -17,7 +17,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
         $principals = new PrincipalCollection($backend);
         $dir->addChild($principals);
 
-        $fakeServer = new DAV\Server(new DAV\ObjectTree($dir));
+        $fakeServer = new DAV\Server($dir);
         $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin($backend,'realm');
@@ -50,8 +50,9 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(400, $server->httpResponse->status);
         $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ), $server->httpResponse->headers);
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+        ), $server->httpResponse->getHeaders());
 
     }
 
@@ -76,8 +77,9 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ), $server->httpResponse->headers);
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+        ), $server->httpResponse->getHeaders());
 
     }
 
@@ -102,8 +104,9 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $server->httpResponse->status, $server->httpResponse->body);
         $this->assertEquals(array(
-            'Content-Type' => 'application/xml; charset=utf-8',
-        ), $server->httpResponse->headers);
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+        ), $server->httpResponse->getHeaders());
 
 
         $check = array(

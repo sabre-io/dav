@@ -180,6 +180,46 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
             array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1/calendar-proxy-read',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/user1/calendar-proxy-write',
+                'protected' => true,
+            ),
+        );
+
+        $children = $this->calendar->getChildren();
+        $this->assertTrue($children[0] instanceof CalendarObject);
+
+        $obj = $children[0];
+        $this->assertEquals($expected, $obj->getACL());
+
+    }
+
+    function testDefaultACL() {
+
+        $backend = new Backend\Mock([], []);
+        $calendarObject = new CalendarObject($backend, ['principaluri' => 'principals/user1'], ['calendarid' => 1, 'uri' => 'foo']);
+        $expected = array(
+            array(
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/user1',
+                'protected' => true,
+            ),
+            array(
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
@@ -200,12 +240,8 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ),
         );
+        $this->assertEquals($expected, $calendarObject->getACL());
 
-        $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
-
-        $obj = $children[0];
-        $this->assertEquals($expected, $obj->getACL());
 
     }
 
@@ -278,7 +314,7 @@ END:VCALENDAR";
                 ),
             )
         ));
-        $obj = new CalendarObject($backend, array(), array('calendarid' => 1, 'uri' => 'foo'));
+        $obj = new CalendarObject($backend, array('id' => 1), array('uri' => 'foo'));
 
         $this->assertEquals('foo', $obj->get());
 

@@ -28,6 +28,22 @@ class ServerEventsTest extends AbstractServer {
 
     }
 
+    function testAfterResponse() {
+
+        $mock = $this->getMock('stdClass', array('afterResponseCallback'));
+        $mock->expects($this->once())->method('afterResponseCallback');
+
+        $this->server->on('afterResponse', [$mock, 'afterResponseCallback']);
+
+        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
+            'REQUEST_METHOD'    => 'GET',
+            'REQUEST_URI'       => '/test.txt',
+        ));
+
+        $this->server->exec();
+
+    }
+
     function testBeforeBindCancel() {
 
         $this->server->on('beforeBind', [$this,'beforeBindCancelHandler']);

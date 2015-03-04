@@ -2,31 +2,33 @@ language: php
 php:
   - 5.4
   - 5.5
-  - 5.5.9
-  - 5.5.10
   - 5.6
+  - 7
   - hhvm
-  - hhvm-nightly
 
 matrix:
   fast_finish: true
   allow_failures:
-    - php: 5.5.10
-    - php: 5.6
-    - php: hhvm
-    - php: hhvm-nightly
+      - php: 7
+
+env:
+  matrix:
+    - LOWEST_DEPS="" TEST_DEPS=""
+    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/"
 
 services:
   - mysql
 
+sudo: false
+
 before_script:
   - mysql -e 'create database sabredav'
-  - composer self-update
-  - composer install --prefer-source
-#  - echo "zend.enable_gc=0" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  #  - composer self-update
+  - composer update --prefer-source $LOWEST_DEPS
 
 script:
-  - phpunit --configuration tests/phpunit.xml
+  - ./bin/phpunit --configuration tests/phpunit.xml $TEST_DEPS
+  - ./bin/phpcs  -p --standard=tests/phpcs/ruleset.xml lib/
 
 notifications:
   irc:

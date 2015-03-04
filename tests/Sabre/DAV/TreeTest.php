@@ -56,8 +56,28 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
 
         $tree = new TreeMock();
         $children = $tree->getChildren('');
-        $this->assertEquals(1,count($children));
+        $this->assertEquals(2,count($children));
         $this->assertEquals('hi', $children[0]->getName());
+
+    }
+
+    function testGetMultipleNodes() {
+
+        $tree = new TreeMock();
+        $result = $tree->getMultipleNodes(['hi/sub', 'hi/file']);
+        $this->assertArrayHasKey('hi/sub', $result);
+        $this->assertArrayHasKey('hi/file', $result);
+
+        $this->assertEquals('sub',  $result['hi/sub']->getName());
+        $this->assertEquals('file', $result['hi/file']->getName());
+
+    }
+    function testGetMultipleNodes2() {
+
+        $tree = new TreeMock();
+        $result = $tree->getMultipleNodes(['multi/1', 'multi/2']);
+        $this->assertArrayHasKey('multi/1', $result);
+        $this->assertArrayHasKey('multi/2', $result);
 
     }
 
@@ -69,19 +89,23 @@ class TreeMock extends Tree {
 
     function __construct() {
 
-        $this->nodes['hi/sub'] = new TreeDirectoryTester('sub');
-        $this->nodes['hi/file'] = new TreeFileTester('file');
-        $this->nodes['hi/file']->properties = array('test1' => 'value');
-        $this->nodes['hi/file']->data = 'foobar';
-        $this->nodes['hi'] = new TreeDirectoryTester('hi',array($this->nodes['hi/sub'], $this->nodes['hi/file']));
-        $this->nodes[''] = new TreeDirectoryTester('hi', array($this->nodes['hi']));
+        $file = new TreeFileTester('file');
+        $file->properties = ['test1'=>'value'];
+        $file->data = 'foobar';
 
-    }
-
-    function getNodeForPath($path) {
-
-        if (isset($this->nodes[$path])) return $this->nodes[$path];
-        throw new Exception\NotFound('item not found');
+        parent::__construct(
+            new TreeDirectoryTester('root', [
+                new TreeDirectoryTester('hi', [
+                    new TreeDirectoryTester('sub'),
+                    $file,
+                ]),
+                new TreeMultiGetTester('multi', [
+                    new TreeFileTester('1'),
+                    new TreeFileTester('2'),
+                    new TreeFileTester('3'),
+                ])
+            ])
+        );
 
     }
 
@@ -111,6 +135,12 @@ class TreeDirectoryTester extends SimpleCollection {
         if (isset($this->newDirectories[$name])) return new TreeDirectoryTester($name);
         if (isset($this->newFiles[$name])) return new TreeFileTester($name, $this->newFiles[$name]);
         return parent::getChild($name);
+
+    }
+
+    function childExists($name) {
+
+        return !!$this->getChild($name);
 
     }
 
@@ -164,16 +194,16 @@ class TreeFileTester extends File implements IProperties {
     /**
      * Updates properties on this node.
      *
-     * This method received a PropPatch object, which contains all the 
+     * This method received a PropPatch object, which contains all the
      * information about the update.
      *
-     * To update specific properties, call the 'handle' method on this object. 
+     * To update specific properties, call the 'handle' method on this object.
      * Read the PropPatch documentation for more information.
      *
      * @param array $mutations
      * @return bool|array
      */
-    public function propPatch(PropPatch $propPatch) {
+    function propPatch(PropPatch $propPatch) {
 
         $this->properties = $propPatch->getMutations();
         $propPatch->setRemainingResultCode(200);
@@ -182,3 +212,30 @@ class TreeFileTester extends File implements IProperties {
 
 }
 
+class TreeMultiGetTester extends TreeDirectoryTester implements IMultiGet {
+
+    /**
+     * This method receives a list of paths in it's first argument.
+     * It must return an array with Node objects.
+     *
+     * If any children are not found, you do not have to return them.
+     *
+     * @return array
+     */
+    function getMultipleChildren(array $paths) {
+
+        $result = [];
+        foreach($paths as $path) {
+            try {
+                $child = $this->getChild($path);
+                $result[] = $child;
+            } catch (Exception\NotFound $e) {
+                // Do nothing
+            }
+        }
+
+        return $result;
+
+    }
+
+}

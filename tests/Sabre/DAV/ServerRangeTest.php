@@ -15,24 +15,25 @@ class ServerRangeTest extends AbstractServer{
 
     function testRange() {
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [4],
-            'Content-Range' => ['bytes 2-5/13'],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [4],
+            'Content-Range'   => ['bytes 2-5/13'],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 
@@ -46,24 +47,25 @@ class ServerRangeTest extends AbstractServer{
      */
     function testStartRange() {
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-',
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [11],
-            'Content-Range' => ['bytes 2-12/13'],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [11],
+            'Content-Range'   => ['bytes 2-12/13'],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 
@@ -77,24 +79,25 @@ class ServerRangeTest extends AbstractServer{
      */
     function testEndRange() {
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=-8',
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [8],
-            'Content-Range' => ['bytes 5-12/13'],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')). '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [8],
+            'Content-Range'   => ['bytes 5-12/13'],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 
@@ -108,11 +111,11 @@ class ServerRangeTest extends AbstractServer{
      */
     function testTooHighRange() {
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=100-200',
-        );
+        ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
@@ -127,11 +130,11 @@ class ServerRangeTest extends AbstractServer{
      */
     function testCrazyRange() {
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=8-4',
-        );
+        ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
@@ -148,25 +151,26 @@ class ServerRangeTest extends AbstractServer{
 
         $node = $this->server->tree->getNodeForPath('test.txt');
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
             'HTTP_IF_RANGE'  => $node->getETag(),
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [4],
-            'Content-Range' => ['bytes 2-5/13'],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [4],
+            'Content-Range'   => ['bytes 2-5/13'],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 
@@ -182,24 +186,25 @@ class ServerRangeTest extends AbstractServer{
 
         $node = $this->server->tree->getNodeForPath('test.txt');
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
             'HTTP_IF_RANGE'  => $node->getETag() . 'blabla',
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [13],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [13],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 
@@ -215,25 +220,26 @@ class ServerRangeTest extends AbstractServer{
 
         $node = $this->server->tree->getNodeForPath('test.txt');
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
             'HTTP_IF_RANGE'  => 'tomorrow',
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [4],
-            'Content-Range' => ['bytes 2-5/13'],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [4],
+            'Content-Range'   => ['bytes 2-5/13'],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 
@@ -249,24 +255,25 @@ class ServerRangeTest extends AbstractServer{
 
         $node = $this->server->tree->getNodeForPath('test.txt');
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
             'HTTP_RANGE'     => 'bytes=2-5',
             'HTTP_IF_RANGE'  => '-2 years',
-        );
+        ];
+        $filename = SABRE_TEMPDIR . '/test.txt';
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
-            'Content-Length' => [13],
-            'Last-Modified' => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'          => ['"' . md5(file_get_contents(SABRE_TEMPDIR . '/test.txt')) . '"'],
-            ),
+            'Content-Type'    => ['application/octet-stream'],
+            'Content-Length'  => [13],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
+            ],
             $this->response->getHeaders()
          );
 

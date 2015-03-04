@@ -1,11 +1,23 @@
 ChangeLog
 =========
 
+2.2.0-alpha3 (2015-02-25)
+-------------------------
+
+* Contains all the changes introduced between 2.1.2 and 2.1.3.
+* Upgraded to sabre/http 4.0.0alpha1 and now also using sabre/uri.
+* The zip release ships with [sabre/vobject 3.4.2][vobj],
+  [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt] and
+  [sabre/uri 1.0.0][uri].
+
+
 2.2.0-alpha2 (2015-01-09)
 -------------------------
 
 * Renamed `Sabre\DAV\Auth\Backend\BackendInterface::requireAuth` to
   `challenge`, which is a more correct and better sounding name.
+* The zip release ships with [sabre/vobject 3.3.5][vobj],
+  [sabre/http 3.0.4][http], [sabre/event 2.0.1][evnt].
 
 
 2.2.0-alpha1 (2014-12-10)
@@ -42,13 +54,23 @@ ChangeLog
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 
 
-2.1.3 (2015-??-??)
+2.1.3 (2015-02-25)
 ------------------
 
-* #586: SCHEDULE-STATUS should not contain a reason-phrase.
+* #586: `SCHEDULE-STATUS` should not contain a reason-phrase.
 * #539: Fixed a bug related to scheduling in shared calendars.
 * #595: Support for calendar-timezone in iCalendar exports.
 * #581: findByUri would send empty prefixes to the principal backend (@soydeedo)
+* #611: Escaping a bit more HTML output in the browser plugin. (@LukasReschke)
+* #610: Don't allow discovery of arbitrary files using `..` in the browser
+  plugin (@LukasReschke).
+* Browser plugin now shows quota properties.
+* #612: PropertyStorage didn't delete properties from nodes when a node's
+  parents get deleted.
+* #581: Fixed problems related to finding attendee information during
+  scheduling.
+* The zip release ships with [sabre/vobject 3.4.2][vobj],
+  [sabre/http 3.0.4][http], and [sabre/event 2.0.1][evnt].
 
 
 2.1.2 (2014-12-10)
@@ -385,6 +407,14 @@ ChangeLog
 * Fixed: SabreDAV catches every exception again.
 * Added: Issue #358, adding a component=vevent parameter to the content-types
   for calendar objects, if the caldav backend provides this info.
+
+
+1.8.12-stable (2015-01-21)
+--------------------------
+
+* The zip release ships with sabre/vobject 2.1.7.
+* #568: Support empty usernames and passwords in basic auth.
+
 
 1.8.11 (2014-12-10)
 -------------------
@@ -1794,5 +1824,6 @@ ChangeLog
 [vobj]: http://sabre.io/vobject/
 [evnt]: http://sabre.io/event/
 [http]: http://sabre.io/http/
+[uri]: http://sabre.io/uri/
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"

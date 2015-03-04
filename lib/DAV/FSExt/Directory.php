@@ -43,8 +43,13 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         file_put_contents($newPath,$data);
+        clearstatcache(true, $newPath);
 
-        return '"' . md5_file($newPath) . '"';
+        return '"' . sha1(
+            fileinode($newPath) .
+            filesize($newPath) .
+            filemtime($newPath)
+        ). '"';
 
     }
 
@@ -60,6 +65,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
+        clearstatcache(true, $newPath);
 
     }
 
@@ -121,11 +127,12 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
             \FilesystemIterator::CURRENT_AS_SELF
           | \FilesystemIterator::SKIP_DOTS
         );
+
         foreach($iterator as $entry) {
 
             $node = $entry->getFilename();
 
-            if($node === '.sabredav')
+            if ($node === '.sabredav')
                 continue;
 
             $nodes[] = $this->getChild($node);

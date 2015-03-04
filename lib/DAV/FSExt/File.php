@@ -15,7 +15,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
     /**
      * Updates the data
      *
-     * data is a readable stream resource.
+     * Data is a readable stream resource.
      *
      * @param resource|string $data
      * @return string
@@ -23,7 +23,8 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
     function put($data) {
 
         file_put_contents($this->path,$data);
-        return '"' . md5_file($this->path) . '"';
+        clearstatcache(true, $this->path);
+        return $this->getETag();
 
     }
 
@@ -42,7 +43,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
      * The third argument is the start or end byte.
      *
      * After a successful put operation, you may choose to return an ETag. The
-     * etag must always be surrounded by double-quotes. These quotes must
+     * ETAG must always be surrounded by double-quotes. These quotes must
      * appear in the actual string you're returning.
      *
      * Clients may use the ETag from a PUT request to later on make sure that
@@ -75,7 +76,8 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
             stream_copy_to_stream($data,$f);
         }
         fclose($f);
-        return '"' . md5_file($this->path) . '"';
+        clearstatcache(true, $this->path);
+        return $this->getETag();
 
     }
 
@@ -112,7 +114,11 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
      */
     function getETag() {
 
-        return '"' . md5_file($this->path). '"';
+        return '"' . sha1(
+            fileinode($this->path) .
+            filesize($this->path) .
+            filemtime($this->path)
+        ). '"';
 
     }
 

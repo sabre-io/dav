@@ -102,7 +102,7 @@ class SimpleFile extends File {
      */
     function getETag() {
 
-        return '"' . md5($this->contents) . '"';
+        return '"' . sha1($this->contents) . '"';
 
     }
 

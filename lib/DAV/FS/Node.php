@@ -67,8 +67,6 @@ abstract class Node implements DAV\INode {
 
     }
 
-
-
     /**
      * Returns the last modification time, as a unix timestamp
      *

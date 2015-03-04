@@ -18,6 +18,7 @@ class ServerTest extends DAV\AbstractServer{
     function testGet() {
 
         $request = new HTTP\Request('GET', '/test.txt');
+        $filename = $this->tempDir . '/test.txt';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -26,8 +27,8 @@ class ServerTest extends DAV\AbstractServer{
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
-            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'            => ['"'  .md5_file($this->tempDir . '/test.txt') . '"'],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($filename)))],
+            'ETag'            => ['"' . sha1(fileinode($filename ) . filesize($filename) . filemtime($filename)) . '"'],
             ],
             $this->response->getHeaders()
          );
@@ -40,6 +41,7 @@ class ServerTest extends DAV\AbstractServer{
     function testHEAD() {
 
         $request = new HTTP\Request('HEAD', '/test.txt');
+        $filename = $this->tempDir . '/test.txt';
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -48,7 +50,7 @@ class ServerTest extends DAV\AbstractServer{
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
             'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
-            'ETag'            => ['"' . md5_file($this->tempDir . '/test.txt') . '"'],
+            'ETag'            => ['"' . sha1(fileinode($filename ) . filesize($filename) . filemtime($filename)) . '"'],
             ],
             $this->response->getHeaders()
          );
@@ -61,19 +63,20 @@ class ServerTest extends DAV\AbstractServer{
     function testPut() {
 
         $request = new HTTP\Request('PUT', '/testput.txt');
+        $filename = $this->tempDir . '/testput.txt';
         $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
-            'Content-Length' => [0],
-            'ETag'           => ['"' . md5('Testing new file') . '"'],
+            'Content-Length'  => [0],
+            'ETag'            => ['"' . sha1(fileinode($filename ) . filesize($filename) . filemtime($filename)) . '"'],
         ], $this->response->getHeaders());
 
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals('', $this->response->body);
-        $this->assertEquals('Testing new file',file_get_contents($this->tempDir . '/testput.txt'));
+        $this->assertEquals('Testing new file',file_get_contents($filename));
 
     }
 
@@ -220,9 +223,8 @@ class ServerTest extends DAV\AbstractServer{
         $tree = new DAV\Tree(new DAV\SimpleCollection('root', [
             new DAV\FS\Directory($this->tempDir . '/tree1'),
             new DAV\FSExt\Directory($this->tempDir . '/tree2'),
-            ]));
+        ]));
         $this->server->tree = $tree;
-
 
         $request = new HTTP\Request('MOVE', '/tree1', ['Destination' => '/tree2/tree1']);
         $this->server->httpRequest = ($request);

@@ -22,6 +22,7 @@ class File extends Node implements DAV\IFile {
     function put($data) {
 
         file_put_contents($this->path,$data);
+        clearstatcache(true, $this->path);
 
     }
 
@@ -70,7 +71,11 @@ class File extends Node implements DAV\IFile {
      */
     function getETag() {
 
-        return null;
+        return '"' . sha1(
+            fileinode($this->path) .
+            filesize($this->path) .
+            filemtime($this->path)
+        ). '"';
 
     }
 

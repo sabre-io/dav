@@ -301,7 +301,7 @@ class CalendarQueryValidator {
                 if ($component->parent->name === 'VEVENT' && $component->parent->RRULE) {
 
                     // Fire up the iterator!
-                    $it = new VObject\RecurrenceIterator($component->parent->parent, (string)$component->parent->UID);
+                    $it = new VObject\Recur\EventIterator($component->parent->parent, (string)$component->parent->UID);
                     while($it->valid()) {
                         $expandedEvent = $it->getEventObject();
 

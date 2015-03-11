@@ -256,7 +256,7 @@ function getDenormalizedData($calendarData) {
                 $lastOccurence = $firstOccurence;
             }
         } else {
-            $it = new \Sabre\VObject\RecurrenceIterator($vObject, (string)$component->UID);
+            $it = new \Sabre\VObject\Recur\EventIterator($vObject, (string)$component->UID);
             $maxDate = new DateTime(\Sabre\CalDAV\Backend\PDO::MAX_DATE);
             if ($it->isInfinite()) {
                 $lastOccurence = $maxDate->getTimeStamp();

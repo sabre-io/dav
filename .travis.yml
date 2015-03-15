@@ -19,7 +19,7 @@ services:
 
 before_script:
   - mysql -e 'create database sabredav'
-  - composer self-update
+  #  - composer self-update
   - composer update --prefer-source $LOWEST_DEPS
 
 script:

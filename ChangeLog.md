@@ -7,6 +7,7 @@ ChangeLog
 * #586: `SCHEDULE-STATUS` should not contain a reason-phrase.
 * #539: Fixed a bug related to scheduling in shared calendars.
 * #595: Support for calendar-timezone in iCalendar exports.
+* #581: findByUri would send empty prefixes to the principal backend (@soydeedo)
 * #611: Escaping a bit more HTML output in the browser plugin. (@LukasReschke)
 * #610: Don't allow discovery of arbitrary files using `..` in the browser
   plugin (@LukasReschke).

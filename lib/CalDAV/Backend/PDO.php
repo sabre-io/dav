@@ -569,7 +569,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
                     $lastOccurence = $firstOccurence;
                 }
             } else {
-                $it = new VObject\RecurrenceIterator($vObject, (string)$component->UID);
+                $it = new VObject\Recur\EventIterator($vObject, (string)$component->UID);
                 $maxDate = new \DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();

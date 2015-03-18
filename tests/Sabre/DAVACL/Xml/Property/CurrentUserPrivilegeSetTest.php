@@ -19,24 +19,22 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
         $prop = new CurrentUserPrivilegeSet($privileges);
         $xml = (new DAV\Server())->xml->write(['{DAV:}root' => $prop]);
 
-        $xpaths = array(
-            '/d:root' => 1,
-            '/d:root/d:privilege' => 2,
-            '/d:root/d:privilege/d:read' => 1,
-            '/d:root/d:privilege/d:write' => 1,
-        );
+        $expected = <<<XML
+<d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+    <d:privilege>
+        <d:read />
+    </d:privilege>
+    <d:privilege>
+        <d:write />
+    </d:privilege>
+</d:root>
+XML;
 
-        $dom2 = XMLUtil::loadDOMDocument($xml);
 
-        $dxpath = new \DOMXPath($dom2);
-        $dxpath->registerNamespace('d','urn:DAV');
-        foreach($xpaths as $xpath=>$count) {
-
-            $this->assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : ' . $xpath . ', we could only find ' . $dxpath->query($xpath)->length . ' elements, while we expected ' . $count);
-
-        }
+        $this->assertXmlStringEqualsXmlString($expected, $xml);
 
     }
+
     function testUnserialize() {
 
         $source = '<?xml version="1.0"?>

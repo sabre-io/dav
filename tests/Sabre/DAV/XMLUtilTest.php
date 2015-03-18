@@ -124,7 +124,7 @@ class XMLUtilTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException Sabre\DAV\Exception\BadRequest
-     * @depends testConvertDAVNamespace
+     * @depends testLoadDOMDocument
      */
     function testLoadDOMDocumentInvalid() {
 
@@ -145,7 +145,9 @@ class XMLUtilTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-
+    /**
+     * @depends testLoadDOMDocument
+     */
     function testParseProperties() {
 
         $xml='<?xml version="1.0"?>

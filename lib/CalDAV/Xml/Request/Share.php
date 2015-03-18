@@ -13,9 +13,9 @@ use Sabre\CalDAV\Plugin;
  *
  * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-sharing.txt
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Share implements XmlDeserializable {
 
@@ -75,11 +75,15 @@ class Share implements XmlDeserializable {
      * @param Reader $reader
      * @return mixed
      */
-    static function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
-        $elems = $reader->parseInnerTree();
+        $elems = $reader->parseInnerTree([
+            '{' . Plugin::NS_CALENDARSERVER . '}set' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{' . Plugin::NS_CALENDARSERVER . '}remove' => 'Sabre\\Xml\\Element\\KeyValue',
+        ]);
 
         $set = [];
+        $remove = [];
 
         foreach($elems as $elem) {
             switch($elem['name']) {

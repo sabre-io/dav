@@ -2,12 +2,13 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
-use Sabre\Xml\Writer;
-use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Element\KeyValue;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CalDAV\Plugin;
-use Sabre\CalDAV\SharingPlugin;
+use
+    Sabre\Xml\Reader,
+    Sabre\Xml\XmlDeserializable,
+    Sabre\Xml\Element\KeyValue,
+    Sabre\DAV\Exception\BadRequest,
+    Sabre\CalDAV\Plugin,
+    Sabre\CalDAV\SharingPlugin;
 
 /**
  * Invite-reply POST request parser
@@ -16,11 +17,11 @@ use Sabre\CalDAV\SharingPlugin;
  *
  * http://svn.calendarserver.org/repository/calendarserver/CalendarServer/trunk/doc/Extensions/caldav-sharing.txt
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
+ * @author Evert Pot (http://evertpot.com/)
+ * @license http://sabre.io/license/ Modified BSD License
  */
-class InviteReply implements Element {
+class InviteReply implements XmlDeserializable {
 
     /**
      * The sharee calendar user address.
@@ -68,7 +69,7 @@ class InviteReply implements Element {
      * @param string $summary
      * @param int $status
      */
-    public function __construct($href, $calendarUri, $inReplyTo, $summary, $status) {
+    function __construct($href, $calendarUri, $inReplyTo, $summary, $status) {
 
         $this->href = $href;
         $this->calendarUri = $calendarUri;
@@ -101,7 +102,7 @@ class InviteReply implements Element {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $elems = KeyValue::deserializeXml($reader);
+        $elems = KeyValue::xmlDeserialize($reader);
 
         $href = null;
         $calendarUri = null;

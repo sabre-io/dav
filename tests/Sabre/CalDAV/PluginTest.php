@@ -1,9 +1,13 @@
 <?php
 
 namespace Sabre\CalDAV;
-use Sabre\DAVACL;
-use Sabre\DAV;
-use Sabre\HTTP;
+
+use
+    Sabre\DAVACL,
+    Sabre\DAV,
+    Sabre\HTTP,
+    DateTime,
+    DateTimeZone;
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
@@ -559,38 +563,27 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(207, $this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
+        $this->assertEquals(207, $this->response->status,'Invalid HTTP status received. Full response body');
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $expectedIcal = TestUtil::getTestCalendarData();
 
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
 
-        $check = array(
-            '/d:multistatus',
-            '/d:multistatus/d:response',
-            '/d:multistatus/d:response/d:href',
-            '/d:multistatus/d:response/d:propstat',
-            '/d:multistatus/d:response/d:propstat/d:prop',
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
-            '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
-        );
-
-        foreach($check as $v1=>$v2) {
-
-            $xpath = is_int($v1)?$v2:$v1;
-
-            $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result));
-
-            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
-
-        }
-
-        // The response object should have a reference to the Asia/Seoul
-        // timezone.
-        $this->assertTrue(strpos($this->response->body,'Asia/Seoul')!==false);
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
 
     }
 
@@ -623,34 +616,31 @@ END:VCALENDAR';
 
         $this->assertEquals(207, $this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
-
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
-
-        $check = array(
-            '/d:multistatus',
-            '/d:multistatus/d:response',
-            '/d:multistatus/d:response/d:href',
-            '/d:multistatus/d:response/d:propstat',
-            '/d:multistatus/d:response/d:propstat/d:prop',
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
-            '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
+        $expectedIcal = TestUtil::getTestCalendarData();
+        $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
+        $expectedIcal->expand(
+            new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC')),
+            new DateTime('2011-12-31 23:59:59', new DateTimeZone('UTC'))
         );
+        $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 
-        foreach($check as $v1=>$v2) {
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
 
-            $xpath = is_int($v1)?$v2:$v1;
-
-            $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result));
-
-            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
-
-        }
-        // The response object should no longer hold references to timezones.
-        $this->assertTrue(strpos($this->response->body,'Asia/Seoul')===false);
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
 
     }
 
@@ -688,32 +678,31 @@ END:VCALENDAR';
 
         $this->assertEquals(207, $this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
-
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
-
-        $check = array(
-            '/d:multistatus',
-            '/d:multistatus/d:response',
-            '/d:multistatus/d:response/d:href',
-            '/d:multistatus/d:response/d:propstat',
-            '/d:multistatus/d:response/d:propstat/d:prop',
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
-            '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
+        $expectedIcal = TestUtil::getTestCalendarData();
+        $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
+        $expectedIcal->expand(
+            new DateTime('2000-01-01 00:00:00', new DateTimeZone('UTC')),
+            new DateTime('2010-12-31 23:59:59', new DateTimeZone('UTC'))
         );
+        $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 
-        foreach($check as $v1=>$v2) {
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
 
-            $xpath = is_int($v1)?$v2:$v1;
-
-            $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result), 'We expected 1 ' . $xpath . ' elements. We\'ve found ' . count($result) . '. Full result: ' . $this->response->body);
-
-            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
-
-        }
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
 
     }
 
@@ -747,31 +736,22 @@ END:VCALENDAR';
 
         $this->assertEquals(207, $this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
 
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
-
-        $check = array(
-            '/d:multistatus',
-            '/d:multistatus/d:response',
-            '/d:multistatus/d:response/d:href',
-            '/d:multistatus/d:response/d:propstat',
-            '/d:multistatus/d:response/d:propstat/d:prop',
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
-        );
-
-        foreach($check as $v1=>$v2) {
-
-            $xpath = is_int($v1)?$v2:$v1;
-
-            $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result), 'We expected 1 ' . $xpath . ' elements. We\'ve found ' . count($result) . '. Full result: ' . $this->response->body);
-
-            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
-
-        }
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
 
     }
 
@@ -836,32 +816,31 @@ END:VCALENDAR';
 
         $this->assertEquals(207, $this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
-
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
-
-        $check = array(
-            '/d:multistatus',
-            '/d:multistatus/d:response',
-            '/d:multistatus/d:response/d:href',
-            '/d:multistatus/d:response/d:propstat',
-            '/d:multistatus/d:response/d:propstat/d:prop',
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
-            '/d:multistatus/d:response/d:propstat/d:prop/c:calendar-data',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
+        $expectedIcal = TestUtil::getTestCalendarData();
+        $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
+        $expectedIcal->expand(
+            new DateTime('2000-01-01 00:00:00', new DateTimeZone('UTC')),
+            new DateTime('2010-12-31 23:59:59', new DateTimeZone('UTC'))
         );
+        $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 
-        foreach($check as $v1=>$v2) {
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
 
-            $xpath = is_int($v1)?$v2:$v1;
-
-            $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result), 'We expected 1 ' . $xpath . ' elements. We\'ve found ' . count($result) . '. Full result: ' . $this->response->body);
-
-            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
-
-        }
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
 
     }
 
@@ -896,31 +875,22 @@ END:VCALENDAR';
 
         $this->assertEquals(207, $this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
 
-        $xml = simplexml_load_string(DAV\XMLUtil::convertDAVNamespace($this->response->body));
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
 
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $xml->registerXPathNamespace('c','urn:ietf:params:xml:ns:caldav');
-
-        $check = array(
-            '/d:multistatus',
-            '/d:multistatus/d:response',
-            '/d:multistatus/d:response/d:href',
-            '/d:multistatus/d:response/d:propstat',
-            '/d:multistatus/d:response/d:propstat/d:prop',
-            '/d:multistatus/d:response/d:propstat/d:prop/d:getetag',
-            '/d:multistatus/d:response/d:propstat/d:status' => 'HTTP/1.1 200 OK',
-        );
-
-        foreach($check as $v1=>$v2) {
-
-            $xpath = is_int($v1)?$v2:$v1;
-
-            $result = $xml->xpath($xpath);
-            $this->assertEquals(1,count($result), 'We expected 1 ' . $xpath . ' elements. We\'ve found ' . count($result) . '. Full result: ' . $this->response->body);
-
-            if (!is_int($v1)) $this->assertEquals($v2,(string)$result[0]);
-
-        }
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
 
     }
 

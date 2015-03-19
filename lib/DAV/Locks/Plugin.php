@@ -59,6 +59,9 @@ class Plugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
+
+        $this->server->xml->elementMap['{DAV:}lockinfo'] = 'Sabre\\DAV\\Xml\\Request\\Lock';
+
         $server->on('method:LOCK',    [$this, 'httpLock']);
         $server->on('method:UNLOCK',  [$this, 'httpUnlock']);
         $server->on('validateTokens', [$this, 'validateTokens']);
@@ -560,25 +563,16 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function parseLockRequest($body) {
 
-        // Fixes an XXE vulnerability on PHP versions older than 5.3.23 or
-        // 5.4.13.
-        $previous = libxml_disable_entity_loader(true);
+        $result = $this->server->xml->parse(
+            $body
+        );
 
-
-        $xml = simplexml_load_string(
-            DAV\XMLUtil::convertDAVNamespace($body),
-            null,
-            LIBXML_NOWARNING);
-        libxml_disable_entity_loader($previous);
-
-        $xml->registerXPathNamespace('d','urn:DAV');
         $lockInfo = new LockInfo();
 
-        $children = $xml->children("urn:DAV");
-        $lockInfo->owner = (string)$children->owner;
+        $lockInfo->owner = $result['value']->owner;
 
         $lockInfo->token = DAV\UUIDUtil::getUUID();
-        $lockInfo->scope = count($xml->xpath('d:lockscope/d:exclusive'))>0 ? LockInfo::EXCLUSIVE : LockInfo::SHARED;
+        $lockInfo->scope = $result['value']->scope;
 
         return $lockInfo;
 

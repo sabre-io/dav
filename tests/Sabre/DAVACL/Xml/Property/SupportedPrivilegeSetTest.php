@@ -26,7 +26,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
             'privilege' => '{DAV:}all',
         ]);
 
-        $xml = (new DAV\Server())->xml->write(['{DAV:}supported-privilege-set' => $prop]);
+        $xml = (new DAV\Server())->xml->write('{DAV:}supported-privilege-set', $prop);
 
         $this->assertXmlStringEqualsXmlString('
 <d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
@@ -58,7 +58,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
             ],
         ]);
 
-        $xml = (new DAV\Server())->xml->write(['{DAV:}supported-privilege-set' => $prop]);
+        $xml = (new DAV\Server())->xml->write('{DAV:}supported-privilege-set', $prop);
 
         $this->assertXmlStringEqualsXmlString('
 <d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">

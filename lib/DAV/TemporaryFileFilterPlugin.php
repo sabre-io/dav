@@ -110,7 +110,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
         if (!$tempLocation = $this->isTempFile($request->getPath()))
-            return true;
+            return;
 
         switch($request->getMethod()) {
             case 'GET' :
@@ -122,7 +122,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
             case 'DELETE' :
                 return $this->httpDelete($request, $response, $tempLocation);
         }
-        return true;
+        return;
 
     }
 
@@ -145,7 +145,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
             file_put_contents($tempPath,$data);
             return false;
         }
-        return true;
+        return;
 
     }
 
@@ -187,7 +187,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      */
     function httpGet(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
-        if (!file_exists($tempLocation)) return true;
+        if (!file_exists($tempLocation)) return;
 
         $hR->setHeader('Content-Type','application/octet-stream');
         $hR->setHeader('Content-Length',filesize($tempLocation));
@@ -235,7 +235,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      */
     function httpDelete(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
-        if (!file_exists($tempLocation)) return true;
+        if (!file_exists($tempLocation)) return;
 
         unlink($tempLocation);
         $hR->setHeader('X-Sabre-Temp','true');
@@ -258,7 +258,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      */
     function httpPropfind(RequestInterface $request, ResponseInterface $hR, $tempLocation) {
 
-        if (!file_exists($tempLocation)) return true;
+        if (!file_exists($tempLocation)) return;
 
         $hR->setHeader('X-Sabre-Temp','true');
         $hR->setStatus(207);

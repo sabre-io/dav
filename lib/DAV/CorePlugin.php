@@ -3,8 +3,10 @@
 namespace Sabre\DAV;
 
 use
+    Sabre\DAV\Exception\BadRequest,
     Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+    Sabre\HTTP\ResponseInterface,
+    Sabre\Xml\ParseException;
 
 /**
  * The core plugin provides all the basic features for a WebDAV server.
@@ -318,11 +320,7 @@ class CorePlugin extends ServerPlugin {
 
         $requestBody = $request->getBodyAsString();
         if (strlen($requestBody)) {
-            $propFindXml = $this->server->xml->parse($requestBody);
-            if ($propFindXml['name'] !== '{DAV:}propfind') {
-                throw new Exception\UnsupportedMediaType('The root element of this request must be {DAV:}propfind');
-            }
-            $propFindXml = $propFindXml['value'];
+            $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
         } else {
             $propFindXml = new Xml\Request\PropFind();
             $propFindXml->allProp = true;
@@ -375,9 +373,11 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $propPatch = $this->server->xml->parse(
-            $request->getBodyAsString()
-        )['value'];
+        try {
+            $propPatch = $this->server->xml->expect('{DAV:}propertyupdate', $request->getBody());
+        } catch (ParseException $e) {
+            throw new BadRequest($e->getMessage(), null, $e);
+        }
         $newProperties = $propPatch->properties;
 
         $result = $this->server->updateProperties($path, $newProperties);
@@ -563,18 +563,12 @@ class CorePlugin extends ServerPlugin {
             }
 
             try {
-                $mkcol = $this->server->xml->parse($requestBody);
+                $mkcol = $this->server->xml->expect('{DAV:}mkcol', $requestBody);
             } catch (\Sabre\Xml\ParseException $e) {
                 throw new Exception\BadRequest($e->getMessage(), null, $e);
             }
-            if ($mkcol['name']!=='{DAV:}mkcol') {
 
-                // We must throw 415 for unsupported mkcol bodies
-                throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must be a {DAV:}mkcol request construct.');
-
-            }
-
-            $properties = $mkcol['value']->getProperties();
+            $properties = $mkcol->getProperties();
 
             if (!isset($properties['{DAV:}resourcetype']))
                 throw new Exception\BadRequest('The mkcol request must include a {DAV:}resourcetype property');
@@ -706,9 +700,13 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $result = $this->server->xml->parse($request->getBody());
+        $result = $this->server->xml->parse(
+            $request->getBody(),
+            $request->getUrl(),
+            $rootElementName
+        );
 
-        if ($this->server->emit('report', [$result['name'], $result['value'], $path])) {
+        if ($this->server->emit('report', [$rootElementName, $result, $path])) {
 
             // If emit returned true, it means the report was not supported
             throw new Exception\ReportNotSupported();

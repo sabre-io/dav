@@ -8,12 +8,12 @@ use Sabre\Xml\Reader;
 abstract class XmlTest extends \PHPUnit_Framework_TestCase {
 
     protected $namespaceMap = ['DAV:' => 'd'];
-    protected $baseUri = '/';
+    protected $contextUri = '/';
 
     function write($input) {
 
         $writer = new Writer();
-        $writer->baseUri = $this->baseUri;
+        $writer->contextUri = $this->contextUri;
         $writer->namespaceMap = $this->namespaceMap;
         $writer->openMemory();
         $writer->setIndent(true);

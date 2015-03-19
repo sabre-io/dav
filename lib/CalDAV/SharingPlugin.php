@@ -263,12 +263,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         // re-populated the request body with the existing data.
         $request->setBody($requestBody);
 
-        $result = $this->server->xml->parse($requestBody);
-
-        $documentType = $result['name'];
-        $message = $result['value'];
-
-        unset($result);
+        $message = $this->server->xml->parse($requestBody, $request->getUrl(), $documentType);
 
         switch($documentType) {
 
@@ -334,6 +329,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 if ($url) {
                     $writer = $this->server->xml->getWriter($this->server->getBaseUri());
+                    $writer->openMemory();
                     $writer->startDocument();
                     $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');
                     $writer->write(new Href($url));

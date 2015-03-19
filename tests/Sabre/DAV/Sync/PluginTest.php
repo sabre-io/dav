@@ -88,7 +88,7 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
-        $multiStatus = $this->server->xml->parse($response->getBodyAsString())['value'];
+        $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
         // Checking the sync-token
         $this->assertEquals(
@@ -151,7 +151,7 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
-        $multiStatus = $this->server->xml->parse($response->getBodyAsString())['value'];
+        $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
         // Checking the sync-token
         $this->assertEquals(
@@ -213,7 +213,7 @@ BLA;
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
-        )['value'];
+        );
 
         // Checking the sync-token
         $this->assertEquals(
@@ -264,7 +264,7 @@ BLA;
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
-        )['value'];
+        );
 
         // Checking the sync-token
         $this->assertEquals(

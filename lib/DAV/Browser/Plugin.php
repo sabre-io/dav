@@ -656,7 +656,7 @@ HTML;
             }
         }
 
-        list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($name);
+        list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($name);
 
         $realName = $name;
         if (isset($this->server->xmlNamespaces[$ns])) {
@@ -667,7 +667,7 @@ HTML;
 
         $xmlValueDisplay = function($propName) {
             $realPropName = $propName;
-            list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($propName);
+            list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($propName);
             if (isset($this->server->xmlNamespaces[$ns])) {
                 $propName = $this->server->xmlNamespaces[$ns] . ':' . $localName;
             }
@@ -720,7 +720,7 @@ HTML;
                 echo $this->escapeHTML($value);
                 break;
             case 'xml' :
-                $xml = $this->server->xml->write(['{DAV:}root' => $value], $this->server->getBaseUri());
+                $xml = $this->server->xml->write('{DAV:}root', $value, $this->server->getBaseUri());
                 // removing first and last line, as they contain our root
                 // element.
                 $xml = substr($xml, strpos($xml,"\n")+1);

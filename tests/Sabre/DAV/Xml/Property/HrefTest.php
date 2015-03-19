@@ -19,7 +19,7 @@ class HrefTest extends XmlTest {
         $href = new Href('path');
         $this->assertEquals('path',$href->getHref());
 
-        $this->baseUri = '/bla/';
+        $this->contextUri = '/bla/';
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 

@@ -189,12 +189,11 @@ class ServerPropsTest extends AbstractServer {
 </d:propertyupdate>';
 
         $result = $this->server->xml->parse($body);
-        $result = $result['value']->properties;
         $this->assertEquals([
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
             '{http://sabredav.org/NS/test}someprop2' => null,
             '{http://sabredav.org/NS/test}someprop3' => null,
-        ], $result);
+        ], $result->properties);
 
     }
 

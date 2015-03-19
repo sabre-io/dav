@@ -122,7 +122,7 @@ class Response implements Element {
         if ($status = $this->getHTTPStatus()) {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
-        $writer->writeElement('{DAV:}href', $writer->baseUri . $this->getHref());
+        $writer->writeElement('{DAV:}href', $writer->contextUri . $this->getHref());
         foreach($this->getResponseProperties() as $status => $properties) {
 
             // Skipping empty lists

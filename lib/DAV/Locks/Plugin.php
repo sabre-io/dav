@@ -404,13 +404,10 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function generateLockResponse(LockInfo $lockInfo) {
 
-        return $this->server->xml->write([
-            '{DAV:}prop' => [
-                '{DAV:}lockdiscovery' =>
-                    new DAV\Xml\Property\LockDiscovery([$lockInfo])
-             ]
+        return $this->server->xml->write('{DAV:}prop',[
+            '{DAV:}lockdiscovery' =>
+                new DAV\Xml\Property\LockDiscovery([$lockInfo])
         ]);
-
     }
 
     /**
@@ -563,16 +560,17 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function parseLockRequest($body) {
 
-        $result = $this->server->xml->parse(
+        $result = $this->server->xml->expect(
+            '{DAV:}lockinfo',
             $body
         );
 
         $lockInfo = new LockInfo();
 
-        $lockInfo->owner = $result['value']->owner;
+        $lockInfo->owner = $result->owner;
 
         $lockInfo->token = DAV\UUIDUtil::getUUID();
-        $lockInfo->scope = $result['value']->scope;
+        $lockInfo->scope = $result->scope;
 
         return $lockInfo;
 

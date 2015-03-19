@@ -104,7 +104,7 @@ class Href implements Element {
 
         foreach($this->getHrefs() as $href) {
             if ($this->autoPrefix) {
-                $href = $writer->baseUri . $href;
+                $href = $writer->contextUri . $href;
             }
             $writer->writeElement('{DAV:}href', $href);
         }

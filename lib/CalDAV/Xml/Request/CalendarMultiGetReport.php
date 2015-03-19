@@ -105,7 +105,7 @@ class CalendarMultiGetReport implements XmlDeserializable {
                     }
                     break;
                 case '{DAV:}href' :
-                    $newProps['hrefs'][] = Uri\resolve($reader->baseUri, $elem['value']);
+                    $newProps['hrefs'][] = Uri\resolve($reader->contextUri, $elem['value']);
                     break;
 
             }

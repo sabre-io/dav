@@ -68,7 +68,7 @@ class Plugin extends ServerPlugin {
         $server->on('method:GET', [$this,'httpGet'], 90);
         $server->on('propFind',   [$this,'propFind']);
 
-        $server->xmlNamespaces[self::NS_CALENDARSERVER] = 'cs';
+        $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
 
         array_push($server->protectedProperties,
@@ -138,6 +138,7 @@ class Plugin extends ServerPlugin {
             return;
 
         $writer = $this->server->xml->getWriter();
+        $writer->openMemory();
         $writer->startDocument('1.0', 'UTF-8');
         $writer->startElement('{http://calendarserver.org/ns/}notification');
         $node->getNotificationType()->xmlSerializeFull($writer);

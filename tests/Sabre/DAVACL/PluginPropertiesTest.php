@@ -95,7 +95,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $server = new DAV\Server();
 
         $prop = $result[200]['{DAV:}supported-privilege-set'];
-        $result = $server->xml->write(['{DAV:}root' => $prop]);
+        $result = $server->xml->write('{DAV:}root', $prop);
 
         $xpaths = [
             '/d:root' => 1,

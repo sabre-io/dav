@@ -164,7 +164,7 @@ class Server extends EventEmitter {
     /**
      * Reference to the XML utility object.
      *
-     * @var XMLUtil
+     * @var Xml\Service
      */
     public $xml;
 
@@ -219,8 +219,7 @@ class Server extends EventEmitter {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
 
-        $this->xml = new XMLUtil();
-        $this->xmlNamespaces =& $this->xml->namespaceMap;
+        $this->xml = new Xml\Service();
         $this->sapi = new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = $this->sapi->getRequest();
@@ -1643,7 +1642,7 @@ class Server extends EventEmitter {
                 unset($entry[404]);
             }
             $response = new Xml\Element\Response(
-                '/' . ltrim($href,'/'),
+                ltrim($href,'/'),
                 $entry
             );
             $xml[] = [
@@ -1652,7 +1651,7 @@ class Server extends EventEmitter {
             ];
 
         }
-        return $this->xml->write(['{DAV:}multistatus' => $xml]);
+        return $this->xml->write('{DAV:}multistatus', $xml, $this->baseUri);
 
     }
 

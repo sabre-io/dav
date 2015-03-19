@@ -1023,8 +1023,8 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\BadRequest('XML body expected in ACL request');
         }
 
-        $acl = $this->server->xml->parse($body);
-        $newAcl = $acl['value']->getPrivileges();
+        $acl = $this->server->xml->expect('{DAV:}acl', $body);
+        $newAcl = $acl->getPrivileges();
 
         // Normalizing urls
         foreach($newAcl as $k=>$newAce) {
@@ -1117,11 +1117,10 @@ class Plugin extends DAV\ServerPlugin {
 
         $result = $this->expandProperties($requestUri, $report->properties, $depth);
 
-        $xml = $this->server->xml->write([
-            '{DAV:}multistatus' => new DAV\Xml\Response\MultiStatus(
-                $result
-            )
-        ]);
+        $xml = $this->server->xml->write(
+            '{DAV:}multistatus',
+            new DAV\Xml\Response\MultiStatus($result)
+        );
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setBody($xml);
@@ -1200,6 +1199,9 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         $writer = $this->server->xml->getWriter();
+        $writer->openMemory();
+        $writer->startDocument();
+
         $writer->startElement('{DAV:}principal-search-property-set');
 
         foreach($this->principalSearchPropertySet as $propertyName=>$description) {

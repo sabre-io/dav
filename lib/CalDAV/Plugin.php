@@ -2,15 +2,17 @@
 
 namespace Sabre\CalDAV;
 
-use DateTimeZone;
-use Sabre\DAV;
-use Sabre\DAV\Xml\Property\Href;
-use Sabre\DAVACL;
-use Sabre\VObject;
-use Sabre\HTTP;
-use Sabre\Uri;
-use Sabre\HTTP\RequestInterface;
-use Sabre\HTTP\ResponseInterface;
+use
+    DateTimeZone,
+    Sabre\DAV,
+    Sabre\DAV\Exception\BadRequest,
+    Sabre\DAV\Xml\Property\Href,
+    Sabre\DAVACL,
+    Sabre\VObject,
+    Sabre\HTTP,
+    Sabre\Uri,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * CalDAV plugin
@@ -258,8 +260,15 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($body) {
 
-            $mkcalendar = $this->server->xml->parse($body);
-            $properties = $mkcalendar['value']->getProperties();
+            try {
+                $mkcalendar = $this->server->xml->expect(
+                    '{urn:ietf:params:xml:ns:caldav}mkcalendar',
+                    $body
+                );
+            } catch (\Sabre\Xml\ParseException $e) {
+                throw new BadRequest($e->getMessage(), null, $e);
+            }
+            $properties = $mkcalendar->getProperties();
 
         }
 

@@ -181,7 +181,7 @@ class Client extends HTTP\Client {
             list(
                 $namespace,
                 $elementName
-            ) = XMLUtil::parseClarkNotation($property);
+            ) = \Sabre\Xml\Service::parseClarkNotation($property);
 
             if ($namespace === 'DAV:') {
                 $element = $dom->createElement('d:'.$elementName);
@@ -250,7 +250,7 @@ class Client extends HTTP\Client {
             list(
                 $namespace,
                 $elementName
-            ) = XMLUtil::parseClarkNotation($propName);
+            ) = \Sabre\Xml\Service::parseClarkNotation($propName);
 
             if ($propValue === null) {
 
@@ -420,14 +420,10 @@ class Client extends HTTP\Client {
      */
     function parseMultiStatus($body) {
 
-        $xmlUtil = new XMLUtil();
-        $multistatus = $xmlUtil->parse($body)['value'];
+        $xmlUtil = new Xml\Service();
+        $multistatus = $xmlUtil->expect('{DAV:}multistatus', $body);
 
         $result = [];
-
-        if (!$multistatus instanceof Xml\Response\MultiStatus) {
-            throw new \InvalidArgumentException('Xml could not be parsed into a {DAV:}multistatus document');
-        }
 
         foreach($multistatus->getResponses() as $response) {
 

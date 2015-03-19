@@ -698,7 +698,7 @@ class Plugin extends ServerPlugin {
         $dom = new \DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
         $scheduleResponse = $dom->createElement('cal:schedule-response');
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+        foreach($this->server->xml->namespaceMap as $namespace=>$prefix) {
 
             $scheduleResponse->setAttribute('xmlns:' . $prefix,$namespace);
 

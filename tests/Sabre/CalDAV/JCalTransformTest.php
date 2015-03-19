@@ -79,7 +79,7 @@ XML;
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
-        )['value'];
+        );
 
         $responses = $multiStatus->getResponses();
         $this->assertEquals(1, count($responses));
@@ -132,7 +132,7 @@ XML;
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
-        )['value'];
+        );
 
         $responses = $multiStatus->getResponses();
 
@@ -185,7 +185,7 @@ XML;
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
-        )['value'];
+        );
 
         $responses = $multiStatus->getResponses();
 

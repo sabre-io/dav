@@ -104,8 +104,8 @@ ics;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML);
-        $this->plugin->report($report['name'], $report['value']);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
         $this->assertEquals(200, $this->server->httpResponse->status);
         $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
@@ -126,8 +126,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML);
-        $this->plugin->report($report['name'], $report['value']);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
     }
 
@@ -148,8 +148,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML);
-        $this->plugin->report($report['name'], $report['value']);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
     }
 
@@ -169,8 +169,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML);
-        $this->plugin->report($report['name'], $report['value']);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
     }
 }

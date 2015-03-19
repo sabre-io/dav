@@ -143,7 +143,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 </cs:notification>
 ';
 
-        $this->assertEquals($expected, $httpResponse->body);
+        $this->assertXmlStringEqualsXmlString($expected, $httpResponse->getBodyAsString());
 
     }
 

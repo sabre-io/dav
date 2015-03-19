@@ -85,7 +85,7 @@ class LockDiscovery implements XmlSerializable {
 
             if (!self::$hideLockRoot) {
                 $writer->startElement('{DAV:}lockroot');
-                $writer->writeElement('{DAV:}href', $writer->baseUri . $lock->uri);
+                $writer->writeElement('{DAV:}href', $writer->contextUri . $lock->uri);
                 $writer->endElement(); // {DAV:}lockroot
             }
             $writer->writeElement('{DAV:}depth', ($lock->depth == DAV\Server::DEPTH_INFINITY?'infinity':$lock->depth));

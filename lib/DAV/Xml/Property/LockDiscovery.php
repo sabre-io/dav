@@ -2,10 +2,13 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV;
-use Sabre\Xml\XmlSerializable;
-use Sabre\Xml\Reader;
-use Sabre\Xml\Writer;
+use
+    Sabre\DAV,
+    Sabre\Xml\Element\XmlFragment,
+    Sabre\Xml\Reader,
+    Sabre\Xml\Writer,
+    Sabre\Xml\XmlSerializable;
+
 
 /**
  * Represents {DAV:}lockdiscovery property.
@@ -95,7 +98,7 @@ class LockDiscovery implements XmlSerializable {
             $writer->writeElement('{DAV:}href', 'opaquelocktoken:' . $lock->token);
             $writer->endElement(); // {DAV:}locktoken
 
-            $writer->writeElement('{DAV:}owner', $lock->owner);
+            $writer->writeElement('{DAV:}owner', new XmlFragment($lock->owner));
             $writer->endElement(); // {DAV:}activelock
 
         }

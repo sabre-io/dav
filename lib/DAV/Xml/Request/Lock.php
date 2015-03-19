@@ -58,9 +58,15 @@ class Lock implements XmlDeserializable {
      */
     static function xmlDeserialize(Reader $reader) {
 
+        $reader->pushContext();
+        $reader->elementMap['{DAV:}owner'] = 'Sabre\\Xml\\Element\\XmlFragment';
+
         $values = KeyValue::xmlDeserialize($reader);
+
+        $reader->popContext();
+
         $new = new self();
-        $new->owner = !empty($values['{DAV:}owner'])?$values['{DAV:}owner']:null;
+        $new->owner = !empty($values['{DAV:}owner'])?$values['{DAV:}owner']->getXml():null;
         $new->scope = LockInfo::SHARED;
 
         if (isset($values['{DAV:}lockscope'])) {

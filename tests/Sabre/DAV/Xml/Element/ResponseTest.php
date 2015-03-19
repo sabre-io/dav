@@ -89,7 +89,7 @@ class ResponseTest extends DAV\Xml\XmlTest {
   <d:href>/uri</d:href>
   <d:propstat>
    <d:prop>
-    <x1:propertyname xmlns:x1="">value</x1:propertyname>
+    <propertyname xmlns="">value</propertyname>
    </d:prop>
    <d:status>HTTP/1.1 200 OK</d:status>
   </d:propstat>

@@ -659,8 +659,8 @@ HTML;
         list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($name);
 
         $realName = $name;
-        if (isset($this->server->xmlNamespaces[$ns])) {
-            $name = $this->server->xmlNamespaces[$ns] . ':' . $localName;
+        if (isset($this->server->xml->namespaceMap[$ns])) {
+            $name = $this->server->xml->namespaceMap[$ns] . ':' . $localName;
         }
 
         ob_start();
@@ -668,8 +668,8 @@ HTML;
         $xmlValueDisplay = function($propName) {
             $realPropName = $propName;
             list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($propName);
-            if (isset($this->server->xmlNamespaces[$ns])) {
-                $propName = $this->server->xmlNamespaces[$ns] . ':' . $localName;
+            if (isset($this->server->xml->namespaceMap[$ns])) {
+                $propName = $this->server->xml->namespaceMap[$ns] . ':' . $localName;
             }
             return "<span title=\"" . $this->escapeHTML($realPropName) . "\">" . $this->escapeHTML($propName) . "</span>";
         };

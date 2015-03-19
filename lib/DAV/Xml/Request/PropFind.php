@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\Xml\Request;
 
-use Sabre\Xml\Element\Elements;
+use Sabre\Xml\Element\KeyValue;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 
@@ -58,30 +58,18 @@ class PropFind implements XmlDeserializable {
 
         $self = new self();
 
-        $reader->read();
+        foreach(KeyValue::xmlDeserialize($reader) as $k=>$v) {
 
-        do {
+            switch($k) {
+                case '{DAV:}prop' :
+                    $self->properties = array_keys($v);
+                    break;
+                case '{DAV:}allprop' :
+                    $self->allProp = true;
 
-            if ($reader->nodeType === Reader::ELEMENT) {
-
-                switch($reader->getClark()) {
-
-                    case '{DAV:}allprop' :
-                        $self->allProp = true;
-                        break;
-                    case '{DAV:}prop' :
-                        $self->properties = Elements::xmlDeserialize($reader);
-                        break;
-                }
-                $reader->next();
-
-            } else {
-                $reader->read();
             }
 
-        } while ($reader->nodeType !== Reader::END_ELEMENT);
-
-        $reader->read();
+        }
         return $self;
 
     }

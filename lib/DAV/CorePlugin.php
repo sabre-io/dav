@@ -320,7 +320,11 @@ class CorePlugin extends ServerPlugin {
 
         $requestBody = $request->getBodyAsString();
         if (strlen($requestBody)) {
-            $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
+            try {
+                $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
+            } catch (ParseException $e) {
+                throw new BadRequest($e->getMessage(), null, $e);
+            }
         } else {
             $propFindXml = new Xml\Request\PropFind();
             $propFindXml->allProp = true;

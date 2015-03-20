@@ -21,9 +21,6 @@ class Service extends \Sabre\Xml\Service {
         '{DAV:}multistatus' => 'Sabre\\DAV\\Xml\\Response\\MultiStatus',
         '{DAV:}response'    => 'Sabre\\DAV\\Xml\\Element\\Response',
         '{DAV:}propstat'    => 'Sabre\\Xml\\Element\\KeyValue',
-        '{DAV:}prop'        => 'Sabre\\Xml\\Element\\KeyValue',
-        '{DAV:}set'         => 'Sabre\\Xml\\Element\\KeyValue',
-        '{DAV:}remove'      => 'Sabre\\Xml\\Element\\KeyValue',
 
         // Requests
         '{DAV:}propfind'        => 'Sabre\\DAV\\Xml\\Request\\PropFind',

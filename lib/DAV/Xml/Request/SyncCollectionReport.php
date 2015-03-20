@@ -73,7 +73,14 @@ class SyncCollectionReport implements XmlDeserializable {
 
         $self = new self();
 
+        $elementMap = $reader->elementMap;
+
+        $reader->pushContext();
+
+        $reader->elementMap['{DAV:}prop']   = 'Sabre\Xml\Element\Elements';
         $elems = KeyValue::xmlDeserialize($reader);
+
+        $reader->popContext();
 
         $required = [
             '{DAV:}sync-token',
@@ -87,7 +94,7 @@ class SyncCollectionReport implements XmlDeserializable {
         }
 
 
-        $self->properties = array_keys($elems['{DAV:}prop']);
+        $self->properties = $elems['{DAV:}prop'];
         $self->syncToken = $elems['{DAV:}sync-token'];
 
         if (isset($elems['{DAV:}limit'])) {

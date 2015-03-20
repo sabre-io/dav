@@ -118,7 +118,9 @@ class MultiStatus implements Element {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $elements = $reader->parseInnerTree();
+        $elementMap = $reader->elementMap;
+        $elementMap['{DAV:}prop'] = 'Sabre\\DAV\\Xml\\Element\\Prop';
+        $elements = $reader->parseInnerTree($elementMap);
 
         $responses = [];
         $syncToken = null;

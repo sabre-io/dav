@@ -22,24 +22,6 @@ use Sabre\Xml\XmlSerializable;
 class SupportedLock implements XmlSerializable {
 
     /**
-     * supportsLocks
-     *
-     * @var bool
-     */
-    public $supportsLocks = false;
-
-    /**
-     * __construct
-     *
-     * @param bool $supportsLocks
-     */
-    function __construct($supportsLocks) {
-
-        $this->supportsLocks = $supportsLocks;
-
-    }
-
-    /**
      * The xmlSerialize metod is called during xml writing.
      *
      * Use the $writer argument to write its own xml serialization.
@@ -59,8 +41,6 @@ class SupportedLock implements XmlSerializable {
      * @return void
      */
     function xmlSerialize(Writer $writer) {
-
-        if (!$this->supportsLocks) return null;
 
         $writer->writeElement('{DAV:}lockentry', [
             '{DAV:}lockscope' => ['{DAV:}exclusive' => null],

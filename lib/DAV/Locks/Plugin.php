@@ -558,7 +558,6 @@ class Plugin extends DAV\ServerPlugin {
         $lockInfo = new LockInfo();
 
         $lockInfo->owner = $result->owner;
-
         $lockInfo->token = DAV\UUIDUtil::getUUID();
         $lockInfo->scope = $result->scope;
 

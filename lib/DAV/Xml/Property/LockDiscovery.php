@@ -4,6 +4,7 @@ namespace Sabre\DAV\Xml\Property;
 
 use
     Sabre\DAV,
+    Sabre\DAV\Locks\LockInfo,
     Sabre\Xml\Element\XmlFragment,
     Sabre\Xml\Reader,
     Sabre\Xml\Writer,
@@ -27,7 +28,7 @@ class LockDiscovery implements XmlSerializable {
     /**
      * locks
      *
-     * @var \Sabre\DAV\Locks\LockInfo[]
+     * @var LockInfo[]
      */
     public $locks;
 
@@ -44,7 +45,7 @@ class LockDiscovery implements XmlSerializable {
     /**
      * __construct
      *
-     * @param \Sabre\DAV\Locks\LockInfo[] $locks
+     * @param LockInfo[] $locks
      */
     function __construct($locks) {
 
@@ -74,7 +75,7 @@ class LockDiscovery implements XmlSerializable {
             $writer->startElement('{DAV:}activelock');
 
             $writer->startElement('{DAV:}lockscope');
-            if ($lock->scope === 'shared') {
+            if ($lock->scope === LockInfo::SHARED) {
                 $writer->writeElement('{DAV:}shared');
             } else {
                 $writer->writeElement('{DAV:}exclusive');

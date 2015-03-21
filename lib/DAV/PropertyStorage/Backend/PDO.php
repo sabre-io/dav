@@ -81,7 +81,7 @@ class PDO implements BackendInterface {
 
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             switch($row['valuetype']) {
-                case NULL :
+                case null :
                 case self::VT_STRING :
                     $propFind->set($row['name'], $row['value']);
                     break;

@@ -52,5 +52,12 @@ class SupportedMethodSetTest extends DAV\AbstractServer {
 
     }
 
+    function testGetObj() {
+
+        $result = $this->server->getProperties('/', ['{DAV:}supported-method-set']);
+        $this->assertTrue($result['{DAV:}supported-method-set']->has('PROPFIND'));
+
+    }
+
 }
 

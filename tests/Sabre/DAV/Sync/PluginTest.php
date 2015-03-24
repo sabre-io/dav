@@ -19,6 +19,15 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     }
 
+    function testGetInfo() {
+
+        $this->assertArrayHasKey(
+            'name',
+            (new Plugin())->getPluginInfo()
+        );
+
+    }
+
     function setUpTree() {
 
         $this->collection =

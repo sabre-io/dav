@@ -38,4 +38,22 @@ XML;
         $this->assertXmlStringEqualsXmlString($expected, $result);
 
     }
+
+    function testDeserialize() {
+
+        $input = <<<XML
+<?xml version="1.0"?>
+<d:getlastmodified xmlns:d="DAV:">Tue, 24 Mar 2015 18:47:00 GMT</d:getlastmodified>
+XML;
+
+        $elementMap = ['{DAV:}getlastmodified' => 'Sabre\DAV\Xml\Property\GetLastModified'];
+        $result = $this->parse($input, $elementMap);
+
+        $this->assertEquals(
+            new DateTime('2015-03-24 18:47:00', new DateTimeZone('UTC')),
+            $result['value']->getTime()
+        );
+
+    }
+
 }

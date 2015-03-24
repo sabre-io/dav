@@ -6,7 +6,9 @@ use
     Sabre\Xml\Element,
     Sabre\Xml\Reader,
     Sabre\Xml\Writer,
-    Sabre\HTTP;
+    Sabre\HTTP,
+    DateTime,
+    DateTimeZone;
 
 /**
  * This property represents the {DAV:}getlastmodified property.
@@ -23,7 +25,7 @@ class GetLastModified implements Element {
     /**
      * time
      *
-     * @var \DateTime
+     * @var DateTime
      */
     public $time;
 
@@ -32,25 +34,25 @@ class GetLastModified implements Element {
      *
      * @param int|DateTime $time
      */
-    public function __construct($time) {
+    function __construct($time) {
 
-        if ($time instanceof \DateTime) {
+        if ($time instanceof DateTime) {
             $this->time = clone $time;
         } else {
-            $this->time = new \DateTime('@' . $time);
+            $this->time = new DateTime('@' . $time);
         }
 
         // Setting timezone to UTC
-        $this->time->setTimezone(new \DateTimeZone('UTC'));
+        $this->time->setTimezone(new DateTimeZone('UTC'));
 
     }
 
     /**
      * getTime
      *
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getTime() {
+    function getTime() {
 
         return $this->time;
 
@@ -71,7 +73,7 @@ class GetLastModified implements Element {
      * @param Writer $writer
      * @return void
      */
-    public function xmlSerialize(Writer $writer) {
+    function xmlSerialize(Writer $writer) {
 
         $writer->write(
             HTTP\Util::toHTTPDate($this->time)
@@ -100,10 +102,10 @@ class GetLastModified implements Element {
      * @param Reader $reader
      * @return mixed
      */
-    static public function xmlDeserialize(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         return
-            new self($reader->parseInnerTree());
+            new self(new DateTime($reader->parseInnerTree()));
 
     }
 }

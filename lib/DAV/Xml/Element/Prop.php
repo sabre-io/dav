@@ -77,22 +77,15 @@ class Prop implements XmlDeserializable {
      * top-level element it doesn't recognize into either a string, or an
      * XmlFragment class.
      *
-     * This method returns arn array with 3 properties:
+     * This method returns arn array with 2 properties:
      *   * name - A clark-notation XML element name.
      *   * value - The parsed value.
-     *   * attributes - A key-value list of attributes.
      *
      * @return array
      */
     static private function parseCurrentElement(Reader $reader) {
 
         $name = $reader->getClark();
-
-        $attributes = [];
-
-        if ($reader->hasAttributes) {
-            $attributes = $reader->parseAttributes();
-        }
 
         if (array_key_exists($name, $reader->elementMap)) {
             $deserializer = $reader->elementMap[$name];
@@ -116,7 +109,6 @@ class Prop implements XmlDeserializable {
         return [
             'name' => $name,
             'value' => $value,
-            'attributes' => $attributes,
         ];
 
     }

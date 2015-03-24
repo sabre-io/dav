@@ -14,12 +14,6 @@ use
  * Defined in:
  * http://tools.ietf.org/html/rfc4918#section-15.7
  *
- * Although this is normally a simple property, windows requires us to add
- * some new attributes.
- *
- * This class uses unix timestamps internally, and converts them to RFC 1123 times for
- * serialization
- *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
@@ -41,11 +35,9 @@ class GetLastModified implements Element {
     public function __construct($time) {
 
         if ($time instanceof \DateTime) {
-            $this->time = $time;
-        } elseif (is_int($time) || ctype_digit($time)) {
-            $this->time = new \DateTime('@' . $time);
+            $this->time = clone $time;
         } else {
-            $this->time = new \DateTime($time);
+            $this->time = new \DateTime('@' . $time);
         }
 
         // Setting timezone to UTC

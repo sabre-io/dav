@@ -30,13 +30,7 @@ class ResourceType extends Element\Elements {
      */
     function __construct($resourceTypes = null) {
 
-        if (is_null($resourceTypes)) {
-            parent::__construct([]);
-        } elseif (is_array($resourceTypes)) {
-            parent::__construct($resourceTypes);
-        } else {
-            parent::__construct([$resourceTypes]);
-        }
+        parent::__construct((array)$resourceTypes);
 
     }
 

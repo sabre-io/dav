@@ -32,7 +32,7 @@ class Collection extends DAV\Collection {
      * @param array $children
      * @return void
      */
-    public function __construct($name, array $children = array(), Collection $parent = null) {
+    function __construct($name, array $children = array(), Collection $parent = null) {
 
         $this->name = $name;
         $this->children = $children;
@@ -47,7 +47,7 @@ class Collection extends DAV\Collection {
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->name;
 
@@ -77,7 +77,7 @@ class Collection extends DAV\Collection {
      * @param resource|string $data Initial payload
      * @return null|string
      */
-    public function createFile($name, $data = null) {
+    function createFile($name, $data = null) {
 
         if (is_resource($data)) {
             $data = stream_get_contents($data);
@@ -93,7 +93,7 @@ class Collection extends DAV\Collection {
      * @param string $name
      * @return void
      */
-    public function createDirectory($name) {
+    function createDirectory($name) {
 
         $this->children[$name] = array();
 
@@ -104,7 +104,7 @@ class Collection extends DAV\Collection {
      *
      * @return \Sabre\DAV\INode[]
      */
-    public function getChildren() {
+    function getChildren() {
 
         $result = array();
         foreach($this->children as $key=>$value) {
@@ -129,7 +129,7 @@ class Collection extends DAV\Collection {
      * @param string $name
      * @return void
      */
-    public function deleteChild($name) {
+    function deleteChild($name) {
 
         foreach($this->children as $key=>$value) {
 
@@ -152,7 +152,7 @@ class Collection extends DAV\Collection {
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         foreach($this->getChildren() as $child) {
             $this->deleteChild($child->getName());

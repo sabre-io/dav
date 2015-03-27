@@ -5,47 +5,16 @@ namespace Sabre\DAV\Mock;
 use Sabre\DAV;
 
 /**
- * Mock File
+ * Mock Streaming File File
  *
- * See the Collection in this directory for more details.
+ * Works similar to the mock file, but this one works with streams and has no
+ * content-length or etags.
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class File extends DAV\File {
-
-    protected $name;
-    protected $contents;
-    protected $parent;
-
-    /**
-     * Creates the object
-     *
-     * @param string $name
-     * @param array $children
-     * @return void
-     */
-    function __construct($name, $contents, Collection $parent = null) {
-
-        $this->name = $name;
-        $this->put($contents);
-        $this->parent = $parent;
-
-    }
-
-    /**
-     * Returns the name of the node.
-     *
-     * This is used to generate the url.
-     *
-     * @return string
-     */
-    function getName() {
-
-        return $this->name;
-
-    }
+class StreamingFile extends File {
 
     /**
      * Updates the data
@@ -69,11 +38,13 @@ class File extends DAV\File {
      */
     function put($data) {
 
-        if (is_resource($data)) {
-            $data = stream_get_contents($data);
+        if (is_string($data)) {
+            $stream = fopen('php://memory','r+');
+            fwrite($stream, $data);
+            rewind($stream);
+            $data = $stream;
         }
         $this->contents = $data;
-        return '"' . md5($data) . '"';
 
     }
 
@@ -91,19 +62,6 @@ class File extends DAV\File {
     }
 
     /**
-     * Changes the name of the node.
-     *
-     * @return void
-     */
-    function setName($newName) {
-
-        $this->parent->deleteChild($this->name);
-        $this->name = $newName;
-        $this->parent->createFile($newName, $this->contents);
-
-    }
-
-    /**
      * Returns the ETag for a file
      *
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.
@@ -114,7 +72,7 @@ class File extends DAV\File {
      */
     function getETag() {
 
-        return '"' . md5($this->contents) . '"';
+        return null;
 
     }
 
@@ -125,18 +83,7 @@ class File extends DAV\File {
      */
     function getSize() {
 
-        return strlen($this->contents);
-
-    }
-
-    /**
-     * Delete the node
-     *
-     * @return void
-     */
-    function delete() {
-
-        $this->parent->deleteChild($this->name);
+        return null;
 
     }
 

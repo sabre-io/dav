@@ -7,6 +7,7 @@ use Sabre\Xml\Reader;
 
 abstract class XmlTest extends \PHPUnit_Framework_TestCase {
 
+    protected $elementMap = [];
     protected $namespaceMap = ['DAV:' => 'd'];
     protected $contextUri = '/';
 
@@ -22,10 +23,10 @@ abstract class XmlTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function parse($xml, $elementMap) {
+    function parse($xml, array $elementMap = []) {
 
         $reader = new Reader();
-        $reader->elementMap = $elementMap;
+        $reader->elementMap = array_merge($this->elementMap, $elementMap);
         $reader->xml($xml);
         return $reader->parse();
 

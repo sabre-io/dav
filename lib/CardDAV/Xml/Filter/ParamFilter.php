@@ -55,10 +55,6 @@ abstract class ParamFilter implements Element {
         $att = $reader->parseAttributes();
         $result['name'] = $att['name'];
 
-        if (isset($att['test']) && $att['test']==='allof') {
-            $result['test'] = 'allof';
-        }
-
         $elems = $reader->parseInnerTree();
 
         if (is_array($elems)) foreach($elems as $elem) {

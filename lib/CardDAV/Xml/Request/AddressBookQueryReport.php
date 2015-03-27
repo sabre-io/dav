@@ -31,6 +31,27 @@ class AddressBookQueryReport implements XmlDeserializable {
     /**
      * List of property/component filters.
      *
+     * This is an array with filters. Every item is a property filter. Every
+     * property filter has the following keys:
+     *   * name - name of the component to filter on
+     *   * test - anyof or allof
+     *   * is-not-defined - Test for non-existence
+     *   * param-filters - A list of parameter filters on the property
+     *   * text-matches - A list of text values the filter needs to match
+     *
+     * Each param-filter has the following keys:
+     *   * name - name of the parameter
+     *   * is-not-defined - Test for non-existence
+     *   * text-match - Match the parameter value
+     *
+     * Each text-match in property filters, and the single text-match in
+     * param-filters have the following keys:
+     *
+     *   * value - value to match
+     *   * match-type - contains, starts-with, ends-with, equals
+     *   * negate-condition - Do the opposite match
+     *   * collation - Usually i;unicode-casemap
+     *
      * @var array
      */
     public $filters;
@@ -91,7 +112,7 @@ class AddressBookQueryReport implements XmlDeserializable {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $elems = $reader->parseInnerTree([
+        $elems = (array)$reader->parseInnerTree([
             '{urn:ietf:params:xml:ns:carddav}prop-filter'  => 'Sabre\\CardDAV\\Xml\\Filter\\PropFilter',
             '{urn:ietf:params:xml:ns:carddav}param-filter' => 'Sabre\\CardDAV\\Xml\\Filter\\ParamFilter',
             '{urn:ietf:params:xml:ns:carddav}address-data' => 'Sabre\\CardDAV\\Xml\\Filter\\AddressData',
@@ -129,11 +150,9 @@ class AddressBookQueryReport implements XmlDeserializable {
                         }
                     }
 
-                    foreach($elem['value'] as $subElem) {
+                    $newProps['filters'] = [];
+                    foreach((array)$elem['value'] as $subElem) {
                         if ($subElem['name'] === '{' . Plugin::NS_CARDDAV . '}prop-filter') {
-                            if (is_null($newProps['filters'])) {
-                                $newProps['filters'] = [];
-                            }
                             $newProps['filters'][] = $subElem['value'];
                         }
                     }

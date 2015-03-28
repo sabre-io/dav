@@ -71,9 +71,6 @@ class PropFilter implements XmlDeserializable {
                     $result['is-not-defined'] = true;
                     break;
                 case '{' . Plugin::NS_CALDAV . '}time-range' :
-                    if ($result['name'] === 'VCALENDAR') {
-                        throw new BadRequest('You cannot add time-range filters on the VCALENDAR component');
-                    }
                     $result['time-range'] = [
                         'start' => isset($elem['attributes']['start'])?DateTimeParser::parseDateTime($elem['attributes']['start']):null,
                         'end' => isset($elem['attributes']['end'])?DateTimeParser::parseDateTime($elem['attributes']['end']):null,

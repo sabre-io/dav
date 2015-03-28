@@ -44,7 +44,7 @@ class ParamFilter implements XmlDeserializable {
      * @param Reader $reader
      * @return mixed
      */
-    static function deserializeXml(Reader $reader) {
+    static function xmlDeserialize(Reader $reader) {
 
         $result = [
             'name' => null,

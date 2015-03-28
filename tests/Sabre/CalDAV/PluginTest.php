@@ -101,6 +101,10 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array('MKCALENDAR'), $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
         $this->assertEquals(array('calendar-access','calendar-proxy'), $this->plugin->getFeatures());
+        $this->assertEquals(
+            'caldav',
+            $this->plugin->getPluginInfo()['name']
+        );
 
     }
 
@@ -427,6 +431,23 @@ END:VCALENDAR';
 
     }
 
+    function testMkCalendarBadXml() {
+
+        $request = HTTP\Sapi::createFromServerArray(array(
+            'REQUEST_METHOD' => 'MKCALENDAR',
+            'REQUEST_URI'    => '/blabla',
+        ));
+
+        $body = 'This is not xml';
+
+        $request->setBody($body);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(400, $this->response->status);
+
+    }
+
     function testPrincipalProperties() {
 
         $httpRequest = HTTP\Sapi::createFromServerArray(array(
@@ -435,10 +456,11 @@ END:VCALENDAR';
         $this->server->httpRequest = $httpRequest;
 
         $props = $this->server->getPropertiesForPath('/principals/user1',array(
-            '{urn:ietf:params:xml:ns:caldav}calendar-home-set',
+            '{' . Plugin::NS_CALDAV . '}calendar-home-set',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-read-for',
             '{' . Plugin::NS_CALENDARSERVER . '}calendar-proxy-write-for',
             '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
+            '{' . Plugin::NS_CALENDARSERVER . '}email-address-set',
         ));
 
         $this->assertArrayHasKey(0,$props);
@@ -460,6 +482,10 @@ END:VCALENDAR';
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
         $this->assertEquals(array('principals/admin'), $prop->getHrefs());
 
+        $this->assertArrayHasKey('{' . Plugin::NS_CALENDARSERVER . '}email-address-set',$props[0][200]);
+        $prop = $props[0][200]['{' . Plugin::NS_CALENDARSERVER . '}email-address-set'];
+        $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\EmailAddressSet', $prop);
+        $this->assertEquals(['user1.sabredav@sabredav.org'],$prop->getValue());
 
     }
 
@@ -1018,6 +1044,26 @@ XML;
         $this->server->exec();
 
         $this->assertEquals(400, $this->response->status,'Invalid HTTP status received. Full response body: ' . $this->response->body);
+
+    }
+
+    /**
+     * @depends testSupportedReportSetPropertyNonCalendar
+     */
+    function testCalendarProperties() {
+
+        $ns = '{urn:ietf:params:xml:ns:caldav}';
+        $props = $this->server->getProperties('calendars/user1/UUID-123467', [
+            $ns . 'max-resource-size',
+            $ns . 'supported-calendar-data',
+            $ns . 'supported-collation-set',
+        ]);
+
+        $this->assertEquals([
+            $ns . 'max-resource-size' => 10000000,
+            $ns . 'supported-calendar-data' => new Xml\Property\SupportedCalendarData(),
+            $ns . 'supported-collation-set' => new Xml\Property\SupportedCollationSet(),
+        ], $props);
 
     }
 

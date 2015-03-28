@@ -68,6 +68,10 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([], $this->plugin->getFeatures());
         $this->assertEquals('notifications', $this->plugin->getPluginName());
+        $this->assertEquals(
+            'notifications',
+            $this->plugin->getPluginInfo()['name']
+        );
 
     }
 

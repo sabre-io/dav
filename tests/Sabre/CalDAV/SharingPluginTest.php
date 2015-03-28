@@ -46,6 +46,10 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
     function testSimple() {
 
         $this->assertInstanceOf('Sabre\\CalDAV\\SharingPlugin', $this->server->getPlugin('caldav-sharing'));
+        $this->assertEquals(
+            'caldav-sharing',
+            $this->caldavSharingPlugin->getPluginInfo()['name']
+        );
 
     }
 

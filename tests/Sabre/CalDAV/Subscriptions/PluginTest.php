@@ -27,6 +27,11 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             $plugin->getFeatures()
         );
 
+        $this->assertEquals(
+            'subscriptions',
+            $plugin->getPluginInfo()['name']
+        );
+
     }
 
     function testPropFind() {

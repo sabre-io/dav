@@ -248,6 +248,17 @@ class PropFind {
     }
 
     /**
+     * Returns true if this was an '{DAV:}allprops' request.
+     *
+     * @return bool
+     */
+    function isAllProps() {
+
+        return $this->requestType === self::ALLPROPS;
+
+    }
+
+    /**
      * Returns a result array that's often used in multistatus responses.
      *
      * The array uses status codes as keys, and property names and value pairs

@@ -3,6 +3,7 @@
 namespace Sabre\DAV\FSExt;
 
 use Sabre\DAV;
+use Sabre\DAV\FS\Node;
 
 /**
  * Directory class
@@ -158,7 +159,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         // Removing the directory itself
         rmdir($this->path);
 
-        return parent::delete();
+        return true;
 
     }
 

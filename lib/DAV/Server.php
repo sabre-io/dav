@@ -909,7 +909,7 @@ class Server extends EventEmitter {
         $path = trim($path,'/');
 
         $propFindType = $propertyNames?PropFind::NORMAL:PropFind::ALLPROPS;
-        $propFind = new PropFind($path, $propertyNames, $depth, $propFindType);
+        $propFind = new PropFind($path, (array)$propertyNames, $depth, $propFindType);
 
         $parentNode = $this->tree->getNodeForPath($path);
 

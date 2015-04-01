@@ -170,24 +170,21 @@ class CorePlugin extends ServerPlugin {
 
             }
 
-            // New read/write stream
-            $newStream = fopen('php://temp','r+');
-
-            // fseek will return 0 only if $streem is seekable (and -1 otherwise)
-            // for a seekable $body stream we set the pointer write before copying it
-            // for a non-seekable $body stream we set the pointer on the copy
-            if ((fseek($body, $start, SEEK_SET)) === 0) {
-                stream_copy_to_stream($body, $newStream, $end - $start + 1, $start);
-                rewind($newStream);
-            } else {
-                stream_copy_to_stream($body, $newStream, $end + 1);
-                fseek($newStream,$start, SEEK_SET);
+            // fseek will return 0 only if $stream is seekable (and -1 otherwise)
+            // for a seekable $body stream we simply set the pointer
+            // for a non-seekable $body stream we read and discard just the
+            //  right amount of data
+            if ((fseek($body, $start, SEEK_SET)) !== 0) {
+                $consume_block = 4096;
+                for($consumed = 0; $start - $consumed > 0; ){
+                    $consumed += strlen(fread($body, min($start - $consumed, $consume_block)));
+                }
             }
 
             $response->setHeader('Content-Length', $end - $start + 1);
             $response->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
             $response->setStatus(206);
-            $response->setBody($newStream);
+            $response->setBody($body);
 
         } else {
 

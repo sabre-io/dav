@@ -201,7 +201,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
         // We only support FSExt\Directory or FSExt\File objects, so
         // anything else we want to quickly reject.
-        if (!$sourceNode instanceof Node) {
+        if (!$sourceNode instanceof Directory && !$sourceNode instanceof File) {
             return false;
         }
 

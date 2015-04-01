@@ -1,9 +1,9 @@
 <?php
 
-namespace Sabre\DAVACL\XML\Request;
+namespace Sabre\DAVACL\Xml\Request;
 
-use Sabre\XML\Reader;
-use Sabre\XML\XmlDeserializable;
+use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
 use Sabre\DAV\Exception\BadRequest;
 
 /**

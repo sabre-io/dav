@@ -62,9 +62,27 @@ class Plugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
+        $this->server->on('method:GET', [$this,'httpGetEarly'], 90);
         $this->server->on('method:GET', [$this,'httpGet'], 200);
         $this->server->on('onHTMLActionsPanel', [$this, 'htmlActionsPanel'],200);
         if ($this->enablePost) $this->server->on('method:POST', [$this,'httpPOST']);
+    }
+
+    /**
+     * This method intercepts GET requests that have ?sabreAction=info
+     * appended to the URL
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return bool
+     */
+    function httpGetEarly(RequestInterface $request, ResponseInterface $response) {
+
+        $params = $request->getQueryParameters();
+        if (isset($params['sabreAction']) && $params['sabreAction']==='info') {
+            return $this->httpGet($request,$response);
+        }
+
     }
 
     /**
@@ -233,7 +251,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function generateDirectoryIndex($path) {
 
-        $html = $this->generateHeader($path . '/', $path);
+        $html = $this->generateHeader($path, $path);
 
         $node = $this->server->tree->getNodeForPath($path);
         if ($node instanceof DAV\ICollection) {
@@ -282,7 +300,9 @@ class Plugin extends DAV\ServerPlugin {
                     $lastMod = $subProps['{DAV:}getlastmodified']->getTime();
                     $html.=$this->escapeHTML($lastMod->format('F j, Y, g:i a'));
                 }
-                $html.= '</td></tr>';
+                $html.= '</td>';
+                $html.= '<td><a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a></td>';
+                $html.= '</tr>';
             }
 
             $html.= '</table>';

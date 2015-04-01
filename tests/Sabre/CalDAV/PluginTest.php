@@ -595,12 +595,12 @@ END:VCALENDAR';
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -652,12 +652,12 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -714,12 +714,12 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -764,7 +764,7 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
@@ -852,12 +852,12 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -903,7 +903,7 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>

@@ -2,11 +2,10 @@
 
 namespace Sabre\DAV\Browser;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP\URLUtil,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\HTTP\URLUtil;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * Browser Plugin
@@ -636,16 +635,16 @@ HTML;
         $view = 'unknown';
         if (is_scalar($value)) {
             $view = 'string';
-        } elseif($value instanceof DAV\Property) {
+        } elseif($value instanceof \Sabre\Xml\XmlSerializable) {
 
             $mapping = [
-                'Sabre\\DAV\\Property\\IHref' => 'href',
-                'Sabre\\DAV\\Property\\HrefList' => 'hreflist',
-                'Sabre\\DAV\\Property\\SupportedMethodSet' => 'valuelist',
-                'Sabre\\DAV\\Property\\ResourceType' => 'xmlvaluelist',
-                'Sabre\\DAV\\Property\\SupportedReportSet' => 'xmlvaluelist',
-                'Sabre\\DAVACL\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
-                'Sabre\\DAVACL\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
+                'Sabre\\DAV\\Xml\\Property\\Href' => 'href',
+                'Sabre\\DAV\\Xml\\Property\\SupportedMethodSet' => 'valuelist',
+                'Sabre\\DAV\\Xml\\Property\\ResourceType' => 'xmlvaluelist',
+                'Sabre\\DAV\\Xml\\Property\\SupportedReportSet' => 'xmlvaluelist',
+                'Sabre\\DAVACL\\Xml\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
+                'Sabre\\DAVACL\\Xml\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
+                'Sabre\\Xml\\XmlSerializable' => 'xml',
             ];
 
             $view = 'complex';
@@ -657,20 +656,20 @@ HTML;
             }
         }
 
-        list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($name);
+        list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($name);
 
         $realName = $name;
-        if (isset($this->server->xmlNamespaces[$ns])) {
-            $name = $this->server->xmlNamespaces[$ns] . ':' . $localName;
+        if (isset($this->server->xml->namespaceMap[$ns])) {
+            $name = $this->server->xml->namespaceMap[$ns] . ':' . $localName;
         }
 
         ob_start();
 
         $xmlValueDisplay = function($propName) {
             $realPropName = $propName;
-            list($ns, $localName) = DAV\XMLUtil::parseClarkNotation($propName);
-            if (isset($this->server->xmlNamespaces[$ns])) {
-                $propName = $this->server->xmlNamespaces[$ns] . ':' . $localName;
+            list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($propName);
+            if (isset($this->server->xml->namespaceMap[$ns])) {
+                $propName = $this->server->xml->namespaceMap[$ns] . ':' . $localName;
             }
             return "<span title=\"" . $this->escapeHTML($realPropName) . "\">" . $this->escapeHTML($propName) . "</span>";
         };
@@ -680,9 +679,6 @@ HTML;
         switch($view) {
 
             case 'href' :
-                echo "<a href=\"" . $this->server->getBaseUri() . $value->getHref() . '">' . $this->server->getBaseUri() . $value->getHref() . '</a>';
-                break;
-            case 'hreflist' :
                 echo implode('<br />', array_map(function($href) {
                     if (stripos($href,'mailto:')===0 || stripos($href,'/')===0 || stripos($href,'http:')===0 || stripos($href,'https:') === 0) {
                         return "<a href=\"" . $this->escapeHTML($href) . '">' . $this->escapeHTML($href) . '</a>';
@@ -722,6 +718,15 @@ HTML;
                 break;
             case 'string' :
                 echo $this->escapeHTML($value);
+                break;
+            case 'xml' :
+                $xml = $this->server->xml->write('{DAV:}root', $value, $this->server->getBaseUri());
+                // removing first and last line, as they contain our root
+                // element.
+                $xml = substr($xml, strpos($xml,"\n")+1);
+                $xml = substr($xml, 0, strrpos($xml,"\n"));
+                $xml = substr($xml, 0, strrpos($xml,"\n"));
+                echo "<pre>", $this->escapeHtml($xml), "</pre>";
                 break;
             case 'complex' :
                 echo '<em title="' . $this->escapeHTML(get_class($value)) . '">complex</em>';

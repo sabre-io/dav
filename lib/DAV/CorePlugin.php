@@ -3,8 +3,10 @@
 namespace Sabre\DAV;
 
 use
+    Sabre\DAV\Exception\BadRequest,
     Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+    Sabre\HTTP\ResponseInterface,
+    Sabre\Xml\ParseException;
 
 /**
  * The core plugin provides all the basic features for a WebDAV server.
@@ -316,15 +318,24 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $requestedProperties = $this->server->parsePropFindRequest(
-            $request->getBodyAsString()
-        );
+        $requestBody = $request->getBodyAsString();
+        if (strlen($requestBody)) {
+            try {
+                $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
+            } catch (ParseException $e) {
+                throw new BadRequest($e->getMessage(), null, $e);
+            }
+        } else {
+            $propFindXml = new Xml\Request\PropFind();
+            $propFindXml->allProp = true;
+            $propFindXml->properties = [];
+        }
 
         $depth = $this->server->getHTTPDepth(1);
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->server->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
-        $newProperties = $this->server->getPropertiesForPath($path, $requestedProperties, $depth);
+        $newProperties = $this->server->getPropertiesForPath($path, $propFindXml->properties, $depth);
 
         // This is a multi-status response
         $response->setStatus(207);
@@ -366,9 +377,12 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $newProperties = $this->server->parsePropPatchRequest(
-            $request->getBodyAsString()
-        );
+        try {
+            $propPatch = $this->server->xml->expect('{DAV:}propertyupdate', $request->getBody());
+        } catch (ParseException $e) {
+            throw new BadRequest($e->getMessage(), null, $e);
+        }
+        $newProperties = $propPatch->properties;
 
         $result = $this->server->updateProperties($path, $newProperties);
 
@@ -552,21 +566,14 @@ class CorePlugin extends ServerPlugin {
 
             }
 
-            $dom = XMLUtil::loadDOMDocument($requestBody);
-            if (XMLUtil::toClarkNotation($dom->firstChild)!=='{DAV:}mkcol') {
-
-                // We must throw 415 for unsupported mkcol bodies
-                throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must be a {DAV:}mkcol request construct.');
-
+            try {
+                $mkcol = $this->server->xml->expect('{DAV:}mkcol', $requestBody);
+            } catch (\Sabre\Xml\ParseException $e) {
+                throw new Exception\BadRequest($e->getMessage(), null, $e);
             }
 
-            $properties = [];
-            foreach($dom->firstChild->childNodes as $childNode) {
+            $properties = $mkcol->getProperties();
 
-                if (XMLUtil::toClarkNotation($childNode)!=='{DAV:}set') continue;
-                $properties = array_merge($properties, XMLUtil::parseProperties($childNode, $this->server->propertyMap));
-
-            }
             if (!isset($properties['{DAV:}resourcetype']))
                 throw new Exception\BadRequest('The mkcol request must include a {DAV:}resourcetype property');
 
@@ -697,12 +704,13 @@ class CorePlugin extends ServerPlugin {
 
         $path = $request->getPath();
 
-        $body = $request->getBodyAsString();
-        $dom = XMLUtil::loadDOMDocument($body);
+        $result = $this->server->xml->parse(
+            $request->getBody(),
+            $request->getUrl(),
+            $rootElementName
+        );
 
-        $reportName = XMLUtil::toClarkNotation($dom->firstChild);
-
-        if ($this->server->emit('report', [$reportName, $dom, $path])) {
+        if ($this->server->emit('report', [$rootElementName, $result, $path])) {
 
             // If emit returned true, it means the report was not supported
             throw new Exception\ReportNotSupported();
@@ -776,7 +784,7 @@ class CorePlugin extends ServerPlugin {
         $propFind->handle('{DAV:}getlastmodified', function() use ($node) {
             $lm = $node->getLastModified();
             if ($lm) {
-                return new Property\GetLastModified($lm);
+                return new Xml\Property\GetLastModified($lm);
             }
         });
 
@@ -805,13 +813,13 @@ class CorePlugin extends ServerPlugin {
             foreach($this->server->getPlugins() as $plugin) {
                 $reports = array_merge($reports, $plugin->getSupportedReportSet($propFind->getPath()));
             }
-            return new Property\SupportedReportSet($reports);
+            return new Xml\Property\SupportedReportSet($reports);
         });
         $propFind->handle('{DAV:}resourcetype', function() use ($node) {
-            return new Property\ResourceType($this->server->getResourceTypeForNode($node));
+            return new Xml\Property\ResourceType($this->server->getResourceTypeForNode($node));
         });
         $propFind->handle('{DAV:}supported-method-set', function() use ($propFind) {
-            return new Property\SupportedMethodSet(
+            return new Xml\Property\SupportedMethodSet(
                 $this->server->getAllowedMethods($propFind->getPath())
             );
         });
@@ -865,7 +873,7 @@ class CorePlugin extends ServerPlugin {
             if ($val && is_scalar($val)) {
                 return $val;
             }
-            if ($val && $val instanceof Property\IHref) {
+            if ($val && $val instanceof Xml\Property\Href) {
                 return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
             }
 
@@ -883,7 +891,7 @@ class CorePlugin extends ServerPlugin {
                 $val = $result['{DAV:}sync-token'];
                 if (is_scalar($val)) {
                     return $val;
-                } elseif ($val instanceof Property\IHref) {
+                } elseif ($val instanceof Xml\Property\Href) {
                     return substr($val->getHref(), strlen(Sync\Plugin::SYNCTOKEN_PREFIX));
                 }
             }

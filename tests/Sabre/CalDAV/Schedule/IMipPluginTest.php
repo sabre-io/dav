@@ -8,6 +8,16 @@ use Sabre\DAV\Server;
 
 class IMipPluginTest extends \PHPUnit_Framework_TestCase {
 
+    function testGetPluginInfo() {
+
+        $plugin = new IMipPlugin('system@example.com');
+        $this->assertEquals(
+            'imip',
+            $plugin->getPluginInfo()['name']
+        );
+
+    }
+
     function testDeliverReply() {
 
         $message = new Message();

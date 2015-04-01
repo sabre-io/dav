@@ -582,18 +582,18 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
+        $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
             'id' => 1,
-        );
+        ];
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
         $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
 
-        $tree = array(
+        $tree = [
             new Calendar($cbackend,$props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -618,6 +618,45 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(0,count($obj->VTIMEZONE));
         $this->assertEquals(0,count($obj->VEVENT));
         $this->assertEquals(1,count($obj->VTODO));
+
+    }
+
+    function testFilterComponentBadComponent() {
+
+        $cbackend = TestUtil::getBackend();
+        $pbackend = new DAVACL\PrincipalBackend\Mock();
+
+        $props = [
+            'uri'=>'UUID-123467',
+            'principaluri' => 'admin',
+            'id' => 1,
+        ];
+        // add a todo to the calendar (see /tests/Sabre/TestUtil)
+        $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
+
+        $tree = [
+            new Calendar($cbackend,$props),
+            new DAVACL\PrincipalCollection($pbackend),
+        ];
+
+        $p = new ICSExportPlugin();
+
+        $s = new DAV\Server($tree);
+        $s->sapi = new HTTP\SapiMock();
+        $s->addPlugin($p);
+        $s->addPlugin(new Plugin());
+
+        $h = HTTP\Sapi::createFromServerArray([
+            'REQUEST_URI' => '/UUID-123467?export&componentType=VVOODOO',
+            'REQUEST_METHOD' => 'GET',
+        ]);
+
+        $s->httpRequest = $h;
+        $s->httpResponse = new HTTP\ResponseMock();
+
+        $s->exec();
+
+        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
 
     }
 }

@@ -104,8 +104,8 @@ ics;
 </c:free-busy-query>
 XML;
 
-        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
-        $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
         $this->assertEquals(200, $this->server->httpResponse->status);
         $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
@@ -126,8 +126,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
-        $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
     }
 
@@ -148,8 +148,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
-        $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
     }
 
@@ -169,8 +169,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $dom = DAV\XMLUtil::loadDOMDocument($reportXML);
-        $this->plugin->report('{urn:ietf:params:xml:ns:caldav}free-busy-query', $dom);
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report);
 
     }
 }

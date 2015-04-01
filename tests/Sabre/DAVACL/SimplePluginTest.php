@@ -30,6 +30,11 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array('ACL'), $aclPlugin->getMethods(''));
 
+
+        $this->assertEquals(
+            'acl',
+            $aclPlugin->getPluginInfo()['name']
+        );
     }
 
     function testGetFlatPrivilegeSet() {

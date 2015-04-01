@@ -5,6 +5,8 @@ namespace Sabre\DAV\PropertyStorage\Backend;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
 
+use Sabre\DAV\Xml\Property\Complex;
+
 /**
  * PropertyStorage PDO backend.
  *
@@ -18,6 +20,21 @@ use Sabre\DAV\PropPatch;
  * @license http://sabre.io/license/ Modified BSD License
  */
 class PDO implements BackendInterface {
+
+    /**
+     * Value is stored as string.
+     */
+    const VT_STRING = 1;
+
+    /**
+     * Value is stored as XML fragment.
+     */
+    const VT_XML = 2;
+
+    /**
+     * Value is stored as a property object.
+     */
+    const VT_OBJECT = 3;
 
     /**
      * PDO
@@ -58,12 +75,23 @@ class PDO implements BackendInterface {
             return;
         }
 
-        $query = 'SELECT name, value FROM propertystorage WHERE path = ?';
+        $query = 'SELECT name, value, valuetype FROM propertystorage WHERE path = ?';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$path]);
 
         while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $propFind->set($row['name'], $row['value']);
+            switch($row['valuetype']) {
+                case null :
+                case self::VT_STRING :
+                    $propFind->set($row['name'], $row['value']);
+                    break;
+                case self::VT_XML :
+                    $propFind->set($row['name'], new Complex($row['value']));
+                    break;
+                case self::VT_OBJECT :
+                    $propFind->set($row['name'], unserialize($row['value']));
+                    break;
+            }
         }
 
     }
@@ -85,13 +113,22 @@ class PDO implements BackendInterface {
 
         $propPatch->handleRemaining(function($properties) use ($path) {
 
-            $updateStmt = $this->pdo->prepare("REPLACE INTO propertystorage (path, name, value) VALUES (?, ?, ?)");
+            $updateStmt = $this->pdo->prepare("REPLACE INTO propertystorage (path, name, valuetype, value) VALUES (?, ?, ?, ?)");
             $deleteStmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? AND name = ?");
 
             foreach($properties as $name=>$value) {
 
                 if (!is_null($value)) {
-                    $updateStmt->execute([$path, $name, $value]);
+                    if (is_scalar($value)) {
+                        $valueType = self::VT_STRING;
+                    } elseif ($value instanceof Complex) {
+                        $valueType = self::VT_XML;
+                        $value = $value->getXml();
+                    } else {
+                        $valueType = self::VT_OBJECT;
+                        $value = serialize($value);
+                    }
+                    $updateStmt->execute([$path, $name, $valueType, $value]);
                 } else {
                     $deleteStmt->execute([$path, $name]);
                 }

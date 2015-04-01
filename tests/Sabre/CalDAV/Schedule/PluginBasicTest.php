@@ -7,6 +7,16 @@ class PluginBasicTest extends \Sabre\DAVServerTest {
     public $setupCalDAV = true;
     public $setupCalDAVScheduling = true;
 
+    function testSimple() {
+
+        $plugin = new Plugin();
+        $this->assertEquals(
+            'caldav-schedule',
+            $plugin->getPluginInfo()['name']
+        );
+
+    }
+
     function testOptions() {
 
         $plugin = new Plugin();

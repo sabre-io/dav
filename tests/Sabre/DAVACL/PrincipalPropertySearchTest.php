@@ -62,7 +62,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->status);
+        $this->assertEquals(400, $server->httpResponse->getStatus(), $server->httpResponse->getBodyAsString());
         $this->assertEquals(array(
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -101,7 +101,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals(207, $server->httpResponse->status);
+        $this->assertEquals(207, $server->httpResponse->getStatus(), "Full body: " . $server->httpResponse->getBodyAsString());
         $this->assertEquals(array(
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],

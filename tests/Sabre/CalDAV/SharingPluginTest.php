@@ -46,6 +46,10 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
     function testSimple() {
 
         $this->assertInstanceOf('Sabre\\CalDAV\\SharingPlugin', $this->server->getPlugin('caldav-sharing'));
+        $this->assertEquals(
+            'caldav-sharing',
+            $this->caldavSharingPlugin->getPluginInfo()['name']
+        );
 
     }
 
@@ -64,8 +68,8 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
         ));
 
-        $this->assertInstanceOf('Sabre\\CalDAV\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
-        $this->assertInstanceOf('Sabre\\CalDAV\\Property\\AllowedSharingModes', $props['{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes']);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\AllowedSharingModes', $props['{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes']);
 
     }
 
@@ -76,8 +80,8 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             '{' . Plugin::NS_CALENDARSERVER . '}invite',
         ));
 
-        $this->assertInstanceOf('Sabre\\CalDAV\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
-        $this->assertInstanceOf('Sabre\\DAV\\Property\\IHref', $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
+        $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
+        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
 
     }
 
@@ -92,12 +96,12 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             array()
         );
         $result = $this->server->updateProperties('calendars/user1/cal1', array(
-            '{DAV:}resourcetype' => new DAV\Property\ResourceType(array('{DAV:}collection'))
+            '{DAV:}resourcetype' => new DAV\Xml\Property\ResourceType(['{DAV:}collection'])
         ));
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             '{DAV:}resourcetype' => 200
-        ), $result);
+        ], $result);
 
         $this->assertEquals(0, count($this->caldavBackend->getShares(1)));
 

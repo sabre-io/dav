@@ -16,13 +16,8 @@ class TemporaryFileFilterTest extends AbstractServer {
 
     function testPutNormal() {
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/testput.txt',
-            'REQUEST_METHOD' => 'PUT',
-        );
+        $request = new HTTP\Request('PUT', '/testput.txt', [], 'Testing new file');
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -37,13 +32,8 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutTemp() {
 
         // mimicking an OS/X resource fork
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'PUT',
-        );
+        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -60,14 +50,8 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutTempIfNoneMatch() {
 
         // mimicking an OS/X resource fork
-        $serverVars = array(
-            'REQUEST_URI'        => '/._testput.txt',
-            'REQUEST_METHOD'     => 'PUT',
-            'HTTP_IF_NONE_MATCH' => '*',
-        );
+        $request = new HTTP\Request('PUT', '/._testput.txt', ['If-None-Match' => '*'], 'Testing new file');
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -93,13 +77,7 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutGet() {
 
         // mimicking an OS/X resource fork
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'PUT',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('Testing new file');
+        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -109,13 +87,9 @@ class TemporaryFileFilterTest extends AbstractServer {
             'X-Sabre-Temp' => ['true'],
         ),$this->response->getHeaders());
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'GET',
-        );
+        $request = new HTTP\Request('GET', '/._testput.txt');
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals(200, $this->response->status);
@@ -137,13 +111,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->addPlugin($locksPlugin);
 
         // mimicking an OS/X resource fork
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testlock.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-
+        $request = new HTTP\Request('LOCK', '/._testput.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -168,14 +136,9 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutDelete() {
 
         // mimicking an OS/X resource fork
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'PUT',
-        );
+        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('Testing new file');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
@@ -184,13 +147,8 @@ class TemporaryFileFilterTest extends AbstractServer {
             'X-Sabre-Temp' => ['true'],
         ),$this->response->getHeaders());
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'DELETE',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $request = new HTTP\Request('DELETE', '/._testput.txt');
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals(204, $this->response->status, "Incorrect status code received. Full body:\n". $this->response->body);
@@ -205,14 +163,8 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutPropfind() {
 
         // mimicking an OS/X resource fork
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'PUT',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('Testing new file');
-        $this->server->httpRequest = ($request);
+        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals('', $this->response->body);
@@ -221,13 +173,8 @@ class TemporaryFileFilterTest extends AbstractServer {
             'X-Sabre-Temp' => ['true'],
         ),$this->response->getHeaders());
 
-        $serverVars = array(
-            'REQUEST_URI'    => '/._testput.txt',
-            'REQUEST_METHOD' => 'PROPFIND',
-        );
+        $request = new HTTP\Request('PROPFIND', '/._testput.txt');
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 

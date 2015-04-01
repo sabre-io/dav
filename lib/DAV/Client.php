@@ -181,7 +181,7 @@ class Client extends HTTP\Client {
             list(
                 $namespace,
                 $elementName
-            ) = XMLUtil::parseClarkNotation($property);
+            ) = \Sabre\Xml\Service::parseClarkNotation($property);
 
             if ($namespace === 'DAV:') {
                 $element = $dom->createElement('d:'.$elementName);
@@ -250,7 +250,7 @@ class Client extends HTTP\Client {
             list(
                 $namespace,
                 $elementName
-            ) = XMLUtil::parseClarkNotation($propName);
+            ) = \Sabre\Xml\Service::parseClarkNotation($propName);
 
             if ($propValue === null) {
 
@@ -420,20 +420,12 @@ class Client extends HTTP\Client {
      */
     function parseMultiStatus($body) {
 
-        try {
-            $dom = XMLUtil::loadDOMDocument($body);
-        } catch (Exception\BadRequest $e) {
-            throw new \InvalidArgumentException('The body passed to parseMultiStatus could not be parsed. Is it really xml?');
-        }
-
-        $responses = Property\ResponseList::unserialize(
-            $dom->documentElement,
-            $this->propertyMap
-        );
+        $xmlUtil = new Xml\Service();
+        $multistatus = $xmlUtil->expect('{DAV:}multistatus', $body);
 
         $result = [];
 
-        foreach($responses->getResponses() as $response) {
+        foreach($multistatus->getResponses() as $response) {
 
             $result[$response->getHref()] = $response->getResponseProperties();
 

@@ -19,7 +19,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @return void
      */
-    public function setUpTree() {
+    function setUpTree() {
 
         $this->tree = new Mock\Collection('root', [
             'file1' => 'foo',
@@ -30,7 +30,7 @@ class HttpPutTest extends DAVServerTest {
     /**
      * A successful PUT of a new file.
      */
-    public function testPut() {
+    function testPut() {
 
         $request = new HTTP\Request('PUT', '/file2', [], 'hello');
 
@@ -59,7 +59,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutExisting() {
+    function testPutExisting() {
 
         $request = new HTTP\Request('PUT', '/file1', [], 'bar');
 
@@ -88,7 +88,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPutExisting
      */
-    public function testPutExistingIfMatchStar() {
+    function testPutExistingIfMatchStar() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -122,7 +122,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPutExisting
      */
-    public function testPutExistingIfMatchCorrect() {
+    function testPutExistingIfMatchCorrect() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -156,7 +156,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutContentRange() {
+    function testPutContentRange() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -175,7 +175,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutIfNoneMatchStar() {
+    function testPutIfNoneMatchStar() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -209,7 +209,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutIfMatchStar() {
+    function testPutIfMatchStar() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -229,7 +229,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutExistingIfNoneMatchStar() {
+    function testPutExistingIfNoneMatchStar() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -250,7 +250,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutNoParent() {
+    function testPutNoParent() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -271,7 +271,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testFinderPutSuccess() {
+    function testFinderPutSuccess() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -304,7 +304,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testFinderPutSuccess
      */
-    public function testFinderPutFail() {
+    function testFinderPutFail() {
 
         $request = new HTTP\Request(
             'PUT',
@@ -324,7 +324,7 @@ class HttpPutTest extends DAVServerTest {
      *
      * @depends testPut
      */
-    public function testPutIntercept() {
+    function testPutIntercept() {
 
         $this->server->on('beforeBind', function($uri) {
             $this->server->httpResponse->setStatus(418);

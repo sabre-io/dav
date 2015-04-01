@@ -6,9 +6,9 @@ use
     DateTimeZone,
     Sabre\DAV\Server,
     Sabre\DAV\ServerPlugin,
-    Sabre\DAV\Property\Href,
     Sabre\DAV\PropFind,
     Sabre\DAV\INode,
+    Sabre\DAV\Xml\Property\Href,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
     Sabre\VObject,
@@ -19,7 +19,7 @@ use
     Sabre\DAVACL,
     Sabre\CalDAV\ICalendar,
     Sabre\CalDAV\ICalendarObject,
-    Sabre\CalDAV\Property\ScheduleCalendarTransp,
+    Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp,
     Sabre\DAV\Exception\NotFound,
     Sabre\DAV\Exception\Forbidden,
     Sabre\DAV\Exception\BadRequest,
@@ -698,7 +698,7 @@ class Plugin extends ServerPlugin {
         $dom = new \DOMDocument('1.0','utf-8');
         $dom->formatOutput = true;
         $scheduleResponse = $dom->createElement('cal:schedule-response');
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
+        foreach($this->server->xml->namespaceMap as $namespace=>$prefix) {
 
             $scheduleResponse->setAttribute('xmlns:' . $prefix,$namespace);
 

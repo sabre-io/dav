@@ -4,6 +4,7 @@ namespace Sabre\CalDAV\Notifications;
 
 use Sabre\DAV;
 use Sabre\CalDAV;
+use Sabre\CalDAV\Xml\Notification\NotificationInterface;
 use Sabre\DAVACL;
 
 /**
@@ -45,9 +46,9 @@ class Node extends DAV\File implements INode, DAVACL\IACL {
      *
      * @param CalDAV\Backend\NotificationSupport $caldavBackend
      * @param string $principalUri
-     * @param CalDAV\Notifications\INotificationType $notification
+     * @param NotificationInterface $notification
      */
-    function __construct(CalDAV\Backend\NotificationSupport $caldavBackend, $principalUri, INotificationType $notification) {
+    function __construct(CalDAV\Backend\NotificationSupport $caldavBackend, $principalUri, NotificationInterface $notification) {
 
         $this->caldavBackend = $caldavBackend;
         $this->principalUri = $principalUri;

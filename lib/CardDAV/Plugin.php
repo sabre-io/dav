@@ -12,6 +12,7 @@ use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
+use Sabre\DAV\Xml\Property\Href;
 
 /**
  * CardDAV plugin
@@ -75,8 +76,8 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('afterMethod:GET',     [$this, 'httpAfterGet']);
 
-        /* Namespaces */
-        $server->xmlNamespaces[self::NS_CARDDAV] = 'card';
+        $server->xml->elementMap['{' . self::NS_CARDDAV . '}addressbook-query'] = 'Sabre\\CardDAV\\Xml\\Request\\AddressBookQueryReport';
+        $server->xml->elementMap['{' . self::NS_CARDDAV . '}addressbook-multiget'] = 'Sabre\\CardDAV\\Xml\\Request\\AddressBookMultiGetReport';
 
         /* Mapping Interfaces to {DAV:}resourcetype values */
         $server->resourceTypeMapping['Sabre\\CardDAV\\IAddressBook'] = '{' . self::NS_CARDDAV . '}addressbook';
@@ -88,7 +89,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}addressbook-home-set';
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-collation-set';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Property\\Href';
+        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Xml\\Property\\Href';
 
         $this->server = $server;
 
@@ -146,10 +147,10 @@ class Plugin extends DAV\ServerPlugin {
 
             $propFind->handle($ns . 'max-resource-size', $this->maxResourceSize);
             $propFind->handle($ns . 'supported-address-data', function() {
-                return new Property\SupportedAddressData();
+                return new Xml\Property\SupportedAddressData();
             });
             $propFind->handle($ns . 'supported-collation-set', function() {
-                return new Property\SupportedCollationSet();
+                return new Xml\Property\SupportedCollationSet();
             });
 
         }
@@ -158,11 +159,11 @@ class Plugin extends DAV\ServerPlugin {
             $path = $propFind->getPath();
 
             $propFind->handle('{' . self::NS_CARDDAV . '}addressbook-home-set', function() use ($path) {
-                return new DAV\Property\Href($this->getAddressBookHomeForPrincipal($path) . '/');
+                return new Href($this->getAddressBookHomeForPrincipal($path) . '/');
             });
 
             if ($this->directories) $propFind->handle('{' . self::NS_CARDDAV . '}directory-gateway', function() {
-                return new DAV\Property\HrefList($this->directories);
+                return new Href($this->directories);
             });
 
         }
@@ -190,7 +191,7 @@ class Plugin extends DAV\ServerPlugin {
                 $props = $this->server->getProperties($node->getOwner(), ['{http://sabredav.org/ns}vcard-url']);
                 if (isset($props['{http://sabredav.org/ns}vcard-url'])) {
 
-                    return new DAV\Property\Href(
+                    return new Href(
                         $props['{http://sabredav.org/ns}vcard-url']
                     );
 
@@ -220,7 +221,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $propPatch->handle($meCard, function($value) use ($node) {
 
-            if ($value instanceof DAV\Property\IHref) {
+            if ($value instanceof Href) {
                 $value = $value->getHref();
                 $value = $this->server->calculateUri($value);
             } elseif (!is_null($value)) {
@@ -286,29 +287,13 @@ class Plugin extends DAV\ServerPlugin {
      * This report is used by the client to fetch the content of a series
      * of urls. Effectively avoiding a lot of redundant requests.
      *
-     * @param \DOMNode $dom
+     * @param Xml\Request\AddressBookMultiGetReport $report
      * @return void
      */
-    function addressbookMultiGetReport($dom) {
+    function addressbookMultiGetReport($report) {
 
-        $properties = array_keys(DAV\XMLUtil::parseProperties($dom->firstChild));
-
-        $hrefElems = $dom->getElementsByTagNameNS('urn:DAV','href');
-        $propertyList = [];
-
-        $uris = [];
-        foreach($hrefElems as $elem) {
-
-            $uris[] = $this->server->calculateUri($elem->nodeValue);
-
-        }
-
-        $xpath = new \DOMXPath($dom);
-        $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
-        $xpath->registerNameSpace('dav','urn:DAV');
-
-        $contentType = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data/@content-type)");
-        $version = $xpath->evaluate("string(/card:addressbook-multiget/dav:prop/card:address-data/@version)");
+        $contentType = $report->contentType;
+        $version = $report->version;
         if ($version) {
             $contentType.='; version=' . $version;
         }
@@ -318,7 +303,7 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $propertyList = [];
-        foreach($this->server->getPropertiesForMultiplePaths($uris, $properties) as $props) {
+        foreach($this->server->getPropertiesForMultiplePaths($report->hrefs, $report->properties) as $props) {
 
             if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
 
@@ -450,13 +435,10 @@ class Plugin extends DAV\ServerPlugin {
      * This report is used by the client to filter an addressbook based on a
      * complex query.
      *
-     * @param \DOMNode $dom
+     * @param Xml\Request\AddressBookQueryReport $report
      * @return void
      */
-    protected function addressbookQueryReport($dom) {
-
-        $query = new AddressBookQueryParser($dom);
-        $query->parse();
+    protected function addressbookQueryReport($report) {
 
         $depth = $this->server->getHTTPDepth(0);
 
@@ -471,20 +453,14 @@ class Plugin extends DAV\ServerPlugin {
             $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
         }
 
-        $xpath = new \DOMXPath($dom);
-        $xpath->registerNameSpace('card',Plugin::NS_CARDDAV);
-        $xpath->registerNameSpace('dav','urn:DAV');
-
-        $contentType = $xpath->evaluate("string(/card:addressbook-query/dav:prop/card:address-data/@content-type)");
-        $version = $xpath->evaluate("string(/card:addressbook-query/dav:prop/card:address-data/@version)");
-        if ($version) {
-            $contentType.='; version=' . $version;
+        $contentType = $report->contentType;
+        if ($report->version) {
+            $contentType.='; version=' . $report->version;
         }
 
         $vcardType = $this->negotiateVCard(
             $contentType
         );
-
 
         $validNodes = [];
         foreach($candidateNodes as $node) {
@@ -497,13 +473,13 @@ class Plugin extends DAV\ServerPlugin {
                 $blob = stream_get_contents($blob);
             }
 
-            if (!$this->validateFilters($blob, $query->filters, $query->test)) {
+            if (!$this->validateFilters($blob, $report->filters, $report->test)) {
                 continue;
             }
 
             $validNodes[] = $node;
 
-            if ($query->limit && $query->limit <= count($validNodes)) {
+            if ($report->limit && $report->limit <= count($validNodes)) {
                 // We hit the maximum number of items, we can stop now.
                 break;
             }
@@ -519,7 +495,7 @@ class Plugin extends DAV\ServerPlugin {
                 $href = $this->server->getRequestUri() . '/' . $validNode->getName();
             }
 
-            list($props) = $this->server->getPropertiesForPath($href, $query->requestedProperties, 0);
+            list($props) = $this->server->getPropertiesForPath($href, $report->properties, 0);
 
             if (isset($props[200]['{' . self::NS_CARDDAV . '}address-data'])) {
 

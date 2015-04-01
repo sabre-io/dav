@@ -4,7 +4,7 @@ namespace Sabre\CalDAV\Subscriptions;
 
 use
     Sabre\DAV\Collection,
-    Sabre\DAV\Property\Href,
+    Sabre\DAV\Xml\Property\Href,
     Sabre\DAV\PropPatch,
     Sabre\DAV\Exception\MethodNotAllowed,
     Sabre\DAVACL\IACL,
@@ -160,7 +160,7 @@ class Subscription extends Collection implements ISubscription, IACL {
                     $r[$prop] = new Href($this->subscriptionInfo['source'], false);
                     break;
                 default :
-                    if (isset($this->subscriptionInfo[$prop])) {
+                    if (array_key_exists($prop,$this->subscriptionInfo)) {
                         $r[$prop] = $this->subscriptionInfo[$prop];
                     }
                     break;
@@ -271,27 +271,6 @@ class Subscription extends Collection implements ISubscription, IACL {
     function getSupportedPrivilegeSet() {
 
         return null;
-
-    }
-
-    /**
-     * Returns a bunch of meta-data about the plugin.
-     *
-     * Providing this information is optional, and is mainly displayed by the
-     * Browser plugin.
-     *
-     * The description key in the returned array may contain html and will not
-     * be sanitized.
-     *
-     * @return array
-     */
-    function getPluginInfo() {
-
-        return [
-            'name'        => $this->getPluginName(),
-            'description' => 'This plugin allows users to store iCalendar subscriptions in their calendar-home.',
-            'link'        => null,
-        ];
 
     }
 

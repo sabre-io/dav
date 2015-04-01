@@ -9,7 +9,6 @@ $autoLoader->add('Sabre\\', __DIR__);
 // VObject tests auto loading
 $autoLoader->addPsr4('Sabre\\VObject\\',__DIR__ . '/../vendor/sabre/vobject/tests/VObject');
 
-
 date_default_timezone_set('UTC');
 
 $config = [

@@ -26,7 +26,7 @@ class File extends DAV\File {
      * @param array $children
      * @return void
      */
-    public function __construct($name, $contents, Collection $parent) {
+    function __construct($name, $contents, Collection $parent = null) {
 
         $this->name = $name;
         $this->put($contents);
@@ -41,7 +41,7 @@ class File extends DAV\File {
      *
      * @return string
      */
-    public function getName() {
+    function getName() {
 
         return $this->name;
 
@@ -67,7 +67,7 @@ class File extends DAV\File {
      * @param resource $data
      * @return string|null
      */
-    public function put($data) {
+    function put($data) {
 
         if (is_resource($data)) {
             $data = stream_get_contents($data);
@@ -84,7 +84,7 @@ class File extends DAV\File {
      *
      * @return mixed
      */
-    public function get() {
+    function get() {
 
         return $this->contents;
 
@@ -95,7 +95,7 @@ class File extends DAV\File {
      *
      * @return void
      */
-    public function setName($newName) {
+    function setName($newName) {
 
         $this->parent->deleteChild($this->name);
         $this->name = $newName;
@@ -112,7 +112,7 @@ class File extends DAV\File {
      *
      * @return void
      */
-    public function getETag() {
+    function getETag() {
 
         return '"' . md5($this->contents) . '"';
 
@@ -123,7 +123,7 @@ class File extends DAV\File {
      *
      * @return int
      */
-    public function getSize() {
+    function getSize() {
 
         return strlen($this->contents);
 
@@ -134,7 +134,7 @@ class File extends DAV\File {
      *
      * @return void
      */
-    public function delete() {
+    function delete() {
 
         $this->parent->deleteChild($this->name);
 

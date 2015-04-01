@@ -85,29 +85,15 @@ class Server extends EventEmitter {
     public $transactionType;
 
     /**
-     * This is a default list of namespaces.
+     * This is a list of properties that are always server-controlled, and
+     * must not get modified with PROPPATCH.
      *
-     * If you are defining your own custom namespace, add it here to reduce
-     * bandwidth and improve legibility of xml bodies.
+     * Plugins may add to this list.
      *
-     * @var array
+     * @var string[]
      */
-    public $xmlNamespaces = [
-        'DAV:' => 'd',
-        'http://sabredav.org/ns' => 's',
-    ];
-
-    /**
-     * The propertymap can be used to map properties from
-     * requests to property classes.
-     *
-     * @var array
-     */
-    public $propertyMap = [
-        '{DAV:}resourcetype' => 'Sabre\\DAV\\Property\\ResourceType',
-    ];
-
     public $protectedProperties = [
+
         // RFC4918
         '{DAV:}getcontentlength',
         '{DAV:}getetag',
@@ -176,6 +162,13 @@ class Server extends EventEmitter {
     public $enablePropfindDepthInfinity = false;
 
     /**
+     * Reference to the XML utility object.
+     *
+     * @var Xml\Service
+     */
+    public $xml;
+
+    /**
      * If this setting is turned off, SabreDAV's version number will be hidden
      * from various places.
      *
@@ -226,6 +219,7 @@ class Server extends EventEmitter {
             throw new Exception('Invalid argument passed to constructor. Argument must either be an instance of Sabre\\DAV\\Tree, Sabre\\DAV\\INode, an array or null');
         }
 
+        $this->xml = new Xml\Service();
         $this->sapi = new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = $this->sapi->getRequest();
@@ -853,7 +847,7 @@ class Server extends EventEmitter {
                 $headers[$header] = $properties[$property];
 
             // GetLastModified gets special cased
-            } elseif ($properties[$property] instanceof Property\GetLastModified) {
+            } elseif ($properties[$property] instanceof Xml\Property\GetLastModified) {
                 $headers[$header] = HTTP\Util::toHTTPDate($properties[$property]->getTime());
             }
 
@@ -915,7 +909,7 @@ class Server extends EventEmitter {
         $path = trim($path,'/');
 
         $propFindType = $propertyNames?PropFind::NORMAL:PropFind::ALLPROPS;
-        $propFind = new PropFind($path, $propertyNames, $depth, $propFindType);
+        $propFind = new PropFind($path, (array)$propertyNames, $depth, $propFindType);
 
         $parentNode = $this->tree->getNodeForPath($path);
 
@@ -1638,104 +1632,27 @@ class Server extends EventEmitter {
      */
     function generateMultiStatus(array $fileProperties, $strip404s = false) {
 
-        $dom = new \DOMDocument('1.0','utf-8');
-        //$dom->formatOutput = true;
-        $multiStatus = $dom->createElement('d:multistatus');
-        $dom->appendChild($multiStatus);
-
-        // Adding in default namespaces
-        foreach($this->xmlNamespaces as $namespace=>$prefix) {
-
-            $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
+        $xml = [];
 
         foreach($fileProperties as $entry) {
 
             $href = $entry['href'];
             unset($entry['href']);
-
-            if ($strip404s && isset($entry[404])) {
+            if ($strip404s) {
                 unset($entry[404]);
             }
-
-            $response = new Property\Response($href,$entry);
-            $response->serialize($this,$multiStatus);
-
-        }
-
-        return $dom->saveXML();
-
-    }
-
-    /**
-     * This method parses a PropPatch request
-     *
-     * PropPatch changes the properties for a resource. This method
-     * returns a list of properties.
-     *
-     * The keys in the returned array contain the property name (e.g.: {DAV:}displayname,
-     * and the value contains the property value. If a property is to be removed the value
-     * will be null.
-     *
-     * @param string $body xml body
-     * @return array list of properties in need of updating or deletion
-     */
-    function parsePropPatchRequest($body) {
-
-        //We'll need to change the DAV namespace declaration to something else in order to make it parsable
-        $dom = XMLUtil::loadDOMDocument($body);
-
-        $newProperties = [];
-
-        foreach($dom->firstChild->childNodes as $child) {
-
-            if ($child->nodeType !== XML_ELEMENT_NODE) continue;
-
-            $operation = XMLUtil::toClarkNotation($child);
-
-            if ($operation!=='{DAV:}set' && $operation!=='{DAV:}remove') continue;
-
-            $innerProperties = XMLUtil::parseProperties($child, $this->propertyMap);
-
-            foreach($innerProperties as $propertyName=>$propertyValue) {
-
-                if ($operation==='{DAV:}remove') {
-                    $propertyValue = null;
-                }
-
-                $newProperties[$propertyName] = $propertyValue;
-
-            }
+            $response = new Xml\Element\Response(
+                ltrim($href,'/'),
+                $entry
+            );
+            $xml[] = [
+                'name'  => '{DAV:}response',
+                'value' => $response
+            ];
 
         }
-
-        return $newProperties;
-
-    }
-
-    /**
-     * This method parses the PROPFIND request and returns its information
-     *
-     * This will either be a list of properties, or an empty array; in which case
-     * an {DAV:}allprop was requested.
-     *
-     * @param string $body
-     * @return array
-     */
-    function parsePropFindRequest($body) {
-
-        // If the propfind body was empty, it means IE is requesting 'all' properties
-        if (!$body) return [];
-
-        $dom = XMLUtil::loadDOMDocument($body);
-        $elem = $dom->getElementsByTagNameNS('urn:DAV','propfind')->item(0);
-        if (is_null($elem)) throw new Exception\UnsupportedMediaType('We could not find a {DAV:}propfind element in the xml request body');
-
-        return array_keys(XMLUtil::parseProperties($elem));
+        return $this->xml->write('{DAV:}multistatus', $xml, $this->baseUri);
 
     }
-
-    // }}}
 
 }

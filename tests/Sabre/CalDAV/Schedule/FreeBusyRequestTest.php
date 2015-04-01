@@ -7,7 +7,7 @@ use
     Sabre\DAVACL,
     Sabre\HTTP,
     Sabre\CalDAV,
-    Sabre\CalDAV\Property\ScheduleCalendarTransp;
+    Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
@@ -20,22 +20,22 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $calendars = array(
-            array(
+        $calendars = [
+            [
                 'principaluri' => 'principals/user2',
                 'id'           => 1,
                 'uri'          => 'calendar1',
                 '{' . CalDAV\Plugin::NS_CALDAV . '}calendar-timezone' => "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nEND:VTIMEZONE\r\nEND:VCALENDAR",
-            ),
-            array(
+            ],
+            [
                 'principaluri' => 'principals/user2',
                 'id'           => 2,
                 'uri'          => 'calendar2',
                 '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp' => new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT),
-            ),
-        );
-        $calendarobjects = array(
-            1 => array( '1.ics' => array(
+            ],
+        ];
+        $calendarobjects = [
+            1 => [ '1.ics' => [
                 'uri' => '1.ics',
                 'calendardata' => 'BEGIN:VCALENDAR
 BEGIN:VEVENT
@@ -44,8 +44,8 @@ DURATION:PT1H
 END:VEVENT
 END:VCALENDAR',
                 'calendarid' => 1,
-            )),
-            2 => array( '2.ics' => array(
+            ]],
+            2 => [ '2.ics' => [
                 'uri' => '2.ics',
                 'calendardata' => 'BEGIN:VCALENDAR
 BEGIN:VEVENT
@@ -54,17 +54,17 @@ DURATION:PT1H
 END:VEVENT
 END:VCALENDAR',
                 'calendarid' => 2,
-            ))
+            ]]
 
-        );
+        ];
 
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
         $this->caldavBackend = new CalDAV\Backend\MockScheduling($calendars, $calendarobjects);
 
-        $tree = array(
+        $tree = [
             new DAVACL\PrincipalCollection($principalBackend),
             new CalDAV\CalendarRoot($principalBackend, $this->caldavBackend),
-        );
+        ];
 
         $this->request = HTTP\Sapi::createFromServerArray([
             'CONTENT_TYPE' => 'text/calendar',

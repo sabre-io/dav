@@ -131,34 +131,34 @@ BLA
 
         $response = $this->request($request);
 
-        $this->assertTrue(strpos($response->body, 'resourcetype')!==false);
-        $this->assertTrue(strpos($response->body, 'something')===false);
+        $body = $response->getBodyAsString();
+
+        $this->assertEquals(207, $response->getStatus(), $body);
+
+        $this->assertTrue(strpos($body, 'resourcetype')!==false, $body);
+        $this->assertTrue(strpos($body, 'something')===false, $body);
 
     }
 
     function testproppatchMinimal() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_METHOD' => 'PROPPATCH',
-            'REQUEST_URI'    => '/',
-            'HTTP_PREFER' => 'return-minimal',
-        ));
+        $request = new HTTP\Request('PROPPATCH','/', ['Prefer' => 'return-minimal']);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
-<d:proppatch xmlns:d="DAV:">
+<d:propertyupdate xmlns:d="DAV:">
     <d:set>
         <d:prop>
             <d:something>nope!</d:something>
         </d:prop>
     </d:set>
-</d:proppatch>
+</d:propertyupdate>
 BLA
         );
 
         $this->server->on('propPatch', function($path, PropPatch $propPatch) {
 
             $propPatch->handle('{DAV:}something', function($props) {
-                return true; 
+                return true;
             });
 
         });
@@ -172,28 +172,26 @@ BLA
 
     function testproppatchMinimalError() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
-            'REQUEST_METHOD' => 'PROPPATCH',
-            'REQUEST_URI'    => '/',
-            'HTTP_PREFER' => 'return-minimal',
-        ));
+        $request = new HTTP\Request('PROPPATCH','/', ['Prefer' => 'return-minimal']);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
-<d:proppatch xmlns:d="DAV:">
+<d:propertyupdate xmlns:d="DAV:">
     <d:set>
         <d:prop>
             <d:something>nope!</d:something>
         </d:prop>
     </d:set>
-</d:proppatch>
+</d:propertyupdate>
 BLA
         );
 
         $response = $this->request($request);
 
+        $body = $response->getBodyAsString();
+
         $this->assertEquals(207, $response->status);
-        $this->assertTrue(strpos($response->body, 'something')!==false);
-        $this->assertTrue(strpos($response->body, '403 Forbidden')!==false);
+        $this->assertTrue(strpos($body, 'something')!==false);
+        $this->assertTrue(strpos($body, '403 Forbidden')!==false, $body);
 
     }
 }

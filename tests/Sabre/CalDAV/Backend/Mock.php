@@ -69,12 +69,12 @@ class Mock extends AbstractBackend {
     function createCalendar($principalUri,$calendarUri,array $properties) {
 
         $id = DAV\UUIDUtil::getUUID();
-        $this->calendars[] = array_merge(array(
+        $this->calendars[] = array_merge([
             'id' => $id,
             'principaluri' => $principalUri,
             'uri' => $calendarUri,
-            '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Property\SupportedCalendarComponentSet(array('VEVENT','VTODO')),
-        ), $properties);
+            '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT','VTODO']),
+        ], $properties);
 
         return $id;
 

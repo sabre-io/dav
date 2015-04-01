@@ -208,10 +208,8 @@ class Plugin extends DAV\ServerPlugin {
             return [self::RANGE_APPEND];
         } elseif (strlen($matches[2])>0) {
             return [self::RANGE_START, $matches[2], $matches[3]?:null];
-        } elseif ($matches[4]) {
-            return [self::RANGE_END, $matches[4]];
         } else {
-            return null;
+            return [self::RANGE_END, $matches[4]];
         }
 
     }

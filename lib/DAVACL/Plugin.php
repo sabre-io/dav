@@ -2,12 +2,12 @@
 
 namespace Sabre\DAVACL;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\INode,
-    Sabre\HTTP\URLUtil,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\DAV\INode;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\Uri;
 
 /**
  * SabreDAV ACL Plugin
@@ -708,7 +708,11 @@ class Plugin extends DAV\ServerPlugin {
 
         // Mapping the group-member-set property to the HrefList property
         // class.
-        $server->propertyMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Property\\HrefList';
+        $server->xml->elementMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
+        $server->xml->elementMap['{DAV:}acl'] = 'Sabre\\DAVACL\\Xml\\Property\\Acl';
+        $server->xml->elementMap['{DAV:}expand-property'] = 'Sabre\\DAVACL\\Xml\\Request\\ExpandPropertyReport';
+        $server->xml->elementMap['{DAV:}principal-property-search'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalPropertySearchReport';
+        $server->xml->elementMap['{DAV:}principal-search-property-set'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalSearchPropertySetReport';
 
     }
 
@@ -791,7 +795,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeBind($uri) {
 
-        list($parentUri) = URLUtil::splitPath($uri);
+        list($parentUri) = Uri\split($uri);
         $this->checkPrivileges($parentUri,'{DAV:}bind');
 
     }
@@ -807,7 +811,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function beforeUnbind($uri) {
 
-        list($parentUri) = URLUtil::splitPath($uri);
+        list($parentUri) = Uri\split($uri);
         $this->checkPrivileges($parentUri,'{DAV:}unbind',self::R_RECURSIVEPARENTS);
 
     }
@@ -863,24 +867,24 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof IPrincipal) {
 
             $propFind->handle('{DAV:}alternate-URI-set', function() use ($node) {
-                return new DAV\Property\HrefList($node->getAlternateUriSet());
+                return new DAV\Xml\Property\Href($node->getAlternateUriSet());
             });
             $propFind->handle('{DAV:}principal-URL', function() use ($node) {
-                return new DAV\Property\Href($node->getPrincipalUrl() . '/');
+                return new DAV\Xml\Property\Href($node->getPrincipalUrl() . '/');
             });
             $propFind->handle('{DAV:}group-member-set', function() use ($node) {
                 $members = $node->getGroupMemberSet();
                 foreach($members as $k=>$member) {
                     $members[$k] = rtrim($member,'/') . '/';
                 }
-                return new DAV\Property\HrefList($members);
+                return new DAV\Xml\Property\Href($members);
             });
             $propFind->handle('{DAV:}group-membership', function() use ($node) {
                 $members = $node->getGroupMembership();
                 foreach($members as $k=>$member) {
                     $members[$k] = rtrim($member,'/') . '/';
                 }
-                return new DAV\Property\HrefList($members);
+                return new DAV\Xml\Property\Href($members);
             });
             $propFind->handle('{DAV:}displayname', [$node, 'getDisplayName']);
 
@@ -891,18 +895,18 @@ class Plugin extends DAV\ServerPlugin {
             $val = $this->principalCollectionSet;
             // Ensuring all collections end with a slash
             foreach($val as $k=>$v) $val[$k] = $v . '/';
-            return new DAV\Property\HrefList($val);
+            return new DAV\Xml\Property\Href($val);
 
         });
         $propFind->handle('{DAV:}current-user-principal', function() {
             if ($url = $this->getCurrentUserPrincipal()) {
-                return new Property\Principal(Property\Principal::HREF, $url . '/');
+                return new Xml\Property\Principal(Xml\Property\Principal::HREF, $url . '/');
             } else {
-                return new Property\Principal(Property\Principal::UNAUTHENTICATED);
+                return new Xml\Property\Principal(Xml\Property\Principal::UNAUTHENTICATED);
             }
         });
         $propFind->handle('{DAV:}supported-privilege-set', function() use ($node) {
-            return new Property\SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
+            return new Xml\Property\SupportedPrivilegeSet($this->getSupportedPrivilegeSet($node));
         });
         $propFind->handle('{DAV:}current-user-privilege-set', function() use ($node, $propFind, $path) {
             if (!$this->checkPrivileges($path, '{DAV:}read-current-user-privilege-set', self::R_PARENT, false)) {
@@ -910,7 +914,7 @@ class Plugin extends DAV\ServerPlugin {
             } else {
                 $val = $this->getCurrentUserPrivilegeSet($node);
                 if (!is_null($val)) {
-                    return new Property\CurrentUserPrivilegeSet($val);
+                    return new Xml\Property\CurrentUserPrivilegeSet($val);
                 }
             }
         });
@@ -921,18 +925,18 @@ class Plugin extends DAV\ServerPlugin {
             } else {
                 $acl = $this->getACL($node);
                 if (!is_null($acl)) {
-                    return new Property\Acl($this->getACL($node));
+                    return new Xml\Property\Acl($this->getACL($node));
                 }
             }
         });
         $propFind->handle('{DAV:}acl-restrictions', function() {
-            return new Property\AclRestrictions();
+            return new Xml\Property\AclRestrictions();
         });
 
         /* Adding ACL properties */
         if ($node instanceof IACL) {
             $propFind->handle('{DAV:}owner', function() use ($node) {
-                return new DAV\Property\Href($node->getOwner() . '/');
+                return new DAV\Xml\Property\Href($node->getOwner() . '/');
             });
         }
 
@@ -951,7 +955,7 @@ class Plugin extends DAV\ServerPlugin {
         $propPatch->handle('{DAV:}group-member-set', function($value) use ($path) {
             if (is_null($value)) {
                 $memberSet = [];
-            } elseif ($value instanceof DAV\Property\HrefList) {
+            } elseif ($value instanceof DAV\Xml\Property\Href) {
                 $memberSet = array_map(
                     [$this->server,'calculateUri'],
                     $value->getHrefs()
@@ -979,24 +983,24 @@ class Plugin extends DAV\ServerPlugin {
      * This method handles HTTP REPORT requests
      *
      * @param string $reportName
-     * @param \DOMNode $dom
+     * @param mixed $report
      * @return bool
      */
-    function report($reportName, $dom) {
+    function report($reportName, $report) {
 
         switch($reportName) {
 
             case '{DAV:}principal-property-search' :
                 $this->server->transactionType = 'report-principal-property-search';
-                $this->principalPropertySearchReport($dom);
+                $this->principalPropertySearchReport($report);
                 return false;
             case '{DAV:}principal-search-property-set' :
                 $this->server->transactionType = 'report-principal-search-property-set';
-                $this->principalSearchPropertySetReport($dom);
+                $this->principalSearchPropertySetReport($report);
                 return false;
             case '{DAV:}expand-property' :
                 $this->server->transactionType = 'report-expand-property';
-                $this->expandPropertyReport($dom);
+                $this->expandPropertyReport($report);
                 return false;
 
         }
@@ -1014,11 +1018,13 @@ class Plugin extends DAV\ServerPlugin {
 
         $path = $request->getPath();
         $body = $request->getBodyAsString();
-        $dom = DAV\XMLUtil::loadDOMDocument($body);
 
-        $newAcl =
-            Property\Acl::unserialize($dom->firstChild, $this->server->propertyMap)
-            ->getPrivileges();
+        if (!$body) {
+            throw new DAV\Exception\BadRequest('XML body expected in ACL request');
+        }
+
+        $acl = $this->server->xml->expect('{DAV:}acl', $body);
+        $newAcl = $acl->getPrivileges();
 
         // Normalizing urls
         foreach($newAcl as $k=>$newAce) {
@@ -1026,7 +1032,7 @@ class Plugin extends DAV\ServerPlugin {
         }
         $node = $this->server->tree->getNodeForPath($path);
 
-        if (!($node instanceof IACL)) {
+        if (!$node instanceof IACL) {
             throw new DAV\Exception\MethodNotAllowed('This node does not support the ACL method');
         }
 
@@ -1101,73 +1107,23 @@ class Plugin extends DAV\ServerPlugin {
      * Other rfc's, such as ACL rely on this report, so it made sense to put
      * it in this plugin.
      *
-     * @param \DOMElement $dom
+     * @param Xml\Request\ExpandPropertyReport $report
      * @return void
      */
-    protected function expandPropertyReport($dom) {
+    protected function expandPropertyReport($report) {
 
-        $requestedProperties = $this->parseExpandPropertyReportRequest($dom->firstChild->firstChild);
         $depth = $this->server->getHTTPDepth(0);
         $requestUri = $this->server->getRequestUri();
 
-        $result = $this->expandProperties($requestUri,$requestedProperties,$depth);
+        $result = $this->expandProperties($requestUri, $report->properties, $depth);
 
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $multiStatus = $dom->createElement('d:multistatus');
-        $dom->appendChild($multiStatus);
-
-        // Adding in default namespaces
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $multiStatus->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
-
-        foreach($result as $response) {
-            $response->serialize($this->server, $multiStatus);
-        }
-
-        $xml = $dom->saveXML();
+        $xml = $this->server->xml->write(
+            '{DAV:}multistatus',
+            new DAV\Xml\Response\MultiStatus($result)
+        );
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(207);
         $this->server->httpResponse->setBody($xml);
-
-    }
-
-    /**
-     * This method is used by expandPropertyReport to parse
-     * out the entire HTTP request.
-     *
-     * @param \DOMElement $node
-     * @return array
-     */
-    protected function parseExpandPropertyReportRequest($node) {
-
-        $requestedProperties = [];
-        do {
-
-            if (DAV\XMLUtil::toClarkNotation($node)!=='{DAV:}property') continue;
-
-            if ($node->firstChild) {
-
-                $children = $this->parseExpandPropertyReportRequest($node->firstChild);
-
-            } else {
-
-                $children = [];
-
-            }
-
-            $namespace = $node->getAttribute('namespace');
-            if (!$namespace) $namespace = 'DAV:';
-
-            $propName = '{'.$namespace.'}' . $node->getAttribute('name');
-            $requestedProperties[$propName] = $children;
-
-        } while ($node = $node->nextSibling);
-
-        return $requestedProperties;
 
     }
 
@@ -1197,20 +1153,26 @@ class Plugin extends DAV\ServerPlugin {
                 // and it contains an href element.
                 if (!array_key_exists($propertyName,$node[200])) continue;
 
-                if ($node[200][$propertyName] instanceof DAV\Property\IHref) {
-                    $hrefs = [$node[200][$propertyName]->getHref()];
-                } elseif ($node[200][$propertyName] instanceof DAV\Property\HrefList) {
-                    $hrefs = $node[200][$propertyName]->getHrefs();
+                if (!$node[200][$propertyName] instanceof DAV\Xml\Property\Href) {
+                    continue;
                 }
 
+                $childHrefs = $node[200][$propertyName]->getHrefs();
                 $childProps = [];
-                foreach($hrefs as $href) {
-                    $childProps = array_merge($childProps, $this->expandProperties($href, $childRequestedProperties, 0));
+
+                foreach($childHrefs as $href) {
+                    // Gathering the result of the children
+                    $childProps[] = [
+                        'name' => '{DAV:}response',
+                        'value' => $this->expandProperties($href, $childRequestedProperties, 0)[0]
+                    ];
                 }
-                $node[200][$propertyName] = new DAV\Property\ResponseList($childProps);
+
+                // Replacing the property with its expannded form.
+                $node[200][$propertyName] = $childProps;
 
             }
-            $result[] = new DAV\Property\Response($node['href'], $node);
+            $result[] = new DAV\Xml\Element\Response($node['href'], $node);
 
         }
 
@@ -1226,57 +1188,49 @@ class Plugin extends DAV\ServerPlugin {
      * of properties the client may search on, using the
      * {DAV:}principal-property-search report.
      *
-     * @param \DOMDocument $dom
+     * @param Xml\Request\PrincipalSearchPropertySetReport $report
      * @return void
      */
-    protected function principalSearchPropertySetReport(\DOMDocument $dom) {
+    protected function principalSearchPropertySetReport($report) {
 
         $httpDepth = $this->server->getHTTPDepth(0);
         if ($httpDepth!==0) {
             throw new DAV\Exception\BadRequest('This report is only defined when Depth: 0');
         }
 
-        if ($dom->firstChild->hasChildNodes())
-            throw new DAV\Exception\BadRequest('The principal-search-property-set report element is not allowed to have child elements');
+        $writer = $this->server->xml->getWriter();
+        $writer->openMemory();
+        $writer->startDocument();
 
-        $dom = new \DOMDocument('1.0','utf-8');
-        $dom->formatOutput = true;
-        $root = $dom->createElement('d:principal-search-property-set');
-        $dom->appendChild($root);
-        // Adding in default namespaces
-        foreach($this->server->xmlNamespaces as $namespace=>$prefix) {
-
-            $root->setAttribute('xmlns:' . $prefix,$namespace);
-
-        }
-
-        $nsList = $this->server->xmlNamespaces;
+        $writer->startElement('{DAV:}principal-search-property-set');
 
         foreach($this->principalSearchPropertySet as $propertyName=>$description) {
 
-            $psp = $dom->createElement('d:principal-search-property');
-            $root->appendChild($psp);
+            $writer->startElement('{DAV:}principal-search-property');
+            $writer->startElement('{DAV:}prop');
 
-            $prop = $dom->createElement('d:prop');
-            $psp->appendChild($prop);
+            $writer->writeElement($propertyName);
 
-            $propName = null;
-            preg_match('/^{([^}]*)}(.*)$/',$propertyName,$propName);
+            $writer->endElement(); // prop
 
-            $currentProperty = $dom->createElement($nsList[$propName[1]] . ':' . $propName[2]);
-            $prop->appendChild($currentProperty);
+            if ($description) {
+                $writer->write([[
+                    'name' => '{DAV:}description',
+                    'value' => $description,
+                    'attributes' => ['xml:lang' => 'en']
+                ]]);
+            }
 
-            $descriptionElem = $dom->createElement('d:description');
-            $descriptionElem->setAttribute('xml:lang','en');
-            $descriptionElem->appendChild($dom->createTextNode($description));
-            $psp->appendChild($descriptionElem);
+            $writer->endElement(); // principal-search-property
 
 
         }
 
+        $writer->endElement(); // principal-search-property-set
+
         $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(200);
-        $this->server->httpResponse->setBody($dom->saveXML());
+        $this->server->httpResponse->setBody($writer->outputMemory());
 
     }
 
@@ -1288,23 +1242,24 @@ class Plugin extends DAV\ServerPlugin {
      * clients to search for groups of principals, based on the value of one
      * or more properties.
      *
-     * @param \DOMDocument $dom
+     * @param Xml\Request\PrincipalPropertySearchReport $report
      * @return void
      */
-    protected function principalPropertySearchReport(\DOMDocument $dom) {
-
-        list(
-            $searchProperties,
-            $requestedProperties,
-            $applyToPrincipalCollectionSet,
-            $test
-        ) = $this->parsePrincipalPropertySearchReportRequest($dom);
+    protected function principalPropertySearchReport($report) {
 
         $uri = null;
-        if (!$applyToPrincipalCollectionSet) {
+        if (!$report->applyToPrincipalCollectionSet) {
             $uri = $this->server->getRequestUri();
         }
-        $result = $this->principalSearch($searchProperties, $requestedProperties, $uri, $test);
+        if ($this->server->getHttpDepth('0')!==0) {
+            throw new BadRequest('Depth must be 0');
+        }
+        $result = $this->principalSearch(
+            $report->searchProperties,
+            $report->properties,
+            $uri,
+            $report->test
+        );
 
         $prefer = $this->server->getHTTPPRefer();
 
@@ -1315,83 +1270,7 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-    /**
-     * parsePrincipalPropertySearchReportRequest
-     *
-     * This method parses the request body from a
-     * {DAV:}principal-property-search report.
-     *
-     * This method returns an array with two elements:
-     *  1. an array with properties to search on, and their values
-     *  2. a list of propertyvalues that should be returned for the request.
-     *
-     * @param \DOMDocument $dom
-     * @return array
-     */
-    protected function parsePrincipalPropertySearchReportRequest($dom) {
-
-        $httpDepth = $this->server->getHTTPDepth(0);
-        if ($httpDepth!==0) {
-            throw new DAV\Exception\BadRequest('This report is only defined when Depth: 0');
-        }
-
-        $searchProperties = [];
-
-        $applyToPrincipalCollectionSet = false;
-
-        $test = $dom->firstChild->getAttribute('test') === 'anyof' ? 'anyof' : 'allof';
-
-        // Parsing the search request
-        foreach($dom->firstChild->childNodes as $searchNode) {
-
-            if (DAV\XMLUtil::toClarkNotation($searchNode) == '{DAV:}apply-to-principal-collection-set') {
-                $applyToPrincipalCollectionSet = true;
-            }
-
-            if (DAV\XMLUtil::toClarkNotation($searchNode)!=='{DAV:}property-search')
-                continue;
-
-            $propertyName = null;
-            $propertyValue = null;
-
-            foreach($searchNode->childNodes as $childNode) {
-
-                switch(DAV\XMLUtil::toClarkNotation($childNode)) {
-
-                    case '{DAV:}prop' :
-                        $property = DAV\XMLUtil::parseProperties($searchNode);
-                        reset($property);
-                        $propertyName = key($property);
-                        break;
-
-                    case '{DAV:}match' :
-                        $propertyValue = $childNode->textContent;
-                        break;
-
-                }
-
-
-            }
-
-            if (is_null($propertyName) || is_null($propertyValue))
-                throw new DAV\Exception\BadRequest('Invalid search request. propertyname: ' . $propertyName . '. propertvvalue: ' . $propertyValue);
-
-            $searchProperties[$propertyName] = $propertyValue;
-
-        }
-
-        return [
-            $searchProperties,
-            array_keys(DAV\XMLUtil::parseProperties($dom->firstChild)),
-            $applyToPrincipalCollectionSet,
-            $test
-        ];
-
-    }
-
-
     /* }}} */
-
 
     /**
      * Returns a bunch of meta-data about the plugin.

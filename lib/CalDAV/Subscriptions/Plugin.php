@@ -36,8 +36,8 @@ class Plugin extends ServerPlugin {
         $server->resourceTypeMapping['Sabre\\CalDAV\\Subscriptions\\ISubscription'] =
             '{http://calendarserver.org/ns/}subscribed';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}source'] =
-            'Sabre\\DAV\\Property\\Href';
+        $server->xml->elementMap['{http://calendarserver.org/ns/}source'] =
+            'Sabre\\DAV\\Xml\\Property\\Href';
 
         $server->on('propFind', [$this, 'propFind'], 150);
 
@@ -82,4 +82,38 @@ class Plugin extends ServerPlugin {
 
     }
 
+    /**
+     * Returns a plugin name.
+     *
+     * Using this name other plugins will be able to access other plugins
+     * using \Sabre\DAV\Server::getPlugin
+     *
+     * @return string
+     */
+    function getPluginName() {
+
+        return 'subscriptions';
+
+    }
+
+    /**
+     * Returns a bunch of meta-data about the plugin.
+     *
+     * Providing this information is optional, and is mainly displayed by the
+     * Browser plugin.
+     *
+     * The description key in the returned array may contain html and will not
+     * be sanitized.
+     *
+     * @return array
+     */
+    function getPluginInfo() {
+
+        return [
+            'name'        => $this->getPluginName(),
+            'description' => 'This plugin allows users to store iCalendar subscriptions in their calendar-home.',
+            'link'        => null,
+        ];
+
+    }
 }

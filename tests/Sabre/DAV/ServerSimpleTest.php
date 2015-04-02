@@ -213,6 +213,18 @@ class ServerSimpleTest extends AbstractServer{
     }
 
     /**
+     * @expectedException \Sabre\DAV\Exception\Forbidden
+     */
+    function testCalculateUriBreakout() {
+
+        $uri = '/path1/';
+
+        $this->server->setBaseUri('/path2/');
+        $this->server->calculateUri($uri);
+
+    }
+
+    /**
      */
     function testGuessBaseUri() {
 

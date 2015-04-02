@@ -1,7 +1,9 @@
 <?php
 
 namespace Sabre\DAV\FSExt;
+
 use Sabre\DAV;
+use Sabre\DAV\FS\Node;
 
 /**
  * File class
@@ -98,7 +100,8 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport {
      * @return bool
      */
     function delete() {
-        return unlink($this->path) && parent::delete();
+
+        return unlink($this->path);
 
     }
 

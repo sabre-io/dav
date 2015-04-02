@@ -10,6 +10,9 @@ ChangeLog
   a locks backend. I'm not sure why this ever made sense.
 * Simplified the Locking system and fixed a bug related to if tokens checking
   locks unrelated to the current request.
+* `FSExt` Directory and File no longer do custom property storage. This
+  functionality is already covered pretty well by the `PropertyStorage` plugin,
+  so please switch.
 
 
 2.2.0-alpha3 (2015-02-25)

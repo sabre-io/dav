@@ -170,24 +170,23 @@ class CorePlugin extends ServerPlugin {
 
             }
 
-            // New read/write stream
-            $newStream = fopen('php://temp','r+');
-
-            // fseek will return 0 only if $streem is seekable (and -1 otherwise)
-            // for a seekable $body stream we set the pointer write before copying it
-            // for a non-seekable $body stream we set the pointer on the copy
-            if ((fseek($body, $start, SEEK_SET)) === 0) {
-                stream_copy_to_stream($body, $newStream, $end - $start + 1, $start);
-                rewind($newStream);
+            // for a seekable $body stream we simply set the pointer
+            // for a non-seekable $body stream we read and discard just the
+            // right amount of data
+            if (stream_get_meta_data($body)['seekable']) {
+                fseek($body, $start, SEEK_SET);
             } else {
-                stream_copy_to_stream($body, $newStream, $end + 1);
-                fseek($newStream,$start, SEEK_SET);
+                $consumeBlock = 8192;
+                for($consumed = 0; $start - $consumed > 0; ){
+                    if(feof($body)) throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $start . ') exceeded the size of the entity (' . $consumed . ')');
+                    $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
+                }
             }
 
             $response->setHeader('Content-Length', $end - $start + 1);
             $response->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
             $response->setStatus(206);
-            $response->setBody($newStream);
+            $response->setBody($body);
 
         } else {
 

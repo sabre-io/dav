@@ -38,7 +38,7 @@ class ServerRangeTest extends AbstractServer{
          );
 
         $this->assertEquals(206, $this->response->status);
-        $this->assertEquals('st c', stream_get_contents($this->response->body));
+        $this->assertEquals('st c', stream_get_contents($this->response->body, 4));
 
     }
 
@@ -70,7 +70,7 @@ class ServerRangeTest extends AbstractServer{
          );
 
         $this->assertEquals(206, $this->response->status);
-        $this->assertEquals('st contents', stream_get_contents($this->response->body));
+        $this->assertEquals('st contents', stream_get_contents($this->response->body, 11));
 
     }
 
@@ -102,7 +102,7 @@ class ServerRangeTest extends AbstractServer{
          );
 
         $this->assertEquals(206, $this->response->status);
-        $this->assertEquals('contents', stream_get_contents($this->response->body));
+        $this->assertEquals('contents', stream_get_contents($this->response->body, 8));
 
     }
 
@@ -175,7 +175,7 @@ class ServerRangeTest extends AbstractServer{
          );
 
         $this->assertEquals(206, $this->response->status);
-        $this->assertEquals('st c', stream_get_contents($this->response->body));
+        $this->assertEquals('st c', stream_get_contents($this->response->body, 4));
 
     }
 
@@ -244,7 +244,7 @@ class ServerRangeTest extends AbstractServer{
          );
 
         $this->assertEquals(206, $this->response->status);
-        $this->assertEquals('st c', stream_get_contents($this->response->body));
+        $this->assertEquals('st c', stream_get_contents($this->response->body, 4));
 
     }
 

@@ -1,20 +1,24 @@
 ChangeLog
 =========
 
-2.2.0-alpha3 (2015-02-25)
+2.2.0-alpha4 (2015-04-??)
 -------------------------
 
-* Contains all the changes introduced between 2.1.2 and 2.1.3.
 * Complete rewrite of the XML system. We now use our own [sabre/xml][xml],
   which has a much smarter XML Reader and Writer.
 * BC Break: It's no longer possible to instantiate the Locks plugin without
   a locks backend. I'm not sure why this ever made sense.
 * Simplified the Locking system and fixed a bug related to if tokens checking
   locks unrelated to the current request.
+
+
+2.2.0-alpha3 (2015-02-25)
+-------------------------
+
+* Contains all the changes introduced between 2.1.2 and 2.1.3.
 * The zip release ships with [sabre/vobject 3.4.2][vobj],
   [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt] and
   [sabre/uri 1.0.0][uri].
-
 
 
 

@@ -170,14 +170,16 @@ class CorePlugin extends ServerPlugin {
 
             }
 
-            // fseek will return 0 only if $stream is seekable (and -1 otherwise)
             // for a seekable $body stream we simply set the pointer
             // for a non-seekable $body stream we read and discard just the
-            //  right amount of data
-            if ((fseek($body, $start, SEEK_SET)) !== 0) {
-                $consume_block = 4096;
+            // right amount of data
+            if (stream_get_meta_data($body)['seekable']) {
+                fseek($body, $start, SEEK_SET);
+            } else {
+                $consumeBlock = 8192;
                 for($consumed = 0; $start - $consumed > 0; ){
-                    $consumed += strlen(fread($body, min($start - $consumed, $consume_block)));
+                    if(feof($body)) throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $start . ') exceeded the size of the entity (' . $consumed . ')');
+                    $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
                 }
             }
 

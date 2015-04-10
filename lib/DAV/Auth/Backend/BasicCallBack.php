@@ -8,7 +8,6 @@ use Sabre\DAV;
  * Extremely simply HTTP Basic auth backend.
  *
  * This backend basically works by calling a callback, which receives a
- *
  * username and password.
  * The callback must return true or false depending on if authentication was
  * correct.

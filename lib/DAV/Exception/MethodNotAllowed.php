@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Exception;
 
+use Sabre\DAV;
+
 /**
  * MethodNotAllowed
  *
@@ -11,7 +13,7 @@ namespace Sabre\DAV\Exception;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class MethodNotAllowed extends \Sabre\DAV\Exception {
+class MethodNotAllowed extends DAV\Exception {
 
     /**
      * Returns the HTTP statuscode for this exception

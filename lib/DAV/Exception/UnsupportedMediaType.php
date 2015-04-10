@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Exception;
 
+use Sabre\DAV;
+
 /**
  * UnSupportedMediaType
  *
@@ -12,7 +14,7 @@ namespace Sabre\DAV\Exception;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class UnsupportedMediaType extends \Sabre\DAV\Exception {
+class UnsupportedMediaType extends DAV\Exception {
 
     /**
      * returns the http statuscode for this exception

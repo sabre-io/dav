@@ -42,25 +42,6 @@ class PluginTest extends AbstractPluginTest {
 
     }
 
-    function testMeCardTest() {
-
-        $result = $this->server->getProperties(
-            'addressbooks/user1',
-            array(
-                '{http://calendarserver.org/ns/}me-card',
-            )
-        );
-
-        $this->assertEquals(
-            array(
-                '{http://calendarserver.org/ns/}me-card' =>
-                    new Href('addressbooks/user1/book1/vcard1.vcf')
-            ),
-            $result
-        );
-
-    }
-
     function testDirectoryGateway() {
 
         $result = $this->server->getProperties('principals/user1', array('{' . Plugin::NS_CARDDAV . '}directory-gateway'));
@@ -107,36 +88,6 @@ class PluginTest extends AbstractPluginTest {
         }
         if (!$newAddressBook)
             $this->fail('Could not find newly created addressbook');
-
-    }
-
-    function testUpdatePropertiesMeCard() {
-
-        $result = $this->server->updateProperties('addressbooks/user1', [
-            '{http://calendarserver.org/ns/}me-card' => new Href('/addressbooks/user1/book1/vcard2',true),
-        ]);
-
-        $this->assertEquals(
-            [
-                '{http://calendarserver.org/ns/}me-card' => 200,
-            ],
-            $result
-        );
-
-    }
-
-    function testUpdatePropertiesMeCardBadValue() {
-
-        $result = $this->server->updateProperties('addressbooks/user1', [
-            '{http://calendarserver.org/ns/}me-card' => [],
-        ]);
-
-        $this->assertEquals(
-            [
-                '{http://calendarserver.org/ns/}me-card' => 400,
-            ],
-            $result
-        );
 
     }
 

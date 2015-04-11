@@ -68,7 +68,6 @@ class Plugin extends DAV\ServerPlugin {
         /* Events */
         $server->on('propFind',            [$this, 'propFindEarly']);
         $server->on('propFind',            [$this, 'propFindLate'],150);
-        $server->on('propPatch',           [$this, 'propPatch']);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
         $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
@@ -89,7 +88,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}addressbook-home-set';
         $server->protectedProperties[] = '{' . self::NS_CARDDAV . '}supported-collation-set';
 
-        $server->propertyMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Xml\\Property\\Href';
+        $server->xml->elementMap['{http://calendarserver.org/ns/}me-card'] = 'Sabre\\DAV\\Xml\\Property\\Href';
 
         $this->server = $server;
 
@@ -183,61 +182,6 @@ class Plugin extends DAV\ServerPlugin {
             });
 
         }
-
-        if ($node instanceof UserAddressBooks) {
-
-            $propFind->handle('{http://calendarserver.org/ns/}me-card', function() use ($node) {
-
-                $props = $this->server->getProperties($node->getOwner(), ['{http://sabredav.org/ns}vcard-url']);
-                if (isset($props['{http://sabredav.org/ns}vcard-url'])) {
-
-                    return new Href(
-                        $props['{http://sabredav.org/ns}vcard-url']
-                    );
-
-                }
-
-            });
-
-        }
-
-    }
-
-    /**
-     * This event is triggered when a PROPPATCH method is executed
-     *
-     * @param string $path
-     * @param DAV\PropPatch $propPatch
-     * @return bool
-     */
-    function propPatch($path, DAV\PropPatch $propPatch) {
-
-        $node = $this->server->tree->getNodeForPath($path);
-        if (!$node instanceof UserAddressBooks) {
-            return true;
-        }
-
-        $meCard = '{http://calendarserver.org/ns/}me-card';
-
-        $propPatch->handle($meCard, function($value) use ($node) {
-
-            if ($value instanceof Href) {
-                $value = $value->getHref();
-                $value = $this->server->calculateUri($value);
-            } elseif (!is_null($value)) {
-                return 400;
-            }
-
-            $innerResult = $this->server->updateProperties(
-                $node->getOwner(),
-                [
-                    '{http://sabredav.org/ns}vcard-url' => $value,
-                ]
-            );
-
-            return $innerResult['{http://sabredav.org/ns}vcard-url'];
-
-        });
 
     }
 

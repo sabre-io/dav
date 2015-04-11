@@ -2,10 +2,10 @@
 
 namespace Sabre\CardDAV;
 
-class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
+class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CardDAV\UserAddressBooks
+     * @var Sabre\CardDAV\AddressBookHome
      */
     protected $s;
     protected $backend;
@@ -13,7 +13,7 @@ class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
     function setUp() {
 
         $this->backend = new Backend\Mock();
-        $this->s = new UserAddressBooks(
+        $this->s = new AddressBookHome(
             $this->backend,
             'principals/user1'
         );

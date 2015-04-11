@@ -1095,40 +1095,32 @@ class Server extends EventEmitter {
      */
     function createDirectory($uri) {
 
-        $this->createCollection($uri,['{DAV:}collection'], []);
+        $this->createCollection($uri,new MkCol(['{DAV:}collection'], []));
 
     }
 
     /**
      * Use this method to create a new collection
      *
-     * The {DAV:}resourcetype is specified using the resourceType array.
-     * At the very least it must contain {DAV:}collection.
-     *
-     * The properties array can contain a list of additional properties.
-     *
      * @param string $uri The new uri
-     * @param array $resourceType The resourceType(s)
-     * @param array $properties A list of properties
+     * @param MkCol $mkCol
      * @return array|null
      */
-    function createCollection($uri, array $resourceType, array $properties) {
+    function createCollection($uri, MkCol $mkCol) {
 
         list($parentUri,$newName) = URLUtil::splitPath($uri);
 
         // Making sure {DAV:}collection was specified as resourceType
-        if (!in_array('{DAV:}collection', $resourceType)) {
+        if (!$mkCol->hasResourceType('{DAV:}collection')) {
             throw new Exception\InvalidResourceType('The resourceType for this collection must at least include {DAV:}collection');
         }
 
 
         // Making sure the parent exists
         try {
-
             $parent = $this->tree->getNodeForPath($parentUri);
 
         } catch (Exception\NotFound $e) {
-
             throw new Exception\Conflict('Parent node does not exist');
 
         }
@@ -1138,8 +1130,6 @@ class Server extends EventEmitter {
             throw new Exception\Conflict('Parent node is not a collection');
         }
 
-
-
         // Making sure the child does not already exist
         try {
             $parent->getChild($newName);
@@ -1148,72 +1138,46 @@ class Server extends EventEmitter {
             throw new Exception\MethodNotAllowed('The resource you tried to create already exists');
 
         } catch (Exception\NotFound $e) {
-            // This is correct
+            // NotFound is the expected behavior.
         }
 
 
         if (!$this->emit('beforeBind',[$uri])) return;
 
-        // There are 2 modes of operation. The standard collection
-        // creates the directory, and then updates properties
-        // the extended collection can create it directly.
         if ($parent instanceof IExtendedCollection) {
 
-            $parent->createExtendedCollection($newName, $resourceType, $properties);
+            /**
+             * If the parent is an instanced of IExtendedCollection, it means that
+             * we can pass the MkCol object directly as it may be able to store
+             * properties immediately.
+             */
+            $parent->createExtendedCollection($newName, $mkCol);
 
         } else {
 
-            // No special resourcetypes are supported
-            if (count($resourceType)>1) {
+            /**
+             * If the parent is a standard ICollection, it means only
+             * 'standard' collections can be created, so we should fail any
+             * MKCOL operation that carry extra resourcetypes.
+             */
+            if (count($mkCol->getResourceType())>1) {
                 throw new Exception\InvalidResourceType('The {DAV:}resourcetype you specified is not supported here.');
             }
 
             $parent->createDirectory($newName);
-            $rollBack = false;
-            $exception = null;
-            $errorResult = null;
-
-            if (count($properties)>0) {
-
-                try {
-
-                    $errorResult = $this->updateProperties($uri, $properties);
-                    if (!isset($errorResult[200])) {
-                        $rollBack = true;
-                    }
-
-                } catch (Exception $e) {
-
-                    $rollBack = true;
-                    $exception = $e;
-
-                }
-
-            }
-
-            if ($rollBack) {
-                if (!$this->emit('beforeUnbind',[$uri])) return;
-                $this->tree->delete($uri);
-
-                // Re-throwing exception
-                if ($exception) throw $exception;
-
-                // Re-arranging the result so it makes sense for
-                // generateMultiStatus.
-                $newResult = [
-                    'href' => $uri,
-                ];
-                foreach($errorResult as $property=>$code) {
-                    if (!isset($newResult[$code])) {
-                        $newResult[$code] = [$property => null];
-                    } else {
-                        $newResult[$code][$property] = null;
-                    }
-                }
-                return $newResult;
-            }
 
         }
+
+        // If there are any properties that have not been handled/stored,
+        // we ask the 'propPatch' event to handle them. This will allow for
+        // example the propertyStorage system to store properties upon MKCOL.
+        if ($mkCol->getRemainingMutations()) {
+            $this->emit('propPatch', [$uri, $mkCol]);
+        }
+        $success = $mkCol->commit();
+
+        if (!$success) return $mkCol->getResult();
+
         $this->tree->markDirty($parentUri);
         $this->emit('afterBind',[$uri]);
 

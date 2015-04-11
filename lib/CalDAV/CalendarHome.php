@@ -5,6 +5,7 @@ namespace Sabre\CalDAV;
 use
     Sabre\DAV,
     Sabre\DAV\Exception\NotFound,
+    Sabre\DAV\MkCol,
     Sabre\DAVACL,
     Sabre\HTTP\URLUtil;
 
@@ -230,18 +231,18 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
     }
 
     /**
-     * Creates a new calendar
+     * Creates a new calendar or subscription.
      *
      * @param string $name
-     * @param array $resourceType
-     * @param array $properties
+     * @param MkCol $mkCol
+     * @throws DAV\Exception\InvalidResourceType
      * @return void
      */
-    function createExtendedCollection($name, array $resourceType, array $properties) {
+    function createExtendedCollection($name, MkCol $mkCol) {
 
         $isCalendar = false;
         $isSubscription = false;
-        foreach($resourceType as $rt) {
+        foreach($mkCol->getResourceType() as $rt) {
             switch ($rt) {
                 case '{DAV:}collection' :
                 case '{http://calendarserver.org/ns/}shared-owner' :
@@ -257,6 +258,10 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
                     throw new DAV\Exception\InvalidResourceType('Unknown resourceType: ' . $rt);
             }
         }
+
+        $properties = $mkCol->getRemainingValues();
+        $mkCol->setRemainingResultCode(201);
+
         if ($isSubscription) {
             if (!$this->caldavBackend instanceof Backend\SubscriptionSupport) {
                 throw new DAV\Exception\InvalidResourceType('This backend does not support subscriptions');

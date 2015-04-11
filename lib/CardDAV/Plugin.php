@@ -681,7 +681,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function htmlActionsPanel(DAV\INode $node, &$output) {
 
-        if (!$node instanceof UserAddressBooks)
+        if (!$node instanceof AddressBookHome)
             return;
 
         $output.= '<tr><td colspan="2"><form method="post" action="">

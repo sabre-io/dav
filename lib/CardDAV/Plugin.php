@@ -2,17 +2,17 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
-use Sabre\VObject;
+use
+    Sabre\DAV,
+    Sabre\DAV\Exception\ReportNotSupported,
+    Sabre\DAV\MkCol,
+    Sabre\DAV\Xml\Property\Href,
+    Sabre\DAVACL,
+    Sabre\HTTP,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface,
+    Sabre\VObject;
 
-use Sabre\DAV\Exception\ReportNotSupported;
-
-use Sabre\HTTP;
-use Sabre\HTTP\RequestInterface;
-use Sabre\HTTP\ResponseInterface;
-
-use Sabre\DAV\Xml\Property\Href;
 
 /**
  * CardDAV plugin
@@ -800,7 +800,7 @@ class Plugin extends DAV\ServerPlugin {
         if (isset($postVars['{DAV:}displayname'])) {
             $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
         }
-        $this->server->createCollection($uri . '/' . $postVars['name'],$resourceType,$properties);
+        $this->server->createCollection($uri . '/' . $postVars['name'], new MkCol($resourceType,$properties));
         return false;
 
     }

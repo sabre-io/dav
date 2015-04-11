@@ -169,7 +169,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
             throw new DAV\Exception\InvalidResourceType('Unknown resourceType for this collection');
         }
         $properties = $mkCol->getRemainingValues();
-        $mkCol->setRemainingStatus(201);
+        $mkCol->setRemainingResultCode(201);
         $this->carddavBackend->createAddressBook($this->principalUri, $name, $properties);
 
     }

@@ -2,6 +2,8 @@
 
 namespace Sabre\CardDAV;
 
+use Sabre\DAV\MkCol;
+
 class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -96,11 +98,11 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateExtendedCollection() {
 
-        $resourceType = array(
+        $resourceType = [ 
             '{' . Plugin::NS_CARDDAV . '}addressbook',
             '{DAV:}collection',
-        );
-        $this->s->createExtendedCollection('book2', $resourceType, array('{DAV:}displayname' => 'a-book 2'));
+        ];
+        $this->s->createExtendedCollection('book2', new MkCol($resourceType, ['{DAV:}displayname' => 'a-book 2']));
 
         $this->assertEquals(array(
             'id' => 'book2',
@@ -119,7 +121,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
         $resourceType = array(
             '{DAV:}collection',
         );
-        $this->s->createExtendedCollection('book2', $resourceType, array('{DAV:}displayname' => 'a-book 2'));
+        $this->s->createExtendedCollection('book2', new MkCol($resourceType, array('{DAV:}displayname' => 'a-book 2')));
 
     }
 

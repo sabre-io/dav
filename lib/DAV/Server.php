@@ -1176,7 +1176,12 @@ class Server extends EventEmitter {
         }
         $success = $mkCol->commit();
 
-        if (!$success) return $mkCol->getResult();
+        if (!$success) {
+            $result = $mkCol->getResult();
+            // generateMkCol needs the href key to exist.
+            $result['href'] = $uri;
+            return $result;
+        }
 
         $this->tree->markDirty($parentUri);
         $this->emit('afterBind',[$uri]);

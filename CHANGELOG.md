@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.2.0-alpha4 (2015-04-??)
+2.2.0-alpha4 (2015-04-13)
 -------------------------
 
 * Complete rewrite of the XML system. We now use our own [sabre/xml][xml],

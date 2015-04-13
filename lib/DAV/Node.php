@@ -14,15 +14,15 @@ namespace Sabre\DAV;
 abstract class Node implements INode {
 
     /**
-     * Returns the last modification time
+     * Returns the last modification time as a unix timestamp.
      *
-     * In this case, it will simply return the current time
+     * If the information is not available, return null.
      *
      * @return int
      */
     function getLastModified() {
 
-        return time();
+        return null;
 
     }
 

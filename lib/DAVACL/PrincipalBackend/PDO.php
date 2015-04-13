@@ -4,6 +4,7 @@ namespace Sabre\DAVACL\PrincipalBackend;
 
 use
     Sabre\DAV,
+    Sabre\DAV\MkCol,
     Sabre\DAVACL,
     Sabre\HTTP\URLUtil;
 
@@ -18,7 +19,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class PDO extends AbstractBackend {
+class PDO extends AbstractBackend implements CreatePrincipalSupport {
 
     /**
      * PDO table name for 'principals'
@@ -55,17 +56,6 @@ class PDO extends AbstractBackend {
             'dbField' => 'displayname',
         ],
 
-        /**
-         * This property is actually used by the CardDAV plugin, where it gets
-         * mapped to {http://calendarserver.orgi/ns/}me-card.
-         *
-         * The reason we don't straight-up use that property, is because
-         * me-card is defined as a property on the users' addressbook
-         * collection.
-         */
-        '{http://sabredav.org/ns}vcard-url' => [
-            'dbField' => 'vcardurl',
-        ],
         /**
          * This is the users' primary email-address.
          */
@@ -374,6 +364,25 @@ class PDO extends AbstractBackend {
             $stmt->execute([$principalId, $memberId]);
 
         }
+
+    }
+
+    /**
+     * Creates a new principal.
+     *
+     * This method receives a full path for the new principal. The mkCol object
+     * contains any additional webdav properties specified during the creation
+     * of the principal.
+     *
+     * @param string $path
+     * @param MkCol $mkCol
+     * @return void
+     */
+    function createPrincipal($path, MkCol $mkCol) {
+
+        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->tableName . ' (uri) VALUES (?)');
+        $stmt->execute([$path]);
+        $this->updatePrincipal($path, $mkCol);
 
     }
 

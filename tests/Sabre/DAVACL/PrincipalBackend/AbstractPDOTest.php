@@ -130,7 +130,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'pietje',
-            '{http://sabredav.org/ns}vcard-url' => 'blabla',
         ]);
 
         $backend->updatePrincipal('principals/user', $propPatch);
@@ -142,7 +141,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'id' => 1,
             'uri' => 'principals/user',
             '{DAV:}displayname' => 'pietje',
-            '{http://sabredav.org/ns}vcard-url' => 'blabla',
             '{http://sabredav.org/ns}email-address' => 'user@example.org',
         ), $backend->getPrincipalByPath('principals/user'));
 
@@ -155,7 +153,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'pietje',
-            '{http://sabredav.org/ns}vcard-url' => 'blabla',
             '{DAV:}unknown' => 'foo',
         ]);
 
@@ -166,7 +163,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(
             '{DAV:}displayname' => 424,
-            '{http://sabredav.org/ns}vcard-url' => 424,
             '{DAV:}unknown' => 403
         ), $propPatch->getResult());
 

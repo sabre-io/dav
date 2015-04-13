@@ -68,29 +68,6 @@ class PluginTest extends AbstractPluginTest {
 
     }
 
-    function testBrowserPostAction() {
-
-        $r = $this->server->emit('onBrowserPostAction', ['addressbooks/user1', 'mkaddressbook', [
-            'name' => 'NEWADDRESSBOOK',
-            '{DAV:}displayname' => 'foo',
-        ]]);
-        $this->assertFalse($r);
-
-        $addressbooks = $this->backend->getAddressBooksforUser('principals/user1');
-        $this->assertEquals(2, count($addressbooks));
-
-        $newAddressBook = null;
-        foreach($addressbooks as $addressbook) {
-           if ($addressbook['uri'] === 'NEWADDRESSBOOK') {
-                $newAddressBook = $addressbook;
-                break;
-           }
-        }
-        if (!$newAddressBook)
-            $this->fail('Could not find newly created addressbook');
-
-    }
-
     function testAddressbookPluginProperties() {
 
         $ns = '{' . Plugin::NS_CARDDAV . '}';

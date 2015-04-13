@@ -1110,12 +1110,6 @@ class Server extends EventEmitter {
 
         list($parentUri,$newName) = URLUtil::splitPath($uri);
 
-        // Making sure {DAV:}collection was specified as resourceType
-        if (!$mkCol->hasResourceType('{DAV:}collection')) {
-            throw new Exception\InvalidResourceType('The resourceType for this collection must at least include {DAV:}collection');
-        }
-
-
         // Making sure the parent exists
         try {
             $parent = $this->tree->getNodeForPath($parentUri);

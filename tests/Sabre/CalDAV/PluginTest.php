@@ -930,30 +930,6 @@ XML;
 
     }
 
-    function testBrowserPostAction() {
-
-        $r = $this->server->emit('onBrowserPostAction', ['calendars/user1', 'mkcalendar', [
-            'name' => 'NEWCALENDAR',
-            '{DAV:}displayname' => 'foo',
-        ]]);
-        $this->assertFalse($r);
-
-        $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(3, count($calendars));
-
-        $newCalendar = null;
-        foreach($calendars as $calendar) {
-           if ($calendar['uri'] === 'NEWCALENDAR') {
-                $newCalendar = $calendar;
-                break;
-           }
-        }
-        if (!$newCalendar)
-            $this->fail('Could not find newly created calendar');
-
-
-    }
-
     /**
      * @depends testCalendarMultiGetReport
      */

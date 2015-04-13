@@ -136,41 +136,9 @@ class ServerMKCOLTest extends AbstractServer {
     }
 
     /**
-     * @depends testMKCOLNoResourceType
+     * @depends testMkcol
      */
     function testMKCOLIncorrectResourceType() {
-
-        $serverVars = array(
-            'REQUEST_URI'    => '/testcol',
-            'REQUEST_METHOD' => 'MKCOL',
-            'HTTP_CONTENT_TYPE' => 'application/xml',
-        );
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody('<?xml version="1.0"?>
-<mkcol xmlns="DAV:">
-  <set>
-    <prop>
-        <resourcetype><blabla /></resourcetype>
-    </prop>
-  </set>
-</mkcol>');
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(array(
-            'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/xml; charset=utf-8'],
-        ),$this->response->getHeaders());
-
-        $this->assertEquals(403, $this->response->status, 'Wrong statuscode received. Full response body: ' .$this->response->body);
-
-    }
-
-    /**
-     * @depends testMKCOLIncorrectResourceType
-     */
-    function testMKCOLIncorrectResourceType2() {
 
         $serverVars = array(
             'REQUEST_URI'    => '/testcol',
@@ -200,7 +168,7 @@ class ServerMKCOLTest extends AbstractServer {
     }
 
     /**
-     * @depends testMKCOLIncorrectResourceType2
+     * @depends testMKCOLIncorrectResourceType
      */
     function testMKCOLSuccess() {
 
@@ -232,7 +200,7 @@ class ServerMKCOLTest extends AbstractServer {
     }
 
     /**
-     * @depends testMKCOLIncorrectResourceType2
+     * @depends testMKCOLIncorrectResourceType
      */
     function testMKCOLWhiteSpaceResourceType() {
 
@@ -266,7 +234,7 @@ class ServerMKCOLTest extends AbstractServer {
     }
 
     /**
-     * @depends testMKCOLIncorrectResourceType2
+     * @depends testMKCOLIncorrectResourceType
      */
     function testMKCOLNoParent() {
 
@@ -291,7 +259,7 @@ class ServerMKCOLTest extends AbstractServer {
     }
 
     /**
-     * @depends testMKCOLIncorrectResourceType2
+     * @depends testMKCOLIncorrectResourceType
      */
     function testMKCOLParentIsNoCollection() {
 
@@ -316,7 +284,7 @@ class ServerMKCOLTest extends AbstractServer {
     }
 
     /**
-     * @depends testMKCOLIncorrectResourceType2
+     * @depends testMKCOLIncorrectResourceType
      */
     function testMKCOLAlreadyExists() {
 

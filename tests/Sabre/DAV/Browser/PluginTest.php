@@ -35,8 +35,9 @@ class PluginTest extends DAV\AbstractServer{
             $this->response->getHeaders()
         );
 
-        $this->assertTrue(strpos($this->response->body, '<title>dir/') !== false);
-        $this->assertTrue(strpos($this->response->body, '<a href="/dir/child.txt">')!==false);
+        $body = $this->response->getBodyAsString();
+        $this->assertTrue(strpos($body, '<title>dir') !== false, $body);
+        $this->assertTrue(strpos($body, '<a href="/dir/child.txt">')!==false);
 
     }
     function testCollectionGetRoot() {
@@ -55,9 +56,10 @@ class PluginTest extends DAV\AbstractServer{
             $this->response->getHeaders()
         );
 
-        $this->assertTrue(strpos($this->response->body, '<title>/') !== false);
-        $this->assertTrue(strpos($this->response->body, '<a href="/dir/">')!==false);
-        $this->assertTrue(strpos($this->response->body, '<span class="btn disabled">')!==false);
+        $body = $this->response->getBodyAsString();
+        $this->assertTrue(strpos($body, '<title>/') !== false, $body);
+        $this->assertTrue(strpos($body, '<a href="/dir/">')!==false);
+        $this->assertTrue(strpos($body, '<span class="btn disabled">')!==false);
 
     }
 

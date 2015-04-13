@@ -110,7 +110,7 @@ class Plugin extends DAV\ServerPlugin {
                 $this->serveAsset(isset($getVars['assetName'])?$getVars['assetName']:null);
                 return false;
             default :
-            case 'nodeInfo' :
+            case 'info' :
                 try {
                     $this->server->tree->getNodeForPath($request->getPath());
                 } catch (DAV\Exception\NotFound $e) {
@@ -301,7 +301,14 @@ class Plugin extends DAV\ServerPlugin {
                     $html.=$this->escapeHTML($lastMod->format('F j, Y, g:i a'));
                 }
                 $html.= '</td>';
-                $html.= '<td><a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a></td>';
+
+                $buttonActions = '';
+                if ($subNode instanceof DAV\IFile) {
+                    $buttonActions =  '<a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
+                }
+                $this->server->emit('browserButtonActions', [$subProps['fullPath'], $subProps['subNode'], &$buttonActions]);
+
+                $html.= '<td>'. $buttonActions . '</td>';
                 $html.= '</tr>';
             }
 

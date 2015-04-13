@@ -13,6 +13,13 @@ ChangeLog
 * `FSExt` Directory and File no longer do custom property storage. This
   functionality is already covered pretty well by the `PropertyStorage` plugin,
   so please switch.
+* Renamed `Sabre\CardDAV\UserAddressBooks` to `Sabre\CardDAV\AddressBookHome`
+  to be more consistent with `CalendarHome` as well as the CardDAV
+  specification.
+* `Sabre\DAV\IExtendedCollection` now receives a `Sabre\DAV\MkCol` object as
+  its second argument, and no longer receives seperate properties and
+  resourcetype arguments.
+* `MKCOL` now integrates better with propertystorage plugins.
 
 
 2.2.0-alpha3 (2015-02-25)

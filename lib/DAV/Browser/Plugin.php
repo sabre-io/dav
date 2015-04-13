@@ -2,10 +2,12 @@
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\DAV;
-use Sabre\HTTP\URLUtil;
-use Sabre\HTTP\RequestInterface;
-use Sabre\HTTP\ResponseInterface;
+use
+    Sabre\DAV,
+    Sabre\DAV\MkCol,
+    Sabre\HTTP\URLUtil,
+    Sabre\HTTP\RequestInterface,
+    Sabre\HTTP\ResponseInterface;
 
 /**
  * Browser Plugin
@@ -152,7 +154,27 @@ class Plugin extends DAV\ServerPlugin {
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         // Using basename() because we won't allow slashes
                         list(, $folderName) = URLUtil::splitPath(trim($postVars['name']));
-                        $this->server->createDirectory($uri . '/' . $folderName);
+
+                        if (isset($postVars['resourceType'])) {
+                            $resourceType = explode(',',$postVars['resourceType']);
+                        } else {
+                            $resourceType = ['{DAV:}collection'];
+                        }
+
+                        $properties = [];
+                        foreach($postVars as $varName => $varValue) {
+                            // Any _POST variable in clark notation is treated
+                            // like a property.
+                            if ($varName[0] === '{') {
+                                $properties[$varName] = $varValue;
+                            }
+                        }
+
+                        $mkCol = new MkCol(
+                            $resourceType,
+                            $properties
+                        );
+                        $this->server->createCollection($uri . '/' . $folderName, $mkCol);
                     }
                     break;
 

@@ -70,7 +70,6 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('propFind',            [$this, 'propFindLate'],150);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
-        $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('afterMethod:GET',     [$this, 'httpAfterGet']);
@@ -686,7 +685,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $output.= '<tr><td colspan="2"><form method="post" action="">
             <h3>Create new address book</h3>
-            <input type="hidden" name="sabreAction" value="mkaddressbook" />
+            <input type="hidden" name="sabreAction" value="mkcol" />
+            <input type="hidden" name="resourceType" value="{DAV:}collection,{' . self::NS_CARDDAV . '}addressbook" />
             <label>Name (uri):</label> <input type="text" name="name" /><br />
             <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
             <input type="submit" value="create" />
@@ -722,30 +722,6 @@ class Plugin extends DAV\ServerPlugin {
         $response->setBody($newBody);
         $response->setHeader('Content-Type', $mimeType . '; charset=utf-8');
         $response->setHeader('Content-Length', strlen($newBody));
-
-    }
-
-    /**
-     * This method allows us to intercept the 'mkaddressbook' sabreAction. This
-     * action enables the user to create new addressbooks from the browser plugin.
-     *
-     * @param string $uri
-     * @param string $action
-     * @param array $postVars
-     * @return bool
-     */
-    function browserPostAction($uri, $action, array $postVars) {
-
-        if ($action!=='mkaddressbook')
-            return;
-
-        $resourceType = ['{DAV:}collection','{urn:ietf:params:xml:ns:carddav}addressbook'];
-        $properties = [];
-        if (isset($postVars['{DAV:}displayname'])) {
-            $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
-        }
-        $this->server->createCollection($uri . '/' . $postVars['name'], new MkCol($resourceType,$properties));
-        return false;
 
     }
 

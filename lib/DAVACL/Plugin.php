@@ -686,6 +686,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeUnlock',        [$this,'beforeUnlock'],20);
         $server->on('report',              [$this,'report']);
         $server->on('method:ACL',          [$this,'httpAcl']);
+        $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',
@@ -1271,6 +1272,35 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /* }}} */
+
+    /**
+     * This method is used to generate HTML output for the
+     * DAV\Browser\Plugin. This allows us to generate an interface users
+     * can use to create new calendars.
+     *
+     * @param DAV\INode $node
+     * @param string $output
+     * @return bool
+     */
+    function htmlActionsPanel(DAV\INode $node, &$output) {
+
+        if (!$node instanceof PrincipalCollection)
+            return;
+
+        $output.= '<tr><td colspan="2"><form method="post" action="">
+            <h3>Create new principal</h3>
+            <input type="hidden" name="sabreAction" value="mkcol" />
+            <input type="hidden" name="resourceType" value="{DAV:}principal" />
+            <label>Name (uri):</label> <input type="text" name="name" /><br />
+            <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
+            <label>Email address:</label> <input type="text" name="{http://sabreav.org/ns}email-address" /><br />
+            <input type="submit" value="create" />
+            </form>
+            </td></tr>';
+
+        return false;
+
+    }
 
     /**
      * Returns a bunch of meta-data about the plugin.

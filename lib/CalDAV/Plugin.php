@@ -174,7 +174,6 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('report',              [$this,'report']);
         $server->on('propFind',            [$this,'propFind']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);
-        $server->on('onBrowserPostAction', [$this,'browserPostAction']);
         $server->on('beforeCreateFile',    [$this,'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this,'beforeWriteContent']);
         $server->on('afterMethod:GET',     [$this,'httpAfterGET']);
@@ -897,37 +896,14 @@ class Plugin extends DAV\ServerPlugin {
 
         $output.= '<tr><td colspan="2"><form method="post" action="">
             <h3>Create new calendar</h3>
-            <input type="hidden" name="sabreAction" value="mkcalendar" />
+            <input type="hidden" name="sabreAction" value="mkcol" />
+            <input type="hidden" name="resourceType" value="{DAV:}collection,{' . self::NS_CALDAV . '}calendar" />
             <label>Name (uri):</label> <input type="text" name="name" /><br />
             <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
             <input type="submit" value="create" />
             </form>
             </td></tr>';
 
-        return false;
-
-    }
-
-    /**
-     * This method allows us to intercept the 'mkcalendar' sabreAction. This
-     * action enables the user to create new calendars from the browser plugin.
-     *
-     * @param string $uri
-     * @param string $action
-     * @param array $postVars
-     * @return bool
-     */
-    function browserPostAction($uri, $action, array $postVars) {
-
-        if ($action!=='mkcalendar')
-            return;
-
-        $resourceType = ['{DAV:}collection','{urn:ietf:params:xml:ns:caldav}calendar'];
-        $properties = [];
-        if (isset($postVars['{DAV:}displayname'])) {
-            $properties['{DAV:}displayname'] = $postVars['{DAV:}displayname'];
-        }
-        $this->server->createCollection($uri . '/' . $postVars['name'], new MkCol($resourceType,$properties));
         return false;
 
     }

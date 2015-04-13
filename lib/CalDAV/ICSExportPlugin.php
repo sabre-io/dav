@@ -324,4 +324,39 @@ class ICSExportPlugin extends DAV\ServerPlugin {
 
     }
 
+    /**
+     * Returns a plugin name.
+     *
+     * Using this name other plugins will be able to access other plugins
+     * using \Sabre\DAV\Server::getPlugin
+     *
+     * @return string
+     */
+    function getPluginName() {
+
+        return 'ics-export';
+
+    }
+
+    /**
+     * Returns a bunch of meta-data about the plugin.
+     *
+     * Providing this information is optional, and is mainly displayed by the
+     * Browser plugin.
+     *
+     * The description key in the returned array may contain html and will not
+     * be sanitized.
+     *
+     * @return array
+     */
+    function getPluginInfo() {
+
+        return [
+            'name'        => $this->getPluginName(),
+            'description' => 'Adds the ability to export CalDAV calendars as a single iCalendar file.',
+            'link'        => 'http://sabre.io/dav/ics-export-plugin/',
+        ];
+
+    }
+
 }

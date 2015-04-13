@@ -156,7 +156,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
     }
 
     /**
-     * Creates a new calendar or subscription.
+     * Creates a new address book.
      *
      * @param string $name
      * @param MkCol $mkCol

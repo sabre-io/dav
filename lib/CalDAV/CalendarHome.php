@@ -231,7 +231,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
     }
 
     /**
-     * Creates a new addressbook.
+     * Creates a new calendar or subscription.
      *
      * @param string $name
      * @param MkCol $mkCol

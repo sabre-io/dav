@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+2.2.0-alpha5 (2015-??-??)
+-------------------------
+
+* It's now possible to get all property information from files using the
+  browser plugin.
+
+
 2.2.0-alpha4 (2015-04-13)
 -------------------------
 

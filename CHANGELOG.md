@@ -6,6 +6,10 @@ ChangeLog
 
 * It's now possible to get all property information from files using the
   browser plugin.
+* Browser plugin will now show a 'calendar export' button when the
+  ics-export plugin is enabled.
+* Some nodes that by default showed the current time as their last
+  modification time, now no longer has a last modification time.
 
 
 2.2.0-alpha4 (2015-04-13)

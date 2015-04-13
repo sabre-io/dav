@@ -1845,5 +1845,6 @@ ChangeLog
 [evnt]: http://sabre.io/event/
 [http]: http://sabre.io/http/
 [uri]: http://sabre.io/uri/
+[xml]: http://sabre.io/xml/
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"

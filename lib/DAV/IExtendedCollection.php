@@ -17,8 +17,8 @@ interface IExtendedCollection extends ICollection {
     /**
      * Creates a new collection.
      *
-     * This method will receive MkCol object with all the information about the
-     * new collection that's being created.
+     * This method will receive a MkCol object with all the information about
+     * the new collection that's being created.
      *
      * The MkCol object contains information about the resourceType of the new
      * collection. If you don't support the specified resourceType, you should

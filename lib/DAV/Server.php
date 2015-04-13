@@ -1095,7 +1095,7 @@ class Server extends EventEmitter {
      */
     function createDirectory($uri) {
 
-        $this->createCollection($uri,new MkCol(['{DAV:}collection'], []));
+        $this->createCollection($uri, new MkCol(['{DAV:}collection'], []));
 
     }
 
@@ -1147,7 +1147,7 @@ class Server extends EventEmitter {
         if ($parent instanceof IExtendedCollection) {
 
             /**
-             * If the parent is an instanced of IExtendedCollection, it means that
+             * If the parent is an instance of IExtendedCollection, it means that
              * we can pass the MkCol object directly as it may be able to store
              * properties immediately.
              */
@@ -1158,7 +1158,7 @@ class Server extends EventEmitter {
             /**
              * If the parent is a standard ICollection, it means only
              * 'standard' collections can be created, so we should fail any
-             * MKCOL operation that carry extra resourcetypes.
+             * MKCOL operation that carries extra resourcetypes.
              */
             if (count($mkCol->getResourceType())>1) {
                 throw new Exception\InvalidResourceType('The {DAV:}resourcetype you specified is not supported here.');

@@ -1293,7 +1293,7 @@ class Plugin extends DAV\ServerPlugin {
             <input type="hidden" name="resourceType" value="{DAV:}principal" />
             <label>Name (uri):</label> <input type="text" name="name" /><br />
             <label>Display name:</label> <input type="text" name="{DAV:}displayname" /><br />
-            <label>Email address:</label> <input type="text" name="{http://sabreav.org/ns}email-address" /><br />
+            <label>Email address:</label> <input type="text" name="{http://sabredav*DOT*org/ns}email-address" /><br />
             <input type="submit" value="create" />
             </form>
             </td></tr>';

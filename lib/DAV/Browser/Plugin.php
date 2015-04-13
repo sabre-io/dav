@@ -166,6 +166,13 @@ class Plugin extends DAV\ServerPlugin {
                             // Any _POST variable in clark notation is treated
                             // like a property.
                             if ($varName[0] === '{') {
+                                // PHP will convert any dots to underscores.
+                                // This leaves us with no way to differentiate
+                                // the two.
+                                // Therefore we replace the string *DOT* with a
+                                // real dot. * is not allowed in uris so we
+                                // should be good.
+                                $varName = str_replace('*DOT*', '.', $varName);
                                 $properties[$varName] = $varValue;
                             }
                         }

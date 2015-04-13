@@ -2,10 +2,12 @@
 
 namespace Sabre\CardDAV;
 
-class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
+use Sabre\DAV\MkCol;
+
+class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CardDAV\UserAddressBooks
+     * @var Sabre\CardDAV\AddressBookHome
      */
     protected $s;
     protected $backend;
@@ -13,7 +15,7 @@ class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
     function setUp() {
 
         $this->backend = new Backend\Mock();
-        $this->s = new UserAddressBooks(
+        $this->s = new AddressBookHome(
             $this->backend,
             'principals/user1'
         );
@@ -96,11 +98,11 @@ class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateExtendedCollection() {
 
-        $resourceType = array(
+        $resourceType = [ 
             '{' . Plugin::NS_CARDDAV . '}addressbook',
             '{DAV:}collection',
-        );
-        $this->s->createExtendedCollection('book2', $resourceType, array('{DAV:}displayname' => 'a-book 2'));
+        ];
+        $this->s->createExtendedCollection('book2', new MkCol($resourceType, ['{DAV:}displayname' => 'a-book 2']));
 
         $this->assertEquals(array(
             'id' => 'book2',
@@ -119,7 +121,7 @@ class UserAddressBooksTest extends \PHPUnit_Framework_TestCase {
         $resourceType = array(
             '{DAV:}collection',
         );
-        $this->s->createExtendedCollection('book2', $resourceType, array('{DAV:}displayname' => 'a-book 2'));
+        $this->s->createExtendedCollection('book2', new MkCol($resourceType, array('{DAV:}displayname' => 'a-book 2')));
 
     }
 

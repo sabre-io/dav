@@ -73,7 +73,7 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection {
      */
     function getChildForPrincipal(array $principal) {
 
-        return new UserAddressBooks($this->carddavBackend, $principal['uri']);
+        return new AddressBookHome($this->carddavBackend, $principal['uri']);
 
     }
 

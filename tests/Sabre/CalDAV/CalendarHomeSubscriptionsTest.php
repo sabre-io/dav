@@ -2,7 +2,9 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL;
+use
+    Sabre\DAV\MkCol,
+    Sabre\DAVACL;
 
 class CalendarHomeSubscriptionsTest extends \PHPUnit_Framework_TestCase {
 
@@ -54,7 +56,7 @@ class CalendarHomeSubscriptionsTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}displayname' => 'baz',
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/test2.ics'),
         ];
-        $instance->createExtendedCollection('sub2', $rt, $props);
+        $instance->createExtendedCollection('sub2', new MkCol($rt, $props));
 
         $children = $instance->getChildren();
         $this->assertEquals(2, count($children));
@@ -64,7 +66,7 @@ class CalendarHomeSubscriptionsTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \Sabre\DAV\Exception\InvalidResourceType
      */
-    public function testNoSubscriptionSupport() {
+    function testNoSubscriptionSupport() {
 
         $principal = [
             'uri' => 'principals/user1'
@@ -78,7 +80,7 @@ class CalendarHomeSubscriptionsTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}displayname' => 'baz',
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/test2.ics'),
         ];
-        $uC->createExtendedCollection('sub2', $rt, $props);
+        $uC->createExtendedCollection('sub2', new MkCol($rt, $props));
 
     }
 

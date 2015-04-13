@@ -586,7 +586,9 @@ class CorePlugin extends ServerPlugin {
 
         }
 
-        $result = $this->server->createCollection($path, $resourceType, $properties);
+        $mkcol = new MkCol($resourceType, $properties);
+
+        $result = $this->server->createCollection($path, $mkcol);
 
         if (is_array($result)) {
             $response->setStatus(207);

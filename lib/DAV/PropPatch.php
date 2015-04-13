@@ -170,7 +170,9 @@ class PropPatch {
     /**
      * Returns the list of properties that don't have a result code yet.
      *
-     * @return array
+     * This method returns a list of property names, but not its values.
+     *
+     * @return string[]
      */
     function getRemainingMutations() {
 
@@ -178,6 +180,26 @@ class PropPatch {
         foreach($this->mutations as $propertyName => $propValue) {
             if (!isset($this->result[$propertyName])) {
                 $remaining[] = $propertyName;
+            }
+        }
+
+        return $remaining;
+
+    }
+
+    /**
+     * Returns the list of properties that don't have a result code yet.
+     *
+     * This method returns list of properties and their values.
+     *
+     * @return array
+     */
+    function getRemainingValues() {
+
+        $remaining = [];
+        foreach($this->mutations as $propertyName => $propValue) {
+            if (!isset($this->result[$propertyName])) {
+                $remaining[$propertyName] = $propValue;
             }
         }
 

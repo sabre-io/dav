@@ -772,10 +772,9 @@ HTML;
                 $xml = $this->server->xml->write('{DAV:}root', $value, $this->server->getBaseUri());
                 // removing first and last line, as they contain our root
                 // element.
-                $xml = substr($xml, strpos($xml,"\n")+1);
-                $xml = substr($xml, 0, strrpos($xml,"\n"));
-                $xml = substr($xml, 0, strrpos($xml,"\n"));
-                echo "<pre>", $this->escapeHtml($xml), "</pre>";
+                $xml = explode("\n", $xml);
+                $xml = array_slice($xml, 2, -2);
+                echo "<pre>", $this->escapeHtml(implode("\n", $xml)), "</pre>";
                 break;
             case 'complex' :
                 echo '<em title="' . $this->escapeHTML(get_class($value)) . '">complex</em>';

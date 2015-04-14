@@ -10,6 +10,7 @@ ChangeLog
   ics-export plugin is enabled.
 * Some nodes that by default showed the current time as their last
   modification time, now no longer has a last modification time.
+* CardDAV namespace was missing from default namespaceMap.
 
 
 2.2.0-alpha4 (2015-04-13)

@@ -74,6 +74,8 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('afterMethod:GET',     [$this, 'httpAfterGet']);
 
+        $server->xml->namespaceMap[self::NS_CARDDAV] = 'card';
+
         $server->xml->elementMap['{' . self::NS_CARDDAV . '}addressbook-query'] = 'Sabre\\CardDAV\\Xml\\Request\\AddressBookQueryReport';
         $server->xml->elementMap['{' . self::NS_CARDDAV . '}addressbook-multiget'] = 'Sabre\\CardDAV\\Xml\\Request\\AddressBookMultiGetReport';
 

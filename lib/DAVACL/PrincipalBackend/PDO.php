@@ -59,7 +59,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
         /**
          * This is the users' primary email-address.
          */
-        '{http://sabredav.org/ns}email-address' =>[
+        '{http://sabredav.org/ns}email-address' => [
             'dbField' => 'email',
         ],
     ];
@@ -74,7 +74,6 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
         $this->pdo = $pdo;
 
     }
-
 
     /**
      * Returns a list of principals based on a prefix.

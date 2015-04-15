@@ -115,7 +115,6 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
     }
 
-
     /**
      * Sets a list of group members
      *
@@ -132,7 +131,6 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
         $this->principalBackend->setGroupMemberSet($this->principalProperties['uri'], $groupMembers);
 
     }
-
 
     /**
      * Returns this principals name.

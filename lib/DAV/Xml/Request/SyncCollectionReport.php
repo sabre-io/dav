@@ -16,7 +16,7 @@ use Sabre\DAV\Exception\BadRequest;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class SyncCollectionReport implements XmlDeserializable {
 

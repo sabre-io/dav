@@ -38,7 +38,7 @@ class CorePlugin extends ServerPlugin {
         $server->on('method:HEAD',      [$this, 'httpHead']);
         $server->on('method:DELETE',    [$this, 'httpDelete']);
         $server->on('method:PROPFIND',  [$this, 'httpPropfind']);
-        $server->on('method:PROPPATCH', [$this, 'httpProppatch']);
+        $server->on('method:PROPPATCH', [$this, 'httpPropPatch']);
         $server->on('method:PUT',       [$this, 'httpPut']);
         $server->on('method:MKCOL',     [$this, 'httpMkcol']);
         $server->on('method:MOVE',      [$this, 'httpMove']);

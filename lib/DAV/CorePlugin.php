@@ -37,7 +37,7 @@ class CorePlugin extends ServerPlugin {
         $server->on('method:OPTIONS',   [$this, 'httpOptions']);
         $server->on('method:HEAD',      [$this, 'httpHead']);
         $server->on('method:DELETE',    [$this, 'httpDelete']);
-        $server->on('method:PROPFIND',  [$this, 'httpPropfind']);
+        $server->on('method:PROPFIND',  [$this, 'httpPropFind']);
         $server->on('method:PROPPATCH', [$this, 'httpPropPatch']);
         $server->on('method:PUT',       [$this, 'httpPut']);
         $server->on('method:MKCOL',     [$this, 'httpMkcol']);
@@ -313,7 +313,7 @@ class CorePlugin extends ServerPlugin {
      * @param ResponseInterface $response
      * @return void
      */
-    function httpPropfind(RequestInterface $request, ResponseInterface $response) {
+    function httpPropFind(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
 

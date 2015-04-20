@@ -420,7 +420,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $needsJson = $report->contentType === 'application/calendar+json';
 
-        $timeZones = [];
+	$timeZones = [];
+	$propertyList = [];
 
         foreach($this->server->getPropertiesForMultiplePaths($report->hrefs, $report->properties) as $uri=>$objProps) {
 

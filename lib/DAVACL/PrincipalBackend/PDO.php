@@ -176,9 +176,9 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
      * Read the PropPatch documenation for more info and examples.
      *
      * @param string $path
-     * @param \Sabre\DAV\PropPatch $propPatch
+     * @param DAV\PropPatch $propPatch
      */
-    function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch) {
+    function updatePrincipal($path, DAV\PropPatch $propPatch) {
 
         $propPatch->handle(array_keys($this->fieldMap), function($properties) use ($path) {
 

@@ -1250,7 +1250,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $uri = null;
         if (!$report->applyToPrincipalCollectionSet) {
-            $uri = $this->server->getRequestUri();
+            $uri = $this->server->httpRequest->getPath();
         }
         if ($this->server->getHttpDepth('0')!==0) {
             throw new BadRequest('Depth must be 0');

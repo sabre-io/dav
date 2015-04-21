@@ -23,9 +23,9 @@ class Service extends \Sabre\Xml\Service {
         '{DAV:}propstat'    => 'Sabre\\Xml\\Element\\KeyValue',
 
         // Requests
-        '{DAV:}propfind'        => 'Sabre\\DAV\\Xml\\Request\\PropFind',
-        '{DAV:}propertyupdate'  => 'Sabre\\DAV\\Xml\\Request\\PropPatch',
-        '{DAV:}mkcol'           => 'Sabre\\DAV\\Xml\\Request\\MkCol',
+        '{DAV:}propfind'       => 'Sabre\\DAV\\Xml\\Request\\PropFind',
+        '{DAV:}propertyupdate' => 'Sabre\\DAV\\Xml\\Request\\PropPatch',
+        '{DAV:}mkcol'          => 'Sabre\\DAV\\Xml\\Request\\MkCol',
 
         // Properties
         '{DAV:}resourcetype' => 'Sabre\\DAV\\Xml\\Property\\ResourceType',
@@ -41,7 +41,7 @@ class Service extends \Sabre\Xml\Service {
      * @var array
      */
     public $namespaceMap = [
-        'DAV:' => 'd',
+        'DAV:'                   => 'd',
         'http://sabredav.org/ns' => 's',
     ];
 

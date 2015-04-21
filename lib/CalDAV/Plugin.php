@@ -170,7 +170,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
 
-        $server->on('method:MKCALENDAR',   [$this,'httpMkcalendar']);
+        $server->on('method:MKCALENDAR',   [$this,'httpMkCalendar']);
         $server->on('report',              [$this,'report']);
         $server->on('propFind',            [$this,'propFind']);
         $server->on('onHTMLActionsPanel',  [$this,'htmlActionsPanel']);

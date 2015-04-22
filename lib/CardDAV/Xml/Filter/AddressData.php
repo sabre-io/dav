@@ -2,11 +2,9 @@
 
 namespace Sabre\CardDAV\Xml\Filter;
 
-use Sabre\Xml\Reader;
-use Sabre\Xml\XmlDeserializable;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CardDAV\Plugin;
-use Sabre\VObject\DateTimeParser;
+use
+    Sabre\Xml\Reader,
+    Sabre\Xml\XmlDeserializable;
 
 
 /**

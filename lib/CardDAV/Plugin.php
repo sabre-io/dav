@@ -5,7 +5,6 @@ namespace Sabre\CardDAV;
 use
     Sabre\DAV,
     Sabre\DAV\Exception\ReportNotSupported,
-    Sabre\DAV\MkCol,
     Sabre\DAV\Xml\Property\Href,
     Sabre\DAVACL,
     Sabre\HTTP,

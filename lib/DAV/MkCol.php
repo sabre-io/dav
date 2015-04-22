@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV;
 
-use UnexpectedValueException;
-
 /**
  * This class represents a MKCOL operation.
  *

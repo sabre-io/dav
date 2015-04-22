@@ -2,9 +2,9 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV;
-use Sabre\Xml\Writer;
-use Sabre\Xml\XmlSerializable;
+use
+    Sabre\Xml\Writer,
+    Sabre\Xml\XmlSerializable;
 
 /**
  * supported-method-set property.

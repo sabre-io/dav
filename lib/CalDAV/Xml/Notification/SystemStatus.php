@@ -2,10 +2,9 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\Xml\Reader;
-use Sabre\Xml\Writer;
-use Sabre\CalDAV\Plugin;
-
+use
+    Sabre\Xml\Writer,
+    Sabre\CalDAV\Plugin;
 
 /**
  * SystemStatus notification

@@ -6,7 +6,6 @@ use
     Sabre\DAV,
     Sabre\DAV\Locks\LockInfo,
     Sabre\Xml\Element\XmlFragment,
-    Sabre\Xml\Reader,
     Sabre\Xml\Writer,
     Sabre\Xml\XmlSerializable;
 

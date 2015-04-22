@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV\Xml\Notification;
 
 use Sabre\Xml\Writer;
-use Sabre\DAV;
 use Sabre\CalDAV;
 use Sabre\CalDAV\SharingPlugin;
 

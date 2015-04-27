@@ -416,47 +416,44 @@ class Plugin extends DAV\ServerPlugin {
 
         $privs = $this->getSupportedPrivilegeSet($node);
 
-        $flat = [];
-        $this->getFPSTraverse($privs, null, $flat);
+        $fpsTraverse = null;
+        $fpsTraverse = function ($priv, $concrete, &$flat) use (&$fpsTraverse) {
 
-        return $flat;
+            $myPriv = [
+                'privilege'  => $priv['privilege'],
+                'abstract'   => isset($priv['abstract']) && $priv['abstract'],
+                'aggregates' => [],
+                'concrete'   => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
+            ];
 
-    }
+            if (isset($priv['aggregates'])) {
 
-    /**
-     * Traverses the privilege set tree for reordering
-     *
-     * This function is solely used by getFlatPrivilegeSet, and would have been
-     * a closure if it wasn't for the fact I need to support PHP 5.2.
-     *
-     * @param array $priv
-     * @param $concrete
-     * @param array $flat
-     * @return void
-     */
-    final private function getFPSTraverse($priv, $concrete, &$flat) {
+                foreach($priv['aggregates'] as $subPriv) {
 
-        $myPriv = [
-            'privilege' => $priv['privilege'],
-            'abstract' => isset($priv['abstract']) && $priv['abstract'],
-            'aggregates' => [],
-            'concrete' => isset($priv['abstract']) && $priv['abstract']?$concrete:$priv['privilege'],
-        ];
+                    $myPriv['aggregates'][] = $subPriv['privilege'];
 
-        if (isset($priv['aggregates']))
-            foreach($priv['aggregates'] as $subPriv) $myPriv['aggregates'][] = $subPriv['privilege'];
-
-        $flat[$priv['privilege']] = $myPriv;
-
-        if (isset($priv['aggregates'])) {
-
-            foreach($priv['aggregates'] as $subPriv) {
-
-                $this->getFPSTraverse($subPriv, $myPriv['concrete'], $flat);
+                }
 
             }
 
-        }
+            $flat[$priv['privilege']] = $myPriv;
+
+            if (isset($priv['aggregates'])) {
+
+                foreach($priv['aggregates'] as $subPriv) {
+
+                    $fpsTraverse($subPriv, $myPriv['concrete'], $flat);
+
+                }
+
+            }
+
+        };
+
+        $flat = [];
+        $fpsTraverse($privs, null, $flat);
+
+        return $flat;
 
     }
 

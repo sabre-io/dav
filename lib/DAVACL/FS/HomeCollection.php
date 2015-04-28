@@ -88,8 +88,6 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL {
                 'protected' => true,
             ],
         ];
-            
-
 
         list(,$principalBaseName) = Uri\split($owner);
         

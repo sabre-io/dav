@@ -4,41 +4,46 @@ namespace Sabre\DAVACL\PrincipalBackend;
 
 class Mock extends AbstractBackend {
 
-    public $groupMembers = array();
+    public $groupMembers = [];
     public $principals;
 
-    function __construct() {
+    function __construct(array $principals = null) {
 
-        $this->principals = array(
-                array(
-                    'uri' => 'principals/user1',
-                    '{DAV:}displayname' => 'User 1',
+        $this->principals = $principals;
+
+        if (is_null($principals)) {
+
+            $this->principals = [
+                [
+                    'uri'                                   => 'principals/user1',
+                    '{DAV:}displayname'                     => 'User 1',
                     '{http://sabredav.org/ns}email-address' => 'user1.sabredav@sabredav.org',
-                    '{http://sabredav.org/ns}vcard-url' => 'addressbooks/user1/book1/vcard1.vcf',
-                ),
-                array(
-                    'uri' => 'principals/admin',
+                    '{http://sabredav.org/ns}vcard-url'     => 'addressbooks/user1/book1/vcard1.vcf',
+                ],
+                [
+                    'uri'               => 'principals/admin',
                     '{DAV:}displayname' => 'Admin',
-                ),
-                array(
-                    'uri' => 'principals/user2',
-                    '{DAV:}displayname' => 'User 2',
+                ],
+                [
+                    'uri'                                   => 'principals/user2',
+                    '{DAV:}displayname'                     => 'User 2',
                     '{http://sabredav.org/ns}email-address' => 'user2.sabredav@sabredav.org',
-                ),
-            );
+                ],
+            ];
 
+        }
 
     }
 
     function getPrincipalsByPrefix($prefix) {
 
-        $prefix = trim($prefix,'/');
-        if ($prefix) $prefix.='/';
-        $return = array();
+        $prefix = trim($prefix, '/');
+        if ($prefix) $prefix .= '/';
+        $return = [];
 
-        foreach($this->principals as $principal) {
+        foreach ($this->principals as $principal) {
 
-            if ($prefix && strpos($principal['uri'], $prefix)!==0) continue;
+            if ($prefix && strpos($principal['uri'], $prefix) !== 0) continue;
 
             $return[] = $principal;
 
@@ -56,7 +61,7 @@ class Mock extends AbstractBackend {
 
     function getPrincipalByPath($path) {
 
-        foreach($this->getPrincipalsByPrefix('principals') as $principal) {
+        foreach ($this->getPrincipalsByPrefix('principals') as $principal) {
             if ($principal['uri'] === $path) return $principal;
         }
 
@@ -64,15 +69,15 @@ class Mock extends AbstractBackend {
 
     function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof') {
 
-        $matches = array();
-        foreach($this->getPrincipalsByPrefix($prefixPath) as $principal) {
+        $matches = [];
+        foreach ($this->getPrincipalsByPrefix($prefixPath) as $principal) {
 
-            foreach($searchProperties as $key=>$value) {
+            foreach ($searchProperties as $key => $value) {
 
                 if (!isset($principal[$key])) {
                     continue 2;
                 }
-                if (mb_stripos($principal[$key],$value, 0, 'UTF-8')===false) {
+                if (mb_stripos($principal[$key], $value, 0, 'UTF-8') === false) {
                     continue 2;
                 }
 
@@ -93,14 +98,14 @@ class Mock extends AbstractBackend {
 
     function getGroupMemberSet($path) {
 
-        return isset($this->groupMembers[$path]) ? $this->groupMembers[$path] : array();
+        return isset($this->groupMembers[$path]) ? $this->groupMembers[$path] : [];
 
     }
 
     function getGroupMembership($path) {
 
-        $membership = array();
-        foreach($this->groupMembers as $group=>$members) {
+        $membership = [];
+        foreach ($this->groupMembers as $group => $members) {
             if (in_array($path, $members)) $membership[] = $group;
         }
         return $membership;
@@ -128,10 +133,10 @@ class Mock extends AbstractBackend {
      * @param string $path
      * @param \Sabre\DAV\PropPatch $propPatch
      */
-    public function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch) {
+    function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch) {
 
         $value = null;
-        foreach($this->principals as $principalIndex=>$value) {
+        foreach ($this->principals as $principalIndex => $value) {
             if ($value['uri'] === $path) {
                 $principal = $value;
                 break;
@@ -141,7 +146,7 @@ class Mock extends AbstractBackend {
 
         $propPatch->handleRemaining(function($mutations) use ($principal, $principalIndex) {
 
-            foreach($mutations as $prop=>$value) {
+            foreach ($mutations as $prop => $value) {
 
                 if (is_null($value) && isset($principal[$prop])) {
                     unset($principal[$prop]);

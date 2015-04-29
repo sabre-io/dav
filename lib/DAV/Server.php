@@ -860,28 +860,23 @@ class Server extends EventEmitter {
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
      */
-    private function addPathNodesRecursively(&$propFindRequests, PropFind $propFind) {
+    private function addPathNodesRecursively(&$nodes, $path, $depth) {
 
-        $newDepth = $propFind->getDepth();
-        $path = $propFind->getPath();
+        $newDepth = $depth;
 
         if ($newDepth !== self::DEPTH_INFINITY) {
             $newDepth--;
         }
 
         foreach($this->tree->getChildren($path) as $childNode) {
-            $subPropFind = clone $propFind;
-            $subPropFind->setDepth($newDepth);
-            $subPath = $path? $path . '/' . $childNode->getName() : $childNode->getName();
-            $subPropFind->setPath($subPath);
-
-            $propFindRequests[] = [
-                $subPropFind,
-                $childNode
+            $subPath = $path ? $path . '/' . $childNode->getName() : $childNode->getName();
+            $nodes[] = [
+                $childNode,
+                $subPath
             ];
 
             if (($newDepth===self::DEPTH_INFINITY || $newDepth>=1) && $childNode instanceof ICollection) {
-                $this->addPathNodesRecursively($propFindRequests, $subPropFind);
+                $this->addPathNodesRecursively($nodes, $subPath, $newDepth);
             }
 
         }
@@ -899,7 +894,7 @@ class Server extends EventEmitter {
      * @param string $path
      * @param array $propertyNames
      * @param int $depth
-     * @return array
+     * @return PropFindIterator
      */
     function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
@@ -913,39 +908,16 @@ class Server extends EventEmitter {
 
         $parentNode = $this->tree->getNodeForPath($path);
 
-        $propFindRequests = [[
-            $propFind,
-            $parentNode
+        $nodes = [[
+            $parentNode,
+            $path
         ]];
 
         if (($depth > 0 || $depth === self::DEPTH_INFINITY) && $parentNode instanceof ICollection) {
-            $this->addPathNodesRecursively($propFindRequests, $propFind);
+            $this->addPathNodesRecursively($nodes, $propFind->getPath(), $propFind->getDepth());
         }
 
-        $returnPropertyList = [];
-
-        foreach($propFindRequests as $propFindRequest) {
-
-            list($propFind, $node) = $propFindRequest;
-            $r = $this->getPropertiesByNode($propFind, $node);
-            if ($r) {
-                $result = $propFind->getResultForMultiStatus();
-                $result['href'] = $propFind->getPath();
-
-                // WebDAV recommends adding a slash to the path, if the path is
-                // a collection.
-                // Furthermore, iCal also demands this to be the case for
-                // principals. This is non-standard, but we support it.
-                $resourceType = $this->getResourceTypeForNode($node);
-                if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
-                    $result['href'].='/';
-                }
-                $returnPropertyList[] = $result;
-            }
-
-        }
-
-        return $returnPropertyList;
+        return new PropFindIterator($propFind, new \ArrayIterator($nodes), $this);
 
     }
 
@@ -1589,11 +1561,11 @@ class Server extends EventEmitter {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array $fileProperties The list with nodes
-     * @param bool strip404s
+     * @param array | \Iterator $fileProperties The list with nodes
+     * @param bool $strip404s
      * @return string
      */
-    function generateMultiStatus(array $fileProperties, $strip404s = false) {
+    function generateMultiStatus($fileProperties, $strip404s = false) {
 
         $xml = [];
 

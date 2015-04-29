@@ -534,7 +534,7 @@ class Plugin extends DAV\ServerPlugin {
 
             // This array should have only 1 element, the first calendar
             // object.
-            $properties = current($properties);
+            $properties = $properties->current();
 
             // If there wasn't any calendar-data returned somehow, we ignore
             // this.

@@ -101,7 +101,8 @@ class PropFind {
             }
             if (!is_null($value)) {
                 $this->itemsLeft--;
-                $this->result[$propertyName] = [200, $value];
+                $this->result[$propertyName][0] = 200;
+                $this->result[$propertyName][1] = $value;
             }
         }
 
@@ -174,6 +175,9 @@ class PropFind {
      * @return void
      */
     function setPath($path) {
+        if ($path !== $this->path) {
+            $this->clear();
+        }
 
         $this->path = $path;
 
@@ -287,6 +291,14 @@ class PropFind {
         if ($this->requestType === self::ALLPROPS) unset($r[404]);
         return $r;
 
+    }
+
+    function clear() {
+        foreach ($this->result as &$info) {
+            $info[0] = 404;
+            $info[1] = null;
+        }
+        $this->itemsLeft = count($this->result);
     }
 
     /**

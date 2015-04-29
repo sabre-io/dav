@@ -13,6 +13,10 @@ ChangeLog
 * CardDAV namespace was missing from default namespaceMap.
 * #646: Properties can now control their own HTML output in the browser plugin.
 * #646: Nicer HTML output for the `{DAV:}acl` property.
+* Browser plugin no longer shows a few properties that take up a lot of space,
+  but are likely not really interesting for most users.
+* #654: Added a collection, `Sabre\DAVACL\FS\HomeCollection` for automatically
+  creating a private home collection per-user.
 
 
 2.2.0-alpha4 (2015-04-13)

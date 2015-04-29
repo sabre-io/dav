@@ -40,6 +40,20 @@ class Plugin extends DAV\ServerPlugin {
     protected $enablePost = true;
 
     /**
+     * A list of properties that are usually not interesting. This can cut down
+     * the browser output a bit by removing the properties that most people
+     * will likely not want to see.
+     *
+     * @var array
+     */
+    public $uninterestingProperties = [
+        '{DAV:}supportedlock',
+        '{DAV:}acl-restrictions',
+        '{DAV:}supported-privilege-set',
+        '{DAV:}supported-method-set',
+    ];
+
+    /**
      * Creates the object.
      *
      * By default it will allow file creation and uploads.
@@ -327,7 +341,9 @@ class Plugin extends DAV\ServerPlugin {
         $properties = $propFind->getResultForMultiStatus()[200];
 
         foreach($properties as $propName => $propValue) {
-            $html.=$this->drawPropertyRow($propName, $propValue);
+            if (!in_array($propName, $this->uninterestingProperties)) {
+                $html.=$this->drawPropertyRow($propName, $propValue);
+            }
 
         }
 

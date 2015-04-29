@@ -136,7 +136,7 @@ class Acl implements Element, HtmlOutput {
             }
             echo '<td>', $html->xmlName($privilege['privilege']), '</td>';
             echo '<td>';
-            if ($privilege['protected']) { echo '(protected)'; }
+            if ($privilege['protected']) echo '(protected)';
             echo '</td>';
             echo '</tr>';
 

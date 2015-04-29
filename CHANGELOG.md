@@ -11,6 +11,8 @@ ChangeLog
 * Some nodes that by default showed the current time as their last
   modification time, now no longer has a last modification time.
 * CardDAV namespace was missing from default namespaceMap.
+* #646: Properties can now control their own HTML output in the browser plugin.
+* #646: Nicer HTML output for the `{DAV:}acl` property.
 
 
 2.2.0-alpha4 (2015-04-13)

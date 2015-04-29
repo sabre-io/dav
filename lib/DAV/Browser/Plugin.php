@@ -679,7 +679,7 @@ HTML;
 
     }
 
-    /**
+    /*
      * Draws a table row for a property
      *
      * @param string $name
@@ -688,111 +688,42 @@ HTML;
      */
     private function drawPropertyRow($name, $value) {
 
-        $view = 'unknown';
+        $html = new HtmlOutputHelper(
+            $this->server->getBaseUri(),
+            $this->server->xml->namespaceMap
+        );
+
+        return "<tr><th>". $html->xmlName($name). "</th><td>". $this->drawPropertyValue($html, $value). "</td></tr>";
+
+    }
+
+    /**
+     * Draws a table row for a property
+     *
+     * @param HtmlOutputHelper $html
+     * @param mixed $value
+     * @return string
+     */
+    private function drawPropertyValue($html, $value) {
+
         if (is_scalar($value)) {
-            $view = 'string';
+            return $html->h($value);
+        } elseif ($value instanceof HtmlOutput) {
+            return $value->toHtml($html);
         } elseif($value instanceof \Sabre\Xml\XmlSerializable) {
 
-            $mapping = [
-                'Sabre\\DAV\\Xml\\Property\\Href' => 'href',
-                'Sabre\\DAV\\Xml\\Property\\SupportedMethodSet' => 'valuelist',
-                'Sabre\\DAV\\Xml\\Property\\ResourceType' => 'xmlvaluelist',
-                'Sabre\\DAV\\Xml\\Property\\SupportedReportSet' => 'xmlvaluelist',
-                'Sabre\\DAVACL\\Xml\\Property\\CurrentUserPrivilegeSet' => 'xmlvaluelist',
-                'Sabre\\DAVACL\\Xml\\Property\\SupportedPrivilegeSet' => 'supported-privilege-set',
-                'Sabre\\Xml\\XmlSerializable' => 'xml',
-            ];
+            // There's no default html output for this property, we're going
+            // to output the actual xml serialization instead.
+            $xml = $this->server->xml->write('{DAV:}root', $value, $this->server->getBaseUri());
+            // removing first and last line, as they contain our root
+            // element.
+            $xml = explode("\n", $xml);
+            $xml = array_slice($xml, 2, -2);
+            return "<pre>" . $html->h(implode("\n", $xml)) . "</pre>";
 
-            $view = 'complex';
-            foreach($mapping as $class=>$val) {
-                if ($value instanceof $class) {
-                    $view = $val;
-                    break;
-                }
-            }
+        } else {
+            return "<em>unknown</em>";
         }
-
-        list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($name);
-
-        $realName = $name;
-        if (isset($this->server->xml->namespaceMap[$ns])) {
-            $name = $this->server->xml->namespaceMap[$ns] . ':' . $localName;
-        }
-
-        ob_start();
-
-        $xmlValueDisplay = function($propName) {
-            $realPropName = $propName;
-            list($ns, $localName) = \Sabre\Xml\Service::parseClarkNotation($propName);
-            if (isset($this->server->xml->namespaceMap[$ns])) {
-                $propName = $this->server->xml->namespaceMap[$ns] . ':' . $localName;
-            }
-            return "<span title=\"" . $this->escapeHTML($realPropName) . "\">" . $this->escapeHTML($propName) . "</span>";
-        };
-
-        echo "<tr><th><span title=\"", $this->escapeHTML($realName), "\">", $this->escapeHTML($name), "</span></th><td>";
-
-        switch($view) {
-
-            case 'href' :
-                echo implode('<br />', array_map(function($href) {
-                    if (stripos($href,'mailto:')===0 || stripos($href,'/')===0 || stripos($href,'http:')===0 || stripos($href,'https:') === 0) {
-                        return "<a href=\"" . $this->escapeHTML($href) . '">' . $this->escapeHTML($href) . '</a>';
-                    } else {
-                        return "<a href=\"" . $this->escapeHTML($this->server->getBaseUri() . $href) . '">' . $this->escapeHTML($this->server->getBaseUri() . $href) . '</a>';
-                    }
-                }, $value->getHrefs()));
-                break;
-            case 'xmlvaluelist' :
-                echo implode(', ', array_map($xmlValueDisplay, $value->getValue()));
-                break;
-            case 'valuelist' :
-                echo $this->escapeHTML(implode(', ', $value->getValue()));
-                break;
-            case 'supported-privilege-set' :
-                $traverse = function($priv) use (&$traverse, $xmlValueDisplay) {
-                    echo "<li>";
-                    echo $xmlValueDisplay($priv['privilege']);
-                    if (isset($priv['abstract']) && $priv['abstract']) {
-                        echo " <i>(abstract)</i>";
-                    }
-                    if (isset($priv['description'])) {
-                        echo " " . $this->escapeHTML($priv['description']);
-                    }
-                    if (isset($priv['aggregates'])) {
-                        echo "\n<ul>\n";
-                        foreach($priv['aggregates'] as $subPriv) {
-                            $traverse($subPriv);
-                        }
-                        echo "</ul>";
-                    }
-                    echo "</li>\n";
-                };
-                echo "<ul class=\"tree\">";
-                $traverse($value->getValue(), '');
-                echo "</ul>\n";
-                break;
-            case 'string' :
-                echo $this->escapeHTML($value);
-                break;
-            case 'xml' :
-                $xml = $this->server->xml->write('{DAV:}root', $value, $this->server->getBaseUri());
-                // removing first and last line, as they contain our root
-                // element.
-                $xml = explode("\n", $xml);
-                $xml = array_slice($xml, 2, -2);
-                echo "<pre>", $this->escapeHtml(implode("\n", $xml)), "</pre>";
-                break;
-            case 'complex' :
-                echo '<em title="' . $this->escapeHTML(get_class($value)) . '">complex</em>';
-                break;
-            default :
-                echo '<em>unknown</em>';
-                break;
-
-        }
-
-        return ob_get_clean();
 
     }
 

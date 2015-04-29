@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.2.0-alpha5 (2015-??-??)
+3.0.0-alpha1 (2015-??-??)
 -------------------------
 
 * It's now possible to get all property information from files using the

@@ -8,7 +8,6 @@ use Sabre\DAVACL\IACL;
 use Sabre\DAVACL\PrincipalBackend\BackendInterface;
 use Sabre\Uri;
 
-
 /**
  * This collection contains a collection for every principal.
  * It is similar to /home on many unix systems.
@@ -24,24 +23,24 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL {
 
     /**
      * Name of this collection.
-     * 
+     *
      * @var string
      */
     public $collectionName = 'home';
 
     /**
      * Path to where the users' files are actually stored.
-     * 
-     * @var string 
+     *
+     * @var string
      */
     protected $storagePath;
 
     /**
-     * Creates the home collection. 
-     * 
-     * @param BackendInterface $principalBackend 
+     * Creates the home collection.
+     *
+     * @param BackendInterface $principalBackend
      * @param string $storagePath Where the actual files are stored.
-     * @param string $principalPrefix list of principals to iterate. 
+     * @param string $principalPrefix list of principals to iterate.
      */
     function __construct(BackendInterface $principalBackend, $storagePath, $principalPrefix = 'principals') {
 
@@ -64,13 +63,13 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL {
     }
 
     /**
-     * Returns a principals' collection of files.  
+     * Returns a principals' collection of files.
      *
      * The passed array contains principal information, and is guaranteed to
      * at least contain a uri item. Other properties may or may not be
      * supplied by the authentication backend.
      *
-     * @param array $principalInfo 
+     * @param array $principalInfo
      * @return void
      */
     function getChildForPrincipal(array $principalInfo) {
@@ -89,12 +88,12 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL {
             ],
         ];
 
-        list(,$principalBaseName) = Uri\split($owner);
+        list(, $principalBaseName) = Uri\split($owner);
         
         $path = $this->storagePath . '/' . $principalBaseName;
 
         if (!is_dir($path)) {
-            mkdir($path,0777,true);
+            mkdir($path, 0777, true);
         }
         return new Collection(
             $path,

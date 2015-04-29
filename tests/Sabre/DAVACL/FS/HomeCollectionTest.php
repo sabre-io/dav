@@ -9,7 +9,7 @@ class HomeCollectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * System under test
      *
-     * @var HomeCollection 
+     * @var HomeCollection
      */
     protected $sut;
 
@@ -32,7 +32,7 @@ class HomeCollectionTest extends \PHPUnit_Framework_TestCase {
 
         \Sabre\TestUtil::clearTempDir();
 
-    } 
+    }
 
     function testGetName() {
 

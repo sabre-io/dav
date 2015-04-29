@@ -5,37 +5,36 @@ namespace Sabre\DAVACL\FS;
 use Sabre\DAV\FSExt\File as BaseFile;
 use Sabre\DAVACL\IACL;
 use Sabre\DAV\Exception\Forbidden;
-use Sabre\DAV\Exception\NotFound;
 
 /**
  * This is an ACL-enabled file node.
- * 
+ *
  * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
- * @author Evert Pot (http://evertpot.com/) 
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
 class File extends BaseFile implements IACL {
 
     /**
-     * A list of ACL rules. 
-     * 
-     * @var array 
+     * A list of ACL rules.
+     *
+     * @var array
      */
     protected $acl;
 
     /**
-     * Owner uri, or null for no owner. 
-     * 
+     * Owner uri, or null for no owner.
+     *
      * @var string|null
      */
     protected $owner;
 
     /**
      * Constructor
-     * 
-     * @param string $path on-disk path. 
-     * @param array $acl ACL rules. 
-     * @param string|null $owner principal owner string. 
+     *
+     * @param string $path on-disk path.
+     * @param array $acl ACL rules.
+     * @param string|null $owner principal owner string.
      */
     function __construct($path, array $acl, $owner = null) {
 

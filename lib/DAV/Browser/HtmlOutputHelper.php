@@ -107,6 +107,8 @@ class HtmlOutputHelper {
         list($ns, $localName) = XmlService::parseClarkNotation($element);
         if (isset($this->namespaceMap[$ns])) {
             $propName = $this->namespaceMap[$ns] . ':' . $localName;
+        } else {
+            $propName = $element;
         }
         return "<span title=\"" . $this->h($element) . "\">" . $this->h($propName) . "</span>";
 

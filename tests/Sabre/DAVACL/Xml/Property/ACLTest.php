@@ -4,6 +4,7 @@ namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\HTTP;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 
 class ACLTest extends \PHPUnit_Framework_TestCase {
 
@@ -28,16 +29,14 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
-        $privileges = [  
-            [ 
+        $privileges = [
+            [
                 'principal' => 'principals/evert',
                 'privilege' => '{DAV:}write',
-                'uri'       => 'articles',
             ],
-            [ 
+            [
                 'principal' => 'principals/foo',
                 'privilege' => '{DAV:}read',
-                'uri'       => 'articles',
                 'protected' => true,
             ],
         ];
@@ -80,17 +79,14 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
             array(
                 'principal' => '{DAV:}authenticated',
                 'privilege' => '{DAV:}write',
-                'uri'       => 'articles',
             ),
             array(
                 'principal' => '{DAV:}unauthenticated',
                 'privilege' => '{DAV:}write',
-                'uri'       => 'articles',
             ),
             array(
                 'principal' => '{DAV:}all',
                 'privilege' => '{DAV:}write',
-                'uri'       => 'articles',
             ),
 
         );
@@ -231,6 +227,7 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
   </d:ace>
   <d:ace>
     <d:grant>
+      <d:ignoreme />
       <d:privilege>
         <d:write/>
       </d:privilege>
@@ -257,18 +254,18 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
 
-        $expected = [ 
+        $expected = [
             [
                 'principal' => '{DAV:}authenticated',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
             ],
-            [ 
+            [
                 'principal' => '{DAV:}unauthenticated',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
             ],
-            [ 
+            [
                 'principal' => '{DAV:}all',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
@@ -286,6 +283,7 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
+  <d:ignore-me />
   <d:ace>
     <d:deny>
       <d:privilege>
@@ -302,6 +300,42 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
         $reader->xml($source);
 
         $result = $reader->parse();
+
+    }
+
+    function testToHtml() {
+
+        $privileges = [
+            [
+                'principal' => 'principals/evert',
+                'privilege' => '{DAV:}write',
+            ],
+            [
+                'principal' => 'principals/foo',
+                'privilege' => '{http://example.org/ns}read',
+                'protected' => true,
+            ],
+            [
+                'principal' => '{DAV:}authenticated',
+                'privilege' => '{DAV:}write',
+            ],
+        ];
+
+        $acl = new Acl($privileges);
+        $html = new HtmlOutputHelper(
+            '/base/',
+            ['DAV:' => 'd']
+        );
+
+        $expected =
+            '<table>' .
+            '<tr><th>Principal</th><th>Privilege</th><th></th></tr>' .
+            '<tr><td><a href="/base/principals/evert">/base/principals/evert</a></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>' .
+            '<tr><td><a href="/base/principals/foo">/base/principals/foo</a></td><td><span title="{http://example.org/ns}read">{http://example.org/ns}read</span></td><td>(protected)</td></tr>' .
+            '<tr><td><span title="{DAV:}authenticated">d:authenticated</span></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>' .
+            '</table>';
+
+        $this->assertEquals($expected, $acl->toHtml($html));
 
     }
 

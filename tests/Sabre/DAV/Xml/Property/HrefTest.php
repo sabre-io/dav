@@ -3,6 +3,7 @@
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\DAV\Xml\XmlTest;
 
 class HrefTest extends XmlTest {
@@ -52,10 +53,10 @@ class HrefTest extends XmlTest {
 
         $result = $this->parse($xml, ['{DAV:}anything' => 'Sabre\\DAV\\Xml\\Property\\Href']);
 
-        $href = $result['value']; 
+        $href = $result['value'];
 
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $href);
-        
+
         $this->assertEquals('/bla/path',$href->getHref());
 
     }
@@ -66,7 +67,7 @@ class HrefTest extends XmlTest {
 <d:anything xmlns:d="DAV:"><d:href2>/bla/path</d:href2></d:anything>
 ';
         $result = $this->parse($xml, ['{DAV:}anything' => 'Sabre\\DAV\\Xml\\Property\\Href']);
-        $href = $result['value']; 
+        $href = $result['value'];
         $this->assertNull($href);
 
     }
@@ -85,6 +86,27 @@ class HrefTest extends XmlTest {
 '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>http://example.org/?a&amp;b</d:href></d:anything>
 ', $xml);
+
+    }
+
+    function testToHtml() {
+
+        $href = new Href([
+            '/foo/bar',
+            'foo/bar',
+            'http://example.org/bar'
+        ]);
+
+        $html = new HtmlOutputHelper(
+            '/base/',
+            []
+        );
+
+        $expected =
+            '<a href="/foo/bar">/foo/bar</a><br />' .
+            '<a href="/base/foo/bar">/base/foo/bar</a><br />' .
+            '<a href="http://example.org/bar">http://example.org/bar</a>';
+        $this->assertEquals($expected, $href->toHtml($html));
 
     }
 

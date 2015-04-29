@@ -124,7 +124,7 @@ class Acl implements Element, HtmlOutput {
 
         ob_start();
         echo "<table>";
-        echo "<tr><th>Principal</th><th>Privilege</th><th></th>";
+        echo "<tr><th>Principal</th><th>Privilege</th><th></th></tr>";
         foreach($this->privileges as $privilege) {
 
             echo '<tr>';
@@ -136,7 +136,7 @@ class Acl implements Element, HtmlOutput {
             }
             echo '<td>', $html->xmlName($privilege['privilege']), '</td>';
             echo '<td>';
-            if ($privilege['protected']) echo '(protected)';
+            if (!empty($privilege['protected'])) echo '(protected)';
             echo '</td>';
             echo '</tr>';
 

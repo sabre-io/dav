@@ -2,10 +2,11 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * Href property
@@ -21,7 +22,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Href implements Element {
+class Href implements Element, HtmlOutput {
 
     /**
      * List of uris
@@ -108,6 +109,30 @@ class Href implements Element {
             }
             $writer->writeElement('{DAV:}href', $href);
         }
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        $links = [];
+        foreach($this->getHrefs() as $href) {
+            $links[] = $html->link($href);
+        }
+        return implode('<br />', $links);
 
     }
 

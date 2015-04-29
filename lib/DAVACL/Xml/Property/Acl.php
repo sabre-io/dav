@@ -2,11 +2,12 @@
 
 namespace Sabre\DAVACL\Xml\Property;
 
-use
-    Sabre\DAV,
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * This class represents the {DAV:}acl property.
@@ -24,7 +25,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Acl implements Element {
+class Acl implements Element, HtmlOutput {
 
     /**
      * List of privileges
@@ -102,6 +103,46 @@ class Acl implements Element {
             $this->serializeAce($writer, $ace);
 
         }
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        ob_start();
+        echo "<table>";
+        echo "<tr><th>Principal</th><th>Privilege</th><th></th></tr>";
+        foreach($this->privileges as $privilege) {
+
+            echo '<tr>';
+            // if it starts with a {, it's a special principal
+            if ($privilege['principal'][0] === '{') {
+                echo '<td>', $html->xmlName($privilege['principal']), '</td>';
+            } else {
+                echo '<td>', $html->link($privilege['principal']), '</td>';
+            }
+            echo '<td>', $html->xmlName($privilege['privilege']), '</td>';
+            echo '<td>';
+            if (!empty($privilege['protected'])) echo '(protected)';
+            echo '</td>';
+            echo '</tr>';
+
+        }
+        echo "</table>";
+        return ob_get_clean();
 
     }
 

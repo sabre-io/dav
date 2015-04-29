@@ -7,9 +7,13 @@ class Mock extends AbstractBackend {
     public $groupMembers = array();
     public $principals;
 
-    function __construct() {
+    function __construct(array $principals = null) {
 
-        $this->principals = array(
+        $this->principals = $principals;
+
+        if (is_null($principals)) {
+
+            $this->principals = array(
                 array(
                     'uri' => 'principals/user1',
                     '{DAV:}displayname' => 'User 1',
@@ -27,6 +31,7 @@ class Mock extends AbstractBackend {
                 ),
             );
 
+        }
 
     }
 

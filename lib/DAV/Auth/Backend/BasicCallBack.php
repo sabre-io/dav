@@ -53,7 +53,7 @@ class BasicCallBack extends AbstractBasic {
     protected function validateUserPass($username, $password) {
 
         $cb = $this->callBack;
-        return $cb($username, $password);
+        return call_user_func($cb, $username, $password);
 
     }
 

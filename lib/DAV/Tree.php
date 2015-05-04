@@ -3,6 +3,7 @@
 namespace Sabre\DAV;
 
 use Sabre\HTTP\URLUtil;
+use Sabre\Event\EventEmitter;
 
 /**
  * The tree object is responsible for basic tree operations.
@@ -14,7 +15,7 @@ use Sabre\HTTP\URLUtil;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Tree {
+class Tree extends EventEmitter {
 
     /**
      * The root node
@@ -70,10 +71,21 @@ class Tree {
             // Otherwise, we recursively grab the parent and ask him/her.
             $parent = $this->getNodeForPath($parentName);
 
-            if (!($parent instanceof ICollection))
-                throw new Exception\NotFound('Could not find node at path: ' . $path);
+            $node = null;
+            $this->emit(
+                'getNodeForPath',
+                [$path, $parent, &$node],
+                function() use (&$node) {
+                    return is_null($node);
+                }
+            );
 
-            $node = $parent->getChild($baseName);
+            if (!$node) {
+                if (!($parent instanceof ICollection))
+                    throw new Exception\NotFound('Could not find node at path: ' . $path);
+
+                $node = $parent->getChild($baseName);
+            }
 
         }
 
@@ -194,6 +206,9 @@ class Tree {
         $node = $this->getNodeForPath($path);
         $children = $node->getChildren();
         $basePath = trim($path,'/') . '/';
+
+        $this->emit('getChildren', [$path, $node, &$children]);
+
         foreach($children as $child) {
 
             $this->cache[$basePath . $child->getName()] = $child;

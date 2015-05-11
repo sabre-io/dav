@@ -307,7 +307,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport {
         $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarTableName.' WHERE id = ?');
         $stmt->execute([$calendarId]);
 
-        $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarChangesTableName.' WHERE id = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM '.$this->calendarChangesTableName.' WHERE calendarid = ?');
         $stmt->execute([$calendarId]);
 
     }

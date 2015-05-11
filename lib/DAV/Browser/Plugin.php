@@ -225,7 +225,7 @@ HTML;
         // If the path is empty, there's no parent.
         if ($path)  {
             list($parentUri) = URLUtil::splitPath($path);
-            $fullPath = URLUtil::encodePath($this->server->getBaseUri() . $parentUri);
+            $fullPath = $this->server->getBaseUri() . URLUtil::encodePath($parentUri);
             $html.='<a href="' . $fullPath . '" class="btn">⇤ Go to parent</a>';
         } else {
             $html.='<span class="btn disabled">⇤ Go to parent</span>';
@@ -250,7 +250,7 @@ HTML;
             foreach($subNodes as $subPath=>$subProps) {
 
                 $subNode = $this->server->tree->getNodeForPath($subPath);
-                $fullPath = URLUtil::encodePath($this->server->getBaseUri() . $subPath);
+                $fullPath = $this->server->getBaseUri() . URLUtil::encodePath($subPath);
                 list(, $displayPath) = URLUtil::splitPath($subPath);
 
                 $subNodes[$subPath]['subNode'] = $subNode;

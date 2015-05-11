@@ -4,26 +4,28 @@ namespace Sabre\CalDAV\Schedule;
 
 use
     DateTimeZone,
+    Sabre\CalDAV\ICalendar,
+    Sabre\CalDAV\ICalendarObject,
+    Sabre\CalDAV\CalendarHome,
+    Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp,
+    Sabre\DAV\Exception\NotFound,
+    Sabre\DAV\Exception\Forbidden,
+    Sabre\DAV\Exception\BadRequest,
+    Sabre\DAV\Exception\NotImplemented,
     Sabre\DAV\Server,
     Sabre\DAV\ServerPlugin,
     Sabre\DAV\PropFind,
     Sabre\DAV\INode,
     Sabre\DAV\Xml\Property\Href,
+    Sabre\DAVACL,
     Sabre\HTTP\RequestInterface,
     Sabre\HTTP\ResponseInterface,
+    Sabre\Uri,
     Sabre\VObject,
     Sabre\VObject\Reader,
     Sabre\VObject\Component\VCalendar,
     Sabre\VObject\ITip,
-    Sabre\VObject\ITip\Message,
-    Sabre\DAVACL,
-    Sabre\CalDAV\ICalendar,
-    Sabre\CalDAV\ICalendarObject,
-    Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp,
-    Sabre\DAV\Exception\NotFound,
-    Sabre\DAV\Exception\Forbidden,
-    Sabre\DAV\Exception\BadRequest,
-    Sabre\DAV\Exception\NotImplemented;
+    Sabre\VObject\ITip\Message;
 
 /**
  * CalDAV scheduling plugin.
@@ -105,6 +107,9 @@ class Plugin extends ServerPlugin {
         $server->on('calendarObjectChange', [$this, 'calendarObjectChange']);
         $server->on('beforeUnbind',         [$this, 'beforeUnbind']);
         $server->on('schedule',             [$this, 'scheduleLocalDelivery']);
+
+        $server->tree->on('getChildren',    [$this, 'treeGetChildren']);
+        $server->tree->on('getChild',       [$this, 'treeGetChild']);
 
         $ns = '{' . self::NS_CALDAV . '}';
 
@@ -491,6 +496,23 @@ class Plugin extends ServerPlugin {
             $objectNode->put($newObject->serialize());
         }
         $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
+
+    }
+
+    function treeGetChildren($path, INode $parent, array &$children) {
+
+        if ($parent instanceof CalendarHome) {
+            $children[] = new Outbox($parent->getOwner()); 
+        }
+
+    }
+    function treeGetChild($path, INode $parent, &$node) {
+
+        if ($parent instanceof CalendarHome) {
+            if (Uri\split($path)[1] === 'outbox') {
+                $node = new Outbox($parent->getOwner());
+            }
+        }
 
     }
 

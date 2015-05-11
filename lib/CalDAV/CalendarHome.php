@@ -137,9 +137,9 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
         if ($name === 'inbox' && $this->caldavBackend instanceof Backend\SchedulingSupport) {
             return new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
         }
-        if ($name === 'outbox' && $this->caldavBackend instanceof Backend\SchedulingSupport) {
+        /*if ($name === 'outbox' && $this->caldavBackend instanceof Backend\SchedulingSupport) {
             return new Schedule\Outbox($this->principalInfo['uri']);
-        }
+        }*/
         if ($name === 'notifications' && $this->caldavBackend instanceof Backend\NotificationSupport) {
             return new Notifications\Collection($this->caldavBackend, $this->principalInfo['uri']);
         }
@@ -211,7 +211,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
         if ($this->caldavBackend instanceof Backend\SchedulingSupport) {
             $objs[] = new Schedule\Inbox($this->caldavBackend, $this->principalInfo['uri']);
-            $objs[] = new Schedule\Outbox($this->principalInfo['uri']);
+            //$objs[] = new Schedule\Outbox($this->principalInfo['uri']);
         }
 
         // We're adding a notifications node, if it's supported by the backend.

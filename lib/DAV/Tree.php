@@ -73,7 +73,7 @@ class Tree extends EventEmitter {
 
             $node = null;
             $this->emit(
-                'getNodeForPath',
+                'getChild',
                 [$path, $parent, &$node],
                 function() use (&$node) {
                     return is_null($node);

@@ -58,4 +58,3 @@ class BasicCallBack extends AbstractBasic {
     }
 
 }
-

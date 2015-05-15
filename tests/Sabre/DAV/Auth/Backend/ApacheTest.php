@@ -69,4 +69,5 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
         );
 
     }
+
 }

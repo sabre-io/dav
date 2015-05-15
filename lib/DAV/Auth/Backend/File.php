@@ -31,8 +31,9 @@ class File extends AbstractDigest {
      */
     function __construct($filename=null) {
 
-        if (!is_null($filename))
+        if (!is_null($filename)) {
             $this->loadFile($filename);
+        }
 
     }
 

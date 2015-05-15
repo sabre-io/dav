@@ -96,4 +96,3 @@ class Apache implements BackendInterface {
     }
 
 }
-

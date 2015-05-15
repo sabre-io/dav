@@ -33,6 +33,13 @@ class Plugin extends ServerPlugin {
     protected $backends;
 
     /**
+     * Whitelist of authorized paths.
+     *
+     * @var array
+     */
+    protected $whiteList = [];
+
+    /**
      * The currently logged in principal. Will be `null` if nobody is currently
      * logged in.
      *
@@ -92,6 +99,37 @@ class Plugin extends ServerPlugin {
     }
 
     /**
+     * Sets the whitelist of authorized paths.
+     *
+     * @param array $paths
+     * @return void
+     */
+    function setWhiteList(array $paths) {
+
+        $this->whiteList = $paths;
+
+    }
+
+    /**
+     * Get a list of de-facto authorized paths.
+     *
+     * Example of authorized paths:
+     *
+     * [
+     *     'signup',
+     *     'signin'
+     * ]
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    function getWhiteList(RequestInterface $request) {
+
+        return $this->whiteList;
+
+    }
+
+    /**
      * Returns the currently logged-in principal.
      *
      * This will return a string such as:
@@ -139,11 +177,17 @@ class Plugin extends ServerPlugin {
      */
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
-        if (!$this->backends) {
+        if (empty($this->backends)) {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
+
+        if (in_array($request->getPath(), $this->getWhiteList($request))) {
+            return;
+        }
+
         $reasons = [];
-        foreach($this->backends as $backend) {
+
+        foreach($this->backends as $i => $backend) {
 
             $result = $backend->check(
                 $request,

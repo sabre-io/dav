@@ -2,14 +2,12 @@
 
 namespace Sabre\DAV\Auth;
 
-use
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface,
-    Sabre\HTTP\URLUtil,
-    Sabre\DAV\Exception\NotAuthenticated,
-    Sabre\DAV\Server,
-    Sabre\DAV\ServerPlugin;
-
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP\URLUtil;
+use Sabre\DAV\Exception\NotAuthenticated;
+use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
 
 /**
  * This plugin provides Authentication for a WebDAV server.
@@ -73,7 +71,7 @@ class Plugin extends ServerPlugin {
      */
     function initialize(Server $server) {
 
-        $server->on('beforeMethod', [$this,'beforeMethod'], 10);
+        $server->on('beforeMethod', [$this, 'beforeMethod'], 10);
 
     }
 
@@ -143,14 +141,14 @@ class Plugin extends ServerPlugin {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
         $reasons = [];
-        foreach($this->backends as $backend) {
+        foreach ($this->backends as $backend) {
 
             $result = $backend->check(
                 $request,
                 $response
             );
 
-            if (!is_array($result) || count($result)!==2 || !is_bool($result[0]) || !is_string($result[1])) {
+            if (!is_array($result) || count($result) !== 2 || !is_bool($result[0]) || !is_string($result[1])) {
                 throw new \Sabre\DAV\Exception('The authentication backend did not return a correct value from the check() method.');
             }
 
@@ -167,7 +165,7 @@ class Plugin extends ServerPlugin {
         // successful in authenticating the user.
         $this->currentPrincipal = null;
 
-        foreach($this->backends as $backend) {
+        foreach ($this->backends as $backend) {
             $backend->challenge($request, $response);
         }
         throw new NotAuthenticated(implode(', ', $reasons));

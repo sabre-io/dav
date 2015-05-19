@@ -27,7 +27,7 @@ class InvalidComponentType extends DAV\Exception\Forbidden {
 
         $doc = $errorNode->ownerDocument;
 
-        $np = $doc->createElementNS(CalDAV\Plugin::NS_CALDAV,'cal:supported-calendar-component');
+        $np = $doc->createElementNS(CalDAV\Plugin::NS_CALDAV, 'cal:supported-calendar-component');
         $errorNode->appendChild($np);
 
     }

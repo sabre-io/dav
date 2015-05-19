@@ -11,7 +11,6 @@ use Sabre\DAVACL;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
-
 /**
  * Notifications plugin
  *
@@ -65,8 +64,8 @@ class Plugin extends ServerPlugin {
     function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('method:GET', [$this,'httpGet'], 90);
-        $server->on('propFind',   [$this,'propFind']);
+        $server->on('method:GET', [$this, 'httpGet'], 90);
+        $server->on('propFind',   [$this, 'propFind']);
 
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
@@ -144,8 +143,8 @@ class Plugin extends ServerPlugin {
         $node->getNotificationType()->xmlSerializeFull($writer);
         $writer->endElement();
 
-        $response->setHeader('Content-Type','application/xml');
-        $response->setHeader('ETag',$node->getETag());
+        $response->setHeader('Content-Type', 'application/xml');
+        $response->setHeader('ETag', $node->getETag());
         $response->setStatus(200);
         $response->setBody($writer->outputMemory());
 

@@ -30,9 +30,9 @@ abstract class Collection extends Node implements ICollection {
      */
     function getChild($name) {
 
-        foreach($this->getChildren() as $child) {
+        foreach ($this->getChildren() as $child) {
 
-            if ($child->getName()==$name) return $child;
+            if ($child->getName() == $name) return $child;
 
         }
         throw new Exception\NotFound('File not found: ' . $name);
@@ -54,7 +54,7 @@ abstract class Collection extends Node implements ICollection {
             $this->getChild($name);
             return true;
 
-        } catch(Exception\NotFound $e) {
+        } catch (Exception\NotFound $e) {
 
             return false;
 
@@ -107,4 +107,3 @@ abstract class Collection extends Node implements ICollection {
 
 
 }
-

@@ -78,30 +78,30 @@ class Share implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $elems = $reader->parseInnerTree([
-            '{' . Plugin::NS_CALENDARSERVER . '}set' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{' . Plugin::NS_CALENDARSERVER . '}set'    => 'Sabre\\Xml\\Element\\KeyValue',
             '{' . Plugin::NS_CALENDARSERVER . '}remove' => 'Sabre\\Xml\\Element\\KeyValue',
         ]);
 
         $set = [];
         $remove = [];
 
-        foreach($elems as $elem) {
-            switch($elem['name']) {
+        foreach ($elems as $elem) {
+            switch ($elem['name']) {
 
-                case '{'.Plugin::NS_CALENDARSERVER.'}set' :
+                case '{' . Plugin::NS_CALENDARSERVER . '}set' :
                     $sharee = $elem['value'];
 
-                    $sumElem = '{'.Plugin::NS_CALENDARSERVER.'}summary';
+                    $sumElem = '{' . Plugin::NS_CALENDARSERVER . '}summary';
 
                     $set[] = [
                         'href'       => $sharee['{DAV:}href'],
-                        'commonName' => $sharee['{'.Plugin::NS_CALENDARSERVER.'}common-name'],
-                        'summary'    => isset($sharee[$sumElem])?$sharee[$sumElem]:null,
+                        'commonName' => $sharee['{' . Plugin::NS_CALENDARSERVER . '}common-name'],
+                        'summary'    => isset($sharee[$sumElem]) ? $sharee[$sumElem] : null,
                         'readOnly'   => isset($sharee['{' . Plugin::NS_CALENDARSERVER . '}readOnly']),
                     ];
                     break;
 
-                case '{'.Plugin::NS_CALENDARSERVER.'}remove' :
+                case '{' . Plugin::NS_CALENDARSERVER . '}remove' :
                     $remove[] = $elem['value']['{DAV:}href'];
                     break;
 

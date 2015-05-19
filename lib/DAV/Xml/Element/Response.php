@@ -123,7 +123,7 @@ class Response implements Element {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
         $writer->writeElement('{DAV:}href', $writer->contextUri . $this->getHref());
-        foreach($this->getResponseProperties() as $status => $properties) {
+        foreach ($this->getResponseProperties() as $status => $properties) {
 
             // Skipping empty lists
             if (!$properties || (!ctype_digit($status) && !is_int($status))) {
@@ -167,21 +167,21 @@ class Response implements Element {
         $propertyLists = [];
         $statusCode = null;
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{DAV:}href' :
                     $href = $elem['value'];
                     break;
                 case '{DAV:}propstat' :
                     $status = $elem['value']['{DAV:}status'];
-                    list(, $status, ) = explode(' ', $status,3);
+                    list(, $status, ) = explode(' ', $status, 3);
                     $properties = $elem['value']['{DAV:}prop'];
                     $propertyLists[$status] = $properties;
                     break;
                 case '{DAV:}status' :
-                    list(, $statusCode, ) = explode(' ', $elem['value'],3);
+                    list(, $statusCode, ) = explode(' ', $elem['value'], 3);
                     break;
 
             }

@@ -122,14 +122,14 @@ class Invite implements Element {
 
         }
 
-        foreach($this->users as $user) {
+        foreach ($this->users as $user) {
 
             $writer->startElement($cs . 'user');
             $writer->writeElement('{DAV:}href', $user['href']);
             if (isset($user['commonName']) && $user['commonName']) {
                 $writer->writeElement($cs . 'common-name', $user['commonName']);
             }
-            switch($user['status']) {
+            switch ($user['status']) {
 
                 case SharingPlugin::STATUS_ACCEPTED :
                     $writer->writeElement($cs . 'invite-accepted');
@@ -190,22 +190,22 @@ class Invite implements Element {
 
         $users = [];
 
-        foreach($reader->parseInnerTree() as $elem) {
+        foreach ($reader->parseInnerTree() as $elem) {
 
-            if ($elem['name']!==$cs.'user')
+            if ($elem['name'] !== $cs . 'user')
                 continue;
 
             $user = [
-                'href' => null,
+                'href'       => null,
                 'commonName' => null,
-                'readOnly' => null,
-                'summary' => null,
-                'status' => null,
+                'readOnly'   => null,
+                'summary'    => null,
+                'status'     => null,
             ];
 
-            foreach($elem['value'] as $userElem) {
+            foreach ($elem['value'] as $userElem) {
 
-                switch($userElem['name']) {
+                switch ($userElem['name']) {
                     case $cs . 'invite-accepted' :
                         $user['status'] = SharingPlugin::STATUS_ACCEPTED;
                         break;
@@ -225,7 +225,7 @@ class Invite implements Element {
                         $user['commonName'] = $userElem['value'];
                         break;
                     case $cs . 'access' :
-                        foreach($userElem['value'] as $accessHref) {
+                        foreach ($userElem['value'] as $accessHref) {
                             if ($accessHref['name'] === $cs . 'read') {
                                 $user['readOnly'] = true;
                             }

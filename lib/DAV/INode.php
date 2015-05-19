@@ -43,4 +43,3 @@ interface INode {
     function getLastModified();
 
 }
-

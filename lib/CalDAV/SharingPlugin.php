@@ -95,8 +95,8 @@ class SharingPlugin extends DAV\ServerPlugin {
         $this->server->xml->elementMap['{' . Plugin::NS_CALENDARSERVER . '}share'] = 'Sabre\\CalDAV\\Xml\\Request\\Share';
         $this->server->xml->elementMap['{' . Plugin::NS_CALENDARSERVER . '}invite-reply'] = 'Sabre\\CalDAV\\Xml\\Request\\InviteReply';
 
-        $this->server->on('propFind',     [$this,'propFindEarly']);
-        $this->server->on('propFind',     [$this,'propFindLate'], 150);
+        $this->server->on('propFind',     [$this, 'propFindEarly']);
+        $this->server->on('propFind',     [$this, 'propFindLate'], 150);
         $this->server->on('propPatch',    [$this, 'propPatch'], 40);
         $this->server->on('method:POST',  [$this, 'httpPost']);
 
@@ -186,7 +186,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 }
             }
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes', function() {
-                return new Xml\Property\AllowedSharingModes(true,false);
+                return new Xml\Property\AllowedSharingModes(true, false);
             });
 
         }
@@ -215,10 +215,10 @@ class SharingPlugin extends DAV\ServerPlugin {
             return;
 
         $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
-            if($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
+            if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
             $shares = $node->getShares();
             $remove = [];
-            foreach($shares as $share) {
+            foreach ($shares as $share) {
                 $remove[] = $share['href'];
             }
             $node->updateShares([], $remove);
@@ -242,7 +242,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         // Only handling xml
         $contentType = $request->getHeader('Content-Type');
-        if (strpos($contentType,'application/xml')===false && strpos($contentType,'text/xml')===false)
+        if (strpos($contentType, 'application/xml') === false && strpos($contentType, 'text/xml') === false)
             return;
 
         // Making sure the node exists
@@ -265,7 +265,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         $message = $this->server->xml->parse($requestBody, $request->getUrl(), $documentType);
 
-        switch($documentType) {
+        switch ($documentType) {
 
             // Dealing with the 'share' document, which modified invitees on a
             // calendar.
@@ -298,7 +298,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
             // The invite-reply document is sent when the user replies to an
             // invitation of a calendar share.
-            case '{'. Plugin::NS_CALENDARSERVER.'}invite-reply' :
+            case '{' . Plugin::NS_CALENDARSERVER . '}invite-reply' :
 
                 // This only works on the calendar-home-root node.
                 if (!$node instanceof CalendarHome) {
@@ -334,7 +334,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                     $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');
                     $writer->write(new Href($url));
                     $writer->endElement();
-                    $response->setHeader('Content-Type','application/xml');
+                    $response->setHeader('Content-Type', 'application/xml');
                     $response->setBody($writer->outputMemory());
 
                 }

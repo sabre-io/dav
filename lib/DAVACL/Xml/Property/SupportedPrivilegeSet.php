@@ -104,7 +104,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
             }
             if (isset($priv['aggregates'])) {
                 echo "\n<ul>\n";
-                foreach($priv['aggregates'] as $subPriv) {
+                foreach ($priv['aggregates'] as $subPriv) {
                     $traverse($subPriv);
                 }
                 echo "</ul>";
@@ -132,7 +132,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
      * @param array $privilege
      * @return void
      */
-    private function serializePriv(Writer $writer,$privilege) {
+    private function serializePriv(Writer $writer, $privilege) {
 
         $writer->startElement('{DAV:}supported-privilege');
 
@@ -147,7 +147,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
             $writer->writeElement('{DAV:}description', $privilege['description']);
         }
         if (isset($privilege['aggregates'])) {
-            foreach($privilege['aggregates'] as $subPrivilege) {
+            foreach ($privilege['aggregates'] as $subPrivilege) {
                 $this->serializePriv($writer, $subPrivilege);
             }
         }

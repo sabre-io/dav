@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Schedule;
+
 use Sabre\DAV;
 use Sabre\CalDAV;
 use Sabre\DAVACL;

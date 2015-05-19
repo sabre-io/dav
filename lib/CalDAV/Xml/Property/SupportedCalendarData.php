@@ -2,10 +2,9 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
-use
-    Sabre\Xml\XmlSerializable,
-    Sabre\Xml\Writer,
-    Sabre\CalDAV\Plugin;
+use Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Writer;
+use Sabre\CalDAV\Plugin;
 
 /**
  * Supported-calendar-data property
@@ -47,7 +46,7 @@ class SupportedCalendarData implements XmlSerializable {
         $writer->startElement('{' . Plugin::NS_CALDAV . '}calendar-data');
         $writer->writeAttributes([
             'content-type' => 'text/calendar',
-            'version' => '2.0',
+            'version'      => '2.0',
         ]);
         $writer->endElement(); // calendar-data
         $writer->startElement('{' . Plugin::NS_CALDAV . '}calendar-data');

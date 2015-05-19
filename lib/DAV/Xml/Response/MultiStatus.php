@@ -86,7 +86,7 @@ class MultiStatus implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->getResponses() as $response) {
+        foreach ($this->getResponses() as $response) {
             $writer->writeElement('{DAV:}response', $response);
         }
         if ($syncToken = $this->getSyncToken()) {
@@ -125,7 +125,7 @@ class MultiStatus implements Element {
         $responses = [];
         $syncToken = null;
 
-        if ($elements) foreach($elements as $elem) {
+        if ($elements) foreach ($elements as $elem) {
             if ($elem['name'] === '{DAV:}response') {
                 $responses[] = $elem['value'];
             }

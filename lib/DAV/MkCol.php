@@ -24,15 +24,15 @@ class MkCol extends PropPatch {
 
     /**
      * A list of resource-types in clark-notation.
-     * 
-     * @var array 
+     *
+     * @var array
      */
     protected $resourceType;
 
     /**
      * Creates the MKCOL object.
-     * 
-     * @param string[] $resourceType List of resourcetype values. 
+     *
+     * @param string[] $resourceType List of resourcetype values.
      * @param array $mutations List of new properties values.
      */
     function __construct(array $resourceType, array $mutations) {

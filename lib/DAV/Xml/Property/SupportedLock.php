@@ -2,9 +2,8 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\Xml\Writer,
-    Sabre\Xml\XmlSerializable;
+use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * This class represents the {DAV:}supportedlock property.
@@ -44,13 +43,12 @@ class SupportedLock implements XmlSerializable {
 
         $writer->writeElement('{DAV:}lockentry', [
             '{DAV:}lockscope' => ['{DAV:}exclusive' => null],
-            '{DAV:}locktype' =>  ['{DAV:}write' => null],
+            '{DAV:}locktype'  => ['{DAV:}write'     => null],
         ]);
         $writer->writeElement('{DAV:}lockentry', [
             '{DAV:}lockscope' => ['{DAV:}shared' => null],
-            '{DAV:}locktype' =>  ['{DAV:}write' => null],
+            '{DAV:}locktype'  => ['{DAV:}write'  => null],
         ]);
 
     }
 }
-

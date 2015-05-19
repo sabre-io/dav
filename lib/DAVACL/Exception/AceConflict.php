@@ -23,11 +23,11 @@ class AceConflict extends DAV\Exception\Conflict {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
         $doc = $errorNode->ownerDocument;
 
-        $np = $doc->createElementNS('DAV:','d:no-ace-conflict');
+        $np = $doc->createElementNS('DAV:', 'd:no-ace-conflict');
         $errorNode->appendChild($np);
 
     }

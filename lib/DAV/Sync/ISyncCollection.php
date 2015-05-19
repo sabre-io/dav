@@ -86,4 +86,3 @@ interface ISyncCollection extends DAV\ICollection {
     function getChanges($syncToken, $syncLevel, $limit = null);
 
 }
-

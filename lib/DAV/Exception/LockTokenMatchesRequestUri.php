@@ -31,9 +31,9 @@ class LockTokenMatchesRequestUri extends Conflict {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
-        $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-matches-request-uri');
+        $error = $errorNode->ownerDocument->createElementNS('DAV:', 'd:lock-token-matches-request-uri');
         $errorNode->appendChild($error);
 
     }

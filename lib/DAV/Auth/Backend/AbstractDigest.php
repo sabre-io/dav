@@ -2,11 +2,10 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use
-    Sabre\HTTP,
-    Sabre\DAV,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP;
+use Sabre\DAV;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * HTTP Digest authentication backend class
@@ -111,7 +110,7 @@ abstract class AbstractDigest implements BackendInterface {
 
         $hash = $this->getDigestHash($this->realm, $username);
         // If this was false, the user account didn't exist
-        if ($hash===false || is_null($hash)) {
+        if ($hash === false || is_null($hash)) {
             return [false, "Username or password was incorrect"];
         }
         if (!is_string($hash)) {

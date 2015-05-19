@@ -92,7 +92,7 @@ class SupportedMethodSet implements XmlSerializable, HtmlOutput {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->getValue() as $val) {
+        foreach ($this->getValue() as $val) {
             $writer->startElement('{DAV:}supported-method');
             $writer->writeAttribute('name', $val);
             $writer->endElement();

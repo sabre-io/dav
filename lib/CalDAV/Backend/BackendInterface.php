@@ -49,7 +49,7 @@ interface BackendInterface {
      * @param array $properties
      * @return void
      */
-    function createCalendar($principalUri,$calendarUri,array $properties);
+    function createCalendar($principalUri, $calendarUri, array $properties);
 
     /**
      * Updates properties for a calendar.
@@ -126,7 +126,7 @@ interface BackendInterface {
      * @param string $objectUri
      * @return array|null
      */
-    function getCalendarObject($calendarId,$objectUri);
+    function getCalendarObject($calendarId, $objectUri);
 
     /**
      * Returns a list of calendar objects.
@@ -160,7 +160,7 @@ interface BackendInterface {
      * @param string $calendarData
      * @return string|null
      */
-    function createCalendarObject($calendarId,$objectUri,$calendarData);
+    function createCalendarObject($calendarId, $objectUri, $calendarData);
 
     /**
      * Updates an existing calendarobject, based on it's uri.
@@ -180,7 +180,7 @@ interface BackendInterface {
      * @param string $calendarData
      * @return string|null
      */
-    function updateCalendarObject($calendarId,$objectUri,$calendarData);
+    function updateCalendarObject($calendarId, $objectUri, $calendarData);
 
     /**
      * Deletes an existing calendar object.
@@ -191,7 +191,7 @@ interface BackendInterface {
      * @param string $objectUri
      * @return void
      */
-    function deleteCalendarObject($calendarId,$objectUri);
+    function deleteCalendarObject($calendarId, $objectUri);
 
     /**
      * Performs a calendar-query on the contents of this calendar.

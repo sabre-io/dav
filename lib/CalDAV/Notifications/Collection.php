@@ -59,7 +59,7 @@ class Collection extends DAV\Collection implements ICollection, DAVACL\IACL {
         $children = [];
         $notifications = $this->caldavBackend->getNotificationsForPrincipal($this->principalUri);
 
-        foreach($notifications as $notification) {
+        foreach ($notifications as $notification) {
 
             $children[] = new Node(
                 $this->caldavBackend,

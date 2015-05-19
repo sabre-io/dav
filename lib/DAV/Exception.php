@@ -9,7 +9,6 @@
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-
 namespace Sabre\DAV;
 
 /**
@@ -41,7 +40,7 @@ class Exception extends \Exception {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(Server $server,\DOMElement $errorNode) {
+    function serialize(Server $server, \DOMElement $errorNode) {
 
 
     }
@@ -61,4 +60,3 @@ class Exception extends \Exception {
     }
 
 }
-

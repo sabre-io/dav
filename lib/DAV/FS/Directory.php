@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\DAV\FS;
+
 use Sabre\DAV;
 
 /**
@@ -76,7 +77,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
 
         if (is_dir($path)) {
 
-            return new Directory($path);
+            return new self($path);
 
         } else {
 
@@ -99,7 +100,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
             \FilesystemIterator::CURRENT_AS_SELF
           | \FilesystemIterator::SKIP_DOTS
         );
-        foreach($iterator as $entry) {
+        foreach ($iterator as $entry) {
 
             $nodes[] = $this->getChild($entry->getFilename());
 
@@ -128,7 +129,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
      */
     function delete() {
 
-        foreach($this->getChildren() as $child) $child->delete();
+        foreach ($this->getChildren() as $child) $child->delete();
         rmdir($this->path);
 
     }
@@ -141,11 +142,10 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     function getQuotaInfo() {
 
         return [
-            disk_total_space($this->path)-disk_free_space($this->path),
+            disk_total_space($this->path) - disk_free_space($this->path),
             disk_free_space($this->path)
         ];
 
     }
 
 }
-

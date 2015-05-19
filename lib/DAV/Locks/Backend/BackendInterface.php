@@ -36,7 +36,7 @@ interface BackendInterface {
      * @param Locks\LockInfo $lockInfo
      * @return bool
      */
-    function lock($uri,Locks\LockInfo $lockInfo);
+    function lock($uri, Locks\LockInfo $lockInfo);
 
     /**
      * Removes a lock from a uri
@@ -45,7 +45,6 @@ interface BackendInterface {
      * @param Locks\LockInfo $lockInfo
      * @return bool
      */
-    function unlock($uri,Locks\LockInfo $lockInfo);
+    function unlock($uri, Locks\LockInfo $lockInfo);
 
 }
-

@@ -2,11 +2,10 @@
 
 namespace Sabre\CardDAV;
 
-use
-    Sabre\DAV,
-    Sabre\VObject,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\VObject;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * VCF Exporter
@@ -38,7 +37,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('method:GET', [$this,'httpGet'], 90);
+        $this->server->on('method:GET', [$this, 'httpGet'], 90);
 
     }
 
@@ -67,12 +66,12 @@ class VCFExportPlugin extends DAV\ServerPlugin {
             $aclPlugin->checkPrivileges($path, '{DAV:}read');
         }
 
-        $response->setHeader('Content-Type','text/directory');
+        $response->setHeader('Content-Type', 'text/directory');
         $response->setStatus(200);
 
         $nodes = $this->server->getPropertiesForPath($path, [
             '{' . Plugin::NS_CARDDAV . '}address-data',
-        ],1);
+        ], 1);
 
         $response->setBody($this->generateVCF($nodes));
 
@@ -91,7 +90,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
 
         $output = "";
 
-        foreach($nodes as $node) {
+        foreach ($nodes as $node) {
 
             if (!isset($node[200]['{' . Plugin::NS_CARDDAV . '}address-data'])) {
                 continue;

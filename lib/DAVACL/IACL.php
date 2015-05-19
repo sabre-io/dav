@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\DAVACL;
+
 use Sabre\DAV;
 
 /**

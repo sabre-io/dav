@@ -61,7 +61,7 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->privileges as $privName) {
+        foreach ($this->privileges as $privName) {
 
             $writer->startElement('{DAV:}privilege');
             $writer->writeElement($privName);
@@ -121,7 +121,7 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput {
         $result = [];
 
         $tree = $reader->parseInnerTree(['{DAV:}privilege' => 'Sabre\\Xml\\Element\\Elements']);
-        foreach($tree as $element) {
+        foreach ($tree as $element) {
             if ($element['name'] !== '{DAV:}privilege') {
                 continue;
             }

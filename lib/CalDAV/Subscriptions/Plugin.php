@@ -2,11 +2,10 @@
 
 namespace Sabre\CalDAV\Subscriptions;
 
-use
-    Sabre\DAV\INode,
-    Sabre\DAV\PropFind,
-    Sabre\DAV\ServerPlugin,
-    Sabre\DAV\Server;
+use Sabre\DAV\INode;
+use Sabre\DAV\PropFind;
+use Sabre\DAV\ServerPlugin;
+use Sabre\DAV\Server;
 
 /**
  * This plugin adds calendar-subscription support to your CalDAV server.
@@ -72,9 +71,9 @@ class Plugin extends ServerPlugin {
             '{http://calendarserver.org/ns/}subscribed-strip-todos',
         ];
 
-        foreach($props as $prop) {
+        foreach ($props as $prop) {
 
-            if ($propFind->getStatus($prop)===200) {
+            if ($propFind->getStatus($prop) === 200) {
                 $propFind->set($prop, '', 200);
             }
 

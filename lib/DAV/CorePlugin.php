@@ -452,7 +452,7 @@ class CorePlugin extends ServerPlugin {
 
         // Intercepting Content-Range
         if ($request->getHeader('Content-Range')) {
-            /**
+            /*
                An origin server that allows PUT on a given target resource MUST send
                a 400 (Bad Request) response to a PUT request that contains a
                Content-Range header field.
@@ -465,7 +465,7 @@ class CorePlugin extends ServerPlugin {
         // Intercepting the Finder problem
         if (($expected = $request->getHeader('X-Expected-Entity-Length')) && $expected > 0) {
 
-            /**
+            /*
             Many webservers will not cooperate well with Finder PUT requests,
             because it uses 'Chunked' transfer encoding for the request body.
 

@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\DAV;
-
 /**
  * Extremely simply HTTP Basic auth backend.
  *
@@ -11,7 +9,7 @@ use Sabre\DAV;
  * username and password.
  * The callback must return true or false depending on if authentication was
  * correct.
-
+ *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
@@ -58,4 +56,3 @@ class BasicCallBack extends AbstractBasic {
     }
 
 }
-

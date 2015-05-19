@@ -100,6 +100,13 @@ ChangeLog
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 
 
+2.1.4 (2015-??-??)
+------------------
+
+* #651: Double-encoded path in the browser plugin. Should fix a few broken
+  links in some setups.
+
+
 2.1.3 (2015-02-25)
 ------------------
 

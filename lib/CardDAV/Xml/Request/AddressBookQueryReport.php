@@ -170,11 +170,11 @@ class AddressBookQueryReport implements XmlDeserializable {
         }
 
         if (is_null($newProps['filters'])) {
-/**
- * We are supposed to throw this error, but KDE sometimes does not
- * include the filter element, and we need to treat it as if no
- * filters are supplied
- */
+            /*
+             * We are supposed to throw this error, but KDE sometimes does not
+             * include the filter element, and we need to treat it as if no
+             * filters are supplied
+             */
             //throw new BadRequest('The {' . Plugin::NS_CARDDAV . '}filter element is required for this request');
             $newProps['filters'] = [];
 

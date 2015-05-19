@@ -98,7 +98,7 @@ ChangeLog
   to the latest API!
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
-
+* #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 2.1.4 (2015-??-??)
 ------------------

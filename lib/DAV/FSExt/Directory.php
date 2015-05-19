@@ -89,7 +89,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
         if (is_dir($path)) {
 
-            return new Directory($path);
+            return new self($path);
 
         } else {
 

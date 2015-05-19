@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+2.0.7 (2015-??-??)
+------------------
+
+* #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
+
+
 2.0.6 (2014-12-10)
 ------------------
 

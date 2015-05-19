@@ -105,6 +105,7 @@ ChangeLog
 
 * #651: Double-encoded path in the browser plugin. Should fix a few broken
   links in some setups.
+* #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
 
 
 2.1.3 (2015-02-25)
@@ -257,6 +258,12 @@ ChangeLog
 * Added: #523 Custom CalDAV backends can now mark any calendar as read-only.
 * The zip release ships with [sabre/vobject 3.3.3][vobj],
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
+
+
+2.0.7 (2015-??-??)
+------------------
+
+* #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
 
 
 2.0.6 (2014-12-10)

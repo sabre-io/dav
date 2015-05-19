@@ -33,7 +33,7 @@ date_default_timezone_set('UTC');
  * concurrency.
  */
 $pdo = new \PDO('sqlite:data/db.sqlite');
-$pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 /**
  * Mapping PHP errors to exceptions.
@@ -42,7 +42,7 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
  * E_NOTICE or anything appears in your code, this allows SabreDAV to intercept
  * the issue and send a proper response back to the client (HTTP/1.1 500).
  */
-function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+function exception_error_handler($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 set_error_handler("exception_error_handler");
@@ -81,7 +81,7 @@ $server = new \Sabre\DAV\Server($nodes);
 if (isset($baseUri)) $server->setBaseUri($baseUri);
 
 // Plugins
-$server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend,'SabreDAV'));
+$server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend, 'SabreDAV'));
 $server->addPlugin(new \Sabre\DAV\Browser\Plugin());
 $server->addPlugin(new \Sabre\CalDAV\Plugin());
 $server->addPlugin(new \Sabre\CardDAV\Plugin());

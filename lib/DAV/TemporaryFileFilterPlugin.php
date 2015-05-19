@@ -267,9 +267,9 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
         $properties = [
             'href' => $request->getPath(),
             200    => [
-                '{DAV:}getlastmodified'             => new Xml\Property\GetLastModified(filemtime($tempLocation)),
-                '{DAV:}getcontentlength'            => filesize($tempLocation),
-                '{DAV:}resourcetype'                => new Xml\Property\ResourceType(null),
+                '{DAV:}getlastmodified'                 => new Xml\Property\GetLastModified(filemtime($tempLocation)),
+                '{DAV:}getcontentlength'                => filesize($tempLocation),
+                '{DAV:}resourcetype'                    => new Xml\Property\ResourceType(null),
                 '{' . Server::NS_SABREDAV . '}tempFile' => true,
 
             ],

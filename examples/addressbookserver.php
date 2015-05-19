@@ -17,10 +17,10 @@ $baseUri = '/';
 
 /* Database */
 $pdo = new PDO('sqlite:data/db.sqlite');
-$pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 //Mapping PHP errors to exceptions
-function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+function exception_error_handler($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 set_error_handler("exception_error_handler");
@@ -46,7 +46,7 @@ $server = new Sabre\DAV\Server($nodes);
 $server->setBaseUri($baseUri);
 
 // Plugins
-$server->addPlugin(new Sabre\DAV\Auth\Plugin($authBackend,'SabreDAV'));
+$server->addPlugin(new Sabre\DAV\Auth\Plugin($authBackend, 'SabreDAV'));
 $server->addPlugin(new Sabre\DAV\Browser\Plugin());
 //$server->addPlugin(new Sabre\CalDAV\Plugin());
 $server->addPlugin(new Sabre\CardDAV\Plugin());

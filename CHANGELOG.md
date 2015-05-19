@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.0.0-alpha1 (2015-??-??)
+3.0.0-alpha1 (2015-05-19)
 -------------------------
 
 * It's now possible to get all property information from files using the
@@ -19,6 +19,9 @@ ChangeLog
   creating a private home collection per-user.
 * Changed all MySQL columns from `VARCHAR` to `VARBINARY` where possible.
 * Improved older migration scripts a bit to allow easier testing.
+* The zip release ships with [sabre/vobject 3.4.3][vobj],
+  [sabre/http 4.0.0-alpha3][http], [sabre/event 2.0.22][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 0.4.3][xml].
 
 
 2.2.0-alpha4 (2015-04-13)

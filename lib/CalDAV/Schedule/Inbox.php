@@ -2,12 +2,11 @@
 
 namespace Sabre\CalDAV\Schedule;
 
-use
-    Sabre\DAV,
-    Sabre\CalDAV,
-    Sabre\DAVACL,
-    Sabre\CalDAV\Backend,
-    Sabre\VObject;
+use Sabre\DAV;
+use Sabre\CalDAV;
+use Sabre\DAVACL;
+use Sabre\CalDAV\Backend;
+use Sabre\VObject;
 
 /**
  * The CalDAV scheduling inbox
@@ -66,10 +65,10 @@ class Inbox extends DAV\Collection implements IInbox {
 
         $objs = $this->caldavBackend->getSchedulingObjects($this->principalUri);
         $children = [];
-        foreach($objs as $obj) {
+        foreach ($objs as $obj) {
             //$obj['acl'] = $this->getACL();
             $obj['principaluri'] = $this->principalUri;
-            $children[] = new SchedulingObject($this->caldavBackend,$obj);
+            $children[] = new SchedulingObject($this->caldavBackend, $obj);
         }
         return $children;
 
@@ -222,7 +221,7 @@ class Inbox extends DAV\Collection implements IInbox {
 
         $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
         $default['aggregates'][] = [
-            'privilege' => $ns . 'schedule-deliver',
+            'privilege'  => $ns . 'schedule-deliver',
             'aggregates' => [
                ['privilege' => $ns . 'schedule-deliver-invite'],
                ['privilege' => $ns . 'schedule-deliver-reply'],
@@ -255,7 +254,7 @@ class Inbox extends DAV\Collection implements IInbox {
         $validator = new CalDAV\CalendarQueryValidator();
 
         $objects = $this->caldavBackend->getSchedulingObjects($this->principalUri);
-        foreach($objects as $object) {
+        foreach ($objects as $object) {
             $vObject = VObject\Reader::read($object['calendardata']);
             if ($validator->validate($vObject, $filters)) {
                 $result[] = $object['uri'];

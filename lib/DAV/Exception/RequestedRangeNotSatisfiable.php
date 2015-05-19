@@ -28,4 +28,3 @@ class RequestedRangeNotSatisfiable extends DAV\Exception {
     }
 
 }
-

@@ -108,4 +108,3 @@ abstract class ServerPlugin {
     }
 
 }
-

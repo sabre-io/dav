@@ -45,4 +45,3 @@ interface IProperties extends INode {
     function getProperties($properties);
 
 }
-

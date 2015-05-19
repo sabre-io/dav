@@ -2,10 +2,8 @@
 
 namespace Sabre\CardDAV\Xml\Filter;
 
-use
-    Sabre\Xml\Reader,
-    Sabre\Xml\XmlDeserializable;
-
+use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
 
 /**
  * AddressData parser.
@@ -49,8 +47,8 @@ class AddressData implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $result = [
-            'contentType' => $reader->getAttribute('content-type')?:'text/vcard',
-            'version'     => $reader->getAttribute('version')?:'3.0',
+            'contentType' => $reader->getAttribute('content-type') ?: 'text/vcard',
+            'version'     => $reader->getAttribute('version') ?: '3.0',
         ];
 
         $reader->next();

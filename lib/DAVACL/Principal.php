@@ -169,7 +169,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
     function getProperties($requestedProperties) {
 
         $newProperties = [];
-        foreach($requestedProperties as $propName) {
+        foreach ($requestedProperties as $propName) {
 
             if (isset($this->principalProperties[$propName])) {
                 $newProperties[$propName] = $this->principalProperties[$propName];

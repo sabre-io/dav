@@ -23,11 +23,11 @@ class NotSupportedPrivilege extends DAV\Exception\PreconditionFailed {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
         $doc = $errorNode->ownerDocument;
 
-        $np = $doc->createElementNS('DAV:','d:not-supported-privilege');
+        $np = $doc->createElementNS('DAV:', 'd:not-supported-privilege');
         $errorNode->appendChild($np);
 
     }

@@ -109,7 +109,7 @@ class Client extends HTTP\Client {
 
         if (isset($settings['userName'])) {
             $userName = $settings['userName'];
-            $password = isset($settings['password'])?$settings['password']:'';
+            $password = isset($settings['password']) ? $settings['password'] : '';
 
             if (isset($settings['authType'])) {
                 $curlType = 0;
@@ -176,7 +176,7 @@ class Client extends HTTP\Client {
         $root = $dom->createElementNS('DAV:', 'd:propfind');
         $prop = $dom->createElement('d:prop');
 
-        foreach($properties as $property) {
+        foreach ($properties as $property) {
 
             list(
                 $namespace,
@@ -184,21 +184,21 @@ class Client extends HTTP\Client {
             ) = \Sabre\Xml\Service::parseClarkNotation($property);
 
             if ($namespace === 'DAV:') {
-                $element = $dom->createElement('d:'.$elementName);
+                $element = $dom->createElement('d:' . $elementName);
             } else {
-                $element = $dom->createElementNS($namespace, 'x:'.$elementName);
+                $element = $dom->createElementNS($namespace, 'x:' . $elementName);
             }
 
-            $prop->appendChild( $element );
+            $prop->appendChild($element);
         }
 
-        $dom->appendChild($root)->appendChild( $prop );
+        $dom->appendChild($root)->appendChild($prop);
         $body = $dom->saveXML();
 
         $url = $this->getAbsoluteUrl($url);
 
         $request = new HTTP\Request('PROPFIND', $url, [
-            'Depth' => $depth,
+            'Depth'        => $depth,
             'Content-Type' => 'application/xml'
         ], $body);
 
@@ -211,16 +211,16 @@ class Client extends HTTP\Client {
         $result = $this->parseMultiStatus($response->getBodyAsString());
 
         // If depth was 0, we only return the top item
-        if ($depth===0) {
+        if ($depth === 0) {
             reset($result);
             $result = current($result);
-            return isset($result[200])?$result[200]:[];
+            return isset($result[200]) ? $result[200] : [];
         }
 
         $newResult = [];
-        foreach($result as $href => $statusList) {
+        foreach ($result as $href => $statusList) {
 
-            $newResult[$href] = isset($statusList[200])?$statusList[200]:[];
+            $newResult[$href] = isset($statusList[200]) ? $statusList[200] : [];
 
         }
 
@@ -245,7 +245,7 @@ class Client extends HTTP\Client {
         $dom->formatOutput = true;
         $root = $dom->createElementNS('DAV:', 'd:propertyupdate');
 
-        foreach($properties as $propName => $propValue) {
+        foreach ($properties as $propName => $propValue) {
 
             list(
                 $namespace,
@@ -258,12 +258,12 @@ class Client extends HTTP\Client {
                 $prop = $dom->createElement('d:prop');
 
                 if ($namespace === 'DAV:') {
-                    $element = $dom->createElement('d:'.$elementName);
+                    $element = $dom->createElement('d:' . $elementName);
                 } else {
-                    $element = $dom->createElementNS($namespace, 'x:'.$elementName);
+                    $element = $dom->createElementNS($namespace, 'x:' . $elementName);
                 }
 
-                $root->appendChild( $remove )->appendChild( $prop )->appendChild( $element );
+                $root->appendChild($remove)->appendChild($prop)->appendChild($element);
 
             } else {
 
@@ -271,18 +271,18 @@ class Client extends HTTP\Client {
                 $prop = $dom->createElement('d:prop');
 
                 if ($namespace === 'DAV:') {
-                    $element = $dom->createElement('d:'.$elementName);
+                    $element = $dom->createElement('d:' . $elementName);
                 } else {
-                    $element = $dom->createElementNS($namespace, 'x:'.$elementName);
+                    $element = $dom->createElementNS($namespace, 'x:' . $elementName);
                 }
 
-                if ( $propValue instanceof Property ) {
-                    $propValue->serialize( new Server, $element );
+                if ($propValue instanceof Property) {
+                    $propValue->serialize(new Server(), $element);
                 } else {
                     $element->nodeValue = htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');
                 }
 
-                $root->appendChild( $set )->appendChild( $prop )->appendChild( $element );
+                $root->appendChild($set)->appendChild($prop)->appendChild($element);
 
             }
 
@@ -318,7 +318,7 @@ class Client extends HTTP\Client {
         }
 
         $features = explode(',', $dav);
-        foreach($features as &$v) {
+        foreach ($features as &$v) {
             $v = trim($v);
         }
         return $features;
@@ -360,9 +360,9 @@ class Client extends HTTP\Client {
 
         $response = $this->send(new HTTP\Request($method, $url, $headers, $body));
         return [
-            'body' => $response->getBodyAsString(),
+            'body'       => $response->getBodyAsString(),
             'statusCode' => (int)$response->getStatus(),
-            'headers' => array_change_key_case($response->getHeaders()),
+            'headers'    => array_change_key_case($response->getHeaders()),
         ];
 
     }
@@ -383,9 +383,9 @@ class Client extends HTTP\Client {
 
         // If the url starts with a slash, we must calculate the url based off
         // the root of the base url.
-        if (strpos($url,'/') === 0) {
+        if (strpos($url, '/') === 0) {
             $parts = parse_url($this->baseUri);
-            return $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port'])?':' . $parts['port']:'') . $url;
+            return $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '') . $url;
         }
 
         // Otherwise...
@@ -425,7 +425,7 @@ class Client extends HTTP\Client {
 
         $result = [];
 
-        foreach($multistatus->getResponses() as $response) {
+        foreach ($multistatus->getResponses() as $response) {
 
             $result[$response->getHref()] = $response->getResponseProperties();
 

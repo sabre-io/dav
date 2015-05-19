@@ -2,11 +2,10 @@
 
 namespace Sabre\DAV;
 
-use
-    Sabre\DAV\Exception\BadRequest,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface,
-    Sabre\Xml\ParseException;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\Xml\ParseException;
 
 /**
  * The core plugin provides all the basic features for a WebDAV server.
@@ -77,7 +76,7 @@ class CorePlugin extends ServerPlugin {
     function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
-        $node = $this->server->tree->getNodeForPath($path,0);
+        $node = $this->server->tree->getNodeForPath($path, 0);
 
         if (!$node instanceof IFile) return;
 
@@ -85,8 +84,8 @@ class CorePlugin extends ServerPlugin {
 
         // Converting string into stream, if needed.
         if (is_string($body)) {
-            $stream = fopen('php://temp','r+');
-            fwrite($stream,$body);
+            $stream = fopen('php://temp', 'r+');
+            fwrite($stream, $body);
             rewind($stream);
             $body = $stream;
         }
@@ -136,14 +135,14 @@ class CorePlugin extends ServerPlugin {
                 if (!isset($httpHeaders['Last-Modified'])) $ignoreRangeHeader = true;
                 else {
                     $modified = new \DateTime($httpHeaders['Last-Modified']);
-                    if($modified > $ifRangeDate) $ignoreRangeHeader = true;
+                    if ($modified > $ifRangeDate) $ignoreRangeHeader = true;
                 }
 
             } catch (\Exception $e) {
 
                 // It's an entity. We can do a simple comparison.
                 if (!isset($httpHeaders['ETag'])) $ignoreRangeHeader = true;
-                elseif ($httpHeaders['ETag']!==$ifRange) $ignoreRangeHeader = true;
+                elseif ($httpHeaders['ETag'] !== $ifRange) $ignoreRangeHeader = true;
             }
         }
 
@@ -155,18 +154,18 @@ class CorePlugin extends ServerPlugin {
 
                 $start = $range[0];
                 $end = $range[1] ? $range[1] : $nodeSize - 1;
-                if($start >= $nodeSize)
+                if ($start >= $nodeSize)
                     throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $range[0] . ') exceeded the size of the entity (' . $nodeSize . ')');
 
-                if($end < $start) throw new Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
-                if($end >= $nodeSize) $end = $nodeSize - 1;
+                if ($end < $start) throw new Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[1] . ') is lower than the start offset (' . $range[0] . ')');
+                if ($end >= $nodeSize) $end = $nodeSize - 1;
 
             } else {
 
                 $start = $nodeSize - $range[1];
                 $end  = $nodeSize - 1;
 
-                if ($start<0) $start = 0;
+                if ($start < 0) $start = 0;
 
             }
 
@@ -177,14 +176,14 @@ class CorePlugin extends ServerPlugin {
                 fseek($body, $start, SEEK_SET);
             } else {
                 $consumeBlock = 8192;
-                for($consumed = 0; $start - $consumed > 0; ){
-                    if(feof($body)) throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $start . ') exceeded the size of the entity (' . $consumed . ')');
+                for ($consumed = 0; $start - $consumed > 0;){
+                    if (feof($body)) throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $start . ') exceeded the size of the entity (' . $consumed . ')');
                     $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
                 }
             }
 
             $response->setHeader('Content-Length', $end - $start + 1);
-            $response->setHeader('Content-Range','bytes ' . $start . '-' . $end . '/' . $nodeSize);
+            $response->setHeader('Content-Range', 'bytes ' . $start . '-' . $end . '/' . $nodeSize);
             $response->setStatus(206);
             $response->setBody($body);
 
@@ -215,7 +214,7 @@ class CorePlugin extends ServerPlugin {
         $response->setHeader('Allow', strtoupper(implode(', ', $methods)));
         $features = ['1', '3', 'extended-mkcol'];
 
-        foreach($this->server->getPlugins() as $plugin) {
+        foreach ($this->server->getPlugins() as $plugin) {
             $features = array_merge($features, $plugin->getFeatures());
         }
 
@@ -345,10 +344,10 @@ class CorePlugin extends ServerPlugin {
         // iCal seems to also depend on these being set for PROPFIND. Since
         // this is not harmful, we'll add it.
         $features = ['1', '3', 'extended-mkcol'];
-        foreach($this->server->getPlugins() as $plugin) {
+        foreach ($this->server->getPlugins() as $plugin) {
             $features = array_merge($features, $plugin->getFeatures());
         }
-        $response->setHeader('DAV',implode(', ', $features));
+        $response->setHeader('DAV', implode(', ', $features));
 
         $prefer = $this->server->getHTTPPrefer();
         $minimal = $prefer['return-minimal'];
@@ -394,7 +393,7 @@ class CorePlugin extends ServerPlugin {
             // request was succesful, and don't need to return the
             // multi-status.
             $ok = true;
-            foreach($result as $prop=>$code) {
+            foreach ($result as $prop => $code) {
                 if ((int)$code > 299) {
                     $ok = false;
                 }
@@ -415,7 +414,7 @@ class CorePlugin extends ServerPlugin {
 
         // Reorganizing the result for generateMultiStatus
         $multiStatus = [];
-        foreach($result as $propertyName => $code) {
+        foreach ($result as $propertyName => $code) {
             if (isset($multiStatus[$code])) {
                 $multiStatus[$code][$propertyName] = null;
             } else {
@@ -452,7 +451,7 @@ class CorePlugin extends ServerPlugin {
 
         // Intercepting Content-Range
         if ($request->getHeader('Content-Range')) {
-            /**
+            /*
                An origin server that allows PUT on a given target resource MUST send
                a 400 (Bad Request) response to a PUT request that contains a
                Content-Range header field.
@@ -465,7 +464,7 @@ class CorePlugin extends ServerPlugin {
         // Intercepting the Finder problem
         if (($expected = $request->getHeader('X-Expected-Entity-Length')) && $expected > 0) {
 
-            /**
+            /*
             Many webservers will not cooperate well with Finder PUT requests,
             because it uses 'Chunked' transfer encoding for the request body.
 
@@ -488,14 +487,14 @@ class CorePlugin extends ServerPlugin {
 
             // Only reading first byte
             $firstByte = fread($body, 1);
-            if (strlen($firstByte)!==1) {
+            if (strlen($firstByte) !== 1) {
                 throw new Exception\Forbidden('This server is not compatible with OS/X finder. Consider using a different WebDAV client or webserver.');
             }
 
             // The body needs to stay intact, so we copy everything to a
             // temporary stream.
 
-            $newBody = fopen('php://temp','r+');
+            $newBody = fopen('php://temp', 'r+');
             fwrite($newBody, $firstByte);
             stream_copy_to_stream($body, $newBody);
             rewind($newBody);
@@ -515,7 +514,7 @@ class CorePlugin extends ServerPlugin {
                 return false;
             }
 
-            $response->setHeader('Content-Length','0');
+            $response->setHeader('Content-Length', '0');
             if ($etag) $response->setHeader('ETag', $etag);
             $response->setStatus(204);
 
@@ -558,7 +557,7 @@ class CorePlugin extends ServerPlugin {
         if ($requestBody) {
 
             $contentType = $request->getHeader('Content-Type');
-            if (strpos($contentType, 'application/xml')!==0 && strpos($contentType, 'text/xml')!==0) {
+            if (strpos($contentType, 'application/xml') !== 0 && strpos($contentType, 'text/xml') !== 0) {
 
                 // We must throw 415 for unsupported mkcol bodies
                 throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must have an xml Content-Type');
@@ -811,7 +810,7 @@ class CorePlugin extends ServerPlugin {
 
         $propFind->handle('{DAV:}supported-report-set', function() use ($propFind) {
             $reports = [];
-            foreach($this->server->getPlugins() as $plugin) {
+            foreach ($this->server->getPlugins() as $plugin) {
                 $reports = array_merge($reports, $plugin->getSupportedReportSet($propFind->getPath()));
             }
             return new Xml\Property\SupportedReportSet($reports);
@@ -843,7 +842,7 @@ class CorePlugin extends ServerPlugin {
 
             $nodeProperties = $node->getProperties($propertyNames);
 
-            foreach($nodeProperties as $propertyName=>$value) {
+            foreach ($nodeProperties as $propertyName => $value) {
                 $propFind->set($propertyName, $value, 200);
             }
 

@@ -38,7 +38,7 @@ class Acl implements Element, HtmlOutput {
      * Whether or not the server base url is required to be prefixed when
      * serializing the property.
      *
-     * @var boolean
+     * @var bool
      */
     protected $prefixBaseUrl;
 
@@ -98,7 +98,7 @@ class Acl implements Element, HtmlOutput {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->privileges as $ace) {
+        foreach ($this->privileges as $ace) {
 
             $this->serializeAce($writer, $ace);
 
@@ -125,7 +125,7 @@ class Acl implements Element, HtmlOutput {
         ob_start();
         echo "<table>";
         echo "<tr><th>Principal</th><th>Privilege</th><th></th></tr>";
-        foreach($this->privileges as $privilege) {
+        foreach ($this->privileges as $privilege) {
 
             echo '<tr>';
             // if it starts with a {, it's a special principal
@@ -177,9 +177,9 @@ class Acl implements Element, HtmlOutput {
 
         $privileges = [];
 
-        foreach((array)$reader->parseInnerTree($elementMap) as $element) {
+        foreach ((array)$reader->parseInnerTree($elementMap) as $element) {
 
-            if ($element['name']!=='{DAV:}ace') {
+            if ($element['name'] !== '{DAV:}ace') {
                 continue;
             }
             $ace = $element['value'];
@@ -189,7 +189,7 @@ class Acl implements Element, HtmlOutput {
             }
             $principal = $ace['{DAV:}principal'];
 
-            switch($principal->getType()) {
+            switch ($principal->getType()) {
                 case Principal::HREF :
                     $principal = $principal->getHref();
                     break;
@@ -210,12 +210,12 @@ class Acl implements Element, HtmlOutput {
             if (!isset($ace['{DAV:}grant'])) {
                 throw new DAV\Exception\NotImplemented('Every {DAV:}ace element must have a {DAV:}grant element. {DAV:}deny is not yet supported');
             }
-            foreach($ace['{DAV:}grant'] as $elem) {
+            foreach ($ace['{DAV:}grant'] as $elem) {
                 if ($elem['name'] !== '{DAV:}privilege') {
                     continue;
                 }
 
-                foreach($elem['value'] as $priv) {
+                foreach ($elem['value'] as $priv) {
                     $privileges[] = [
                         'principal' => $principal,
                         'protected' => $protected,
@@ -242,7 +242,7 @@ class Acl implements Element, HtmlOutput {
 
         $writer->startElement('{DAV:}ace');
 
-        switch($ace['principal']) {
+        switch ($ace['principal']) {
             case '{DAV:}authenticated' :
                 $principal = new Principal(Principal::AUTHENTICATED);
                 break;

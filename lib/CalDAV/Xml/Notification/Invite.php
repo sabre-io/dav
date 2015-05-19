@@ -139,7 +139,7 @@ class Invite implements NotificationInterface {
      */
     function __construct(array $values) {
 
-        $required = array(
+        $required = [
             'id',
             'etag',
             'href',
@@ -148,14 +148,14 @@ class Invite implements NotificationInterface {
             'readOnly',
             'hostUrl',
             'organizer',
-        );
-        foreach($required as $item) {
+        ];
+        foreach ($required as $item) {
             if (!isset($values[$item])) {
                 throw new \InvalidArgumentException($item . ' is a required constructor option');
             }
         }
 
-        foreach($values as $key=>$value) {
+        foreach ($values as $key => $value) {
             if (!property_exists($this, $key)) {
                 throw new \InvalidArgumentException('Unknown option: ' . $key);
             }
@@ -185,7 +185,7 @@ class Invite implements NotificationInterface {
      */
     function xmlSerialize(Writer $writer) {
 
-        $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER .'}invite-notification');
+        $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER . '}invite-notification');
 
     }
 
@@ -208,7 +208,7 @@ class Invite implements NotificationInterface {
         $writer->writeElement($cs . 'uid', $this->id);
         $writer->writeElement('{DAV:}href', $this->href);
 
-        switch($this->type) {
+        switch ($this->type) {
 
             case SharingPlugin::STATUS_ACCEPTED :
                 $writer->writeElement($cs . 'invite-accepted');
@@ -244,10 +244,10 @@ class Invite implements NotificationInterface {
         $writer->startElement($cs . 'organizer');
         // If the organizer contains a 'mailto:' part, it means it should be
         // treated as absolute.
-        if (strtolower(substr($this->organizer,0,7))==='mailto:') {
-            $writer->writeElement('{DAV:}href',$this->organizer);
+        if (strtolower(substr($this->organizer, 0, 7)) === 'mailto:') {
+            $writer->writeElement('{DAV:}href', $this->organizer);
         } else {
-            $writer->writeElement('{DAV:}href',$writer->baseUri . $this->organizer);
+            $writer->writeElement('{DAV:}href', $writer->baseUri . $this->organizer);
         }
         if ($this->commonName) {
             $writer->writeElement($cs . 'common-name', $this->commonName);

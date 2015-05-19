@@ -110,7 +110,7 @@ abstract class AbstractBackend implements BackendInterface {
         $result = [];
         $objects = $this->getCalendarObjects($calendarId);
 
-        foreach($objects as $object) {
+        foreach ($objects as $object) {
 
             if ($this->validateFilterForObject($object, $filters)) {
                 $result[] = $object['uri'];
@@ -169,38 +169,38 @@ abstract class AbstractBackend implements BackendInterface {
 
         // Note: this is a super slow naive implementation of this method. You
         // are highly recommended to optimize it, if your backend allows it.
-        foreach($this->getCalendarsForUser($principalUri) as $calendar) {
+        foreach ($this->getCalendarsForUser($principalUri) as $calendar) {
 
             // We must ignore calendars owned by other principals.
-            if ($calendar['principaluri']!==$principalUri) {
+            if ($calendar['principaluri'] !== $principalUri) {
                 continue;
             }
 
             // Ignore calendars that are shared.
-            if (isset($calendar['{http://sabredav.org/ns}owner-principal']) && $calendar['{http://sabredav.org/ns}owner-principal']!==$principalUri) {
+            if (isset($calendar['{http://sabredav.org/ns}owner-principal']) && $calendar['{http://sabredav.org/ns}owner-principal'] !== $principalUri) {
                 continue;
             }
 
             $results = $this->calendarQuery(
                 $calendar['id'],
                 [
-                    'name' => 'VCALENDAR',
+                    'name'         => 'VCALENDAR',
                     'prop-filters' => [],
                     'comp-filters' => [
                         [
-                            'name' => 'VEVENT',
+                            'name'           => 'VEVENT',
                             'is-not-defined' => false,
-                            'time-range' => null,
-                            'comp-filters' => [],
-                            'prop-filters' => [
+                            'time-range'     => null,
+                            'comp-filters'   => [],
+                            'prop-filters'   => [
                                 [
-                                    'name' => 'UID',
+                                    'name'           => 'UID',
                                     'is-not-defined' => false,
-                                    'time-range' => null,
-                                    'text-match' => [
-                                        'value' => $uid,
+                                    'time-range'     => null,
+                                    'text-match'     => [
+                                        'value'            => $uid,
                                         'negate-condition' => false,
-                                        'collation' => 'i;octet',
+                                        'collation'        => 'i;octet',
                                     ],
                                     'param-filters' => [],
                                 ],

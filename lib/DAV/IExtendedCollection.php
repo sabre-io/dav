@@ -41,4 +41,3 @@ interface IExtendedCollection extends ICollection {
     function createExtendedCollection($name, MkCol $mkCol);
 
 }
-

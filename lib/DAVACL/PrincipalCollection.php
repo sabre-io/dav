@@ -2,11 +2,10 @@
 
 namespace Sabre\DAVACL;
 
-use
-    Sabre\DAV\Exception\InvalidResourceType,
-    Sabre\DAV\Exception\Forbidden,
-    Sabre\DAV\IExtendedCollection,
-    Sabre\DAV\MkCol;
+use Sabre\DAV\Exception\InvalidResourceType;
+use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\IExtendedCollection;
+use Sabre\DAV\MkCol;
 
 /**
  * Principals Collection

@@ -41,16 +41,16 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
     function createFile($name, $data = null) {
 
         // We're not allowing dots
-        if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
+        if ($name == '.' || $name == '..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
-        file_put_contents($newPath,$data);
+        file_put_contents($newPath, $data);
         clearstatcache(true, $newPath);
 
         return '"' . sha1(
             fileinode($newPath) .
             filesize($newPath) .
             filemtime($newPath)
-        ). '"';
+        ) . '"';
 
     }
 
@@ -63,7 +63,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
     function createDirectory($name) {
 
         // We're not allowing dots
-        if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
+        if ($name == '.' || $name == '..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
         $newPath = $this->path . '/' . $name;
         mkdir($newPath);
         clearstatcache(true, $newPath);
@@ -85,7 +85,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         $path = $this->path . '/' . $name;
 
         if (!file_exists($path)) throw new DAV\Exception\NotFound('File could not be located');
-        if ($name=='.' || $name=='..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
+        if ($name == '.' || $name == '..') throw new DAV\Exception\Forbidden('Permission denied to . and ..');
 
         if (is_dir($path)) {
 
@@ -107,7 +107,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      */
     function childExists($name) {
 
-        if ($name=='.' || $name=='..')
+        if ($name == '.' || $name == '..')
             throw new DAV\Exception\Forbidden('Permission denied to . and ..');
 
         $path = $this->path . '/' . $name;
@@ -129,7 +129,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
           | \FilesystemIterator::SKIP_DOTS
         );
 
-        foreach($iterator as $entry) {
+        foreach ($iterator as $entry) {
 
             $node = $entry->getFilename();
 
@@ -151,7 +151,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
     function delete() {
 
         // Deleting all children
-        foreach($this->getChildren() as $child) $child->delete();
+        foreach ($this->getChildren() as $child) $child->delete();
 
         // Removing resource info, if its still around
         if (file_exists($this->path . '/.sabredav')) unlink($this->path . '/.sabredav');
@@ -203,7 +203,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
         // We only support FSExt\Directory or FSExt\File objects, so
         // anything else we want to quickly reject.
-        if (!$sourceNode instanceof Directory && !$sourceNode instanceof File) {
+        if (!$sourceNode instanceof self && !$sourceNode instanceof File) {
             return false;
         }
 
@@ -217,4 +217,3 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
     }
 
 }
-

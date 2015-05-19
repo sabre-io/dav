@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Principal;
+
 use Sabre\DAVACL;
 use Sabre\DAV;
 

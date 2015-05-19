@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\Locks\Backend;
 
-use Sabre\DAV\Locks;
-
 /**
  * This is an Abstract clas for lock backends.
  *
@@ -18,4 +16,3 @@ use Sabre\DAV\Locks;
 abstract class AbstractBackend implements BackendInterface {
 
 }
-

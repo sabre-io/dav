@@ -2,11 +2,10 @@
 
 namespace Sabre\CardDAV;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\MkCol,
-    Sabre\DAVACL,
-    Sabre\Uri;
+use Sabre\DAV;
+use Sabre\DAV\MkCol;
+use Sabre\DAVACL;
+use Sabre\Uri;
 
 /**
  * AddressBook Home class
@@ -53,7 +52,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      */
     function getName() {
 
-        list(,$name) = Uri\split($this->principalUri);
+        list(, $name) = Uri\split($this->principalUri);
         return $name;
 
     }
@@ -101,7 +100,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      * @param resource $data
      * @return void
      */
-    function createFile($filename, $data=null) {
+    function createFile($filename, $data = null) {
 
         throw new DAV\Exception\MethodNotAllowed('Creating new files in this collection is not supported');
 
@@ -130,8 +129,8 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      */
     function getChild($name) {
 
-        foreach($this->getChildren() as $child) {
-            if ($name==$child->getName())
+        foreach ($this->getChildren() as $child) {
+            if ($name == $child->getName())
                 return $child;
 
         }
@@ -148,7 +147,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
 
         $addressbooks = $this->carddavBackend->getAddressBooksForUser($this->principalUri);
         $objs = [];
-        foreach($addressbooks as $addressbook) {
+        foreach ($addressbooks as $addressbook) {
             $objs[] = new AddressBook($this->carddavBackend, $addressbook);
         }
         return $objs;
@@ -165,7 +164,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      */
     function createExtendedCollection($name, MkCol $mkCol) {
 
-        if (!$mkCol->hasResourceType('{'.Plugin::NS_CARDDAV.'}addressbook')) {
+        if (!$mkCol->hasResourceType('{' . Plugin::NS_CARDDAV . '}addressbook')) {
             throw new DAV\Exception\InvalidResourceType('Unknown resourceType for this collection');
         }
         $properties = $mkCol->getRemainingValues();

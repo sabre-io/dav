@@ -22,9 +22,9 @@ class ReportNotSupported extends UnsupportedMediaType {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
-        $error = $errorNode->ownerDocument->createElementNS('DAV:','d:supported-report');
+        $error = $errorNode->ownerDocument->createElementNS('DAV:', 'd:supported-report');
         $errorNode->appendChild($error);
 
     }

@@ -74,4 +74,3 @@ interface ICollection extends INode {
     function childExists($name);
 
 }
-

@@ -33,7 +33,7 @@ class PreconditionFailed extends DAV\Exception {
      * @param string $message
      * @param string $header
      */
-    function __construct($message, $header=null) {
+    function __construct($message, $header = null) {
 
         parent::__construct($message);
         $this->header = $header;
@@ -58,7 +58,7 @@ class PreconditionFailed extends DAV\Exception {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
         if ($this->header) {
             $prop = $errorNode->ownerDocument->createElement('s:header');

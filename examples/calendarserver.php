@@ -17,10 +17,10 @@ date_default_timezone_set('Canada/Eastern');
 
 /* Database */
 $pdo = new PDO('sqlite:data/db.sqlite');
-$pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 //Mapping PHP errors to exceptions
-function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+function exception_error_handler($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 set_error_handler("exception_error_handler");
@@ -45,7 +45,7 @@ if (isset($baseUri))
     $server->setBaseUri($baseUri);
 
 /* Server Plugins */
-$authPlugin = new Sabre\DAV\Auth\Plugin($authBackend,'SabreDAV');
+$authPlugin = new Sabre\DAV\Auth\Plugin($authBackend, 'SabreDAV');
 $server->addPlugin($authPlugin);
 
 $aclPlugin = new Sabre\DAVACL\Plugin();

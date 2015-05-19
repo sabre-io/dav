@@ -24,7 +24,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
             '{http://sabredav.org/ns}owner-principal',
             '{http://sabredav.org/ns}read-only',
         ];
-        foreach($required as $r) {
+        foreach ($required as $r) {
             if (!isset($calendarInfo[$r])) {
                 throw new \InvalidArgumentException('The ' . $r . ' property must be specified for SharedCalendar(s)');
             }

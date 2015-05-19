@@ -45,7 +45,7 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
      * @param Backend\BackendInterface $caldavBackend
      * @param array $objectData
      */
-    function __construct(Backend\SchedulingSupport $caldavBackend,array $objectData) {
+    function __construct(Backend\SchedulingSupport $caldavBackend, array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
 
@@ -92,7 +92,7 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
      */
     function delete() {
 
-        $this->caldavBackend->deleteSchedulingObject($this->objectData['principaluri'],$this->objectData['uri']);
+        $this->caldavBackend->deleteSchedulingObject($this->objectData['principaluri'], $this->objectData['uri']);
 
     }
 

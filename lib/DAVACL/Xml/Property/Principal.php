@@ -61,11 +61,11 @@ class Principal extends DAV\Xml\Property\Href {
     function __construct($type, $href = null) {
 
         $this->type = $type;
-        if ($type===self::HREF && is_null($href)) {
+        if ($type === self::HREF && is_null($href)) {
             throw new DAV\Exception('The href argument must be specified for the HREF principal type.');
         }
         if ($href) {
-            $href = rtrim($href,'/') . '/';
+            $href = rtrim($href, '/') . '/';
             parent::__construct($href);
         }
 
@@ -104,7 +104,7 @@ class Principal extends DAV\Xml\Property\Href {
      */
     function xmlSerialize(Writer $writer) {
 
-        switch($this->type) {
+        switch ($this->type) {
 
             case self::UNAUTHENTICATED :
                 $writer->writeElement('{DAV:}unauthenticated');
@@ -147,7 +147,7 @@ class Principal extends DAV\Xml\Property\Href {
 
         $tree = $reader->parseInnerTree()[0];
 
-        switch($tree['name']) {
+        switch ($tree['name']) {
             case '{DAV:}unauthenticated' :
                 return new self(self::UNAUTHENTICATED);
             case '{DAV:}authenticated' :

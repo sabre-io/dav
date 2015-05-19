@@ -43,7 +43,7 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection {
      * @param Backend\BackendInterface $carddavBackend
      * @param string $principalPrefix
      */
-    function __construct(DAVACL\PrincipalBackend\BackendInterface $principalBackend,Backend\BackendInterface $carddavBackend, $principalPrefix = 'principals') {
+    function __construct(DAVACL\PrincipalBackend\BackendInterface $principalBackend, Backend\BackendInterface $carddavBackend, $principalPrefix = 'principals') {
 
         $this->carddavBackend = $carddavBackend;
         parent::__construct($principalBackend, $principalPrefix);

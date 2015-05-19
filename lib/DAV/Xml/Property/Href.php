@@ -103,7 +103,7 @@ class Href implements Element, HtmlOutput {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->getHrefs() as $href) {
+        foreach ($this->getHrefs() as $href) {
             if ($this->autoPrefix) {
                 $href = $writer->contextUri . $href;
             }
@@ -129,7 +129,7 @@ class Href implements Element, HtmlOutput {
     function toHtml(HtmlOutputHelper $html) {
 
         $links = [];
-        foreach($this->getHrefs() as $href) {
+        foreach ($this->getHrefs() as $href) {
             $links[] = $html->link($href);
         }
         return implode('<br />', $links);
@@ -160,7 +160,7 @@ class Href implements Element, HtmlOutput {
     static function xmlDeserialize(Reader $reader) {
 
         $hrefs = [];
-        foreach($reader->parseInnerTree() as $elem) {
+        foreach ($reader->parseInnerTree() as $elem) {
             if ($elem['name'] !== '{DAV:}href')
                 continue;
 

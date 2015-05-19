@@ -36,12 +36,12 @@ abstract class AbstractBackend implements BackendInterface {
 
         // Note that the default implementation here is a bit slow and could
         // likely be optimized.
-        if (substr($uri,0,7)!=='mailto:') {
+        if (substr($uri, 0, 7) !== 'mailto:') {
             return;
         }
         $result = $this->searchPrincipals(
             $principalPrefix,
-            ['{http://sabredav.org/ns}email-address' => substr($uri,7)]
+            ['{http://sabredav.org/ns}email-address' => substr($uri, 7)]
         );
 
         if ($result) {

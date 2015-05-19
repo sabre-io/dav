@@ -89,7 +89,7 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL {
         ];
 
         list(, $principalBaseName) = Uri\split($owner);
-        
+
         $path = $this->storagePath . '/' . $principalBaseName;
 
         if (!is_dir($path)) {

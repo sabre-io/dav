@@ -67,10 +67,10 @@ class HtmlOutputHelper {
     }
 
     /**
-     * Escape string for HTML output. 
+     * Escape string for HTML output.
      *
-     * @param string $input 
-     * @return string 
+     * @param string $input
+     * @return string
      */
     function h($input) {
 
@@ -82,11 +82,11 @@ class HtmlOutputHelper {
      * Generates a full <a>-tag.
      *
      * Url is automatically expanded. If label is not specified, we re-use the
-     * url. 
-     * 
-     * @param string $url 
-     * @param string $label 
-     * @return string 
+     * url.
+     *
+     * @param string $url
+     * @param string $label
+     * @return string
      */
     function link($url, $label = null) {
 
@@ -97,10 +97,10 @@ class HtmlOutputHelper {
 
     /**
      * This method takes an xml element in clark-notation, and turns it into a
-     * shortened version with a prefix, if it was a known namespace. 
-     * 
+     * shortened version with a prefix, if it was a known namespace.
+     *
      * @param string $element
-     * @return string 
+     * @return string
      */
     function xmlName($element) {
 

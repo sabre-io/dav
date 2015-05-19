@@ -18,6 +18,7 @@ ChangeLog
 * #654: Added a collection, `Sabre\DAVACL\FS\HomeCollection` for automatically
   creating a private home collection per-user.
 * Changed all MySQL columns from `VARCHAR` to `VARBINARY` where possible.
+* Improved older migration scripts a bit to allow easier testing.
 
 
 2.2.0-alpha4 (2015-04-13)

@@ -64,7 +64,7 @@ class Collection extends BaseCollection implements IACL {
 
         if (is_dir($path)) {
 
-            return new self($path, $this->acl, $this->owner);
+            return new static($path, $this->acl, $this->owner);
 
         } else {
 

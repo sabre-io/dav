@@ -7,6 +7,7 @@ ChangeLog
 * `migrate22.php` is now called `migrate30.php`.
 * Using php-cs-fixer for automated coding standards enforcement and fixing.
 * #660: principals could break html output.
+* #662: Fixed several bugs in the `share` request parser.
 
 
 3.0.0-alpha1 (2015-05-19)

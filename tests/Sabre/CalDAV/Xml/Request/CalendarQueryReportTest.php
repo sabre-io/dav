@@ -30,11 +30,11 @@ XML;
             '{DAV:}getetag',
         ];
         $calendarQueryReport->filters = [
-            'name' => 'VCALENDAR',
+            'name'           => 'VCALENDAR',
             'is-not-defined' => false,
-            'comp-filters' => [],
-            'prop-filters' => [],
-            'time-range' => false,
+            'comp-filters'   => [],
+            'prop-filters'   => [],
+            'time-range'     => false,
         ];
 
         $this->assertEquals(
@@ -115,96 +115,96 @@ XML;
         ];
         $calendarQueryReport->expand = [
             'start' => new \DateTime('2015-01-01 00:00:00', new \DateTimeZone('UTC')),
-            'end' => new \DateTime('2016-01-01 00:00:00', new \DateTimeZone('UTC')),
+            'end'   => new \DateTime('2016-01-01 00:00:00', new \DateTimeZone('UTC')),
         ];
         $calendarQueryReport->filters = [
-            'name' => 'VCALENDAR',
+            'name'           => 'VCALENDAR',
             'is-not-defined' => false,
-            'comp-filters' => [
+            'comp-filters'   => [
                 [
-                    'name' => 'VEVENT',
+                    'name'           => 'VEVENT',
                     'is-not-defined' => false,
-                    'comp-filters' => [
+                    'comp-filters'   => [
                         [
-                            'name' => 'VALARM',
+                            'name'           => 'VALARM',
                             'is-not-defined' => true,
-                            'comp-filters' => [],
-                            'prop-filters' => [],
-                            'time-range' => false,
+                            'comp-filters'   => [],
+                            'prop-filters'   => [],
+                            'time-range'     => false,
                         ],
                     ],
                     'prop-filters' => [
                         [
-                            'name' => 'UID',
+                            'name'           => 'UID',
                             'is-not-defined' => false,
-                            'time-range' => false,
-                            'text-match' => null,
-                            'param-filters' => [],
+                            'time-range'     => false,
+                            'text-match'     => null,
+                            'param-filters'  => [],
                         ],
                         [
-                            'name' => 'X-PROP',
+                            'name'           => 'X-PROP',
                             'is-not-defined' => false,
-                            'time-range' => false,
-                            'text-match' => null,
-                            'param-filters' => [
+                            'time-range'     => false,
+                            'text-match'     => null,
+                            'param-filters'  => [
                                 [
-                                    'name' => 'X-PARAM',
+                                    'name'           => 'X-PARAM',
                                     'is-not-defined' => false,
-                                    'text-match' => null,
+                                    'text-match'     => null,
                                 ],
                                 [
-                                    'name' => 'X-PARAM2',
+                                    'name'           => 'X-PARAM2',
                                     'is-not-defined' => true,
-                                    'text-match' => null,
+                                    'text-match'     => null,
                                 ],
                                 [
-                                    'name' => 'X-PARAM3',
+                                    'name'           => 'X-PARAM3',
                                     'is-not-defined' => false,
-                                    'text-match' => [
+                                    'text-match'     => [
                                         'negate-condition' => true,
-                                        'collation' => 'i;ascii-casemap',
-                                        'value' => 'hi',    
+                                        'collation'        => 'i;ascii-casemap',
+                                        'value'            => 'hi',
                                     ],
                                 ],
                             ],
                         ],
                         [
-                            'name' => 'X-PROP2',
+                            'name'           => 'X-PROP2',
                             'is-not-defined' => true,
-                            'time-range' => false,
-                            'text-match' => null,
-                            'param-filters' => [],
+                            'time-range'     => false,
+                            'text-match'     => null,
+                            'param-filters'  => [],
                         ],
                         [
-                            'name' => 'X-PROP3',
+                            'name'           => 'X-PROP3',
                             'is-not-defined' => false,
-                            'time-range' => [
+                            'time-range'     => [
                                 'start' => new \DateTime('2015-01-01 00:00:00', new \DateTimeZone('UTC')),
-                                'end' => new \DateTime('2016-01-01 00:00:00', new \DateTimeZone('UTC')),
-                            ], 
-                            'text-match' => null,
+                                'end'   => new \DateTime('2016-01-01 00:00:00', new \DateTimeZone('UTC')),
+                            ],
+                            'text-match'    => null,
                             'param-filters' => [],
                         ],
                         [
-                            'name' => 'X-PROP4',
+                            'name'           => 'X-PROP4',
                             'is-not-defined' => false,
-                            'time-range' => false, 
-                            'text-match' => [
+                            'time-range'     => false,
+                            'text-match'     => [
                                 'negate-condition' => false,
-                                'collation' => 'i;ascii-casemap',
-                                'value' => 'Hello',
+                                'collation'        => 'i;ascii-casemap',
+                                'value'            => 'Hello',
                             ],
                             'param-filters' => [],
                         ],
                     ],
                     'time-range' => [
                         'start' => new \DateTime('2015-01-01 00:00:00', new \DateTimeZone('UTC')),
-                        'end' => new \DateTime('2016-01-01 00:00:00', new \DateTimeZone('UTC')),
+                        'end'   => new \DateTime('2016-01-01 00:00:00', new \DateTimeZone('UTC')),
                     ]
                 ],
             ],
             'prop-filters' => [],
-            'time-range' => false,
+            'time-range'   => false,
         ];
 
         $this->assertEquals(

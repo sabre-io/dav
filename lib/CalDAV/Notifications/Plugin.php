@@ -100,7 +100,7 @@ class Plugin extends ServerPlugin {
 
             });
 
-        } // instanceof IPrincipal
+        }
 
         if ($node instanceof INode) {
 
@@ -109,7 +109,7 @@ class Plugin extends ServerPlugin {
                 [$node, 'getNotificationType']
             );
 
-        } // instanceof Notifications_INode
+        }
 
     }
 

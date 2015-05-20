@@ -3,6 +3,7 @@
 namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 use Sabre\Xml\Reader;
 
@@ -140,6 +141,50 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $reader->xml($xml);
         $result = $reader->parse();
         return $result['value'];
+
+    }
+
+    /**
+     * @depends testSimple
+     * @dataProvider htmlProvider
+     */
+    function testToHtml($principal, $output) {
+
+        $html = $principal->toHtml(new HtmlOutputHelper('/',[]));
+
+        $this->assertXmlStringEqualsXmlString(
+            $output,
+            $html
+        );
+
+    }
+
+    /**
+     * Provides data for the html tests
+     *
+     * @return array
+     */
+    function htmlProvider() {
+
+        return [
+            [
+                new Principal(Principal::UNAUTHENTICATED),
+                '<em>unauthenticated</em>',
+            ],
+            [
+                new Principal(Principal::AUTHENTICATED),
+                '<em>authenticated</em>',
+            ],
+            [
+                new Principal(Principal::ALL),
+                '<em>all</em>',
+            ],
+            [
+                new Principal(Principal::HREF, 'principals/admin'),
+                '<a href="/principals/admin/">/principals/admin/</a>',
+            ],
+
+        ];
 
     }
 

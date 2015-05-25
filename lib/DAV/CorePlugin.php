@@ -350,7 +350,7 @@ class CorePlugin extends ServerPlugin {
         $response->setHeader('DAV', implode(', ', $features));
 
         $prefer = $this->server->getHTTPPrefer();
-        $minimal = $prefer['return-minimal'];
+        $minimal = $prefer['return'] === 'minimal';
 
         $data = $this->server->generateMultiStatus($newProperties, $minimal);
         $response->setBody($data);
@@ -387,7 +387,7 @@ class CorePlugin extends ServerPlugin {
         $prefer = $this->server->getHTTPPrefer();
         $response->setHeader('Vary', 'Brief,Prefer');
 
-        if ($prefer['return-minimal']) {
+        if ($prefer['return'] === 'minimal') {
 
             // If return-minimal is specified, we only have to check if the
             // request was succesful, and don't need to return the

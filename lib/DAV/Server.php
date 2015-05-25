@@ -645,48 +645,25 @@ class Server extends EventEmitter {
     function getHTTPPrefer() {
 
         $result = [
-            'return-asynch'         => false,
-            'return-minimal'        => false,
-            'return-representation' => false,
-            'wait'                  => null,
-            'strict'                => false,
-            'lenient'               => false,
+            // can be true or false
+            'respond-async' => false,
+            // Could be set to 'representation' or 'minimal'.
+            'return'        => null,
+            // Used as a timeout, is usually a number.
+            'wait'          => null,
+            // can be 'strict' or 'lenient'.
+            'handling'      => false,
         ];
 
         if ($prefer = $this->httpRequest->getHeader('Prefer')) {
 
-            $parameters = array_map('trim',
-                explode(',', $prefer)
+            $result = array_merge(
+                $result,
+                \Sabre\HTTP\parsePrefer($prefer)
             );
 
-            foreach ($parameters as $parameter) {
-
-                // Right now our regex only supports the tokens actually
-                // specified in the draft. We may need to expand this if new
-                // tokens get registered.
-                if (!preg_match('/^(?P<token>[a-z0-9-]+)(?:=(?P<value>[0-9]+))?$/', $parameter, $matches)) {
-                    continue;
-                }
-
-                switch ($matches['token']) {
-
-                    case 'return-asynch' :
-                    case 'return-minimal' :
-                    case 'return-representation' :
-                    case 'strict' :
-                    case 'lenient' :
-                        $result[$matches['token']] = true;
-                        break;
-                    case 'wait' :
-                        $result[$matches['token']] = $matches['value'];
-                        break;
-
-                }
-
-            }
-
         } elseif ($this->httpRequest->getHeader('Brief') == 't') {
-            $result['return-minimal'] = true;
+            $result['return'] = 'minimal';
         }
 
         return $result;

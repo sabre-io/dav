@@ -1116,7 +1116,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $xml = $this->server->xml->write(
             '{DAV:}multistatus',
-            new DAV\Xml\Response\MultiStatus($result)
+            new DAV\Xml\Response\MultiStatus($result),
+            $this->server->getBaseUri()
         );
         $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
         $this->server->httpResponse->setStatus(207);

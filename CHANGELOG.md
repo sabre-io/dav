@@ -10,6 +10,8 @@ ChangeLog
 * #662: Fixed several bugs in the `share` request parser.
 * #665: Fix a bug in serialization of complex properties in the proppatch
   request in the client.
+* #666: expand-property report did not correctly prepend the base uri when
+  generating uris, this caused delegation to break.
 
 
 3.0.0-alpha1 (2015-05-19)

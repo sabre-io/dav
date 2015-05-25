@@ -368,14 +368,16 @@ class Plugin extends DAV\ServerPlugin {
 
                     $groupNode = $this->server->tree->getNodeForPath($group);
 
+                    $listItem = Uri\split($group)[0] . '/';
+
                     // If the node is either ap proxy-read or proxy-write
                     // group, we grab the parent principal and add it to the
                     // list.
                     if ($groupNode instanceof Principal\IProxyRead) {
-                        list($readList[]) = Uri\split($group);
+                        $readList[] = $listItem;
                     }
                     if ($groupNode instanceof Principal\IProxyWrite) {
-                        list($writeList[]) = Uri\split($group);
+                        $writeList[] = $listItem;
                     }
 
                 }

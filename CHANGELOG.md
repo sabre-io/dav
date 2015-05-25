@@ -14,6 +14,8 @@ ChangeLog
   generating uris, this caused delegation to break.
 * #659: Don't throw errors when when etag-related checks are done on
   collections.
+* Fully supporting the updated `Prefer` header syntax, as defined in
+  [rfc7240][rfc7240].
 
 
 3.0.0-alpha1 (2015-05-19)
@@ -1905,3 +1907,4 @@ ChangeLog
 [xml]: http://sabre.io/xml/
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"
+[rfc7240]: http://tools.ietf.org/html/rfc7240

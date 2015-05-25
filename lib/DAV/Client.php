@@ -19,15 +19,21 @@ use Sabre\HTTP;
 class Client extends HTTP\Client {
 
     /**
-     * The propertyMap is a key-value array.
+     * The xml service.
      *
-     * If you use the propertyMap, any {DAV:}multistatus responses with the
-     * properties listed in this array, will automatically be mapped to a
-     * respective class.
+     * Uset this service to configure the property and namespace maps.
      *
-     * The {DAV:}resourcetype property is automatically added. This maps to
-     * Sabre\DAV\Property\ResourceType
+     * @var mixed
+     */
+    public $xml;
+
+    /**
+     * The elementMap
      *
+     * This property is linked via reference to $this->xml->elementMap.
+     * It's deprecated as of version 3.0.0, and should no longer be used.
+     *
+     * @deprecated
      * @var array
      */
     public $propertyMap = [];
@@ -144,7 +150,9 @@ class Client extends HTTP\Client {
             $this->addCurlSetting(CURLOPT_ENCODING, implode(',', $encodings));
         }
 
-        $this->propertyMap['{DAV:}resourcetype'] = 'Sabre\\DAV\\Property\\ResourceType';
+        $this->xml = new Xml\Service();
+        // BC
+        $this->propertyMap = & $this->xml->elementMap;
 
     }
 
@@ -241,60 +249,17 @@ class Client extends HTTP\Client {
      */
     function propPatch($url, array $properties) {
 
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        $root = $dom->createElementNS('DAV:', 'd:propertyupdate');
-
-        foreach ($properties as $propName => $propValue) {
-
-            list(
-                $namespace,
-                $elementName
-            ) = \Sabre\Xml\Service::parseClarkNotation($propName);
-
-            if ($propValue === null) {
-
-                $remove = $dom->createElement('d:remove');
-                $prop = $dom->createElement('d:prop');
-
-                if ($namespace === 'DAV:') {
-                    $element = $dom->createElement('d:' . $elementName);
-                } else {
-                    $element = $dom->createElementNS($namespace, 'x:' . $elementName);
-                }
-
-                $root->appendChild($remove)->appendChild($prop)->appendChild($element);
-
-            } else {
-
-                $set = $dom->createElement('d:set');
-                $prop = $dom->createElement('d:prop');
-
-                if ($namespace === 'DAV:') {
-                    $element = $dom->createElement('d:' . $elementName);
-                } else {
-                    $element = $dom->createElementNS($namespace, 'x:' . $elementName);
-                }
-
-                if ($propValue instanceof Property) {
-                    $propValue->serialize(new Server(), $element);
-                } else {
-                    $element->nodeValue = htmlspecialchars($propValue, ENT_NOQUOTES, 'UTF-8');
-                }
-
-                $root->appendChild($set)->appendChild($prop)->appendChild($element);
-
-            }
-
-        }
-
-        $dom->appendChild($root);
-        $body = $dom->saveXML();
+        $propPatch = new Xml\Request\PropPatch();
+        $propPatch->properties = $properties;
+        $xml = $this->xml->write(
+            '{DAV:}propertyupdate',
+            $propPatch
+        );
 
         $url = $this->getAbsoluteUrl($url);
         $request = new HTTP\Request('PROPPATCH', $url, [
             'Content-Type' => 'application/xml',
-        ], $body);
+        ], $xml);
         $this->send($request);
     }
 
@@ -420,8 +385,7 @@ class Client extends HTTP\Client {
      */
     function parseMultiStatus($body) {
 
-        $xmlUtil = new Xml\Service();
-        $multistatus = $xmlUtil->expect('{DAV:}multistatus', $body);
+        $multistatus = $this->xml->expect('{DAV:}multistatus', $body);
 
         $result = [];
 

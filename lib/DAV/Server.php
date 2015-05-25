@@ -1260,7 +1260,7 @@ class Server extends EventEmitter {
                     // Stripping any extra spaces
                     $ifMatchItem = trim($ifMatchItem, ' ');
 
-                    $etag = $node->getETag();
+                    $etag = $node instanceof IFile ? $node->getETag() : null;
                     if ($etag === $ifMatchItem) {
                         $haveMatch = true;
                     } else {
@@ -1300,7 +1300,7 @@ class Server extends EventEmitter {
 
                     // There might be multiple ETags
                     $ifNoneMatch = explode(',', $ifNoneMatch);
-                    $etag = $node->getETag();
+                    $etag = $node instanceof IFile ? $node->getETag() : null;
 
                     foreach ($ifNoneMatch as $ifNoneMatchItem) {
 

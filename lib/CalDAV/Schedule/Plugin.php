@@ -123,7 +123,8 @@ class Plugin extends ServerPlugin {
             $ns . 'schedule-inbox-URL',
             $ns . 'schedule-outbox-URL',
             $ns . 'calendar-user-address-set',
-            $ns . 'calendar-user-type'
+            $ns . 'calendar-user-type',
+            $ns . 'schedule-default-calendar-URL'
         );
 
     }

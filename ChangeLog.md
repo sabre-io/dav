@@ -7,6 +7,8 @@ ChangeLog
 * #651: Double-encoded path in the browser plugin. Should fix a few broken
   links in some setups.
 * #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
+* #658: Updating `schedule-calendar-default-URL` does not work well, so we're
+  disabling it until there's a better fix.
 
 
 2.1.3 (2015-02-25)

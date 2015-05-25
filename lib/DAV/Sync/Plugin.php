@@ -106,9 +106,6 @@ class Plugin extends DAV\ServerPlugin {
      */
     function syncCollection($uri, SyncCollectionReport $report) {
 
-        // rfc3253 specifies 0 is the default value for Depth:
-        $depth = $this->server->getHTTPDepth(0);
-
         // Getting the data
         $node = $this->server->tree->getNodeForPath($uri);
         if (!$node instanceof ISyncCollection) {

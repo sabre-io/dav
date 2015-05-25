@@ -12,6 +12,8 @@ ChangeLog
   request in the client.
 * #666: expand-property report did not correctly prepend the base uri when
   generating uris, this caused delegation to break.
+* #659: Don't throw errors when when etag-related checks are done on
+  collections.
 
 
 3.0.0-alpha1 (2015-05-19)

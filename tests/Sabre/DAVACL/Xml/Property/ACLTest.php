@@ -10,14 +10,14 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 
     function testConstruct() {
 
-        $acl = new Acl(array());
+        $acl = new Acl([]);
         $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\ACL', $acl);
 
     }
 
     function testSerializeEmpty() {
 
-        $acl = new Acl(array());
+        $acl = new Acl([]);
         $xml = (new DAV\Server())->xml->write('{DAV:}root', $acl);
 
         $expected = '<?xml version="1.0"?>
@@ -75,21 +75,21 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 
     function testSerializeSpecialPrincipals() {
 
-        $privileges = array(
-            array(
+        $privileges = [
+            [
                 'principal' => '{DAV:}authenticated',
                 'privilege' => '{DAV:}write',
-            ),
-            array(
+            ],
+            [
                 'principal' => '{DAV:}unauthenticated',
                 'privilege' => '{DAV:}write',
-            ),
-            array(
+            ],
+            [
                 'principal' => '{DAV:}all',
                 'privilege' => '{DAV:}write',
-            ),
+            ],
 
-        );
+        ];
 
         $acl = new Acl($privileges);
         $xml = (new DAV\Server())->xml->write('{DAV:}root', $acl, '/');
@@ -169,18 +169,18 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
 
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'principal' => '/principals/evert/',
                 'protected' => false,
                 'privilege' => '{DAV:}write',
-            ),
-            array(
+            ],
+            [
                 'principal' => '/principals/foo/',
                 'protected' => true,
                 'privilege' => '{DAV:}read',
-            ),
-        );
+            ],
+        ];
 
         $this->assertEquals($expected, $result->getPrivileges());
 

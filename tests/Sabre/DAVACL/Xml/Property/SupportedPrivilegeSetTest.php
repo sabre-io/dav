@@ -46,14 +46,14 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
     function testSerializeAggregate() {
 
         $prop = new SupportedPrivilegeSet([
-            'privilege' => '{DAV:}all',
-            'abstract'  => true,
+            'privilege'  => '{DAV:}all',
+            'abstract'   => true,
             'aggregates' => [
                 [
                     'privilege' => '{DAV:}read',
                 ],
                 [
-                    'privilege' => '{DAV:}write',
+                    'privilege'   => '{DAV:}write',
                     'description' => 'booh',
                 ],
             ],
@@ -87,14 +87,14 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
     function testToHtml() {
 
         $prop = new SupportedPrivilegeSet([
-            'privilege' => '{DAV:}all',
-            'abstract'  => true,
+            'privilege'  => '{DAV:}all',
+            'abstract'   => true,
             'aggregates' => [
                 [
                     'privilege' => '{DAV:}read',
                 ],
                 [
-                    'privilege' => '{DAV:}write',
+                    'privilege'   => '{DAV:}write',
                     'description' => 'booh',
                 ],
             ],

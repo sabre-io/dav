@@ -19,9 +19,9 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
         $this->assertNull($principal->getHref());
 
-        $principal = new Principal(Principal::HREF,'admin');
+        $principal = new Principal(Principal::HREF, 'admin');
         $this->assertEquals(Principal::HREF, $principal->getType());
-        $this->assertEquals('admin/',$principal->getHref());
+        $this->assertEquals('admin/', $principal->getHref());
 
     }
 
@@ -73,7 +73,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerializeHref() {
 
-        $prin = new Principal(Principal::HREF,'principals/admin');
+        $prin = new Principal(Principal::HREF, 'principals/admin');
         $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin, '/');
 
         $this->assertXmlStringEqualsXmlString('
@@ -150,7 +150,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
      */
     function testToHtml($principal, $output) {
 
-        $html = $principal->toHtml(new HtmlOutputHelper('/',[]));
+        $html = $principal->toHtml(new HtmlOutputHelper('/', []));
 
         $this->assertXmlStringEqualsXmlString(
             $output,

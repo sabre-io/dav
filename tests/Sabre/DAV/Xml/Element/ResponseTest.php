@@ -17,10 +17,10 @@ class ResponseTest extends DAV\Xml\XmlTest {
             ]
         ];
 
-        $property = new Response('uri',$innerProps);
+        $property = new Response('uri', $innerProps);
 
-        $this->assertEquals('uri',$property->getHref());
-        $this->assertEquals($innerProps,$property->getResponseProperties());
+        $this->assertEquals('uri', $property->getHref());
+        $this->assertEquals($innerProps, $property->getResponseProperties());
 
 
     }
@@ -39,7 +39,7 @@ class ResponseTest extends DAV\Xml\XmlTest {
             ]
         ];
 
-        $property = new Response('uri',$innerProps);
+        $property = new Response('uri', $innerProps);
 
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
@@ -73,13 +73,13 @@ class ResponseTest extends DAV\Xml\XmlTest {
      */
     function testSerializeEmptyNamespace() {
 
-        $innerProps = [ 
-            200 => [ 
+        $innerProps = [
+            200 => [
                 '{}propertyname' => 'value',
             ],
         ];
 
-        $property = new Response('uri',$innerProps);
+        $property = new Response('uri', $innerProps);
 
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
@@ -107,12 +107,12 @@ class ResponseTest extends DAV\Xml\XmlTest {
     function testSerializeCustomNamespace() {
 
         $innerProps = [
-            200 => [ 
+            200 => [
                 '{http://sabredav.org/NS/example}propertyname' => 'value',
             ],
         ];
 
-        $property = new Response('uri',$innerProps);
+        $property = new Response('uri', $innerProps);
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         $this->assertXmlStringEqualsXmlString(
@@ -136,13 +136,13 @@ class ResponseTest extends DAV\Xml\XmlTest {
      */
     function testSerializeComplexProperty() {
 
-        $innerProps = [ 
-            200 => [ 
+        $innerProps = [
+            200 => [
                 '{DAV:}link' => new DAV\Xml\Property\Href('http://sabredav.org/', false)
             ],
         ];
 
-        $property = new Response('uri',$innerProps);
+        $property = new Response('uri', $innerProps);
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         $this->assertXmlStringEqualsXmlString(
@@ -168,13 +168,13 @@ class ResponseTest extends DAV\Xml\XmlTest {
      */
     function testSerializeBreak() {
 
-        $innerProps = array(
-            200 => array(
+        $innerProps = [
+            200 => [
                 '{DAV:}link' => new \STDClass()
-            ),
-        );
+            ],
+        ];
 
-        $property = new Response('uri',$innerProps);
+        $property = new Response('uri', $innerProps);
         $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
     }

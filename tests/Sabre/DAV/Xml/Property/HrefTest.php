@@ -11,14 +11,14 @@ class HrefTest extends XmlTest {
     function testConstruct() {
 
         $href = new Href('path');
-        $this->assertEquals('path',$href->getHref());
+        $this->assertEquals('path', $href->getHref());
 
     }
 
     function testSerialize() {
 
         $href = new Href('path');
-        $this->assertEquals('path',$href->getHref());
+        $this->assertEquals('path', $href->getHref());
 
         $this->contextUri = '/bla/';
 
@@ -33,8 +33,8 @@ class HrefTest extends XmlTest {
 
     function testSerializeNoPrefix() {
 
-        $href = new Href('path',false);
-        $this->assertEquals('path',$href->getHref());
+        $href = new Href('path', false);
+        $this->assertEquals('path', $href->getHref());
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 
@@ -57,7 +57,7 @@ class HrefTest extends XmlTest {
 
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $href);
 
-        $this->assertEquals('/bla/path',$href->getHref());
+        $this->assertEquals('/bla/path', $href->getHref());
 
     }
 
@@ -78,7 +78,7 @@ class HrefTest extends XmlTest {
     function testSerializeEntity() {
 
         $href = new Href('http://example.org/?a&b', false);
-        $this->assertEquals('http://example.org/?a&b',$href->getHref());
+        $this->assertEquals('http://example.org/?a&b', $href->getHref());
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 

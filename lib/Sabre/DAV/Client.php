@@ -557,8 +557,15 @@ class Client {
 
                 $propStat->registerXPathNamespace('d', 'urn:DAV');
                 $status = $propStat->xpath('d:status');
-                list($httpVersion, $statusCode, $message) = explode(' ', (string)$status[0],3);
-
+                
+                // This resolves issues that are flooding the log file due to some malformed
+                // WebDAV response e.g. T-Mobile's cloud named "Mediencenter"
+                // This has the positve side-effect of a huge speed inporovement on erros
+                if (count($status) < 1 || empty($status[0]) || count($status) < 3)
+                    $statusCode='200';
+                else
+                    list($httpVersion, $statusCode, $message) = explode(' ', (string)$status[0],3);
+                
                 // Only using the propertymap for results with status 200.
                 $propertyMap = $statusCode==='200' ? $this->propertyMap : array();
 

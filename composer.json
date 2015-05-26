@@ -16,9 +16,9 @@
     "require": {
         "php": ">=5.4.1",
         "sabre/vobject": ">=3.3.4,<4",
-        "sabre/event" : "~2.0.0",
-        "sabre/xml"  : "~0.4.2",
-        "sabre/http" : "~4.0.0-alpha1",
+        "sabre/event" : "~2.0",
+        "sabre/xml"  : "~1.0",
+        "sabre/http" : "~4.0",
         "sabre/uri" : "~1.0",
         "ext-dom": "*",
         "ext-pcre": "*",

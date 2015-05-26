@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.0.0-beta2 (2015-??-??)
+------------------------
+
+* Some uris were not correctly encoded in notifications.
+
+
 3.0.0-beta1 (2015-05-25)
 ------------------------
 

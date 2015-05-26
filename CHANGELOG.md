@@ -4,6 +4,7 @@ ChangeLog
 3.0.0-beta2 (2015-??-??)
 ------------------------
 
+* A node's properties should not overwrite properties that were already set.
 * Some uris were not correctly encoded in notifications.
 
 

@@ -120,7 +120,8 @@ ChangeLog
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
-2.1.4 (2015-??-??)
+
+2.1.4 (2015-05-25)
 ------------------
 
 * #651: Double-encoded path in the browser plugin. Should fix a few broken
@@ -128,6 +129,8 @@ ChangeLog
 * #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
 * #658: Updating `schedule-calendar-default-URL` does not work well, so we're
   disabling it until there's a better fix.
+* The zip release ships with [sabre/vobject 3.4.3][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.3 (2015-02-25)
@@ -282,10 +285,12 @@ ChangeLog
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
 
 
-2.0.7 (2015-??-??)
+2.0.7 (2015-05-25)
 ------------------
 
 * #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 
 2.0.6 (2014-12-10)

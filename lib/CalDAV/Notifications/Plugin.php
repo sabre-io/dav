@@ -137,7 +137,7 @@ class Plugin extends ServerPlugin {
             return;
 
         $writer = $this->server->xml->getWriter();
-        $writer->contextUri = $request->getUrl();
+        $writer->contextUri = $this->server->getBaseUri();
         $writer->openMemory();
         $writer->startDocument('1.0', 'UTF-8');
         $writer->startElement('{http://calendarserver.org/ns/}notification');

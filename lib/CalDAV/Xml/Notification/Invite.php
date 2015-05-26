@@ -226,7 +226,7 @@ class Invite implements NotificationInterface {
         }
 
         $writer->writeElement($cs . 'hosturl', [
-            '{DAV:}href' => $writer->baseUri . $this->hostUrl
+            '{DAV:}href' => $writer->contextUri . $this->hostUrl
             ]);
 
         if ($this->summary) {
@@ -247,7 +247,7 @@ class Invite implements NotificationInterface {
         if (strtolower(substr($this->organizer, 0, 7)) === 'mailto:') {
             $writer->writeElement('{DAV:}href', $this->organizer);
         } else {
-            $writer->writeElement('{DAV:}href', $writer->baseUri . $this->organizer);
+            $writer->writeElement('{DAV:}href', $writer->contextUri . $this->organizer);
         }
         if ($this->commonName) {
             $writer->writeElement($cs . 'common-name', $this->commonName);

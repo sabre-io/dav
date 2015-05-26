@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.0.0-beta1 (2015-05-??)
+3.0.0-beta1 (2015-05-25)
 ------------------------
 
 * `migrate22.php` is now called `migrate30.php`.
@@ -16,6 +16,9 @@ ChangeLog
   collections.
 * Fully supporting the updated `Prefer` header syntax, as defined in
   [rfc7240][rfc7240].
+* The zip release ships with [sabre/vobject 3.4.3][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
 
 
 3.0.0-alpha1 (2015-05-19)
@@ -37,7 +40,7 @@ ChangeLog
 * Changed all MySQL columns from `VARCHAR` to `VARBINARY` where possible.
 * Improved older migration scripts a bit to allow easier testing.
 * The zip release ships with [sabre/vobject 3.4.3][vobj],
-  [sabre/http 4.0.0-alpha3][http], [sabre/event 2.0.22][evnt],
+  [sabre/http 4.0.0-alpha3][http], [sabre/event 2.0.2][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 0.4.3][xml].
 
 

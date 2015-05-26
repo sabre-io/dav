@@ -1,10 +1,12 @@
 ChangeLog
 =========
 
-2.0.7 (2015-??-??)
+2.0.7 (2015-05-25)
 ------------------
 
 * #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 
 2.0.6 (2014-12-10)

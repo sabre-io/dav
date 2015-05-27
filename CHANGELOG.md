@@ -1,11 +1,14 @@
 ChangeLog
 =========
 
-3.0.0-beta2 (2015-??-??)
+3.0.0-beta2 (2015-05-27)
 ------------------------
 
 * A node's properties should not overwrite properties that were already set.
 * Some uris were not correctly encoded in notifications.
+* The zip release ships with [sabre/vobject 3.4.4][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
 
 
 3.0.0-beta1 (2015-05-25)

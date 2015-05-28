@@ -5,6 +5,7 @@ ChangeLog
 ------------------
 
 * Fixed deserializing href properties with no value.
+* Fixed deserializing `{DAV:}propstat` without a `{DAV:}prop`.
 
 
 3.0.0-beta2 (2015-05-27)

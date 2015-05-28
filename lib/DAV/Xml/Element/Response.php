@@ -177,7 +177,7 @@ class Response implements Element {
                 case '{DAV:}propstat' :
                     $status = $elem['value']['{DAV:}status'];
                     list(, $status, ) = explode(' ', $status, 3);
-                    $properties = $elem['value']['{DAV:}prop'];
+                    $properties = isset($elem['value']['{DAV:}prop']) ? $elem['value']['{DAV:}prop'] : [];
                     $propertyLists[$status] = $properties;
                     break;
                 case '{DAV:}status' :

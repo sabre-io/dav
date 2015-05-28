@@ -71,6 +71,16 @@ class HrefTest extends XmlTest {
         $this->assertNull($href);
 
     }
+    function testUnserializeEmpty() {
+
+        $xml = '<?xml version="1.0"?>
+<d:anything xmlns:d="DAV:"></d:anything>
+';
+        $result = $this->parse($xml, ['{DAV:}anything' => 'Sabre\\DAV\\Xml\\Property\\Href']);
+        $href = $result['value'];
+        $this->assertNull($href);
+
+    }
 
     /**
      * This method tests if hrefs containing & are correctly encoded.

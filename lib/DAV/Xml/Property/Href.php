@@ -160,7 +160,7 @@ class Href implements Element, HtmlOutput {
     static function xmlDeserialize(Reader $reader) {
 
         $hrefs = [];
-        foreach ($reader->parseInnerTree() as $elem) {
+        foreach ((array)$reader->parseInnerTree() as $elem) {
             if ($elem['name'] !== '{DAV:}href')
                 continue;
 

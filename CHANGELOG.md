@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.0.0 (2015-??-??)
+------------------
+
+* Fixed deserializing href properties with no value.
+
+
 3.0.0-beta2 (2015-05-27)
 ------------------------
 

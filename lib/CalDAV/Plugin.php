@@ -424,7 +424,12 @@ class Plugin extends DAV\ServerPlugin {
         $timeZones = [];
         $propertyList = [];
 
-        foreach ($this->server->getPropertiesForMultiplePaths($report->hrefs, $report->properties) as $uri => $objProps) {
+        $paths = array_map(
+            [$this->server, 'calculateUri'],
+            $report->hrefs
+        );
+
+        foreach ($this->server->getPropertiesForMultiplePaths($paths, $report->properties) as $uri => $objProps) {
 
             if (($needsJson || $report->expand) && isset($objProps[200]['{' . self::NS_CALDAV . '}calendar-data'])) {
                 $vObject = VObject\Reader::read($objProps[200]['{' . self::NS_CALDAV . '}calendar-data']);

@@ -245,7 +245,11 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $propertyList = [];
-        foreach ($this->server->getPropertiesForMultiplePaths($report->hrefs, $report->properties) as $props) {
+        $paths = array_map(
+            [$this->server, 'calculateUri'],
+            $report->hrefs
+        );
+        foreach ($this->server->getPropertiesForMultiplePaths($paths, $report->properties) as $props) {
 
             if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
 

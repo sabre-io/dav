@@ -1,13 +1,14 @@
 ChangeLog
 =========
 
-3.0.0 (2015-??-??)
-------------------
+3.0.0-beta3 (2015-??-??)
+------------------------
 
 * Fixed deserializing href properties with no value.
 * Fixed deserializing `{DAV:}propstat` without a `{DAV:}prop`.
 * #668: More information about vcf-export-plugin in browser plugin.
 * #669: Add export button to browser plugin for address books. (@mgee)
+* #670: multiget report hrefs were not decoded.
 
 
 3.0.0-beta2 (2015-05-27)

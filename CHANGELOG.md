@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.0.0-beta3 (2015-??-??)
+3.0.0-beta3 (2015-05-29)
 ------------------------
 
 * Fixed deserializing href properties with no value.
@@ -9,6 +9,9 @@ ChangeLog
 * #668: More information about vcf-export-plugin in browser plugin.
 * #669: Add export button to browser plugin for address books. (@mgee)
 * #670: multiget report hrefs were not decoded.
+* The zip release ships with [sabre/vobject 3.4.4][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
 
 
 3.0.0-beta2 (2015-05-27)

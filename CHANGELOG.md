@@ -6,6 +6,7 @@ ChangeLog
 
 * Fixed deserializing href properties with no value.
 * Fixed deserializing `{DAV:}propstat` without a `{DAV:}prop`.
+* #668: More information about vcf-export-plugin in browser plugin.
 * #669: Add export button to browser plugin for address books. (@mgee)
 
 

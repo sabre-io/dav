@@ -1,6 +1,15 @@
 ChangeLog
 =========
 
+3.0.0 (2015-06-02)
+------------------
+
+* No changes since last beta.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
+
+
 3.0.0-beta3 (2015-05-29)
 ------------------------
 

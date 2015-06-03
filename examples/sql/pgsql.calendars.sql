@@ -29,7 +29,8 @@ CREATE TABLE calendarobjects (
     size INTEGER NOT NULL,
     componenttype VARCHAR(8),
     firstoccurence INTEGER,
-    lastoccurence INTEGER
+    lastoccurence INTEGER,
+    uid VARCHAR(200)
 );
 
 ALTER TABLE ONLY calendarobjects

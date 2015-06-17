@@ -75,6 +75,9 @@ we'd still _love_ your pull request.
 We may have to write the tests ourselves, which can increase the time it takes
 to accept the patch, but we'd still really like your contribution!
 
+To run the testsuite jump into the directory `cd tests` and trigger `phpunit`.
+Make sure you did a `composer install` beforehand.
+
 [1]: http://www.php-fig.org/psr/psr-1/
 [2]: http://www.php-fig.org/psr/psr-4/
 [3]: http://www.php-fig.org/psr/psr-2/

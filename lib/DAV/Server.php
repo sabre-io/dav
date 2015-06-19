@@ -848,7 +848,11 @@ class Server extends EventEmitter {
         foreach ($this->tree->getChildren($path) as $childNode) {
             $subPropFind = clone $propFind;
             $subPropFind->setDepth($newDepth);
-            $subPath = $path ? $path . '/' . $childNode->getName() : $childNode->getName();
+            if ($path !== '') {
+                $subPath = $path . '/' . $childNode->getName();
+            } else {
+                $subPath = $childNode->getName();
+            }
             $subPropFind->setPath($subPath);
 
             $propFindRequests[] = [

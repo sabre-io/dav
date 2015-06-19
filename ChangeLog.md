@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+2.1.5 (????-??-??)
+------------------
+
+* #677: Resources with the name '0' would not get retrieved when using
+  `Depth: infinity` in a `PROPFIND` request.
+
+
 2.1.4 (2015-05-25)
 ------------------
 

@@ -5,6 +5,8 @@ ChangeLog
 ------------------
 
 * #647: Postgres sql file fixes. (@davesouthney)
+* #677: Resources with the name '0' would not get retrieved when using
+  `Depth: infinity` in a `PROPFIND` request.
 
 
 3.0.0 (2015-06-02)

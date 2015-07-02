@@ -145,8 +145,8 @@ class Href implements Element, HtmlOutput {
      * Often you want to return an instance of the current class, but you are
      * free to return other data as well.
      *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
      *
      * If you just want to skip parsing for this element altogether, you can
      * just call $reader->next();
@@ -168,7 +168,7 @@ class Href implements Element, HtmlOutput {
 
         }
         if ($hrefs) {
-            return new self($hrefs);
+            return new self($hrefs, false);
         }
 
     }

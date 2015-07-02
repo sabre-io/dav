@@ -63,7 +63,7 @@ XML;
 XML;
 
         $expected = [
-            '{DAV:}foo' => new Href('/hello')
+            '{DAV:}foo' => new Href('/hello', false)
         ];
 
         $elementMap = [

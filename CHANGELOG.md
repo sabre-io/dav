@@ -1,13 +1,17 @@
 ChangeLog
 =========
 
-3.0.1 (????-??-??)
+3.0.1 (2015-07-02)
 ------------------
 
 * #647: Postgres sql file fixes. (@davesouthney)
 * #677: Resources with the name '0' would not get retrieved when using
   `Depth: infinity` in a `PROPFIND` request.
 * #680: Fix 'autoprefixing' of dead `{DAV:}href` properties.
+* #675: NTLM support in DAV\Client. (@k42b3)
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
 3.0.0 (2015-06-02)

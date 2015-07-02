@@ -4,7 +4,7 @@ ChangeLog
 3.0.1 (2015-07-02)
 ------------------
 
-* #647: Postgres sql file fixes. (@davesouthney)
+* #674: Postgres sql file fixes. (@davesouthey)
 * #677: Resources with the name '0' would not get retrieved when using
   `Depth: infinity` in a `PROPFIND` request.
 * #680: Fix 'autoprefixing' of dead `{DAV:}href` properties.

@@ -40,7 +40,7 @@ class CalendarRoot extends \Sabre\DAVACL\AbstractPrincipalCollection {
      * @param Backend\BackendInterface $caldavBackend
      * @param string $principalPrefix
      */
-    function __construct(PrincipalBackend\BackendInterface $principalBackend,Backend\BackendInterface $caldavBackend, $principalPrefix = 'principals') {
+    function __construct(PrincipalBackend\BackendInterface $principalBackend, Backend\BackendInterface $caldavBackend, $principalPrefix = 'principals') {
 
         parent::__construct($principalBackend, $principalPrefix);
         $this->caldavBackend = $caldavBackend;

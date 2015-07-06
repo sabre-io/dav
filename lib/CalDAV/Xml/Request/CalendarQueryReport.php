@@ -93,24 +93,24 @@ class CalendarQueryReport implements XmlDeserializable {
         ]);
 
         $newProps = [
-            'filters' => null,
+            'filters'    => null,
             'properties' => [],
         ];
 
         if (!is_array($elems)) $elems = [];
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{DAV:}prop' :
                     $newProps['properties'] = array_keys($elem['value']);
                     if (isset($elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data'])) {
-                        $newProps+=$elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data'];
+                        $newProps += $elem['value']['{' . Plugin::NS_CALDAV . '}calendar-data'];
                     }
                     break;
-                case '{'.Plugin::NS_CALDAV.'}filter' :
-                    foreach($elem['value'] as $subElem) {
+                case '{' . Plugin::NS_CALDAV . '}filter' :
+                    foreach ($elem['value'] as $subElem) {
                         if ($subElem['name'] === '{' . Plugin::NS_CALDAV . '}comp-filter') {
                             if (!is_null($newProps['filters'])) {
                                 throw new BadRequest('Only one top-level comp-filter may be defined');
@@ -129,7 +129,7 @@ class CalendarQueryReport implements XmlDeserializable {
         }
 
         $obj = new self();
-        foreach($newProps as $key=>$value) {
+        foreach ($newProps as $key => $value) {
             $obj->$key = $value;
         }
         return $obj;

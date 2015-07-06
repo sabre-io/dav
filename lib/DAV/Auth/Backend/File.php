@@ -29,7 +29,7 @@ class File extends AbstractDigest {
      *
      * @param string|null $filename
      */
-    function __construct($filename=null) {
+    function __construct($filename = null) {
 
         if (!is_null($filename))
             $this->loadFile($filename);
@@ -45,12 +45,12 @@ class File extends AbstractDigest {
      */
     function loadFile($filename) {
 
-        foreach(file($filename,FILE_IGNORE_NEW_LINES) as $line) {
+        foreach (file($filename, FILE_IGNORE_NEW_LINES) as $line) {
 
             if (substr_count($line, ":") !== 2)
                 throw new DAV\Exception('Malformed htdigest file. Every line should contain 2 colons');
 
-            list($username,$realm,$A1) = explode(':',$line);
+            list($username, $realm, $A1) = explode(':', $line);
 
             if (!preg_match('/^[a-zA-Z0-9]{32}$/', $A1))
                 throw new DAV\Exception('Malformed htdigest file. Invalid md5 hash');
@@ -70,7 +70,7 @@ class File extends AbstractDigest {
      */
     function getDigestHash($realm, $username) {
 
-        return isset($this->users[$realm . ':' . $username])?$this->users[$realm . ':' . $username]:false;
+        return isset($this->users[$realm . ':' . $username]) ? $this->users[$realm . ':' . $username] : false;
 
     }
 

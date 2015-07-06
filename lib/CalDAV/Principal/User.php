@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Principal;
+
 use Sabre\DAV;
 use Sabre\DAVACL;
 
@@ -69,7 +70,7 @@ class User extends DAVACL\Principal implements DAV\ICollection {
     /**
      * Returns an array with all the child nodes
      *
-    * @return DAV\INode[]
+     * @return DAV\INode[]
      */
     function getChildren() {
 

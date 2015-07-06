@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Xml\Property;
 
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
 
@@ -16,7 +18,7 @@ use Sabre\Xml\Reader;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ResourceType extends Element\Elements {
+class ResourceType extends Element\Elements implements HtmlOutput {
 
     /**
      * Constructor
@@ -97,6 +99,29 @@ class ResourceType extends Element\Elements {
 
         return
             new self(parent::xmlDeserialize($reader));
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        return implode(
+            ', ',
+            array_map([$html, 'xmlName'], $this->getValue())
+        );
 
     }
 

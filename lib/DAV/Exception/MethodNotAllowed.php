@@ -39,7 +39,7 @@ class MethodNotAllowed extends DAV\Exception {
         $methods = $server->getAllowedMethods($server->getRequestUri());
 
         return [
-            'Allow' => strtoupper(implode(', ',$methods)),
+            'Allow' => strtoupper(implode(', ', $methods)),
         ];
 
     }

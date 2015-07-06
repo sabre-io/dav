@@ -78,4 +78,3 @@ class LockInfo {
     public $uri;
 
 }
-

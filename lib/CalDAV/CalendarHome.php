@@ -2,12 +2,11 @@
 
 namespace Sabre\CalDAV;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\Exception\NotFound,
-    Sabre\DAV\MkCol,
-    Sabre\DAVACL,
-    Sabre\HTTP\URLUtil;
+use Sabre\DAV;
+use Sabre\DAV\Exception\NotFound;
+use Sabre\DAV\MkCol;
+use Sabre\DAVACL;
+use Sabre\HTTP\URLUtil;
 
 /**
  * The CalendarHome represents a node that is usually in a users'
@@ -57,7 +56,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      */
     function getName() {
 
-        list(,$name) = URLUtil::splitPath($this->principalInfo['uri']);
+        list(, $name) = URLUtil::splitPath($this->principalInfo['uri']);
         return $name;
 
     }
@@ -105,7 +104,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      * @param resource $data
      * @return void
      */
-    function createFile($filename, $data=null) {
+    function createFile($filename, $data = null) {
 
         throw new DAV\Exception\MethodNotAllowed('Creating new files in this collection is not supported');
 
@@ -145,7 +144,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
         }
 
         // Calendars
-        foreach($this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']) as $calendar) {
+        foreach ($this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']) as $calendar) {
             if ($calendar['uri'] === $name) {
                 if ($this->caldavBackend instanceof Backend\SharingSupport) {
                     if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
@@ -160,7 +159,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
         }
 
         if ($this->caldavBackend instanceof Backend\SubscriptionSupport) {
-            foreach($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
+            foreach ($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
                 if ($subscription['uri'] === $name) {
                     return new Subscriptions\Subscription($this->caldavBackend, $subscription);
                 }
@@ -197,7 +196,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
         $calendars = $this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']);
         $objs = [];
-        foreach($calendars as $calendar) {
+        foreach ($calendars as $calendar) {
             if ($this->caldavBackend instanceof Backend\SharingSupport) {
                 if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
                     $objs[] = new SharedCalendar($this->caldavBackend, $calendar);
@@ -221,7 +220,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
         // If the backend supports subscriptions, we'll add those as well,
         if ($this->caldavBackend instanceof Backend\SubscriptionSupport) {
-            foreach($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
+            foreach ($this->caldavBackend->getSubscriptionsForUser($this->principalInfo['uri']) as $subscription) {
                 $objs[] = new Subscriptions\Subscription($this->caldavBackend, $subscription);
             }
         }
@@ -242,7 +241,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
         $isCalendar = false;
         $isSubscription = false;
-        foreach($mkCol->getResourceType() as $rt) {
+        foreach ($mkCol->getResourceType() as $rt) {
             switch ($rt) {
                 case '{DAV:}collection' :
                 case '{http://calendarserver.org/ns/}shared-owner' :

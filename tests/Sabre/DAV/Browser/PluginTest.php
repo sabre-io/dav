@@ -40,6 +40,32 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertTrue(strpos($body, '<a href="/dir/child.txt">')!==false);
 
     }
+
+    /**
+     * Adding the If-None-Match should have 0 effect, but it threw an error.
+     */
+    function testCollectionGetIfNoneMatch() {
+
+        $request = new HTTP\Request('GET', '/dir');
+        $request->setHeader('If-None-Match', '"foo-bar"');
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
+        $this->assertEquals(
+            [
+                'X-Sabre-Version' => [DAV\Version::VERSION],
+                'Content-Type' => ['text/html; charset=utf-8'],
+                'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
+            ],
+            $this->response->getHeaders()
+        );
+
+        $body = $this->response->getBodyAsString();
+        $this->assertTrue(strpos($body, '<title>dir') !== false, $body);
+        $this->assertTrue(strpos($body, '<a href="/dir/child.txt">')!==false);
+
+    }
     function testCollectionGetRoot() {
 
         $request = new HTTP\Request('GET', '/');

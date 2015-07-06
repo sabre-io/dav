@@ -71,11 +71,11 @@ class ExpandPropertyReport implements XmlDeserializable {
      * @param array $elems
      * @return void
      */
-    static private function traverse($elems) {
+    private static function traverse($elems) {
 
         $result = [];
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
             if ($elem['name'] !== '{DAV:}property') {
                 continue;

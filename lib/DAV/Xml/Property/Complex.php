@@ -2,9 +2,8 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\Xml\Element\XmlFragment,
-    Sabre\Xml\Reader;
+use Sabre\Xml\Element\XmlFragment;
+use Sabre\Xml\Reader;
 
 /**
  * This class represents a 'complex' property that didn't have a default
@@ -56,16 +55,16 @@ class Complex extends XmlFragment {
         $nonText = false;
         $text = '';
 
-        while(true) {
+        while (true) {
 
-            switch($reader->nodeType) {
+            switch ($reader->nodeType) {
                 case Reader::ELEMENT :
                     $nonText = true;
                     $reader->next();
                     continue 2;
                 case Reader::TEXT :
                 case Reader::CDATA :
-                    $text.=$reader->value;
+                    $text .= $reader->value;
                     break;
                 case Reader::END_ELEMENT :
                     break 2;
@@ -88,4 +87,3 @@ class Complex extends XmlFragment {
 
 
 }
-

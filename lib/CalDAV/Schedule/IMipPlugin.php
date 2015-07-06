@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV\Schedule;
 
 use Sabre\DAV;
-use Sabre\VObject;
 use Sabre\VObject\ITip;
 
 /**
@@ -100,14 +99,14 @@ class IMipPlugin extends DAV\ServerPlugin {
 
         $summary = $iTipMessage->message->VEVENT->SUMMARY;
 
-        if (parse_url($iTipMessage->sender, PHP_URL_SCHEME)!=='mailto')
+        if (parse_url($iTipMessage->sender, PHP_URL_SCHEME) !== 'mailto')
             return;
 
-        if (parse_url($iTipMessage->recipient, PHP_URL_SCHEME)!=='mailto')
+        if (parse_url($iTipMessage->recipient, PHP_URL_SCHEME) !== 'mailto')
             return;
 
-        $sender = substr($iTipMessage->sender,7);
-        $recipient = substr($iTipMessage->recipient,7);
+        $sender = substr($iTipMessage->sender, 7);
+        $recipient = substr($iTipMessage->recipient, 7);
 
         if ($iTipMessage->senderName) {
             $sender = $iTipMessage->senderName . ' <' . $sender . '>';
@@ -117,7 +116,7 @@ class IMipPlugin extends DAV\ServerPlugin {
         }
 
         $subject = 'SabreDAV iTIP message';
-        switch(strtoupper($iTipMessage->method)) {
+        switch (strtoupper($iTipMessage->method)) {
             case 'REPLY' :
                 $subject = 'Re: ' . $summary;
                 break;

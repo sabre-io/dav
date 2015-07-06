@@ -29,7 +29,7 @@ class CalendarQueryValidator {
      * @param array $filters
      * @return bool
      */
-    function validate(VObject\Component\VCalendar $vObject,array $filters) {
+    function validate(VObject\Component\VCalendar $vObject, array $filters) {
 
         // The top level object is always a component filter.
         // We'll parse it manually, as it's pretty simple.
@@ -57,7 +57,7 @@ class CalendarQueryValidator {
      */
     protected function validateCompFilters(VObject\Component $parent, array $filters) {
 
-        foreach($filters as $filter) {
+        foreach ($filters as $filter) {
 
             $isDefined = isset($parent->$filter['name']);
 
@@ -75,7 +75,7 @@ class CalendarQueryValidator {
             }
 
             if ($filter['time-range']) {
-                foreach($parent->$filter['name'] as $subComponent) {
+                foreach ($parent->$filter['name'] as $subComponent) {
                     if ($this->validateTimeRange($subComponent, $filter['time-range']['start'], $filter['time-range']['end'])) {
                         continue 2;
                     }
@@ -89,7 +89,7 @@ class CalendarQueryValidator {
 
             // If there are sub-filters, we need to find at least one component
             // for which the subfilters hold true.
-            foreach($parent->$filter['name'] as $subComponent) {
+            foreach ($parent->$filter['name'] as $subComponent) {
 
                 if (
                     $this->validateCompFilters($subComponent, $filter['comp-filters']) &&
@@ -126,7 +126,7 @@ class CalendarQueryValidator {
      */
     protected function validatePropFilters(VObject\Component $parent, array $filters) {
 
-        foreach($filters as $filter) {
+        foreach ($filters as $filter) {
 
             $isDefined = isset($parent->$filter['name']);
 
@@ -144,7 +144,7 @@ class CalendarQueryValidator {
             }
 
             if ($filter['time-range']) {
-                foreach($parent->$filter['name'] as $subComponent) {
+                foreach ($parent->$filter['name'] as $subComponent) {
                     if ($this->validateTimeRange($subComponent, $filter['time-range']['start'], $filter['time-range']['end'])) {
                         continue 2;
                     }
@@ -158,9 +158,9 @@ class CalendarQueryValidator {
 
             // If there are sub-filters, we need to find at least one property
             // for which the subfilters hold true.
-            foreach($parent->$filter['name'] as $subComponent) {
+            foreach ($parent->$filter['name'] as $subComponent) {
 
-                if(
+                if (
                     $this->validateParamFilters($subComponent, $filter['param-filters']) &&
                     (!$filter['text-match'] || $this->validateTextMatch($subComponent, $filter['text-match']))
                 ) {
@@ -196,7 +196,7 @@ class CalendarQueryValidator {
      */
     protected function validateParamFilters(VObject\Property $parent, array $filters) {
 
-        foreach($filters as $filter) {
+        foreach ($filters as $filter) {
 
             $isDefined = isset($parent[$filter['name']]);
 
@@ -219,9 +219,9 @@ class CalendarQueryValidator {
 
             // If there are sub-filters, we need to find at least one parameter
             // for which the subfilters hold true.
-            foreach($parent[$filter['name']]->getParts() as $paramPart) {
+            foreach ($parent[$filter['name']]->getParts() as $paramPart) {
 
-                if($this->validateTextMatch($paramPart,$filter['text-match'])) {
+                if ($this->validateTextMatch($paramPart, $filter['text-match'])) {
                     // We had a match, so this param-filter succeeds
                     continue 2;
                 }
@@ -282,7 +282,7 @@ class CalendarQueryValidator {
             $end = new DateTime('3000-01-01');
         }
 
-        switch($component->name) {
+        switch ($component->name) {
 
             case 'VEVENT' :
             case 'VTODO' :
@@ -302,7 +302,7 @@ class CalendarQueryValidator {
 
                     // Fire up the iterator!
                     $it = new VObject\Recur\EventIterator($component->parent->parent, (string)$component->parent->UID);
-                    while($it->valid()) {
+                    while ($it->valid()) {
                         $expandedEvent = $it->getEventObject();
 
                         // We need to check from these expanded alarms, which
@@ -310,7 +310,7 @@ class CalendarQueryValidator {
                         // determine if we can 'give up' expanding events.
                         $firstAlarm = null;
                         if ($expandedEvent->VALARM !== null) {
-                            foreach($expandedEvent->VALARM as $expandedAlarm) {
+                            foreach ($expandedEvent->VALARM as $expandedAlarm) {
 
                                 $effectiveTrigger = $expandedAlarm->getEffectiveTriggerTime();
                                 if ($expandedAlarm->isInTimeRange($start, $end)) {

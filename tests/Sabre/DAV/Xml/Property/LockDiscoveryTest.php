@@ -4,6 +4,7 @@ namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Xml\XmlTest;
 use Sabre\DAV\Locks\LockInfo;
+
 class LockDiscoveryTest extends XmlTest {
 
     function testSerialize() {

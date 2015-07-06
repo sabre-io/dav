@@ -82,4 +82,3 @@ abstract class File extends Node implements IFile {
     }
 
 }
-

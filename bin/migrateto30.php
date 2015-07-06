@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php
 
-echo "SabreDAV migrate script for version 2.2\n";
+echo "SabreDAV migrate script for version 3.0\n";
 
 if ($argc<2) {
 
     echo <<<HELLO
 
-This script help you migrate from a pre-2.2 database to 2.2 and later
+This script help you migrate from a pre-3.0 database to 3.0 and later
 
 Changes:
   * The propertystorage table has changed to allow storage of complex
@@ -168,4 +168,4 @@ while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
 }
 
 echo "Done.\n";
-echo "Upgrade to 2.2 schema completed.\n";
+echo "Upgrade to 3.0 schema completed.\n";

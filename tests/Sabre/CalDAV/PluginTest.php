@@ -475,12 +475,12 @@ END:VCALENDAR';
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+        $this->assertEquals(array('principals/admin/'), $prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+        $this->assertEquals(array('principals/admin/'), $prop->getHrefs());
 
         $this->assertArrayHasKey('{' . Plugin::NS_CALENDARSERVER . '}email-address-set',$props[0][200]);
         $prop = $props[0][200]['{' . Plugin::NS_CALENDARSERVER . '}email-address-set'];

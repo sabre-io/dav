@@ -38,7 +38,7 @@ class SupportedCollationSet implements XmlSerializable {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach(['i;ascii-casemap', 'i;octet', 'i;unicode-casemap'] as $coll) {
+        foreach (['i;ascii-casemap', 'i;octet', 'i;unicode-casemap'] as $coll) {
             $writer->writeElement('{urn:ietf:params:xml:ns:carddav}supported-collation', $coll);
         }
 

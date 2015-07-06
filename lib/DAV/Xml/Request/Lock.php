@@ -66,11 +66,11 @@ class Lock implements XmlDeserializable {
         $reader->popContext();
 
         $new = new self();
-        $new->owner = !empty($values['{DAV:}owner'])?$values['{DAV:}owner']->getXml():null;
+        $new->owner = !empty($values['{DAV:}owner']) ? $values['{DAV:}owner']->getXml() : null;
         $new->scope = LockInfo::SHARED;
 
         if (isset($values['{DAV:}lockscope'])) {
-            foreach($values['{DAV:}lockscope'] as $elem) {
+            foreach ($values['{DAV:}lockscope'] as $elem) {
                 if ($elem['name'] === '{DAV:}exclusive') $new->scope = LockInfo::EXCLUSIVE;
             }
         }

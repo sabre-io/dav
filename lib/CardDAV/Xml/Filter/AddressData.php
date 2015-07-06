@@ -4,10 +4,6 @@ namespace Sabre\CardDAV\Xml\Filter;
 
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CardDAV\Plugin;
-use Sabre\VObject\DateTimeParser;
-
 
 /**
  * AddressData parser.
@@ -51,8 +47,8 @@ class AddressData implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $result = [
-            'contentType' => $reader->getAttribute('content-type')?:'text/vcard',
-            'version'     => $reader->getAttribute('version')?:'3.0',
+            'contentType' => $reader->getAttribute('content-type') ?: 'text/vcard',
+            'version'     => $reader->getAttribute('version') ?: '3.0',
         ];
 
         $reader->next();

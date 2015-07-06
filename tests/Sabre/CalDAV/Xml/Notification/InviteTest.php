@@ -224,7 +224,7 @@ FOO
     function writeFull($input) {
 
         $writer = new Writer();
-        $writer->baseUri = '/';
+        $writer->contextUri = '/';
         $writer->namespaceMap = $this->namespaceMap;
         $writer->openMemory();
         $writer->startElement('{http://calendarserver.org/ns/}root');

@@ -2,10 +2,8 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
 use Sabre\CalDAV\Plugin;
-
 
 /**
  * SystemStatus notification
@@ -97,7 +95,7 @@ class SystemStatus implements NotificationInterface {
      */
     function xmlSerialize(Writer $writer) {
 
-        switch($this->type) {
+        switch ($this->type) {
             case self::TYPE_LOW :
                 $type = 'low';
                 break;
@@ -110,7 +108,7 @@ class SystemStatus implements NotificationInterface {
                 break;
         }
 
-        $writer->startElement('{' . Plugin::NS_CALENDARSERVER .'}systemstatus');
+        $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}systemstatus');
         $writer->writeAttribute('type', $type);
         $writer->endElement();
 
@@ -125,8 +123,8 @@ class SystemStatus implements NotificationInterface {
      */
     function xmlSerializeFull(Writer $writer) {
 
-        $cs = '{' . Plugin::NS_CALENDARSERVER .'}';
-        switch($this->type) {
+        $cs = '{' . Plugin::NS_CALENDARSERVER . '}';
+        switch ($this->type) {
             case self::TYPE_LOW :
                 $type = 'low';
                 break;
@@ -139,7 +137,7 @@ class SystemStatus implements NotificationInterface {
                 break;
         }
 
-        $writer->startElement($cs .'systemstatus');
+        $writer->startElement($cs . 'systemstatus');
         $writer->writeAttribute('type', $type);
 
 

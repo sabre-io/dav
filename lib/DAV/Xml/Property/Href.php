@@ -2,10 +2,11 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * Href property
@@ -21,7 +22,7 @@ use
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Href implements Element {
+class Href implements Element, HtmlOutput {
 
     /**
      * List of uris
@@ -102,12 +103,36 @@ class Href implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->getHrefs() as $href) {
+        foreach ($this->getHrefs() as $href) {
             if ($this->autoPrefix) {
                 $href = $writer->contextUri . $href;
             }
             $writer->writeElement('{DAV:}href', $href);
         }
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        $links = [];
+        foreach ($this->getHrefs() as $href) {
+            $links[] = $html->link($href);
+        }
+        return implode('<br />', $links);
 
     }
 
@@ -120,8 +145,8 @@ class Href implements Element {
      * Often you want to return an instance of the current class, but you are
      * free to return other data as well.
      *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
      *
      * If you just want to skip parsing for this element altogether, you can
      * just call $reader->next();
@@ -135,7 +160,7 @@ class Href implements Element {
     static function xmlDeserialize(Reader $reader) {
 
         $hrefs = [];
-        foreach($reader->parseInnerTree() as $elem) {
+        foreach ((array)$reader->parseInnerTree() as $elem) {
             if ($elem['name'] !== '{DAV:}href')
                 continue;
 
@@ -143,7 +168,7 @@ class Href implements Element {
 
         }
         if ($hrefs) {
-            return new self($hrefs);
+            return new self($hrefs, false);
         }
 
     }

@@ -3,16 +3,15 @@
 namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
-use Sabre\DAV\XMLUtil;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 use Sabre\Xml\Reader;
-
 
 class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
     function testSerialize() {
 
-        $privileges = [ 
+        $privileges = [
             '{DAV:}read',
             '{DAV:}write',
         ];
@@ -42,6 +41,7 @@ XML;
     <d:privilege>
         <d:write-properties />
     </d:privilege>
+    <d:ignoreme />
     <d:privilege>
         <d:read />
     </d:privilege>
@@ -62,6 +62,24 @@ XML;
         $reader->xml($xml);
         $result = $reader->parse();
         return $result['value'];
+
+    }
+
+    function testToHtml() {
+
+        $privileges = ['{DAV:}read', '{DAV:}write'];
+
+        $prop = new CurrentUserPrivilegeSet($privileges);
+        $html = new HtmlOutputHelper(
+            '/base/',
+            ['DAV:' => 'd']
+        );
+
+        $expected =
+            '<span title="{DAV:}read">d:read</span>, ' .
+            '<span title="{DAV:}write">d:write</span>';
+
+        $this->assertEquals($expected, $prop->toHtml($html));
 
     }
 

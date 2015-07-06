@@ -27,4 +27,3 @@ class NotFound extends DAV\Exception {
     }
 
 }
-

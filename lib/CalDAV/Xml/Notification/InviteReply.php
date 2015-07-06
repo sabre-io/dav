@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV\Xml\Notification;
 
 use Sabre\Xml\Writer;
-use Sabre\DAV;
 use Sabre\CalDAV;
 use Sabre\CalDAV\SharingPlugin;
 
@@ -99,13 +98,13 @@ class InviteReply implements NotificationInterface {
             'type',
             'hostUrl',
         ];
-        foreach($required as $item) {
+        foreach ($required as $item) {
             if (!isset($values[$item])) {
                 throw new \InvalidArgumentException($item . ' is a required constructor option');
             }
         }
 
-        foreach($values as $key=>$value) {
+        foreach ($values as $key => $value) {
             if (!property_exists($this, $key)) {
                 throw new \InvalidArgumentException('Unknown option: ' . $key);
             }
@@ -135,7 +134,7 @@ class InviteReply implements NotificationInterface {
      */
     function xmlSerialize(Writer $writer) {
 
-        $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER .'}invite-reply');
+        $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER . '}invite-reply');
 
     }
 
@@ -159,7 +158,7 @@ class InviteReply implements NotificationInterface {
         $writer->writeElement($cs . 'in-reply-to', $this->inReplyTo);
         $writer->writeElement('{DAV:}href', $this->href);
 
-        switch($this->type) {
+        switch ($this->type) {
 
             case SharingPlugin::STATUS_ACCEPTED :
                 $writer->writeElement($cs . 'invite-accepted');
@@ -171,7 +170,7 @@ class InviteReply implements NotificationInterface {
         }
 
         $writer->writeElement($cs . 'hosturl', [
-            '{DAV:}href' => $writer->baseUri . $this->hostUrl
+            '{DAV:}href' => $writer->contextUri . $this->hostUrl
             ]);
 
         if ($this->summary) {

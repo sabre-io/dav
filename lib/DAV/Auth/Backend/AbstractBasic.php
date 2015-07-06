@@ -2,11 +2,10 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\HTTP;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * HTTP Basic authentication backend class
@@ -103,7 +102,7 @@ abstract class AbstractBasic implements BackendInterface {
         if (!$userpass) {
             return [false, "No 'Authorization: Basic' header found. Either the client didn't send one, or the server is mis-configured"];
         }
-        if (!$this->validateUserPass($userpass[0],$userpass[1])) {
+        if (!$this->validateUserPass($userpass[0], $userpass[1])) {
             return [false, "Username or password was incorrect"];
         }
         return [true, $this->principalPrefix . $userpass[0]];
@@ -143,4 +142,3 @@ abstract class AbstractBasic implements BackendInterface {
     }
 
 }
-

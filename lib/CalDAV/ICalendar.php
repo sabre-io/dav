@@ -2,7 +2,6 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAV;
 use Sabre\DAVACL;
 
 /**

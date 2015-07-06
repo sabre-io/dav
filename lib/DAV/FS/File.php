@@ -21,7 +21,7 @@ class File extends Node implements DAV\IFile {
      */
     function put($data) {
 
-        file_put_contents($this->path,$data);
+        file_put_contents($this->path, $data);
         clearstatcache(true, $this->path);
 
     }
@@ -33,7 +33,7 @@ class File extends Node implements DAV\IFile {
      */
     function get() {
 
-        return fopen($this->path,'r');
+        return fopen($this->path, 'r');
 
     }
 
@@ -75,7 +75,7 @@ class File extends Node implements DAV\IFile {
             fileinode($this->path) .
             filesize($this->path) .
             filemtime($this->path)
-        ). '"';
+        ) . '"';
 
     }
 
@@ -93,4 +93,3 @@ class File extends Node implements DAV\IFile {
     }
 
 }
-

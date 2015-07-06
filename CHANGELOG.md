@@ -1,7 +1,72 @@
 ChangeLog
 =========
 
-2.2.0-alpha5 (2015-??-??)
+3.0.1 (2015-07-02)
+------------------
+
+* #674: Postgres sql file fixes. (@davesouthey)
+* #677: Resources with the name '0' would not get retrieved when using
+  `Depth: infinity` in a `PROPFIND` request.
+* #680: Fix 'autoprefixing' of dead `{DAV:}href` properties.
+* #675: NTLM support in DAV\Client. (@k42b3)
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.0 (2015-06-02)
+------------------
+
+* No changes since last beta.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
+
+
+3.0.0-beta3 (2015-05-29)
+------------------------
+
+* Fixed deserializing href properties with no value.
+* Fixed deserializing `{DAV:}propstat` without a `{DAV:}prop`.
+* #668: More information about vcf-export-plugin in browser plugin.
+* #669: Add export button to browser plugin for address books. (@mgee)
+* #670: multiget report hrefs were not decoded.
+* The zip release ships with [sabre/vobject 3.4.4][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
+
+
+3.0.0-beta2 (2015-05-27)
+------------------------
+
+* A node's properties should not overwrite properties that were already set.
+* Some uris were not correctly encoded in notifications.
+* The zip release ships with [sabre/vobject 3.4.4][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
+
+
+3.0.0-beta1 (2015-05-25)
+------------------------
+
+* `migrate22.php` is now called `migrate30.php`.
+* Using php-cs-fixer for automated coding standards enforcement and fixing.
+* #660: principals could break html output.
+* #662: Fixed several bugs in the `share` request parser.
+* #665: Fix a bug in serialization of complex properties in the proppatch
+  request in the client.
+* #666: expand-property report did not correctly prepend the base uri when
+  generating uris, this caused delegation to break.
+* #659: Don't throw errors when when etag-related checks are done on
+  collections.
+* Fully supporting the updated `Prefer` header syntax, as defined in
+  [rfc7240][rfc7240].
+* The zip release ships with [sabre/vobject 3.4.3][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.0.0][xml].
+
+
+3.0.0-alpha1 (2015-05-19)
 -------------------------
 
 * It's now possible to get all property information from files using the
@@ -11,6 +76,17 @@ ChangeLog
 * Some nodes that by default showed the current time as their last
   modification time, now no longer has a last modification time.
 * CardDAV namespace was missing from default namespaceMap.
+* #646: Properties can now control their own HTML output in the browser plugin.
+* #646: Nicer HTML output for the `{DAV:}acl` property.
+* Browser plugin no longer shows a few properties that take up a lot of space,
+  but are likely not really interesting for most users.
+* #654: Added a collection, `Sabre\DAVACL\FS\HomeCollection` for automatically
+  creating a private home collection per-user.
+* Changed all MySQL columns from `VARCHAR` to `VARBINARY` where possible.
+* Improved older migration scripts a bit to allow easier testing.
+* The zip release ships with [sabre/vobject 3.4.3][vobj],
+  [sabre/http 4.0.0-alpha3][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 0.4.3][xml].
 
 
 2.2.0-alpha4 (2015-04-13)
@@ -87,6 +163,26 @@ ChangeLog
   to the latest API!
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
+* #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.5 (????-??-??)
+------------------
+
+* #677: Resources with the name '0' would not get retrieved when using
+  `Depth: infinity` in a `PROPFIND` request.
+
+
+2.1.4 (2015-05-25)
+------------------
+
+* #651: Double-encoded path in the browser plugin. Should fix a few broken
+  links in some setups.
+* #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
+* #658: Updating `schedule-calendar-default-URL` does not work well, so we're
+  disabling it until there's a better fix.
+* The zip release ships with [sabre/vobject 3.4.3][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.3 (2015-02-25)
@@ -239,6 +335,21 @@ ChangeLog
 * Added: #523 Custom CalDAV backends can now mark any calendar as read-only.
 * The zip release ships with [sabre/vobject 3.3.3][vobj],
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
+
+
+2.0.8 (????-??-??)
+------------------
+
+* #677: Resources with the name '0' would not get retrieved when using
+  `Depth: infinity` in a `PROPFIND` request.
+
+
+2.0.7 (2015-05-25)
+------------------
+
+* #650: Correctly cleaning up change info after deleting calendars (@ErrOrnAmE).
+* The zip release ships with [sabre/vobject 3.3.4][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 
 2.0.6 (2014-12-10)
@@ -1863,3 +1974,4 @@ ChangeLog
 [xml]: http://sabre.io/xml/
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"
+[rfc7240]: http://tools.ietf.org/html/rfc7240

@@ -63,7 +63,7 @@ XML;
 XML;
 
         $expected = [
-            '{DAV:}foo' => new Href('/hello')
+            '{DAV:}foo' => new Href('/hello', false)
         ];
 
         $elementMap = [
@@ -90,7 +90,7 @@ XML;
             '{DAV:}foo' => function($reader) {
                 $reader->next();
                 return 'zim';
-            } 
+            }
         ];
 
         $this->assertDecodeProp($input, $expected, $elementMap);
@@ -112,7 +112,7 @@ XML;
         $expected = [];
 
         $elementMap = [
-            '{DAV:}foo' => 'idk?', 
+            '{DAV:}foo' => 'idk?',
         ];
 
         $this->assertDecodeProp($input, $expected, $elementMap);
@@ -134,7 +134,7 @@ XML;
         $expected = [];
 
         $elementMap = [
-            '{DAV:}foo' => new \StdClass(), 
+            '{DAV:}foo' => new \StdClass(),
         ];
 
         $this->assertDecodeProp($input, $expected, $elementMap);

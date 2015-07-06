@@ -2,17 +2,14 @@
 
 namespace Sabre\CardDAV;
 
-use
-    Sabre\DAV,
-    Sabre\DAV\Exception\ReportNotSupported,
-    Sabre\DAV\MkCol,
-    Sabre\DAV\Xml\Property\Href,
-    Sabre\DAVACL,
-    Sabre\HTTP,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface,
-    Sabre\VObject;
-
+use Sabre\DAV;
+use Sabre\DAV\Exception\ReportNotSupported;
+use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAVACL;
+use Sabre\HTTP;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\VObject;
 
 /**
  * CardDAV plugin
@@ -67,7 +64,7 @@ class Plugin extends DAV\ServerPlugin {
 
         /* Events */
         $server->on('propFind',            [$this, 'propFindEarly']);
-        $server->on('propFind',            [$this, 'propFindLate'],150);
+        $server->on('propFind',            [$this, 'propFindLate'], 150);
         $server->on('report',              [$this, 'report']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
@@ -193,14 +190,14 @@ class Plugin extends DAV\ServerPlugin {
      * @param \DOMNode $dom
      * @return bool
      */
-    function report($reportName,$dom) {
+    function report($reportName, $dom) {
 
-        switch($reportName) {
-            case '{'.self::NS_CARDDAV.'}addressbook-multiget' :
+        switch ($reportName) {
+            case '{' . self::NS_CARDDAV . '}addressbook-multiget' :
                 $this->server->transactionType = 'report-addressbook-multiget';
                 $this->addressbookMultiGetReport($dom);
                 return false;
-            case '{'.self::NS_CARDDAV.'}addressbook-query' :
+            case '{' . self::NS_CARDDAV . '}addressbook-query' :
                 $this->server->transactionType = 'report-addressbook-query';
                 $this->addressBookQueryReport($dom);
                 return false;
@@ -240,7 +237,7 @@ class Plugin extends DAV\ServerPlugin {
         $contentType = $report->contentType;
         $version = $report->version;
         if ($version) {
-            $contentType.='; version=' . $version;
+            $contentType .= '; version=' . $version;
         }
 
         $vcardType = $this->negotiateVCard(
@@ -248,7 +245,11 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $propertyList = [];
-        foreach($this->server->getPropertiesForMultiplePaths($report->hrefs, $report->properties) as $props) {
+        $paths = array_map(
+            [$this->server, 'calculateUri'],
+            $report->hrefs
+        );
+        foreach ($this->server->getPropertiesForMultiplePaths($paths, $report->properties) as $props) {
 
             if (isset($props['200']['{' . self::NS_CARDDAV . '}address-data'])) {
 
@@ -262,12 +263,12 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $prefer = $this->server->getHTTPPRefer();
+        $prefer = $this->server->getHTTPPrefer();
 
         $this->server->httpResponse->setStatus(207);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList, $prefer['return-minimal']));
+        $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
+        $this->server->httpResponse->setHeader('Vary', 'Brief,Prefer');
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList, $prefer['return'] === 'minimal'));
 
     }
 
@@ -343,7 +344,7 @@ class Plugin extends DAV\ServerPlugin {
 
             // If the data starts with a [, we can reasonably assume we're dealing
             // with a jCal object.
-            if (substr($data,0,1)==='[') {
+            if (substr($data, 0, 1) === '[') {
                 $vobj = VObject\Reader::readJson($data);
 
                 // Converting $data back to iCalendar, as that's what we
@@ -387,7 +388,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $depth = $this->server->getHTTPDepth(0);
 
-        if ($depth==0) {
+        if ($depth == 0) {
             $candidateNodes = [
                 $this->server->tree->getNodeForPath($this->server->getRequestUri())
             ];
@@ -400,7 +401,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $contentType = $report->contentType;
         if ($report->version) {
-            $contentType.='; version=' . $report->version;
+            $contentType .= '; version=' . $report->version;
         }
 
         $vcardType = $this->negotiateVCard(
@@ -408,7 +409,7 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $validNodes = [];
-        foreach($candidateNodes as $node) {
+        foreach ($candidateNodes as $node) {
 
             if (!$node instanceof ICard)
                 continue;
@@ -432,9 +433,9 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         $result = [];
-        foreach($validNodes as $validNode) {
+        foreach ($validNodes as $validNode) {
 
-            if ($depth==0) {
+            if ($depth == 0) {
                 $href = $this->server->getRequestUri();
             } else {
                 $href = $this->server->getRequestUri() . '/' . $validNode->getName();
@@ -454,12 +455,12 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
-        $prefer = $this->server->getHTTPPRefer();
+        $prefer = $this->server->getHTTPPrefer();
 
         $this->server->httpResponse->setStatus(207);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
-        $this->server->httpResponse->setHeader('Vary','Brief,Prefer');
-        $this->server->httpResponse->setBody($this->server->generateMultiStatus($result, $prefer['return-minimal']));
+        $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
+        $this->server->httpResponse->setHeader('Vary', 'Brief,Prefer');
+        $this->server->httpResponse->setBody($this->server->generateMultiStatus($result, $prefer['return'] === 'minimal'));
 
     }
 
@@ -477,7 +478,7 @@ class Plugin extends DAV\ServerPlugin {
 
         if (!$filters) return true;
 
-        foreach($filters as $filter) {
+        foreach ($filters as $filter) {
 
             $isDefined = isset($vcard->{$filter['name']});
             if ($filter['is-not-defined']) {
@@ -501,13 +502,13 @@ class Plugin extends DAV\ServerPlugin {
                 }
                 if ($filter['text-matches']) {
                     $texts = [];
-                    foreach($vProperties as $vProperty)
+                    foreach ($vProperties as $vProperty)
                         $texts[] = $vProperty->getValue();
 
                     $results[] = $this->validateTextMatches($texts, $filter['text-matches'], $filter['test']);
                 }
 
-                if (count($results)===1) {
+                if (count($results) === 1) {
                     $success = $results[0];
                 } else {
                     if ($filter['test'] === 'anyof') {
@@ -521,10 +522,10 @@ class Plugin extends DAV\ServerPlugin {
 
             // There are two conditions where we can already determine whether
             // or not this filter succeeds.
-            if ($test==='anyof' && $success) {
+            if ($test === 'anyof' && $success) {
                 return true;
             }
-            if ($test==='allof' && !$success) {
+            if ($test === 'allof' && !$success) {
                 return false;
             }
 
@@ -535,7 +536,7 @@ class Plugin extends DAV\ServerPlugin {
         //
         // This implies for 'anyof' that the test failed, and for 'allof' that
         // we succeeded. Sounds weird, but makes sense.
-        return $test==='allof';
+        return $test === 'allof';
 
     }
 
@@ -552,10 +553,10 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function validateParamFilters(array $vProperties, array $filters, $test) {
 
-        foreach($filters as $filter) {
+        foreach ($filters as $filter) {
 
             $isDefined = false;
-            foreach($vProperties as $vProperty) {
+            foreach ($vProperties as $vProperty) {
                 $isDefined = isset($vProperty[$filter['name']]);
                 if ($isDefined) break;
             }
@@ -575,7 +576,7 @@ class Plugin extends DAV\ServerPlugin {
             } else {
 
                 $success = false;
-                foreach($vProperties as $vProperty) {
+                foreach ($vProperties as $vProperty) {
                     // If we got all the way here, we'll need to validate the
                     // text-match filter.
                     $success = DAV\StringUtil::textMatch($vProperty[$filter['name']]->getValue(), $filter['text-match']['value'], $filter['text-match']['collation'], $filter['text-match']['match-type']);
@@ -589,10 +590,10 @@ class Plugin extends DAV\ServerPlugin {
 
             // There are two conditions where we can already determine whether
             // or not this filter succeeds.
-            if ($test==='anyof' && $success) {
+            if ($test === 'anyof' && $success) {
                 return true;
             }
-            if ($test==='allof' && !$success) {
+            if ($test === 'allof' && !$success) {
                 return false;
             }
 
@@ -603,7 +604,7 @@ class Plugin extends DAV\ServerPlugin {
         //
         // This implies for 'anyof' that the test failed, and for 'allof' that
         // we succeeded. Sounds weird, but makes sense.
-        return $test==='allof';
+        return $test === 'allof';
 
     }
 
@@ -617,10 +618,10 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function validateTextMatches(array $texts, array $filters, $test) {
 
-        foreach($filters as $filter) {
+        foreach ($filters as $filter) {
 
             $success = false;
-            foreach($texts as $haystack) {
+            foreach ($texts as $haystack) {
                 $success = DAV\StringUtil::textMatch($haystack, $filter['value'], $filter['collation'], $filter['match-type']);
 
                 // Breaking on the first match
@@ -630,10 +631,10 @@ class Plugin extends DAV\ServerPlugin {
                 $success = !$success;
             }
 
-            if ($success && $test==='anyof')
+            if ($success && $test === 'anyof')
                 return true;
 
-            if (!$success && $test=='allof')
+            if (!$success && $test == 'allof')
                 return false;
 
 
@@ -644,7 +645,7 @@ class Plugin extends DAV\ServerPlugin {
         //
         // This implies for 'anyof' that the test failed, and for 'allof' that
         // we succeeded. Sounds weird, but makes sense.
-        return $test==='allof';
+        return $test === 'allof';
 
     }
 
@@ -660,7 +661,7 @@ class Plugin extends DAV\ServerPlugin {
         // the content-type property. By default SabreDAV will send back
         // text/x-vcard; charset=utf-8, but for SOGO we must strip that last
         // part.
-        if (strpos($this->server->httpRequest->getHeader('User-Agent'),'Thunderbird')===false) {
+        if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'Thunderbird') === false) {
             return;
         }
         $contentType = $propFind->get('{DAV:}getcontenttype');
@@ -685,7 +686,7 @@ class Plugin extends DAV\ServerPlugin {
         if (!$node instanceof AddressBookHome)
             return;
 
-        $output.= '<tr><td colspan="2"><form method="post" action="">
+        $output .= '<tr><td colspan="2"><form method="post" action="">
             <h3>Create new address book</h3>
             <input type="hidden" name="sabreAction" value="mkcol" />
             <input type="hidden" name="resourceType" value="{DAV:}collection,{' . self::NS_CARDDAV . '}addressbook" />
@@ -710,7 +711,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function httpAfterGet(RequestInterface $request, ResponseInterface $response) {
 
-        if (strpos($response->getHeader('Content-Type'),'text/vcard')===false) {
+        if (strpos($response->getHeader('Content-Type'), 'text/vcard') === false) {
             return;
         }
 
@@ -761,7 +762,7 @@ class Plugin extends DAV\ServerPlugin {
         );
 
         $mimeType = $result;
-        switch($result) {
+        switch ($result) {
 
             default :
             case 'text/x-vcard' :
@@ -790,7 +791,7 @@ class Plugin extends DAV\ServerPlugin {
     protected function convertVCard($data, $target) {
 
         $data = VObject\Reader::read($data);
-        switch($target) {
+        switch ($target) {
             default :
             case 'vcard3' :
                 $data = $data->convert(VObject\Document::VCARD30);

@@ -198,6 +198,7 @@ class SharingPlugin extends ServerPlugin {
             if ($rt = $propFind->get('{DAV:}resourcetype')) {
                 $rt->add('{DAV:}shared');
                 $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared');
+
             }
 
         }
@@ -244,7 +245,7 @@ class SharingPlugin extends ServerPlugin {
             $documentType
         );
 
-        switch($documentType) {
+        switch ($documentType) {
 
             // Dealing with the 'share-resource' document, which modified invitees on a
             // calendar.
@@ -277,7 +278,7 @@ class SharingPlugin extends ServerPlugin {
 
             // The invite-reply document is sent when the user replies to an
             // invitation of a calendar share.
-            case '{'. Plugin::NS_CALENDARSERVER.'}invite-reply' :
+            case '{' . Plugin::NS_CALENDARSERVER . '}invite-reply' :
 
                 // This only works on the calendar-home-root node.
                 if (!$node instanceof INotification) {
@@ -321,7 +322,7 @@ class SharingPlugin extends ServerPlugin {
                     $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');
                     $writer->write(new Href($url));
                     $writer->endElement();
-                    $response->setHeader('Content-Type','application/xml');
+                    $response->setHeader('Content-Type', 'application/xml');
                     $response->setBody($writer->outputMemory());
 
                 }

@@ -45,4 +45,3 @@ interface IPatchSupport extends DAV\IFile {
     function patch($data, $rangeType, $offset = null);
 
 }
-

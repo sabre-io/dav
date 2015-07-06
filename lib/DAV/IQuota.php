@@ -24,4 +24,3 @@ interface IQuota extends ICollection {
     function getQuotaInfo();
 
 }
-

@@ -2,10 +2,9 @@
 
 namespace Sabre\DAV\Xml\Element;
 
-use
-    Sabre\DAV\Xml\Property\Complex,
-    Sabre\Xml\XmlDeserializable,
-    Sabre\Xml\Reader;
+use Sabre\DAV\Xml\Property\Complex;
+use Sabre\Xml\XmlDeserializable;
+use Sabre\Xml\Reader;
 
 /**
  * This class is responsible for decoding the {DAV:}prop element as it appears
@@ -83,31 +82,31 @@ class Prop implements XmlDeserializable {
      *
      * @return array
      */
-    static private function parseCurrentElement(Reader $reader) {
+    private static function parseCurrentElement(Reader $reader) {
 
         $name = $reader->getClark();
 
         if (array_key_exists($name, $reader->elementMap)) {
             $deserializer = $reader->elementMap[$name];
             if (is_subclass_of($deserializer, 'Sabre\\Xml\\XmlDeserializable')) {
-                $value = call_user_func( [ $deserializer, 'xmlDeserialize' ], $reader);
+                $value = call_user_func([ $deserializer, 'xmlDeserialize' ], $reader);
             } elseif (is_callable($deserializer)) {
                 $value = call_user_func($deserializer, $reader);
             } else {
                 $type = gettype($deserializer);
-                if ($type==='string') {
-                    $type.=' (' . $deserializer . ')';
-                } elseif ($type==='object') {
-                    $type.=' (' . get_class($deserializer) . ')';
+                if ($type === 'string') {
+                    $type .= ' (' . $deserializer . ')';
+                } elseif ($type === 'object') {
+                    $type .= ' (' . get_class($deserializer) . ')';
                 }
-                throw new \LogicException('Could not use this type as a deserializer: ' . $type );
+                throw new \LogicException('Could not use this type as a deserializer: ' . $type);
             }
         } else {
             $value = Complex::xmlDeserialize($reader);
         }
 
         return [
-            'name' => $name,
+            'name'  => $name,
             'value' => $value,
         ];
 

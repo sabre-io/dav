@@ -17,7 +17,7 @@ use Sabre\DAV\Exception\Forbidden;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport {
+class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport, SharingSupport {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -58,20 +58,6 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     public $calendarChangesTableName = 'calendarchanges';
 
     /**
-     * The table name that will be used inbox items.
-     *
-     * @var string
-     */
-    public $schedulingObjectTableName = 'schedulingobjects';
-
-    /**
-     * The table name that will be used for calendar subscriptions.
-     *
-     * @var string
-     */
-    public $calendarSubscriptionsTableName = 'calendarsubscriptions';
-
-    /**
      * List of CalDAV properties, and how they map to database fieldnames
      * Add your own properties by simply adding on to this array.
      *
@@ -85,21 +71,6 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         '{urn:ietf:params:xml:ns:caldav}calendar-timezone'    => 'timezone',
         '{http://apple.com/ns/ical/}calendar-order'           => 'calendarorder',
         '{http://apple.com/ns/ical/}calendar-color'           => 'calendarcolor',
-    ];
-
-    /**
-     * List of subscription properties, and how they map to database fieldnames.
-     *
-     * @var array
-     */
-    public $subscriptionPropertyMap = [
-        '{DAV:}displayname'                                           => 'displayname',
-        '{http://apple.com/ns/ical/}refreshrate'                      => 'refreshrate',
-        '{http://apple.com/ns/ical/}calendar-order'                   => 'calendarorder',
-        '{http://apple.com/ns/ical/}calendar-color'                   => 'calendarcolor',
-        '{http://calendarserver.org/ns/}subscribed-strip-todos'       => 'striptodos',
-        '{http://calendarserver.org/ns/}subscribed-strip-alarms'      => 'stripalarms',
-        '{http://calendarserver.org/ns/}subscribed-strip-attachments' => 'stripattachments',
     ];
 
     /**
@@ -926,282 +897,15 @@ SQL;
 
     }
 
-    /**
-     * Returns a list of subscriptions for a principal.
-     *
-     * Every subscription is an array with the following keys:
-     *  * id, a unique id that will be used by other functions to modify the
-     *    subscription. This can be the same as the uri or a database key.
-     *  * uri. This is just the 'base uri' or 'filename' of the subscription.
-     *  * principaluri. The owner of the subscription. Almost always the same as
-     *    principalUri passed to this method.
-     *  * source. Url to the actual feed
-     *
-     * Furthermore, all the subscription info must be returned too:
-     *
-     * 1. {DAV:}displayname
-     * 2. {http://apple.com/ns/ical/}refreshrate
-     * 3. {http://calendarserver.org/ns/}subscribed-strip-todos (omit if todos
-     *    should not be stripped).
-     * 4. {http://calendarserver.org/ns/}subscribed-strip-alarms (omit if alarms
-     *    should not be stripped).
-     * 5. {http://calendarserver.org/ns/}subscribed-strip-attachments (omit if
-     *    attachments should not be stripped).
-     * 7. {http://apple.com/ns/ical/}calendar-color
-     * 8. {http://apple.com/ns/ical/}calendar-order
-     * 9. {urn:ietf:params:xml:ns:caldav}supported-calendar-component-set
-     *    (should just be an instance of
-     *    Sabre\CalDAV\Property\SupportedCalendarComponentSet, with a bunch of
-     *    default components).
-     *
-     * @param string $principalUri
-     * @return array
-     */
-    function getSubscriptionsForUser($principalUri) {
-
-        $fields = array_values($this->subscriptionPropertyMap);
-        $fields[] = 'id';
-        $fields[] = 'uri';
-        $fields[] = 'source';
-        $fields[] = 'principaluri';
-        $fields[] = 'lastmodified';
-
-        // Making fields a comma-delimited list
-        $fields = implode(', ', $fields);
-        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM " . $this->calendarSubscriptionsTableName . " WHERE principaluri = ? ORDER BY calendarorder ASC");
-        $stmt->execute([$principalUri]);
-
-        $subscriptions = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-
-            $subscription = [
-                'id'           => $row['id'],
-                'uri'          => $row['uri'],
-                'principaluri' => $row['principaluri'],
-                'source'       => $row['source'],
-                'lastmodified' => $row['lastmodified'],
-
-                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VTODO', 'VEVENT']),
-            ];
-
-            foreach ($this->subscriptionPropertyMap as $xmlName => $dbName) {
-                if (!is_null($row[$dbName])) {
-                    $subscription[$xmlName] = $row[$dbName];
-                }
-            }
-
-            $subscriptions[] = $subscription;
-
-        }
-
-        return $subscriptions;
-
-    }
 
     /**
-     * Creates a new subscription for a principal.
-     *
-     * If the creation was a success, an id must be returned that can be used to reference
-     * this subscription in other methods, such as updateSubscription.
-     *
-     * @param string $principalUri
-     * @param string $uri
-     * @param array $properties
-     * @return mixed
+     * SubscriptionSupport
      */
-    function createSubscription($principalUri, $uri, array $properties) {
-
-        $fieldNames = [
-            'principaluri',
-            'uri',
-            'source',
-            'lastmodified',
-        ];
-
-        if (!isset($properties['{http://calendarserver.org/ns/}source'])) {
-            throw new Forbidden('The {http://calendarserver.org/ns/}source property is required when creating subscriptions');
-        }
-
-        $values = [
-            ':principaluri' => $principalUri,
-            ':uri'          => $uri,
-            ':source'       => $properties['{http://calendarserver.org/ns/}source']->getHref(),
-            ':lastmodified' => time(),
-        ];
-
-        foreach ($this->subscriptionPropertyMap as $xmlName => $dbName) {
-            if (isset($properties[$xmlName])) {
-
-                $values[':' . $dbName] = $properties[$xmlName];
-                $fieldNames[] = $dbName;
-            }
-        }
-
-        $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarSubscriptionsTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
-        $stmt->execute($values);
-
-        return $this->pdo->lastInsertId();
-
-    }
+    use PDO\SubscriptionSupportTrait;
 
     /**
-     * Updates a subscription
-     *
-     * The list of mutations is stored in a Sabre\DAV\PropPatch object.
-     * To do the actual updates, you must tell this object which properties
-     * you're going to process with the handle() method.
-     *
-     * Calling the handle method is like telling the PropPatch object "I
-     * promise I can handle updating this property".
-     *
-     * Read the PropPatch documenation for more info and examples.
-     *
-     * @param mixed $subscriptionId
-     * @param \Sabre\DAV\PropPatch $propPatch
-     * @return void
+     * SchedulingSupport
      */
-    function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
-
-        $supportedProperties = array_keys($this->subscriptionPropertyMap);
-        $supportedProperties[] = '{http://calendarserver.org/ns/}source';
-
-        $propPatch->handle($supportedProperties, function($mutations) use ($subscriptionId) {
-
-            $newValues = [];
-
-            foreach ($mutations as $propertyName => $propertyValue) {
-
-                if ($propertyName === '{http://calendarserver.org/ns/}source') {
-                    $newValues['source'] = $propertyValue->getHref();
-                } else {
-                    $fieldName = $this->subscriptionPropertyMap[$propertyName];
-                    $newValues[$fieldName] = $propertyValue;
-                }
-
-            }
-
-            // Now we're generating the sql query.
-            $valuesSql = [];
-            foreach ($newValues as $fieldName => $value) {
-                $valuesSql[] = $fieldName . ' = ?';
-            }
-
-            $stmt = $this->pdo->prepare("UPDATE " . $this->calendarSubscriptionsTableName . " SET " . implode(', ', $valuesSql) . ", lastmodified = ? WHERE id = ?");
-            $newValues['lastmodified'] = time();
-            $newValues['id'] = $subscriptionId;
-            $stmt->execute(array_values($newValues));
-
-            return true;
-
-        });
-
-    }
-
-    /**
-     * Deletes a subscription
-     *
-     * @param mixed $subscriptionId
-     * @return void
-     */
-    function deleteSubscription($subscriptionId) {
-
-        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarSubscriptionsTableName . ' WHERE id = ?');
-        $stmt->execute([$subscriptionId]);
-
-    }
-
-    /**
-     * Returns a single scheduling object.
-     *
-     * The returned array should contain the following elements:
-     *   * uri - A unique basename for the object. This will be used to
-     *           construct a full uri.
-     *   * calendardata - The iCalendar object
-     *   * lastmodified - The last modification date. Can be an int for a unix
-     *                    timestamp, or a PHP DateTime object.
-     *   * etag - A unique token that must change if the object changed.
-     *   * size - The size of the object, in bytes.
-     *
-     * @param string $principalUri
-     * @param string $objectUri
-     * @return array
-     */
-    function getSchedulingObject($principalUri, $objectUri) {
-
-        $stmt = $this->pdo->prepare('SELECT uri, calendardata, lastmodified, etag, size FROM ' . $this->schedulingObjectTableName . ' WHERE principaluri = ? AND uri = ?');
-        $stmt->execute([$principalUri, $objectUri]);
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-        if (!$row) return null;
-
-        return [
-            'uri'          => $row['uri'],
-            'calendardata' => $row['calendardata'],
-            'lastmodified' => $row['lastmodified'],
-            'etag'         => '"' . $row['etag'] . '"',
-            'size'         => (int)$row['size'],
-         ];
-
-    }
-
-    /**
-     * Returns all scheduling objects for the inbox collection.
-     *
-     * These objects should be returned as an array. Every item in the array
-     * should follow the same structure as returned from getSchedulingObject.
-     *
-     * The main difference is that 'calendardata' is optional.
-     *
-     * @param string $principalUri
-     * @return array
-     */
-    function getSchedulingObjects($principalUri) {
-
-        $stmt = $this->pdo->prepare('SELECT id, calendardata, uri, lastmodified, etag, size FROM ' . $this->schedulingObjectTableName . ' WHERE principaluri = ?');
-        $stmt->execute([$principalUri]);
-
-        $result = [];
-        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            $result[] = [
-                'calendardata' => $row['calendardata'],
-                'uri'          => $row['uri'],
-                'lastmodified' => $row['lastmodified'],
-                'etag'         => '"' . $row['etag'] . '"',
-                'size'         => (int)$row['size'],
-            ];
-        }
-
-        return $result;
-
-    }
-
-    /**
-     * Deletes a scheduling object
-     *
-     * @param string $principalUri
-     * @param string $objectUri
-     * @return void
-     */
-    function deleteSchedulingObject($principalUri, $objectUri) {
-
-        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->schedulingObjectTableName . ' WHERE principaluri = ? AND uri = ?');
-        $stmt->execute([$principalUri, $objectUri]);
-
-    }
-
-    /**
-     * Creates a new scheduling object. This should land in a users' inbox.
-     *
-     * @param string $principalUri
-     * @param string $objectUri
-     * @param string $objectData
-     * @return void
-     */
-    function createSchedulingObject($principalUri, $objectUri, $objectData) {
-
-        $stmt = $this->pdo->prepare('INSERT INTO ' . $this->schedulingObjectTableName . ' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData) ]);
-
-    }
+    use PDO\SchedulingSupport;
 
 }

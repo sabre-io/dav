@@ -17,7 +17,7 @@ use Sabre\DAV\Exception\Forbidden;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport, SharingSupport {
+class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -906,6 +906,6 @@ SQL;
     /**
      * SchedulingSupport
      */
-    use PDO\SchedulingSupport;
+    use PDO\SchedulingSupportTrait;
 
 }

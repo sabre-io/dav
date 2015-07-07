@@ -8,6 +8,8 @@ use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * This plugin implements support for sharing calendars.
@@ -22,6 +24,15 @@ use Sabre\DAV\ServerPlugin;
  * @license http://sabre.io/license/ Modified BSD License
  */
 class SharingPlugin extends ServerPlugin {
+
+    /**
+     * Various statuses used by the sharing process
+     */
+    const STATUS_ACCEPTED = 1;
+    const STATUS_DECLINED = 2;
+    const STATUS_DELETED = 3;
+    const STATUS_NORESPONSE = 4;
+    const STATUS_INVALID = 5;
 
     /**
      * This initializes the plugin.
@@ -109,13 +120,13 @@ class SharingPlugin extends ServerPlugin {
 
         if ($node instanceof IShareableCalendar) {
 
-            $propFind->handle('{DAV:}invite', function() use $node) {
+            $propFind->handle('{DAV:}invite', function() use ($node) {
 
                 return new DAV\Xml\Property\Invite(
                     $node->getShares()
                 );
 
-            }
+            });
 
         }
         if ($node instanceof ISharedCalendar) {

@@ -2,6 +2,11 @@
 
 namespace Sabre\CalDAV\Backend\PDO;
 
+use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\PropPatch;
+use Sabre\CalDAV\Plugin as CalDAVPlugin;
+use Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet;
+
 /**
  * This trait implements Sabre\CalDAV\Backend\SubscriptionSupport for the PDO
  * CalDAV backend.
@@ -89,7 +94,7 @@ trait SubscriptionSupportTrait {
                 'source'       => $row['source'],
                 'lastmodified' => $row['lastmodified'],
 
-                '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VTODO', 'VEVENT']),
+                '{' . CalDAVPlugin::NS_CALDAV . '}supported-calendar-component-set' => new SupportedCalendarComponentSet(['VTODO', 'VEVENT']),
             ];
 
             foreach ($this->subscriptionPropertyMap as $xmlName => $dbName) {
@@ -165,10 +170,10 @@ trait SubscriptionSupportTrait {
      * Read the PropPatch documenation for more info and examples.
      *
      * @param mixed $subscriptionId
-     * @param \Sabre\DAV\PropPatch $propPatch
+     * @param PropPatch $propPatch
      * @return void
      */
-    function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
+    function updateSubscription($subscriptionId, PropPatch $propPatch) {
 
         $supportedProperties = array_keys($this->subscriptionPropertyMap);
         $supportedProperties[] = '{http://calendarserver.org/ns/}source';

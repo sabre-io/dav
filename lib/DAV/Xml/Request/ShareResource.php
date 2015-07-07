@@ -4,8 +4,6 @@ namespace Sabre\DAV\Xml\Request;
 
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Element\KeyValue;
-use Sabre\DAV\Exception\BadRequest;
 
 /**
  * ShareResource request parser.
@@ -95,13 +93,13 @@ class ShareResource implements XmlDeserializable {
                     $sharee = $elem['value'];
 
                     $setInvitee = [
-                        'href' => null,
-                        'comment' => null,
+                        'href'     => null,
+                        'comment'  => null,
                         'readOnly' => false,
                     ];
-                    foreach($sharee as $key=>$value) {
+                    foreach ($sharee as $key => $value) {
 
-                        switch($key) {
+                        switch ($key) {
 
                             case '{DAV:}href' :
                                 $setInvitee['href'] = $value;
@@ -119,7 +117,7 @@ class ShareResource implements XmlDeserializable {
                                 $setInvitee[$key] = $value;
                                 break;
 
-                        } 
+                        }
 
                     }
                     $set[] = $setInvitee;

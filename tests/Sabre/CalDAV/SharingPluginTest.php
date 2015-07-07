@@ -14,26 +14,26 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function setUp() {
 
-        $this->caldavCalendars = array(
-            array(
+        $this->caldavCalendars = [
+            [
                 'principaluri' => 'principals/user1',
-                'id' => 1,
-                'uri' => 'cal1',
-            ),
-            array(
-                'principaluri' => 'principals/user1',
-                'id' => 2,
-                'uri' => 'cal2',
+                'id'           => 1,
+                'uri'          => 'cal1',
+            ],
+            [
+                'principaluri'                                  => 'principals/user1',
+                'id'                                            => 2,
+                'uri'                                           => 'cal2',
                 '{' . Plugin::NS_CALENDARSERVER . '}shared-url' => 'calendars/user1/cal2',
-                '{http://sabredav.org/ns}owner-principal' => 'principals/user2',
-                '{http://sabredav.org/ns}read-only' => 'true',
-            ),
-            array(
+                '{http://sabredav.org/ns}owner-principal'       => 'principals/user2',
+                '{http://sabredav.org/ns}read-only'             => 'true',
+            ],
+            [
                 'principaluri' => 'principals/user1',
-                'id' => 3,
-                'uri' => 'cal3',
-            ),
-        );
+                'id'           => 3,
+                'uri'          => 'cal3',
+            ],
+        ];
 
         parent::setUp();
 
@@ -55,7 +55,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testGetFeatures() {
 
-        $this->assertEquals(array('calendarserver-sharing'), $this->caldavSharingPlugin->getFeatures());
+        $this->assertEquals(['calendarserver-sharing'], $this->caldavSharingPlugin->getFeatures());
 
     }
 
@@ -63,10 +63,10 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
         // Forcing the server to authenticate:
         $this->authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
-        $props = $this->server->getProperties('calendars/user1/cal1', array(
+        $props = $this->server->getProperties('calendars/user1/cal1', [
             '{' . Plugin::NS_CALENDARSERVER . '}invite',
             '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
-        ));
+        ]);
 
         $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
         $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\AllowedSharingModes', $props['{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes']);
@@ -75,10 +75,10 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testBeforeGetSharedCalendar() {
 
-        $props = $this->server->getProperties('calendars/user1/cal2', array(
+        $props = $this->server->getProperties('calendars/user1/cal2', [
             '{' . Plugin::NS_CALENDARSERVER . '}shared-url',
             '{' . Plugin::NS_CALENDARSERVER . '}invite',
-        ));
+        ]);
 
         $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\Invite', $props['{' . Plugin::NS_CALENDARSERVER . '}invite']);
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
@@ -88,16 +88,16 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
     function testUpdateProperties() {
 
         $this->caldavBackend->updateShares(1,
-            array(
-                array(
+            [
+                [
                     'href' => 'mailto:joe@example.org',
-                ),
-            ),
-            array()
+                ],
+            ],
+            []
         );
-        $result = $this->server->updateProperties('calendars/user1/cal1', array(
+        $result = $this->server->updateProperties('calendars/user1/cal1', [
             '{DAV:}resourcetype' => new DAV\Xml\Property\ResourceType(['{DAV:}collection'])
-        ));
+        ]);
 
         $this->assertEquals([
             '{DAV:}resourcetype' => 200
@@ -109,22 +109,22 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUpdatePropertiesPassThru() {
 
-        $result = $this->server->updateProperties('calendars/user1/cal3', array(
+        $result = $this->server->updateProperties('calendars/user1/cal3', [
             '{DAV:}foo' => 'bar',
-        ));
+        ]);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             '{DAV:}foo' => 403,
-        ), $result);
+        ], $result);
 
     }
 
     function testUnknownMethodNoPOST() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/',
-        ));
+        ]);
 
         $response = $this->request($request);
 
@@ -134,11 +134,11 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUnknownMethodNoXML() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/',
             'CONTENT_TYPE'   => 'text/plain',
-        ));
+        ]);
 
         $response = $this->request($request);
 
@@ -148,11 +148,11 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUnknownMethodNoNode() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/foo',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $response = $this->request($request);
 
@@ -162,11 +162,11 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testShareRequest() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = <<<RRR
 <?xml version="1.0"?>
@@ -187,16 +187,16 @@ RRR;
         $response = $this->request($request);
         $this->assertEquals(200, $response->status, $response->body);
 
-        $this->assertEquals(array(array(
-            'href' => 'mailto:joe@example.org',
+        $this->assertEquals([[
+            'href'       => 'mailto:joe@example.org',
             'commonName' => 'Joe Shmoe',
-            'readOnly' => false,
-            'status' => SharingPlugin::STATUS_NORESPONSE,
-            'summary' => '',
-        )), $this->caldavBackend->getShares(1));
+            'readOnly'   => false,
+            'status'     => SharingPlugin::STATUS_NORESPONSE,
+            'summary'    => '',
+        ]], $this->caldavBackend->getShares(1));
 
         // Verifying that the calendar is now marked shared.
-        $props = $this->server->getProperties('calendars/user1/cal1', array('{DAV:}resourcetype'));
+        $props = $this->server->getProperties('calendars/user1/cal1', ['{DAV:}resourcetype']);
         $this->assertTrue(
             $props['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared-owner')
         );
@@ -205,11 +205,11 @@ RRR;
 
     function testShareRequestNoShareableCalendar() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:share xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -233,11 +233,11 @@ RRR;
 
     function testInviteReply() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -254,11 +254,11 @@ RRR;
 
     function testInviteBadXML() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -272,11 +272,11 @@ RRR;
 
     function testInviteWrongUrl() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -295,11 +295,11 @@ RRR;
 
     function testPublish() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
@@ -314,11 +314,11 @@ RRR;
 
     function testUnpublish() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal1',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
@@ -333,11 +333,11 @@ RRR;
 
     function testPublishWrongUrl() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
@@ -352,11 +352,11 @@ RRR;
 
     function testUnpublishWrongUrl() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
@@ -371,11 +371,11 @@ RRR;
 
     function testUnknownXmlDoc() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI'    => '/calendars/user1/cal2',
             'CONTENT_TYPE'   => 'text/xml',
-        ));
+        ]);
 
         $xml = '<?xml version="1.0"?>
 <cs:foo-bar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />';

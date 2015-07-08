@@ -748,12 +748,12 @@ class Plugin extends ServerPlugin {
      *   * 3.7;description
      *
      * @param string $email address
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTimeInterface $start
+     * @param DateTimeInterface $end
      * @param VObject\Component $request
      * @return array
      */
-    protected function getFreeBusyForEmail($email, \DateTime $start, \DateTime $end, VObject\Component $request) {
+    protected function getFreeBusyForEmail($email, \DateTimeInterface $start, \DateTimeInterface $end, VObject\Component $request) {
 
         $caldavNS = '{' . self::NS_CALDAV . '}';
 

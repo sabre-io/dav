@@ -100,7 +100,7 @@ function composerupdate() {
 
     global $baseDir;
     echo "  Updating composer packages to latest version\n\n";
-    system('cd ' . $baseDir . '; composer update --dev');
+    system('cd ' . $baseDir . '; composer update');
 }
 
 function test() {

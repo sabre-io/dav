@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.0.8 (????-??-??)
+2.0.8 (2015-07-11)
 ------------------
 
 * #677: Resources with the name '0' would not get retrieved when using

@@ -44,13 +44,6 @@ abstract class AbstractBackend implements BackendInterface {
             ['{http://sabredav.org/ns}email-address' => substr($uri, 7)]
         );
 
-		//searchPrincipals did the search with wildcards (%email%)
-		//here, we only want exact matches
-		for($i=0;$i<count($result);$i++){
-			$uri = $result[$i];
-			error_log("Principal URI: ".$uri);
-		}
-
         if ($result) {
             return $result[0];
         }

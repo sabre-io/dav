@@ -252,8 +252,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
                     $values[] = '%' . $value . '%';
                     break;
                 case '{http://sabredav.org/ns}email-address' :
-                    $query .= ' AND email LIKE ?';
-                    $values[] = '%' . $value . '%';
+                    $query .= ' AND lcase(email) = lcase(?)';
+                    $values[] = $value;
                     break;
                 default :
                     // Unsupported property

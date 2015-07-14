@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+3.0.2 (2015-??-??)
+------------------
+
+* #657: Migration script would break when coming a cross an iCalendar object
+  with no UID.
+
+
 3.0.1 (2015-07-02)
 ------------------
 

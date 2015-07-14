@@ -122,7 +122,7 @@ if ($addUid) {
             $vobj = \Sabre\VObject\Reader::read($row['calendardata']);
         } catch (\Exception $e) {
             echo "Warning! Item with id $row[id] could not be parsed!\n";
-            goto yoyo;
+            continue;
         }
         $uid = null;
         $item = $vobj->getBaseComponent();

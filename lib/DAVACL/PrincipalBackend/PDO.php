@@ -240,25 +240,24 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
      * @return array
      */
     function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof') {
-		if(count($searchProperties) == 0) return [];	//No criteria
+        if (count($searchProperties) == 0) return [];    //No criteria
 
         $query = 'SELECT uri FROM ' . $this->tableName . ' WHERE ';
         $values = [];
         foreach ($searchProperties as $property => $value) {
-			$column;
             switch ($property) {
                 case '{DAV:}displayname' :
-					$column = "displayname";
+                    $column = "displayname";
                     break;
                 case '{http://sabredav.org/ns}email-address' :
-					$column = "email";
+                    $column = "email";
                     break;
                 default :
                     // Unsupported property
                     return [];
             }
-			if(count($values) > 0) $query .= (strcmp($test,"anyof")==0 ? " OR ":" AND ");
-            $query .= 'lower('.$column.') LIKE lower(?)';
+            if (count($values) > 0) $query .= (strcmp($test, "anyof") == 0 ? " OR " : " AND ");
+            $query .= 'lower(' . $column . ') LIKE lower(?)';
             $values[] = '%' . $value . '%';
 
         }
@@ -280,7 +279,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
 
     }
 
-	/**
+    /**
      * Finds a principal by its URI.
      *
      * This method may receive any type of uri, but mailto: addresses will be
@@ -297,36 +296,33 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
      * @param string $principalPrefix
      * @return string
      */
-	function findByUri($uri, $principalPrefix) {
-		$idx = strpos($uri,":");
-		if($idx===FALSE){
-			return null;
-		}
-		
-		$scheme = substr($uri,0,$idx);
-		$value = substr($uri,$idx+1);
+    function findByUri($uri, $principalPrefix) {
+        $value = null;
+        $scheme = null;
+        list($scheme, $value) = explode(":", $uri, 2);
+        if ($value == null) return null;
 
-		$uri = null;
-		switch($scheme){
-			case "mailto":
-				$query = 'SELECT uri FROM ' . $this->tableName . ' WHERE lower(email)=lower(?)';
-				$stmt = $this->pdo->prepare($query);
-		        $stmt->execute([ $value ]);
-	        
-	        	while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-	           		// Checking if the principal is in the prefix
-	           		list($rowPrefix) = URLUtil::splitPath($row['uri']);
-					if($rowPrefix !== $principalPrefix) continue;
-					
-	            	$uri = $row['uri'];
-					break; //Stop on first match
-				}
-				break;
-			default:
-				//unsupported uri scheme
-				return null;
-		}
-		return $uri;
+        $uri = null;
+        switch ($scheme){
+            case "mailto":
+                $query = 'SELECT uri FROM ' . $this->tableName . ' WHERE lower(email)=lower(?)';
+                $stmt = $this->pdo->prepare($query);
+                $stmt->execute([ $value ]);
+            
+                while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                       // Checking if the principal is in the prefix
+                       list($rowPrefix) = URLUtil::splitPath($row['uri']);
+                    if ($rowPrefix !== $principalPrefix) continue;
+                    
+                    $uri = $row['uri'];
+                    break; //Stop on first match
+                }
+                break;
+            default:
+                //unsupported uri scheme
+                return null;
+        }
+        return $uri;
     }
 
     /**

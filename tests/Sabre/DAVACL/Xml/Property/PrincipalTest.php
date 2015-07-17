@@ -3,6 +3,7 @@
 namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 use Sabre\Xml\Reader;
 
@@ -18,9 +19,9 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
         $this->assertNull($principal->getHref());
 
-        $principal = new Principal(Principal::HREF,'admin');
+        $principal = new Principal(Principal::HREF, 'admin');
         $this->assertEquals(Principal::HREF, $principal->getType());
-        $this->assertEquals('admin/',$principal->getHref());
+        $this->assertEquals('admin/', $principal->getHref());
 
     }
 
@@ -72,7 +73,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
      */
     function testSerializeHref() {
 
-        $prin = new Principal(Principal::HREF,'principals/admin');
+        $prin = new Principal(Principal::HREF, 'principals/admin');
         $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin, '/');
 
         $this->assertXmlStringEqualsXmlString('
@@ -140,6 +141,50 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $reader->xml($xml);
         $result = $reader->parse();
         return $result['value'];
+
+    }
+
+    /**
+     * @depends testSimple
+     * @dataProvider htmlProvider
+     */
+    function testToHtml($principal, $output) {
+
+        $html = $principal->toHtml(new HtmlOutputHelper('/', []));
+
+        $this->assertXmlStringEqualsXmlString(
+            $output,
+            $html
+        );
+
+    }
+
+    /**
+     * Provides data for the html tests
+     *
+     * @return array
+     */
+    function htmlProvider() {
+
+        return [
+            [
+                new Principal(Principal::UNAUTHENTICATED),
+                '<em>unauthenticated</em>',
+            ],
+            [
+                new Principal(Principal::AUTHENTICATED),
+                '<em>authenticated</em>',
+            ],
+            [
+                new Principal(Principal::ALL),
+                '<em>all</em>',
+            ],
+            [
+                new Principal(Principal::HREF, 'principals/admin'),
+                '<a href="/principals/admin/">/principals/admin/</a>',
+            ],
+
+        ];
 
     }
 

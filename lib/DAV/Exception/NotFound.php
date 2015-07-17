@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Exception;
 
+use Sabre\DAV;
+
 /**
  * NotFound
  *
@@ -11,7 +13,7 @@ namespace Sabre\DAV\Exception;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class NotFound extends \Sabre\DAV\Exception {
+class NotFound extends DAV\Exception {
 
     /**
      * Returns the HTTP statuscode for this exception
@@ -25,4 +27,3 @@ class NotFound extends \Sabre\DAV\Exception {
     }
 
 }
-

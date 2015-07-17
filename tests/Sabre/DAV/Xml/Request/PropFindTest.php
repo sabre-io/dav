@@ -46,4 +46,3 @@ class PropFindTest extends XmlTest {
 
 
 }
-

@@ -2,13 +2,12 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer,
-    Sabre\HTTP,
-    DateTime,
-    DateTimeZone;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
+use Sabre\HTTP;
+use DateTime;
+use DateTimeZone;
 
 /**
  * This property represents the {DAV:}getlastmodified property.
@@ -18,7 +17,7 @@ use
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class GetLastModified implements Element {
 
@@ -30,7 +29,7 @@ class GetLastModified implements Element {
     public $time;
 
     /**
-     * Constructor 
+     * Constructor
      *
      * @param int|DateTime $time
      */
@@ -109,4 +108,3 @@ class GetLastModified implements Element {
 
     }
 }
-

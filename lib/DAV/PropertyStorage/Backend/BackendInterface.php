@@ -27,6 +27,9 @@ interface BackendInterface {
      * as this will give you the _exact_ list of properties that need to be
      * fetched, and haven't yet.
      *
+     * However, you can also support the 'allprops' property here. In that
+     * case, you should check for $propFind->isAllProps().
+     *
      * @param string $path
      * @param PropFind $propFind
      * @return void

@@ -33,7 +33,7 @@ class InviteReplyTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($simpleExpected, $writer->outputMemory());
 
         $writer = new Writer();
-        $writer->baseUri = '/';
+        $writer->contextUri = '/';
         $writer->namespaceMap = [
             'http://calendarserver.org/ns/' => 'cs',
             'DAV:' => 'd',

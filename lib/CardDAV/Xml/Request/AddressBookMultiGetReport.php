@@ -17,7 +17,7 @@ use Sabre\Xml\XmlDeserializable;
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class AddressBookMultiGetReport implements XmlDeserializable {
 
@@ -80,18 +80,18 @@ class AddressBookMultiGetReport implements XmlDeserializable {
         ]);
 
         $newProps = [
-            'hrefs' => [],
+            'hrefs'      => [],
             'properties' => []
         ];
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{DAV:}prop' :
                     $newProps['properties'] = array_keys($elem['value']);
                     if (isset($elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'])) {
-                        $newProps+=$elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'];
+                        $newProps += $elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'];
                     }
                     break;
                 case '{DAV:}href' :
@@ -103,7 +103,7 @@ class AddressBookMultiGetReport implements XmlDeserializable {
         }
 
         $obj = new self();
-        foreach($newProps as $key=>$value) {
+        foreach ($newProps as $key => $value) {
             $obj->$key = $value;
         }
         return $obj;

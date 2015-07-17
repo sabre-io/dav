@@ -3,6 +3,8 @@
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\Xml\Writer;
 use Sabre\Xml\XmlSerializable;
 
@@ -17,9 +19,9 @@ use Sabre\Xml\XmlSerializable;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
-class SupportedReportSet implements XmlSerializable {
+class SupportedReportSet implements XmlSerializable, HtmlOutput {
 
     /**
      * List of reports
@@ -58,9 +60,9 @@ class SupportedReportSet implements XmlSerializable {
 
         $report = (array)$report;
 
-        foreach($report as $r) {
+        foreach ($report as $r) {
 
-            if (!preg_match('/^{([^}]*)}(.*)$/',$r))
+            if (!preg_match('/^{([^}]*)}(.*)$/', $r))
                 throw new DAV\Exception('Reportname must be in clark-notation');
 
             $this->reports[] = $r;
@@ -116,13 +118,36 @@ class SupportedReportSet implements XmlSerializable {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->getValue() as $val) {
+        foreach ($this->getValue() as $val) {
             $writer->startElement('{DAV:}supported-report');
             $writer->startElement('{DAV:}report');
             $writer->writeElement($val);
             $writer->endElement();
             $writer->endElement();
         }
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        return implode(
+            ', ',
+            array_map([$html, 'xmlName'], $this->getValue())
+        );
 
     }
 

@@ -475,12 +475,12 @@ END:VCALENDAR';
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+        $this->assertEquals(array('principals/admin/'), $prop->getHrefs());
 
         $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
         $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals(array('principals/admin'), $prop->getHrefs());
+        $this->assertEquals(array('principals/admin/'), $prop->getHrefs());
 
         $this->assertArrayHasKey('{' . Plugin::NS_CALENDARSERVER . '}email-address-set',$props[0][200]);
         $prop = $props[0][200]['{' . Plugin::NS_CALENDARSERVER . '}email-address-set'];
@@ -595,12 +595,12 @@ END:VCALENDAR';
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -652,12 +652,12 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -714,12 +714,12 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -764,7 +764,7 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
@@ -852,12 +852,12 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
     <d:prop>
-      <x1:calendar-data xmlns:x1="urn:ietf:params:xml:ns:caldav">$expectedIcal</x1:calendar-data>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
       <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
     </d:prop>
     <d:status>HTTP/1.1 200 OK</d:status>
@@ -903,7 +903,7 @@ XML;
 
         $expected = <<<XML
 <?xml version="1.0"?>
-<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:response>
   <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
   <d:propstat>
@@ -927,30 +927,6 @@ XML;
         $this->assertFalse($r);
 
         $this->assertTrue(!!strpos($output,'Display name'));
-
-    }
-
-    function testBrowserPostAction() {
-
-        $r = $this->server->emit('onBrowserPostAction', ['calendars/user1', 'mkcalendar', [
-            'name' => 'NEWCALENDAR',
-            '{DAV:}displayname' => 'foo',
-        ]]);
-        $this->assertFalse($r);
-
-        $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(3, count($calendars));
-
-        $newCalendar = null;
-        foreach($calendars as $calendar) {
-           if ($calendar['uri'] === 'NEWCALENDAR') {
-                $newCalendar = $calendar;
-                break;
-           }
-        }
-        if (!$newCalendar)
-            $this->fail('Could not find newly created calendar');
-
 
     }
 

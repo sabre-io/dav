@@ -7,7 +7,6 @@ use Sabre\Xml\XmlDeserializable;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\CardDAV\Plugin;
 
-
 /**
  * PropFilter parser.
  *
@@ -17,9 +16,9 @@ use Sabre\CardDAV\Plugin;
  * http://tools.ietf.org/html/rfc6352#section-10.5.1
  *
  * The result will be spit out as an array.
- * 
+ *
  * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
- * @author Evert Pot (http://evertpot.com/) 
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
 class PropFilter implements XmlDeserializable {
@@ -48,25 +47,25 @@ class PropFilter implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $result = [
-            'name' => null,
-            'test' => 'anyof',
+            'name'           => null,
+            'test'           => 'anyof',
             'is-not-defined' => false,
-            'param-filters' => [],
-            'text-matches' => [],
+            'param-filters'  => [],
+            'text-matches'   => [],
         ];
 
         $att = $reader->parseAttributes();
         $result['name'] = $att['name'];
 
-        if (isset($att['test']) && $att['test']==='allof') {
+        if (isset($att['test']) && $att['test'] === 'allof') {
             $result['test'] = 'allof';
         }
 
         $elems = $reader->parseInnerTree();
 
-        if (is_array($elems)) foreach($elems as $elem) {
+        if (is_array($elems)) foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{' . Plugin::NS_CARDDAV . '}param-filter' :
                     $result['param-filters'][] = $elem['value'];
@@ -75,14 +74,14 @@ class PropFilter implements XmlDeserializable {
                     $result['is-not-defined'] = true;
                     break;
                 case '{' . Plugin::NS_CARDDAV . '}text-match' :
-                    $matchType = isset($elem['attributes']['match-type'])?$elem['attributes']['match-type']:'contains';
+                    $matchType = isset($elem['attributes']['match-type']) ? $elem['attributes']['match-type'] : 'contains';
 
                     if (!in_array($matchType, ['contains', 'equals', 'starts-with', 'ends-with'])) {
                         throw new BadRequest('Unknown match-type: ' . $matchType);
                     }
                     $result['text-matches'][] = [
-                        'negate-condition' => isset($elem['attributes']['negate-condition']) && $elem['attributes']['negate-condition']==='yes',
-                        'collation'        => isset($elem['attributes']['collation'])?$elem['attributes']['collation']:'i;unicode-casemap',
+                        'negate-condition' => isset($elem['attributes']['negate-condition']) && $elem['attributes']['negate-condition'] === 'yes',
+                        'collation'        => isset($elem['attributes']['collation']) ? $elem['attributes']['collation'] : 'i;unicode-casemap',
                         'value'            => $elem['value'],
                         'match-type'       => $matchType,
                     ];

@@ -69,7 +69,7 @@ class MkCol implements XmlDeserializable {
 
         $elems = $reader->parseInnerTree($elementMap);
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
             if ($elem['name'] === '{DAV:}set') {
                 $self->properties = array_merge($self->properties, $elem['value']['{DAV:}prop']);
             }

@@ -9,7 +9,7 @@ CREATE TABLE calendarobjects (
     componenttype VARBINARY(8),
     firstoccurence INT(11) UNSIGNED,
     lastoccurence INT(11) UNSIGNED,
-    uid VARCHAR(200),
+    uid VARBINARY(200),
     UNIQUE(calendarid, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -30,7 +30,7 @@ CREATE TABLE calendars (
 
 CREATE TABLE calendarchanges (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    uri VARCHAR(200) NOT NULL,
+    uri VARBINARY(200) NOT NULL,
     synctoken INT(11) UNSIGNED NOT NULL,
     calendarid INT(11) UNSIGNED NOT NULL,
     operation TINYINT(1) NOT NULL,
@@ -39,13 +39,13 @@ CREATE TABLE calendarchanges (
 
 CREATE TABLE calendarsubscriptions (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    uri VARCHAR(200) NOT NULL,
-    principaluri VARCHAR(100) NOT NULL,
+    uri VARBINARY(200) NOT NULL,
+    principaluri VARBINARY(100) NOT NULL,
     source TEXT,
     displayname VARCHAR(100),
     refreshrate VARCHAR(10),
     calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
-    calendarcolor VARCHAR(10),
+    calendarcolor VARBINARY(10),
     striptodos TINYINT(1) NULL,
     stripalarms TINYINT(1) NULL,
     stripattachments TINYINT(1) NULL,
@@ -55,10 +55,10 @@ CREATE TABLE calendarsubscriptions (
 
 CREATE TABLE schedulingobjects (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    principaluri VARCHAR(255),
+    principaluri VARBINARY(255),
     calendardata MEDIUMBLOB,
-    uri VARCHAR(200),
+    uri VARBINARY(200),
     lastmodified INT(11) UNSIGNED,
-    etag VARCHAR(32),
+    etag VARBINARY(32),
     size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

@@ -45,7 +45,7 @@ In addition to that, here's a list of basic rules:
 1. PHP 5.4 array syntax must be used every where. This means you use `[` and
    `]` instead of `array(` and `)`.
 2. Use PHP namespaces everywhere.
-3. Use 4 spaces for indentiation.
+3. Use 4 spaces for indentation.
 4. Try to keep your lines under 80 characters. This is not a hard rule, as
    there are many places in the source where it felt more sensibile to not
    do so. In particular, function declarations are never split over multiple
@@ -74,6 +74,9 @@ we'd still _love_ your pull request.
 
 We may have to write the tests ourselves, which can increase the time it takes
 to accept the patch, but we'd still really like your contribution!
+
+To run the testsuite jump into the directory `cd tests` and trigger `phpunit`.
+Make sure you did a `composer install` beforehand.
 
 [1]: http://www.php-fig.org/psr/psr-1/
 [2]: http://www.php-fig.org/psr/psr-4/

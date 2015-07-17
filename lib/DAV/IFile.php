@@ -79,4 +79,3 @@ interface IFile extends INode {
     function getSize();
 
 }
-

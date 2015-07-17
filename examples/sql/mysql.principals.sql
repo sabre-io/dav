@@ -1,9 +1,8 @@
 CREATE TABLE principals (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    uri VARCHAR(200) NOT NULL,
-    email VARCHAR(80),
+    uri VARBINARY(200) NOT NULL,
+    email VARBINARY(80),
     displayname VARCHAR(80),
-    vcardurl VARCHAR(255),
     UNIQUE(uri)
 );
 

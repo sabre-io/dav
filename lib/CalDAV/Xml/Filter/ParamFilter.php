@@ -6,7 +6,6 @@ use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 use Sabre\CalDAV\Plugin;
 
-
 /**
  * PropFilter parser.
  *
@@ -19,7 +18,7 @@ use Sabre\CalDAV\Plugin;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class ParamFilter implements XmlDeserializable {
 
@@ -47,9 +46,9 @@ class ParamFilter implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $result = [
-            'name' => null,
+            'name'           => null,
             'is-not-defined' => false,
-            'text-match' => null,
+            'text-match'     => null,
         ];
 
         $att = $reader->parseAttributes();
@@ -57,17 +56,17 @@ class ParamFilter implements XmlDeserializable {
 
         $elems = $reader->parseInnerTree();
 
-        if (is_array($elems)) foreach($elems as $elem) {
+        if (is_array($elems)) foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{' . Plugin::NS_CALDAV . '}is-not-defined' :
                     $result['is-not-defined'] = true;
                     break;
                 case '{' . Plugin::NS_CALDAV . '}text-match' :
                     $result['text-match'] = [
-                        'negate-condition' => isset($elem['attributes']['negate-condition']) && $elem['attributes']['negate-condition']==='yes',
-                        'collation'        => isset($elem['attributes']['collation'])?$elem['attributes']['collation']:'i;ascii-casemap',
+                        'negate-condition' => isset($elem['attributes']['negate-condition']) && $elem['attributes']['negate-condition'] === 'yes',
+                        'collation'        => isset($elem['attributes']['collation']) ? $elem['attributes']['collation'] : 'i;ascii-casemap',
                         'value'            => $elem['value'],
                     ];
                     break;

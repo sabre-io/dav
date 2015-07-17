@@ -106,9 +106,6 @@ class Plugin extends DAV\ServerPlugin {
      */
     function syncCollection($uri, SyncCollectionReport $report) {
 
-        // rfc3253 specifies 0 is the default value for Depth:
-        $depth = $this->server->getHTTPDepth(0);
-
         // Getting the data
         $node = $this->server->tree->getNodeForPath($uri);
         if (!$node instanceof ISyncCollection) {
@@ -166,13 +163,13 @@ class Plugin extends DAV\ServerPlugin {
         $fullPaths = [];
 
         // Pre-fetching children, if this is possible.
-        foreach(array_merge($added, $modified) as $item) {
+        foreach (array_merge($added, $modified) as $item) {
             $fullPath = $collectionUrl . '/' . $item;
             $fullPaths[] = $fullPath;
         }
 
         $responses = [];
-        foreach($this->server->getPropertiesForMultiplePaths($fullPaths, $properties) as $fullPath => $props) {
+        foreach ($this->server->getPropertiesForMultiplePaths($fullPaths, $properties) as $fullPath => $props) {
 
             // The 'Property_Response' class is responsible for generating a
             // single {DAV:}response xml element.
@@ -184,7 +181,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // Deleted items also show up as 'responses'. They have no properties,
         // and a single {DAV:}status element set as 'HTTP/1.1 404 Not Found'.
-        foreach($deleted as $item) {
+        foreach ($deleted as $item) {
 
             $fullPath = $collectionUrl . '/' . $item;
             $responses[] = new DAV\Xml\Element\Response($fullPath, [], 404);
@@ -193,7 +190,7 @@ class Plugin extends DAV\ServerPlugin {
         $multiStatus = new DAV\Xml\Response\MultiStatus($responses, self::SYNCTOKEN_PREFIX . $syncToken);
 
         $this->server->httpResponse->setStatus(207);
-        $this->server->httpResponse->setHeader('Content-Type','application/xml; charset=utf-8');
+        $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
         $this->server->httpResponse->setBody(
             $this->server->xml->write('{DAV:}multistatus', $multiStatus, $this->server->getBaseUri())
         );
@@ -228,11 +225,11 @@ class Plugin extends DAV\ServerPlugin {
      * @param mixed $conditions
      * @return void
      */
-    function validateTokens( RequestInterface $request, &$conditions ) {
+    function validateTokens(RequestInterface $request, &$conditions) {
 
-        foreach($conditions as $kk=>$condition) {
+        foreach ($conditions as $kk => $condition) {
 
-            foreach($condition['tokens'] as $ii=>$token) {
+            foreach ($condition['tokens'] as $ii => $token) {
 
                 // Sync-tokens must always start with our designated prefix.
                 if (substr($token['token'], 0, strlen(self::SYNCTOKEN_PREFIX)) !== self::SYNCTOKEN_PREFIX) {
@@ -277,4 +274,3 @@ class Plugin extends DAV\ServerPlugin {
     }
 
 }
-

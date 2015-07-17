@@ -13,7 +13,7 @@ use Sabre\DAVACL;
  * The signature is mostly identical to that of Sabre\DAV\IFile, but the get() method
  * MUST return an xml document that matches the requirements of the
  * 'caldav-notifications.txt' spec.
-
+ *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License

@@ -4,6 +4,7 @@ namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\HTTP;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 
 class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 
@@ -45,14 +46,14 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
     function testSerializeAggregate() {
 
         $prop = new SupportedPrivilegeSet([
-            'privilege' => '{DAV:}all',
-            'abstract'  => true,
+            'privilege'  => '{DAV:}all',
+            'abstract'   => true,
             'aggregates' => [
                 [
                     'privilege' => '{DAV:}read',
                 ],
                 [
-                    'privilege' => '{DAV:}write',
+                    'privilege'   => '{DAV:}write',
                     'description' => 'booh',
                 ],
             ],
@@ -80,6 +81,40 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
   </d:supported-privilege>
  </d:supported-privilege>
 </d:supported-privilege-set>', $xml);
+
+    }
+
+    function testToHtml() {
+
+        $prop = new SupportedPrivilegeSet([
+            'privilege'  => '{DAV:}all',
+            'abstract'   => true,
+            'aggregates' => [
+                [
+                    'privilege' => '{DAV:}read',
+                ],
+                [
+                    'privilege'   => '{DAV:}write',
+                    'description' => 'booh',
+                ],
+            ],
+        ]);
+        $html = new HtmlOutputHelper(
+            '/base/',
+            ['DAV:' => 'd']
+        );
+
+        $expected = <<<HTML
+<ul class="tree"><li><span title="{DAV:}all">d:all</span> <i>(abstract)</i>
+<ul>
+<li><span title="{DAV:}read">d:read</span></li>
+<li><span title="{DAV:}write">d:write</span> booh</li>
+</ul></li>
+</ul>
+
+HTML;
+
+        $this->assertEquals($expected, $prop->toHtml($html));
 
     }
 }

@@ -2,11 +2,12 @@
 
 namespace Sabre\DAVACL\Xml\Property;
 
-use
-    Sabre\DAV,
-    Sabre\Xml\Element,
-    Sabre\Xml\Reader,
-    Sabre\Xml\Writer;
+use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * This class represents the {DAV:}acl property.
@@ -24,7 +25,7 @@ use
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Acl implements Element {
+class Acl implements Element, HtmlOutput {
 
     /**
      * List of privileges
@@ -37,7 +38,7 @@ class Acl implements Element {
      * Whether or not the server base url is required to be prefixed when
      * serializing the property.
      *
-     * @var boolean
+     * @var bool
      */
     protected $prefixBaseUrl;
 
@@ -97,11 +98,51 @@ class Acl implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->privileges as $ace) {
+        foreach ($this->privileges as $ace) {
 
             $this->serializeAce($writer, $ace);
 
         }
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        ob_start();
+        echo "<table>";
+        echo "<tr><th>Principal</th><th>Privilege</th><th></th></tr>";
+        foreach ($this->privileges as $privilege) {
+
+            echo '<tr>';
+            // if it starts with a {, it's a special principal
+            if ($privilege['principal'][0] === '{') {
+                echo '<td>', $html->xmlName($privilege['principal']), '</td>';
+            } else {
+                echo '<td>', $html->link($privilege['principal']), '</td>';
+            }
+            echo '<td>', $html->xmlName($privilege['privilege']), '</td>';
+            echo '<td>';
+            if (!empty($privilege['protected'])) echo '(protected)';
+            echo '</td>';
+            echo '</tr>';
+
+        }
+        echo "</table>";
+        return ob_get_clean();
 
     }
 
@@ -136,9 +177,9 @@ class Acl implements Element {
 
         $privileges = [];
 
-        foreach((array)$reader->parseInnerTree($elementMap) as $element) {
+        foreach ((array)$reader->parseInnerTree($elementMap) as $element) {
 
-            if ($element['name']!=='{DAV:}ace') {
+            if ($element['name'] !== '{DAV:}ace') {
                 continue;
             }
             $ace = $element['value'];
@@ -148,7 +189,7 @@ class Acl implements Element {
             }
             $principal = $ace['{DAV:}principal'];
 
-            switch($principal->getType()) {
+            switch ($principal->getType()) {
                 case Principal::HREF :
                     $principal = $principal->getHref();
                     break;
@@ -169,12 +210,12 @@ class Acl implements Element {
             if (!isset($ace['{DAV:}grant'])) {
                 throw new DAV\Exception\NotImplemented('Every {DAV:}ace element must have a {DAV:}grant element. {DAV:}deny is not yet supported');
             }
-            foreach($ace['{DAV:}grant'] as $elem) {
+            foreach ($ace['{DAV:}grant'] as $elem) {
                 if ($elem['name'] !== '{DAV:}privilege') {
                     continue;
                 }
 
-                foreach($elem['value'] as $priv) {
+                foreach ($elem['value'] as $priv) {
                     $privileges[] = [
                         'principal' => $principal,
                         'protected' => $protected,
@@ -201,7 +242,7 @@ class Acl implements Element {
 
         $writer->startElement('{DAV:}ace');
 
-        switch($ace['principal']) {
+        switch ($ace['principal']) {
             case '{DAV:}authenticated' :
                 $principal = new Principal(Principal::AUTHENTICATED);
                 break;

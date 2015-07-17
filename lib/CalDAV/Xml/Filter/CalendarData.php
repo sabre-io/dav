@@ -8,7 +8,6 @@ use Sabre\DAV\Exception\BadRequest;
 use Sabre\CalDAV\Plugin;
 use Sabre\VObject\DateTimeParser;
 
-
 /**
  * CalendarData parser.
  *
@@ -20,11 +19,11 @@ use Sabre\VObject\DateTimeParser;
  * This element is used in three distinct places in the caldav spec, but in
  * this case, this element class only implements the calendar-data element as
  * it appears in a DAV:prop element, in a calendar-query or calendar-multiget
- * REPORT request. 
+ * REPORT request.
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class CalendarData implements XmlDeserializable {
 
@@ -52,19 +51,19 @@ class CalendarData implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $result = [
-            'contentType' => $reader->getAttribute('content-type')?:'text/calendar',
-            'version'     => $reader->getAttribute('version')?:'2.0',
+            'contentType' => $reader->getAttribute('content-type') ?: 'text/calendar',
+            'version'     => $reader->getAttribute('version') ?: '2.0',
         ];
 
         $elems = (array)$reader->parseInnerTree();
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
                 case '{' . Plugin::NS_CALDAV . '}expand' :
 
                     $result['expand'] = [
-                        'start' => isset($elem['attributes']['start'])?DateTimeParser::parseDateTime($elem['attributes']['start']):null,
-                        'end' => isset($elem['attributes']['end'])?DateTimeParser::parseDateTime($elem['attributes']['end']):null,
+                        'start' => isset($elem['attributes']['start']) ? DateTimeParser::parseDateTime($elem['attributes']['start']) : null,
+                        'end'   => isset($elem['attributes']['end']) ? DateTimeParser::parseDateTime($elem['attributes']['end']) : null,
                     ];
 
                     if (!$result['expand']['start'] || !$result['expand']['end']) {

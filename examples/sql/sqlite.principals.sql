@@ -3,7 +3,6 @@ CREATE TABLE principals (
     uri TEXT,
     email TEXT,
     displayname TEXT,
-    vcardurl TEXT,
     UNIQUE(uri)
 );
 

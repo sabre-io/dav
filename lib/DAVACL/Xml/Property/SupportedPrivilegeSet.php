@@ -2,6 +2,8 @@
 
 namespace Sabre\DAVACL\Xml\Property;
 
+use Sabre\DAV\Browser\HtmlOutput;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
 
@@ -19,7 +21,7 @@ use Sabre\Xml\Writer;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class SupportedPrivilegeSet implements XmlSerializable {
+class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
 
     /**
      * privileges
@@ -75,6 +77,51 @@ class SupportedPrivilegeSet implements XmlSerializable {
 
     }
 
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        $traverse = function($priv) use (&$traverse, $html) {
+            echo "<li>";
+            echo $html->xmlName($priv['privilege']);
+            if (isset($priv['abstract']) && $priv['abstract']) {
+                echo " <i>(abstract)</i>";
+            }
+            if (isset($priv['description'])) {
+                echo " " . $html->h($priv['description']);
+            }
+            if (isset($priv['aggregates'])) {
+                echo "\n<ul>\n";
+                foreach ($priv['aggregates'] as $subPriv) {
+                    $traverse($subPriv);
+                }
+                echo "</ul>";
+            }
+            echo "</li>\n";
+        };
+
+        ob_start();
+        echo "<ul class=\"tree\">";
+        $traverse($this->getValue(), '');
+        echo "</ul>\n";
+
+        return ob_get_clean();
+
+    }
+
+
 
     /**
      * Serializes a property
@@ -85,7 +132,7 @@ class SupportedPrivilegeSet implements XmlSerializable {
      * @param array $privilege
      * @return void
      */
-    private function serializePriv(Writer $writer,$privilege) {
+    private function serializePriv(Writer $writer, $privilege) {
 
         $writer->startElement('{DAV:}supported-privilege');
 
@@ -100,7 +147,7 @@ class SupportedPrivilegeSet implements XmlSerializable {
             $writer->writeElement('{DAV:}description', $privilege['description']);
         }
         if (isset($privilege['aggregates'])) {
-            foreach($privilege['aggregates'] as $subPrivilege) {
+            foreach ($privilege['aggregates'] as $subPrivilege) {
                 $this->serializePriv($writer, $subPrivilege);
             }
         }

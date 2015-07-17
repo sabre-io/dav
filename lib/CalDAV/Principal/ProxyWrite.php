@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Principal;
+
 use Sabre\DAVACL;
 use Sabre\DAV;
 
@@ -103,7 +104,7 @@ class ProxyWrite implements IProxyWrite {
      */
     function getAlternateUriSet() {
 
-        return array();
+        return [];
 
     }
 

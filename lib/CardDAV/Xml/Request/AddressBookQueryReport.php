@@ -17,7 +17,7 @@ use Sabre\CardDAV\Plugin;
  *
  * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class AddressBookQueryReport implements XmlDeserializable {
 
@@ -120,46 +120,46 @@ class AddressBookQueryReport implements XmlDeserializable {
         ]);
 
         $newProps = [
-            'filters' => null,
+            'filters'    => null,
             'properties' => [],
-            'test' => 'anyof',
-            'limit' => null,
+            'test'       => 'anyof',
+            'limit'      => null,
         ];
 
         if (!is_array($elems)) $elems = [];
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{DAV:}prop' :
                     $newProps['properties'] = array_keys($elem['value']);
                     if (isset($elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'])) {
-                        $newProps+=$elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'];
+                        $newProps += $elem['value']['{' . Plugin::NS_CARDDAV . '}address-data'];
                     }
                     break;
-                case '{'.Plugin::NS_CARDDAV.'}filter' :
+                case '{' . Plugin::NS_CARDDAV . '}filter' :
 
                     if (!is_null($newProps['filters'])) {
                         throw new BadRequest('You can only include 1 {' . Plugin::NS_CARDDAV . '}filter element');
                     }
                     if (isset($elem['attributes']['test'])) {
                         $newProps['test'] = $elem['attributes']['test'];
-                        if ($newProps['test']!=='allof' && $newProps['test']!=='anyof') {
+                        if ($newProps['test'] !== 'allof' && $newProps['test'] !== 'anyof') {
                             throw new BadRequest('The "test" attribute must be one of "allof" or "anyof"');
                         }
                     }
 
                     $newProps['filters'] = [];
-                    foreach((array)$elem['value'] as $subElem) {
+                    foreach ((array)$elem['value'] as $subElem) {
                         if ($subElem['name'] === '{' . Plugin::NS_CARDDAV . '}prop-filter') {
                             $newProps['filters'][] = $subElem['value'];
                         }
                     }
                     break;
-                case '{'.Plugin::NS_CARDDAV.'}limit' :
-                    foreach($elem['value'] as $child) {
-                        if ($child['name'] === '{'. Plugin::NS_CARDDAV .'}nresults') {
+                case '{' . Plugin::NS_CARDDAV . '}limit' :
+                    foreach ($elem['value'] as $child) {
+                        if ($child['name'] === '{' . Plugin::NS_CARDDAV . '}nresults') {
                             $newProps['limit'] = (int)$child['value'];
                         }
                     }
@@ -170,7 +170,7 @@ class AddressBookQueryReport implements XmlDeserializable {
         }
 
         if (is_null($newProps['filters'])) {
-            /**
+            /*
              * We are supposed to throw this error, but KDE sometimes does not
              * include the filter element, and we need to treat it as if no
              * filters are supplied
@@ -181,7 +181,7 @@ class AddressBookQueryReport implements XmlDeserializable {
         }
 
         $obj = new self();
-        foreach($newProps as $key=>$value) {
+        foreach ($newProps as $key => $value) {
             $obj->$key = $value;
         }
 

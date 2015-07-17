@@ -6,7 +6,7 @@ use Sabre\DAV\Xml\XmlTest;
 use DateTime;
 use DateTimeZone;
 
-class GetLastModifiedTest extends XmlTest {
+class LastModifiedTest extends XmlTest {
 
     function testSerializeDateTime() {
 

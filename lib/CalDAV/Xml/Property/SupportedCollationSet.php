@@ -48,7 +48,7 @@ class SupportedCollationSet implements XmlSerializable {
             'i;unicode-casemap'
         ];
 
-        foreach($collations as $collation) {
+        foreach ($collations as $collation) {
             $writer->writeElement('{' . Plugin::NS_CALDAV . '}supported-collation', $collation);
         }
 

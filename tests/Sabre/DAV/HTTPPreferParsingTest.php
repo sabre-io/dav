@@ -4,105 +4,96 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class HTTPPReferParsingTest extends \Sabre\DAVServerTest {
+class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
 
     function testParseSimple() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
+        $httpRequest = HTTP\Sapi::createFromServerArray([
             'HTTP_PREFER' => 'return-asynch',
-        ));
+        ]);
 
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals(array(
-            'return-asynch' => true,
-            'return-minimal' => false,
-            'return-representation' => false,
-            'strict' => false,
-            'lenient' => false,
-            'wait' => null,
-        ), $server->getHTTPPrefer());
+        $this->assertEquals([
+            'respond-async' => true,
+            'return'        => null,
+            'handling'      => null,
+            'wait'          => null,
+        ], $server->getHTTPPrefer());
 
     }
 
     function testParseValue() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
+        $httpRequest = HTTP\Sapi::createFromServerArray([
             'HTTP_PREFER' => 'wait=10',
-        ));
+        ]);
 
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals(array(
-            'return-asynch' => false,
-            'return-minimal' => false,
-            'return-representation' => false,
-            'strict' => false,
-            'lenient' => false,
-            'wait' => 10,
-        ), $server->getHTTPPrefer());
+        $this->assertEquals([
+            'respond-async' => false,
+            'return'        => null,
+            'handling'      => null,
+            'wait'          => '10',
+        ], $server->getHTTPPrefer());
 
     }
 
     function testParseMultiple() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
+        $httpRequest = HTTP\Sapi::createFromServerArray([
             'HTTP_PREFER' => 'return-minimal, strict,lenient',
-        ));
+        ]);
 
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals(array(
-            'return-asynch' => false,
-            'return-minimal' => true,
-            'return-representation' => false,
-            'strict' => true,
-            'lenient' => true,
-            'wait' => null,
-        ), $server->getHTTPPrefer());
+        $this->assertEquals([
+            'respond-async' => false,
+            'return'        => 'minimal',
+            'handling'      => 'lenient',
+            'wait'          => null,
+        ], $server->getHTTPPrefer());
 
     }
 
     function testParseWeirdValue() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
+        $httpRequest = HTTP\Sapi::createFromServerArray([
             'HTTP_PREFER' => 'BOOOH',
-        ));
+        ]);
 
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals(array(
-            'strict' => false,
-            'lenient' => false,
-            'wait' => null,
-            'return-asynch' => false,
-            'return-minimal' => false,
-            'return-representation' => false,
-        ), $server->getHTTPPrefer());
+        $this->assertEquals([
+            'respond-async' => false,
+            'return'        => null,
+            'handling'      => null,
+            'wait'          => null,
+            'boooh'         => true,
+        ], $server->getHTTPPrefer());
 
     }
 
     function testBrief() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray(array(
+        $httpRequest = HTTP\Sapi::createFromServerArray([
             'HTTP_BRIEF' => 't',
-        ));
+        ]);
 
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals(array(
-            'strict' => false,
-            'lenient' => false,
-            'wait' => null,
-            'return-asynch' => false,
-            'return-minimal' => true,
-            'return-representation' => false,
-        ), $server->getHTTPPrefer());
+        $this->assertEquals([
+            'respond-async' => false,
+            'return'        => 'minimal',
+            'handling'      => null,
+            'wait'          => null,
+        ], $server->getHTTPPrefer());
 
     }
 
@@ -113,11 +104,11 @@ class HTTPPReferParsingTest extends \Sabre\DAVServerTest {
      */
     function testpropfindMinimal() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PROPFIND',
             'REQUEST_URI'    => '/',
-            'HTTP_PREFER' => 'return-minimal',
-        ));
+            'HTTP_PREFER'    => 'return-minimal',
+        ]);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
 <d:propfind xmlns:d="DAV:">
@@ -135,14 +126,14 @@ BLA
 
         $this->assertEquals(207, $response->getStatus(), $body);
 
-        $this->assertTrue(strpos($body, 'resourcetype')!==false, $body);
-        $this->assertTrue(strpos($body, 'something')===false, $body);
+        $this->assertTrue(strpos($body, 'resourcetype') !== false, $body);
+        $this->assertTrue(strpos($body, 'something') === false, $body);
 
     }
 
     function testproppatchMinimal() {
 
-        $request = new HTTP\Request('PROPPATCH','/', ['Prefer' => 'return-minimal']);
+        $request = new HTTP\Request('PROPPATCH', '/', ['Prefer' => 'return-minimal']);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
 <d:propertyupdate xmlns:d="DAV:">
@@ -172,7 +163,7 @@ BLA
 
     function testproppatchMinimalError() {
 
-        $request = new HTTP\Request('PROPPATCH','/', ['Prefer' => 'return-minimal']);
+        $request = new HTTP\Request('PROPPATCH', '/', ['Prefer' => 'return-minimal']);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>
 <d:propertyupdate xmlns:d="DAV:">
@@ -190,8 +181,8 @@ BLA
         $body = $response->getBodyAsString();
 
         $this->assertEquals(207, $response->status);
-        $this->assertTrue(strpos($body, 'something')!==false);
-        $this->assertTrue(strpos($body, '403 Forbidden')!==false, $body);
+        $this->assertTrue(strpos($body, 'something') !== false);
+        $this->assertTrue(strpos($body, '403 Forbidden') !== false, $body);
 
     }
 }

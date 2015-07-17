@@ -40,10 +40,10 @@ class MyCollection extends Sabre\DAV\Collection {
 
     $children = [];
     // Loop through the directory, and create objects for each node
-    foreach(scandir($this->myPath) as $node) {
+    foreach (scandir($this->myPath) as $node) {
 
       // Ignoring files staring with .
-      if ($node[0]==='.') continue;
+      if ($node[0] === '.') continue;
 
       $children[] = $this->getChild($node);
 
@@ -61,7 +61,7 @@ class MyCollection extends Sabre\DAV\Collection {
         if (!file_exists($this->myPath)) throw new \Sabre\DAV\Exception\NotFound('The file with name: ' . $name . ' could not be found');
         // Some added security
 
-        if ($name[0]=='.')  throw new \Sabre\DAV\Exception\Forbidden('Access denied');
+        if ($name[0] == '.')  throw new \Sabre\DAV\Exception\Forbidden('Access denied');
 
         if (is_dir($path)) {
 
@@ -101,7 +101,7 @@ class MyFile extends \Sabre\DAV\File {
 
   function get() {
 
-    return fopen($this->myPath,'r');
+    return fopen($this->myPath, 'r');
 
   }
 

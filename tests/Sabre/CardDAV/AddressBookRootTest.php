@@ -24,7 +24,7 @@ class AddressBookRootTest extends \PHPUnit_Framework_TestCase {
         $children = $root->getChildren();
         $this->assertEquals(3, count($children));
 
-        $this->assertInstanceOf('Sabre\\CardDAV\\UserAddressBooks', $children[0]);
+        $this->assertInstanceOf('Sabre\\CardDAV\\AddressBookHome', $children[0]);
         $this->assertEquals('user1', $children[0]->getName());
 
     }

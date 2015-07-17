@@ -4,7 +4,7 @@ namespace Sabre\DAV\Xml\Request;
 
 use Sabre\DAV\Xml\XmlTest;
 
-class SyncCollectionReportTest extends XmlTest {
+class SyncCollectionTest extends XmlTest {
 
     function testDeserializeProp() {
 
@@ -92,4 +92,3 @@ class SyncCollectionReportTest extends XmlTest {
     }
 
 }
-

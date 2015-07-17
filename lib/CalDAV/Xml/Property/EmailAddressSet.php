@@ -69,7 +69,7 @@ class EmailAddressSet implements XmlSerializable {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->emails as $email) {
+        foreach ($this->emails as $email) {
 
             $writer->writeElement('{http://calendarserver.org/ns/}email-address', $email);
 

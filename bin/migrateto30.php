@@ -1,17 +1,19 @@
 #!/usr/bin/env php
 <?php
 
-echo "SabreDAV migrate script for version 2.2\n";
+echo "SabreDAV migrate script for version 3.0\n";
 
 if ($argc<2) {
 
     echo <<<HELLO
 
-This script help you migrate from a pre-2.2 database to 2.2 and later
+This script help you migrate from a pre-3.0 database to 3.0 and later
 
 Changes:
-  * Values in the propertystorage table are now serialized using PHP's
-    serialize()
+  * The propertystorage table has changed to allow storage of complex
+    properties.
+  * the vcardurl field in the principals table is no more. This was moved to
+    the propertystorage table.
 
 Keep in mind that ALTER TABLE commands will be executed. If you have a large
 dataset this may mean that this process takes a while.
@@ -83,8 +85,40 @@ try {
     $row = $result->fetch(\PDO::FETCH_ASSOC);
 
     if (!$row) {
-        echo "No data in table. Going to try to add the uid field anyway.\n";
-        $addValueType = true;
+        echo "No data in table. Going to re-create the table.\n";
+        $random = mt_rand(1000,9999);
+        echo "Renaming propertystorage -> propertystorage_old$random and creating new table.\n";
+
+        switch($driver) {
+
+            case 'mysql' :
+                $pdo->exec('RENAME TABLE propertystorage TO propertystorage_old' . $random);
+                $pdo->exec('
+    CREATE TABLE propertystorage (
+        id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        path VARBINARY(1024) NOT NULL,
+        name VARBINARY(100) NOT NULL,
+        valuetype INT UNSIGNED,
+        value MEDIUMBLOB
+    );
+                ');
+                $pdo->exec('CREATE UNIQUE INDEX path_property_' . $random . '  ON propertystorage (path(600), name(100));');
+                break;
+            case 'sqlite' :
+                $pdo->exec('ALTER TABLE propertystorage RENAME TO propertystorage_old' . $random);
+                $pdo->exec('
+CREATE TABLE propertystorage (
+    id integer primary key asc,
+    path text,
+    name text,
+    valuetype integer,
+    value blob
+);');
+
+                $pdo->exec('CREATE UNIQUE INDEX path_property_' . $random . ' ON propertystorage (path, name);');
+                break;
+
+        }
     } elseif (array_key_exists('valuetype', $row)) {
         echo "valuetype field exists. Assuming that this part of the migration has\n";
         echo "Already been completed.\n";
@@ -96,6 +130,7 @@ try {
 } catch (Exception $e) {
     echo "Could not find a propertystorage table. Skipping this part of the\n";
     echo "upgrade.\n";
+    echo $e->getMessage(), "\n";
 }
 
 if ($addValueType) {
@@ -114,5 +149,23 @@ if ($addValueType) {
 
 }
 
+echo "Migrating vcardurl\n";
+
+$result = $pdo->query('SELECT id, uri, vcardurl FROM principals WHERE vcardurl IS NOT NULL');
+$stmt1 = $pdo->prepare('INSERT INTO propertystorage (path, name, valuetype, value) VALUES (?, ?, 3, ?)');
+
+while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+
+    // Inserting the new record
+    $stmt1->execute([
+        'addressbooks/' . basename($row['uri']),
+        '{http://calendarserver.org/ns/}me-card',
+        serialize(new Sabre\DAV\Xml\Property\Href($row['vcardurl']))
+    ]);
+
+    echo serialize(new Sabre\DAV\Xml\Property\Href($row['vcardurl']));
+
+}
+
 echo "Done.\n";
-echo "Upgrade to 2.2 schema completed.\n";
+echo "Upgrade to 3.0 schema completed.\n";

@@ -63,12 +63,12 @@ class FreeBusyQueryReport implements XmlDeserializable {
         $start = null;
         $end = null;
 
-        foreach((array)$reader->parseInnerTree([]) as $elem) {
+        foreach ((array)$reader->parseInnerTree([]) as $elem) {
 
-            if ($elem['name']!==$timeRange) continue;
+            if ($elem['name'] !== $timeRange) continue;
 
-            $start = empty($elem['attributes']['start'])?:$elem['attributes']['start'];
-            $end = empty($elem['attributes']['end'])?:$elem['attributes']['end'];
+            $start = empty($elem['attributes']['start']) ?: $elem['attributes']['start'];
+            $end = empty($elem['attributes']['end']) ?: $elem['attributes']['end'];
 
         }
         if (!$start && !$end) {

@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Principal;
+
 use Sabre\DAVACL;
 
 /**
@@ -15,7 +16,7 @@ use Sabre\DAVACL;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Collection extends DAVACL\AbstractPrincipalCollection {
+class Collection extends DAVACL\PrincipalCollection {
 
     /**
      * Returns a child object based on principal information

@@ -62,9 +62,9 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      */
     function getChild($name) {
 
-        $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'],$name);
+        $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'], $name);
         if (!$obj) throw new DAV\Exception\NotFound('Card not found');
-        return new Card($this->carddavBackend,$this->addressBookInfo,$obj);
+        return new Card($this->carddavBackend, $this->addressBookInfo, $obj);
 
     }
 
@@ -77,9 +77,9 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
 
         $objs = $this->carddavBackend->getCards($this->addressBookInfo['id']);
         $children = [];
-        foreach($objs as $obj) {
+        foreach ($objs as $obj) {
             $obj['acl'] = $this->getChildACL();
-            $children[] = new Card($this->carddavBackend,$this->addressBookInfo,$obj);
+            $children[] = new Card($this->carddavBackend, $this->addressBookInfo, $obj);
         }
         return $children;
 
@@ -97,9 +97,9 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
 
         $objs = $this->carddavBackend->getMultipleCards($this->addressBookInfo['id'], $paths);
         $children = [];
-        foreach($objs as $obj) {
+        foreach ($objs as $obj) {
             $obj['acl'] = $this->getChildACL();
-            $children[] = new Card($this->carddavBackend,$this->addressBookInfo,$obj);
+            $children[] = new Card($this->carddavBackend, $this->addressBookInfo, $obj);
         }
         return $children;
 
@@ -130,7 +130,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @param resource $vcardData
      * @return string|null
      */
-    function createFile($name,$vcardData = null) {
+    function createFile($name, $vcardData = null) {
 
         if (is_resource($vcardData)) {
             $vcardData = stream_get_contents($vcardData);
@@ -138,7 +138,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
         // Converting to UTF-8, if needed
         $vcardData = DAV\StringUtil::ensureUTF8($vcardData);
 
-        return $this->carddavBackend->createCard($this->addressBookInfo['id'],$name,$vcardData);
+        return $this->carddavBackend->createCard($this->addressBookInfo['id'], $name, $vcardData);
 
     }
 
@@ -208,7 +208,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
     function getProperties($properties) {
 
         $response = [];
-        foreach($properties as $propertyName) {
+        foreach ($properties as $propertyName) {
 
             if (isset($this->addressBookInfo[$propertyName])) {
 

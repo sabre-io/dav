@@ -50,7 +50,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
      * @param array $calendarInfo
      * @param array $objectData
      */
-    function __construct(Backend\BackendInterface $caldavBackend,array $calendarInfo,array $objectData) {
+    function __construct(Backend\BackendInterface $caldavBackend, array $calendarInfo, array $objectData) {
 
         $this->caldavBackend = $caldavBackend;
 
@@ -101,7 +101,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
         if (is_resource($calendarData)) {
             $calendarData = stream_get_contents($calendarData);
         }
-        $etag = $this->caldavBackend->updateCalendarObject($this->calendarInfo['id'],$this->objectData['uri'],$calendarData);
+        $etag = $this->caldavBackend->updateCalendarObject($this->calendarInfo['id'], $this->objectData['uri'], $calendarData);
         $this->objectData['calendardata'] = $calendarData;
         $this->objectData['etag'] = $etag;
 
@@ -116,7 +116,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
      */
     function delete() {
 
-        $this->caldavBackend->deleteCalendarObject($this->calendarInfo['id'],$this->objectData['uri']);
+        $this->caldavBackend->deleteCalendarObject($this->calendarInfo['id'], $this->objectData['uri']);
 
     }
 
@@ -129,7 +129,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
 
         $mime = 'text/calendar; charset=utf-8';
         if (isset($this->objectData['component']) && $this->objectData['component']) {
-            $mime.='; component=' . $this->objectData['component'];
+            $mime .= '; component=' . $this->objectData['component'];
         }
         return $mime;
 
@@ -147,7 +147,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
         if (isset($this->objectData['etag'])) {
             return $this->objectData['etag'];
         } else {
-            return '"' . md5($this->get()). '"';
+            return '"' . md5($this->get()) . '"';
         }
 
     }
@@ -170,7 +170,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
      */
     function getSize() {
 
-        if (array_key_exists('size',$this->objectData)) {
+        if (array_key_exists('size', $this->objectData)) {
             return $this->objectData['size'];
         } else {
             return strlen($this->get());
@@ -288,4 +288,3 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     }
 
 }
-

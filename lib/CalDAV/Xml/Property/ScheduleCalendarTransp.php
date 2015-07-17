@@ -22,7 +22,7 @@ use Sabre\CalDAV\Plugin;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class ScheduleCalendarTransp implements Element {
 
@@ -82,12 +82,12 @@ class ScheduleCalendarTransp implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
-        switch($this->value) {
+        switch ($this->value) {
             case self::TRANSPARENT :
-                $writer->writeElement('{'.Plugin::NS_CALDAV.'}transparent');
+                $writer->writeElement('{' . Plugin::NS_CALDAV . '}transparent');
                 break;
             case self::OPAQUE :
-                $writer->writeElement('{'.Plugin::NS_CALDAV.'}opaque');
+                $writer->writeElement('{' . Plugin::NS_CALDAV . '}opaque');
                 break;
         }
 
@@ -120,8 +120,8 @@ class ScheduleCalendarTransp implements Element {
 
         $value = null;
 
-        foreach($elems as $elem) {
-            switch($elem) {
+        foreach ($elems as $elem) {
+            switch ($elem) {
                 case '{' . Plugin::NS_CALDAV . '}opaque' :
                     $value = self::OPAQUE;
                     break;

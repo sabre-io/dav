@@ -54,13 +54,13 @@ class Locked extends DAV\Exception {
      * @param \DOMElement $errorNode
      * @return void
      */
-    function serialize(DAV\Server $server,\DOMElement $errorNode) {
+    function serialize(DAV\Server $server, \DOMElement $errorNode) {
 
         if ($this->lock) {
-            $error = $errorNode->ownerDocument->createElementNS('DAV:','d:lock-token-submitted');
+            $error = $errorNode->ownerDocument->createElementNS('DAV:', 'd:lock-token-submitted');
             $errorNode->appendChild($error);
 
-            $href = $errorNode->ownerDocument->createElementNS('DAV:','d:href');
+            $href = $errorNode->ownerDocument->createElementNS('DAV:', 'd:href');
             $href->appendChild($errorNode->ownerDocument->createTextNode($this->lock->uri));
             $error->appendChild(
                 $href
@@ -70,4 +70,3 @@ class Locked extends DAV\Exception {
     }
 
 }
-

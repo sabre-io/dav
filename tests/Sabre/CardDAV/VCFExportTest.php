@@ -37,7 +37,7 @@ class VCFExportTest extends \Sabre\DAVServerTest {
 
     function testSimple() {
 
-        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $this->server->getPlugin('Sabre\\CardDAV\\VCFExportPlugin'));
+        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $this->server->getPlugin('vcf-export'));
 
     }
 

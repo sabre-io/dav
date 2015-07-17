@@ -357,17 +357,18 @@ try {
     $create = false;
     $row = $pdo->query("SELECT * FROM cards LIMIT 1")->fetch();
     if (!$row) {
+        $random = mt_rand(1000,9999);
         echo "There was no data in the cards table, so we're re-creating it\n";
-        echo "The old table will be renamed to cards_old, just in case.\n";
+        echo "The old table will be renamed to cards_old$random, just in case.\n";
 
         $create = true;
 
         switch($driver) {
             case 'mysql' :
-                $pdo->exec("RENAME TABLE cards TO cards_old");
+                $pdo->exec("RENAME TABLE cards TO cards_old$random");
                 break;
             case 'sqlite' :
-                $pdo->exec("ALTER TABLE cards RENAME TO cards_old");
+                $pdo->exec("ALTER TABLE cards RENAME TO cards_old$random");
                 break;
 
         }
@@ -376,6 +377,7 @@ try {
 } catch (Exception $e) {
 
     echo "Exception while checking cards table. Assuming that the table does not yet exist.\n";
+    echo "Debug: ", $e->getMessage(), "\n";
     $create = true;
 
 }
@@ -405,7 +407,7 @@ CREATE TABLE cards (
     addressbookid integer,
     carddata blob,
     uri text,
-    lastmodified integer
+    lastmodified integer,
     etag text,
     size integer
 );

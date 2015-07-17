@@ -4,7 +4,6 @@ namespace Sabre\DAV\PropertyStorage\Backend;
 
 use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
-
 use Sabre\DAV\Xml\Property\Complex;
 
 /**
@@ -64,14 +63,16 @@ class PDO implements BackendInterface {
      * as this will give you the _exact_ list of properties that need to be
      * fetched, and haven't yet.
      *
+     * However, you can also support the 'allprops' property here. In that
+     * case, you should check for $propFind->isAllProps().
+     *
      * @param string $path
      * @param PropFind $propFind
      * @return void
      */
     function propFind($path, PropFind $propFind) {
 
-        $propertyNames = $propFind->get404Properties();
-        if (!$propertyNames) {
+        if (!$propFind->isAllProps() && count($propFind->get404Properties()) === 0) {
             return;
         }
 
@@ -79,8 +80,8 @@ class PDO implements BackendInterface {
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$path]);
 
-        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            switch($row['valuetype']) {
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            switch ($row['valuetype']) {
                 case null :
                 case self::VT_STRING :
                     $propFind->set($row['name'], $row['value']);
@@ -116,7 +117,7 @@ class PDO implements BackendInterface {
             $updateStmt = $this->pdo->prepare("REPLACE INTO propertystorage (path, name, valuetype, value) VALUES (?, ?, ?, ?)");
             $deleteStmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? AND name = ?");
 
-            foreach($properties as $name=>$value) {
+            foreach ($properties as $name => $value) {
 
                 if (!is_null($value)) {
                     if (is_scalar($value)) {
@@ -189,16 +190,16 @@ class PDO implements BackendInterface {
         $select->execute([$source, $source . '/%']);
 
         $update = $this->pdo->prepare('UPDATE propertystorage SET path = ? WHERE id = ?');
-        while($row = $select->fetch(\PDO::FETCH_ASSOC)) {
+        while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
 
             // Sanity check. SQL may select too many records, such as records
             // with different cases.
-            if ($row['path'] !== $source && strpos($row['path'], $source . '/')!==0) continue;
+            if ($row['path'] !== $source && strpos($row['path'], $source . '/') !== 0) continue;
 
-            $trailingPart = substr($row['path'], strlen($source)+1);
+            $trailingPart = substr($row['path'], strlen($source) + 1);
             $newPath = $destination;
             if ($trailingPart) {
-                $newPath.='/' . $trailingPart;
+                $newPath .= '/' . $trailingPart;
             }
             $update->execute([$newPath, $row['id']]);
 

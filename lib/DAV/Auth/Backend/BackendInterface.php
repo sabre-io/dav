@@ -2,9 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * This is the base class for any authentication object.
@@ -69,4 +68,3 @@ interface BackendInterface {
     function challenge(RequestInterface $request, ResponseInterface $response);
 
 }
-

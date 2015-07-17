@@ -11,7 +11,6 @@ use Sabre\DAVACL;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
-
 /**
  * Notifications plugin
  *
@@ -23,7 +22,7 @@ use Sabre\HTTP\ResponseInterface;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Plugin extends ServerPlugin {
 
@@ -65,8 +64,8 @@ class Plugin extends ServerPlugin {
     function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('method:GET', [$this,'httpGet'], 90);
-        $server->on('propFind',   [$this,'propFind']);
+        $server->on('method:GET', [$this, 'httpGet'], 90);
+        $server->on('propFind',   [$this, 'propFind']);
 
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
         $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{' . self::NS_CALENDARSERVER . '}notification';
@@ -101,7 +100,7 @@ class Plugin extends ServerPlugin {
 
             });
 
-        } // instanceof IPrincipal
+        }
 
         if ($node instanceof INode) {
 
@@ -110,7 +109,7 @@ class Plugin extends ServerPlugin {
                 [$node, 'getNotificationType']
             );
 
-        } // instanceof Notifications_INode
+        }
 
     }
 
@@ -138,14 +137,15 @@ class Plugin extends ServerPlugin {
             return;
 
         $writer = $this->server->xml->getWriter();
+        $writer->contextUri = $this->server->getBaseUri();
         $writer->openMemory();
         $writer->startDocument('1.0', 'UTF-8');
         $writer->startElement('{http://calendarserver.org/ns/}notification');
         $node->getNotificationType()->xmlSerializeFull($writer);
         $writer->endElement();
 
-        $response->setHeader('Content-Type','application/xml');
-        $response->setHeader('ETag',$node->getETag());
+        $response->setHeader('Content-Type', 'application/xml');
+        $response->setHeader('ETag', $node->getETag());
         $response->setStatus(200);
         $response->setBody($writer->outputMemory());
 

@@ -22,9 +22,9 @@ class PDOSQLiteTest extends AbstractPDOTest {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
-        $pdo->query('CREATE TABLE principals (id INTEGER PRIMARY KEY ASC, uri TEXT, email VARCHAR(80), displayname VARCHAR(80), vcardurl VARCHAR(80))');
-        $pdo->query('INSERT INTO principals VALUES (1, "principals/user","user@example.org","User",null)');
-        $pdo->query('INSERT INTO principals VALUES (2, "principals/group","group@example.org","Group",null)');
+        $pdo->query('CREATE TABLE principals (id INTEGER PRIMARY KEY ASC, uri TEXT, email VARCHAR(80), displayname VARCHAR(80))');
+        $pdo->query('INSERT INTO principals VALUES (1, "principals/user","user@example.org","User")');
+        $pdo->query('INSERT INTO principals VALUES (2, "principals/group","group@example.org","Group")');
 
         $pdo->query("CREATE TABLE groupmembers (
                 id INTEGER PRIMARY KEY ASC,

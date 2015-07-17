@@ -89,4 +89,33 @@ class ServerEventsTest extends AbstractServer {
 
     }
 
+    function testMethod() {
+
+        $k = 1;
+        $this->server->on('method', function() use (&$k) {
+
+            $k+=1;
+
+            return false;
+
+        });
+        $this->server->on('method', function() use (&$k) {
+
+            $k+=2;
+
+            return false;
+
+        });
+
+        $this->server->invokeMethod(
+            new HTTP\Request('BLABLA', '/'),
+            new HTTP\Response(),
+            false
+        );
+
+        $this->assertEquals(2, $k);
+
+
+    }
+
 }

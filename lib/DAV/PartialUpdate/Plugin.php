@@ -2,10 +2,9 @@
 
 namespace Sabre\DAV\PartialUpdate;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\DAV;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 /**
  * Partial update plugin (Patch method)
@@ -45,7 +44,7 @@ class Plugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $server->on('method:PATCH', [$this,'httpPatch']);
+        $server->on('method:PATCH', [$this, 'httpPatch']);
 
     }
 
@@ -140,7 +139,7 @@ class Plugin extends DAV\ServerPlugin {
         $len = $this->server->httpRequest->getHeader('Content-Length');
         if (!$len) throw new DAV\Exception\LengthRequired('A Content-Length header is required');
 
-        switch($range[0]) {
+        switch ($range[0]) {
             case self::RANGE_START :
                 // Calculate the end-range if it doesn't exist.
                 if (!$range[2]) {
@@ -149,7 +148,7 @@ class Plugin extends DAV\ServerPlugin {
                     if ($range[2] < $range[1]) {
                         throw new DAV\Exception\RequestedRangeNotSatisfiable('The end offset (' . $range[2] . ') is lower than the start offset (' . $range[1] . ')');
                     }
-                    if($range[2] - $range[1] + 1 != $len) {
+                    if ($range[2] - $range[1] + 1 != $len) {
                         throw new DAV\Exception\RequestedRangeNotSatisfiable('Actual data length (' . $len . ') is not consistent with begin (' . $range[1] . ') and end (' . $range[2] . ') offsets');
                     }
                 }
@@ -162,12 +161,12 @@ class Plugin extends DAV\ServerPlugin {
         $body = $this->server->httpRequest->getBody();
 
 
-        $etag = $node->patch($body, $range[0], isset($range[1])?$range[1]:null);
+        $etag = $node->patch($body, $range[0], isset($range[1]) ? $range[1] : null);
 
         $this->server->emit('afterWriteContent', [$path, $node]);
 
-        $response->setHeader('Content-Length','0');
-        if ($etag) $response->setHeader('ETag',$etag);
+        $response->setHeader('Content-Length', '0');
+        if ($etag) $response->setHeader('ETag', $etag);
         $response->setStatus(204);
 
         // Breaks the event chain
@@ -202,12 +201,12 @@ class Plugin extends DAV\ServerPlugin {
 
         // Matching "Range: bytes=1234-5678: both numbers are optional
 
-        if (!preg_match('/^(append)|(?:bytes=([0-9]+)-([0-9]*))|(?:bytes=(-[0-9]+))$/i',$range,$matches)) return null;
+        if (!preg_match('/^(append)|(?:bytes=([0-9]+)-([0-9]*))|(?:bytes=(-[0-9]+))$/i', $range, $matches)) return null;
 
-        if ($matches[1]==='append') {
+        if ($matches[1] === 'append') {
             return [self::RANGE_APPEND];
-        } elseif (strlen($matches[2])>0) {
-            return [self::RANGE_START, $matches[2], $matches[3]?:null];
+        } elseif (strlen($matches[2]) > 0) {
+            return [self::RANGE_START, $matches[2], $matches[3] ?: null];
         } else {
             return [self::RANGE_END, $matches[4]];
         }

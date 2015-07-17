@@ -23,7 +23,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $p = new ICSExportPlugin();
         $s = new DAV\Server();
         $s->addPlugin($p);
-        $this->assertEquals($p, $s->getPlugin('Sabre\CalDAV\ICSExportPlugin'));
+        $this->assertEquals($p, $s->getPlugin('ics-export'));
 
     }
 

@@ -15,7 +15,7 @@ use Sabre\Xml\Writer;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Response implements Element {
 
@@ -123,7 +123,7 @@ class Response implements Element {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
         $writer->writeElement('{DAV:}href', $writer->contextUri . $this->getHref());
-        foreach($this->getResponseProperties() as $status => $properties) {
+        foreach ($this->getResponseProperties() as $status => $properties) {
 
             // Skipping empty lists
             if (!$properties || (!ctype_digit($status) && !is_int($status))) {
@@ -167,21 +167,21 @@ class Response implements Element {
         $propertyLists = [];
         $statusCode = null;
 
-        foreach($elems as $elem) {
+        foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{DAV:}href' :
                     $href = $elem['value'];
                     break;
                 case '{DAV:}propstat' :
                     $status = $elem['value']['{DAV:}status'];
-                    list(, $status, ) = explode(' ', $status,3);
-                    $properties = $elem['value']['{DAV:}prop'];
+                    list(, $status, ) = explode(' ', $status, 3);
+                    $properties = isset($elem['value']['{DAV:}prop']) ? $elem['value']['{DAV:}prop'] : [];
                     $propertyLists[$status] = $properties;
                     break;
                 case '{DAV:}status' :
-                    list(, $statusCode, ) = explode(' ', $elem['value'],3);
+                    list(, $statusCode, ) = explode(' ', $elem['value'], 3);
                     break;
 
             }

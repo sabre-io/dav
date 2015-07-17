@@ -101,7 +101,7 @@ function composerupdate() {
 
     global $baseDir;
     echo "  Updating composer packages to latest version\n\n";
-    system('cd ' . $baseDir . '; composer update --dev');
+    system('cd ' . $baseDir . '; composer update');
 }
 
 function test() {
@@ -143,7 +143,7 @@ function buildzip() {
     file_put_contents('build/SabreDAV/composer.json', json_encode($newComposer, JSON_PRETTY_PRINT));
 
     echo "  Downloading dependencies\n";
-    system("cd build/SabreDAV; composer install -n --no-dev", $code);
+    system("cd build/SabreDAV; composer install -n", $code);
     if ($code!==0) {
         echo "Composer reported error code $code\n";
         die(1);

@@ -3,6 +3,7 @@
 namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
+use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
@@ -61,11 +62,11 @@ class Principal extends DAV\Xml\Property\Href {
     function __construct($type, $href = null) {
 
         $this->type = $type;
-        if ($type===self::HREF && is_null($href)) {
+        if ($type === self::HREF && is_null($href)) {
             throw new DAV\Exception('The href argument must be specified for the HREF principal type.');
         }
         if ($href) {
-            $href = rtrim($href,'/') . '/';
+            $href = rtrim($href, '/') . '/';
             parent::__construct($href);
         }
 
@@ -104,7 +105,7 @@ class Principal extends DAV\Xml\Property\Href {
      */
     function xmlSerialize(Writer $writer) {
 
-        switch($this->type) {
+        switch ($this->type) {
 
             case self::UNAUTHENTICATED :
                 $writer->writeElement('{DAV:}unauthenticated');
@@ -118,6 +119,36 @@ class Principal extends DAV\Xml\Property\Href {
             case self::ALL :
                 $writer->writeElement('{DAV:}all');
                 break;
+        }
+
+    }
+
+    /**
+     * Generate html representation for this value.
+     *
+     * The html output is 100% trusted, and no effort is being made to sanitize
+     * it. It's up to the implementor to sanitize user provided values.
+     *
+     * The output must be in UTF-8.
+     *
+     * The baseUri parameter is a url to the root of the application, and can
+     * be used to construct local links.
+     *
+     * @param HtmlOutputHelper $html
+     * @return string
+     */
+    function toHtml(HtmlOutputHelper $html) {
+
+        switch ($this->type) {
+
+            case self::UNAUTHENTICATED :
+                return '<em>unauthenticated</em>';
+            case self::AUTHENTICATED :
+                return '<em>authenticated</em>';
+            case self::HREF :
+                return parent::toHtml($html);
+            case self::ALL :
+                return '<em>all</em>';
         }
 
     }
@@ -147,7 +178,7 @@ class Principal extends DAV\Xml\Property\Href {
 
         $tree = $reader->parseInnerTree()[0];
 
-        switch($tree['name']) {
+        switch ($tree['name']) {
             case '{DAV:}unauthenticated' :
                 return new self(self::UNAUTHENTICATED);
             case '{DAV:}authenticated' :

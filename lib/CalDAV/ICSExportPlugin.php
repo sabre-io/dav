@@ -2,14 +2,13 @@
 
 namespace Sabre\CalDAV;
 
-use
-    DateTimeZone,
-    Sabre\DAV,
-    Sabre\VObject,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface,
-    Sabre\DAV\Exception\BadRequest,
-    DateTime;
+use DateTimeZone;
+use Sabre\DAV;
+use Sabre\VObject;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\DAV\Exception\BadRequest;
+use DateTime;
 
 /**
  * ICS Exporter
@@ -63,7 +62,12 @@ class ICSExportPlugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
-        $this->server->on('method:GET', [$this,'httpGet'], 90);
+        $server->on('method:GET', [$this, 'httpGet'], 90);
+        $server->on('browserButtonActions', function($path, $node, &$actions) {
+            if ($node instanceof ICalendar) {
+                $actions .= '<a href="' . htmlspecialchars($path, ENT_QUOTES, 'UTF-8') . '?export"><span class="oi" data-glyph="calendar"></span></a>';
+            }
+        });
 
     }
 
@@ -174,22 +178,22 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             // calendarQuery for speed.
             $calendarNode = $this->server->tree->getNodeForPath($path);
             $queryResult = $calendarNode->calendarQuery([
-                'name' => 'VCALENDAR',
+                'name'         => 'VCALENDAR',
                 'comp-filters' => [
                     [
-                        'name' => $componentType,
-                        'comp-filters' => [],
-                        'prop-filters' => [],
+                        'name'           => $componentType,
+                        'comp-filters'   => [],
+                        'prop-filters'   => [],
                         'is-not-defined' => false,
-                        'time-range' => [
+                        'time-range'     => [
                             'start' => $start,
-                            'end' => $end,
+                            'end'   => $end,
                         ],
                     ],
                 ],
-                'prop-filters' => [],
+                'prop-filters'   => [],
                 'is-not-defined' => false,
-                'time-range' => null,
+                'time-range'     => null,
             ]);
 
             // queryResult is just a list of base urls. We need to prefix the
@@ -208,7 +212,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         }
 
         // Flattening the arrays
-        foreach($nodes as $node) {
+        foreach ($nodes as $node) {
             if (isset($node[200][$calDataProp])) {
                 $blobs[$node['href']] = $node[200][$calDataProp];
             }
@@ -242,7 +246,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
 
         $response->setHeader('Content-Type', $format);
 
-        switch($format) {
+        switch ($format) {
             case 'text/calendar' :
                 $mergedCalendar = $mergedCalendar->serialize();
                 break;
@@ -284,13 +288,13 @@ class ICSExportPlugin extends DAV\ServerPlugin {
         $timezones = [];
         $objects = [];
 
-        foreach($inputObjects as $href => $inputObject) {
+        foreach ($inputObjects as $href => $inputObject) {
 
             $nodeComp = VObject\Reader::read($inputObject);
 
-            foreach($nodeComp->children() as $child) {
+            foreach ($nodeComp->children() as $child) {
 
-                switch($child->name) {
+                switch ($child->name) {
                     case 'VEVENT' :
                     case 'VTODO' :
                     case 'VJOURNAL' :
@@ -312,10 +316,45 @@ class ICSExportPlugin extends DAV\ServerPlugin {
 
         }
 
-        foreach($timezones as $tz) $calendar->add($tz);
-        foreach($objects as $obj) $calendar->add($obj);
+        foreach ($timezones as $tz) $calendar->add($tz);
+        foreach ($objects as $obj) $calendar->add($obj);
 
         return $calendar;
+
+    }
+
+    /**
+     * Returns a plugin name.
+     *
+     * Using this name other plugins will be able to access other plugins
+     * using \Sabre\DAV\Server::getPlugin
+     *
+     * @return string
+     */
+    function getPluginName() {
+
+        return 'ics-export';
+
+    }
+
+    /**
+     * Returns a bunch of meta-data about the plugin.
+     *
+     * Providing this information is optional, and is mainly displayed by the
+     * Browser plugin.
+     *
+     * The description key in the returned array may contain html and will not
+     * be sanitized.
+     *
+     * @return array
+     */
+    function getPluginInfo() {
+
+        return [
+            'name'        => $this->getPluginName(),
+            'description' => 'Adds the ability to export CalDAV calendars as a single iCalendar file.',
+            'link'        => 'http://sabre.io/dav/ics-export-plugin/',
+        ];
 
     }
 

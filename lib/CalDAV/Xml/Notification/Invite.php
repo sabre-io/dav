@@ -14,7 +14,7 @@ use Sabre\CalDAV;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class Invite implements NotificationInterface {
 
@@ -139,7 +139,7 @@ class Invite implements NotificationInterface {
      */
     function __construct(array $values) {
 
-        $required = array(
+        $required = [
             'id',
             'etag',
             'href',
@@ -148,14 +148,14 @@ class Invite implements NotificationInterface {
             'readOnly',
             'hostUrl',
             'organizer',
-        );
-        foreach($required as $item) {
+        ];
+        foreach ($required as $item) {
             if (!isset($values[$item])) {
                 throw new \InvalidArgumentException($item . ' is a required constructor option');
             }
         }
 
-        foreach($values as $key=>$value) {
+        foreach ($values as $key => $value) {
             if (!property_exists($this, $key)) {
                 throw new \InvalidArgumentException('Unknown option: ' . $key);
             }
@@ -165,23 +165,27 @@ class Invite implements NotificationInterface {
     }
 
     /**
-     * The serialize method is called during xml writing.
+     * The xmlSerialize metod is called during xml writing.
      *
-     * It should use the $writer argument to encode this object into XML.
+     * Use the $writer argument to write its own xml serialization.
      *
-     * Important note: it is not needed to create the parent element. The
-     * parent element is already created, and we only have to worry about
-     * attributes, child elements and text (if any).
+     * An important note: do _not_ create a parent element. Any element
+     * implementing XmlSerializble should only ever write what's considered
+     * its 'inner xml'.
      *
-     * Important note 2: If you are writing any new elements, you are also
-     * responsible for closing them.
+     * The parent of the current element is responsible for writing a
+     * containing element.
+     *
+     * This allows serializers to be re-used for different element names.
+     *
+     * If you are opening new elements, you must also close them again.
      *
      * @param Writer $writer
      * @return void
      */
     function xmlSerialize(Writer $writer) {
 
-        $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER .'}invite-notification');
+        $writer->writeElement('{' . CalDAV\Plugin::NS_CALENDARSERVER . '}invite-notification');
 
     }
 
@@ -204,7 +208,7 @@ class Invite implements NotificationInterface {
         $writer->writeElement($cs . 'uid', $this->id);
         $writer->writeElement('{DAV:}href', $this->href);
 
-        switch($this->type) {
+        switch ($this->type) {
 
             case SharingPlugin::STATUS_ACCEPTED :
                 $writer->writeElement($cs . 'invite-accepted');
@@ -222,7 +226,7 @@ class Invite implements NotificationInterface {
         }
 
         $writer->writeElement($cs . 'hosturl', [
-            '{DAV:}href' => $writer->baseUri . $this->hostUrl
+            '{DAV:}href' => $writer->contextUri . $this->hostUrl
             ]);
 
         if ($this->summary) {
@@ -240,10 +244,10 @@ class Invite implements NotificationInterface {
         $writer->startElement($cs . 'organizer');
         // If the organizer contains a 'mailto:' part, it means it should be
         // treated as absolute.
-        if (strtolower(substr($this->organizer,0,7))==='mailto:') {
-            $writer->writeElement('{DAV:}href',$this->organizer);
+        if (strtolower(substr($this->organizer, 0, 7)) === 'mailto:') {
+            $writer->writeElement('{DAV:}href', $this->organizer);
         } else {
-            $writer->writeElement('{DAV:}href',$writer->baseUri . $this->organizer);
+            $writer->writeElement('{DAV:}href', $writer->contextUri . $this->organizer);
         }
         if ($this->commonName) {
             $writer->writeElement($cs . 'common-name', $this->commonName);

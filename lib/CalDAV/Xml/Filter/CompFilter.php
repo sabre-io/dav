@@ -2,13 +2,11 @@
 
 namespace Sabre\CalDAV\Xml\Filter;
 
-
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\CalDAV\Plugin;
 use Sabre\VObject\DateTimeParser;
-
 
 /**
  * CompFilter parser.
@@ -22,7 +20,7 @@ use Sabre\VObject\DateTimeParser;
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
- * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
+ * @license http://sabre.io/license/ Modified BSD License
  */
 class CompFilter implements XmlDeserializable {
 
@@ -50,11 +48,11 @@ class CompFilter implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $result = [
-            'name' => null,
+            'name'           => null,
             'is-not-defined' => false,
-            'comp-filters' => [],
-            'prop-filters' => [],
-            'time-range' => false,
+            'comp-filters'   => [],
+            'prop-filters'   => [],
+            'time-range'     => false,
         ];
 
         $att = $reader->parseAttributes();
@@ -62,9 +60,9 @@ class CompFilter implements XmlDeserializable {
 
         $elems = $reader->parseInnerTree();
 
-        if (is_array($elems)) foreach($elems as $elem) {
+        if (is_array($elems)) foreach ($elems as $elem) {
 
-            switch($elem['name']) {
+            switch ($elem['name']) {
 
                 case '{' . Plugin::NS_CALDAV . '}comp-filter' :
                     $result['comp-filters'][] = $elem['value'];
@@ -80,10 +78,10 @@ class CompFilter implements XmlDeserializable {
                         throw new BadRequest('You cannot add time-range filters on the VCALENDAR component');
                     }
                     $result['time-range'] = [
-                        'start' => isset($elem['attributes']['start'])?DateTimeParser::parseDateTime($elem['attributes']['start']):null,
-                        'end' => isset($elem['attributes']['end'])?DateTimeParser::parseDateTime($elem['attributes']['end']):null,
+                        'start' => isset($elem['attributes']['start']) ? DateTimeParser::parseDateTime($elem['attributes']['start']) : null,
+                        'end'   => isset($elem['attributes']['end']) ? DateTimeParser::parseDateTime($elem['attributes']['end']) : null,
                     ];
-                    if($result['time-range']['start'] && $result['time-range']['end'] && $result['time-range']['end'] <= $result['time-range']['start']) {
+                    if ($result['time-range']['start'] && $result['time-range']['end'] && $result['time-range']['end'] <= $result['time-range']['start']) {
                         throw new BadRequest('The end-date must be larger than the start-date');
                     }
                     break;

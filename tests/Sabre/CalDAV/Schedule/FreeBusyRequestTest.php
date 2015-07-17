@@ -301,7 +301,7 @@ ICS;
             '<d:href>mailto:user3.sabredav@sabredav.org</d:href>',
             '<cal:request-status>2.0;Success</cal:request-status>',
             '<cal:request-status>3.7;Could not find principal</cal:request-status>',
-            'FREEBUSY;FBTYPE=BUSY:20110101T120000Z/20110101T130000Z',
+            'FREEBUSY:20110101T120000Z/20110101T130000Z',
         );
 
         foreach($strings as $string) {

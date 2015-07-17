@@ -16,6 +16,7 @@ Build status
 | branch       | status |
 | ------------ | ------ |
 | master       | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=master)](https://travis-ci.org/fruux/sabre-dav) |
+| 3.0          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=3.0)](https://travis-ci.org/fruux/sabre-dav) |
 | 2.1          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=2.1)](https://travis-ci.org/fruux/sabre-dav) |
 | 2.0          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=2.0)](https://travis-ci.org/fruux/sabre-dav) |
 | 1.8          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=1.8)](https://travis-ci.org/fruux/sabre-dav) |

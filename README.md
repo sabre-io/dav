@@ -22,7 +22,6 @@ Build status
 | 1.8          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=1.8)](https://travis-ci.org/fruux/sabre-dav) |
 | 1.7          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=1.7)](https://travis-ci.org/fruux/sabre-dav) |
 | 1.6          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=1.6)](https://travis-ci.org/fruux/sabre-dav) |
-| xml-rewrite2 | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=xml-rewrite2)](https://travis-ci.org/fruux/sabre-dav) |
 
 Made at fruux
 -------------

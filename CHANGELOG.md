@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.1.0-alpha1 (2015-??-??)
+3.1.0-alpha1 (2015-07-19)
 -------------------------
 
 * Now requires PHP 5.5
@@ -10,6 +10,9 @@ ChangeLog
 * #690: Support for `calendar-availability`, draft 05.
   [reference][calendar-availability].
 * #691: Workaround for broken Windows Phone client.
+* The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
 3.0.2 (2015-??-??)

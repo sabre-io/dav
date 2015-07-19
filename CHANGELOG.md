@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+3.1.0-alpha1 (2015-??-??)
+-------------------------
+
+* Now requires PHP 5.5
+* Upgraded to vobject 4, which is a lot faster.
+* Support for PHP 7.
+
+
 3.0.2 (2015-??-??)
 ------------------
 

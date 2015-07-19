@@ -6,7 +6,7 @@ ChangeLog
 
 * #657: Migration script would break when coming a cross an iCalendar object
   with no UID.
-
+* #691: Workaround for broken Windows Phone client.
 
 2.1.5 (2015-07-11)
 ------------------

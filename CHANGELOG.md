@@ -7,7 +7,8 @@ ChangeLog
 * Now requires PHP 5.5
 * Upgraded to vobject 4, which is a lot faster.
 * Support for PHP 7.
-* Support for `calendar-availability`, draft 05. [reference][calendar-availability].
+* #690: Support for `calendar-availability`, draft 05.
+  [reference][calendar-availability].
 
 
 3.0.2 (2015-??-??)

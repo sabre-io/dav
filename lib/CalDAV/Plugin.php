@@ -579,7 +579,7 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($node instanceof ICalendarObjectContainer && $depth === 0) {
 
-            if(strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-WP/') === 0) {
+            if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-WP/') === 0) {
                 // Windows phone incorrectly supplied depth as 0, when it actually
                 // should have set depth to 1. We're implementing a workaround here
                 // to deal with this.

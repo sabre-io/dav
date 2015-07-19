@@ -9,6 +9,14 @@ require_once 'Sabre/DAV/ClientMock.php';
 
 class ClientTest extends \PHPUnit_Framework_TestCase {
 
+    function setUp() {
+
+        if (!function_exists('curl_init')) {
+            $this->markTestSkipped('CURL must be installed to test the client');
+        }
+
+    }
+
     function testConstruct() {
 
         $client = new ClientMock(array(

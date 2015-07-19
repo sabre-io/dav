@@ -7,6 +7,7 @@ ChangeLog
 * Now requires PHP 5.5
 * Upgraded to vobject 4, which is a lot faster.
 * Support for PHP 7.
+* #691: Workaround for broken Windows Phone client.
 
 
 3.0.2 (2015-??-??)

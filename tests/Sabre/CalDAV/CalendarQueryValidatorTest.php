@@ -54,6 +54,9 @@ ICS;
                     // We need to test something to be valid for phpunit strict
                     // mode.
                     $this->assertTrue(true);
+                } catch (\Throwable $e) {
+                    // PHP7
+                    $this->assertTrue(true);
                 }
                 break;
 

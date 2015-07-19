@@ -7,6 +7,8 @@ ChangeLog
 * Now requires PHP 5.5
 * Upgraded to vobject 4, which is a lot faster.
 * Support for PHP 7.
+* #690: Support for `calendar-availability`, draft 05.
+  [reference][calendar-availability].
 
 
 3.0.2 (2015-??-??)
@@ -2001,3 +2003,4 @@ ChangeLog
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"
 [rfc7240]: http://tools.ietf.org/html/rfc7240
+[calendar-availability]: https://tools.ietf.org/html/draft-daboo-calendar-availability-05

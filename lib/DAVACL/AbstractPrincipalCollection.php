@@ -140,6 +140,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * used to call $this->getChild in the future.
      *
      * @param array $searchProperties
+     * @param string $test
      * @return array
      */
     function searchPrincipals(array $searchProperties, $test = 'allof') {

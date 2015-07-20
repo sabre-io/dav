@@ -32,6 +32,8 @@ class Plugin extends ServerPlugin {
     const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
+     * Reference to the main server object.
+     *
      * @var Server
      */
     protected $server;

@@ -180,6 +180,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->xml->namespaceMap[self::NS_CALDAV] = 'cal';
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
 
+        $server->xml->elementMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}calendar-query'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarQueryReport';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}calendar-multiget'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarMultiGetReport';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}free-busy-query'] = 'Sabre\\CalDAV\\Xml\\Request\\FreeBusyQueryReport';
@@ -572,6 +573,19 @@ class Plugin extends DAV\ServerPlugin {
 
                 }
 
+            }
+
+        }
+
+        if ($node instanceof ICalendarObjectContainer && $depth === 0) {
+
+            if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-WP/') === 0) {
+                // Windows phone incorrectly supplied depth as 0, when it actually
+                // should have set depth to 1. We're implementing a workaround here
+                // to deal with this.
+                $depth = 1;
+            } else {
+                throw new BadRequest('A calendar-query REPORT on a calendar with a Depth: 0 is undefined. Set Depth to 1');
             }
 
         }

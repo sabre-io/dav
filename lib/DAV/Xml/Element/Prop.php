@@ -80,6 +80,7 @@ class Prop implements XmlDeserializable {
      *   * name - A clark-notation XML element name.
      *   * value - The parsed value.
      *
+     * @param Reader $reader
      * @return array
      */
     private static function parseCurrentElement(Reader $reader) {

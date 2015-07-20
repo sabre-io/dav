@@ -7,7 +7,7 @@ if ($argc<2) {
 
     echo <<<HELLO
 
-This script help you migrate from a pre-2.1 database to 2.1 and later
+This script help you migrate from a pre-2.1 database to 2.1.
 
 Changes:
   The 'calendarobjects' table will be upgraded.
@@ -118,19 +118,17 @@ if ($addUid) {
 
     while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
 
-        yoyo:
-
         try {
             $vobj = \Sabre\VObject\Reader::read($row['calendardata']);
         } catch (\Exception $e) {
             echo "Warning! Item with id $row[id] could not be parsed!\n";
-            goto yoyo;
+            continue;
         }
         $uid = null;
         $item = $vobj->getBaseComponent();
         if (!isset($item->UID)) {
             echo "Warning! Item with id $item[id] does NOT have a UID property and this is required.\n";
-            goto yoyo;
+            continue;
         }
         $uid = (string)$item->UID;
         $stmt->execute([$uid, $row['id']]);

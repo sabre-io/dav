@@ -72,7 +72,7 @@ class Plugin extends ServerPlugin {
      */
     function getFeatures() {
 
-        return ['calendar-auto-schedule'];
+        return ['calendar-auto-schedule', 'calendar-availability'];
 
     }
 
@@ -748,12 +748,12 @@ class Plugin extends ServerPlugin {
      *   * 3.7;description
      *
      * @param string $email address
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTimeInterface $start
+     * @param DateTimeInterface $end
      * @param VObject\Component $request
      * @return array
      */
-    protected function getFreeBusyForEmail($email, \DateTime $start, \DateTime $end, VObject\Component $request) {
+    protected function getFreeBusyForEmail($email, \DateTimeInterface $start, \DateTimeInterface $end, VObject\Component $request) {
 
         $caldavNS = '{' . self::NS_CALDAV . '}';
 
@@ -763,8 +763,11 @@ class Plugin extends ServerPlugin {
         $result = $aclPlugin->principalSearch(
             ['{http://sabredav.org/ns}email-address' => $email],
             [
-                '{DAV:}principal-URL', $caldavNS . 'calendar-home-set',
+                '{DAV:}principal-URL',
+                $caldavNS . 'calendar-home-set',
+                $caldavNS . 'schedule-inbox-URL',
                 '{http://sabredav.org/ns}email-address',
+
             ]
         );
 
@@ -781,7 +784,14 @@ class Plugin extends ServerPlugin {
                 'href'           => 'mailto:' . $email,
             ];
         }
+        if (!isset($result[0][200][$caldavNS . 'schedule-inbox-URL'])) {
+            return [
+                'request-status' => '3.7;No schedule-inbox-URL property found',
+                'href'           => 'mailto:' . $email,
+            ];
+        }
         $homeSet = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
+        $inboxUrl = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
 
         // Grabbing the calendar list
         $objects = [];
@@ -838,6 +848,11 @@ class Plugin extends ServerPlugin {
 
         }
 
+        $inboxProps = $this->server->getProperties(
+            $inboxUrl,
+            $caldavNS . 'calendar-availability'
+        );
+
         $vcalendar = new VObject\Component\VCalendar();
         $vcalendar->METHOD = 'REPLY';
 
@@ -846,6 +861,14 @@ class Plugin extends ServerPlugin {
         $generator->setTimeRange($start, $end);
         $generator->setBaseObject($vcalendar);
         $generator->setTimeZone($calendarTimeZone);
+
+        if ($inboxProps) {
+            $generator->setVAvailability(
+                VObject\Reader::read(
+                    $inboxProps[$caldavNS . 'calendar-availability']
+                )
+            );
+        }
 
         $result = $generator->getResult();
 

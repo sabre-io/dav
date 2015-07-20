@@ -1,6 +1,27 @@
 ChangeLog
 =========
 
+3.1.0-alpha1 (2015-07-19)
+-------------------------
+
+* Now requires PHP 5.5
+* Upgraded to vobject 4, which is a lot faster.
+* Support for PHP 7.
+* #690: Support for `calendar-availability`, draft 05.
+  [reference][calendar-availability].
+* #691: Workaround for broken Windows Phone client.
+* The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.2 (2015-??-??)
+------------------
+
+* #657: Migration script would break when coming a cross an iCalendar object
+  with no UID.
+
+
 3.0.1 (2015-07-02)
 ------------------
 
@@ -166,11 +187,20 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
-2.1.5 (????-??-??)
+2.1.6 (2015-??-??)
+------------------
+
+* #657: Migration script would break when coming a cross an iCalendar object
+  with no UID.
+
+
+2.1.5 (2015-07-11)
 ------------------
 
 * #677: Resources with the name '0' would not get retrieved when using
   `Depth: infinity` in a `PROPFIND` request.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.4 (2015-05-25)
@@ -337,11 +367,13 @@ ChangeLog
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
 
 
-2.0.8 (????-??-??)
+2.0.8 (2015-07-11)
 ------------------
 
 * #677: Resources with the name '0' would not get retrieved when using
   `Depth: infinity` in a `PROPFIND` request.
+* The zip release ships with [sabre/vobject 3.3.5][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
 
 
 2.0.7 (2015-05-25)
@@ -1975,3 +2007,4 @@ ChangeLog
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"
 [rfc7240]: http://tools.ietf.org/html/rfc7240
+[calendar-availability]: https://tools.ietf.org/html/draft-daboo-calendar-availability-05

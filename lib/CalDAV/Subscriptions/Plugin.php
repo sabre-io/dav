@@ -59,6 +59,8 @@ class Plugin extends ServerPlugin {
     /**
      * Triggered after properties have been fetched.
      *
+     * @param PropFind $propFind
+     * @param INode $node
      * @return void
      */
     function propFind(PropFind $propFind, INode $node) {

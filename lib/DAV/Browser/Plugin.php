@@ -406,6 +406,16 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
+    /**
+     * Generates the first block of HTML, including the <head> tag and page
+     * header.
+     *
+     * Returns footer.
+     *
+     * @param string $title
+     * @param string $path
+     * @return void
+     */
     function generateHeader($title, $path = null) {
 
         $version = DAV\Version::VERSION;
@@ -456,6 +466,13 @@ HTML;
 
     }
 
+    /**
+     * Generates the page footer.
+     *
+     * Returns html.
+     *
+     * @return string
+     */
     function generateFooter() {
 
         $version = DAV\Version::VERSION;
@@ -694,7 +711,7 @@ HTML;
 
     }
 
-    /*
+    /**
      * Draws a table row for a property
      *
      * @param string $name

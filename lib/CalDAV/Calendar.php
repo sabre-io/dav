@@ -137,6 +137,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      *
      * If any children are not found, you do not have to return them.
      *
+     * @param string[] $paths
      * @return array
      */
     function getMultipleChildren(array $paths) {

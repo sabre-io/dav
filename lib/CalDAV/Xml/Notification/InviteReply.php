@@ -86,6 +86,8 @@ class InviteReply implements NotificationInterface {
      *   * hostUrl      - A url to the shared calendar.
      *   * summary      - Description of the share, can be the same as the
      *                    calendar, but may also be modified (optional).
+     *
+     * @param array $values
      */
     function __construct(array $values) {
 

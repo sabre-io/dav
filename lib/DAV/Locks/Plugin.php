@@ -409,6 +409,7 @@ class Plugin extends DAV\ServerPlugin {
      * must be present in the request, and reject requests without the proper
      * tokens.
      *
+     * @param RequestInterface $request
      * @param mixed $conditions
      * @return void
      */

@@ -38,6 +38,13 @@ class Client extends HTTP\Client {
      */
     public $propertyMap = [];
 
+    /**
+     * Base URI
+     *
+     * This URI will be used to resolve relative urls.
+     *
+     * @var string
+     */
     protected $baseUri;
 
     /**

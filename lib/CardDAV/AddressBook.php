@@ -91,6 +91,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * If any children are not found, you do not have to return them.
      *
+     * @param string[] $paths
      * @return array
      */
     function getMultipleChildren(array $paths) {

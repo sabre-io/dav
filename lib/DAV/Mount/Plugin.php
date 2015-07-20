@@ -65,6 +65,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Generates the davmount response
      *
+     * @param ResponseInterface $response
      * @param string $uri absolute uri
      * @return void
      */

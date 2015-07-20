@@ -76,6 +76,7 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput {
      * Returns true or false, whether the specified principal appears in the
      * list.
      *
+     * @param string $privilegeName
      * @return bool
      */
     function has($privilegeName) {

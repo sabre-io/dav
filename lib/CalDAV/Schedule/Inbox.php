@@ -34,6 +34,7 @@ class Inbox extends DAV\Collection implements IInbox {
     /**
      * Constructor
      *
+     * @param Backend\SchedulingSupport $caldavBackend
      * @param string $principalUri
      */
     function __construct(Backend\SchedulingSupport $caldavBackend, $principalUri) {

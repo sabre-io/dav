@@ -56,8 +56,8 @@ class Acl implements Element, HtmlOutput {
      * are already full urls. If this is kept to true, the servers base url
      * will automatically be prefixed.
      *
-     * @param bool $prefixBaseUrl
      * @param array $privileges
+     * @param bool $prefixBaseUrl
      */
     function __construct(array $privileges, $prefixBaseUrl = true) {
 

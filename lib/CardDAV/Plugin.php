@@ -654,6 +654,10 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This event is scheduled late in the process, after most work for
      * propfind has been done.
+     *
+     * @param DAV\PropFind $propFind
+     * @param DAV\INode $node
+     * @return void
      */
     function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 

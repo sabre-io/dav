@@ -835,6 +835,10 @@ class Server extends EventEmitter {
 
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
+     *
+     * @param array[] $propFindRequests
+     * @param PropFind $propFind
+     * @return void
      */
     private function addPathNodesRecursively(&$propFindRequests, PropFind $propFind) {
 
@@ -1492,6 +1496,7 @@ class Server extends EventEmitter {
      *    ],
      * ]
      *
+     * @param RequestInterface $request
      * @return array
      */
     function getIfConditions(RequestInterface $request) {

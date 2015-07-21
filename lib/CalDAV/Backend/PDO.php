@@ -585,6 +585,9 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             }
         }
 
+        // Destroy circular references to PHP will GC the object.
+        $vObject->destroy();
+
         return [
             'etag'           => md5($calendarData),
             'size'           => strlen($calendarData),

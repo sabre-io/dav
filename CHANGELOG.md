@@ -4,7 +4,8 @@ ChangeLog
 3.1.0-alpha2 (????-??-??)
 -------------------------
 
-* ...
+* Massive calendar and addressbooks should see a big drop in peak memory
+  usage.
 
 
 3.1.0-alpha1 (2015-07-19)

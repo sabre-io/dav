@@ -260,6 +260,9 @@ class Inbox extends DAV\Collection implements IInbox {
             if ($validator->validate($vObject, $filters)) {
                 $result[] = $object['uri'];
             }
+
+            // Destroy circular references to PHP will GC the object.
+            $vObject->destroy();
         }
         return $result;
 

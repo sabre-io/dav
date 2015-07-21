@@ -733,6 +733,105 @@ XML;
     }
 
     /**
+     * @depends testSupportedReportSetProperty
+     * @depends testCalendarMultiGetReport
+     */
+    function testCalendarQueryReportWindowsPhone() {
+
+        $body =
+            '<?xml version="1.0"?>' .
+            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
+            '<d:prop>' .
+            '  <c:calendar-data>' .
+            '     <c:expand start="20000101T000000Z" end="20101231T235959Z" />' .
+            '  </c:calendar-data>' .
+            '  <d:getetag />' .
+            '</d:prop>' .
+            '<c:filter>' .
+            '  <c:comp-filter name="VCALENDAR">' .
+            '    <c:comp-filter name="VEVENT" />' .
+            '  </c:comp-filter>' .
+            '</c:filter>' .
+            '</c:calendar-query>';
+
+        $request = HTTP\Sapi::createFromServerArray(array(
+            'REQUEST_METHOD'  => 'REPORT',
+            'REQUEST_URI'     => '/calendars/user1/UUID-123467',
+            'HTTP_USER_AGENT' => 'MSFT-WP/8.10.14219 (gzip)',
+            'HTTP_DEPTH'      => '0',
+        ));
+        $request->setBody($body);
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(207, $this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
+
+        $expectedIcal = TestUtil::getTestCalendarData();
+        $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
+        $expectedIcal->expand(
+            new \DateTime('2000-01-01 00:00:00', new \DateTimeZone('UTC')),
+            new \DateTime('2010-12-31 23:59:59', new \DateTimeZone('UTC'))
+        );
+        $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
+
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+<d:response>
+  <d:href>/calendars/user1/UUID-123467/UUID-2345</d:href>
+  <d:propstat>
+    <d:prop>
+      <cal:calendar-data>$expectedIcal</cal:calendar-data>
+      <d:getetag>"e207e33c10e5fb9c12cfb35b5d9116e1"</d:getetag>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+</d:multistatus>
+XML;
+
+        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+
+    }
+
+    /**
+     * @depends testSupportedReportSetProperty
+     * @depends testCalendarMultiGetReport
+     */
+    function testCalendarQueryReportBadDepth() {
+
+        $body =
+            '<?xml version="1.0"?>' .
+            '<c:calendar-query xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">' .
+            '<d:prop>' .
+            '  <c:calendar-data>' .
+            '     <c:expand start="20000101T000000Z" end="20101231T235959Z" />' .
+            '  </c:calendar-data>' .
+            '  <d:getetag />' .
+            '</d:prop>' .
+            '<c:filter>' .
+            '  <c:comp-filter name="VCALENDAR">' .
+            '    <c:comp-filter name="VEVENT" />' .
+            '  </c:comp-filter>' .
+            '</c:filter>' .
+            '</c:calendar-query>';
+
+        $request = HTTP\Sapi::createFromServerArray(array(
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/calendars/user1/UUID-123467',
+            'HTTP_DEPTH'     => '0',
+        ));
+        $request->setBody($body);
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(400, $this->response->status,'Received an unexpected status. Full response body: ' . $this->response->body);
+
+    }
+
+    /**
      * @depends testCalendarQueryReport
      */
     function testCalendarQueryReportNoCalData() {

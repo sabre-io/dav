@@ -758,8 +758,8 @@ END:VCALENDAR';
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
         $expectedIcal->expand(
-            new DateTime('2000-01-01 00:00:00', new DateTimeZone('UTC')),
-            new DateTime('2010-12-31 23:59:59', new DateTimeZone('UTC'))
+            new \DateTime('2000-01-01 00:00:00', new \DateTimeZone('UTC')),
+            new \DateTime('2010-12-31 23:59:59', new \DateTimeZone('UTC'))
         );
         $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 

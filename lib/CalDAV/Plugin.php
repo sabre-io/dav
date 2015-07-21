@@ -4,6 +4,7 @@ namespace Sabre\CalDAV;
 
 use DateTimeZone;
 use Sabre\DAV;
+use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Property\HrefList;
 use Sabre\DAVACL;
 use Sabre\VObject;

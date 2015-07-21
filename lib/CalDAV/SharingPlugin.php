@@ -267,8 +267,9 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         switch ($documentType) {
 
-            // Dealing with the 'share' document, which modified invitees on a
-            // calendar.
+            // Both the DAV:share-resource and CALENDARSERVER:share requests
+            // behave identically.
+            case '{DAV:}share-resource' :
             case '{' . Plugin::NS_CALENDARSERVER . '}share' :
 
                 // We can only deal with IShareableCalendar objects
@@ -283,7 +284,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($path, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}share');
                 }
 
                 $node->updateShares($message->set, $message->remove);

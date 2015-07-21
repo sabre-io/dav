@@ -6,6 +6,11 @@ ChangeLog
 
 * #657: Migration script would break when coming a cross an iCalendar object
   with no UID.
+* #691: Workaround for broken Windows Phone client.
+* Fixed a whole bunch of incorrect php docblocks.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
 3.0.1 (2015-07-02)

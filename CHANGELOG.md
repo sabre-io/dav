@@ -6,6 +6,7 @@ ChangeLog
 
 * Massive calendar and addressbooks should see a big drop in peak memory
   usage.
+* Fixed a privilege bug in the availability system.
 
 
 3.1.0-alpha1 (2015-07-19)

@@ -101,6 +101,7 @@ class Plugin extends ServerPlugin {
         $this->server = $server;
         $server->on('method:POST',          [$this, 'httpPost']);
         $server->on('propFind',             [$this, 'propFind']);
+        $server->on('propPatch',            [$this, 'propPatch']);
         $server->on('calendarObjectChange', [$this, 'calendarObjectChange']);
         $server->on('beforeUnbind',         [$this, 'beforeUnbind']);
         $server->on('schedule',             [$this, 'scheduleLocalDelivery']);
@@ -250,11 +251,58 @@ class Plugin extends ServerPlugin {
 
         });
 
+        // Mapping the old property to the new property.
+        $propFind->handle('{https://calendarserver.org/ns/}calendar-availability', function() use ($propFind, $node) {
+
+             // In case it wasn't clear, the only difference is that we map the
+            // old property to a different namespace.
+             $availProp = '{' . self::NS_CALDAV . '}calendar-availability';
+             $subPropFind = new PropFind(
+                 $propFind->getPath(),
+                 $availProp
+             );
+
+             $this->server->getPropertiesByNode(
+                 $subPropFind,
+                 $node
+             );
+
+             $propFind->set(
+                 '{https://calendarserver.org/ns/}calendar-availability',
+                 $subPropFind->get($availProp),
+                 $subPropFind->getStatus($availProp)
+             );
+
+        });
+
         // The server currently reports every principal to be of type
         // 'INDIVIDUAL'
         $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-type', function() {
 
             return 'INDIVIDUAL';
+
+        });
+
+    }
+
+    /**
+     * This method is called during property updates.
+     *
+     * @param string $path
+     * @param PropPatch $propPatch
+     * @return void
+     */
+    function propPatch($path, PropPatch $propPatch) {
+
+        // Mapping the old property to the new property.
+        $propPatch->handle('{https://calendarserver.org/ns/}calendar-availability', function($value) use ($path) {
+
+            $availProp = '{' . self::NS_CALDAV . '}calendar-availability';
+            $subPropPatch = new PropPatch([$availProp => $value]);
+            $this->server->emit('propPatch', [$path, $subPropPatch]);
+            $subPropPatch->commit();
+
+            return $subPropPatch->getResult()[$availProp];
 
         });
 

@@ -462,12 +462,6 @@ class Plugin extends ServerPlugin {
         $broker = new ITip\Broker();
         $newObject = $broker->processMessage($iTipMessage, $currentObject);
 
-        if ($currentObject) {
-            // Destroy circular references so PHP can garbage collect the object.
-            $currentObject->destroy();
-            unset($currentObject);
-        }
-
         $inbox->createFile($newFileName, $iTipMessage->message->serialize());
 
         if (!$newObject) {

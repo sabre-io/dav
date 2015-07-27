@@ -6,6 +6,7 @@ use DateTimeZone;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 use Sabre\DAV\PropFind;
+use Sabre\DAV\PropPatch;
 use Sabre\DAV\INode;
 use Sabre\DAV\Xml\Property\Href;
 use Sabre\HTTP\RequestInterface;

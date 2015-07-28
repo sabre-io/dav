@@ -185,7 +185,7 @@ class Plugin extends ServerPlugin {
         return [
             'name'        => $this->getPluginName(),
             'description' => 'This plugin implements WebDAV resource sharing',
-            'link'        => null,
+            'link'        => 'https://github.com/evert/webdav-sharing'
         ];
 
     }

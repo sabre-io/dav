@@ -4,6 +4,8 @@ namespace Sabre\DAV\Sharing;
 
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\INode;
+use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 use Sabre\HTTP\RequestInterface;
@@ -74,49 +76,7 @@ class Plugin extends ServerPlugin {
 
         $server->xml->elementMap['{DAV:}share-resource'] = 'Sabre\\DAV\\Xml\\Request\\ShareResource';
         $server->on('method:POST',  [$this, 'httpPost']);
-
-    }
-
-    /**
-     * We intercept this to handle POST requests on shared resources
-     *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return null|bool
-     */
-    function httpPost(RequestInterface $request, ResponseInterface $response) {
-
-        $path = $request->getPath();
-        $contentType = $request->getHeader('Content-Type');
-
-        // We're only interested in the davsharing content type.
-        if (strpos($contentType, 'application/davsharing+xml') === false) {
-            return;
-        }
-
-        $message = $this->server->xml->parse(
-            $request->getBody(),
-            $request->getUrl(),
-            $documentType
-        );
-
-        switch ($documentType) {
-
-            case '{DAV:}share-resource':
-
-                $this->shareResource($path, $message->set, $message->remove);
-                $response->setStatus(200);
-                // Adding this because sending a response body may cause issues,
-                // and I wanted some type of indicator the response was handled.
-                $response->setHeader('X-Sabre-Status', 'everything-went-well');
-
-                // Breaking the event chain
-                return false;
-
-            default :
-                throw new BadRequest('Unexpected document type: ' . $documentType . ' for this Content-Type');
-
-        }
+        $server->on('propFind',     [$this, 'propFind']);
 
     }
 
@@ -168,6 +128,68 @@ class Plugin extends ServerPlugin {
         $node->updateShares($set, $remove);
 
     }
+
+    /**
+     * This event is triggered when properties are requested for nodes.
+     *
+     * This allows us to inject any sharings-specific properties.
+     *
+     * @param PropFind $propFind
+     * @param INode $node
+     * @return void
+     */
+    function propFind(PropFind $propFind, INode $node) {
+
+        if ($node instanceof IShareableNode) {
+
+
+        }
+
+    }
+
+    /**
+     * We intercept this to handle POST requests on shared resources
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return null|bool
+     */
+    function httpPost(RequestInterface $request, ResponseInterface $response) {
+
+        $path = $request->getPath();
+        $contentType = $request->getHeader('Content-Type');
+
+        // We're only interested in the davsharing content type.
+        if (strpos($contentType, 'application/davsharing+xml') === false) {
+            return;
+        }
+
+        $message = $this->server->xml->parse(
+            $request->getBody(),
+            $request->getUrl(),
+            $documentType
+        );
+
+        switch ($documentType) {
+
+            case '{DAV:}share-resource':
+
+                $this->shareResource($path, $message->set, $message->remove);
+                $response->setStatus(200);
+                // Adding this because sending a response body may cause issues,
+                // and I wanted some type of indicator the response was handled.
+                $response->setHeader('X-Sabre-Status', 'everything-went-well');
+
+                // Breaking the event chain
+                return false;
+
+            default :
+                throw new BadRequest('Unexpected document type: ' . $documentType . ' for this Content-Type');
+
+        }
+
+    }
+
 
     /**
      * Returns a bunch of meta-data about the plugin.

@@ -201,7 +201,7 @@ class Plugin extends ServerPlugin {
      */
     function propFind(PropFind $propFind, INode $node) {
 
-        if ($node instanceof DAVACL\IPrincipal) { 
+        if ($node instanceof DAVACL\IPrincipal) {
 
             $caldavPlugin = $this->server->getPlugin('caldav');
             $principalUrl = $node->getPrincipalUrl();

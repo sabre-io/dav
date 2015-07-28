@@ -2,8 +2,6 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL\Plugin as ACLPlugin;
-
 /**
  * This object represents a CalDAV calendar that can be shared with other
  * users.

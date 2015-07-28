@@ -15,9 +15,9 @@ use Sabre\HTTP\ResponseInterface;
  * draft-pot-webdav-resource-sharing-02
  *
  * This specification allows people to share webdav resources with others.
- * 
+ *
  * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
- * @author Evert Pot (http://evertpot.com/) 
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
 class Plugin extends ServerPlugin {
@@ -117,7 +117,7 @@ class Plugin extends ServerPlugin {
                 throw new BadRequest('Unexpected document type: ' . $documentType . ' for this Content-Type');
 
         }
-            
+
     }
 
     /**
@@ -136,10 +136,10 @@ class Plugin extends ServerPlugin {
      *
      * Every element in the remove array is just the url of the sharee that's
      * to be removed.
-     * 
-     * @param string $path 
-     * @param array $set 
-     * @param array $remove 
+     *
+     * @param string $path
+     * @param array $set
+     * @param array $remove
      * @return void
      */
     function shareResource($path, $set, $remove) {
@@ -150,7 +150,7 @@ class Plugin extends ServerPlugin {
             // If the target node is not found, we stop executing.
             return;
         }
-    
+
         if (!$node instanceof IShareableNode) {
 
             throw new Forbidden('Sharing is not allowed on this node');

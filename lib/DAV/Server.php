@@ -751,9 +751,13 @@ class Server extends EventEmitter {
     /**
      * Returns a list of properties for a path
      *
-     * This is a simplified version getPropertiesForPath.
-     * if you aren't interested in status codes, but you just
-     * want to have a flat list of properties. Use this method.
+     * This is a simplified version getPropertiesForPath. If you aren't
+     * interested in status codes, but you just want to have a flat list of
+     * properties, use this method.
+     *
+     * Please note though that any problems related to retrieving properties,
+     * such as permission issues will just result in an empty array being
+     * returned.
      *
      * @param string $path
      * @param array $propertyNames
@@ -761,7 +765,11 @@ class Server extends EventEmitter {
     function getProperties($path, $propertyNames) {
 
         $result = $this->getPropertiesForPath($path, $propertyNames, 0);
-        return $result[0][200];
+        if (isset($result[0][200])) {
+            return $result[0][200];
+        } else {
+            return [];
+        }
 
     }
 

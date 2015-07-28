@@ -6,6 +6,7 @@ use DateTimeZone;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 use Sabre\DAV\PropFind;
+use Sabre\DAV\PropPatch;
 use Sabre\DAV\INode;
 use Sabre\DAV\Xml\Property\Href;
 use Sabre\HTTP\RequestInterface;
@@ -101,6 +102,7 @@ class Plugin extends ServerPlugin {
         $this->server = $server;
         $server->on('method:POST',          [$this, 'httpPost']);
         $server->on('propFind',             [$this, 'propFind']);
+        $server->on('propPatch',            [$this, 'propPatch']);
         $server->on('calendarObjectChange', [$this, 'calendarObjectChange']);
         $server->on('beforeUnbind',         [$this, 'beforeUnbind']);
         $server->on('schedule',             [$this, 'scheduleLocalDelivery']);
@@ -199,62 +201,111 @@ class Plugin extends ServerPlugin {
      */
     function propFind(PropFind $propFind, INode $node) {
 
-        if (!$node instanceof DAVACL\IPrincipal) return;
+        if ($node instanceof DAVACL\IPrincipal) {
 
-        $caldavPlugin = $this->server->getPlugin('caldav');
-        $principalUrl = $node->getPrincipalUrl();
+            $caldavPlugin = $this->server->getPlugin('caldav');
+            $principalUrl = $node->getPrincipalUrl();
 
-        // schedule-outbox-URL property
-        $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL', function() use ($principalUrl, $caldavPlugin) {
+            // schedule-outbox-URL property
+            $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL', function() use ($principalUrl, $caldavPlugin) {
 
-            $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-            $outboxPath = $calendarHomePath . '/outbox/';
+                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                $outboxPath = $calendarHomePath . '/outbox/';
 
-            return new Href($outboxPath);
+                return new Href($outboxPath);
 
-        });
-        // schedule-inbox-URL property
-        $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL', function() use ($principalUrl, $caldavPlugin) {
+            });
+            // schedule-inbox-URL property
+            $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL', function() use ($principalUrl, $caldavPlugin) {
 
-            $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
-            $inboxPath = $calendarHomePath . '/inbox/';
+                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                $inboxPath = $calendarHomePath . '/inbox/';
 
-            return new Href($inboxPath);
+                return new Href($inboxPath);
 
-        });
+            });
 
-        $propFind->handle('{' . self::NS_CALDAV . '}schedule-default-calendar-URL', function() use ($principalUrl, $caldavPlugin) {
+            $propFind->handle('{' . self::NS_CALDAV . '}schedule-default-calendar-URL', function() use ($principalUrl, $caldavPlugin) {
 
-            // We don't support customizing this property yet, so in the
-            // meantime we just grab the first calendar in the home-set.
-            $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                // We don't support customizing this property yet, so in the
+                // meantime we just grab the first calendar in the home-set.
+                $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
 
-            $sccs = '{' . self::NS_CALDAV . '}supported-calendar-component-set';
+                $sccs = '{' . self::NS_CALDAV . '}supported-calendar-component-set';
 
-            $result = $this->server->getPropertiesForPath($calendarHomePath, [
-                '{DAV:}resourcetype',
-                $sccs,
-            ], 1);
+                $result = $this->server->getPropertiesForPath($calendarHomePath, [
+                    '{DAV:}resourcetype',
+                    $sccs,
+                ], 1);
 
-            foreach ($result as $child) {
-                if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar') || $child[200]['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared')) {
-                    // Node is either not a calendar or a shared instance.
-                    continue;
+                foreach ($result as $child) {
+                    if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar') || $child[200]['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared')) {
+                        // Node is either not a calendar or a shared instance.
+                        continue;
+                    }
+                    if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {
+                        // Either there is no supported-calendar-component-set
+                        // (which is fine) or we found one that supports VEVENT.
+                        return new Href($child['href']);
+                    }
                 }
-                if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {
-                    // Either there is no supported-calendar-component-set
-                    // (which is fine) or we found one that supports VEVENT.
-                    return new Href($child['href']);
-                }
-            }
+
+            });
+
+            // The server currently reports every principal to be of type
+            // 'INDIVIDUAL'
+            $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-type', function() {
+
+                return 'INDIVIDUAL';
+
+            });
+
+        }
+
+        // Mapping the old property to the new property.
+        $propFind->handle('{http://calendarserver.org/ns/}calendar-availability', function() use ($propFind, $node) {
+
+             // In case it wasn't clear, the only difference is that we map the
+            // old property to a different namespace.
+             $availProp = '{' . self::NS_CALDAV . '}calendar-availability';
+             $subPropFind = new PropFind(
+                 $propFind->getPath(),
+                 [$availProp]
+             );
+
+             $this->server->getPropertiesByNode(
+                 $subPropFind,
+                 $node
+             );
+
+             $propFind->set(
+                 '{http://calendarserver.org/ns/}calendar-availability',
+                 $subPropFind->get($availProp),
+                 $subPropFind->getStatus($availProp)
+             );
 
         });
 
-        // The server currently reports every principal to be of type
-        // 'INDIVIDUAL'
-        $propFind->handle('{' . self::NS_CALDAV . '}calendar-user-type', function() {
+    }
 
-            return 'INDIVIDUAL';
+    /**
+     * This method is called during property updates.
+     *
+     * @param string $path
+     * @param PropPatch $propPatch
+     * @return void
+     */
+    function propPatch($path, PropPatch $propPatch) {
+
+        // Mapping the old property to the new property.
+        $propPatch->handle('{http://calendarserver.org/ns/}calendar-availability', function($value) use ($path) {
+
+            $availProp = '{' . self::NS_CALDAV . '}calendar-availability';
+            $subPropPatch = new PropPatch([$availProp => $value]);
+            $this->server->emit('propPatch', [$path, $subPropPatch]);
+            $subPropPatch->commit();
+
+            return $subPropPatch->getResult()[$availProp];
 
         });
 

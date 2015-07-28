@@ -722,6 +722,7 @@ XML;
             'Depth' => '0',
             'User-Agent' => 'MSFT-WP/8.10.14219 (gzip)',
         ]);
+
         $request->setBody($body);
 
         $this->server->httpRequest = $request;

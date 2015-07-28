@@ -293,6 +293,11 @@ class Plugin extends ServerPlugin {
 
         $this->processICalendarChange($oldObj, $vCal, $addresses, [], $modified);
 
+        if ($oldObj) {
+            // Destroy circular references so PHP will GC the object.
+            $oldObj->destroy();
+        }
+
     }
 
     /**
@@ -636,6 +641,10 @@ class Plugin extends ServerPlugin {
             $acl && $acl->checkPrivileges($outboxPath, '{' . self::NS_CALDAV . '}schedule-query-freebusy');
             $this->handleFreeBusyRequest($outboxNode, $vObject, $request, $response);
 
+            // Destroy circular references so PHP can GC the object.
+            $vObject->destroy();
+            unset($vObject);
+
         } else {
 
             throw new NotImplemented('We only support VFREEBUSY (REQUEST) on this endpoint');
@@ -817,6 +826,10 @@ class Plugin extends ServerPlugin {
             if (isset($props[$ctz])) {
                 $vtimezoneObj = VObject\Reader::read($props[$ctz]);
                 $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+
+                // Destroy circular references so PHP can garbage collect the object.
+                $vtimezoneObj->destroy();
+
             }
 
             // Getting the list of object uris within the time-range

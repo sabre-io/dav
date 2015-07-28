@@ -235,6 +235,8 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                 // VTIMEZONE.
                 $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
                 $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+                // Destroy circular references to PHP will GC the object.
+                $vtimezoneObj->destroy();
                 unset($vtimezoneObj);
             } else {
                 // Defaulting to UTC.
@@ -298,7 +300,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                     case 'VEVENT' :
                     case 'VTODO' :
                     case 'VJOURNAL' :
-                        $objects[] = $child;
+                        $objects[] = clone $child;
                         break;
 
                     // VTIMEZONE is special, because we need to filter out the duplicates
@@ -306,13 +308,16 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                         // Naively just checking tzid.
                         if (in_array((string)$child->TZID, $collectedTimezones)) continue;
 
-                        $timezones[] = $child;
+                        $timezones[] = clone $child;
                         $collectedTimezones[] = $child->TZID;
                         break;
 
                 }
 
             }
+            // Destroy circular references to PHP will GC the object.
+            $nodeComp->destroy();
+            unset($nodeComp);
 
         }
 

@@ -142,7 +142,12 @@ abstract class AbstractBackend implements BackendInterface {
         $vObject = VObject\Reader::read($object['calendardata']);
 
         $validator = new CalDAV\CalendarQueryValidator();
-        return $validator->validate($vObject, $filters);
+        $result = $validator->validate($vObject, $filters);
+
+        // Destroy circular references so PHP will GC the object.
+        $vObject->destroy();
+
+        return $result;
 
     }
 

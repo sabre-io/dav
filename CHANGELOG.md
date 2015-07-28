@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+3.1.0-alpha2 (????-??-??)
+-------------------------
+
+* Massive calendars and addressbooks should see a big drop in peak memory
+  usage.
+* Fixed a privilege bug in the availability system.
+
+
 3.1.0-alpha1 (2015-07-19)
 -------------------------
 
@@ -15,11 +23,16 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.2 (2015-??-??)
+3.0.2 (2015-07-21)
 ------------------
 
 * #657: Migration script would break when coming a cross an iCalendar object
   with no UID.
+* #691: Workaround for broken Windows Phone client.
+* Fixed a whole bunch of incorrect php docblocks.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
 3.0.1 (2015-07-02)
@@ -187,11 +200,14 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
-2.1.6 (2015-??-??)
+2.1.6 (2015-07-21)
 ------------------
 
 * #657: Migration script would break when coming a cross an iCalendar object
   with no UID.
+* #691: Workaround for broken Windows Phone client.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.5 (2015-07-11)

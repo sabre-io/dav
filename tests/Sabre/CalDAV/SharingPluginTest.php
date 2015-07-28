@@ -205,11 +205,11 @@ RRR;
 
     function testShareRequestNoShareableCalendar() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1/cal2',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
+        $request = new HTTP\Request(
+            'POST',
+            '/calendars/user1/cal2',
+            ['Content-Type' => 'text/xml']
+        );
 
         $xml = '<?xml version="1.0"?>
 <cs:share xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -227,7 +227,7 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertEquals(403, $response->getStatus(), $response->getBody());
 
     }
 

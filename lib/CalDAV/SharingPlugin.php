@@ -83,6 +83,11 @@ class SharingPlugin extends DAV\ServerPlugin {
     function initialize(DAV\Server $server) {
 
         $this->server = $server;
+
+        if (is_null($this->server->getPlugin('sharing'))) {
+            throw new \LogicException('The generic "sharing" plugin must be loaded before the caldav sharing plugin. Call $server->addPlugin(new \Sabre\DAV\Sharing\Plugin()); before this one.');
+        }
+
         $server->resourceTypeMapping['Sabre\\CalDAV\\ISharedCalendar'] = '{' . Plugin::NS_CALENDARSERVER . '}shared';
 
         array_push(
@@ -272,22 +277,8 @@ class SharingPlugin extends DAV\ServerPlugin {
             case '{DAV:}share-resource' :
             case '{' . Plugin::NS_CALENDARSERVER . '}share' :
 
-                // We can only deal with IShareableCalendar objects
-                if (!$node instanceof IShareableCalendar) {
-                    return;
-                }
-
-                $this->server->transactionType = 'post-calendar-share';
-
-                // Getting ACL info
-                $acl = $this->server->getPlugin('acl');
-
-                // If there's no ACL support, we allow everything
-                if ($acl) {
-                    $acl->checkPrivileges($path, '{DAV:}share');
-                }
-
-                $node->updateShares($message->set, $message->remove);
+                $sharingPlugin = $this->server->getPlugin('sharing');
+                $sharingPlugin->shareResource($path, $message->set, $message->remove);
 
                 $response->setStatus(200);
                 // Adding this because sending a response body may cause issues,

@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\DAVACL\Plugin as ACLPlugin;
+
 /**
  * This object represents a CalDAV calendar that can be shared with other
  * users.
@@ -66,6 +68,56 @@ class ShareableCalendar extends Calendar implements IShareableCalendar {
     function setPublishStatus($value) {
 
         $this->caldavBackend->setPublishStatus($this->calendarInfo['id'], $value);
+
+    }
+
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to
+     *      be updated.
+     *
+     * @return array
+     */
+    function getACL() {
+
+        // The top-level ACL only contains access information for the true
+        // owner of the calendar, so we need to add the information for the
+        // sharee.
+        $acl = parent::getACL();
+        $acl[] = [
+            'privilege' => '{DAV:}share',
+            'principal' => $this->calendarInfo['principaluri'],
+            'protected' => true,
+        ];
+        return $acl;
+
+    }
+
+    /**
+     * Returns the list of supported privileges for this node.
+     *
+     * The returned data structure is a list of nested privileges.
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * standard structure.
+     *
+     * If null is returned from this method, the default privilege set is used,
+     * which is fine for most common usecases.
+     *
+     * @return array|null
+     */
+    function getSupportedPrivilegeSet() {
+
+        $default = parent::getSupportedPrivilegeSet();
+        $default['aggregates'][] = [
+            'privilege' => '{DAV:}share',
+        ];
+
+        return $default;
 
     }
 

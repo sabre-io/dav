@@ -89,6 +89,13 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $locksPlugin;
 
     /**
+     * Sharing plugin.
+     *
+     * @var \Sabre\DAV\Sharing\Plugin
+     */
+    protected $sharingPlugin;
+
+    /**
      * If this string is set, we will automatically log in the user with this
      * name.
      */
@@ -108,7 +115,9 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->server->addPlugin($this->caldavPlugin);
         }
         if ($this->setupCalDAVSharing) {
+            $this->sharingPlugin = new DAV\Sharing\Plugin();
             $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
+            $this->server->addPlugin($this->sharingPlugin);
             $this->server->addPlugin($this->caldavSharingPlugin);
         }
         if ($this->setupCalDAVScheduling) {

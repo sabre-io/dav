@@ -63,7 +63,7 @@ class ShareMode implements XmlSerializable {
      */
     function xmlSerialize(Writer $writer) {
 
-        switch($this->value) {
+        switch ($this->value) {
 
             case self::SHARED :
                 $writer->writeElement('{DAV:}shared');

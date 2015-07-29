@@ -8,6 +8,7 @@ use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
+use Sabre\DAV\Xml\Property;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
@@ -75,6 +76,12 @@ class Plugin extends ServerPlugin {
         $this->server = $server;
 
         $server->xml->elementMap['{DAV:}share-resource'] = 'Sabre\\DAV\\Xml\\Request\\ShareResource';
+
+        array_push(
+            $server->protectedProperties,
+            '{DAV:}share-mode'
+        );
+
         $server->on('method:POST',  [$this, 'httpPost']);
         $server->on('propFind',     [$this, 'propFind']);
 
@@ -140,10 +147,20 @@ class Plugin extends ServerPlugin {
      */
     function propFind(PropFind $propFind, INode $node) {
 
-        if ($node instanceof IShareableNode) {
+        $propFind->handle('{DAV:}share-mode', function() {
 
+            if (INode instanceof ISharedNode) {
 
-        }
+                return new Property\ShareMode(Property\ShareMode::SHARED);
+
+            } elseif (INode instanceof IShareableNode) {
+
+                return new Property\ShareMode(Property\ShareMode::SHAREDOWNER);
+
+            }
+
+        });
+
 
     }
 

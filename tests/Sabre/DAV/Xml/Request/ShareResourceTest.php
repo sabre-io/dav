@@ -41,16 +41,16 @@ XML;
         $this->assertEquals(
             [
                 [
-                    'href' => 'mailto:eric@example.com',
+                    'href'              => 'mailto:eric@example.com',
                     '{DAV:}displayname' => 'Eric York',
-                    'comment' => 'Shared workspace',
-                    'readOnly' => false,
+                    'comment'           => 'Shared workspace',
+                    'readOnly'          => false,
                 ],
                 [
-                    'href' => 'mailto:evert@example.com',
+                    'href'              => 'mailto:evert@example.com',
                     '{DAV:}displayname' => 'Evert Pot',
-                    'comment' => 'Shared workspace',
-                    'readOnly' => true,
+                    'comment'           => 'Shared workspace',
+                    'readOnly'          => true,
                 ],
             ],
             $result['value']->set

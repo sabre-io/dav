@@ -43,6 +43,13 @@ class PDO implements BackendInterface {
     protected $pdo;
 
     /**
+     * PDO table name we'll be using
+     *
+     * @var string
+     */
+    public $tableName = 'propertystorage';
+
+    /**
      * Creates the PDO property storage engine
      *
      * @param \PDO $pdo
@@ -76,7 +83,7 @@ class PDO implements BackendInterface {
             return;
         }
 
-        $query = 'SELECT name, value, valuetype FROM propertystorage WHERE path = ?';
+        $query = 'SELECT name, value, valuetype FROM ' . $this->tableName . ' WHERE path = ?';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([$path]);
 
@@ -114,8 +121,8 @@ class PDO implements BackendInterface {
 
         $propPatch->handleRemaining(function($properties) use ($path) {
 
-            $updateStmt = $this->pdo->prepare("REPLACE INTO propertystorage (path, name, valuetype, value) VALUES (?, ?, ?, ?)");
-            $deleteStmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? AND name = ?");
+            $updateStmt = $this->pdo->prepare("REPLACE INTO " . $this->tableName . " (path, name, valuetype, value) VALUES (?, ?, ?, ?)");
+            $deleteStmt = $this->pdo->prepare("DELETE FROM " . $this->tableName . " WHERE path = ? AND name = ?");
 
             foreach ($properties as $name => $value) {
 
@@ -155,7 +162,7 @@ class PDO implements BackendInterface {
      */
     function delete($path) {
 
-        $stmt = $this->pdo->prepare("DELETE FROM propertystorage WHERE path = ? OR path LIKE ? ESCAPE '='");
+        $stmt = $this->pdo->prepare("DELETE FROM " . $this->tableName . "  WHERE path = ? OR path LIKE ? ESCAPE '='");
         $childPath = strtr(
             $path,
             [
@@ -186,10 +193,10 @@ class PDO implements BackendInterface {
         // also compatible across db engines, so we're letting PHP do all the
         // updates. Much slower, but it should still be pretty fast in most
         // cases.
-        $select = $this->pdo->prepare('SELECT id, path FROM propertystorage WHERE path = ? OR path LIKE ?');
+        $select = $this->pdo->prepare('SELECT id, path FROM ' . $this->tableName . '  WHERE path = ? OR path LIKE ?');
         $select->execute([$source, $source . '/%']);
 
-        $update = $this->pdo->prepare('UPDATE propertystorage SET path = ? WHERE id = ?');
+        $update = $this->pdo->prepare('UPDATE ' . $this->tableName . ' SET path = ? WHERE id = ?');
         while ($row = $select->fetch(\PDO::FETCH_ASSOC)) {
 
             // Sanity check. SQL may select too many records, such as records

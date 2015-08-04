@@ -7,6 +7,7 @@ ChangeLog
 * Massive calendars and addressbooks should see a big drop in peak memory
   usage.
 * Fixed a privilege bug in the availability system.
+* #697: Added a "tableName" member to the PropertyStorage PDO backend. (@Frzk).
 
 
 3.1.0-alpha1 (2015-07-19)

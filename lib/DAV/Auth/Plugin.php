@@ -137,6 +137,23 @@ class Plugin extends ServerPlugin {
      */
     function beforeMethod(RequestInterface $request, ResponseInterface $response) {
 
+        if ($this->currentPrincipal) {
+
+            // We already have authentication information. This means that the
+            // event has already fired earlier, and is now likely fired for a
+            // sub-request.
+            //
+            // We don't want to authenticate users twice, so we simply don't do
+            // anything here. See Issue #700 for additional reasoning.
+            //
+            // This is not a perfect solution, but will be fixed once the
+            // "currently authenticated principal" is information that's not
+            // not associated with the plugin, but rather per-request.
+            //
+            // See issue #580 for more information about that.
+            return;
+
+        }
         if (!$this->backends) {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }

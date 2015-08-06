@@ -6,7 +6,7 @@ use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
 /**
- * Tests related to the PUT request.
+ * Tests related to the GET request.
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
@@ -125,53 +125,12 @@ class HttpGetTest extends DAVServerTest {
 
     }
 
-    /**
-     * HEAD is identical to GET, but it's missing a body
-     */
-    function testHEAD() {
-
-        $request = new HTTP\Request('HEAD', '//file1');
-        $response = $this->request($request);
-
-        $this->assertEquals(200, $response->getStatus());
-
-        // Removing Last-Modified because it keeps changing.
-        $response->removeHeader('Last-Modified');
-
-        $this->assertEquals(
-            [
-                'X-Sabre-Version' => [Version::VERSION],
-                'Content-Type'    => ['application/octet-stream'],
-                'Content-Length'  => [3],
-                'ETag'            => ['"' . md5('foo') . '"'],
-            ],
-            $response->getHeaders()
-        );
-
-        $this->assertEquals('', $response->getBodyAsString());
-
-    }
-
     function testGetCollection() {
 
         $request = new HTTP\Request('GET', '/dir');
         $response = $this->request($request);
 
         $this->assertEquals(501, $response->getStatus());
-
-    }
-
-    /**
-     * According to the specs, HEAD should behave identical to GET. But, broken
-     * clients needs HEAD requests on collections to respond with a 200, so
-     * that's what we do.
-     */
-    function testHEADCollection() {
-
-        $request = new HTTP\Request('HEAD', '/dir');
-        $response = $this->request($request);
-
-        $this->assertEquals(200, $response->getStatus());
 
     }
 

@@ -5,6 +5,10 @@ ChangeLog
 ------------------
 
 * #700: Digest Auth fails on `HEAD` requests.
+* Fixed example files to no longer use now-deprecated realm argument.
+* The zip release ships with [sabre/vobject 3.4.6][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
 3.0.2 (2015-07-21)

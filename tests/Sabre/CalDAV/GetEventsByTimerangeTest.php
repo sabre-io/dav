@@ -58,15 +58,15 @@ END:VCALENDAR
 <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
     <D:prop>
         <C:calendar-data>
-            <C:expand start="20120226T230000Z" end="20120228T225959Z"/>
+            <C:expand start="20120226T220000Z" end="20120228T225959Z"/>
         </C:calendar-data>
         <D:getetag/>
     </D:prop>
     <C:filter>
         <C:comp-filter name="VCALENDAR">
             <C:comp-filter name="VEVENT">
-                <C:time-range start="20120226T230000Z" end="20120228T225959Z"/>
-           </C:comp-filter>
+                <C:time-range start="20120226T220000Z" end="20120228T225959Z"/>
+            </C:comp-filter>
         </C:comp-filter>
     </C:filter>
 </C:calendar-query>');

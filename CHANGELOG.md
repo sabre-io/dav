@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.0.4 (2015-??-??)
+------------------
+
+* #703: PropPatch in client is not correctly encoded.
+
+
 3.0.3 (2015-08-06)
 ------------------
 

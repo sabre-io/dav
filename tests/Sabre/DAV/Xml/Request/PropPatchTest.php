@@ -24,15 +24,21 @@ class PropPatchTest extends XmlTest {
 <?xml version="1.0"?>
 <d:propertyupdate xmlns:d="DAV:">
     <d:set>
-        <d:displayname>Hello!</d:displayname>
+        <d:prop>
+            <d:displayname>Hello!</d:displayname>
+        </d:prop>
     </d:set>
     <d:remove>
-        <d:delete-me />
+        <d:prop>
+          <d:delete-me />
+        </d:prop>
     </d:remove>
     <d:set>
-        <d:some-url>
-            <d:href>/foo/bar</d:href>
-        </d:some-url>
+        <d:prop>
+            <d:some-url>
+                <d:href>/foo/bar</d:href>
+            </d:some-url>
+        </d:prop>
     </d:set>
 </d:propertyupdate>
 XML;

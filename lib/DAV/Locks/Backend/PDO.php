@@ -59,7 +59,7 @@ class PDO extends AbstractBackend {
         // NOTE: the following 10 lines or so could be easily replaced by
         // pure sql. MySQL's non-standard string concatenation prevents us
         // from doing this though.
-        $query = 'SELECT owner, token, timeout, created, scope, depth, uri FROM ' . $this->tableName . ' WHERE ((created + timeout) > CAST(? AS UNSIGNED INTEGER)) AND ((uri = ?)';
+        $query = 'SELECT owner, token, timeout, created, scope, depth, uri FROM ' . $this->tableName . ' WHERE (created > (? - timeout)) AND ((uri = ?)';
         $params = [time(),$uri];
 
         // We need to check locks for every part in the uri.

@@ -7,6 +7,8 @@ ChangeLog
 * Massive calendars and addressbooks should see a big drop in peak memory
   usage.
 * Fixed a privilege bug in the availability system.
+* #697: Added a "tableName" member to the PropertyStorage PDO backend. (@Frzk).
+* #699: PostgreSQL fix for the Locks PDO backend. (@TCKnet)
 
 
 3.1.0-alpha1 (2015-07-19)
@@ -19,6 +21,20 @@ ChangeLog
   [reference][calendar-availability].
 * #691: Workaround for broken Windows Phone client.
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
+
+
+3.0.4 (2015-??-??)
+------------------
+
+* #703: PropPatch in client is not correctly encoded.
+
+
+3.0.3 (2015-08-06)
+------------------
+
+* #700: Digest Auth fails on `HEAD` requests.
+* Fixed example files to no longer use now-deprecated realm argument.
+* The zip release ships with [sabre/vobject 3.4.6][vobj],
   [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 

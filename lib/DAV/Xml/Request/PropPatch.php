@@ -51,11 +51,15 @@ class PropPatch implements Element {
 
         foreach ($this->properties as $propertyName => $propertyValue) {
 
-            if (is_null($propertyValue)) {
-                $writer->write(['{DAV:}remove' => [$propertyName => $propertyValue]]);
-            } else {
-                $writer->write(['{DAV:}set' => [$propertyName => $propertyValue]]);
-            }
+	  if (is_null($propertyValue)) {
+	    $writer->startElement("{DAV:}remove");
+	    $writer->write(['{DAV:}prop' => [$propertyName => $propertyValue]]);
+	    $writer->endElement();
+	  } else {
+	    $writer->startElement("{DAV:}set");
+	    $writer->write(['{DAV:}prop' => [$propertyName => $propertyValue]]);
+	    $writer->endElement();
+	  }
 
         }
 

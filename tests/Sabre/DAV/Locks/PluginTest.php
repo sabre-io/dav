@@ -10,7 +10,7 @@ require_once 'Sabre/DAV/AbstractServer.php';
 class PluginTest extends DAV\AbstractServer {
 
     /**
-     * @var Sabre\DAV\Locks\Plugin
+     * @var Plugin
      */
     protected $locksPlugin;
 
@@ -21,6 +21,15 @@ class PluginTest extends DAV\AbstractServer {
         $locksPlugin = new Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;
+
+    }
+
+    function testGetInfo() {
+
+        $this->assertArrayHasKey(
+            'name',
+            $this->locksPlugin->getPluginInfo()
+        );
 
     }
 

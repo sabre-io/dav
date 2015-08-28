@@ -27,6 +27,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupCalDAVICSExport = false;
     protected $setupLocks = false;
     protected $setupFiles = false;
+    protected $setupSharing = false;
     protected $setupPropertyStorage = false;
 
     /**
@@ -120,10 +121,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->caldavPlugin = new CalDAV\Plugin();
             $this->server->addPlugin($this->caldavPlugin);
         }
-        if ($this->setupCalDAVSharing) {
+        if ($this->setupCalDAVSharing || $this->setupSharing) {
             $this->sharingPlugin = new DAV\Sharing\Plugin();
-            $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->sharingPlugin);
+        }
+        if ($this->setupCalDAVSharing) {
+            $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
         }
         if ($this->setupCalDAVScheduling) {

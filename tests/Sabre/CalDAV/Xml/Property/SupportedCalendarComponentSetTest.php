@@ -78,6 +78,9 @@ XML;
 
     }
 
+    /**
+     * @expectedException \Sabre\Xml\ParseException
+     */
     function testUnserializeEmpty() {
 
         $cal = CalDAV\Plugin::NS_CALDAV;

@@ -28,6 +28,8 @@ ChangeLog
 ------------------
 
 * #703: PropPatch in client is not correctly encoded.
+* #709: Throw exception when running into empty
+  `supported-calendar-component-set.
 
 
 3.0.3 (2015-08-06)

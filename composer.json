@@ -13,12 +13,18 @@
             "role" : "Developer"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/fkooman/sabre-http"
+        }
+    ],
     "require": {
         "php": ">=5.5.0",
         "sabre/vobject": ">=4.0.0-alpha1",
         "sabre/event" : "~2.0",
         "sabre/xml"  : "~1.0",
-        "sabre/http" : "~4.0",
+        "sabre/http" : "dev-bearer",
         "sabre/uri" : "~1.0",
         "ext-dom": "*",
         "ext-pcre": "*",

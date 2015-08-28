@@ -1,0 +1,222 @@
+<?php
+
+namespace Sabre\DAV\Auth\Backend;
+
+use Sabre\DAV;
+use Sabre\HTTP;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+
+/**
+ * Introspection authentication backend class for validating Bearer tokens
+ * against an introspection endpoint.
+ *
+ * @see https://tools.ietf.org/html/draft-ietf-oauth-introspection
+ * 
+ * This class can be used by authentication objects wishing to use HTTP Bearer
+ *
+ * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @author François Kooman (fkooman@tuxed.net)
+ * @license http://sabre.io/license/ Modified BSD License
+ */
+abstract class Introspection implements BackendInterface
+{
+    /**
+     * Authentication Realm.
+     *
+     * The realm is often displayed by browser clients when showing the
+     * authentication dialog.
+     *
+     * @var string
+     */
+    protected $realm = 'sabre/dav';
+
+    /**
+     * The field in the introspection response to be used as the 
+     * principal identifier.
+     *
+     * @var string
+     */
+    protected $principalField = 'sub';
+
+    /**
+     * This is the prefix that will be used to generate principal urls.
+     *
+     * @var string
+     */
+    protected $principalPrefix = 'principals/';
+
+    /**
+     * This is the URL that will be used to verify the Bearer token.
+     *
+     * @var string
+     */
+    protected $introspectionEndpoint;
+
+    /**
+     * The user name for authenticating to the introspection endpoint.
+     *
+     * @var string
+     */
+    protected $introspectionUser;
+
+    /**
+     * The secret for authenticating to the introspection endpoint.
+     *
+     * @var string
+     */
+    protected $introspectionSecret;
+
+    /**
+     * Sets the authentication realm for this backend.
+     *
+     * @param string $realm
+     */
+    public function setRealm($realm)
+    {
+        $this->realm = $realm;
+    }
+
+    /**
+     * Sets the principal field to be used from the introspection response.
+     *
+     * @param string $principalField
+     */
+    public function setPrincipalField($principalField)
+    {
+        $this->principalField = $principalField;
+    }
+
+    public function setIntrospectionEndpoint($introspectionEndpoint)
+    {
+        $this->introspectionEndpoint = $introspectionEndpoint;
+    }
+
+    public function setIntrospectionUser($user)
+    {
+        $this->introspectionUser = $user;
+    }
+
+    public function setIntrospectionSecret($secret)
+    {
+        $this->introspectionSecret = $secret;
+    }
+
+    /**
+     * When this method is called, the backend must check if authentication was
+     * successful.
+     *
+     * The returned value must be one of the following
+     *
+     * [true, "principals/username"]
+     * [false, "reason for failure"]
+     *
+     * If authentication was successful, it's expected that the authentication
+     * backend returns a so-called principal url.
+     *
+     * Examples of a principal url:
+     *
+     * principals/admin
+     * principals/user1
+     * principals/users/joe
+     * principals/uid/123457
+     *
+     * If you don't use WebDAV ACL (RFC3744) we recommend that you simply
+     * return a string such as:
+     *
+     * principals/users/[username]
+     *
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     *
+     * @return array
+     */
+    public function check(RequestInterface $request, ResponseInterface $response)
+    {
+        $auth = new HTTP\Auth\Bearer(
+            $this->realm,
+            $request,
+            $response
+        );
+
+        $token = $auth->getToken($request);
+        if (!$token) {
+            return [false, "No 'Authorization: Bearer' header found. Either the client didn't send one, or the server is mis-configured"];
+        }
+        if (!$sub = $this->validateToken($token)) {
+            return [false, 'token was incorrect'];
+        }
+
+        return [true, $this->principalPrefix.$sub];
+    }
+
+    public function validateToken($token)
+    {
+        // XXX the introspection fields need to be set!
+        $client = new Client();
+        $request = new Request('POST', $this->introspectionEndpoint);
+        $request->setHeader(
+            'Authorization',
+            sprintf(
+                'Basic %s',
+                base64_encode(
+                    $this->introspectionUser,
+                    $this->introspectionSecret
+                )
+            )
+        );
+        $request->setPostData(
+            array('token' => $token)
+        );
+
+        $response = $client->send($request);
+        // XXX deal with exceptions?
+
+        $responseData = json_decode($response->getBodyAsString(), true);
+
+        if (!is_array($responseData)) {
+            // XXX unexpected response!
+        }
+        if (!array_key_exists('active', $responseData)) {
+            // XXX active field MUST be there
+        }
+        if (!$responseBody['active']) {
+            return false;
+        }
+        if (!array_key_exists($this->principalField, $responseBody)) {
+            // XXX the principalfield must be there
+        }
+
+        return $responseBody[$this->principalField];
+    }
+
+    /**
+     * This method is called when a user could not be authenticated, and
+     * authentication was required for the current request.
+     *
+     * This gives you the opportunity to set authentication headers. The 401
+     * status code will already be set.
+     *
+     * In this case of Basic Auth, this would for example mean that the
+     * following header needs to be set:
+     *
+     * $response->addHeader('WWW-Authenticate', 'Basic realm=SabreDAV');
+     *
+     * Keep in mind that in the case of multiple authentication backends, other
+     * WWW-Authenticate headers may already have been set, and you'll want to
+     * append your own WWW-Authenticate header instead of overwriting the
+     * existing one.
+     *
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     */
+    public function challenge(RequestInterface $request, ResponseInterface $response)
+    {
+        $auth = new HTTP\Auth\Bearer(
+            $this->realm,
+            $request,
+            $response
+        );
+        $auth->requireLogin();
+    }
+}

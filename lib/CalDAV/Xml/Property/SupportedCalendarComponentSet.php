@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV\Xml\Property;
 
 use Sabre\Xml\Element;
+use Sabre\Xml\ParseException;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
 use Sabre\CalDAV\Plugin;
@@ -111,10 +112,14 @@ class SupportedCalendarComponentSet implements Element {
 
         $components = [];
 
-        foreach ($elems as $elem) {
+        foreach ((array)$elems as $elem) {
             if ($elem['name'] === '{' . Plugin::NS_CALDAV . '}comp') {
                 $components[] = $elem['attributes']['name'];
             }
+        }
+
+        if (!$components) {
+            throw new ParseException('supported-calendar-component-set must have at least one CALDAV:comp element');
         }
 
         return new self($components);

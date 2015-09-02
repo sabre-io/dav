@@ -92,7 +92,7 @@ class Collection extends DAV\Collection {
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
-        $this->children[$name] = $data;
+        $this->children[] = new File($name, $data, $this);
         return '"' . md5($data) . '"';
 
     }

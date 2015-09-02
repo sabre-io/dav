@@ -233,7 +233,7 @@ class ResponseTest extends DAV\Xml\XmlTest {
         $result = $this->parse($xml, [
             '{DAV:}response' => 'Sabre\DAV\Xml\Element\Response',
             '{DAV:}foo' => function($reader) {
-                throw new \LogicException('This should never happned');
+                throw new \LogicException('This should never happen');
             },
         ]);
         $this->assertEquals(

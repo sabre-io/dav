@@ -36,7 +36,7 @@ class HttpPutTest extends DAVServerTest {
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->getStatus(), 'Incorrect status code received. Fully response body:' . $response->getBodyAsString());
+        $this->assertEquals(201, $response->getStatus(), 'Incorrect status code received. Full response body:' . $response->getBodyAsString());
 
         $this->assertEquals(
             'hello',

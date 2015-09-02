@@ -84,7 +84,7 @@ class AbstractBearerMock extends AbstractBearer {
      */
     function validateBearerToken($bearerToken) {
 
-        return 'valid' === $bearerToken ? 'username' : false;
+        return 'valid' === $bearerToken ? 'principals/username' : false;
 
     }
 

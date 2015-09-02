@@ -33,20 +33,13 @@ abstract class AbstractBearer implements BackendInterface {
     protected $realm = 'sabre/dav';
 
     /**
-     * This is the prefix that will be used to generate principal urls.
-     *
-     * @var string
-     */
-    protected $principalPrefix = 'principals/';
-
-    /**
      * Validates a Bearer token
      *
-     * This method should return true or false depending on if login
-     * succeeded.
+     * This method should return the full principal url, or false if the 
+     * token was incorrect.
      *
      * @param string $bearerToken
-     * @return bool
+     * @return string|false
      */
     abstract protected function validateBearerToken($bearerToken);
 
@@ -102,11 +95,11 @@ abstract class AbstractBearer implements BackendInterface {
         if (!$bearerToken) {
             return [false, "No 'Authorization: Bearer' header found. Either the client didn't send one, or the server is mis-configured"];
         }
-        $resourceOwner = $this->validateBearerToken($bearerToken);
-        if (!$resourceOwner) {
+        $principalUrl = $this->validateBearerToken($bearerToken);
+        if (!$principalUrl) {
             return [false, "Bearer token was incorrect"];
         }
-        return [true, $this->principalPrefix . $resourceOwner];
+        return [true, $principalUrl];
 
     }
 

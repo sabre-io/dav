@@ -161,7 +161,46 @@ class Response implements Element {
      */
     static function xmlDeserialize(Reader $reader) {
 
+        $reader->pushContext();
+
+        $reader->elementMap['{DAV:}propstat'] = 'Sabre\\Xml\\Element\\KeyValue';
+
+        // We are overriding the parser for {DAV:}prop. This deserializer is
+        // almost identical to the one for Sabre\Xml\Element\KeyValue.
+        //
+        // The difference is that if there are any child-elements inside of
+        // {DAV:}prop, that have no value, normally any deserializers are
+        // called. But we don't want this, because a singlular element without
+        // child-elements implies 'no value' in {DAV:}prop, so we want to skip
+        // deserializers and just set null for those.
+        $reader->elementMap['{DAV:}prop'] = function(Reader $reader) {
+
+            if ($reader->isEmptyElement) {
+                $reader->next();
+                return [];
+            }
+            $values = [];
+            $reader->read();
+            do {
+                if ($reader->nodeType === Reader::ELEMENT) {
+                    $clark = $reader->getClark();
+
+                    if ($reader->isEmptyElement) {
+                        $values[$clark] = null;
+                        $reader->next();
+                    } else {
+                        $values[$clark] = $reader->parseCurrentElement()['value'];
+                    }
+                } else {
+                    $reader->read();
+                }
+            } while ($reader->nodeType !== Reader::END_ELEMENT);
+            $reader->read();
+            return $values;
+
+        };
         $elems = $reader->parseInnerTree();
+        $reader->popContext();
 
         $href = null;
         $propertyLists = [];

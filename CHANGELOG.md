@@ -10,6 +10,11 @@ ChangeLog
 * #697: Added a "tableName" member to the PropertyStorage PDO backend. (@Frzk).
 * #699: PostgreSQL fix for the Locks PDO backend. (@TCKnet)
 * Removed the `simplefsserver.php` example file. It's not simple enough.
+* #703: PropPatch in client is not correctly encoded.
+* #709: Throw exception when running into empty
+  `supported-calendar-component-set`.
+* #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
+  fixes issues when using sabre/dav as a client.
 
 
 3.1.0-alpha1 (2015-07-19)

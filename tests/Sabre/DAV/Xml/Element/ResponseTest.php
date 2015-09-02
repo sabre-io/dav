@@ -179,4 +179,71 @@ class ResponseTest extends DAV\Xml\XmlTest {
 
     }
 
+    function testDeserializeComplexProperty() {
+
+        $xml = '<?xml version="1.0"?>
+<d:response xmlns:d="DAV:">
+  <d:href>/uri</d:href>
+  <d:propstat>
+    <d:prop>
+      <d:foo>hello</d:foo>
+    </d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>
+</d:response>
+';
+
+        $result = $this->parse($xml, [
+            '{DAV:}response' => 'Sabre\DAV\Xml\Element\Response',
+            '{DAV:}foo' => function($reader) {
+
+                $reader->next();
+                return 'world';
+            },
+        ]);
+        $this->assertEquals(
+            new Response('/uri', [
+                '200' => [
+                    '{DAV:}foo' => 'world',
+                ]
+            ]),
+            $result['value']
+        );
+
+    }
+
+    /**
+     * In the case of {DAV:}prop, a deserializer should never get called, if
+     * the property element is empty.
+     */
+    function testDeserializeComplexPropertyEmpty() {
+
+        $xml = '<?xml version="1.0"?>
+<d:response xmlns:d="DAV:">
+  <d:href>/uri</d:href>
+  <d:propstat>
+    <d:prop>
+      <d:foo />
+    </d:prop>
+    <d:status>HTTP/1.1 404 Not Found</d:status>
+  </d:propstat>
+</d:response>
+';
+
+        $result = $this->parse($xml, [
+            '{DAV:}response' => 'Sabre\DAV\Xml\Element\Response',
+            '{DAV:}foo' => function($reader) {
+                throw new \LogicException('This should never happen');
+            },
+        ]);
+        $this->assertEquals(
+            new Response('/uri', [
+                '404' => [
+                    '{DAV:}foo' => null
+                ]
+            ]),
+            $result['value']
+        );
+
+    }
 }

@@ -29,7 +29,9 @@ ChangeLog
 
 * #703: PropPatch in client is not correctly encoded.
 * #709: Throw exception when running into empty
-  `supported-calendar-component-set.
+  `supported-calendar-component-set`.
+* #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
+  fixes issues when using sabre/dav as a client.
 
 
 3.0.3 (2015-08-06)

@@ -105,7 +105,7 @@ class Collection extends DAV\Collection {
      */
     public function createDirectory($name) {
 
-        $this->children = new Collection($name);
+        $this->children[] = new Collection($name);
 
     }
 

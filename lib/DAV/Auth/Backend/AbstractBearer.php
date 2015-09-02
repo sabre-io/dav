@@ -35,7 +35,7 @@ abstract class AbstractBearer implements BackendInterface {
     /**
      * Validates a Bearer token
      *
-     * This method should return the full principal url, or false if the 
+     * This method should return the full principal url, or false if the
      * token was incorrect.
      *
      * @param string $bearerToken

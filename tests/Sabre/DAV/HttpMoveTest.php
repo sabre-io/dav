@@ -101,8 +101,7 @@ class HttpMoveTest extends DAVServerTest {
         $this->server->on('beforeUnbind', function($path) {
 
             if ($path==='file1') {
-                // Block file1 from being deleted.
-                return false;
+                throw new \Sabre\DAV\Exception\Forbidden('uh oh');
             }
 
         });
@@ -110,9 +109,11 @@ class HttpMoveTest extends DAVServerTest {
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus(), print_r($response,true));
-        $this->assertEquals('content1', $this->tree->getChild('file2')->get());
-        $this->assertFalse($this->tree->childExists('file1'));
+        $this->assertEquals(403, $response->getStatus(), print_r($response,true));
+        $this->assertEquals('content1', $this->tree->getChild('file1')->get());
+        $this->assertEquals('content2', $this->tree->getChild('file2')->get());
+        $this->assertTrue($this->tree->childExists('file1'));
+        $this->assertTrue($this->tree->childExists('file2'));
 
     }    
 }

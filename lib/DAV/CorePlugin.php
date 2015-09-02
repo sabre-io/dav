@@ -633,13 +633,18 @@ class CorePlugin extends ServerPlugin {
         if ($moveInfo['destinationExists']) {
 
             if (!$this->server->emit('beforeUnbind',[$moveInfo['destination']])) return false;
+
+        }
+        if (!$this->server->emit('beforeUnbind',[$path])) return false;
+        if (!$this->server->emit('beforeBind',[$moveInfo['destination']])) return false;
+
+        if ($moveInfo['destinationExists']) {
+
             $this->server->tree->delete($moveInfo['destination']);
             $this->server->emit('afterUnbind',[$moveInfo['destination']]);
 
         }
 
-        if (!$this->server->emit('beforeUnbind',[$path])) return false;
-        if (!$this->server->emit('beforeBind',[$moveInfo['destination']])) return false;
         $this->server->tree->move($path, $moveInfo['destination']);
         $this->server->emit('afterUnbind',[$path]);
         $this->server->emit('afterBind',[$moveInfo['destination']]);

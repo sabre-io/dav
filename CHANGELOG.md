@@ -15,6 +15,9 @@ ChangeLog
   `supported-calendar-component-set`.
 * #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
   fixes issues when using sabre/dav as a client.
+* The zip release ships with [sabre/vobject 4.0.0-alpha2][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
 
 
 3.1.0-alpha1 (2015-07-19)
@@ -27,6 +30,8 @@ ChangeLog
   [reference][calendar-availability].
 * #691: Workaround for broken Windows Phone client.
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
 3.0.4 (2015-09-06)

@@ -32,7 +32,7 @@ abstract class Collection extends Node implements ICollection {
 
         foreach($this->getChildren() as $child) {
 
-            if ($child->getName()==$name) return $child;
+            if ($child->getName()===$name) return $child;
 
         }
         throw new Exception\NotFound('File not found: ' . $name);

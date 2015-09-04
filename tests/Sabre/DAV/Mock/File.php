@@ -47,6 +47,12 @@ class File extends DAV\File {
 
     }
 
+    function setName($name) {
+
+        $this->name = $name;
+
+    }
+
     /**
      * Updates the data
      *

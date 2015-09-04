@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+2.0.9 (2015-09-04)
+------------------
+
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+
+
 2.0.8 (2015-07-11)
 ------------------
 

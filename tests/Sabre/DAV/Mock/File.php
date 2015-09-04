@@ -47,6 +47,11 @@ class File extends DAV\File {
 
     }
 
+    /**
+     * Changes the name of the node.
+     *
+     * @return void
+     */
     function setName($name) {
 
         $this->name = $name;
@@ -93,19 +98,6 @@ class File extends DAV\File {
     public function get() {
 
         return $this->contents;
-
-    }
-
-    /**
-     * Changes the name of the node.
-     *
-     * @return void
-     */
-    public function setName($newName) {
-
-        $this->parent->deleteChild($this->name);
-        $this->name = $newName;
-        $this->parent->createFile($newName, $this->contents);
 
     }
 

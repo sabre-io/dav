@@ -1,12 +1,14 @@
 ChangeLog
 =========
 
-2.1.7 (2015-??-??)
+2.1.7 (2015-09-05)
 ------------------
 
 * #705: A `MOVE` request that gets prevented from deleting the source resource
   will still remove the target resource. Now all events are triggered before
   any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.6 (2015-07-21)

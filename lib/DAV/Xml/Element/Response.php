@@ -170,7 +170,7 @@ class Response implements Element {
         //
         // The difference is that if there are any child-elements inside of
         // {DAV:}prop, that have no value, normally any deserializers are
-        // called. But we don't want this, because a singlular element without
+        // called. But we don't want this, because a singular element without
         // child-elements implies 'no value' in {DAV:}prop, so we want to skip
         // deserializers and just set null for those.
         $reader->elementMap['{DAV:}prop'] = function(Reader $reader) {

@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\Mock;
 
-use Sabre\DAV;
-
 /**
  * Mock Streaming File File
  *
@@ -39,7 +37,7 @@ class StreamingFile extends File {
     function put($data) {
 
         if (is_string($data)) {
-            $stream = fopen('php://memory','r+');
+            $stream = fopen('php://memory', 'r+');
             fwrite($stream, $data);
             rewind($stream);
             $data = $stream;

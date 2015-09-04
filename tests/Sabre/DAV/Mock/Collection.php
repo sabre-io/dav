@@ -32,14 +32,14 @@ class Collection extends DAV\Collection {
      * @param array $children
      * @return void
      */
-    function __construct($name, array $children = array(), Collection $parent = null) {
+    function __construct($name, array $children = [], Collection $parent = null) {
 
         $this->name = $name;
-        foreach($children as $key=>$value) {
+        foreach ($children as $key => $value) {
             if (is_string($value)) {
                 $this->children[] = new File($key, $value, $this);
             } elseif (is_array($value)) {
-                $this->children[] = new Collection($key, $value, $this);
+                $this->children[] = new self($key, $value, $this);
             } elseif ($value instanceof \Sabre\DAV\INode) {
                 $this->children[] = $value;
             } else {
@@ -105,7 +105,7 @@ class Collection extends DAV\Collection {
      */
     function createDirectory($name) {
 
-        $this->children[] = new Collection($name);
+        $this->children[] = new self($name);
 
     }
 
@@ -128,7 +128,7 @@ class Collection extends DAV\Collection {
      */
     function deleteChild($name) {
 
-        foreach($this->children as $key=>$value) {
+        foreach ($this->children as $key => $value) {
 
             if ($value->getName() == $name) {
                 unset($this->children[$key]);
@@ -146,7 +146,7 @@ class Collection extends DAV\Collection {
      */
     function delete() {
 
-        foreach($this->getChildren() as $child) {
+        foreach ($this->getChildren() as $child) {
             $this->deleteChild($child->getName());
         }
         $this->parent->deleteChild($this->getName());

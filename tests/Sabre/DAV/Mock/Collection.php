@@ -35,7 +35,17 @@ class Collection extends DAV\Collection {
     function __construct($name, array $children = array(), Collection $parent = null) {
 
         $this->name = $name;
-        $this->children = $children;
+        foreach($children as $key=>$value) {
+            if (is_string($value)) {
+                $this->children[] = new File($key, $value, $this);
+            } elseif (is_array($value)) {
+                $this->children[] = new Collection($key, $value, $this);
+            } elseif ($value instanceof \Sabre\DAV\INode) {
+                $this->children[] = $value;
+            } else {
+                throw new \InvalidArgumentException('Unknown value passed in $children');
+            }
+        }
         $this->parent = $parent;
 
     }
@@ -82,7 +92,7 @@ class Collection extends DAV\Collection {
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
-        $this->children[$name] = $data;
+        $this->children[] = new File($name, $data, $this);
         return '"' . md5($data) . '"';
 
     }
@@ -95,7 +105,7 @@ class Collection extends DAV\Collection {
      */
     function createDirectory($name) {
 
-        $this->children[$name] = array();
+        $this->children[] = new Collection($name);
 
     }
 
@@ -106,20 +116,7 @@ class Collection extends DAV\Collection {
      */
     function getChildren() {
 
-        $result = array();
-        foreach($this->children as $key=>$value) {
-
-            if ($value instanceof DAV\INode) {
-                $result[] = $value;
-            } elseif (is_array($value)) {
-                $result[] = new Collection($key, $value, $this);
-            } else {
-                $result[] = new File($key, $value, $this);
-            }
-
-        }
-
-        return $result;
+        return $this->children;
 
     }
 
@@ -133,12 +130,7 @@ class Collection extends DAV\Collection {
 
         foreach($this->children as $key=>$value) {
 
-            if ($value instanceof DAV\INode) {
-                if ($value->getName() == $name) {
-                    unset($this->children[$key]);
-                    return;
-                }
-            } elseif ($key === $name) {
+            if ($value->getName() == $name) {
                 unset($this->children[$key]);
                 return;
             }

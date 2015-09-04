@@ -37,7 +37,7 @@ class HttpMoveTest extends DAVServerTest {
         $this->assertEquals(403, $response->getStatus());
         $this->assertEquals('content1', $this->tree->getChild('file1')->get());
 
-    }    
+    }
 
     function testMove() {
 
@@ -49,7 +49,7 @@ class HttpMoveTest extends DAVServerTest {
         $this->assertEquals('content1', $this->tree->getChild('file3')->get());
         $this->assertFalse($this->tree->childExists('file1'));
 
-    }    
+    }
 
     function testMoveToExisting() {
 
@@ -61,7 +61,7 @@ class HttpMoveTest extends DAVServerTest {
         $this->assertEquals('content1', $this->tree->getChild('file2')->get());
         $this->assertFalse($this->tree->childExists('file1'));
 
-    }    
+    }
 
     function testMoveToExistingOverwriteT() {
 
@@ -74,7 +74,7 @@ class HttpMoveTest extends DAVServerTest {
         $this->assertEquals('content1', $this->tree->getChild('file2')->get());
         $this->assertFalse($this->tree->childExists('file1'));
 
-    }    
+    }
 
     function testMoveToExistingOverwriteF() {
 
@@ -115,5 +115,5 @@ class HttpMoveTest extends DAVServerTest {
         $this->assertTrue($this->tree->childExists('file1'));
         $this->assertTrue($this->tree->childExists('file2'));
 
-    }    
+    }
 }

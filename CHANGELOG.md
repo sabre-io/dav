@@ -1848,7 +1848,7 @@ ChangeLog
 
 * Updated: Now in Beta
 * Updated: Pear package no longer includes docs/ directory. These just contained
-  rfc's, which are publically available. This reduces the package from ~800k to
+  rfc's, which are publicly available. This reduces the package from ~800k to
   ~60k
 * Added: generatePropfindResponse now takes a baseUri argument
 * Added: ResourceType property can now contain multiple resourcetypes.

@@ -310,8 +310,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
                 $stmt->execute([ $value ]);
             
                 while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                       // Checking if the principal is in the prefix
-                       list($rowPrefix) = URLUtil::splitPath($row['uri']);
+                    // Checking if the principal is in the prefix
+                    list($rowPrefix) = URLUtil::splitPath($row['uri']);
                     if ($rowPrefix !== $principalPrefix) continue;
                     
                     $uri = $row['uri'];

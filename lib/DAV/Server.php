@@ -523,7 +523,12 @@ class Server extends EventEmitter {
     }
 
     /**
-     * Calculates the uri for a request, making sure that the base uri is stripped out
+     * Turns a URI such as the REQUEST_URI into a local path.
+     *
+     * This method:
+     *   * strips off the base path
+     *   * normalizes the path
+     *   * uri-decodes the path
      *
      * @param string $uri
      * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri

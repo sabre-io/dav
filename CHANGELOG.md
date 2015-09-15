@@ -4,7 +4,8 @@ ChangeLog
 3.0.5 (2015-??-??)
 ------------------
 
-*
+* #704: Fixed broken uri encoding in multistatus responses. This affected
+  at least CyberDuck, but probably also others.
 
 
 3.0.4 (2015-09-06)

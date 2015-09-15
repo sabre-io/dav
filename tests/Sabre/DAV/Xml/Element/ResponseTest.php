@@ -213,6 +213,38 @@ class ResponseTest extends DAV\Xml\XmlTest {
     }
 
     /**
+     * @depends testSimple
+     */
+    function testSerializeUrlencoding() {
+
+        $innerProps = [
+            200 => [
+                '{DAV:}displayname' => 'my file',
+            ],
+        ];
+
+        $property = new Response('space here', $innerProps);
+
+        $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
+
+        $this->assertXmlStringEqualsXmlString(
+'<?xml version="1.0"?>
+<d:root xmlns:d="DAV:">
+  <d:response>
+    <d:href>/space%20here</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:displayname>my file</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+  </d:response>
+</d:root>
+', $xml);
+
+    }
+
+    /**
      * In the case of {DAV:}prop, a deserializer should never get called, if
      * the property element is empty.
      */

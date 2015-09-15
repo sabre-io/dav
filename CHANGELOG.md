@@ -34,6 +34,17 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
+3.0.5 (2015-09-15)
+------------------
+
+* #704: Fixed broken uri encoding in multistatus responses. This affected
+  at least CyberDuck, but probably also others.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
+
+
 3.0.4 (2015-09-06)
 ------------------
 

@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.1.0-alpha3 (2015-??-??)
+-------------------------
+
+* Better error message when the browser plugin is not enabled.
+
+
 3.1.0-alpha2 (2015-09-05)
 -------------------------
 

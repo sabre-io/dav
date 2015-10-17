@@ -105,7 +105,7 @@ class Href implements Element, HtmlOutput {
 
         foreach ($this->getHrefs() as $href) {
             if ($this->autoPrefix) {
-                $href = $writer->contextUri . $href;
+                $href = $writer->contextUri . \Sabre\HTTP\encodePath($href);
             }
             $writer->writeElement('{DAV:}href', $href);
         }

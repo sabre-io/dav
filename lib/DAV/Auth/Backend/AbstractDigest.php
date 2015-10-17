@@ -105,7 +105,7 @@ abstract class AbstractDigest implements BackendInterface {
 
         // No username was given
         if (!$username) {
-            return [false, "No 'Authorization: Digest' header found. Either the client didn't send one, or the server is mis-configured"];
+            return [false, "No 'Authorization: Digest' header found. Either the client didn't send one, or the server is misconfigured"];
         }
 
         $hash = $this->getDigestHash($this->realm, $username);

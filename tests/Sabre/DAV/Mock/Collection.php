@@ -32,10 +32,20 @@ class Collection extends DAV\Collection {
      * @param array $children
      * @return void
      */
-    function __construct($name, array $children = array(), Collection $parent = null) {
+    function __construct($name, array $children = [], Collection $parent = null) {
 
         $this->name = $name;
-        $this->children = $children;
+        foreach ($children as $key => $value) {
+            if (is_string($value)) {
+                $this->children[] = new File($key, $value, $this);
+            } elseif (is_array($value)) {
+                $this->children[] = new self($key, $value, $this);
+            } elseif ($value instanceof \Sabre\DAV\INode) {
+                $this->children[] = $value;
+            } else {
+                throw new \InvalidArgumentException('Unknown value passed in $children');
+            }
+        }
         $this->parent = $parent;
 
     }
@@ -82,7 +92,7 @@ class Collection extends DAV\Collection {
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
-        $this->children[$name] = $data;
+        $this->children[] = new File($name, $data, $this);
         return '"' . md5($data) . '"';
 
     }
@@ -95,7 +105,7 @@ class Collection extends DAV\Collection {
      */
     function createDirectory($name) {
 
-        $this->children[$name] = array();
+        $this->children[] = new self($name);
 
     }
 
@@ -106,20 +116,7 @@ class Collection extends DAV\Collection {
      */
     function getChildren() {
 
-        $result = array();
-        foreach($this->children as $key=>$value) {
-
-            if ($value instanceof DAV\INode) {
-                $result[] = $value;
-            } elseif (is_array($value)) {
-                $result[] = new Collection($key, $value, $this);
-            } else {
-                $result[] = new File($key, $value, $this);
-            }
-
-        }
-
-        return $result;
+        return $this->children;
 
     }
 
@@ -131,14 +128,9 @@ class Collection extends DAV\Collection {
      */
     function deleteChild($name) {
 
-        foreach($this->children as $key=>$value) {
+        foreach ($this->children as $key => $value) {
 
-            if ($value instanceof DAV\INode) {
-                if ($value->getName() == $name) {
-                    unset($this->children[$key]);
-                    return;
-                }
-            } elseif ($key === $name) {
+            if ($value->getName() == $name) {
                 unset($this->children[$key]);
                 return;
             }
@@ -154,7 +146,7 @@ class Collection extends DAV\Collection {
      */
     function delete() {
 
-        foreach($this->getChildren() as $child) {
+        foreach ($this->getChildren() as $child) {
             $this->deleteChild($child->getName());
         }
         $this->parent->deleteChild($this->getName());

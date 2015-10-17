@@ -458,8 +458,13 @@ class Server extends EventEmitter {
 
         if ($this->emit('method:' . $method, [$request, $response])) {
             if ($this->emit('method', [$request, $response])) {
+                $exMessage = "There was no plugin in the system that was willing to handle this " . $method . " method.";
+                if ($method === "GET") {
+                    $exMessage .= " Enable the Browser plugin to get a better result here.";
+                }
+
                 // Unsupported method
-                throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
+                throw new Exception\NotImplemented($exMessage);
             }
         }
 
@@ -523,7 +528,12 @@ class Server extends EventEmitter {
     }
 
     /**
-     * Calculates the uri for a request, making sure that the base uri is stripped out
+     * Turns a URI such as the REQUEST_URI into a local path.
+     *
+     * This method:
+     *   * strips off the base path
+     *   * normalizes the path
+     *   * uri-decodes the path
      *
      * @param string $uri
      * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri

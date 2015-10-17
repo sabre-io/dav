@@ -17,7 +17,13 @@ use Sabre\DAV\Exception\Forbidden;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, SchedulingSupport {
+class PDO extends AbstractBackend
+    implements
+        SyncSupport,
+        SubscriptionSupport,
+        SchedulingSupport,
+        SharingSupport
+    {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -42,6 +48,16 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * @var string
      */
     public $calendarTableName = 'calendars';
+
+    /**
+     * The table name that will be used for calendars instances.
+     *
+     * A single calendar can have multiple instances, if the calendar is
+     * shared.
+     *
+     * @var string
+     */
+    public $calendarTableName = 'calendar_instances';
 
     /**
      * The table name that will be used for calendar objects
@@ -140,16 +156,23 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
     function getCalendarsForUser($principalUri) {
 
         $fields = array_values($this->propertyMap);
-        $fields[] = 'id';
+        $fields[] = 'calendarid';
         $fields[] = 'uri';
         $fields[] = 'synctoken';
         $fields[] = 'components';
         $fields[] = 'principaluri';
         $fields[] = 'transparent';
+        $fields[] = 'access';
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
-        $stmt = $this->pdo->prepare("SELECT " . $fields . " FROM " . $this->calendarTableName . " WHERE principaluri = ? ORDER BY calendarorder ASC");
+        $stmt = $this->pdo->prepare(<<<SQL
+SELECT $fields FROM {$this->calendarInstancesTableName}
+    LEFT JOIN {$this->calendarTableName} ON
+        {$this->calendarInstancesTableName}.calendarid = {$this->calendarTableName}.id
+WHERE principaluri = ? ORDER BY calendarorder ASC
+SQL
+        );
         $stmt->execute([$principalUri]);
 
         $calendars = [];
@@ -169,6 +192,16 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
                 '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet($components),
                 '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp'         => new CalDAV\Xml\Property\ScheduleCalendarTransp($row['transparent'] ? 'transparent' : 'opaque'),
             ];
+
+            // 1 = owner, 2 = readonly, 3 = readwrite
+            if ($row['access'] > 1) {
+                // We need to find more information about the original owner.
+                $stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
+                $stmt2->execute([$row['id']]);
+
+                $calendar['owner_principal'] = $stmt2->fetchColumn();
+                $calendar['read-only'] = $row['access']===3;
+            }
 
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -199,31 +232,34 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         $fieldNames = [
             'principaluri',
             'uri',
-            'synctoken',
             'transparent',
+            'calendarid',
         ];
         $values = [
             ':principaluri' => $principalUri,
             ':uri'          => $calendarUri,
-            ':synctoken'    => 1,
             ':transparent'  => 0,
         ];
 
-        // Default value
+
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $fieldNames[] = 'components';
         if (!isset($properties[$sccs])) {
-            $values[':components'] = 'VEVENT,VTODO';
+            // Default value
+            $components = 'VEVENT,VTODO';
         } else {
             if (!($properties[$sccs] instanceof CalDAV\Xml\Property\SupportedCalendarComponentSet)) {
                 throw new DAV\Exception('The ' . $sccs . ' property must be of type: \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet');
             }
-            $values[':components'] = implode(',', $properties[$sccs]->getValue());
+            $components = implode(',', $properties[$sccs]->getValue());
         }
         $transp = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
         if (isset($properties[$transp])) {
             $values[':transparent'] = $properties[$transp]->getValue() === 'transparent';
         }
+        $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarTableName . " (synctoken, components) VALUES (1, ?)");
+        $stmt->execute([$components]);
+
+        $values[':calendarid'] = $this->pdo->lastInsertId()
 
         foreach ($this->propertyMap as $xmlName => $dbName) {
             if (isset($properties[$xmlName])) {
@@ -233,7 +269,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
             }
         }
 
-        $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
+        $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarInstancesTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
         $stmt->execute($values);
 
         return $this->pdo->lastInsertId();
@@ -282,7 +318,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
                 $valuesSql[] = $fieldName . ' = ?';
             }
 
-            $stmt = $this->pdo->prepare("UPDATE " . $this->calendarTableName . " SET " . implode(', ', $valuesSql) . " WHERE id = ?");
+            $stmt = $this->pdo->prepare("UPDATE " . $this->calendarInstancesTableName . " SET " . implode(', ', $valuesSql) . " WHERE id = ?");
             $newValues['id'] = $calendarId;
             $stmt->execute(array_values($newValues));
 

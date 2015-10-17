@@ -8,24 +8,6 @@ namespace Sabre\CalDAV\Backend;
  * Note: This feature is experimental, and may change in between different
  * SabreDAV versions.
  *
- * Early warning: Currently SabreDAV provides no implementation for this. This
- * is, because in it's current state there is no elegant way to do this.
- * The problem lies in the fact that a real CalDAV server with sharing support
- * would first need email support (with invite notifications), and really also
- * a browser-frontend that allows people to accept or reject these shares.
- *
- * In addition, the CalDAV backends are currently kept as independent as
- * possible, and should not be aware of principals, email addresses or
- * accounts.
- *
- * Adding an implementation for Sharing to standard-sabredav would contradict
- * these goals, so for this reason this is currently not implemented, although
- * it may very well in the future; but probably not before SabreDAV 2.0.
- *
- * The interface works however, so if you implement all this, and do it
- * correctly sharing _will_ work. It's not particularly easy, and I _urge you_
- * to make yourself acquainted with the following document first:
- *
  * https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-sharing.txt
  *
  * An overview
@@ -65,12 +47,12 @@ namespace Sabre\CalDAV\Backend;
  * change.
  * This notification is always represented by:
  *
- * Sabre\CalDAV\Notifications\Notification\Invite
+ * Sabre\CalDAV\Xml\Notification\Invite
  *
  * In the case of an invite, the sharee may reply with an 'accept' or
  * 'decline'. These are always represented by:
  *
- * Sabre\CalDAV\Notifications\Notification\InviteReply
+ * Sabre\CalDAV\Xml\Notification\InviteReply
  *
  *
  * Calendar access by sharees
@@ -81,16 +63,12 @@ namespace Sabre\CalDAV\Backend;
  *
  * The following properties must be specified:
  *
- * 1. {http://calendarserver.org/ns/}shared-url
+ * 1. owner-principal 
  *
- * This property MUST contain the url to the original calendar, that is.. the
- * path to the calendar from the owner.
+ * If the calendar is shared, and the current user is not the owner, then this
+ * property MUST contain information to identify the real owner.
  *
- * 2. {http://sabredav.org/ns}owner-principal
- *
- * This is a url to to the principal who is sharing the calendar.
- *
- * 3. {http://sabredav.org/ns}read-only
+ * 2. read-only
  *
  * This should be either 0 or 1, depending on if the user has read-only or
  * read-write access to the calendar.

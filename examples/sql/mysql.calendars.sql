@@ -15,18 +15,24 @@ CREATE TABLE calendarobjects (
 
 CREATE TABLE calendars (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    synctoken INTEGER UNSIGNED NOT NULL DEFAULT '1',
+    components VARBINARY(20)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE calendar_instances (
+    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    calendarid INTEGER UNSIGNED NOT NULL,
     principaluri VARBINARY(100),
+    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = readwrite, 3 = read',
     displayname VARCHAR(100),
     uri VARBINARY(200),
-    synctoken INTEGER UNSIGNED NOT NULL DEFAULT '1',
     description TEXT,
     calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
     calendarcolor VARBINARY(10),
     timezone TEXT,
-    components VARBINARY(20),
     transparent TINYINT(1) NOT NULL DEFAULT '0',
     UNIQUE(principaluri, uri)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+);
 
 CREATE TABLE calendarchanges (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,

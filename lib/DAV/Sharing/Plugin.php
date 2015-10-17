@@ -147,13 +147,13 @@ class Plugin extends ServerPlugin {
      */
     function propFind(PropFind $propFind, INode $node) {
 
-        $propFind->handle('{DAV:}share-mode', function() {
+        $propFind->handle('{DAV:}share-mode', function() use ($node) {
 
-            if (INode instanceof ISharedNode) {
+            if ($node instanceof ISharedNode) {
 
                 return new Property\ShareMode(Property\ShareMode::SHARED);
 
-            } elseif (INode instanceof IShareableNode) {
+            } elseif ($node instanceof IShareableNode) {
 
                 return new Property\ShareMode(Property\ShareMode::SHAREDOWNER);
 
@@ -206,7 +206,6 @@ class Plugin extends ServerPlugin {
         }
 
     }
-
 
     /**
      * Returns a bunch of meta-data about the plugin.

@@ -3,7 +3,7 @@
 
 echo "SabreDAV migrate script for version 3.1\n";
 
-if ($argc<2) {
+if ($argc < 2) {
 
     echo <<<HELLO
 
@@ -47,7 +47,7 @@ $paths = [
     __DIR__ . '/../../../autoload.php',
 ];
 
-foreach($paths as $path) {
+foreach ($paths as $path) {
     if (file_exists($path)) {
         include $path;
         break;
@@ -55,8 +55,8 @@ foreach($paths as $path) {
 }
 
 $dsn = $argv[1];
-$user = isset($argv[2])?$argv[2]:null;
-$pass = isset($argv[3])?$argv[3]:null;
+$user = isset($argv[2]) ? $argv[2] : null;
+$pass = isset($argv[3]) ? $argv[3] : null;
 
 $backupPostfix = time();
 
@@ -68,7 +68,7 @@ $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 
-switch($driver) {
+switch ($driver) {
 
     case 'mysql' :
         echo "Detected MySQL.\n";
@@ -90,7 +90,7 @@ try {
 } catch (Exception $e) {
     echo "calendar_instances does not yet exist. Creating table and migrating data.\n";
 
-    switch($driver) {
+    switch ($driver) {
         case 'mysql' :
             $pdo->exec(<<<SQL
 CREATE TABLE calendar_instances (
@@ -133,7 +133,7 @@ SELECT
     calendarcolor,
     transparent
 FROM calendars
-"); 
+");
             break;
         case 'sqlite' :
             $pdo->exec(<<<SQL
@@ -176,7 +176,7 @@ SELECT
     calendarcolor,
     transparent
 FROM calendars
-"); 
+");
             break;
     }
 
@@ -188,7 +188,7 @@ try {
     if (!$row) {
         echo "Source table is empty.\n";
         $migrateCalendars = true;
-    } 
+    }
 
     $columnCount = count($row);
     if ($columnCount === 3) {
@@ -209,7 +209,7 @@ if ($migrateCalendars) {
     $calendarBackup = 'calendars_3_0_' . $backupPostfix;
     echo "Backing up 'calendars' to '", $calendarBackup, "'\n";
 
-    switch($driver) {
+    switch ($driver) {
         case 'mysql' :
             $pdo->exec('RENAME TABLE calendars TO ' . $calendarBackup);
             break;
@@ -220,7 +220,7 @@ if ($migrateCalendars) {
     }
 
     echo "Creating new calendars table.\n";
-    switch($driver) {
+    switch ($driver) {
         case 'mysql' :
             $pdo->exec(<<<SQL
 CREATE TABLE calendars (

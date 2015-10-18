@@ -199,7 +199,7 @@ SQL
                 $stmt2->execute([$row['id']]);
 
                 $calendar['owner_principal'] = $stmt2->fetchColumn();
-                $calendar['read-only'] = $row['access']===3;
+                $calendar['read-only'] = $row['access'] === 3;
             }
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -356,7 +356,7 @@ SQL
             /**
              * If the user is the owner of the calendar, we delete all data and all
              * instances.
-             **/ 
+             **/
             $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ?');
             $stmt->execute([$calendarId]);
 

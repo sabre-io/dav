@@ -846,7 +846,7 @@ class CorePlugin extends ServerPlugin {
         if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {
 
             $nodeProperties = $node->getProperties($propertyNames);
-            foreach ($nodeProperties as $propertyName=>$propertyValue) {
+            foreach ($nodeProperties as $propertyName => $propertyValue) {
                 $propFind->set($propertyName, $propertyValue, 200);
             }
 

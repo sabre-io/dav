@@ -32,14 +32,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
 
         $props = [
-            'uri'=>'UUID-123467',
-            'principaluri' => 'admin',
-            'id' => [1,1],
-            '{DAV:}displayname' => 'Hello!',
+            'uri'                                       => 'UUID-123467',
+            'principaluri'                              => 'admin',
+            'id'                                        => [1,1],
+            '{DAV:}displayname'                         => 'Hello!',
             '{http://apple.com/ns/ical/}calendar-color' => '#AA0000FF',
         ];
         $tree = [
-            new Calendar($cbackend,$props),
+            new Calendar($cbackend, $props),
         ];
 
         $p = new ICSExportPlugin();
@@ -49,7 +49,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_URI'    => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -65,13 +65,13 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(7,count($obj->children()));
-        $this->assertEquals(1,count($obj->VERSION));
-        $this->assertEquals(1,count($obj->CALSCALE));
-        $this->assertEquals(1,count($obj->PRODID));
-        $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION)!==false);
-        $this->assertEquals(1,count($obj->VTIMEZONE));
-        $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals(7, count($obj->children()));
+        $this->assertEquals(1, count($obj->VERSION));
+        $this->assertEquals(1, count($obj->CALSCALE));
+        $this->assertEquals(1, count($obj->PRODID));
+        $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION) !== false);
+        $this->assertEquals(1, count($obj->VTIMEZONE));
+        $this->assertEquals(1, count($obj->VEVENT));
         $this->assertEquals("Hello!", $obj->{"X-WR-CALNAME"});
         $this->assertEquals("#AA0000FF", $obj->{"X-APPLE-CALENDAR-COLOR"});
 
@@ -82,12 +82,12 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
 
         $props = [
-            'uri'=>'UUID-123467',
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
+            'id'           => [1,1],
         ];
         $tree = [
-            new Calendar($cbackend,$props),
+            new Calendar($cbackend, $props),
         ];
 
         $p = new ICSExportPlugin();
@@ -98,7 +98,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_URI'    => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -116,13 +116,13 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
-        $this->assertEquals(1,count($obj->VERSION));
-        $this->assertEquals(1,count($obj->CALSCALE));
-        $this->assertEquals(1,count($obj->PRODID));
-        $this->assertFalse(strpos((string)$obj->PRODID, DAV\Version::VERSION)!==false);
-        $this->assertEquals(1,count($obj->VTIMEZONE));
-        $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals(5, count($obj->children()));
+        $this->assertEquals(1, count($obj->VERSION));
+        $this->assertEquals(1, count($obj->CALSCALE));
+        $this->assertEquals(1, count($obj->PRODID));
+        $this->assertFalse(strpos((string)$obj->PRODID, DAV\Version::VERSION) !== false);
+        $this->assertEquals(1, count($obj->VTIMEZONE));
+        $this->assertEquals(1, count($obj->VEVENT));
 
     }
 
@@ -134,7 +134,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467',
+            'REQUEST_URI'    => '/UUID-123467',
             'REQUEST_METHOD' => 'GET',
         ]);
         $this->assertNull($p->httpGet($h, $s->httpResponse));
@@ -145,14 +145,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $cbackend = TestUtil::getBackend();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
-        );
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -182,15 +182,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -199,14 +199,14 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
-        $s->addPlugin(new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'SabreDAV'));
+        $s->addPlugin(new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(), 'SabreDAV'));
 
         // Forcing login
-        $s->getPlugin('acl')->adminPrincipals = array('principals/admin');
+        $s->getPlugin('acl')->adminPrincipals = ['principals/admin'];
 
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_URI'    => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -215,20 +215,20 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
-        $this->assertEquals(array(
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
+        $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
-            'Content-Type' => ['text/calendar'],
-        ), $s->httpResponse->getHeaders());
+            'Content-Type'    => ['text/calendar'],
+        ], $s->httpResponse->getHeaders());
 
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(5,count($obj->children()));
-        $this->assertEquals(1,count($obj->VERSION));
-        $this->assertEquals(1,count($obj->CALSCALE));
-        $this->assertEquals(1,count($obj->PRODID));
-        $this->assertEquals(1,count($obj->VTIMEZONE));
-        $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals(5, count($obj->children()));
+        $this->assertEquals(1, count($obj->VERSION));
+        $this->assertEquals(1, count($obj->CALSCALE));
+        $this->assertEquals(1, count($obj->PRODID));
+        $this->assertEquals(1, count($obj->VTIMEZONE));
+        $this->assertEquals(1, count($obj->VEVENT));
 
     }
 
@@ -237,15 +237,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => 1,
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -255,7 +255,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&start=foo',
+            'REQUEST_URI'    => '/UUID-123467?export&start=foo',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -264,7 +264,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
 
     }
 
@@ -273,15 +273,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -291,7 +291,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&end=foo',
+            'REQUEST_URI'    => '/UUID-123467?export&end=foo',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -300,7 +300,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
 
     }
 
@@ -309,15 +309,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -327,7 +327,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&start=1&end=2',
+            'REQUEST_URI'    => '/UUID-123467?export&start=1&end=2',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -336,11 +336,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(0,count($obj->VTIMEZONE));
-        $this->assertEquals(0,count($obj->VEVENT));
+        $this->assertEquals(0, count($obj->VTIMEZONE));
+        $this->assertEquals(0, count($obj->VEVENT));
 
     }
 
@@ -349,15 +349,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -367,7 +367,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&expand=1&end=1',
+            'REQUEST_URI'    => '/UUID-123467?export&expand=1&end=1',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -376,7 +376,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
 
     }
 
@@ -385,15 +385,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -403,7 +403,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&start=1&end=2000000000&expand=1',
+            'REQUEST_URI'    => '/UUID-123467?export&start=1&end=2000000000&expand=1',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -412,11 +412,11 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(0,count($obj->VTIMEZONE));
-        $this->assertEquals(1,count($obj->VEVENT));
+        $this->assertEquals(0, count($obj->VTIMEZONE));
+        $this->assertEquals(1, count($obj->VEVENT));
 
     }
 
@@ -425,15 +425,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -443,9 +443,9 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_URI'    => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_ACCEPT' => 'application/calendar+json',
+            'HTTP_ACCEPT'    => 'application/calendar+json',
         ]);
 
         $s->httpRequest = $h;
@@ -453,7 +453,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $this->assertEquals('application/calendar+json', $s->httpResponse->getHeader('Content-Type'));
 
     }
@@ -463,15 +463,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -481,7 +481,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&accept=jcal',
+            'REQUEST_URI'    => '/UUID-123467?export&accept=jcal',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -490,7 +490,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $this->assertEquals('application/calendar+json', $s->httpResponse->getHeader('Content-Type'));
 
     }
@@ -500,15 +500,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
-        $tree = array(
-            new Calendar($cbackend,$props),
+            'id'           => [1,1],
+        ];
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -518,9 +518,9 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export',
+            'REQUEST_URI'    => '/UUID-123467?export',
             'REQUEST_METHOD' => 'GET',
-            'HTTP_ACCEPT' => 'text/plain',
+            'HTTP_ACCEPT'    => 'text/plain',
         ]);
 
         $s->httpRequest = $h;
@@ -528,7 +528,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $this->assertEquals('text/calendar', $s->httpResponse->getHeader('Content-Type'));
 
     }
@@ -538,18 +538,18 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $cbackend = TestUtil::getBackend();
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
-        $props = array(
-            'uri'=>'UUID-123467',
+        $props = [
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
-        );
+            'id'           => [1,1],
+        ];
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
-        $cbackend->createCalendarObject([1,1], 'UUID-3456', TestUtil::getTestTODO());
+        $cbackend->createCalendarObject([1, 1], 'UUID-3456', TestUtil::getTestTODO());
 
-        $tree = array(
-            new Calendar($cbackend,$props),
+        $tree = [
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
-        );
+        ];
 
         $p = new ICSExportPlugin();
 
@@ -559,7 +559,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&componentType=VEVENT',
+            'REQUEST_URI'    => '/UUID-123467?export&componentType=VEVENT',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -568,12 +568,12 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(1,count($obj->VTIMEZONE));
-        $this->assertEquals(1,count($obj->VEVENT));
-        $this->assertEquals(0,count($obj->VTODO));
+        $this->assertEquals(1, count($obj->VTIMEZONE));
+        $this->assertEquals(1, count($obj->VEVENT));
+        $this->assertEquals(0, count($obj->VTODO));
 
     }
 
@@ -583,15 +583,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
         $props = [
-            'uri'=>'UUID-123467',
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
+            'id'           => [1,1],
         ];
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
-        $cbackend->createCalendarObject([1,1], 'UUID-3456', TestUtil::getTestTODO());
+        $cbackend->createCalendarObject([1, 1], 'UUID-3456', TestUtil::getTestTODO());
 
         $tree = [
-            new Calendar($cbackend,$props),
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
         ];
 
@@ -603,7 +603,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&componentType=VTODO',
+            'REQUEST_URI'    => '/UUID-123467?export&componentType=VTODO',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -612,12 +612,12 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(200, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(200, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
         $obj = VObject\Reader::read($s->httpResponse->body);
 
-        $this->assertEquals(0,count($obj->VTIMEZONE));
-        $this->assertEquals(0,count($obj->VEVENT));
-        $this->assertEquals(1,count($obj->VTODO));
+        $this->assertEquals(0, count($obj->VTIMEZONE));
+        $this->assertEquals(0, count($obj->VEVENT));
+        $this->assertEquals(1, count($obj->VTODO));
 
     }
 
@@ -627,15 +627,15 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $pbackend = new DAVACL\PrincipalBackend\Mock();
 
         $props = [
-            'uri'=>'UUID-123467',
+            'uri'          => 'UUID-123467',
             'principaluri' => 'admin',
-            'id' => [1,1],
+            'id'           => [1,1],
         ];
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
-        $cbackend->createCalendarObject([1,1], 'UUID-3456', TestUtil::getTestTODO());
+        $cbackend->createCalendarObject([1, 1], 'UUID-3456', TestUtil::getTestTODO());
 
         $tree = [
-            new Calendar($cbackend,$props),
+            new Calendar($cbackend, $props),
             new DAVACL\PrincipalCollection($pbackend),
         ];
 
@@ -647,7 +647,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin(new Plugin());
 
         $h = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/UUID-123467?export&componentType=VVOODOO',
+            'REQUEST_URI'    => '/UUID-123467?export&componentType=VVOODOO',
             'REQUEST_METHOD' => 'GET',
         ]);
 
@@ -656,7 +656,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
 
         $s->exec();
 
-        $this->assertEquals(400, $s->httpResponse->status,'Invalid status received. Response body: '. $s->httpResponse->body);
+        $this->assertEquals(400, $s->httpResponse->status, 'Invalid status received. Response body: ' . $s->httpResponse->body);
 
     }
 }

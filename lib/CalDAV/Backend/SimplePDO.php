@@ -2,10 +2,8 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\VObject;
 use Sabre\CalDAV;
 use Sabre\DAV;
-use Sabre\DAV\Exception\Forbidden;
 
 /**
  * Simple PDO CalDAV backend.

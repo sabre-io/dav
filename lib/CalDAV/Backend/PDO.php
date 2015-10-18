@@ -21,8 +21,7 @@ class PDO extends AbstractBackend
     implements
         SyncSupport,
         SubscriptionSupport,
-        SchedulingSupport,
-        SharingSupport
+        SchedulingSupport
     {
 
     /**
@@ -57,7 +56,7 @@ class PDO extends AbstractBackend
      *
      * @var string
      */
-    public $calendarTableName = 'calendar_instances';
+    public $calendarInstancesTableName = 'calendar_instances';
 
     /**
      * The table name that will be used for calendar objects
@@ -167,7 +166,7 @@ class PDO extends AbstractBackend
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
         $stmt = $this->pdo->prepare(<<<SQL
-SELECT $fields FROM {$this->calendarInstancesTableName}
+SELECT calendars.id as id, $fields FROM {$this->calendarInstancesTableName}
     LEFT JOIN {$this->calendarTableName} ON
         {$this->calendarInstancesTableName}.calendarid = {$this->calendarTableName}.id
 WHERE principaluri = ? ORDER BY calendarorder ASC
@@ -184,7 +183,7 @@ SQL
             }
 
             $calendar = [
-                'id'                                                                 => $row['id'],
+                'id'                                                                 => [$row['id'], $row['calendarid']],
                 'uri'                                                                => $row['uri'],
                 'principaluri'                                                       => $row['principaluri'],
                 '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag'                  => 'http://sabre.io/ns/sync/' . ($row['synctoken'] ? $row['synctoken'] : '0'),
@@ -202,7 +201,6 @@ SQL
                 $calendar['owner_principal'] = $stmt2->fetchColumn();
                 $calendar['read-only'] = $row['access']===3;
             }
-
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
                 $calendar[$xmlName] = $row[$dbName];
@@ -259,7 +257,8 @@ SQL
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarTableName . " (synctoken, components) VALUES (1, ?)");
         $stmt->execute([$components]);
 
-        $values[':calendarid'] = $this->pdo->lastInsertId()
+        $calendarId = $this->pdo->lastInsertId();
+        $values[':calendarid'] = $calendarId;
 
         foreach ($this->propertyMap as $xmlName => $dbName) {
             if (isset($properties[$xmlName])) {
@@ -272,7 +271,7 @@ SQL
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarInstancesTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
         $stmt->execute($values);
 
-        return $this->pdo->lastInsertId();
+        return [$calendarId, $this->pdo->lastInsertId()];
 
     }
 
@@ -288,16 +287,21 @@ SQL
      *
      * Read the PropPatch documenation for more info and examples.
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */
     function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
 
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
+
         $supportedProperties = array_keys($this->propertyMap);
         $supportedProperties[] = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
 
-        $propPatch->handle($supportedProperties, function($mutations) use ($calendarId) {
+        $propPatch->handle($supportedProperties, function($mutations) use ($calendarId, $instanceId) {
             $newValues = [];
             foreach ($mutations as $propertyName => $propertyValue) {
 
@@ -319,7 +323,7 @@ SQL
             }
 
             $stmt = $this->pdo->prepare("UPDATE " . $this->calendarInstancesTableName . " SET " . implode(', ', $valuesSql) . " WHERE id = ?");
-            $newValues['id'] = $calendarId;
+            $newValues['id'] = $instanceId;
             $stmt->execute(array_values($newValues));
 
             $this->addChange($calendarId, "", 2);
@@ -333,19 +337,49 @@ SQL
     /**
      * Delete a calendar and all it's objects
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @return void
      */
     function deleteCalendar($calendarId) {
 
-        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ?');
-        $stmt->execute([$calendarId]);
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
-        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarTableName . ' WHERE id = ?');
-        $stmt->execute([$calendarId]);
+        $stmt = $this->pdo->prepare('SELECT access FROM ' . $this->calendarInstancesTableName . ' where id = ?');
+        $stmt->execute([$instanceId]);
+        $access = $stmt->fetchColumn();
 
-        $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarChangesTableName . ' WHERE calendarid = ?');
-        $stmt->execute([$calendarId]);
+        if ($access === 1) {
+
+            /**
+             * If the user is the owner of the calendar, we delete all data and all
+             * instances.
+             **/ 
+            $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ?');
+            $stmt->execute([$calendarId]);
+
+            $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarChangesTableName . ' WHERE calendarid = ?');
+            $stmt->execute([$calendarId]);
+
+            $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarInstancesTableName . ' WHERE calendarid = ?');
+            $stmt->execute([$calendarId]);
+
+            $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarTableName . ' WHERE id = ?');
+            $stmt->execute([$calendarId]);
+
+        } else {
+
+            /**
+             * If it was an instance of a shared calendar, we only delete that
+             * instance.
+             */
+            $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarInstancesTableName . ' WHERE id = ?');
+            $stmt->execute([$instanceId]);
+
+        }
+
 
     }
 
@@ -377,10 +411,15 @@ SQL
      * used/fetched to determine these numbers. If both are specified the
      * amount of times this is needed is reduced by a great degree.
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @return array
      */
     function getCalendarObjects($calendarId) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, componenttype FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ?');
         $stmt->execute([$calendarId]);
@@ -392,7 +431,6 @@ SQL
                 'uri'          => $row['uri'],
                 'lastmodified' => $row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
-                'calendarid'   => $row['calendarid'],
                 'size'         => (int)$row['size'],
                 'component'    => strtolower($row['componenttype']),
             ];
@@ -414,11 +452,16 @@ SQL
      *
      * This method must return null if the object did not exist.
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @param string $objectUri
      * @return array|null
      */
     function getCalendarObject($calendarId, $objectUri) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarId, $objectUri]);
@@ -431,7 +474,6 @@ SQL
             'uri'           => $row['uri'],
             'lastmodified'  => $row['lastmodified'],
             'etag'          => '"' . $row['etag'] . '"',
-            'calendarid'    => $row['calendarid'],
             'size'          => (int)$row['size'],
             'calendardata'  => $row['calendardata'],
             'component'     => strtolower($row['componenttype']),
@@ -453,6 +495,11 @@ SQL
      */
     function getMultipleCalendarObjects($calendarId, array $uris) {
 
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
+
         $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ? AND uri IN (';
         // Inserting a whole bunch of question marks
         $query .= implode(',', array_fill(0, count($uris), '?'));
@@ -469,7 +516,6 @@ SQL
                 'uri'          => $row['uri'],
                 'lastmodified' => $row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
-                'calendarid'   => $row['calendarid'],
                 'size'         => (int)$row['size'],
                 'calendardata' => $row['calendardata'],
                 'component'    => strtolower($row['componenttype']),
@@ -500,6 +546,11 @@ SQL
      * @return string|null
      */
     function createCalendarObject($calendarId, $objectUri, $calendarData) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         $extraData = $this->getDenormalizedData($calendarData);
 
@@ -541,6 +592,11 @@ SQL
      * @return string|null
      */
     function updateCalendarObject($calendarId, $objectUri, $calendarData) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         $extraData = $this->getDenormalizedData($calendarData);
 
@@ -640,11 +696,16 @@ SQL
      *
      * The object uri is only the basename, or filename and not a full path.
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @param string $objectUri
      * @return void
      */
     function deleteCalendarObject($calendarId, $objectUri) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ? AND uri = ?');
         $stmt->execute([$calendarId, $objectUri]);
@@ -701,11 +762,16 @@ SQL
      * This specific implementation (for the PDO) backend optimizes filters on
      * specific components, and VEVENT time-ranges.
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @param array $filters
      * @return array
      */
     function calendarQuery($calendarId, array $filters) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         $componentType = null;
         $requirePostFilter = true;
@@ -802,14 +868,14 @@ SQL
 
         $query = <<<SQL
 SELECT
-    calendars.uri AS calendaruri, calendarobjects.uri as objecturi
+    calendar_instances.uri AS calendaruri, calendarobjects.uri as objecturi
 FROM
     $this->calendarObjectTableName AS calendarobjects
 LEFT JOIN
-    $this->calendarTableName AS calendars
-    ON calendarobjects.calendarid = calendars.id
+    $this->calendarInstancesTableName AS calendar_instances
+    ON calendarobjects.calendarid = calendar_instances.calendarid
 WHERE
-    calendars.principaluri = ?
+    calendar_instances.principaluri = ?
     AND
     calendarobjects.uid = ?
 SQL;
@@ -873,13 +939,18 @@ SQL;
      *
      * The limit is 'suggestive'. You are free to ignore it.
      *
-     * @param string $calendarId
+     * @param mixed $calendarId
      * @param string $syncToken
      * @param int $syncLevel
      * @param int $limit
      * @return array
      */
     function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
+
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
 
         // Current synctoken
         $stmt = $this->pdo->prepare('SELECT synctoken FROM ' . $this->calendarTableName . ' WHERE id = ?');

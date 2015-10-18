@@ -42,7 +42,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
         $elementCheck = array(
-            'id'                => $returnedId,
             'uri'               => 'somerandomid',
             '{DAV:}displayname' => 'Hello!',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
@@ -207,7 +206,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 'size' => strlen($object),
                 'calendardata' => $object,
                 'lastmodified' => null,
-                'calendarid' => $returnedId,
             ],
             [
                 'id' => 2,
@@ -216,7 +214,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 'size' => strlen($object),
                 'calendardata' => $object,
                 'lastmodified' => null,
-                'calendarid' => $returnedId,
             ],
         ];
 
@@ -413,7 +410,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, count($data));
         $data = $data[0];
 
-        $this->assertEquals($returnedId, $data['calendarid']);
         $this->assertEquals('random-id', $data['uri']);
         $this->assertEquals(strlen($object),$data['size']);
 
@@ -456,7 +452,6 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $data = $backend->getCalendarObject($returnedId,'random-id');
 
         $this->assertEquals($object2, $data['calendardata']);
-        $this->assertEquals($returnedId, $data['calendarid']);
         $this->assertEquals('random-id', $data['uri']);
 
 
@@ -499,15 +494,15 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->assertEquals(array(
-        ), $abstract->calendarQuery(1, $filters));
+        ), $abstract->calendarQuery([1,1], $filters));
 
     }
 
     function testCalendarQueryTodo() {
 
         $backend = new PDO($this->pdo);
-        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
         $filters = array(
             'name' => 'VCALENDAR',
@@ -527,14 +522,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(
             "todo",
-        ), $backend->calendarQuery(1, $filters));
+        ), $backend->calendarQuery([1,1], $filters));
 
     }
     function testCalendarQueryTodoNotMatch() {
 
         $backend = new PDO($this->pdo);
-        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
         $filters = array(
             'name' => 'VCALENDAR',
@@ -561,15 +556,15 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->assertEquals(array(
-        ), $backend->calendarQuery(1, $filters));
+        ), $backend->calendarQuery([1,1], $filters));
 
     }
 
     function testCalendarQueryNoFilter() {
 
         $backend = new PDO($this->pdo);
-        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
         $filters = array(
             'name' => 'VCALENDAR',
@@ -579,7 +574,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'time-range' => null,
         );
 
-        $result = $backend->calendarQuery(1, $filters);
+        $result = $backend->calendarQuery([1,1], $filters);
         $this->assertTrue(in_array('todo', $result));
         $this->assertTrue(in_array('event', $result));
 
@@ -588,9 +583,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCalendarQueryTimeRange() {
 
         $backend = new PDO($this->pdo);
-        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
         $filters = array(
             'name' => 'VCALENDAR',
@@ -613,15 +608,15 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(
             "event2",
-        ), $backend->calendarQuery(1, $filters));
+        ), $backend->calendarQuery([1,1], $filters));
 
     }
     function testCalendarQueryTimeRangeNoEnd() {
 
         $backend = new PDO($this->pdo);
-        $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
-        $backend->createCalendarObject(1, "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1,1], "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
         $filters = array(
             'name' => 'VCALENDAR',
@@ -644,7 +639,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(
             "event2",
-        ), $backend->calendarQuery(1, $filters));
+        ), $backend->calendarQuery([1,1], $filters));
 
     }
 

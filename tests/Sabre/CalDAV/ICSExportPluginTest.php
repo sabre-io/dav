@@ -34,7 +34,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
             '{DAV:}displayname' => 'Hello!',
             '{http://apple.com/ns/ical/}calendar-color' => '#AA0000FF',
         ];
@@ -84,7 +84,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         ];
         $tree = [
             new Calendar($cbackend,$props),
@@ -148,7 +148,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -185,7 +185,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -276,7 +276,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -312,7 +312,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -352,7 +352,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -388,7 +388,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -428,7 +428,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -466,7 +466,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -503,7 +503,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         $tree = array(
             new Calendar($cbackend,$props),
@@ -541,10 +541,10 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = array(
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         );
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
-        $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
+        $cbackend->createCalendarObject([1,1], 'UUID-3456', TestUtil::getTestTODO());
 
         $tree = array(
             new Calendar($cbackend,$props),
@@ -585,10 +585,10 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         ];
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
-        $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
+        $cbackend->createCalendarObject([1,1], 'UUID-3456', TestUtil::getTestTODO());
 
         $tree = [
             new Calendar($cbackend,$props),
@@ -629,10 +629,10 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $props = [
             'uri'=>'UUID-123467',
             'principaluri' => 'admin',
-            'id' => 1,
+            'id' => [1,1],
         ];
         // add a todo to the calendar (see /tests/Sabre/TestUtil)
-        $cbackend->createCalendarObject(1, 'UUID-3456', TestUtil::getTestTODO());
+        $cbackend->createCalendarObject([1,1], 'UUID-3456', TestUtil::getTestTODO());
 
         $tree = [
             new Calendar($cbackend,$props),

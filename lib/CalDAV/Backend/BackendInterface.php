@@ -63,7 +63,7 @@ interface BackendInterface {
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param string $path
+     * @param mixed $calendarId
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */

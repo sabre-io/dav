@@ -92,7 +92,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getOwner() {
 
-        return $this->calendarInfo['{http://sabredav.org/ns}owner-principal'];
+        return $this->calendarInfo['principaluri'];
 
     }
 
@@ -110,10 +110,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getACL() {
 
-        // The top-level ACL only contains access information for the true
-        // owner of the calendar, so we need to add the information for the
-        // sharee.
-        $acl = parent::getACL();
+        $acl = [];
 
         switch ($this->getShareAccess()) {
             case SPlugin::ACCESS_NOTSHARED :
@@ -123,11 +120,21 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
                     'principal' => $this->calendarInfo['principaluri'],
                     'protected' => true,
                 ];
+                $acl[] = [
+                    'privilege' => '{DAV:}share',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
                 // No break intentional!
             case SPlugin::ACCESS_READWRITE :
                 $acl[] = [
                     'privilege' => '{DAV:}write',
                     'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
                     'protected' => true,
                 ];
                 // No break intentional!
@@ -138,8 +145,28 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
                     'protected' => true,
                 ];
                 $acl[] = [
+                    'privilege' => '{DAV:}write-properties',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                $acl[] = [
                     'privilege' => '{DAV:}read',
                     'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
+                    'principal' => '{DAV:}authenticated',
                     'protected' => true,
                 ];
                 break;
@@ -180,12 +207,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getChildACL() {
 
-        $acl = parent::getChildACL();
-        $acl[] = [
-            'privilege' => '{DAV:}read',
-            'principal' => $this->calendarInfo['principaluri'],
-            'protected' => true,
-        ];
+        $acl = [];
 
         switch ($this->getShareAccess()) {
             case SPlugin::ACCESS_NOTSHARED :
@@ -193,13 +215,33 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
             case SPlugin::ACCESS_OWNER :
                 // No break intentional
             case SPlugin::ACCESS_READWRITE:
-                if (!$this->calendarInfo['{http://sabredav.org/ns}read-only']) {
-                    $acl[] = [
-                        'privilege' => '{DAV:}write',
-                        'principal' => $this->calendarInfo['principaluri'],
-                        'protected' => true,
-                    ];
-                }
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                // No break intentional
+            case SPlugin::ACCESS_READONLY:
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                    'protected' => true,
+                ];
                 break;
         }
 

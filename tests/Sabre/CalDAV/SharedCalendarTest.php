@@ -50,46 +50,20 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
     }
 
     function testGetOwner() {
-        $this->assertEquals('principals/owner', $this->getInstance()->getOwner());
+        $this->assertEquals('principals/sharee', $this->getInstance()->getOwner());
     }
 
     function testGetACL() {
 
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-read',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
-                'principal' => '{DAV:}authenticated',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/sharee',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/sharee/calendar-proxy-write',
                 'protected' => true,
             ],
             [
@@ -98,8 +72,28 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ],
             [
+                'privilege' => '{DAV:}write-properties',
+                'principal' => 'principals/sharee/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/sharee',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-read',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ],
         ];
@@ -112,28 +106,13 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-read',
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/sharee',
                 'protected' => true,
             ],
             [
                 'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner/calendar-proxy-write',
+                'principal' => 'principals/sharee/calendar-proxy-write',
                 'protected' => true,
             ],
             [
@@ -142,49 +121,19 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/sharee',
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-write',
                 'protected' => true,
             ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-read',
+                'protected' => true,
+            ],
+
         ];
 
         $this->assertEquals($expected, $this->getInstance()->getChildACL());
-
-    }
-
-    function testGetChildACLReadOnly() {
-
-        $expected = [
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-read',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/sharee',
-                'protected' => true,
-            ],
-        ];
-
-        $props = [
-            'id'                                        => 1,
-            '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
-            '{http://sabredav.org/ns}owner-principal'   => 'principals/owner',
-            '{http://sabredav.org/ns}read-only'         => true,
-            'principaluri'                              => 'principals/sharee',
-        ];
-        $this->assertEquals($expected, $this->getInstance($props)->getChildACL());
 
     }
 

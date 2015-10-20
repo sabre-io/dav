@@ -19,6 +19,43 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
     }
 
     /**
+     * Returns a list of calendars for a principal.
+     *
+     * Every project is an array with the following keys:
+     *  * id, a unique id that will be used by other functions to modify the
+     *    calendar. This can be the same as the uri or a database key.
+     *  * uri, which the basename of the uri with which the calendar is
+     *    accessed.
+     *  * principalUri. The owner of the calendar. Almost always the same as
+     *    principalUri passed to this method.
+     *
+     * Furthermore it can contain webdav properties in clark notation. A very
+     * common one is '{DAV:}displayname'.
+     *
+     * @param string $principalUri
+     * @return array
+     */
+    function getCalendarsForUser($principalUri) {
+
+        $calendars = parent::getCalendarsForUser($principalUri);
+        foreach ($calendars as $k => $calendar) {
+
+            if (isset($calendar['share-access'])) {
+                continue;
+            }
+            if (!empty($this->shares[$calendar['id']])) {
+                $calendar['share-access'] = \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER;
+            } else {
+                $calendar['share-access'] = \Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED;
+            }
+            $calendars[$k] = $calendar;
+
+        }
+        return $calendars;
+
+    }
+
+    /**
      * Returns a list of notifications for a given principal url.
      *
      * The returned array should only consist of implementations of
@@ -47,7 +84,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
      */
     function deleteNotification($principalUri, NotificationInterface $notification) {
 
-        foreach($this->notifications[$principalUri] as $key=>$value) {
+        foreach ($this->notifications[$principalUri] as $key => $value) {
             if ($notification === $value) {
                 unset($this->notifications[$principalUri][$key]);
             }
@@ -84,12 +121,12 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
             $this->shares[$calendarId] = [];
         }
 
-        foreach($add as $val) {
+        foreach ($add as $val) {
             $val['status'] = CalDAV\SharingPlugin::STATUS_NORESPONSE;
             $this->shares[$calendarId][] = $val;
         }
 
-        foreach($this->shares[$calendarId] as $k=>$share) {
+        foreach ($this->shares[$calendarId] as $k => $share) {
 
             if (in_array($share['href'], $remove)) {
                 unset($this->shares[$calendarId][$k]);
@@ -153,7 +190,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
      */
     function setPublishStatus($calendarId, $value) {
 
-        foreach($this->calendars as $k=>$cal) {
+        foreach ($this->calendars as $k => $cal) {
             if ($cal['id'] === $calendarId) {
                 if (!$value) {
                     unset($cal['{http://calendarserver.org/ns/}publish-url']);
@@ -169,4 +206,3 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
     }
 
 }
-

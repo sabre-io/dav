@@ -26,34 +26,6 @@ namespace Sabre\CalDAV\Backend;
  * When a user shares a calendar, the updateShares() method will be called with
  * a list of sharees that are now added, and a list of sharees that have been
  * removed.
- * Removal is instant, but when a sharee is added the sharee first gets a
- * chance to accept or reject the invitation for a share.
- *
- * After a share is accepted, the calendar will be returned from
- * getUserCalendars for both the sharer, and the sharee.
- *
- * If the sharee deletes the calendar, only their share gets deleted. When the
- * owner deletes a calendar, it will be removed for everybody.
- *
- *
- * Notifications
- * =============
- *
- * During all these sharing operations, a lot of notifications are sent back
- * and forward.
- *
- * Whenever the list of sharees for a calendar has been changed (they have been
- * added, removed or modified) all sharees should get a notification for this
- * change.
- * This notification is always represented by:
- *
- * Sabre\CalDAV\Xml\Notification\Invite
- *
- * In the case of an invite, the sharee may reply with an 'accept' or
- * 'decline'. These are always represented by:
- *
- * Sabre\CalDAV\Xml\Notification\InviteReply
- *
  *
  * Calendar access by sharees
  * ==========================
@@ -61,34 +33,28 @@ namespace Sabre\CalDAV\Backend;
  * As mentioned earlier, shared calendars must now also be returned for
  * getCalendarsForUser for sharees. A few things change though.
  *
- * The following properties must be specified:
+ * The following key must be returned for shared calendars:
  *
- * 1. share-access
+ * share-access
  *
  * If the calendar is shared, share-access must be provided and must be one of
  * the Sabre\DAV\Sharing\Plugin::ACCESS_ constants.
- *
- * 2. read-only
- *
- * This should be either 0 or 1, depending on if the user has read-only or
- * read-write access to the calendar.
  *
  * Only when this is done, the calendar will correctly be marked as a calendar
  * that's shared to him, thus allowing clients to display the correct interface
  * and ACL enforcement.
  *
+ * Deleting calendars
+ * ==================
+ *
+ * As an implementor you also need to make sure that deleting calendars
+ * behaves as expected.
+ *
  * If a sharee deletes their calendar, only their instance of the calendar
  * should be deleted, the original should still exists.
- * Pretty much any 'dead' WebDAV properties on these shared calendars should be
- * specific to a user. This means that if the displayname is changed by a
- * sharee, the original is not affected. This is also true for:
- *   * The description
- *   * The color
- *   * The order
- *   * And any other dead properties.
  *
- * Properties like a ctag should not be different for multiple instances of the
- * calendar.
+ * Per user-data
+ * ============
  *
  * Lastly, objects *within* calendars should also have user-specific data. The
  * two things that are user-specific are:
@@ -99,9 +65,6 @@ namespace Sabre\CalDAV\Backend;
  * this has no effect on the original VALARM.
  *
  * Understandably, the this last requirement is one of the hardest.
- * Realisticly, I can see people ignoring this part of the spec, but that could
- * cause a different set of issues.
- *
  *
  * Publishing
  * ==========
@@ -131,23 +94,26 @@ namespace Sabre\CalDAV\Backend;
  * will actually publish it.
  *
  *
- * Selectively disabling publish or share feature
- * ==============================================
+ * Integration with notifications
+ * ==============================
  *
- * If Sabre\CalDAV\Property\AllowedSharingModes is returned from
- * getCalendarsForUser, this allows the server to specify whether either sharing,
- * or publishing is supported.
+ * If the SharingSupport interface is implemented, it's possible to allow
+ * people to immediately share calendars with other users.
  *
- * This allows a client to determine in advance which features are available,
- * and update the interface appropriately. If this property is not returned by
- * the backend, the SharingPlugin automatically injects it and assumes both
- * features are available.
+ * However, in some cases it may be desired to let the invitee first know
+ * that someone is trying to share something with them, and allow them to
+ * accept or reject the share.
+ *
+ * If this behavior is desired, it's also required to implement the
+ * NotificationSupport interface. Implementing that interface will allow
+ * supporting clients to display invitations and let users accept or reject
+ * them straight from within their calendaring application.
  *
  * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-interface SharingSupport extends NotificationSupport {
+interface SharingSupport extends BackendInterface {
 
     /**
      * Updates the list of shares.
@@ -193,21 +159,6 @@ interface SharingSupport extends NotificationSupport {
      * @return array
      */
     function getShares($calendarId);
-
-    /**
-     * This method is called when a user replied to a request to share.
-     *
-     * If the user chose to accept the share, this method should return the
-     * newly created calendar url.
-     *
-     * @param string href The sharee who is replying (often a mailto: address)
-     * @param int status One of the SharingPlugin::STATUS_* constants
-     * @param string $calendarUri The url to the calendar thats being shared
-     * @param string $inReplyTo The unique id this message is a response to
-     * @param string $summary A description of the reply
-     * @return null|string
-     */
-    function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null);
 
     /**
      * Publishes a calendar

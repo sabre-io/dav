@@ -1,11 +1,14 @@
+<?xml version="1.0"?>
 <phpunit
   colors="true"
   bootstrap="bootstrap.php"
   convertErrorsToExceptions="true"
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
-  strict="true"
-  >
+  beStrictAboutTestsThatDoNotTestAnything="true"
+  beStrictAboutOutputDuringTests="true"
+  beStrictAboutTestSize="true">
+
   <testsuite name="sabre-vobject">
       <directory>../vendor/sabre/vobject/tests/VObject</directory>
   </testsuite>

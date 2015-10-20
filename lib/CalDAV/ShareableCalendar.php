@@ -69,4 +69,30 @@ class ShareableCalendar extends Calendar implements IShareableCalendar {
 
     }
 
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to
+     *      be updated.
+     *
+     * @return array
+     */
+    function getACL() {
+
+        $acl = parent::getACL();
+        if (empty($this->calendarInfo['{http://sabredav.org/ns}read-only'])) {
+            $acl[] = [
+                'privilege' => '{DAV:}share',
+                'principal' => $this->getOwner(),
+                'protected' => true,
+            ];
+        }
+        return $acl;
+
+    }
+
 }

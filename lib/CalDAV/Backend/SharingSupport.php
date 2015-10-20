@@ -63,10 +63,10 @@ namespace Sabre\CalDAV\Backend;
  *
  * The following properties must be specified:
  *
- * 1. owner-principal
+ * 1. share-access
  *
- * If the calendar is shared, and the current user is not the owner, then this
- * property MUST contain information to identify the real owner.
+ * If the calendar is shared, share-access must be provided and must be one of
+ * the Sabre\DAV\Sharing\Plugin::ACCESS_ constants.
  *
  * 2. read-only
  *

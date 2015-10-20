@@ -2,10 +2,11 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\VObject;
 use Sabre\CalDAV;
+use Sabre\CalDAV\Xml\Notification\NotificationInterface;
 use Sabre\DAV;
 use Sabre\DAV\Exception\Forbidden;
+use Sabre\VObject;
 
 /**
  * PDO CalDAV backend
@@ -21,8 +22,8 @@ class PDO extends AbstractBackend
     implements
         SyncSupport,
         SubscriptionSupport,
-        SchedulingSupport
-    {
+        SchedulingSupport,
+        SharingSupport {
 
     /**
      * We need to specify a max date, because we need to stop *somewhere*
@@ -198,8 +199,9 @@ SQL
                 $stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
                 $stmt2->execute([$row['id']]);
 
+                $calendar['share-access'] = $row['access'];
                 $calendar['owner_principal'] = $stmt2->fetchColumn();
-                $calendar['read-only'] = $row['access'] === 3;
+                $calendar['read-only'] = $row['access'] === \Sabre\DAV\Sharing\Plugin::ACCESS_READONLY;
             }
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -1311,6 +1313,119 @@ SQL;
 
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->schedulingObjectTableName . ' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData) ]);
+
+    }
+
+    /**
+     * Updates the list of shares.
+     *
+     * The first array is a list of people that are to be added to the
+     * calendar.
+     *
+     * Every element in the add array has the following properties:
+     *   * href - A url. Usually a mailto: address
+     *   * commonName - Usually a first and last name, or false
+     *   * summary - A description of the share, can also be false
+     *   * readOnly - A boolean value
+     *
+     * Every element in the remove array is just the address string.
+     *
+     * Note that if the calendar is currently marked as 'not shared' by and
+     * this method is called, the calendar should be 'upgraded' to a shared
+     * calendar.
+     *
+     * @param mixed $calendarId
+     * @param array $add
+     * @param array $remove
+     * @return void
+     */
+    function updateShares($calendarId, array $add, array $remove) {
+
+        throw new \Exception('Not implemented');
+
+    }
+
+    /**
+     * Returns the list of people whom this calendar is shared with.
+     *
+     * Every element in this array should have the following properties:
+     *   * href - Often a mailto: address
+     *   * commonName - Optional, for example a first + last name
+     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
+     *   * readOnly - boolean
+     *   * summary - Optional, a description for the share
+     *
+     * This method may be called by either the original instance of the
+     * calendar, as well as the shared instances. In the case of the shared
+     * instances, it is perfectly acceptable to return an empty array in case
+     * there are privacy concerns.
+     *
+     * @param mixed $calendarId
+     * @return array
+     */
+    function getShares($calendarId) {
+
+        throw new \Exception('Not implemented');
+
+    }
+
+
+    /**
+     * This method is called when a user replied to a request to share.
+     *
+     * If the user chose to accept the share, this method should return the
+     * newly created calendar url.
+     *
+     * @param string href The sharee who is replying (often a mailto: address)
+     * @param int status One of the SharingPlugin::STATUS_* constants
+     * @param string $calendarUri The url to the calendar thats being shared
+     * @param string $inReplyTo The unique id this message is a response to
+     * @param string $summary A description of the reply
+     * @return null|string
+     */
+    function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
+
+        throw new \Exception('Not implemented');
+
+    }
+
+    /**
+     * Publishes a calendar
+     *
+     * @param mixed $calendarId
+     * @param bool $value
+     * @return void
+     */
+    function setPublishStatus($calendarId, $value) {
+
+        throw new \Exception('Not implemented');
+
+    }
+
+    /**
+     * Returns a list of notifications for a given principal url.
+     *
+     * @param string $principalUri
+     * @return NotificationInterface[]
+     */
+    function getNotificationsForPrincipal($principalUri) {
+
+        throw new \Exception('Not implemented');
+
+    }
+
+    /**
+     * This deletes a specific notifcation.
+     *
+     * This may be called by a client once it deems a notification handled.
+     *
+     * @param string $principalUri
+     * @param NotificationInterface $notification
+     * @return void
+     */
+    function deleteNotification($principalUri, NotificationInterface $notification) {
+
+        throw new \Exception('Not implemented');
 
     }
 

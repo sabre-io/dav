@@ -86,7 +86,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
 
         foreach ($this->calendarInfo as $propName => $propValue) {
 
-            if ($propName[0] === '{')
+            if (!is_null($propValue) && $propName[0] === '{')
                 $response[$propName] = $this->calendarInfo[$propName];
 
         }

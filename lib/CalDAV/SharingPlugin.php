@@ -130,13 +130,8 @@ class SharingPlugin extends DAV\ServerPlugin {
         if ($node instanceof ISharedCalendar) {
 
             /**
-            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}shared-url', function() use ($node) {
-                return new Href(
-                    $node->getSharedUrl()
-                );
-            });
-            **/
-
+             });
+             **/
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
 
                 // Fetching owner information
@@ -187,7 +182,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         if ($node instanceof ISharedCalendar) {
             $shareAccess = $node->getShareAccess();
             if ($rt = $propFind->get('{DAV:}resourcetype')) {
-                switch($shareAccess) {
+                switch ($shareAccess) {
                     case \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER :
                         $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared-owner');
                         break;
@@ -227,7 +222,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         if (!$node instanceof ISharedCalendar)
             return;
 
-        if ($node->getShareAccess()===\Sabre\DAV\Sharing\Plugin::ACCESS_OWNER || $node->getShareAccess()===\Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED) {
+        if ($node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER || $node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED) {
 
             $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
                 if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;

@@ -245,7 +245,7 @@ class Plugin extends ServerPlugin {
                         // Node is either not a calendar
                         continue;
                     }
-                    if (isset($child[200]['{DAV:}share-access']) ) {
+                    if (isset($child[200]['{DAV:}share-access'])) {
                         $shareAccess = $child[200]['{DAV:}share-access']->getValue();
                         if ($shareAccess !== Sharing\Plugin::ACCESS_NOTSHARED && $shareAccess !== Sharing\Plugin::ACCESS_OWNER) {
                             // Node is a shared node, not owned by the relevant

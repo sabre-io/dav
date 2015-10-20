@@ -4,7 +4,6 @@ namespace Sabre\DAV\Xml\Property;
 
 use Sabre\Xml\Writer;
 use Sabre\Xml\XmlSerializable;
-
 use Sabre\DAV\Sharing\Plugin as SharingPlugin;
 
 /**

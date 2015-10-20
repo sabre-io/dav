@@ -34,7 +34,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      *   * href - Often a mailto: address
      *   * commonName - Optional, for example a first + last name
      *   * status - See the Sabre\DAV\Sharing\Plugin::STATUS_ constants.
-     *   * access - one of the Sabre\DAV\Sharing\Plugin::ACCESS_ constants. 
+     *   * access - one of the Sabre\DAV\Sharing\Plugin::ACCESS_ constants.
      *
      * @return array
      */

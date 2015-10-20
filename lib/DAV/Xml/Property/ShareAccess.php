@@ -33,7 +33,7 @@ class ShareAccess implements XmlSerializable {
      * Creates the property.
      *
      * The constructor value must be one of the
-     * \Sabre\DAV\Sharing\Plugin::ACCESS_ constants. 
+     * \Sabre\DAV\Sharing\Plugin::ACCESS_ constants.
      *
      * @param int $shareAccess
      */
@@ -45,7 +45,7 @@ class ShareAccess implements XmlSerializable {
 
     /**
      * Returns the current value.
-     * 
+     *
      * @return int
      */
     function getValue() {

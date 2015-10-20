@@ -101,10 +101,10 @@ class Mock extends AbstractBackend {
 
         $propPatch->handleRemaining(function($props) use ($calendarId) {
 
-            foreach($this->calendars as $k=>$calendar) {
+            foreach ($this->calendars as $k => $calendar) {
 
                 if ($calendar['id'] === $calendarId) {
-                    foreach($props as $propName=>$propValue) {
+                    foreach ($props as $propName => $propValue) {
                         if (is_null($propValue)) {
                             unset($this->calendars[$k][$propName]);
                         } else {

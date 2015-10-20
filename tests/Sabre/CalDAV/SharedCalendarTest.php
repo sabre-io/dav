@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\DAV\Sharing;
+
 class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
@@ -14,6 +16,7 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
                 '{http://sabredav.org/ns}owner-principal'   => 'principals/owner',
                 '{http://sabredav.org/ns}read-only'         => false,
+                'share-access'                              => Sharing\Plugin::ACCESS_READWRITE,
                 'principaluri'                              => 'principals/sharee',
             ];
         }
@@ -85,12 +88,17 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}read',
+                'privilege' => '{DAV:}write',
                 'principal' => 'principals/sharee',
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}write-properties',
+                'principal' => 'principals/sharee',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
                 'principal' => 'principals/sharee',
                 'protected' => true,
             ],
@@ -180,23 +188,10 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    function testCreateInstanceMissingArg() {
-
-        $this->getInstance([
-            'id'                                        => 1,
-            '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
-            '{http://sabredav.org/ns}read-only'         => false,
-            'principaluri'                              => 'principals/sharee',
-        ]);
-
-    }
-
     function testUpdateShares() {
 
-        $this->instance->updateShares([
+        $instance = $this->getInstance();
+        $instance->updateShares([
             [
                 'href'       => 'mailto:test@example.org',
                 'commonName' => 'Foo Bar',
@@ -211,14 +206,15 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
             'summary'    => 'Booh',
             'readOnly'   => false,
             'status'     => SharingPlugin::STATUS_NORESPONSE,
-        ]], $this->instance->getShares());
+        ]], $instance->getShares());
 
     }
 
     function testPublish() {
 
-        $this->assertNull($this->instance->setPublishStatus(true));
-        $this->assertNull($this->instance->setPublishStatus(false));
+        $instance = $this->getInstance();
+        $this->assertNull($instance->setPublishStatus(true));
+        $this->assertNull($instance->setPublishStatus(false));
 
     }
 }

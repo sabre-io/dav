@@ -47,7 +47,7 @@ interface ISharedNode extends INode {
      * @return void
      */
     function updateShares(array $add, array $remove);
-    
+
     /**
      * Returns the list of people whom this resource is shared with.
      *
@@ -55,7 +55,7 @@ interface ISharedNode extends INode {
      *   * href - Often a mailto: address
      *   * commonName - Optional, for example a first + last name
      *   * status - See the Sabre\DAV\Sharing\Plugin::STATUS_ constants.
-     *   * access - one of the Sabre\DAV\Sharing\Plugin::ACCESS_ constants. 
+     *   * access - one of the Sabre\DAV\Sharing\Plugin::ACCESS_ constants.
      *
      * @return array
      */

@@ -25,8 +25,6 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function setup() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-
         $this->backend = TestUtil::getBackend();
 
         $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
@@ -250,40 +248,14 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testGetSyncToken() {
 
-        $this->assertEquals(2, $this->calendar->getSyncToken());
-
-    }
-    function testGetSyncToken2() {
-
-        $calendar = new Calendar(new Backend\Mock([],[]), [
-            '{DAV:}sync-token' => 2
-        ]);
-        $this->assertEquals(2, $this->calendar->getSyncToken());
-
-    }
-
-    function testGetSyncTokenNoSyncSupport() {
-
-        $calendar = new Calendar(new Backend\Mock([],[]), []);
-        $this->assertNull($calendar->getSyncToken());
+        $this->assertNull($this->calendar->getSyncToken());
 
     }
 
     function testGetChanges() {
 
-        $this->assertEquals([
-            'syncToken' => 2,
-            'modified'  => [],
-            'deleted'   => [],
-            'added'     => ['UUID-2345'],
-        ], $this->calendar->getChanges(1, 1));
+        $this->assertNull($this->calendar->getChanges(1,1));
 
     }
 
-    function testGetChangesNoSyncSupport() {
-
-        $calendar = new Calendar(new Backend\Mock([],[]), []);
-        $this->assertNull($calendar->getChanges(1,null));
-
-    }
 }

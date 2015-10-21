@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV\Backend;
 
 use Sabre\CalDAV;
-use Sabre\CalDAV\Xml\Notification\NotificationInterface;
 use Sabre\DAV;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\VObject;

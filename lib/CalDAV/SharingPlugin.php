@@ -117,21 +117,8 @@ class SharingPlugin extends DAV\ServerPlugin {
      */
     function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
 
-        if ($node instanceof IShareableCalendar) {
-
-            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
-                return new Xml\Property\Invite(
-                    $node->getShares()
-                );
-            });
-
-        }
-
         if ($node instanceof ISharedCalendar) {
 
-            /**
-             });
-             **/
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
 
                 // Fetching owner information

@@ -31,9 +31,3 @@ script:
   - ./bin/phpunit --configuration tests/phpunit.xml $TEST_DEPS
   - ./bin/sabre-cs-fixer fix lib/ --dry-run --diff
 
-notifications:
-  irc:
-    channels:
-        - "chat.freenode.net#sabredav"
-    on_success: change
-    on_failure: change

@@ -40,6 +40,14 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
+3.0.6 (2015-??-??)
+------------------
+
+* #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
+  use emoji in some tables where you couldn't before.
+* #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
+
+
 3.0.5 (2015-09-15)
 ------------------
 

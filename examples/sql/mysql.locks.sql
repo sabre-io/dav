@@ -9,5 +9,5 @@ CREATE TABLE locks (
     uri VARBINARY(1000),
     INDEX(token),
     INDEX(uri(100))
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci;
 

@@ -194,7 +194,7 @@ class Tree {
         $node = $this->getNodeForPath($path);
         $children = $node->getChildren();
         $basePath = trim($path, '/');
-        if ($basePath !== '') $basePath.='/';
+        if ($basePath !== '') $basePath .= '/';
 
         foreach ($children as $child) {
 

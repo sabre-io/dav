@@ -5,6 +5,7 @@ ChangeLog
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
+* #727: Added another workaround to make CalDAV work for Windows 10 clients.
 
 
 3.0.8 (2016-03-12)

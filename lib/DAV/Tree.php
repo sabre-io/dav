@@ -193,8 +193,7 @@ class Tree {
 
         $node = $this->getNodeForPath($path);
         $children = $node->getChildren();
-        $basePath = trim($path,'/');
-        $basePath .= $basePath === '' ? '' : '/';
+        $basePath = trim($path,'/') . '/';
         foreach($children as $child) {
 
             $this->cache[$basePath . $child->getName()] = $child;

@@ -1,7 +1,13 @@
 ChangeLog
 =========
 
-3.1.0-alpha2 (????-??-??)
+3.1.0-alpha3 (2015-??-??)
+-------------------------
+
+* Better error message when the browser plugin is not enabled.
+
+
+3.1.0-alpha2 (2015-09-05)
 -------------------------
 
 * Massive calendars and addressbooks should see a big drop in peak memory
@@ -9,6 +15,15 @@ ChangeLog
 * Fixed a privilege bug in the availability system.
 * #697: Added a "tableName" member to the PropertyStorage PDO backend. (@Frzk).
 * #699: PostgreSQL fix for the Locks PDO backend. (@TCKnet)
+* Removed the `simplefsserver.php` example file. It's not simple enough.
+* #703: PropPatch in client is not correctly encoded.
+* #709: Throw exception when running into empty
+  `supported-calendar-component-set`.
+* #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
+  fixes issues when using sabre/dav as a client.
+* The zip release ships with [sabre/vobject 4.0.0-alpha2][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
 
 
 3.1.0-alpha1 (2015-07-19)
@@ -21,12 +36,35 @@ ChangeLog
   [reference][calendar-availability].
 * #691: Workaround for broken Windows Phone client.
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.4 (2015-??-??)
+3.0.5 (2015-09-15)
+------------------
+
+* #704: Fixed broken uri encoding in multistatus responses. This affected
+  at least CyberDuck, but probably also others.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
+
+
+3.0.4 (2015-09-06)
 ------------------
 
 * #703: PropPatch in client is not correctly encoded.
+* #709: Throw exception when running into empty
+  `supported-calendar-component-set`.
+* #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
+  fixes issues when using sabre/dav as a client.
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
 
 
 3.0.3 (2015-08-06)
@@ -216,6 +254,16 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
+2.1.7 (2015-09-05)
+------------------
+
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
+
+
 2.1.6 (2015-07-21)
 ------------------
 
@@ -397,6 +445,17 @@ ChangeLog
 * Added: #523 Custom CalDAV backends can now mark any calendar as read-only.
 * The zip release ships with [sabre/vobject 3.3.3][vobj],
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
+
+
+2.0.9 (2015-09-04)
+------------------
+
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.6][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
+
 
 
 2.0.8 (2015-07-11)
@@ -1838,7 +1897,7 @@ ChangeLog
 
 * Updated: Now in Beta
 * Updated: Pear package no longer includes docs/ directory. These just contained
-  rfc's, which are publically available. This reduces the package from ~800k to
+  rfc's, which are publicly available. This reduces the package from ~800k to
   ~60k
 * Added: generatePropfindResponse now takes a baseUri argument
 * Added: ResourceType property can now contain multiple resourcetypes.

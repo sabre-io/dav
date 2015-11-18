@@ -25,6 +25,11 @@ use Sabre\HTTP\ResponseInterface;
  */
 class Plugin extends ServerPlugin {
 
+    const ACCESS_NOTSHARED = 0;
+    const ACCESS_OWNER = 1;
+    const ACCESS_READONLY = 2;
+    const ACCESS_READWRITE = 3;
+
     /**
      * Reference to SabreDAV server object.
      *
@@ -118,7 +123,7 @@ class Plugin extends ServerPlugin {
             return;
         }
 
-        if (!$node instanceof IShareableNode) {
+        if (!$node instanceof ISharedNode) {
 
             throw new Forbidden('Sharing is not allowed on this node');
 
@@ -147,20 +152,28 @@ class Plugin extends ServerPlugin {
      */
     function propFind(PropFind $propFind, INode $node) {
 
-        $propFind->handle('{DAV:}share-mode', function() {
+        if ($node instanceof ISharedNode) {
+            $propFind->handle('{DAV:}share-mode', function() use ($node) {
+                switch ($node->getShareAccess()) {
+                    case self::ACCESS_NOTSHARED :
+                        return null;
+                    case self::ACCESS_OWNER :
+                        return new Property\ShareMode(Property\ShareMode::SHAREDOWNER);
+                    case self::ACCESS_READONLY :
+                        return new Property\ShareMode(Property\ShareMode::SHARED);
+                    case self::ACCESS_READWRITE :
+                        return new Property\ShareMode(Property\ShareMode::SHARED);
 
-            if (INode instanceof ISharedNode) {
+                }
+            });
 
-                return new Property\ShareMode(Property\ShareMode::SHARED);
+            $propFind->handle('{DAV:}share-access', function() use ($node) {
 
-            } elseif (INode instanceof IShareableNode) {
+                return new Property\ShareAccess($node->getShareAccess());
 
-                return new Property\ShareMode(Property\ShareMode::SHAREDOWNER);
+            });
 
-            }
-
-        });
-
+        }
 
     }
 
@@ -206,7 +219,6 @@ class Plugin extends ServerPlugin {
         }
 
     }
-
 
     /**
      * Returns a bunch of meta-data about the plugin.

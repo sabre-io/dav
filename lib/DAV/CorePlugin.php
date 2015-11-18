@@ -626,14 +626,19 @@ class CorePlugin extends ServerPlugin {
         if ($moveInfo['destinationExists']) {
 
             if (!$this->server->emit('beforeUnbind', [$moveInfo['destination']])) return false;
+
+        }
+        if (!$this->server->emit('beforeUnbind', [$path])) return false;
+        if (!$this->server->emit('beforeBind', [$moveInfo['destination']])) return false;
+        if (!$this->server->emit('beforeMove', [$path, $moveInfo['destination']])) return false;
+
+        if ($moveInfo['destinationExists']) {
+
             $this->server->tree->delete($moveInfo['destination']);
             $this->server->emit('afterUnbind', [$moveInfo['destination']]);
 
         }
 
-        if (!$this->server->emit('beforeUnbind', [$path])) return false;
-        if (!$this->server->emit('beforeBind', [$moveInfo['destination']])) return false;
-        if (!$this->server->emit('beforeMove', [$path, $moveInfo['destination']])) return false;
         $this->server->tree->move($path, $moveInfo['destination']);
 
         // Its important afterMove is called before afterUnbind, because it
@@ -841,10 +846,8 @@ class CorePlugin extends ServerPlugin {
         if ($node instanceof IProperties && $propertyNames = $propFind->get404Properties()) {
 
             $nodeProperties = $node->getProperties($propertyNames);
-            foreach ($propertyNames as $propertyName) {
-                if (array_key_exists($propertyName, $nodeProperties)) {
-                    $propFind->set($propertyName, $nodeProperties[$propertyName], 200);
-                }
+            foreach ($nodeProperties as $propertyName => $propertyValue) {
+                $propFind->set($propertyName, $propertyValue, 200);
             }
 
         }

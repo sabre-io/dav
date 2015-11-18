@@ -88,8 +88,6 @@ class SharingPlugin extends DAV\ServerPlugin {
             throw new \LogicException('The generic "sharing" plugin must be loaded before the caldav sharing plugin. Call $server->addPlugin(new \Sabre\DAV\Sharing\Plugin()); before this one.');
         }
 
-        $server->resourceTypeMapping['Sabre\\CalDAV\\ISharedCalendar'] = '{' . Plugin::NS_CALENDARSERVER . '}shared';
-
         array_push(
             $this->server->protectedProperties,
             '{' . Plugin::NS_CALENDARSERVER . '}invite',
@@ -131,12 +129,9 @@ class SharingPlugin extends DAV\ServerPlugin {
 
         if ($node instanceof ISharedCalendar) {
 
-            $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}shared-url', function() use ($node) {
-                return new Href(
-                    $node->getSharedUrl()
-                );
-            });
-
+            /**
+             });
+             **/
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}invite', function() use ($node) {
 
                 // Fetching owner information
@@ -184,10 +179,18 @@ class SharingPlugin extends DAV\ServerPlugin {
      */
     function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 
-        if ($node instanceof IShareableCalendar) {
+        if ($node instanceof ISharedCalendar) {
+            $shareAccess = $node->getShareAccess();
             if ($rt = $propFind->get('{DAV:}resourcetype')) {
-                if (count($node->getShares()) > 0) {
-                    $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared-owner');
+                switch ($shareAccess) {
+                    case \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER :
+                        $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared-owner');
+                        break;
+                    case \Sabre\DAV\Sharing\Plugin::ACCESS_READONLY :
+                    case \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE :
+                        $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared');
+                        break;
+
                 }
             }
             $propFind->handle('{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes', function() {
@@ -216,21 +219,25 @@ class SharingPlugin extends DAV\ServerPlugin {
     function propPatch($path, DAV\PropPatch $propPatch) {
 
         $node = $this->server->tree->getNodeForPath($path);
-        if (!$node instanceof IShareableCalendar)
+        if (!$node instanceof ISharedCalendar)
             return;
 
-        $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
-            if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
-            $shares = $node->getShares();
-            $remove = [];
-            foreach ($shares as $share) {
-                $remove[] = $share['href'];
-            }
-            $node->updateShares([], $remove);
+        if ($node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER || $node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED) {
 
-            return true;
+            $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
+                if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
+                $shares = $node->getShares();
+                $remove = [];
+                foreach ($shares as $share) {
+                    $remove[] = $share['href'];
+                }
+                $node->updateShares([], $remove);
 
-        });
+                return true;
+
+            });
+
+        }
 
     }
 
@@ -274,7 +281,6 @@ class SharingPlugin extends DAV\ServerPlugin {
 
             // Both the DAV:share-resource and CALENDARSERVER:share requests
             // behave identically.
-            case '{DAV:}share-resource' :
             case '{' . Plugin::NS_CALENDARSERVER . '}share' :
 
                 $sharingPlugin = $this->server->getPlugin('sharing');
@@ -337,7 +343,7 @@ class SharingPlugin extends DAV\ServerPlugin {
             case '{' . Plugin::NS_CALENDARSERVER . '}publish-calendar' :
 
                 // We can only deal with IShareableCalendar objects
-                if (!$node instanceof IShareableCalendar) {
+                if (!$node instanceof ISharedCalendar) {
                     return;
                 }
                 $this->server->transactionType = 'post-publish-calendar';
@@ -347,7 +353,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($path, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}share');
                 }
 
                 $node->setPublishStatus(true);
@@ -365,7 +371,7 @@ class SharingPlugin extends DAV\ServerPlugin {
             case '{' . Plugin::NS_CALENDARSERVER . '}unpublish-calendar' :
 
                 // We can only deal with IShareableCalendar objects
-                if (!$node instanceof IShareableCalendar) {
+                if (!$node instanceof ISharedCalendar) {
                     return;
                 }
                 $this->server->transactionType = 'post-unpublish-calendar';
@@ -375,7 +381,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 // If there's no ACL support, we allow everything
                 if ($acl) {
-                    $acl->checkPrivileges($path, '{DAV:}write');
+                    $acl->checkPrivileges($path, '{DAV:}share');
                 }
 
                 $node->setPublishStatus(false);

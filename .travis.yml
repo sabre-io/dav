@@ -6,7 +6,6 @@ php:
   - hhvm
 
 matrix:
-  fast_finish: true
   allow_failures:
       - php: hhvm
 
@@ -28,12 +27,6 @@ before_script:
   - composer update --prefer-source $LOWEST_DEPS
 
 script:
-  - ./bin/phpunit --configuration tests/phpunit.xml $TEST_DEPS
+  - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS
   - ./bin/sabre-cs-fixer fix lib/ --dry-run --diff
 
-notifications:
-  irc:
-    channels:
-        - "chat.freenode.net#sabredav"
-    on_success: change
-    on_failure: change

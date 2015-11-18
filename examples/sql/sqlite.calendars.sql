@@ -14,15 +14,21 @@ CREATE TABLE calendarobjects (
 
 CREATE TABLE calendars (
     id integer primary key asc,
+    synctoken integer,
+    components text
+);
+
+CREATE TABLE calendar_instances (
+    id integer primary key asc,
+    calendarid integer,
     principaluri text,
+    access integer COMMENT '1 = owner, 2 = readwrite, 3 = read',
     displayname text,
     uri text,
-    synctoken integer,
     description text,
     calendarorder integer,
     calendarcolor text,
     timezone text,
-    components text,
     transparent bool
 );
 

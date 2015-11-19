@@ -208,6 +208,8 @@ ChangeLog
   its second argument, and no longer receives seperate properties and
   resourcetype arguments.
 * `MKCOL` now integrates better with propertystorage plugins.
+* #623: Remove need of temporary files when working with Range requests.
+  (@dratini0)
 * The zip release ships with [sabre/vobject 3.4.2][vobj],
   [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt],
   [sabre/uri 1.0.0][uri] and [sabre/xml 0.4.3][xml].

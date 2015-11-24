@@ -149,7 +149,7 @@ class Response implements Element {
              * no properties.
              */
             $writer->writeElement('{DAV:}propstat', [
-                '{DAV:}prop' => [],
+                '{DAV:}prop'   => [],
                 '{DAV:}status' => 'HTTP/1.1 418 ' . \Sabre\HTTP\Response::$statusCodes[418]
             ]);
 

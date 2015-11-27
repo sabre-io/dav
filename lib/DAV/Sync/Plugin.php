@@ -222,7 +222,8 @@ class Plugin extends DAV\ServerPlugin {
      * It's a moment where this plugin can check all the supplied lock tokens
      * in the If: header, and check if they are valid.
      *
-     * @param mixed $conditions
+     * @param RequestInterface $request
+     * @param array $conditions
      * @return void
      */
     function validateTokens(RequestInterface $request, &$conditions) {

@@ -81,7 +81,7 @@ $server = new \Sabre\DAV\Server($nodes);
 if (isset($baseUri)) $server->setBaseUri($baseUri);
 
 // Plugins
-$server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend, 'SabreDAV'));
+$server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend));
 $server->addPlugin(new \Sabre\DAV\Browser\Plugin());
 $server->addPlugin(new \Sabre\CalDAV\Plugin());
 $server->addPlugin(new \Sabre\CardDAV\Plugin());

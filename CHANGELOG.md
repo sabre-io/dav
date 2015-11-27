@@ -1,6 +1,106 @@
 ChangeLog
 =========
 
+3.1.0-alpha3 (2015-??-??)
+-------------------------
+
+* Better error message when the browser plugin is not enabled.
+* #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
+  use emoji in some tables where you couldn't before.
+* #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
+* #727: Added another workaround to make CalDAV work for Windows 10 clients.
+
+
+3.1.0-alpha2 (2015-09-05)
+-------------------------
+
+* Massive calendars and addressbooks should see a big drop in peak memory
+  usage.
+* Fixed a privilege bug in the availability system.
+* #697: Added a "tableName" member to the PropertyStorage PDO backend. (@Frzk).
+* #699: PostgreSQL fix for the Locks PDO backend. (@TCKnet)
+* Removed the `simplefsserver.php` example file. It's not simple enough.
+* #703: PropPatch in client is not correctly encoded.
+* #709: Throw exception when running into empty
+  `supported-calendar-component-set`.
+* #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
+  fixes issues when using sabre/dav as a client.
+* The zip release ships with [sabre/vobject 4.0.0-alpha2][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
+
+
+3.1.0-alpha1 (2015-07-19)
+-------------------------
+
+* Now requires PHP 5.5
+* Upgraded to vobject 4, which is a lot faster.
+* Support for PHP 7.
+* #690: Support for `calendar-availability`, draft 05.
+  [reference][calendar-availability].
+* #691: Workaround for broken Windows Phone client.
+* The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.6 (2015-??-??)
+------------------
+
+* #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
+  use emoji in some tables where you couldn't before.
+* #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
+
+
+3.0.5 (2015-09-15)
+------------------
+
+* #704: Fixed broken uri encoding in multistatus responses. This affected
+  at least CyberDuck, but probably also others.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
+
+
+3.0.4 (2015-09-06)
+------------------
+
+* #703: PropPatch in client is not correctly encoded.
+* #709: Throw exception when running into empty
+  `supported-calendar-component-set`.
+* #711: Don't trigger deserializers for empty elements in `{DAV:}prop`. This
+  fixes issues when using sabre/dav as a client.
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.2.0][xml].
+
+
+3.0.3 (2015-08-06)
+------------------
+
+* #700: Digest Auth fails on `HEAD` requests.
+* Fixed example files to no longer use now-deprecated realm argument.
+* The zip release ships with [sabre/vobject 3.4.6][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.2 (2015-07-21)
+------------------
+
+* #657: Migration script would break when coming a cross an iCalendar object
+  with no UID.
+* #691: Workaround for broken Windows Phone client.
+* Fixed a whole bunch of incorrect php docblocks.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
 3.0.1 (2015-07-02)
 ------------------
 
@@ -108,6 +208,8 @@ ChangeLog
   its second argument, and no longer receives seperate properties and
   resourcetype arguments.
 * `MKCOL` now integrates better with propertystorage plugins.
+* #623: Remove need of temporary files when working with Range requests.
+  (@dratini0)
 * The zip release ships with [sabre/vobject 3.4.2][vobj],
   [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt],
   [sabre/uri 1.0.0][uri] and [sabre/xml 0.4.3][xml].
@@ -164,6 +266,26 @@ ChangeLog
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.7 (2015-09-05)
+------------------
+
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.7][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
+
+
+2.1.6 (2015-07-21)
+------------------
+
+* #657: Migration script would break when coming a cross an iCalendar object
+  with no UID.
+* #691: Workaround for broken Windows Phone client.
+* The zip release ships with [sabre/vobject 3.4.5][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.5 (2015-07-11)
@@ -337,6 +459,17 @@ ChangeLog
 * Added: #523 Custom CalDAV backends can now mark any calendar as read-only.
 * The zip release ships with [sabre/vobject 3.3.3][vobj],
   [sabre/http 3.0.0][http], and [sabre/event 2.0.0][evnt].
+
+
+2.0.9 (2015-09-04)
+------------------
+
+* #705: A `MOVE` request that gets prevented from deleting the source resource
+  will still remove the target resource. Now all events are triggered before
+  any destructive operations.
+* The zip release ships with [sabre/vobject 3.4.6][vobj],
+  [sabre/http 2.0.4][http], and [sabre/event 1.0.1][evnt].
+
 
 
 2.0.8 (2015-07-11)
@@ -1778,7 +1911,7 @@ ChangeLog
 
 * Updated: Now in Beta
 * Updated: Pear package no longer includes docs/ directory. These just contained
-  rfc's, which are publically available. This reduces the package from ~800k to
+  rfc's, which are publicly available. This reduces the package from ~800k to
   ~60k
 * Added: generatePropfindResponse now takes a baseUri argument
 * Added: ResourceType property can now contain multiple resourcetypes.
@@ -1979,3 +2112,4 @@ ChangeLog
 [mi20]: http://sabre.io/dav/upgrade/1.8-to-2.0/
 [rfc6638]: http://tools.ietf.org/html/rfc6638 "CalDAV Scheduling"
 [rfc7240]: http://tools.ietf.org/html/rfc7240
+[calendar-availability]: https://tools.ietf.org/html/draft-daboo-calendar-availability-05

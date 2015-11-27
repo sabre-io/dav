@@ -122,17 +122,36 @@ class Response implements Element {
         if ($status = $this->getHTTPStatus()) {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
-        $writer->writeElement('{DAV:}href', $writer->contextUri . $this->getHref());
+        $writer->writeElement('{DAV:}href', $writer->contextUri . \Sabre\HTTP\encodePath($this->getHref()));
+
+        $empty = true;
+
         foreach ($this->getResponseProperties() as $status => $properties) {
 
             // Skipping empty lists
             if (!$properties || (!ctype_digit($status) && !is_int($status))) {
                 continue;
             }
+            $empty = false;
             $writer->startElement('{DAV:}propstat');
             $writer->writeElement('{DAV:}prop', $properties);
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
             $writer->endElement(); // {DAV:}propstat
+
+        }
+        if ($empty) {
+            /*
+             * The WebDAV spec _requires_ at least one DAV:propstat to appear for
+             * every DAV:response. There are circumstances however, there are no
+             * properties to encode.
+             *
+             * In those cases we MUST specify at least one DAV:propstat anyway, with
+             * no properties.
+             */
+            $writer->writeElement('{DAV:}propstat', [
+                '{DAV:}prop'   => [],
+                '{DAV:}status' => 'HTTP/1.1 418 ' . \Sabre\HTTP\Response::$statusCodes[418]
+            ]);
 
         }
 
@@ -161,7 +180,46 @@ class Response implements Element {
      */
     static function xmlDeserialize(Reader $reader) {
 
+        $reader->pushContext();
+
+        $reader->elementMap['{DAV:}propstat'] = 'Sabre\\Xml\\Element\\KeyValue';
+
+        // We are overriding the parser for {DAV:}prop. This deserializer is
+        // almost identical to the one for Sabre\Xml\Element\KeyValue.
+        //
+        // The difference is that if there are any child-elements inside of
+        // {DAV:}prop, that have no value, normally any deserializers are
+        // called. But we don't want this, because a singular element without
+        // child-elements implies 'no value' in {DAV:}prop, so we want to skip
+        // deserializers and just set null for those.
+        $reader->elementMap['{DAV:}prop'] = function(Reader $reader) {
+
+            if ($reader->isEmptyElement) {
+                $reader->next();
+                return [];
+            }
+            $values = [];
+            $reader->read();
+            do {
+                if ($reader->nodeType === Reader::ELEMENT) {
+                    $clark = $reader->getClark();
+
+                    if ($reader->isEmptyElement) {
+                        $values[$clark] = null;
+                        $reader->next();
+                    } else {
+                        $values[$clark] = $reader->parseCurrentElement()['value'];
+                    }
+                } else {
+                    $reader->read();
+                }
+            } while ($reader->nodeType !== Reader::END_ELEMENT);
+            $reader->read();
+            return $values;
+
+        };
         $elems = $reader->parseInnerTree();
+        $reader->popContext();
 
         $href = null;
         $propertyLists = [];
@@ -178,7 +236,7 @@ class Response implements Element {
                     $status = $elem['value']['{DAV:}status'];
                     list(, $status, ) = explode(' ', $status, 3);
                     $properties = isset($elem['value']['{DAV:}prop']) ? $elem['value']['{DAV:}prop'] : [];
-                    $propertyLists[$status] = $properties;
+                    if ($properties) $propertyLists[$status] = $properties;
                     break;
                 case '{DAV:}status' :
                     list(, $statusCode, ) = explode(' ', $elem['value'], 3);

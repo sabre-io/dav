@@ -45,7 +45,7 @@ $server->addPlugin(new \Sabre\DAV\Browser\GuessContentType());
 
 // Authentication backend
 $authBackend = new \Sabre\DAV\Auth\Backend\File('.htdigest');
-$auth = new \Sabre\DAV\Auth\Plugin($authBackend, 'SabreDAV');
+$auth = new \Sabre\DAV\Auth\Plugin($authBackend);
 $server->addPlugin($auth);
 
 // Temporary file filter

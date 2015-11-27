@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV;
+
 use Sabre\HTTP;
 use Sabre\VObject;
 
@@ -14,12 +15,12 @@ class ExpandEventsFloatingTimeTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAVICSExport = true;
 
-    protected $caldavCalendars = array(
-        array(
-            'id' => 1,
-            'name' => 'Calendar',
-            'principaluri' => 'principals/user1',
-            'uri' => 'calendar1',
+    protected $caldavCalendars = [
+        [
+            'id'                                               => 1,
+            'name'                                             => 'Calendar',
+            'principaluri'                                     => 'principals/user1',
+            'uri'                                              => 'calendar1',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => 'BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -41,12 +42,12 @@ TZOFFSETTO:+0100
 END:STANDARD
 END:VTIMEZONE
 END:VCALENDAR',
-        )
-    );
+        ]
+    ];
 
-    protected $caldavCalendarObjects = array(
-        1 => array(
-           'event.ics' => array(
+    protected $caldavCalendarObjects = [
+        1 => [
+           'event.ics' => [
                 'calendardata' => 'BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -62,14 +63,14 @@ SEQUENCE:1
 END:VEVENT
 END:VCALENDAR
 ',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     function testExpandCalendarQuery() {
 
         $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
-            'Depth' => 1,
+            'Depth'        => 1,
             'Content-Type' => 'application/xml',
         ]);
 
@@ -98,16 +99,15 @@ END:VCALENDAR
             $start = strpos($response->body, 'BEGIN:VCALENDAR'),
             strpos($response->body, 'END:VCALENDAR') - $start + 13
         );
-        $body = str_replace('&#13;','',$body);
+        $body = str_replace('&#13;', '', $body);
 
         $vObject = VObject\Reader::read($body);
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
             /** @var $vevent Sabre\VObject\Component\VEvent */
-            foreach ($vevent->children as $child) {
+            foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals($child->getValue(), '20141108T043000Z');
@@ -122,7 +122,7 @@ END:VCALENDAR
     function testExpandMultiGet() {
 
         $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
-            'Depth' => 1,
+            'Depth'        => 1,
             'Content-Type' => 'application/xml',
         ]);
 
@@ -147,16 +147,15 @@ END:VCALENDAR
             $start = strpos($response->body, 'BEGIN:VCALENDAR'),
             strpos($response->body, 'END:VCALENDAR') - $start + 13
         );
-        $body = str_replace('&#13;','',$body);
+        $body = str_replace('&#13;', '', $body);
 
         $vObject = VObject\Reader::read($body);
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
             /** @var $vevent Sabre\VObject\Component\VEvent */
-            foreach ($vevent->children as $child) {
+            foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals($child->getValue(), '20141108T043000Z');
@@ -171,7 +170,7 @@ END:VCALENDAR
     function testExpandExport() {
 
         $request = new HTTP\Request('GET', '/calendars/user1/calendar1?export&start=1&end=2000000000&expand=1', [
-            'Depth' => 1,
+            'Depth'        => 1,
             'Content-Type' => 'application/xml',
         ]);
 
@@ -185,16 +184,15 @@ END:VCALENDAR
             $start = strpos($response->body, 'BEGIN:VCALENDAR'),
             strpos($response->body, 'END:VCALENDAR') - $start + 13
         );
-        $body = str_replace('&#13;','',$body);
+        $body = str_replace('&#13;', '', $body);
 
         $vObject = VObject\Reader::read($body);
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
             /** @var $vevent Sabre\VObject\Component\VEvent */
-            foreach ($vevent->children as $child) {
+            foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals($child->getValue(), '20141108T043000Z');
@@ -207,4 +205,3 @@ END:VCALENDAR
     }
 
 }
-

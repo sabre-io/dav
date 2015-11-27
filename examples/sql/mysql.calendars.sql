@@ -11,7 +11,7 @@ CREATE TABLE calendarobjects (
     lastoccurence INT(11) UNSIGNED,
     uid VARBINARY(200),
     UNIQUE(calendarid, uri)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE calendars (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -26,7 +26,7 @@ CREATE TABLE calendars (
     components VARBINARY(20),
     transparent TINYINT(1) NOT NULL DEFAULT '0',
     UNIQUE(principaluri, uri)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE calendarchanges (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -35,7 +35,7 @@ CREATE TABLE calendarchanges (
     calendarid INT(11) UNSIGNED NOT NULL,
     operation TINYINT(1) NOT NULL,
     INDEX calendarid_synctoken (calendarid, synctoken)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE calendarsubscriptions (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -51,7 +51,7 @@ CREATE TABLE calendarsubscriptions (
     stripattachments TINYINT(1) NULL,
     lastmodified INT(11) UNSIGNED,
     UNIQUE(principaluri, uri)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE schedulingobjects (
     id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -61,4 +61,4 @@ CREATE TABLE schedulingobjects (
     lastmodified INT(11) UNSIGNED,
     etag VARBINARY(32),
     size INT(11) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

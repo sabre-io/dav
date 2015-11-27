@@ -458,8 +458,13 @@ class Server extends EventEmitter {
 
         if ($this->emit('method:' . $method, [$request, $response])) {
             if ($this->emit('method', [$request, $response])) {
+                $exMessage = "There was no plugin in the system that was willing to handle this " . $method . " method.";
+                if ($method === "GET") {
+                    $exMessage .= " Enable the Browser plugin to get a better result here.";
+                }
+
                 // Unsupported method
-                throw new Exception\NotImplemented('There was no handler found for this "' . $method . '" method');
+                throw new Exception\NotImplemented($exMessage);
             }
         }
 
@@ -523,7 +528,12 @@ class Server extends EventEmitter {
     }
 
     /**
-     * Calculates the uri for a request, making sure that the base uri is stripped out
+     * Turns a URI such as the REQUEST_URI into a local path.
+     *
+     * This method:
+     *   * strips off the base path
+     *   * normalizes the path
+     *   * uri-decodes the path
      *
      * @param string $uri
      * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
@@ -751,9 +761,13 @@ class Server extends EventEmitter {
     /**
      * Returns a list of properties for a path
      *
-     * This is a simplified version getPropertiesForPath.
-     * if you aren't interested in status codes, but you just
-     * want to have a flat list of properties. Use this method.
+     * This is a simplified version getPropertiesForPath. If you aren't
+     * interested in status codes, but you just want to have a flat list of
+     * properties, use this method.
+     *
+     * Please note though that any problems related to retrieving properties,
+     * such as permission issues will just result in an empty array being
+     * returned.
      *
      * @param string $path
      * @param array $propertyNames
@@ -761,7 +775,11 @@ class Server extends EventEmitter {
     function getProperties($path, $propertyNames) {
 
         $result = $this->getPropertiesForPath($path, $propertyNames, 0);
-        return $result[0][200];
+        if (isset($result[0][200])) {
+            return $result[0][200];
+        } else {
+            return [];
+        }
 
     }
 
@@ -835,6 +853,10 @@ class Server extends EventEmitter {
 
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
+     *
+     * @param array[] $propFindRequests
+     * @param PropFind $propFind
+     * @return void
      */
     private function addPathNodesRecursively(&$propFindRequests, PropFind $propFind) {
 
@@ -1492,6 +1514,7 @@ class Server extends EventEmitter {
      *    ],
      * ]
      *
+     * @param RequestInterface $request
      * @return array
      */
     function getIfConditions(RequestInterface $request) {

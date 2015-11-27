@@ -4,5 +4,6 @@ CREATE TABLE propertystorage (
     name VARBINARY(100) NOT NULL,
     valuetype INT UNSIGNED,
     value MEDIUMBLOB
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE UNIQUE INDEX path_property ON propertystorage (path(600), name(100));

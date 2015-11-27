@@ -372,6 +372,8 @@ class Plugin extends DAV\ServerPlugin {
             $modified = true;
         }
 
+        // Destroy circular references to PHP will GC the object.
+        $vobj->destroy();
     }
 
 
@@ -474,9 +476,9 @@ class Plugin extends DAV\ServerPlugin {
      */
     function validateFilters($vcardData, array $filters, $test) {
 
-        $vcard = VObject\Reader::read($vcardData);
 
         if (!$filters) return true;
+        $vcard = VObject\Reader::read($vcardData);
 
         foreach ($filters as $filter) {
 
@@ -523,13 +525,25 @@ class Plugin extends DAV\ServerPlugin {
             // There are two conditions where we can already determine whether
             // or not this filter succeeds.
             if ($test === 'anyof' && $success) {
+
+                // Destroy circular references to PHP will GC the object.
+                $vcard->destroy();
+
                 return true;
             }
             if ($test === 'allof' && !$success) {
+
+                // Destroy circular references to PHP will GC the object.
+                $vcard->destroy();
+
                 return false;
             }
 
         } // foreach
+
+
+        // Destroy circular references to PHP will GC the object.
+        $vcard->destroy();
 
         // If we got all the way here, it means we haven't been able to
         // determine early if the test failed or not.
@@ -654,6 +668,10 @@ class Plugin extends DAV\ServerPlugin {
      *
      * This event is scheduled late in the process, after most work for
      * propfind has been done.
+     *
+     * @param DAV\PropFind $propFind
+     * @param DAV\INode $node
+     * @return void
      */
     function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
 
@@ -795,17 +813,22 @@ class Plugin extends DAV\ServerPlugin {
             default :
             case 'vcard3' :
                 $data = $data->convert(VObject\Document::VCARD30);
-                return $data->serialize();
+                $newResult = $data->serialize();
+                break;
             case 'vcard4' :
                 $data = $data->convert(VObject\Document::VCARD40);
-                return $data->serialize();
+                $newResult = $data->serialize();
+                break;
             case 'jcard' :
                 $data = $data->convert(VObject\Document::VCARD40);
-                return json_encode($data->jsonSerialize());
+                $newResult = json_encode($data->jsonSerialize());
+                break;
 
-        // @codeCoverageIgnoreStart
         }
-        // @codeCoverageIgnoreEnd
+        // Destroy circular references to PHP will GC the object.
+        $data->destroy();
+
+        return $newResult;
 
     }
 

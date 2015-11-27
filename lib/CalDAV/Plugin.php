@@ -180,6 +180,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->xml->namespaceMap[self::NS_CALDAV] = 'cal';
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
 
+        $server->xml->elementMap['{' . self::NS_CALDAV . '}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}calendar-query'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarQueryReport';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}calendar-multiget'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarMultiGetReport';
         $server->xml->elementMap['{' . self::NS_CALDAV . '}free-busy-query'] = 'Sabre\\CalDAV\\Xml\\Request\\FreeBusyQueryReport';
@@ -461,6 +462,9 @@ class Plugin extends DAV\ServerPlugin {
                 } else {
                     $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                 }
+                // Destroy circular references so PHP will garbage collect the
+                // object.
+                $vObject->destroy();
             }
 
             $propertyList[] = $objProps;
@@ -508,7 +512,10 @@ class Plugin extends DAV\ServerPlugin {
                 // VTIMEZONE.
                 $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
                 $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
-                unset($vtimezoneObj);
+
+                // Destroy circular references so PHP will garbage collect the
+                // object.
+                $vtimezoneObj->destroy();
             } else {
                 // Defaulting to UTC.
                 $calendarTimeZone = new DateTimeZone('UTC');
@@ -571,7 +578,27 @@ class Plugin extends DAV\ServerPlugin {
                     $result = [$properties];
 
                 }
+                // Destroy circular references so PHP will garbage collect the
+                // object.
+                $vObject->destroy();
 
+            }
+
+        }
+
+        if ($node instanceof ICalendarObjectContainer && $depth === 0) {
+
+            if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-') === 0) {
+                // Microsoft clients incorrectly supplied depth as 0, when it actually
+                // should have set depth to 1. We're implementing a workaround here
+                // to deal with this.
+                //
+                // This targets at least the following clients:
+                //   Windows 10
+                //   Windows Phone 8, 10
+                $depth = 1;
+            } else {
+                throw new BadRequest('A calendar-query REPORT on a calendar with a Depth: 0 is undefined. Set Depth to 1');
             }
 
         }
@@ -599,6 +626,10 @@ class Plugin extends DAV\ServerPlugin {
                     } else {
                         $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = $vObject->serialize();
                     }
+
+                    // Destroy circular references so PHP will garbage collect the
+                    // object.
+                    $vObject->destroy();
                 }
                 $result[] = $properties;
 
@@ -645,6 +676,8 @@ class Plugin extends DAV\ServerPlugin {
         if (isset($calendarProps[$tzProp])) {
             $vtimezoneObj = VObject\Reader::read($calendarProps[$tzProp]);
             $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+            // Destroy circular references so PHP will garbage collect the object.
+            $vtimezoneObj->destroy();
         } else {
             $calendarTimeZone = new DateTimeZone('UTC');
         }
@@ -884,6 +917,9 @@ class Plugin extends DAV\ServerPlugin {
 
         }
 
+        // Destroy circular references so PHP will garbage collect the object.
+        $vobj->destroy();
+
     }
 
 
@@ -945,6 +981,9 @@ class Plugin extends DAV\ServerPlugin {
 
         $jsonBody = json_encode($vobj->jsonSerialize());
         $response->setBody($jsonBody);
+
+        // Destroy circular references so PHP will garbage collect the object.
+        $vobj->destroy();
 
         $response->setHeader('Content-Type', 'application/calendar+json');
         $response->setHeader('Content-Length', strlen($jsonBody));

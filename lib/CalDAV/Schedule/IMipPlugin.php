@@ -57,7 +57,7 @@ class IMipPlugin extends DAV\ServerPlugin {
      *
      * This method should set up the required event subscriptions.
      *
-     * @param Server $server
+     * @param DAV\Server $server
      * @return void
      */
     function initialize(DAV\Server $server) {

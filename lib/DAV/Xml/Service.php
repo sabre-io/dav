@@ -20,7 +20,6 @@ class Service extends \Sabre\Xml\Service {
     public $elementMap = [
         '{DAV:}multistatus' => 'Sabre\\DAV\\Xml\\Response\\MultiStatus',
         '{DAV:}response'    => 'Sabre\\DAV\\Xml\\Element\\Response',
-        '{DAV:}propstat'    => 'Sabre\\Xml\\Element\\KeyValue',
 
         // Requests
         '{DAV:}propfind'       => 'Sabre\\DAV\\Xml\\Request\\PropFind',

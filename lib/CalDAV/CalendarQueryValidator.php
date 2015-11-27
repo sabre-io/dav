@@ -59,7 +59,7 @@ class CalendarQueryValidator {
 
         foreach ($filters as $filter) {
 
-            $isDefined = isset($parent->$filter['name']);
+            $isDefined = isset($parent->{$filter['name']});
 
             if ($filter['is-not-defined']) {
 
@@ -75,7 +75,7 @@ class CalendarQueryValidator {
             }
 
             if ($filter['time-range']) {
-                foreach ($parent->$filter['name'] as $subComponent) {
+                foreach ($parent->{$filter['name']} as $subComponent) {
                     if ($this->validateTimeRange($subComponent, $filter['time-range']['start'], $filter['time-range']['end'])) {
                         continue 2;
                     }
@@ -89,7 +89,7 @@ class CalendarQueryValidator {
 
             // If there are sub-filters, we need to find at least one component
             // for which the subfilters hold true.
-            foreach ($parent->$filter['name'] as $subComponent) {
+            foreach ($parent->{$filter['name']} as $subComponent) {
 
                 if (
                     $this->validateCompFilters($subComponent, $filter['comp-filters']) &&
@@ -128,7 +128,7 @@ class CalendarQueryValidator {
 
         foreach ($filters as $filter) {
 
-            $isDefined = isset($parent->$filter['name']);
+            $isDefined = isset($parent->{$filter['name']});
 
             if ($filter['is-not-defined']) {
 
@@ -144,7 +144,7 @@ class CalendarQueryValidator {
             }
 
             if ($filter['time-range']) {
-                foreach ($parent->$filter['name'] as $subComponent) {
+                foreach ($parent->{$filter['name']} as $subComponent) {
                     if ($this->validateTimeRange($subComponent, $filter['time-range']['start'], $filter['time-range']['end'])) {
                         continue 2;
                     }
@@ -158,7 +158,7 @@ class CalendarQueryValidator {
 
             // If there are sub-filters, we need to find at least one property
             // for which the subfilters hold true.
-            foreach ($parent->$filter['name'] as $subComponent) {
+            foreach ($parent->{$filter['name']} as $subComponent) {
 
                 if (
                     $this->validateParamFilters($subComponent, $filter['param-filters']) &&

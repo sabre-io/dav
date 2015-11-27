@@ -62,7 +62,7 @@ interface BackendInterface {
      * existing one.
      *
      * @param RequestInterface $request
-     * @param ResponseInterface $request
+     * @param ResponseInterface $response
      * @return void
      */
     function challenge(RequestInterface $request, ResponseInterface $response);

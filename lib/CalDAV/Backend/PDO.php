@@ -558,11 +558,11 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
                     $lastOccurence = $component->DTEND->getDateTime()->getTimeStamp();
                 } elseif (isset($component->DURATION)) {
                     $endDate = clone $component->DTSTART->getDateTime();
-                    $endDate->add(VObject\DateTimeParser::parse($component->DURATION->getValue()));
+                    $endDate = $endDate->add(VObject\DateTimeParser::parse($component->DURATION->getValue()));
                     $lastOccurence = $endDate->getTimeStamp();
                 } elseif (!$component->DTSTART->hasTime()) {
                     $endDate = clone $component->DTSTART->getDateTime();
-                    $endDate->modify('+1 day');
+                    $endDate = $endDate->modify('+1 day');
                     $lastOccurence = $endDate->getTimeStamp();
                 } else {
                     $lastOccurence = $firstOccurence;
@@ -584,6 +584,9 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
             }
         }
+
+        // Destroy circular references to PHP will GC the object.
+        $vObject->destroy();
 
         return [
             'etag'           => md5($calendarData),

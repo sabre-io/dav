@@ -2,10 +2,8 @@
 
 namespace Sabre\DAV\Mock;
 
-use
-    Sabre\DAV\IProperties,
-    Sabre\DAV\PropPatch;
-
+use Sabre\DAV\IProperties;
+use Sabre\DAV\PropPatch;
 
 /**
  * A node specifically for testing property-related operations
@@ -28,7 +26,7 @@ class PropertiesCollection extends Collection implements IProperties {
      * @param array $properties
      * @return void
      */
-    public function __construct($name, array $children, array $properties = []) {
+    function __construct($name, array $children, array $properties = []) {
 
         parent::__construct($name, $children, null);
         $this->properties = $properties;
@@ -47,15 +45,15 @@ class PropertiesCollection extends Collection implements IProperties {
      * @param array $mutations
      * @return bool|array
      */
-    public function propPatch(PropPatch $proppatch) {
+    function propPatch(PropPatch $proppatch) {
 
         $proppatch->handleRemaining(function($updateProperties) {
 
-            switch($this->failMode) {
+            switch ($this->failMode) {
                 case 'updatepropsfalse' : return false;
                 case 'updatepropsarray' :
                     $r = [];
-                    foreach($updateProperties as $k=>$v) $r[$k] = 402;
+                    foreach ($updateProperties as $k => $v) $r[$k] = 402;
                     return $r;
                 case 'updatepropsobj' :
                     return new \STDClass();
@@ -80,10 +78,10 @@ class PropertiesCollection extends Collection implements IProperties {
      * @param array $properties
      * @return array
      */
-    public function getProperties($requestedProperties) {
+    function getProperties($requestedProperties) {
 
-        $returnedProperties = array();
-        foreach($requestedProperties as $requestedProperty) {
+        $returnedProperties = [];
+        foreach ($requestedProperties as $requestedProperty) {
             if (isset($this->properties[$requestedProperty])) {
                 $returnedProperties[$requestedProperty] =
                     $this->properties[$requestedProperty];

@@ -34,6 +34,7 @@ class Inbox extends DAV\Collection implements IInbox {
     /**
      * Constructor
      *
+     * @param Backend\SchedulingSupport $caldavBackend
      * @param string $principalUri
      */
     function __construct(Backend\SchedulingSupport $caldavBackend, $principalUri) {
@@ -147,7 +148,7 @@ class Inbox extends DAV\Collection implements IInbox {
         return [
             [
                 'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner(),
+                'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ],
             [
@@ -158,16 +159,6 @@ class Inbox extends DAV\Collection implements IInbox {
             [
                 'privilege' => '{DAV:}unbind',
                 'principal' => $this->getOwner(),
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner() . '/calendar-proxy-read',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
             ],
             [
@@ -259,6 +250,9 @@ class Inbox extends DAV\Collection implements IInbox {
             if ($validator->validate($vObject, $filters)) {
                 $result[] = $object['uri'];
             }
+
+            // Destroy circular references to PHP will GC the object.
+            $vObject->destroy();
         }
         return $result;
 

@@ -588,10 +588,14 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($node instanceof ICalendarObjectContainer && $depth === 0) {
 
-            if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-WP/') === 0) {
-                // Windows phone incorrectly supplied depth as 0, when it actually
+            if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-') === 0) {
+                // Microsoft clients incorrectly supplied depth as 0, when it actually
                 // should have set depth to 1. We're implementing a workaround here
                 // to deal with this.
+                //
+                // This targets at least the following clients:
+                //   Windows 10
+                //   Windows Phone 8, 10
                 $depth = 1;
             } else {
                 throw new BadRequest('A calendar-query REPORT on a calendar with a Depth: 0 is undefined. Set Depth to 1');

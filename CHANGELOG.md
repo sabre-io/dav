@@ -5,6 +5,10 @@ ChangeLog
 -------------------------
 
 * Better error message when the browser plugin is not enabled.
+* #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
+  use emoji in some tables where you couldn't before.
+* #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
+* #727: Added another workaround to make CalDAV work for Windows 10 clients.
 
 
 3.1.0-alpha2 (2015-09-05)
@@ -38,6 +42,14 @@ ChangeLog
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
   [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.6 (2015-??-??)
+------------------
+
+* #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
+  use emoji in some tables where you couldn't before.
+* #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 
 
 3.0.5 (2015-09-15)
@@ -196,6 +208,8 @@ ChangeLog
   its second argument, and no longer receives seperate properties and
   resourcetype arguments.
 * `MKCOL` now integrates better with propertystorage plugins.
+* #623: Remove need of temporary files when working with Range requests.
+  (@dratini0)
 * The zip release ships with [sabre/vobject 3.4.2][vobj],
   [sabre/http 4.0.0-alpha1][http], [sabre/event 2.0.1][evnt],
   [sabre/uri 1.0.0][uri] and [sabre/xml 0.4.3][xml].

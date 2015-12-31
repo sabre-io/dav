@@ -224,6 +224,12 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
+2.1.8 (????-??-??)
+------------------
+
+* #729: Fixed a caching problem in the Tree object.
+
+
 2.1.7 (2015-09-05)
 ------------------
 

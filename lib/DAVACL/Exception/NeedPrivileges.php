@@ -10,7 +10,7 @@ use Sabre\DAV;
  * The 403-need privileges is thrown when a user didn't have the appropriate
  * permissions to perform an operation
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

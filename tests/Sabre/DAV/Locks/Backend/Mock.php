@@ -9,7 +9,7 @@ use Sabre\DAV\Locks\LockInfo;
  *
  * This backend stores lock information in memory. Mainly useful for testing.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

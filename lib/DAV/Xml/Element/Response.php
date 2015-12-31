@@ -123,16 +123,35 @@ class Response implements Element {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
         $writer->writeElement('{DAV:}href', $writer->contextUri . \Sabre\HTTP\encodePath($this->getHref()));
+
+        $empty = true;
+
         foreach ($this->getResponseProperties() as $status => $properties) {
 
             // Skipping empty lists
             if (!$properties || (!ctype_digit($status) && !is_int($status))) {
                 continue;
             }
+            $empty = false;
             $writer->startElement('{DAV:}propstat');
             $writer->writeElement('{DAV:}prop', $properties);
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
             $writer->endElement(); // {DAV:}propstat
+
+        }
+        if ($empty) {
+            /*
+             * The WebDAV spec _requires_ at least one DAV:propstat to appear for
+             * every DAV:response. In some circumstances however, there are no
+             * properties to encode.
+             *
+             * In those cases we MUST specify at least one DAV:propstat anyway, with
+             * no properties.
+             */
+            $writer->writeElement('{DAV:}propstat', [
+                '{DAV:}prop'   => [],
+                '{DAV:}status' => 'HTTP/1.1 418 ' . \Sabre\HTTP\Response::$statusCodes[418]
+            ]);
 
         }
 
@@ -217,7 +236,7 @@ class Response implements Element {
                     $status = $elem['value']['{DAV:}status'];
                     list(, $status, ) = explode(' ', $status, 3);
                     $properties = isset($elem['value']['{DAV:}prop']) ? $elem['value']['{DAV:}prop'] : [];
-                    $propertyLists[$status] = $properties;
+                    if ($properties) $propertyLists[$status] = $properties;
                     break;
                 case '{DAV:}status' :
                     list(, $statusCode, ) = explode(' ', $elem['value'], 3);

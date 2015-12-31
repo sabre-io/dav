@@ -10,7 +10,7 @@ use Sabre\DAV;
  * Similar to  the Locked exception, this exception thrown when a LOCK request
  * was made, on a resource which was already locked
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

@@ -12,8 +12,8 @@ use Sabre\HTTP;
  *
  * This file will be removed in a future version.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @deprecated Use Sabre\HTTP\URLUtil instead!
  * @license http://sabre.io/license/ Modified BSD License
  */

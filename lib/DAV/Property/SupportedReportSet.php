@@ -10,7 +10,7 @@ use Sabre\DAV;
  * This property is defined in RFC3253, but since it's
  * so common in other webdav-related specs, it is part of the core server.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

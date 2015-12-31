@@ -9,7 +9,7 @@ namespace Sabre\DAV\Property;
  * This is used by certain subsystems to aquire more information about for example
  * the owner of a file
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

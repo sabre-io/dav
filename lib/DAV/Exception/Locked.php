@@ -9,7 +9,7 @@ use Sabre\DAV;
  *
  * The 423 is thrown when a client tried to access a resource that was locked, without supplying a valid lock token
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

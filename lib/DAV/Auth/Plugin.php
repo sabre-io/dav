@@ -16,7 +16,7 @@ use
  *  * {DAV:}current-user-principal property from RFC5397
  *  * {DAV:}principal-collection-set property from RFC3744
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

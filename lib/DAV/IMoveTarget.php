@@ -13,7 +13,7 @@ namespace Sabre\DAV;
  * If a backend supports a better optimized move operation, this can trigger
  * some huge speed gains.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */

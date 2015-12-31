@@ -7,7 +7,7 @@ namespace Sabre\DAV\Exception;
  *
  * This Exception is thrown when a Node couldn't be found. It returns HTTP error code 404
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

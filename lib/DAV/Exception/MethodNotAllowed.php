@@ -7,7 +7,7 @@ namespace Sabre\DAV\Exception;
  *
  * The 405 is thrown when a client tried to create a directory on an already existing directory
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

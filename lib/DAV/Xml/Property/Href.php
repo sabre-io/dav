@@ -18,7 +18,7 @@ use Sabre\Xml\Writer;
  * {DAV:}href elements were found, this property will unserialize itself as
  * null.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

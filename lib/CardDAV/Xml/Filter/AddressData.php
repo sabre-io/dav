@@ -17,7 +17,7 @@ use Sabre\Xml\XmlDeserializable;
  * encodes the address-data element as it appears in the addressbook-query
  * adressbook-multiget REPORT requests.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

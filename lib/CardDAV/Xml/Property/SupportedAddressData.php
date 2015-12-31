@@ -16,7 +16,7 @@ use Sabre\CardDAV\Plugin;
  *
  * http://tools.ietf.org/html/rfc6352#section-6.2.2
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

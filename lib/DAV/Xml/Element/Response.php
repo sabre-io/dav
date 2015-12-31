@@ -13,7 +13,7 @@ use Sabre\Xml\Writer;
  *
  * https://tools.ietf.org/html/rfc4918#section-14.24
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

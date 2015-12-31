@@ -16,7 +16,7 @@ use Sabre\CalDAV\Plugin;
  * This property is defined in:
  * http://tools.ietf.org/html/rfc4791#section-5.2.4
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

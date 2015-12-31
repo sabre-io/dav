@@ -21,7 +21,7 @@ use Sabre\VObject\DateTimeParser;
  * it appears in a DAV:prop element, in a calendar-query or calendar-multiget
  * REPORT request.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

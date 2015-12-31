@@ -8,7 +8,7 @@ namespace Sabre\DAV\Mock;
  * Works similar to the mock file, but this one works with streams and has no
  * content-length or etags.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

@@ -50,6 +50,8 @@ ChangeLog
 * #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
   use emoji in some tables where you couldn't before.
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
+* #734: Return `418 I'm a Teapot` when generating a multistatus response that
+  has resources with no returned properties.
 
 
 3.0.5 (2015-09-15)
@@ -266,6 +268,12 @@ ChangeLog
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.8 (????-??-??)
+------------------
+
+* #729: Fixed a caching problem in the Tree object.
 
 
 2.1.7 (2015-09-05)

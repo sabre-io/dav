@@ -10,7 +10,7 @@ use Sabre\DAV\Exception\MethodNotAllowed;
  *
  * @author Brett (https://github.com/bretten)
  * @license http://sabre.io/license/ Modified BSD License
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  */
 class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements ISchedulingObject {
 

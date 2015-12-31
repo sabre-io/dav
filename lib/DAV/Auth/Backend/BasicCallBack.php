@@ -10,7 +10,7 @@ namespace Sabre\DAV\Auth\Backend;
  * The callback must return true or false depending on if authentication was
  * correct.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

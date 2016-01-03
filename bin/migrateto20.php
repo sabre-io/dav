@@ -133,6 +133,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
                         ");
                         break;
                 }
+                break;
 
             case 'sqlite' :
 
@@ -170,6 +171,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
 
                         break;
                 }
+                break;
 
         }
         echo "Creation of 2.0 $tableName table is complete\n";
@@ -391,7 +393,7 @@ CREATE TABLE cards (
     uri VARCHAR(200),
     lastmodified INT(11) UNSIGNED,
     etag VARBINARY(32),
-    size INT(11) UNSIGNED NOT NULL,
+    size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
             ");

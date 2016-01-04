@@ -455,7 +455,7 @@ class Plugin extends DAV\ServerPlugin {
                         $timeZones[$calendarPath] = $timeZone;
                     }
 
-                    $vObject->expand($report->expand['start'], $report->expand['end'], $timeZones[$calendarPath]);
+                    $vObject = $vObject->expand($report->expand['start'], $report->expand['end'], $timeZones[$calendarPath]);
                 }
                 if ($needsJson) {
                     $objProps[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
@@ -566,7 +566,7 @@ class Plugin extends DAV\ServerPlugin {
 
 
                         if ($report->expand) {
-                            $vObject->expand($report->expand['start'], $report->expand['end'], $calendarTimeZone);
+                            $vObject = $vObject->expand($report->expand['start'], $report->expand['end'], $calendarTimeZone);
                         }
                         if ($needsJson) {
                             $properties[200]['{' . self::NS_CALDAV . '}calendar-data'] = json_encode($vObject->jsonSerialize());
@@ -618,7 +618,7 @@ class Plugin extends DAV\ServerPlugin {
                     $vObject = VObject\Reader::read($properties[200]['{' . self::NS_CALDAV . '}calendar-data']);
 
                     if ($report->expand) {
-                        $vObject->expand($report->expand['start'], $report->expand['end'], $calendarTimeZone);
+                        $vObject = $vObject->expand($report->expand['start'], $report->expand['end'], $calendarTimeZone);
                     }
 
                     if ($needsJson) {

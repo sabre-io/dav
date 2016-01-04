@@ -243,7 +243,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                 $calendarTimeZone = new DateTimeZone('UTC');
             }
 
-            $mergedCalendar->expand($start, $end, $calendarTimeZone);
+            $mergedCalendar = $mergedCalendar->expand($start, $end, $calendarTimeZone);
         }
 
         $response->setHeader('Content-Type', $format);

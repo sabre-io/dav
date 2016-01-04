@@ -18,6 +18,7 @@ class File extends DAV\File {
     protected $name;
     protected $contents;
     protected $parent;
+    protected $lastModified;
 
     /**
      * Creates the object
@@ -26,11 +27,17 @@ class File extends DAV\File {
      * @param array $children
      * @return void
      */
-    function __construct($name, $contents, Collection $parent = null) {
+    function __construct($name, $contents, Collection $parent = null, $lastModified = -1) {
 
         $this->name = $name;
         $this->put($contents);
         $this->parent = $parent;
+
+        if ($lastModified === -1) {
+            $lastModified = time();
+        }
+
+        $this->lastModified = $lastModified;
 
     }
 
@@ -135,6 +142,18 @@ class File extends DAV\File {
     function delete() {
 
         $this->parent->deleteChild($this->name);
+
+    }
+
+    /**
+     * Returns the last modification time as a unix timestamp.
+     * If the information is not available, return null.
+     *
+     * @return int
+     */
+    function getLastModified() {
+
+        return $this->lastModified;
 
     }
 

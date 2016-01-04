@@ -53,6 +53,7 @@ ChangeLog
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 * #734: Return `418 I'm a Teapot` when generating a multistatus response that
   has resources with no returned properties.
+* #740: Bugs in `migrate20.php` script.
 
 
 3.0.5 (2015-09-15)
@@ -275,6 +276,7 @@ ChangeLog
 ------------------
 
 * #729: Fixed a caching problem in the Tree object.
+* #740: Bugs in `migrate20.php` script.
 
 
 2.1.7 (2015-09-05)

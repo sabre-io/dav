@@ -228,6 +228,7 @@ ChangeLog
 ------------------
 
 * #729: Fixed a caching problem in the Tree object.
+* #740: Bugs in `migrate20.php` script.
 
 
 2.1.7 (2015-09-05)

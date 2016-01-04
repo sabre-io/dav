@@ -134,9 +134,12 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      *
      * @param string $uri
      * @param resource $data
+     * @param DAV\ICollection $parentNode
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return bool
      */
-    function beforeCreateFile($uri, $data) {
+    function beforeCreateFile($uri, $data, $parent, $modified) {
 
         if ($tempPath = $this->isTempFile($uri)) {
 

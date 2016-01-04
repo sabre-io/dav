@@ -45,7 +45,7 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.6 (2015-??-??)
+3.0.6 (2016-01-04)
 ------------------
 
 * #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
@@ -54,6 +54,9 @@ ChangeLog
 * #734: Return `418 I'm a Teapot` when generating a multistatus response that
   has resources with no returned properties.
 * #740: Bugs in `migrate20.php` script.
+* The zip release ships with [sabre/vobject 3.4.8][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.0.5 (2015-09-15)
@@ -272,11 +275,13 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
-2.1.8 (????-??-??)
+2.1.8 (2016-01-04)
 ------------------
 
 * #729: Fixed a caching problem in the Tree object.
 * #740: Bugs in `migrate20.php` script.
+* The zip release ships with [sabre/vobject 3.4.8][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.7 (2015-09-05)

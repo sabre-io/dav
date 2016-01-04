@@ -24,6 +24,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s = new DAV\Server();
         $s->addPlugin($p);
         $this->assertEquals($p, $s->getPlugin('ics-export'));
+        $this->assertEquals('ics-export', $p->getPluginInfo()['name']);
 
     }
 

@@ -29,15 +29,22 @@ class VCFExportTest extends \Sabre\DAVServerTest {
     function setUp() {
 
         parent::setUp();
+        $plugin = new VCFExportPlugin();
         $this->server->addPlugin(
-            new VCFExportPlugin()
+            $plugin
         );
 
     }
 
     function testSimple() {
 
-        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $this->server->getPlugin('vcf-export'));
+        $plugin = $this->server->getPlugin('vcf-export');
+        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $plugin);
+
+        $this->assertEquals(
+            'vcf-export',
+            $plugin->getPluginInfo()['name']
+        );
 
     }
 
@@ -69,6 +76,16 @@ END:VCARD
         $expected = str_replace("\n","\r\n", $expected);
 
         $this->assertEquals($expected, $response->body);
+
+    }
+
+    function testBrowserIntegration() {
+
+        $plugin = $this->server->getPlugin('vcf-export');
+        $actions = '';
+        $addressbook = new AddressBook($this->carddavBackend, []);
+        $this->server->emit('browserButtonActions', ['/foo', $addressbook, &$actions]);
+        $this->assertContains('/foo?export', $actions);
 
     }
 

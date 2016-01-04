@@ -110,10 +110,10 @@ END:VCALENDAR
                 /** @var $child Sabre\VObject\Property */
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
-                    $this->assertEquals($child->getValue(), '20141108T043000Z');
+                    $this->assertEquals('20141108T043000Z', $child->getValue());
                 } elseif ($child->name == 'DTEND') {
                     // DTEND should be the UTC equivalent of given floating time
-                    $this->assertEquals($child->getValue(), '20141108T063000Z');
+                    $this->assertEquals('20141108T063000Z', $child->getValue());
                 }
             }
         }
@@ -195,10 +195,10 @@ END:VCALENDAR
                 /** @var $child Sabre\VObject\Property */
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
-                    $this->assertEquals($child->getValue(), '20141108T043000Z');
+                    $this->assertEquals('20141108T043000Z', $child->getValue());
                 } elseif ($child->name == 'DTEND') {
                     // DTEND should be the UTC equivalent of given floating time
-                    $this->assertEquals($child->getValue(), '20141108T063000Z');
+                    $this->assertEquals('20141108T063000Z', $child->getValue());
                 }
             }
         }

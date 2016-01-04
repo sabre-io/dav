@@ -35,7 +35,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
         $file->loadFile(SABRE_TEMPDIR . '/backend');
 
         $this->assertFalse($file->getDigestHash('realm','blabla'));
-        $this->assertEquals(md5('user:realm:password'), $file->getDigesthash('realm','user'));
+        $this->assertEquals(md5('user:realm:password'), $file->getDigestHash('realm','user'));
 
     }
 

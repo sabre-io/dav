@@ -12,7 +12,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     function testInit() {
 
         $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new Backend\Mock(),'realm');
+        $plugin = new Plugin(new Backend\Mock());
         $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));

@@ -70,17 +70,6 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function updatePropFail(&$propertyDelta, &$result, $node) {
-
-        $result[404] = array(
-            '{DAV:}foo' => null,
-        );
-        unset($propertyDelta['{DAV:}foo']);
-        return false;
-
-    }
-
-
     function testUpdatePropertiesEventSuccess() {
 
         $tree = array(
@@ -111,17 +100,4 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function updatePropSuccess(&$propertyDelta, &$result, $node) {
-
-        $result[200] = array(
-            '{DAV:}foo' => null,
-        );
-        $result[201] = array(
-            '{DAV:}foo2' => null,
-        );
-        unset($propertyDelta['{DAV:}foo']);
-        unset($propertyDelta['{DAV:}foo2']);
-        return;
-
-    }
 }

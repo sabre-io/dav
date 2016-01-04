@@ -45,10 +45,6 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     public function testPropFindEmptyBody() {
 
-        $hasFired = false;
-
-        $self = $this;
-
         $this->sendRequest("");
 
         $this->assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->getBodyAsString());

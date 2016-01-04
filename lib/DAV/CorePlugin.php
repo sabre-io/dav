@@ -76,7 +76,7 @@ class CorePlugin extends ServerPlugin {
     function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
-        $node = $this->server->tree->getNodeForPath($path, 0);
+        $node = $this->server->tree->getNodeForPath($path);
 
         if (!$node instanceof IFile) return;
 

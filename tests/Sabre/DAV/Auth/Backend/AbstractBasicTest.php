@@ -5,8 +5,6 @@ namespace Sabre\DAV\Auth\Backend;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckNoHeaders() {

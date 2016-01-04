@@ -40,7 +40,7 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function testPatchNoRange() {
 
-        $this->node->put('00000000');
+        $this->node->put('aaaaaaaa');
         $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PATCH',
             'REQUEST_URI'    => '/partial',
@@ -53,10 +53,10 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function testPatchNotSupported() {
 
-        $this->node->put('00000000');
+        $this->node->put('aaaaaaaa');
         $request = new HTTP\Request('PATCH', '/', ['X-Update-Range' => '3-4']);
         $request->setBody(
-            '111'
+            'bbb'
         );
         $response = $this->request($request);
 
@@ -66,10 +66,10 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function testPatchNoContentType() {
 
-        $this->node->put('00000000');
+        $this->node->put('aaaaaaaa');
         $request = new HTTP\Request('PATCH', '/partial', ['X-Update-Range' => 'bytes=3-4']);
         $request->setBody(
-            '111'
+            'bbb'
         );
         $response = $this->request($request);
 
@@ -79,10 +79,10 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function testPatchBadRange() {
 
-        $this->node->put('00000000');
+        $this->node->put('aaaaaaaa');
         $request = new HTTP\Request('PATCH', '/partial', ['X-Update-Range' => 'bytes=3-4', 'Content-Type' => 'application/x-sabredav-partialupdate', 'Content-Length' => '3']);
         $request->setBody(
-            '111'
+            'bbb'
         );
         $response = $this->request($request);
 
@@ -92,10 +92,10 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function testPatchNoLength() {
 
-        $this->node->put('00000000');
+        $this->node->put('aaaaaaaa');
         $request = new HTTP\Request('PATCH', '/partial', ['X-Update-Range' => 'bytes=3-5', 'Content-Type' => 'application/x-sabredav-partialupdate']);
         $request->setBody(
-            '111'
+            'bbb'
         );
         $response = $this->request($request);
 
@@ -105,30 +105,30 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function testPatchSuccess() {
 
-        $this->node->put('00000000');
+        $this->node->put('aaaaaaaa');
         $request = new HTTP\Request('PATCH', '/partial', ['X-Update-Range' => 'bytes=3-5', 'Content-Type' => 'application/x-sabredav-partialupdate', 'Content-Length' => 3]);
         $request->setBody(
-            '111'
+            'bbb'
         );
         $response = $this->request($request);
 
         $this->assertEquals(204, $response->status, 'Full response body:' . $response->body);
-        $this->assertEquals('00011100', $this->node->get());
+        $this->assertEquals('aaabbbaa', $this->node->get());
 
     }
 
     function testPatchNoEndRange() {
 
-        $this->node->put('00000');
+        $this->node->put('aaaaa');
         $request = new HTTP\Request('PATCH', '/partial', ['X-Update-Range' => 'bytes=3-', 'Content-Type' => 'application/x-sabredav-partialupdate', 'Content-Length' => '3']);
         $request->setBody(
-            '111'
+            'bbb'
         );
 
         $response = $this->request($request);
 
         $this->assertEquals(204, $response->getStatus(), 'Full response body:' . $response->getBodyAsString());
-        $this->assertEquals('00111', $this->node->get());
+        $this->assertEquals('aaabbb', $this->node->get());
 
     }
 

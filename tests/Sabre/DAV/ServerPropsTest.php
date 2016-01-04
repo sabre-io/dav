@@ -86,7 +86,7 @@ class ServerPropsTest extends AbstractServer {
         $xml->registerXPathNamespace('d','urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
-        $this->assertEquals('/test2.txt',(string)$data,'href element should have been /');
+        $this->assertEquals('/test2.txt',(string)$data,'href element should have been /test2.txt');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength');
         $this->assertEquals(1,count($data));

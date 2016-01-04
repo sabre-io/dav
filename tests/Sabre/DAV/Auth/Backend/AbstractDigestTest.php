@@ -47,11 +47,6 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertNull(
-            $backend->check($request, $response)
-        );
-
-        $backend = new AbstractDigestMock();
         $backend->check($request, $response);
 
     }

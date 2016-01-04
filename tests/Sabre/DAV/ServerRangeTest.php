@@ -218,8 +218,6 @@ class ServerRangeTest extends AbstractServer{
      */
     function testIfRangeModificationDate() {
 
-        $node = $this->server->tree->getNodeForPath('test.txt');
-
         $serverVars = [
             'REQUEST_URI'    => '/test.txt',
             'REQUEST_METHOD' => 'GET',
@@ -252,8 +250,6 @@ class ServerRangeTest extends AbstractServer{
      * @depends testRange
      */
     function testIfRangeModificationDateModified() {
-
-        $node = $this->server->tree->getNodeForPath('test.txt');
 
         $serverVars = [
             'REQUEST_URI'    => '/test.txt',

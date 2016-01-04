@@ -18,7 +18,7 @@ class SyncCollectionTest extends XmlTest {
 </d:sync-collection>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\SyncCollectionReport']);
+        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\\SyncCollectionReport']);
 
         $elem = new SyncCollectionReport();
         $elem->syncLevel = 1;
@@ -42,7 +42,7 @@ class SyncCollectionTest extends XmlTest {
 </d:sync-collection>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\SyncCollectionReport']);
+        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\\SyncCollectionReport']);
 
         $elem = new SyncCollectionReport();
         $elem->syncLevel = 1;
@@ -66,7 +66,7 @@ class SyncCollectionTest extends XmlTest {
 </d:sync-collection>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\SyncCollectionReport']);
+        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\\SyncCollectionReport']);
 
         $elem = new SyncCollectionReport();
         $elem->syncLevel = \Sabre\DAV\Server::DEPTH_INFINITY;
@@ -87,7 +87,7 @@ class SyncCollectionTest extends XmlTest {
 </d:sync-collection>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\SyncCollectionReport']);
+        $result = $this->parse($xml, ['{DAV:}sync-collection' => 'Sabre\\DAV\\Xml\\Request\\SyncCollectionReport']);
 
     }
 

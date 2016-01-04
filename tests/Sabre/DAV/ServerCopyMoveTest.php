@@ -143,7 +143,7 @@ class ServerCopyMoveTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status, 'Full response: ' . $this->response->getBody(true));
+        $this->assertEquals(201, $this->response->status, 'Full response: ' . $this->response->getBodyAsString());
 
         $this->assertEquals(array(
                 'X-Sabre-Version' => [Version::VERSION],

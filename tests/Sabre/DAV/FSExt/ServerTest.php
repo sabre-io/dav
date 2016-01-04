@@ -70,7 +70,7 @@ class ServerTest extends DAV\AbstractServer{
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
-            'Content-Length'  => [0],
+            'Content-Length'  => ['0'],
             'ETag'            => ['"' . sha1(fileinode($filename ) . filesize($filename) . filemtime($filename)) . '"'],
         ], $this->response->getHeaders());
 
@@ -161,7 +161,7 @@ class ServerTest extends DAV\AbstractServer{
         ],$this->response->getHeaders());
         $this->assertEquals(204, $this->response->status);
         $this->assertEquals('', $this->response->body);
-        $this->assertFalse(file_exists($this->tempDir . '/col'));
+        $this->assertFalse(file_exists($this->tempDir . '/testcol'));
 
     }
 

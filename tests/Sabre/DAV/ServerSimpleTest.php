@@ -120,7 +120,7 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
-            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($filename)))],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
             ],
             $this->response->getHeaders()
@@ -380,7 +380,7 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
-    function exceptionTrigger() {
+    function exceptionTrigger($request, $response) {
 
         throw new Exception('Hola');
 
@@ -433,7 +433,7 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
-    function reportHandler($reportName) {
+    function reportHandler($reportName, $result, $path) {
 
         if ($reportName=='{http://www.rooftopsolutions.nl/NS}myreport') {
             $this->server->httpResponse->setStatus(418);

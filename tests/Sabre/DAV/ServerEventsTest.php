@@ -62,7 +62,7 @@ class ServerEventsTest extends AbstractServer {
 
     }
 
-    function beforeBindCancelHandler() {
+    function beforeBindCancelHandler($path) {
 
         return false;
 
@@ -92,14 +92,14 @@ class ServerEventsTest extends AbstractServer {
     function testMethod() {
 
         $k = 1;
-        $this->server->on('method', function() use (&$k) {
+        $this->server->on('method', function($request, $response) use (&$k) {
 
             $k+=1;
 
             return false;
 
         });
-        $this->server->on('method', function() use (&$k) {
+        $this->server->on('method', function($request, $response) use (&$k) {
 
             $k+=2;
 

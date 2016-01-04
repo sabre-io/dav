@@ -225,11 +225,13 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
-2.1.8 (????-??-??)
+2.1.8 (2016-01-04)
 ------------------
 
 * #729: Fixed a caching problem in the Tree object.
 * #740: Bugs in `migrate20.php` script.
+* The zip release ships with [sabre/vobject 3.4.8][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.7 (2015-09-05)

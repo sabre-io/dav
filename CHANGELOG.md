@@ -14,7 +14,8 @@ ChangeLog
 * Subtle browser improvements.
 * #726: Better error reporting in `Client::propPatch`. We're now throwing
   exceptions.
-
+* #721: Events are now handled in the correct order for `COPY` requests.
+  Before this subtle bugs could appear that could cause data-loss.
 
 3.1.0-alpha2 (2015-09-05)
 -------------------------

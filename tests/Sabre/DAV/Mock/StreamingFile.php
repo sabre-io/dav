@@ -14,6 +14,8 @@ namespace Sabre\DAV\Mock;
  */
 class StreamingFile extends File {
 
+    protected $size;
+
     /**
      * Updates the data
      *
@@ -81,7 +83,19 @@ class StreamingFile extends File {
      */
     function getSize() {
 
-        return null;
+        return $this->size;
+
+    }
+
+    /**
+     * Allows testing scripts to set the resource's file size.
+     *
+     * @param int $size
+     * @return void
+     */
+    function setSize($size) {
+
+        $this->size = $size;
 
     }
 

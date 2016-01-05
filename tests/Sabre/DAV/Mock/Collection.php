@@ -121,6 +121,15 @@ class Collection extends DAV\Collection {
     }
 
     /**
+     * Adds an already existing node to this collection.
+     */
+    function addNode(\Sabre\DAV\INode $node) {
+
+        $this->children[] = $node;
+
+    }
+
+    /**
      * Removes a childnode from this node.
      *
      * @param string $name

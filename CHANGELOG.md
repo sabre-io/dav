@@ -23,6 +23,8 @@ ChangeLog
   Before this subtle bugs could appear that could cause data-loss.
 * #747: Now throwing exceptions and setting the HTTP status to 500 in subtle
   cases where no other plugin set a correct HTTP status.
+* #686: Corrected PDO principal backend's findByURI for email addresses that
+  don't match the exact capitalization.
 
 
 3.1.0-alpha2 (2015-09-05)

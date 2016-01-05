@@ -12,6 +12,8 @@ ChangeLog
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #742: Fixes to make sure that vobject 4 is correctly supported.
 * Subtle browser improvements.
+* #726: Better error reporting in `Client::propPatch`. We're now throwing
+  exceptions.
 
 
 3.1.0-alpha2 (2015-09-05)

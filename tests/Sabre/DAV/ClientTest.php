@@ -149,7 +149,7 @@ XML;
     }
 
     /**
-     * @expectedException \Sabre\DAV\Exception
+     * @expectedException \Sabre\HTTP\ClientHttpException
      */
     function testPropFindError() {
 

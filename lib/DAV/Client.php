@@ -228,7 +228,7 @@ class Client extends HTTP\Client {
         $response = $this->send($request);
 
         if ((int)$response->getStatus() >= 400) {
-            throw new Exception('HTTP error: ' . $response->getStatus());
+            throw new \Sabre\HTTP\ClientHttpException($response);
         }
 
         $result = $this->parseMultiStatus($response->getBodyAsString());

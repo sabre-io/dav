@@ -260,7 +260,7 @@ class Client extends HTTP\Client {
      *
      * @param string $url
      * @param array $properties
-     * @return void
+     * @return bool
      */
     function propPatch($url, array $properties) {
 
@@ -275,7 +275,36 @@ class Client extends HTTP\Client {
         $request = new HTTP\Request('PROPPATCH', $url, [
             'Content-Type' => 'application/xml',
         ], $xml);
-        $this->send($request);
+        $response = $this->send($request);
+
+        if ($response->getStatus() >= 400) {
+            throw new \Sabre\HTTP\ClientHttpException($response);
+        }
+
+        if ($response->getStatus() === 207) {
+            // If it's a 207, the request could still have failed, but the
+            // information is hidden in the response body.
+            $result = $this->parseMultiStatus($response->getBodyAsString());
+
+            $errorProperties = [];
+            foreach ($result as $href => $statusList) {
+                foreach ($statusList as $status => $properties) {
+
+                    if ($status >= 400) {
+                        foreach ($properties as $propName => $propValue) {
+                            $errorProperties[] = $propName . ' (' . $status . ')';
+                        }
+                    }
+
+                }
+            }
+            if ($errorProperties) {
+
+                throw new \Sabre\HTTP\ClientException('PROPPATCH failed. The following properties errored: ' . implode(', ', $errorProperties));
+            }
+        }
+        return true;
+
     }
 
     /**

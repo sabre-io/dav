@@ -14,6 +14,9 @@ ChangeLog
 * Subtle browser improvements.
 * #726: Better error reporting in `Client::propPatch`. We're now throwing
   exceptions.
+* #608: When a HTTP error is triggered during `Client:propFind`, we're now
+  throwing `Sabre\HTTP\ClientHttpException` instead of `Sabre\DAV\Exception`.
+  This new exception contains a LOT more information about the problem.
 * #721: Events are now handled in the correct order for `COPY` requests.
   Before this subtle bugs could appear that could cause data-loss.
 * #747: Now throwing exceptions and setting the HTTP status to 500 in subtle

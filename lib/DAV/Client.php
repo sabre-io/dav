@@ -165,6 +165,8 @@ class Client extends HTTP\Client {
             $this->addCurlSetting(CURLOPT_ENCODING, implode(',', $encodings));
         }
 
+        $this->addCurlSetting(CURLOPT_USERAGENT, 'sabre-dav/' . Version::VERSION . ' (http://sabre.io/)');
+
         $this->xml = new Xml\Service();
         // BC
         $this->propertyMap = & $this->xml->elementMap;

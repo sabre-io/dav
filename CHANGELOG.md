@@ -25,6 +25,7 @@ ChangeLog
   cases where no other plugin set a correct HTTP status.
 * #686: Corrected PDO principal backend's findByURI for email addresses that
   don't match the exact capitalization.
+* #512: The client now has it's own `User-Agent`.
 
 
 3.1.0-alpha2 (2015-09-05)

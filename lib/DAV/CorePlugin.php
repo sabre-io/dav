@@ -675,12 +675,12 @@ class CorePlugin extends ServerPlugin {
 
         $copyInfo = $this->server->getCopyAndMoveInfo($request);
 
+        if (!$this->server->emit('beforeBind', [$copyInfo['destination']])) return false;
         if ($copyInfo['destinationExists']) {
             if (!$this->server->emit('beforeUnbind', [$copyInfo['destination']])) return false;
             $this->server->tree->delete($copyInfo['destination']);
-
         }
-        if (!$this->server->emit('beforeBind', [$copyInfo['destination']])) return false;
+
         $this->server->tree->copy($path, $copyInfo['destination']);
         $this->server->emit('afterBind', [$copyInfo['destination']]);
 

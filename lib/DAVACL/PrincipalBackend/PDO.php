@@ -208,6 +208,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
 
         });
 
+        $propPatch->commit();
+
     }
 
     /**

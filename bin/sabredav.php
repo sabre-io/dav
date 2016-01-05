@@ -8,7 +8,7 @@ class CliLog {
 
     function __construct() {
 
-        $this->stream = fopen('php://stdout','w');
+        $this->stream = fopen('php://stdout', 'w');
 
     }
 
@@ -20,19 +20,19 @@ class CliLog {
 
 $log = new CliLog();
 
-if (php_sapi_name()!=='cli-server') {
+if (php_sapi_name() !== 'cli-server') {
     die("This script is intended to run on the built-in php webserver");
 }
 
 // Finding composer
 
 
-$paths = array(
+$paths = [
     __DIR__ . '/../vendor/autoload.php',
     __DIR__ . '/../../../autoload.php',
-);
+];
 
-foreach($paths as $path) {
+foreach ($paths as $path) {
     if (file_exists($path)) {
         include $path;
         break;

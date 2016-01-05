@@ -47,7 +47,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
      */
     function deleteNotification($principalUri, NotificationInterface $notification) {
 
-        foreach($this->notifications[$principalUri] as $key=>$value) {
+        foreach ($this->notifications[$principalUri] as $key => $value) {
             if ($notification === $value) {
                 unset($this->notifications[$principalUri][$key]);
             }
@@ -84,12 +84,12 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
             $this->shares[$calendarId] = [];
         }
 
-        foreach($add as $val) {
+        foreach ($add as $val) {
             $val['status'] = CalDAV\SharingPlugin::STATUS_NORESPONSE;
             $this->shares[$calendarId][] = $val;
         }
 
-        foreach($this->shares[$calendarId] as $k=>$share) {
+        foreach ($this->shares[$calendarId] as $k => $share) {
 
             if (in_array($share['href'], $remove)) {
                 unset($this->shares[$calendarId][$k]);
@@ -153,7 +153,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
      */
     function setPublishStatus($calendarId, $value) {
 
-        foreach($this->calendars as $k=>$cal) {
+        foreach ($this->calendars as $k => $cal) {
             if ($cal['id'] === $calendarId) {
                 if (!$value) {
                     unset($cal['{http://calendarserver.org/ns/}publish-url']);
@@ -169,4 +169,3 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
     }
 
 }
-

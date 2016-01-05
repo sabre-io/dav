@@ -24,7 +24,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new PDO($this->pdo);
         $calendars = $backend->getCalendarsForUser('principals/user2');
-        $this->assertEquals(array(),$calendars);
+        $this->assertEquals([], $calendars);
 
     }
 
@@ -34,28 +34,28 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarAndFetch() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
-            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(array('VEVENT')),
-            '{DAV:}displayname' => 'Hello!',
-            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
-        ));
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', [
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT']),
+            '{DAV:}displayname'                                               => 'Hello!',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp'         => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
+        ]);
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
-        $elementCheck = array(
-            'id'                => $returnedId,
-            'uri'               => 'somerandomid',
-            '{DAV:}displayname' => 'Hello!',
-            '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
+        $elementCheck = [
+            'id'                                                      => $returnedId,
+            'uri'                                                     => 'somerandomid',
+            '{DAV:}displayname'                                       => 'Hello!',
+            '{urn:ietf:params:xml:ns:caldav}calendar-description'     => '',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
-        );
+        ];
 
-        $this->assertInternalType('array',$calendars);
-        $this->assertEquals(1,count($calendars));
+        $this->assertInternalType('array', $calendars);
+        $this->assertEquals(1, count($calendars));
 
-        foreach($elementCheck as $name=>$value) {
+        foreach ($elementCheck as $name => $value) {
 
             $this->assertArrayHasKey($name, $calendars[0]);
-            $this->assertEquals($value,$calendars[0][$name]);
+            $this->assertEquals($value, $calendars[0][$name]);
 
         }
 
@@ -69,10 +69,10 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
 
         //Creating a new calendar
-        $newId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
-            '{DAV:}displayname' => 'myCalendar',
+            '{DAV:}displayname'                                       => 'myCalendar',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
         ]);
 
@@ -87,23 +87,23 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
         // Checking if all the information is still correct
-        $elementCheck = array(
-            'id'                => $newId,
-            'uri'               => 'somerandomid',
-            '{DAV:}displayname' => 'myCalendar',
-            '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
-            '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => '',
-            '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/2',
+        $elementCheck = [
+            'id'                                                      => $newId,
+            'uri'                                                     => 'somerandomid',
+            '{DAV:}displayname'                                       => 'myCalendar',
+            '{urn:ietf:params:xml:ns:caldav}calendar-description'     => '',
+            '{urn:ietf:params:xml:ns:caldav}calendar-timezone'        => '',
+            '{http://calendarserver.org/ns/}getctag'                  => 'http://sabre.io/ns/sync/2',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
-        );
+        ];
 
-        $this->assertInternalType('array',$calendars);
-        $this->assertEquals(1,count($calendars));
+        $this->assertInternalType('array', $calendars);
+        $this->assertEquals(1, count($calendars));
 
-        foreach($elementCheck as $name=>$value) {
+        foreach ($elementCheck as $name => $value) {
 
             $this->assertArrayHasKey($name, $calendars[0]);
-            $this->assertEquals($value,$calendars[0][$name]);
+            $this->assertEquals($value, $calendars[0][$name]);
 
         }
 
@@ -117,7 +117,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
 
         //Creating a new calendar
-        $newId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
             '{DAV:}displayname' => 'myCalendar',
@@ -130,7 +130,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         // Verifying the result of the update
         $this->assertEquals([
-            '{DAV:}yourmom' => 403,
+            '{DAV:}yourmom'     => 403,
             '{DAV:}displayname' => 424,
         ], $propPatch->getResult());
 
@@ -142,15 +142,15 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testDeleteCalendar() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array(
-            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(array('VEVENT')),
-            '{DAV:}displayname' => 'Hello!',
-        ));
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', [
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT']),
+            '{DAV:}displayname'                                               => 'Hello!',
+        ]);
 
         $backend->deleteCalendar($returnedId);
 
         $calendars = $backend->getCalendarsForUser('principals/user2');
-        $this->assertEquals(array(),$calendars);
+        $this->assertEquals([], $calendars);
 
     }
 
@@ -163,36 +163,36 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($this->pdo);
 
         //Creating a new calendar
-        $newId = $backend->createCalendar('principals/user2','somerandomid',array(
+        $newId = $backend->createCalendar('principals/user2', 'somerandomid', [
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => 'blabla',
-        ));
+        ]);
 
     }
 
     function testCreateCalendarObject() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => strtotime('20120101'),
-            'lastoccurence' => strtotime('20120101')+(3600*24),
-            'componenttype' => 'VEVENT',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => strtotime('20120101') + (3600 * 24),
+            'componenttype'  => 'VEVENT',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
     function testGetMultipleObjects() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
@@ -201,32 +201,32 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $check = [
             [
-                'id' => 1,
-                'etag' => '"' . md5($object) . '"',
-                'uri' => 'id-1',
-                'size' => strlen($object),
+                'id'           => 1,
+                'etag'         => '"' . md5($object) . '"',
+                'uri'          => 'id-1',
+                'size'         => strlen($object),
                 'calendardata' => $object,
                 'lastmodified' => null,
-                'calendarid' => $returnedId,
+                'calendarid'   => $returnedId,
             ],
             [
-                'id' => 2,
-                'etag' => '"' . md5($object) . '"',
-                'uri' => 'id-2',
-                'size' => strlen($object),
+                'id'           => 2,
+                'etag'         => '"' . md5($object) . '"',
+                'uri'          => 'id-2',
+                'size'         => strlen($object),
                 'calendardata' => $object,
                 'lastmodified' => null,
-                'calendarid' => $returnedId,
+                'calendarid'   => $returnedId,
             ],
         ];
 
         $result = $backend->getMultipleCalendarObjects($returnedId, [ 'id-1', 'id-2' ]);
 
-        foreach($check as $index => $props) {
+        foreach ($check as $index => $props) {
 
-            foreach($props as $key=>$value) {
+            foreach ($props as $key => $value) {
 
-                if ($key!=='lastmodified') {
+                if ($key !== 'lastmodified') {
                     $this->assertEquals($value, $result[$index][$key]);
                 } else {
                     $this->assertTrue(isset($result[$index][$key]));
@@ -245,7 +245,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectNoComponent() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nEND:VCALENDAR\r\n";
 
@@ -259,21 +259,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectDuration() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nDURATION:P2D\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => strtotime('20120101'),
-            'lastoccurence' => strtotime('20120101')+(3600*48),
-            'componenttype' => 'VEVENT',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => strtotime('20120101') + (3600 * 48),
+            'componenttype'  => 'VEVENT',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
 
@@ -283,21 +283,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectNoDTEND() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
-            'lastoccurence' => strtotime('2012-01-01 10:00:00'),
-            'componenttype' => 'VEVENT',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => strtotime('2012-01-01 10:00:00'),
+            'componenttype'  => 'VEVENT',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
 
@@ -307,21 +307,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectWithDTEND() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND:20120101T110000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
-            'lastoccurence' => strtotime('2012-01-01 11:00:00'),
-            'componenttype' => 'VEVENT',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => strtotime('2012-01-01 11:00:00'),
+            'componenttype'  => 'VEVENT',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
 
@@ -331,21 +331,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectInfiniteReccurence() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nRRULE:FREQ=DAILY\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
-            'lastoccurence' => strtotime(PDO::MAX_DATE),
-            'componenttype' => 'VEVENT',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => strtotime(PDO::MAX_DATE),
+            'componenttype'  => 'VEVENT',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
 
@@ -355,21 +355,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectEndingReccurence() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nUID:foo\r\nRRULE:FREQ=DAILY;COUNT=1000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
-            'lastoccurence' => strtotime('2012-01-01 11:00:00') + (3600 * 24 * 999),
-            'componenttype' => 'VEVENT',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => strtotime('2012-01-01 11:00:00') + (3600 * 24 * 999),
+            'componenttype'  => 'VEVENT',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
 
@@ -379,21 +379,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCreateCalendarObjectTask() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nDUE;VALUE=DATE-TIME:20120101T100000Z\r\nEND:VTODO\r\nEND:VCALENDAR\r\n";
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals(array(
-            'etag' => md5($object),
-            'size' => strlen($object),
-            'calendardata' => $object,
+        $this->assertEquals([
+            'etag'           => md5($object),
+            'size'           => strlen($object),
+            'calendardata'   => $object,
             'firstoccurence' => null,
-            'lastoccurence' => null,
-            'componenttype' => 'VTODO',
-        ), $result->fetch(\PDO::FETCH_ASSOC));
+            'lastoccurence'  => null,
+            'componenttype'  => 'VTODO',
+        ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
 
@@ -403,19 +403,19 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testGetCalendarObjects() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $data = $backend->getCalendarObjects($returnedId,'random-id');
+        $data = $backend->getCalendarObjects($returnedId, 'random-id');
 
         $this->assertEquals(1, count($data));
         $data = $data[0];
 
         $this->assertEquals($returnedId, $data['calendarid']);
         $this->assertEquals('random-id', $data['uri']);
-        $this->assertEquals(strlen($object),$data['size']);
+        $this->assertEquals(strlen($object), $data['size']);
 
 
     }
@@ -425,7 +425,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testGetCalendarObjectByUID() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',[]);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
@@ -446,14 +446,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testUpdateCalendarObject() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $object2 = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20130101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
         $backend->updateCalendarObject($returnedId, 'random-id', $object2);
 
-        $data = $backend->getCalendarObject($returnedId,'random-id');
+        $data = $backend->getCalendarObject($returnedId, 'random-id');
 
         $this->assertEquals($object2, $data['calendardata']);
         $this->assertEquals($returnedId, $data['calendarid']);
@@ -468,13 +468,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testDeleteCalendarObject() {
 
         $backend = new PDO($this->pdo);
-        $returnedId = $backend->createCalendar('principals/user2','somerandomid',array());
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
         $backend->deleteCalendarObject($returnedId, 'random-id');
 
-        $data = $backend->getCalendarObject($returnedId,'random-id');
+        $data = $backend->getCalendarObject($returnedId, 'random-id');
         $this->assertNull($data);
 
     }
@@ -482,24 +482,24 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testCalendarQueryNoResult() {
 
         $abstract = new PDO($this->pdo);
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VJOURNAL',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VJOURNAL',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => null,
-                ),
-            ),
-            'prop-filters' => array(),
+                    'time-range'     => null,
+                ],
+            ],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
 
-        $this->assertEquals(array(
-        ), $abstract->calendarQuery(1, $filters));
+        $this->assertEquals([
+        ], $abstract->calendarQuery(1, $filters));
 
     }
 
@@ -509,25 +509,25 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
         $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VTODO',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VTODO',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => null,
-                ),
-            ),
-            'prop-filters' => array(),
+                    'time-range'     => null,
+                ],
+            ],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             "todo",
-        ), $backend->calendarQuery(1, $filters));
+        ], $backend->calendarQuery(1, $filters));
 
     }
     function testCalendarQueryTodoNotMatch() {
@@ -536,32 +536,32 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
         $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VTODO',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(
-                        array(
-                            'name' => 'summary',
-                            'text-match' => null,
-                            'time-range' => null,
-                            'param-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'         => 'VTODO',
+                    'comp-filters' => [],
+                    'prop-filters' => [
+                        [
+                            'name'           => 'summary',
+                            'text-match'     => null,
+                            'time-range'     => null,
+                            'param-filters'  => [],
                             'is-not-defined' => false,
-                        ),
-                    ),
+                        ],
+                    ],
                     'is-not-defined' => false,
-                    'time-range' => null,
-                ),
-            ),
-            'prop-filters' => array(),
+                    'time-range'     => null,
+                ],
+            ],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
 
-        $this->assertEquals(array(
-        ), $backend->calendarQuery(1, $filters));
+        $this->assertEquals([
+        ], $backend->calendarQuery(1, $filters));
 
     }
 
@@ -571,13 +571,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createCalendarObject(1, "todo", "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
         $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(),
-            'prop-filters' => array(),
+        $filters = [
+            'name'           => 'VCALENDAR',
+            'comp-filters'   => [],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
 
         $result = $backend->calendarQuery(1, $filters);
         $this->assertTrue(in_array('todo', $result));
@@ -592,28 +592,28 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
         $backend->createCalendarObject(1, "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VEVENT',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range'     => [
                         'start' => new \DateTime('20120103'),
                         'end'   => new \DateTime('20120104'),
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
+                    ],
+                ],
+            ],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             "event2",
-        ), $backend->calendarQuery(1, $filters));
+        ], $backend->calendarQuery(1, $filters));
 
     }
     function testCalendarQueryTimeRangeNoEnd() {
@@ -623,28 +623,28 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createCalendarObject(1, "event", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
         $backend->createCalendarObject(1, "event2", "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VEVENT',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range'     => [
                         'start' => new \DateTime('20120102'),
-                        'end' => null,
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
+                        'end'   => null,
+                    ],
+                ],
+            ],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             "event2",
-        ), $backend->calendarQuery(1, $filters));
+        ], $backend->calendarQuery(1, $filters));
 
     }
 
@@ -660,9 +660,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
             'syncToken' => 1,
-            'modified' => [],
-            'deleted' => [],
-            'added' => [],
+            'modified'  => [],
+            'deleted'   => [],
+            'added'     => [],
         ], $result);
 
         $currentToken = $result['syncToken'];
@@ -688,19 +688,19 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
             'syncToken' => 6,
-            'modified' => [],
-            'deleted' => [],
-            'added' => ["todo1.ics", "todo3.ics"],
+            'modified'  => [],
+            'deleted'   => [],
+            'added'     => ["todo1.ics", "todo3.ics"],
         ], $result);
     }
 
     function testCreateSubscriptions() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
-            '{DAV:}displayname' => 'cal',
-            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
-            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}source'                 => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname'                                     => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate'                => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color'             => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
             //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
@@ -720,7 +720,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $expected['source'] = 'http://example.org/cal.ics';
 
         $this->assertEquals(1, count($subs));
-        foreach($expected as $k=>$v) {
+        foreach ($expected as $k => $v) {
             $this->assertEquals($subs[0][$k], $expected[$k]);
         }
 
@@ -742,10 +742,10 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testUpdateSubscriptions() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
-            '{DAV:}displayname' => 'cal',
-            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
-            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}source'                 => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname'                                     => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate'                => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color'             => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
             //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
@@ -755,7 +755,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createSubscription('principals/user1', 'sub1', $props);
 
         $newProps = [
-            '{DAV:}displayname' => 'new displayname',
+            '{DAV:}displayname'                     => 'new displayname',
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics', false),
         ];
 
@@ -776,7 +776,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $expected['source'] = 'http://example.org/cal2.ics';
 
         $this->assertEquals(1, count($subs));
-        foreach($expected as $k=>$v) {
+        foreach ($expected as $k => $v) {
             $this->assertEquals($subs[0][$k], $expected[$k]);
         }
 
@@ -785,10 +785,10 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testUpdateSubscriptionsFail() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
-            '{DAV:}displayname' => 'cal',
-            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
-            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}source'                 => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname'                                     => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate'                => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color'             => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
             //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
@@ -798,17 +798,17 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createSubscription('principals/user1', 'sub1', $props);
 
         $propPatch = new DAV\PropPatch([
-            '{DAV:}displayname' => 'new displayname',
+            '{DAV:}displayname'                     => 'new displayname',
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics', false),
-            '{DAV:}unknown' => 'foo',
+            '{DAV:}unknown'                         => 'foo',
         ]);
 
         $backend->updateSubscription(1, $propPatch);
         $propPatch->commit();
 
         $this->assertEquals([
-            '{DAV:}unknown' => 403,
-            '{DAV:}displayname' => 424,
+            '{DAV:}unknown'                         => 403,
+            '{DAV:}displayname'                     => 424,
             '{http://calendarserver.org/ns/}source' => 424,
         ], $propPatch->getResult());
 
@@ -817,10 +817,10 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testDeleteSubscriptions() {
 
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
-            '{DAV:}displayname' => 'cal',
-            '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
-            '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
+            '{http://calendarserver.org/ns/}source'                 => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics', false),
+            '{DAV:}displayname'                                     => 'cal',
+            '{http://apple.com/ns/ical/}refreshrate'                => 'P1W',
+            '{http://apple.com/ns/ical/}calendar-color'             => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
             //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
@@ -830,7 +830,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->createSubscription('principals/user1', 'sub1', $props);
 
         $newProps = [
-            '{DAV:}displayname' => 'new displayname',
+            '{DAV:}displayname'                     => 'new displayname',
             '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics', false),
         ];
 
@@ -854,13 +854,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $expected = [
             'calendardata' => $calData,
-            'uri' => 'schedule1.ics',
-            'etag' => '"' . md5($calData) . '"',
-            'size' => strlen($calData)
+            'uri'          => 'schedule1.ics',
+            'etag'         => '"' . md5($calData) . '"',
+            'size'         => strlen($calData)
         ];
 
         $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
-        foreach($expected as $k=>$v) {
+        foreach ($expected as $k => $v) {
             $this->assertArrayHasKey($k, $result);
             $this->assertEquals($v, $result[$k]);
         }
@@ -869,7 +869,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(1, count($results));
         $result = $results[0];
-        foreach($expected as $k=>$v) {
+        foreach ($expected as $k => $v) {
             $this->assertEquals($v, $result[$k]);
         }
 

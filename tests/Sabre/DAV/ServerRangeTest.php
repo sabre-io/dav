@@ -159,7 +159,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
     function testIfRangeEtag() {
 
         $request = new HTTP\Request('GET', '/files/test.txt', [
-            'Range' => 'bytes=2-5',
+            'Range'    => 'bytes=2-5',
             'If-Range' => '"' . md5('Test contents') . '"',
         ]);
         $response = $this->request($request);
@@ -186,7 +186,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
     function testIfRangeEtagIncorrect() {
 
         $request = new HTTP\Request('GET', '/files/test.txt', [
-            'Range' => 'bytes=2-5',
+            'Range'    => 'bytes=2-5',
             'If-Range' => '"foobar"',
         ]);
         $response = $this->request($request);
@@ -212,7 +212,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
     function testIfRangeModificationDate() {
 
         $request = new HTTP\Request('GET', '/files/test.txt', [
-            'Range' => 'bytes=2-5',
+            'Range'    => 'bytes=2-5',
             'If-Range' => 'tomorrow',
         ]);
         $response = $this->request($request);
@@ -239,7 +239,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
     function testIfRangeModificationDateModified() {
 
         $request = new HTTP\Request('GET', '/files/test.txt', [
-            'Range' => 'bytes=2-5',
+            'Range'    => 'bytes=2-5',
             'If-Range' => '-2 years',
         ]);
         $response = $this->request($request);

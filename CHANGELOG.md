@@ -16,6 +16,9 @@ ChangeLog
   exceptions.
 * #721: Events are now handled in the correct order for `COPY` requests.
   Before this subtle bugs could appear that could cause data-loss.
+* #747: Now throwing exceptions and setting the HTTP status to 500 in subtle
+  cases where no other plugin set a correct HTTP status.
+
 
 3.1.0-alpha2 (2015-09-05)
 -------------------------

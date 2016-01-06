@@ -13,7 +13,6 @@ ChangeLog
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #742: Fixes to make sure that vobject 4 is correctly supported.
-* Subtle browser improvements.
 * #726: Better error reporting in `Client::propPatch`. We're now throwing
   exceptions.
 * #608: When a HTTP error is triggered during `Client:propFind`, we're now
@@ -26,6 +25,7 @@ ChangeLog
 * #686: Corrected PDO principal backend's findByURI for email addresses that
   don't match the exact capitalization.
 * #512: The client now has it's own `User-Agent`.
+* #720: Some browser improvements.
 
 
 3.1.0-alpha2 (2015-09-05)

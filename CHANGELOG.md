@@ -2136,8 +2136,9 @@ ChangeLog
 
 * First release!
 * Passes litmus: basic, http and copymove test.
-* Fully working in Finder and DavFSv2 Project started: 2007-12-13
+* Fully working in Finder and DavFS2.
 
+Project started: 2007-12-13
 
 [vobj]: http://sabre.io/vobject/
 [evnt]: http://sabre.io/event/

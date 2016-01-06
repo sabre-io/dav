@@ -1,8 +1,8 @@
 ChangeLog
 =========
 
-3.1.0-alpha3 (2015-??-??)
--------------------------
+3.1.0 (2016-01-06)
+------------------
 
 * Better error message when the browser plugin is not enabled.
 * Added a super minimal server example.
@@ -26,6 +26,9 @@ ChangeLog
   don't match the exact capitalization.
 * #512: The client now has it's own `User-Agent`.
 * #720: Some browser improvements.
+* The zip release ships with [sabre/vobject 4.0.1][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.1.0-alpha2 (2015-09-05)

@@ -21,7 +21,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->debugExceptions = true;
-        $plugin = new MockPlugin($backend,'realm');
+        $plugin = new MockPlugin();
         $plugin->allowAccessToNodesWithoutACL = true;
 
         $this->assertTrue($plugin instanceof Plugin);

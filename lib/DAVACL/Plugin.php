@@ -981,9 +981,10 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $reportName
      * @param mixed $report
+     * @param mixed $path
      * @return bool
      */
-    function report($reportName, $report) {
+    function report($reportName, $report, $path) {
 
         switch ($reportName) {
 

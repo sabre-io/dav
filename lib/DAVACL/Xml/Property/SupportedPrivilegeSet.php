@@ -114,7 +114,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
 
         ob_start();
         echo "<ul class=\"tree\">";
-        $traverse($this->getValue(), '');
+        $traverse($this->getValue());
         echo "</ul>\n";
 
         return ob_get_clean();

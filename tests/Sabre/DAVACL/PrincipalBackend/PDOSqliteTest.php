@@ -26,12 +26,15 @@ class PDOSQLiteTest extends AbstractPDOTest {
         $pdo->query('INSERT INTO principals VALUES (1, "principals/user","user@example.org","User")');
         $pdo->query('INSERT INTO principals VALUES (2, "principals/group","group@example.org","Group")');
 
-        $pdo->query("CREATE TABLE groupmembers (
-                id INTEGER PRIMARY KEY ASC,
-                principal_id INT,
-                member_id INT,
-                UNIQUE(principal_id, member_id)
-        );");
+        $pdo->query(<<<SQL
+CREATE TABLE groupmembers (
+  id INTEGER PRIMARY KEY ASC,
+  principal_id INT,
+  member_id INT,
+  UNIQUE(principal_id, member_id)
+)
+SQL
+        );
 
         $pdo->query("INSERT INTO groupmembers (principal_id,member_id) VALUES (2,1)");
 

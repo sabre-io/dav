@@ -91,6 +91,21 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest {
         $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-default-calendar-URL', $props[0][404]);
 
     }
+    function testNoDefaultCalendar() {
+
+        foreach($this->caldavBackend->getCalendarsForUser('principals/user1') as $calendar) {
+            $this->caldavBackend->deleteCalendar($calendar['id']);
+        }
+        $props = $this->server->getPropertiesForPath('/principals/user1', [
+            '{urn:ietf:params:xml:ns:caldav}schedule-default-calendar-URL',
+        ]);
+
+        $this->assertArrayHasKey(0, $props);
+        $this->assertArrayHasKey(404, $props[0]);
+
+        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}schedule-default-calendar-URL', $props[0][404]);
+
+    }
 
     /**
      * There are two properties for availability. The server should

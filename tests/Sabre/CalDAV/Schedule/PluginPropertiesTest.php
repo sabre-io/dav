@@ -93,7 +93,7 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest {
     }
     function testNoDefaultCalendar() {
 
-        foreach($this->caldavBackend->getCalendarsForUser('principals/user1') as $calendar) {
+        foreach ($this->caldavBackend->getCalendarsForUser('principals/user1') as $calendar) {
             $this->caldavBackend->deleteCalendar($calendar['id']);
         }
         $props = $this->server->getPropertiesForPath('/principals/user1', [

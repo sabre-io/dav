@@ -105,8 +105,8 @@ class Plugin extends DAV\ServerPlugin {
         // excludes things like the calendar-proxy-read principal (which it
         // should).
         $parts = explode('/', trim($principalUrl, '/'));
-        if (count($parts)!==2) return;
-        if ($parts[0]!=='principals') return;
+        if (count($parts) !== 2) return;
+        if ($parts[0] !== 'principals') return;
 
         return self::CALENDAR_ROOT . '/' . $parts[1];
 

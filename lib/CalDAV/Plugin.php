@@ -89,16 +89,26 @@ class Plugin extends DAV\ServerPlugin {
      * Returns the path to a principal's calendar home.
      *
      * The return url must not end with a slash.
+     * This function should return null in case a principal did not have
+     * a calendar home.
      *
      * @param string $principalUrl
      * @return string
      */
     function getCalendarHomeForPrincipal($principalUrl) {
 
-        // The default is a bit naive, but it can be overwritten.
-        list(, $nodeName) = Uri\split($principalUrl);
+        // The default behavior for most sabre/dav servers is that there is a
+        // principals root node, which contains users directly under it.
+        //
+        // This function assumes that there are two components in a principal
+        // path. If there's more, we don't return a calendar home. This
+        // excludes things like the calendar-proxy-read principal (which it
+        // should).
+        $parts = explode('/', trim($principalUrl, '/'));
+        if (count($parts) !== 2) return;
+        if ($parts[0] !== 'principals') return;
 
-        return self::CALENDAR_ROOT . '/' . $nodeName;
+        return self::CALENDAR_ROOT . '/' . $parts[1];
 
     }
 
@@ -329,8 +339,9 @@ class Plugin extends DAV\ServerPlugin {
 
             $propFind->handle('{' . self::NS_CALDAV . '}calendar-home-set', function() use ($principalUrl) {
 
-                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl) . '/';
-                return new Href($calendarHomePath);
+                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl);
+                if (is_null($calendarHomePath)) return null;
+                return new Href($calendarHomePath . '/');
 
             });
             // The calendar-user-address-set property is basically mapped to

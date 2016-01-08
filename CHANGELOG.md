@@ -4,6 +4,9 @@ ChangeLog
 3.1.1 (????-??-??)
 ------------------
 
+* #755: The brower plugin and some operations would break when scheduling and
+  delegation would both be enabled.
+
 
 3.1.0 (2016-01-06)
 ------------------

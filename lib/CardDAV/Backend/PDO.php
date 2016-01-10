@@ -151,7 +151,7 @@ class PDO extends AbstractBackend implements SyncSupport {
      * @param string $principalUri
      * @param string $url Just the 'basename' of the url.
      * @param array $properties
-     * @return void
+     * @return int Last insert id
      */
     function createAddressBook($principalUri, $url, array $properties) {
 

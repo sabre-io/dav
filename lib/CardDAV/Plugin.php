@@ -188,9 +188,10 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string $reportName
      * @param \DOMNode $dom
+     * @param mixed $path
      * @return bool
      */
-    function report($reportName, $dom) {
+    function report($reportName, $dom, $path) {
 
         switch ($reportName) {
             case '{' . self::NS_CARDDAV . '}addressbook-multiget' :

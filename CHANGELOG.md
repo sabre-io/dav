@@ -71,6 +71,12 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
+3.0.7 (????-??-??)
+------------------
+
+* #752: PHP 7 support for 3.0 branch. (@DeepDiver1975)
+
+
 3.0.6 (2016-01-04)
 ------------------
 

@@ -17,7 +17,7 @@ use Sabre\HTTP\ResponseInterface;
  * The class intercepts GET requests to collection resources and generates a simple
  * html index.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -316,7 +316,7 @@ class Plugin extends DAV\ServerPlugin {
                 $html .= '</td>';
 
                 $buttonActions = '';
-                if ($subNode instanceof DAV\IFile) {
+                if ($subProps['subNode'] instanceof DAV\IFile) {
                     $buttonActions =  '<a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
                 }
                 $this->server->emit('browserButtonActions', [$subProps['fullPath'], $subProps['subNode'], &$buttonActions]);

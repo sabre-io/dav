@@ -9,7 +9,7 @@ namespace Sabre\DAV\Browser;
  * This is only useful for display purposes, and might make it a bit easier for
  * people to read and understand the value of some properties.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH. (https://fruux.com/)
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

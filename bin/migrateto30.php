@@ -3,7 +3,7 @@
 
 echo "SabreDAV migrate script for version 3.0\n";
 
-if ($argc<2) {
+if ($argc < 2) {
 
     echo <<<HELLO
 
@@ -46,7 +46,7 @@ $paths = [
     __DIR__ . '/../../../autoload.php',
 ];
 
-foreach($paths as $path) {
+foreach ($paths as $path) {
     if (file_exists($path)) {
         include $path;
         break;
@@ -54,8 +54,8 @@ foreach($paths as $path) {
 }
 
 $dsn = $argv[1];
-$user = isset($argv[2])?$argv[2]:null;
-$pass = isset($argv[3])?$argv[3]:null;
+$user = isset($argv[2]) ? $argv[2] : null;
+$pass = isset($argv[3]) ? $argv[3] : null;
 
 echo "Connecting to database: " . $dsn . "\n";
 
@@ -65,7 +65,7 @@ $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 
-switch($driver) {
+switch ($driver) {
 
     case 'mysql' :
         echo "Detected MySQL.\n";
@@ -86,10 +86,10 @@ try {
 
     if (!$row) {
         echo "No data in table. Going to re-create the table.\n";
-        $random = mt_rand(1000,9999);
+        $random = mt_rand(1000, 9999);
         echo "Renaming propertystorage -> propertystorage_old$random and creating new table.\n";
 
-        switch($driver) {
+        switch ($driver) {
 
             case 'mysql' :
                 $pdo->exec('RENAME TABLE propertystorage TO propertystorage_old' . $random);
@@ -135,7 +135,7 @@ CREATE TABLE propertystorage (
 
 if ($addValueType) {
 
-    switch($driver) {
+    switch ($driver) {
         case 'mysql' :
             $pdo->exec('ALTER TABLE propertystorage ADD valuetype INT UNSIGNED');
             break;
@@ -154,7 +154,7 @@ echo "Migrating vcardurl\n";
 $result = $pdo->query('SELECT id, uri, vcardurl FROM principals WHERE vcardurl IS NOT NULL');
 $stmt1 = $pdo->prepare('INSERT INTO propertystorage (path, name, valuetype, value) VALUES (?, ?, 3, ?)');
 
-while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
 
     // Inserting the new record
     $stmt1->execute([

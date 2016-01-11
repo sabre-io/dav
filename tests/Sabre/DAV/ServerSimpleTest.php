@@ -53,7 +53,7 @@ class ServerSimpleTest extends AbstractServer{
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [Version::VERSION],
-        ],$this->response->getHeaders());
+        ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('', $this->response->body);
@@ -74,7 +74,7 @@ class ServerSimpleTest extends AbstractServer{
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [Version::VERSION],
-        ],$this->response->getHeaders());
+        ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('', $this->response->body);
@@ -95,7 +95,7 @@ class ServerSimpleTest extends AbstractServer{
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
-        ],$this->response->getHeaders());
+        ], $this->response->getHeaders());
 
         $this->assertEquals(501, $this->response->status);
 
@@ -112,7 +112,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->setBaseUri('/blabla/');
-        $this->assertEquals('/blabla/',$this->server->getBaseUri());
+        $this->assertEquals('/blabla/', $this->server->getBaseUri());
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
@@ -120,7 +120,7 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
-            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
+            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($filename)))],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
             ],
             $this->response->getHeaders()
@@ -141,7 +141,7 @@ class ServerSimpleTest extends AbstractServer{
             '/foo/bar/' => '/foo/bar/',
         ];
 
-        foreach($tests as $test=>$result) {
+        foreach ($tests as $test => $result) {
             $this->server->setBaseUri($test);
 
             $this->assertEquals($result, $this->server->getBaseUri());
@@ -160,17 +160,17 @@ class ServerSimpleTest extends AbstractServer{
 
         $this->server->setBaseUri('/root/');
 
-        foreach($uris as $uri) {
+        foreach ($uris as $uri) {
 
-            $this->assertEquals('somepath',$this->server->calculateUri($uri));
+            $this->assertEquals('somepath', $this->server->calculateUri($uri));
 
         }
 
         $this->server->setBaseUri('/root');
 
-        foreach($uris as $uri) {
+        foreach ($uris as $uri) {
 
-            $this->assertEquals('somepath',$this->server->calculateUri($uri));
+            $this->assertEquals('somepath', $this->server->calculateUri($uri));
 
         }
 
@@ -188,25 +188,25 @@ class ServerSimpleTest extends AbstractServer{
 
         $this->server->setBaseUri('/root/');
 
-        foreach($uris as $uri) {
+        foreach ($uris as $uri) {
 
-            $this->assertEquals("\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
+            $this->assertEquals("\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
 
         }
 
         $this->server->setBaseUri('/root');
 
-        foreach($uris as $uri) {
+        foreach ($uris as $uri) {
 
-            $this->assertEquals("\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
+            $this->assertEquals("\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
 
         }
 
         $this->server->setBaseUri('/');
 
-        foreach($uris as $uri) {
+        foreach ($uris as $uri) {
 
-            $this->assertEquals("root/\xc3\xa0fo\xc3\xb3",$this->server->calculateUri($uri));
+            $this->assertEquals("root/\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
 
         }
 
@@ -363,24 +363,24 @@ class ServerSimpleTest extends AbstractServer{
     function testTriggerException() {
 
         $serverVars = [
-            'REQUEST_URI' => '/',
+            'REQUEST_URI'    => '/',
             'REQUEST_METHOD' => 'FOO',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = $httpRequest;
-        $this->server->on('beforeMethod', [$this,'exceptionTrigger']);
+        $this->server->on('beforeMethod', [$this, 'exceptionTrigger']);
         $this->server->exec();
 
         $this->assertEquals([
             'Content-Type' => ['application/xml; charset=utf-8'],
-        ],$this->response->getHeaders());
+        ], $this->response->getHeaders());
 
         $this->assertEquals(500, $this->response->status);
 
     }
 
-    function exceptionTrigger() {
+    function exceptionTrigger($request, $response) {
 
         throw new Exception('Hola');
 
@@ -419,7 +419,7 @@ class ServerSimpleTest extends AbstractServer{
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
-        $this->server->on('report', [$this,'reportHandler']);
+        $this->server->on('report', [$this, 'reportHandler']);
         $this->server->exec();
 
         $this->assertEquals([
@@ -429,15 +429,15 @@ class ServerSimpleTest extends AbstractServer{
             $this->response->getHeaders()
         );
 
-        $this->assertEquals(418, $this->response->status,'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: ' . $this->response->body);
 
     }
 
-    function reportHandler($reportName) {
+    function reportHandler($reportName, $result, $path) {
 
-        if ($reportName=='{http://www.rooftopsolutions.nl/NS}myreport') {
+        if ($reportName == '{http://www.rooftopsolutions.nl/NS}myreport') {
             $this->server->httpResponse->setStatus(418);
-            $this->server->httpResponse->setHeader('testheader','testvalue');
+            $this->server->httpResponse->setHeader('testheader', 'testvalue');
             return false;
         }
         else return;
@@ -446,7 +446,7 @@ class ServerSimpleTest extends AbstractServer{
 
     function testGetPropertiesForChildren() {
 
-        $result = $this->server->getPropertiesForChildren('',[
+        $result = $this->server->getPropertiesForChildren('', [
             '{DAV:}getcontentlength',
         ]);
 
@@ -455,7 +455,20 @@ class ServerSimpleTest extends AbstractServer{
             'dir/'     => [],
         ];
 
-        $this->assertEquals($expected,$result);
+        $this->assertEquals($expected, $result);
+
+    }
+
+    /**
+     * There are certain cases where no HTTP status may be set. We need to
+     * intercept these and set it to a default error message.
+     */
+    function testNoHTTPSTatusSet() {
+
+        $this->server->on('method:GET', function() { return false; }, 1);
+        $this->server->httpRequest = new HTTP\Request('GET', '/');
+        $this->server->exec();
+        $this->assertEquals(500, $this->response->getStatus());
 
     }
 

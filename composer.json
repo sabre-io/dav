@@ -15,10 +15,10 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "sabre/vobject": ">=4.0.0-alpha1",
-        "sabre/event" : "~2.0",
-        "sabre/xml"  : "~1.2",
-        "sabre/http" : "~4.1",
+        "sabre/vobject": "~4.0",
+        "sabre/event" : ">=2.0.0, <4.0.0",
+        "sabre/xml"  : "~1.0",
+        "sabre/http" : "^4.2.1",
         "sabre/uri" : "~1.0",
         "ext-dom": "*",
         "ext-pcre": "*",
@@ -31,7 +31,7 @@
         "ext-libxml" : "*"
     },
     "require-dev" : {
-        "phpunit/phpunit" : ">= 4.8.18 < 6.0.0",
+        "phpunit/phpunit" : "> 4.8, <=6.0.0",
         "evert/phpdoc-md" : "~0.1.0",
         "sabre/cs"        : "~0.0.5"
     },

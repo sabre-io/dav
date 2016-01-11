@@ -13,7 +13,7 @@ use Sabre\Xml\Writer;
  *
  * https://tools.ietf.org/html/rfc4918#section-14.24
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -142,7 +142,7 @@ class Response implements Element {
         if ($empty) {
             /*
              * The WebDAV spec _requires_ at least one DAV:propstat to appear for
-             * every DAV:response. There are circumstances however, there are no
+             * every DAV:response. In some circumstances however, there are no
              * properties to encode.
              *
              * In those cases we MUST specify at least one DAV:propstat anyway, with

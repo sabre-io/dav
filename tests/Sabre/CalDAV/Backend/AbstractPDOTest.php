@@ -206,6 +206,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 'size'         => strlen($object),
                 'calendardata' => $object,
                 'lastmodified' => null,
+                'calendarid'   => $returnedId,
             ],
             [
                 'id'           => 2,
@@ -214,6 +215,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 'size'         => strlen($object),
                 'calendardata' => $object,
                 'lastmodified' => null,
+                'calendarid'   => $returnedId,
             ],
         ];
 

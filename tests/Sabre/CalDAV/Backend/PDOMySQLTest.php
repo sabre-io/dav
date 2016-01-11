@@ -21,8 +21,8 @@ class PDOMySQLTest extends AbstractPDOTest {
             file_get_contents(__DIR__ . '/../../../../examples/sql/mysql.calendars.sql')
         );
 
-        foreach($queries as $query) {
-            $query = trim($query," \r\n\t");
+        foreach ($queries as $query) {
+            $query = trim($query, " \r\n\t");
             if ($query)
                 $pdo->exec($query);
         }

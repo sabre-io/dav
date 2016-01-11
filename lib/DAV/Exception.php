@@ -11,7 +11,7 @@ namespace Sabre\DAV;
  * This class also allows you to generate custom xml data for your exceptions. This will be displayed
  * in the 'error' element in the failing response.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

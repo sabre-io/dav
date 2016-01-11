@@ -8,7 +8,7 @@ use Sabre\HTTP\ResponseInterface;
 /**
  * This is the base class for any authentication object.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

@@ -14,7 +14,7 @@ use Sabre\HTTP\ResponseInterface;
  * Most of the digest logic is handled, implementors just need to worry about
  * the validateUserPass method.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author James David Low (http://jameslow.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
@@ -98,7 +98,7 @@ abstract class AbstractBasic implements BackendInterface {
             $response
         );
 
-        $userpass = $auth->getCredentials($request);
+        $userpass = $auth->getCredentials();
         if (!$userpass) {
             return [false, "No 'Authorization: Basic' header found. Either the client didn't send one, or the server is misconfigured"];
         }

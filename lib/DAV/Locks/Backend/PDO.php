@@ -10,7 +10,7 @@ use Sabre\DAV\Locks\LockInfo;
  * This Lock Manager stores all its data in a database. You must pass a PDO
  * connection object in the constructor.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

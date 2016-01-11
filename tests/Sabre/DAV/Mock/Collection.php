@@ -15,7 +15,7 @@ use Sabre\DAV;
  *   * a string, for a file
  *   * An instance of \Sabre\DAV\INode.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -117,6 +117,15 @@ class Collection extends DAV\Collection {
     function getChildren() {
 
         return $this->children;
+
+    }
+
+    /**
+     * Adds an already existing node to this collection.
+     */
+    function addNode(\Sabre\DAV\INode $node) {
+
+        $this->children[] = $node;
 
     }
 

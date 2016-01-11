@@ -3,7 +3,7 @@
 
 echo "SabreDAV migrate script for version 2.0\n";
 
-if ($argc<2) {
+if ($argc < 2) {
 
     echo <<<HELLO
 
@@ -46,7 +46,7 @@ $paths = [
     __DIR__ . '/../../../autoload.php',
 ];
 
-foreach($paths as $path) {
+foreach ($paths as $path) {
     if (file_exists($path)) {
         include $path;
         break;
@@ -54,8 +54,8 @@ foreach($paths as $path) {
 }
 
 $dsn = $argv[1];
-$user = isset($argv[2])?$argv[2]:null;
-$pass = isset($argv[3])?$argv[3]:null;
+$user = isset($argv[2]) ? $argv[2] : null;
+$pass = isset($argv[3]) ? $argv[3] : null;
 
 echo "Connecting to database: " . $dsn . "\n";
 
@@ -65,7 +65,7 @@ $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 
-switch($driver) {
+switch ($driver) {
 
     case 'mysql' :
         echo "Detected MySQL.\n";
@@ -78,7 +78,7 @@ switch($driver) {
         die(-1);
 }
 
-foreach(['calendar', 'addressbook'] as $itemType) {
+foreach (['calendar', 'addressbook'] as $itemType) {
 
     $tableName = $itemType . 's';
     $tableNameOld = $tableName . '_old';
@@ -96,11 +96,11 @@ foreach(['calendar', 'addressbook'] as $itemType) {
         echo "We're going to rename the old table to $tableNameOld (just in case).\n";
         echo "and re-create the new table.\n";
 
-        switch($driver) {
+        switch ($driver) {
 
             case 'mysql' :
                 $pdo->exec("RENAME TABLE $tableName TO $tableNameOld");
-                switch($itemType) {
+                switch ($itemType) {
                     case 'calendar' :
                         $pdo->exec("
             CREATE TABLE calendars (
@@ -133,12 +133,13 @@ foreach(['calendar', 'addressbook'] as $itemType) {
                         ");
                         break;
                 }
+                break;
 
             case 'sqlite' :
 
                 $pdo->exec("ALTER TABLE $tableName RENAME TO $tableNameOld");
 
-                switch($itemType) {
+                switch ($itemType) {
                     case 'calendar' :
                         $pdo->exec("
             CREATE TABLE calendars (
@@ -170,6 +171,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
 
                         break;
                 }
+                break;
 
         }
         echo "Creation of 2.0 $tableName table is complete\n";
@@ -184,7 +186,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
         } else {
 
             echo "1.8 table schema detected\n";
-            switch($driver) {
+            switch ($driver) {
 
                 case 'mysql' :
                     $pdo->exec("ALTER TABLE $tableName ADD synctoken INT(11) UNSIGNED NOT NULL DEFAULT '1'");
@@ -215,7 +217,7 @@ foreach(['calendar', 'addressbook'] as $itemType) {
     } catch (Exception $e) {
         echo "Creating '$changesTable' table.\n";
 
-        switch($driver) {
+        switch ($driver) {
 
             case 'mysql' :
                 $pdo->exec("
@@ -260,7 +262,7 @@ try {
 } catch (Exception $e) {
     echo "Creating calendarsubscriptions table.\n";
 
-    switch($driver) {
+    switch ($driver) {
 
         case 'mysql' :
             $pdo->exec("
@@ -316,7 +318,7 @@ try {
 } catch (Exception $e) {
     echo "Creating propertystorage table.\n";
 
-    switch($driver) {
+    switch ($driver) {
 
         case 'mysql' :
             $pdo->exec("
@@ -357,13 +359,13 @@ try {
     $create = false;
     $row = $pdo->query("SELECT * FROM cards LIMIT 1")->fetch();
     if (!$row) {
-        $random = mt_rand(1000,9999);
+        $random = mt_rand(1000, 9999);
         echo "There was no data in the cards table, so we're re-creating it\n";
         echo "The old table will be renamed to cards_old$random, just in case.\n";
 
         $create = true;
 
-        switch($driver) {
+        switch ($driver) {
             case 'mysql' :
                 $pdo->exec("RENAME TABLE cards TO cards_old$random");
                 break;
@@ -383,7 +385,7 @@ try {
 }
 
 if ($create) {
-    switch($driver) {
+    switch ($driver) {
         case 'mysql' :
             $pdo->exec("
 CREATE TABLE cards (
@@ -393,7 +395,7 @@ CREATE TABLE cards (
     uri VARCHAR(200),
     lastmodified INT(11) UNSIGNED,
     etag VARBINARY(32),
-    size INT(11) UNSIGNED NOT NULL,
+    size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
             ");
@@ -416,7 +418,7 @@ CREATE TABLE cards (
 
     }
 } else {
-    switch($driver) {
+    switch ($driver) {
         case 'mysql' :
             $pdo->exec("
                 ALTER TABLE cards
@@ -437,7 +439,7 @@ CREATE TABLE cards (
     echo "Reading all old vcards and populating etag and size fields.\n";
     $result = $pdo->query('SELECT id, carddata FROM cards');
     $stmt = $pdo->prepare('UPDATE cards SET etag = ?, size = ? WHERE id = ?');
-    while($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+    while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
         $stmt->execute([
             md5($row['carddata']),
             strlen($row['carddata']),

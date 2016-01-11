@@ -17,7 +17,7 @@ use Sabre\Xml\Writer;
  * Sabre\DAVACL\Plugin::getSupportedPrivilegeSet as the argument in its
  * constructor.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -114,7 +114,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
 
         ob_start();
         echo "<ul class=\"tree\">";
-        $traverse($this->getValue(), '');
+        $traverse($this->getValue());
         echo "</ul>\n";
 
         return ob_get_clean();

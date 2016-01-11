@@ -3,7 +3,7 @@
 
 echo "SabreDAV migrate script for version 1.7\n";
 
-if ($argc<2) {
+if ($argc < 2) {
 
     echo <<<HELLO
 
@@ -35,12 +35,12 @@ HELLO;
 
 // There's a bunch of places where the autoloader could be, so we'll try all of
 // them.
-$paths = array(
+$paths = [
     __DIR__ . '/../vendor/autoload.php',
     __DIR__ . '/../../../autoload.php',
-);
+];
 
-foreach($paths as $path) {
+foreach ($paths as $path) {
     if (file_exists($path)) {
         include $path;
         break;
@@ -48,8 +48,8 @@ foreach($paths as $path) {
 }
 
 $dsn = $argv[1];
-$user = isset($argv[2])?$argv[2]:null;
-$pass = isset($argv[3])?$argv[3]:null;
+$user = isset($argv[2]) ? $argv[2] : null;
+$pass = isset($argv[3]) ? $argv[3] : null;
 
 echo "Connecting to database: " . $dsn . "\n";
 
@@ -67,32 +67,32 @@ if (!$row) {
     exit(-1);
 }
 
-$requiredFields = array(
+$requiredFields = [
     'id',
     'calendardata',
     'uri',
     'calendarid',
     'lastmodified',
-);
+];
 
-foreach($requiredFields as $requiredField) {
-    if (!array_key_exists($requiredField,$row)) {
+foreach ($requiredFields as $requiredField) {
+    if (!array_key_exists($requiredField, $row)) {
         echo "Error: The current 'calendarobjects' table was missing a field we expected to exist.\n";
         echo "For safety reasons, this process is stopped.\n";
         exit(-1);
     }
 }
 
-$fields17 = array(
+$fields17 = [
     'etag',
     'size',
     'componenttype',
     'firstoccurence',
     'lastoccurence',
-);
+];
 
 $found = 0;
-foreach($fields17 as $field) {
+foreach ($fields17 as $field) {
     if (array_key_exists($field, $row)) {
         $found++;
     }
@@ -102,7 +102,7 @@ if ($found === 0) {
     echo "The database had the 1.6 schema. Table will now be altered.\n";
     echo "This may take some time for large tables\n";
 
-    switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+    switch ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
 
         case 'mysql' :
 
@@ -150,7 +150,7 @@ $stmt = $pdo->prepare('UPDATE calendarobjects SET etag = ?, size = ?, componentt
 echo "Total records found: " . $result->rowCount() . "\n";
 $done = 0;
 $total = $result->rowCount();
-while($row = $result->fetch()) {
+while ($row = $result->fetch()) {
 
     try {
         $newData = getDenormalizedData($row['calendardata']);
@@ -161,14 +161,14 @@ while($row = $result->fetch()) {
         echo "This record is ignored, you should inspect it to see if there's anything wrong.\n===\n";
         continue;
     }
-    $stmt->execute(array(
+    $stmt->execute([
         $newData['etag'],
         $newData['size'],
         $newData['componentType'],
         $newData['firstOccurence'],
         $newData['lastOccurence'],
         $row['id'],
-    ));
+    ]);
     $done++;
 
     if ($done % 500 === 0) {
@@ -188,7 +188,7 @@ if (array_key_exists('transparent', $row)) {
 
     echo "Adding the 'transparent' field to the calendars table\n";
 
-    switch($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+    switch ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
 
         case 'mysql' :
             $pdo->exec("ALTER TABLE calendars ADD transparent TINYINT(1) NOT NULL DEFAULT '0'");
@@ -229,8 +229,8 @@ function getDenormalizedData($calendarData) {
     $component = null;
     $firstOccurence = null;
     $lastOccurence = null;
-    foreach($vObject->getComponents() as $component) {
-        if ($component->name!=='VTIMEZONE') {
+    foreach ($vObject->getComponents() as $component) {
+        if ($component->name !== 'VTIMEZONE') {
             $componentType = $component->name;
             break;
         }
@@ -262,7 +262,7 @@ function getDenormalizedData($calendarData) {
                 $lastOccurence = $maxDate->getTimeStamp();
             } else {
                 $end = $it->getDtEnd();
-                while($it->valid() && $end < $maxDate) {
+                while ($it->valid() && $end < $maxDate) {
                     $end = $it->getDtEnd();
                     $it->next();
 
@@ -273,12 +273,12 @@ function getDenormalizedData($calendarData) {
         }
     }
 
-    return array(
-        'etag' => md5($calendarData),
-        'size' => strlen($calendarData),
-        'componentType' => $componentType,
+    return [
+        'etag'           => md5($calendarData),
+        'size'           => strlen($calendarData),
+        'componentType'  => $componentType,
         'firstOccurence' => $firstOccurence,
         'lastOccurence'  => $lastOccurence,
-    );
+    ];
 
 }

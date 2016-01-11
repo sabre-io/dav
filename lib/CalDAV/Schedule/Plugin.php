@@ -49,7 +49,7 @@ use Sabre\DAV\Exception\NotImplemented;
  *
  * iSchedule is something for later.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -211,6 +211,9 @@ class Plugin extends ServerPlugin {
             $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL', function() use ($principalUrl, $caldavPlugin) {
 
                 $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                if (!$calendarHomePath) {
+                    return null;
+                }
                 $outboxPath = $calendarHomePath . '/outbox/';
 
                 return new Href($outboxPath);
@@ -220,6 +223,9 @@ class Plugin extends ServerPlugin {
             $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL', function() use ($principalUrl, $caldavPlugin) {
 
                 $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                if (!$calendarHomePath) {
+                    return null;
+                }
                 $inboxPath = $calendarHomePath . '/inbox/';
 
                 return new Href($inboxPath);
@@ -231,6 +237,10 @@ class Plugin extends ServerPlugin {
                 // We don't support customizing this property yet, so in the
                 // meantime we just grab the first calendar in the home-set.
                 $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+
+                if (!$calendarHomePath) {
+                    return null;
+                }
 
                 $sccs = '{' . self::NS_CALDAV . '}supported-calendar-component-set';
 

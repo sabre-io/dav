@@ -1,14 +1,41 @@
 ChangeLog
 =========
 
-3.1.0-alpha3 (2015-??-??)
--------------------------
+3.1.1 (????-??-??)
+------------------
+
+* #755: The brower plugin and some operations would break when scheduling and
+  delegation would both be enabled.
+
+
+3.1.0 (2016-01-06)
+------------------
 
 * Better error message when the browser plugin is not enabled.
+* Added a super minimal server example.
 * #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
   use emoji in some tables where you couldn't before.
+* #710: Provide an Auth backend that acts as a helper for people implementing
+  OAuth2 helper token. (@fkooman).
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
+* #742: Fixes to make sure that vobject 4 is correctly supported.
+* #726: Better error reporting in `Client::propPatch`. We're now throwing
+  exceptions.
+* #608: When a HTTP error is triggered during `Client:propFind`, we're now
+  throwing `Sabre\HTTP\ClientHttpException` instead of `Sabre\DAV\Exception`.
+  This new exception contains a LOT more information about the problem.
+* #721: Events are now handled in the correct order for `COPY` requests.
+  Before this subtle bugs could appear that could cause data-loss.
+* #747: Now throwing exceptions and setting the HTTP status to 500 in subtle
+  cases where no other plugin set a correct HTTP status.
+* #686: Corrected PDO principal backend's findByURI for email addresses that
+  don't match the exact capitalization.
+* #512: The client now has it's own `User-Agent`.
+* #720: Some browser improvements.
+* The zip release ships with [sabre/vobject 4.0.1][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.1.0-alpha2 (2015-09-05)
@@ -44,12 +71,24 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.6 (2015-??-??)
+3.0.7 (????-??-??)
+------------------
+
+* #752: PHP 7 support for 3.0 branch. (@DeepDiver1975)
+
+
+3.0.6 (2016-01-04)
 ------------------
 
 * #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
   use emoji in some tables where you couldn't before.
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
+* #734: Return `418 I'm a Teapot` when generating a multistatus response that
+  has resources with no returned properties.
+* #740: Bugs in `migrate20.php` script.
+* The zip release ships with [sabre/vobject 3.4.8][vobj],
+  [sabre/http 4.1.0][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.0.5 (2015-09-15)
@@ -266,6 +305,15 @@ ChangeLog
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.8 (2016-01-04)
+------------------
+
+* #729: Fixed a caching problem in the Tree object.
+* #740: Bugs in `migrate20.php` script.
+* The zip release ships with [sabre/vobject 3.4.8][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.7 (2015-09-05)
@@ -2101,8 +2149,9 @@ ChangeLog
 
 * First release!
 * Passes litmus: basic, http and copymove test.
-* Fully working in Finder and DavFSv2 Project started: 2007-12-13
+* Fully working in Finder and DavFS2.
 
+Project started: 2007-12-13
 
 [vobj]: http://sabre.io/vobject/
 [evnt]: http://sabre.io/event/

@@ -8,11 +8,13 @@ namespace Sabre\DAV\Mock;
  * Works similar to the mock file, but this one works with streams and has no
  * content-length or etags.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
 class StreamingFile extends File {
+
+    protected $size;
 
     /**
      * Updates the data
@@ -81,7 +83,19 @@ class StreamingFile extends File {
      */
     function getSize() {
 
-        return null;
+        return $this->size;
+
+    }
+
+    /**
+     * Allows testing scripts to set the resource's file size.
+     *
+     * @param int $size
+     * @return void
+     */
+    function setSize($size) {
+
+        $this->size = $size;
 
     }
 

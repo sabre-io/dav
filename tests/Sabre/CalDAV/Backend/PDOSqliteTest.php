@@ -6,7 +6,7 @@ use Sabre\CalDAV;
 
 require_once 'Sabre/CalDAV/Backend/AbstractPDOTest.php';
 
-class PDOSQLiteTest extends AbstractPDOTest {
+class PDOSqliteTest extends AbstractPDOTest {
 
     function setup() {
 
@@ -16,11 +16,11 @@ class PDOSQLiteTest extends AbstractPDOTest {
             unlink(SABRE_TEMPDIR . '/testdb.sqlite');
 
         $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         // Yup this is definitely not 'fool proof', but good enough for now.
         $queries = explode(';', file_get_contents(__DIR__ . '/../../../../examples/sql/sqlite.calendars.sql'));
-        foreach($queries as $query) {
+        foreach ($queries as $query) {
             $pdo->exec($query);
         }
         $this->pdo = $pdo;

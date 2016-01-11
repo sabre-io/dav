@@ -248,7 +248,7 @@ class ResponseTest extends DAV\Xml\XmlTest {
      * @depends testSerialize
      *
      * The WebDAV spec _requires_ at least one DAV:propstat to appear for
-     * every DAV:response. There are circumstances however, there are no
+     * every DAV:response. In some circumstances however, there are no
      * properties to encode.
      *
      * In those cases we MUST specify at least one DAV:propstat anyway, with

@@ -20,7 +20,7 @@ use Sabre\CalDAV\Plugin;
  * means that this calendar will not be taken into consideration when a
  * different user queries for free-busy information. If it's 'opaque', it will.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

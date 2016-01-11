@@ -60,6 +60,9 @@ END:VCALENDAR
 ICS
         );
 
+        $this->assertEquals($this->icsExportPlugin, $this->server->getPlugin('ics-export'));
+        $this->assertEquals('ics-export', $this->icsExportplugin->getPluginInfo()['name']);
+
     }
 
     function testInit() {

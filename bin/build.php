@@ -10,10 +10,10 @@ $tasks = [
         'init', 'test', 'clean',
     ],
     'clean' => [],
-    'test' => [
+    'test'  => [
         'composerupdate',
     ],
-    'init' => [],
+    'init'           => [],
     'composerupdate' => [],
  ];
 
@@ -36,9 +36,9 @@ if (!isset($tasks[$currentTask])) {
 $newTaskList = [];
 $oldTaskList = [$currentTask => true];
 
-while(count($oldTaskList)>0) {
+while (count($oldTaskList) > 0) {
 
-    foreach($oldTaskList as $task=>$foo) {
+    foreach ($oldTaskList as $task => $foo) {
 
         if (!isset($tasks[$task])) {
             echo "Dependency not found: " . $task, "\n";
@@ -47,7 +47,7 @@ while(count($oldTaskList)>0) {
         $dependencies = $tasks[$task];
 
         $fullFilled = true;
-        foreach($dependencies as $dependency) {
+        foreach ($dependencies as $dependency) {
             if (isset($newTaskList[$dependency])) {
                 // Already in the fulfilled task list.
                 continue;
@@ -66,7 +66,7 @@ while(count($oldTaskList)>0) {
 
 }
 
-foreach(array_keys($newTaskList) as $task) {
+foreach (array_keys($newTaskList) as $task) {
 
     echo "task: " . $task, "\n";
     call_user_func($task);
@@ -129,7 +129,7 @@ function buildzip() {
         "config"  => [
             "bin-dir" => "./bin",
         ],
-        "prefer-stable" => true,
+        "prefer-stable"     => true,
         "minimum-stability" => "alpha",
     ];
     unset(
@@ -144,7 +144,7 @@ function buildzip() {
 
     echo "  Downloading dependencies\n";
     system("cd build/SabreDAV; composer install -n", $code);
-    if ($code!==0) {
+    if ($code !== 0) {
         echo "Composer reported error code $code\n";
         die(1);
     }
@@ -161,7 +161,7 @@ function buildzip() {
         'README.md',
         'examples',
     ];
-    foreach($fileNames as $fileName) {
+    foreach ($fileNames as $fileName) {
         echo "    $fileName\n";
         rename('build/SabreDAV/vendor/sabre/dav/' . $fileName, 'build/SabreDAV/' . $fileName);
     }

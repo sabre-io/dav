@@ -13,7 +13,7 @@ use Sabre\DAV\Server;
  * Some clients support 'managed subscriptions' server-side. This is basically
  * a list of subscription urls a user is using.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

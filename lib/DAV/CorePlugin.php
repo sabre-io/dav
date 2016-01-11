@@ -10,7 +10,7 @@ use Sabre\Xml\ParseException;
 /**
  * The core plugin provides all the basic features for a WebDAV server.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -76,7 +76,7 @@ class CorePlugin extends ServerPlugin {
     function httpGet(RequestInterface $request, ResponseInterface $response) {
 
         $path = $request->getPath();
-        $node = $this->server->tree->getNodeForPath($path, 0);
+        $node = $this->server->tree->getNodeForPath($path);
 
         if (!$node instanceof IFile) return;
 
@@ -675,12 +675,12 @@ class CorePlugin extends ServerPlugin {
 
         $copyInfo = $this->server->getCopyAndMoveInfo($request);
 
+        if (!$this->server->emit('beforeBind', [$copyInfo['destination']])) return false;
         if ($copyInfo['destinationExists']) {
             if (!$this->server->emit('beforeUnbind', [$copyInfo['destination']])) return false;
             $this->server->tree->delete($copyInfo['destination']);
-
         }
-        if (!$this->server->emit('beforeBind', [$copyInfo['destination']])) return false;
+
         $this->server->tree->copy($path, $copyInfo['destination']);
         $this->server->emit('afterBind', [$copyInfo['destination']]);
 

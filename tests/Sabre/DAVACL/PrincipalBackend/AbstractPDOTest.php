@@ -175,4 +175,24 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testFindByUriUnknownScheme() {
+
+        $pdo = $this->getPDO();
+        $backend = new PDO($pdo);
+        $this->assertNull($backend->findByUri('http://foo', 'principals'));
+
+    }
+
+
+    function testFindByUri() {
+
+        $pdo = $this->getPDO();
+        $backend = new PDO($pdo);
+        $this->assertEquals(
+            'principals/user',
+            $backend->findByUri('mailto:user@example.org', 'principals')
+        );
+
+    }
+
 }

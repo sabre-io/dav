@@ -15,7 +15,7 @@ use Sabre\CardDAV\Plugin;
  *
  * http://tools.ietf.org/html/rfc6352#section-8.6
  *
- * @copyright Copyright (C) 2007-2013 Rooftop Solutions. All rights reserved.
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */

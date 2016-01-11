@@ -20,6 +20,13 @@ $config = [
     'SABRE_MYSQLPASS' => '',
 ];
 
+if (file_exists(__DIR__ . '/config.user.php')) {
+    include __DIR__ . '/config.user.php';
+    foreach($userConfig as $key=>$value) {
+        $config[$key] = $value;
+    }
+}
+
 foreach($config as $key=>$value) {
     if (!defined($key)) define($key, $value);
 }

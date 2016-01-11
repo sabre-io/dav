@@ -26,7 +26,7 @@ use Sabre\HTTP\URLUtil;
  * Additional patterns can be added, by adding on to the
  * temporaryFilePatterns property.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
@@ -134,9 +134,12 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
      *
      * @param string $uri
      * @param resource $data
+     * @param DAV\ICollection $parentNode
+     * @param bool $modified Should be set to true, if this event handler
+     *                       changed &$data.
      * @return bool
      */
-    function beforeCreateFile($uri, $data) {
+    function beforeCreateFile($uri, $data, $parent, $modified) {
 
         if ($tempPath = $this->isTempFile($uri)) {
 

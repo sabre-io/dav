@@ -9,7 +9,7 @@ namespace Sabre\DAV;
  * UUIDs are used a decent amount within various *DAV standards, so it made
  * sense to include it.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */

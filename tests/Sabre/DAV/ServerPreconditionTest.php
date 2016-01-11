@@ -232,7 +232,6 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'   => '/foo'
         ));
 
-        $httpRequest = $httpRequest;
         $httpResponse = new HTTP\ResponseMock();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
@@ -248,7 +247,6 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
             'REQUEST_URI'   => '/foo'
         ));
-        $httpRequest = $httpRequest;
         $httpResponse = new HTTP\ResponseMock();
 
         // Invalid dates must be ignored, so this should return true

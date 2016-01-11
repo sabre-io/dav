@@ -15,17 +15,8 @@ class TestUtil {
 
     static function getSQLiteDB() {
 
-        if (file_exists(SABRE_TEMPDIR . '/testdb.sqlite'))
-            unlink(SABRE_TEMPDIR . '/testdb.sqlite');
+        $pdo = Backend\PDOSqliteTest::getSQLite();
 
-        $pdo = new PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-
-        // Yup this is definitely not 'fool proof', but good enough for now.
-        $queries = explode(';', file_get_contents(__DIR__ . '/../../../examples/sql/sqlite.addressbooks.sql'));
-        foreach($queries as $query) {
-            $pdo->exec($query);
-        }
         // Inserting events through a backend class.
         $backend = new Backend\PDO($pdo);
         $addressbookId = $backend->createAddressBook(
@@ -49,7 +40,12 @@ class TestUtil {
 
     }
 
-    static function getTestCardData($type = 1) {
+    static function deleteSQLiteDB() {
+        $sqliteTest = new Backend\PDOSqliteTest();
+        $pdo = $sqliteTest->tearDown();
+    }
+
+    static function getTestCardData() {
 
         $addressbookData = 'BEGIN:VCARD
 VERSION:3.0

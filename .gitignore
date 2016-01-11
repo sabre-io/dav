@@ -3,6 +3,9 @@ tests/temp
 tests/.sabredav
 tests/cov
 
+# Custom settings for tests
+tests/config.user.php
+
 # ViM
 *.swp
 

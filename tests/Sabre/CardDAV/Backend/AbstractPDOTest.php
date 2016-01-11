@@ -39,7 +39,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}displayname' => 'book1',
                 '{' . CardDAV\Plugin::NS_CARDDAV . '}addressbook-description' => 'addressbook 1',
                 '{http://calendarserver.org/ns/}getctag' => 1,
-                '{http://sabredav.org/ns}sync-token' => "1"
+                '{http://sabredav.org/ns}sync-token' => 1
             )
         );
 

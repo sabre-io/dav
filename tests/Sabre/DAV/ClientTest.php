@@ -121,20 +121,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
         $responseBody = <<<XML
 <?xml version="1.0"?>
 <multistatus xmlns="DAV:">
-<response>
-  <href>/foo</href>
-  <propstat>
-    <prop>
-      <displayname>bar</displayname>
-    </prop>
-    <status>HTTP/1.1 200 OK</status>
-  </propstat>
-</response>
+  <response>
+    <href>/foo</href>
+    <propstat>
+      <prop>
+        <displayname>bar</displayname>
+      </prop>
+      <status>HTTP/1.1 200 OK</status>
+    </propstat>
+  </response>
 </multistatus>
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $result = $client->propfind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
+        $result = $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
 
         $this->assertEquals(['{DAV:}displayname' => 'bar'], $result);
 
@@ -158,7 +158,7 @@ XML;
         ]);
 
         $client->response = new Response(405, []);
-        $client->propfind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
+        $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
 
     }
 
@@ -171,20 +171,20 @@ XML;
         $responseBody = <<<XML
 <?xml version="1.0"?>
 <multistatus xmlns="DAV:">
-<response>
-  <href>/foo</href>
-  <propstat>
-    <prop>
-      <displayname>bar</displayname>
-    </prop>
-    <status>HTTP/1.1 200 OK</status>
-  </propstat>
-</response>
+  <response>
+    <href>/foo</href>
+    <propstat>
+      <prop>
+        <displayname>bar</displayname>
+      </prop>
+      <status>HTTP/1.1 200 OK</status>
+    </propstat>
+  </response>
 </multistatus>
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $result = $client->propfind('foo', ['{DAV:}displayname', '{urn:zim}gir'], 1);
+        $result = $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir'], 1);
 
         $this->assertEquals([
             '/foo' => [
@@ -211,15 +211,15 @@ XML;
         $responseBody = <<<XML
 <?xml version="1.0"?>
 <multistatus xmlns="DAV:">
-<response>
-  <href>/foo</href>
-  <propstat>
-    <prop>
-      <displayname>bar</displayname>
-    </prop>
-    <status>HTTP/1.1 200 OK</status>
-  </propstat>
-</response>
+  <response>
+    <href>/foo</href>
+    <propstat>
+      <prop>
+        <displayname>bar</displayname>
+      </prop>
+      <status>HTTP/1.1 200 OK</status>
+    </propstat>
+  </response>
 </multistatus>
 XML;
 

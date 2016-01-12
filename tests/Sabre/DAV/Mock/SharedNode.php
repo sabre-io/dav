@@ -1,19 +1,27 @@
 <?php
 
-namespace Sabre\DAV\Sharing;
+namespace Sabre\DAV\Mock;
 
-use Sabre\DAV\INode;
+use Sabre\DAV\Sharing\ISharedNode;
+use Sabre\DAV\Sharing\Sharee;
 
-/**
- * This interface represents a resource that has sharing capabilities, either
- * because it's possible for an owner to share the resource, or because this is
- * an instance of a shared resource.
- *
- * @copyright Copyright (C) fruux GmbH. (https://fruux.com/)
- * @author Evert Pot (http://evertpot.com/)
- * @license http://sabre.io/license/ Modified BSD License
- */
-interface ISharedNode extends INode {
+class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
+
+    protected $name;
+    protected $access;
+
+    function __construct($name, $access) {
+
+        $this->name = $name;
+        $this->access = $access;
+
+    }
+
+    function getName() {
+
+        return $this->name;
+
+    }
 
     /**
      * Returns the 'access level' for the instance of this shared resource.
@@ -23,7 +31,11 @@ interface ISharedNode extends INode {
      *
      * @return int
      */
-    function getShareAccess();
+    function getShareAccess() {
+
+        return $this->access;
+
+    }
 
     /**
      * This function must return a URI that uniquely identifies the shared
@@ -36,7 +48,11 @@ interface ISharedNode extends INode {
      *
      * @return string
      */
-    function getShareResourceUri();
+    function getShareResourceUri() {
+
+        throw new \Exception('Not implemented');
+
+    }
 
     /**
      * Updates the list of sharees.
@@ -46,7 +62,11 @@ interface ISharedNode extends INode {
      * @param Sharee[] $sharees
      * @return void
      */
-    function updateInvites(array $sharees);
+    function updateInvites(array $sharees) {
+
+        throw new \Exception('Not implemented');
+
+    }
 
     /**
      * Returns the list of people whom this resource is shared with.
@@ -64,6 +84,9 @@ interface ISharedNode extends INode {
      *
      * @return array
      */
-    function getInvites();
+    function getInvites() {
 
-}
+        throw new \Exception('Not implemented');
+
+    }
+} 

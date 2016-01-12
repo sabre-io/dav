@@ -4,6 +4,9 @@ namespace Sabre\DAV\Xml\Request;
 
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
+use Sabre\Xml\Deserializer;
+use Sabre\DAV\Sharing\Sharee;
+use Sabre\DAV\Exception\BadRequest;
 
 /**
  * ShareResource request parser.
@@ -19,39 +22,20 @@ use Sabre\Xml\XmlDeserializable;
 class ShareResource implements XmlDeserializable {
 
     /**
-     * The list of new people added or updated.
+     * The list of new people added or updated or removed from the share.
      *
-     * Every element has the following keys:
-     * 1. href - An email address
-     * 2. comment - An optional description of the share
-     * 3. readOnly - true or false
-     *
-     * In addition to that, it might contain a list of webdav properties
-     * associated with the sharer. The most common one is {DAV:}displayname.
-     *
-     * @var array
+     * @var Sharee[]
      */
-    public $set = [];
-
-    /**
-     * List of people removed from the share list.
-     *
-     * The list is a flat list of email addresses (including mailto:).
-     *
-     * @var array
-     */
-    public $remove = [];
+    public $sharees = [];
 
     /**
      * Constructor
      *
-     * @param array $set
-     * @param array $remove
+     * @param Sharee[] $sharees
      */
-    function __construct(array $set, array $remove) {
+    function __construct(array $sharees) {
 
-        $this->set = $set;
-        $this->remove = $remove;
+        $this->sharees = $sharees;
 
     }
 
@@ -79,58 +63,42 @@ class ShareResource implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $elems = $reader->parseInnerTree([
-            '{DAV:}set-invitee'    => 'Sabre\\Xml\\Element\\KeyValue',
-            '{DAV:}remove-invitee' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{DAV:}sharee' => function(Reader $reader) {
+                return Deserializer\keyValue($reader, 'DAV:');
+            },
+            '{DAV:}share-access' => 'Sabre\DAV\Xml\Property\ShareAccess',
+            '{DAV:}prop' => 'Sabre\Xml\Deserializer\keyValue',
         ]);
 
-        $set = [];
-        $remove = [];
+        $sharees = [];
 
         foreach ($elems as $elem) {
-            switch ($elem['name']) {
+            if ($elem['name'] !== '{DAV:}sharee') continue;
 
-                case '{DAV:}set-invitee' :
-                    $sharee = $elem['value'];
+            $xsharee = $elem['value'];
 
-                    $setInvitee = [
-                        'href'     => null,
-                        'comment'  => null,
-                        'readOnly' => false,
-                    ];
-                    foreach ($sharee as $key => $value) {
-
-                        switch ($key) {
-
-                            case '{DAV:}href' :
-                                $setInvitee['href'] = $value;
-                                break;
-                            case '{DAV:}comment' :
-                                $setInvitee['comment'] = $value;
-                                break;
-                            case '{DAV:}read' :
-                                $setInvitee['readOnly'] = true;
-                                break;
-                            case '{DAV:}read-write' :
-                                $setInvitee['readOnly'] = false;
-                                break;
-                            default :
-                                $setInvitee[$key] = $value;
-                                break;
-
-                        }
-
-                    }
-                    $set[] = $setInvitee;
-                    break;
-
-                case '{DAV:}remove-invitee' :
-                    $remove[] = $elem['value']['{DAV:}href'];
-                    break;
-
+            $sharee = new Sharee();
+            if (!isset($xsharee['href'])) {
+                throw new BadRequest('Every {DAV:}sharee must have a {DAV:}href child-element');
             }
+            $sharee->href = $xsharee['href'];
+
+            if (isset($xsharee['prop'])) {
+                $sharee->properties = $xsharee['prop'];
+            }
+            if (isset($xsharee['comment'])) {
+                $sharee->comment = $xsharee['comment'];
+            }
+            if (!isset($xsharee['share-access'])) {
+                throw new BadRequest('Every {DAV:}sharee must have a {DAV:}share-access child element');
+            }
+            $sharee->access = $xsharee['share-access']->getValue();
+
+            $sharees[] = $sharee;
+
         }
 
-        return new self($set, $remove);
+        return new self($sharees);
 
     }
 

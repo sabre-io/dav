@@ -26,9 +26,15 @@ use Sabre\HTTP\ResponseInterface;
 class Plugin extends ServerPlugin {
 
     const ACCESS_NOTSHARED = 0;
-    const ACCESS_OWNER = 1;
-    const ACCESS_READONLY = 2;
+    const ACCESS_SHAREDOWNER = 1;
+    const ACCESS_READ = 2;
     const ACCESS_READWRITE = 3;
+    const ACCESS_NOACCESS = 4;
+
+    const INVITE_NORESPONSE = 1;
+    const INVITE_ACCEPTED = 2;
+    const INVITE_DECLINED = 3;
+    const INVITE_INVALID = 4;
 
     /**
      * Reference to SabreDAV server object.
@@ -95,26 +101,14 @@ class Plugin extends ServerPlugin {
     /**
      * Updates the list of sharees on a shared resource.
      *
-     * The set array is a list of people that are to be added to the
-     * shared resource.
-     *
-     * Every element in the add array has the following properties:
-     *   * href - A url. Usually a mailto: address
-     *   * summary - A description of the share, can also be false
-     *   * readOnly - A boolean value
-     *
-     * In addition to that, the array might have any additional properties,
-     * specified in clark-notation, such as '{DAV:}displayname'.
-     *
-     * Every element in the remove array is just the url of the sharee that's
-     * to be removed.
+     * The sharees  array is a list of people that are to be added modified
+     * or removed in the list of shares.
      *
      * @param string $path
-     * @param array $set
-     * @param array $remove
+     * @param Sharee[] $sharees
      * @return void
      */
-    function shareResource($path, $set, $remove) {
+    function shareResource($path, array $sharees) {
 
         try {
             $node = $this->server->tree->getNodeForPath($path);
@@ -137,7 +131,7 @@ class Plugin extends ServerPlugin {
             $acl->checkPrivileges($path, '{DAV:}share');
         }
 
-        $node->updateShares($set, $remove);
+        $node->updateShares($sharees);
 
     }
 
@@ -153,23 +147,20 @@ class Plugin extends ServerPlugin {
     function propFind(PropFind $propFind, INode $node) {
 
         if ($node instanceof ISharedNode) {
-            $propFind->handle('{DAV:}share-mode', function() use ($node) {
-                switch ($node->getShareAccess()) {
-                    case self::ACCESS_NOTSHARED :
-                        return null;
-                    case self::ACCESS_OWNER :
-                        return new Property\ShareMode(Property\ShareMode::SHAREDOWNER);
-                    case self::ACCESS_READONLY :
-                        return new Property\ShareMode(Property\ShareMode::SHARED);
-                    case self::ACCESS_READWRITE :
-                        return new Property\ShareMode(Property\ShareMode::SHARED);
-
-                }
-            });
 
             $propFind->handle('{DAV:}share-access', function() use ($node) {
 
                 return new Property\ShareAccess($node->getShareAccess());
+
+            });
+            $propFind->handle('{DAV:}invite', function() use ($node) {
+
+                return new Property\Invites($node->getInvites());
+
+            });
+            $propFind->handle('{DAV:}share-resource-uri', function() use ($node) {
+
+                return new Property\Href($node->getShareResourceUri());
 
             });
 
@@ -204,7 +195,7 @@ class Plugin extends ServerPlugin {
 
             case '{DAV:}share-resource':
 
-                $this->shareResource($path, $message->set, $message->remove);
+                $this->shareResource($path, $message->sharees);
                 $response->setStatus(200);
                 // Adding this because sending a response body may cause issues,
                 // and I wanted some type of indicator the response was handled.

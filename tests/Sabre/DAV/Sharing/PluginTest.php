@@ -3,6 +3,7 @@
 namespace Sabre\DAV\Sharing;
 
 use Sabre\DAV\Mock;
+use Sabre\DAV\Xml\Property;
 
 class PluginTest extends \Sabre\DAVServerTest {
 
@@ -10,7 +11,10 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     function setUpTree() {
 
-        $this->tree[] = new Mock\ShareableNode();
+        $this->tree[] = new Mock\SharedNode(
+            'shareable',
+            Plugin::ACCESS_READWRITE
+        );
 
     }
 
@@ -18,10 +22,18 @@ class PluginTest extends \Sabre\DAVServerTest {
 
         $result = $this->server->getPropertiesForPath(
             'shareable',
-            ['{DAV:}share-mode']
+            ['{DAV:}share-access']
         );
 
-        $expected = [];
+        $expected = [
+            [
+                200 => [
+                    '{DAV:}share-access' => new Property\ShareAccess(Plugin::ACCESS_READWRITE)
+                ],
+                404 => [],
+                'href' => 'shareable',
+            ]
+        ];
 
         $this->assertEquals(
             $expected,

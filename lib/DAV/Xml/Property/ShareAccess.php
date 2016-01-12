@@ -2,9 +2,11 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\Xml\Writer;
-use Sabre\Xml\XmlSerializable;
 use Sabre\DAV\Sharing\Plugin as SharingPlugin;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\Xml\Element;
+use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * This class represents the {DAV:}share-access property.
@@ -20,7 +22,7 @@ use Sabre\DAV\Sharing\Plugin as SharingPlugin;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ShareAccess implements XmlSerializable {
+class ShareAccess implements Element {
 
     /**
      * Either SHARED or SHAREDOWNER
@@ -80,18 +82,63 @@ class ShareAccess implements XmlSerializable {
             case SharingPlugin::ACCESS_NOTSHARED :
                 $writer->writeElement('{DAV:}not-shared');
                 break;
-            case SharingPlugin::ACCESS_OWNER :
+            case SharingPlugin::ACCESS_SHAREDOWNER :
                 $writer->writeElement('{DAV:}shared-owner');
                 break;
-            case SharingPlugin::ACCESS_READONLY :
-                $writer->writeElement('{DAV:}shared-readonly');
+            case SharingPlugin::ACCESS_READ :
+                $writer->writeElement('{DAV:}read');
                 break;
             case SharingPlugin::ACCESS_READWRITE :
-                $writer->writeElement('{DAV:}shared-readwrite');
+                $writer->writeElement('{DAV:}read-write');
+                break;
+            case SharingPlugin::ACCESS_NOACCESS :
+                $writer->writeElement('{DAV:}no-access');
                 break;
 
         }
 
     }
 
+    /**
+     * The deserialize method is called during xml parsing.
+     *
+     * This method is called statictly, this is because in theory this method
+     * may be used as a type of constructor, or factory method.
+     *
+     * Often you want to return an instance of the current class, but you are
+     * free to return other data as well.
+     *
+     * You are responsible for advancing the reader to the next element. Not
+     * doing anything will result in a never-ending loop.
+     *
+     * If you just want to skip parsing for this element altogether, you can
+     * just call $reader->next();
+     *
+     * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
+     * the next element.
+     *
+     * @param Reader $reader
+     * @return mixed
+     */
+    static function xmlDeserialize(Reader $reader) {
+
+        $elems = $reader->parseInnerTree();
+        $value = null;
+        foreach($elems as $elem) {
+            switch($elem['name']) {
+                case '{DAV:}not-shared' :
+                    return new self(SharingPlugin::ACCESS_NOTSHARED);
+                case '{DAV:}sharedowner' :
+                    return new self(SharingPlugin::ACCESS_SHAREDOWNER);
+                case '{DAV:}read' :
+                    return new self(SharingPlugin::ACCESS_READ);
+                case '{DAV:}read-write' :
+                    return new self(SharingPlugin::ACCESS_READWRITE);
+                case '{DAV:}no-access' :
+                    return new self(SharingPlugin::ACCESS_NOACCESS);
+            }
+        }
+        throw new BadRequest('Invalid value for {DAV:}share-access element');
+
+    }
 }

@@ -5,6 +5,9 @@ ChangeLog
 ------------------
 
 * #752: PHP 7 support for 3.0 branch. (@DeepDiver1975)
+* The zip release ships with [sabre/vobject 3.5.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.0.6 (2016-01-04)

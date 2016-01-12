@@ -8,6 +8,7 @@ $autoLoader = include __DIR__ . '/../vendor/autoload.php';
 $autoLoader->add('Sabre\\', __DIR__);
 // VObject tests auto loading
 $autoLoader->addPsr4('Sabre\\VObject\\',__DIR__ . '/../vendor/sabre/vobject/tests/VObject');
+$autoLoader->addPsr4('Sabre\\Xml\\',__DIR__ . '/../vendor/sabre/xml/tests/Sabre/Xml');
 
 date_default_timezone_set('UTC');
 

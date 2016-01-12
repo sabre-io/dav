@@ -43,7 +43,7 @@ interface ISharedNode extends INode {
      *
      * Every item must be a Sharee object.
      *
-     * @param Sharee[] $sharees
+     * @param \Sabre\DAV\Xml\Element\Sharee[] $sharees
      * @return void
      */
     function updateInvites(array $sharees);
@@ -62,7 +62,7 @@ interface ISharedNode extends INode {
      *
      * * $properties
      *
-     * @return array
+     * @return \Sabre\DAV\Xml\Element\Sharee[]
      */
     function getInvites();
 

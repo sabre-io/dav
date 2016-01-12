@@ -3,7 +3,7 @@
 namespace Sabre\DAV\Xml\Request;
 
 use Sabre\DAV\Xml\XmlTest;
-use Sabre\DAV\Sharing\Sharee;
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\DAV\Sharing\Plugin;
 
 class ShareResourceTest extends XmlTest {

@@ -5,7 +5,7 @@ namespace Sabre\DAV\Xml\Request;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 use Sabre\Xml\Deserializer;
-use Sabre\DAV\Sharing\Sharee;
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\DAV\Exception\BadRequest;
 
 /**
@@ -63,9 +63,7 @@ class ShareResource implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $elems = $reader->parseInnerTree([
-            '{DAV:}sharee' => function(Reader $reader) {
-                return Deserializer\keyValue($reader, 'DAV:');
-            },
+            '{DAV:}sharee' => 'Sabre\DAV\Xml\Element\Sharee',
             '{DAV:}share-access' => 'Sabre\DAV\Xml\Property\ShareAccess',
             '{DAV:}prop' => 'Sabre\Xml\Deserializer\keyValue',
         ]);
@@ -74,27 +72,7 @@ class ShareResource implements XmlDeserializable {
 
         foreach ($elems as $elem) {
             if ($elem['name'] !== '{DAV:}sharee') continue;
-
-            $xsharee = $elem['value'];
-
-            $sharee = new Sharee();
-            if (!isset($xsharee['href'])) {
-                throw new BadRequest('Every {DAV:}sharee must have a {DAV:}href child-element');
-            }
-            $sharee->href = $xsharee['href'];
-
-            if (isset($xsharee['prop'])) {
-                $sharee->properties = $xsharee['prop'];
-            }
-            if (isset($xsharee['comment'])) {
-                $sharee->comment = $xsharee['comment'];
-            }
-            if (!isset($xsharee['share-access'])) {
-                throw new BadRequest('Every {DAV:}sharee must have a {DAV:}share-access child element');
-            }
-            $sharee->access = $xsharee['share-access']->getValue();
-
-            $sharees[] = $sharee;
+            $sharees[] = $elem['value'];
 
         }
 

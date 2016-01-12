@@ -12,14 +12,14 @@ use Sabre\Xml\Writer;
  * This class represents the {DAV:}share-access property.
  *
  * This property is defined here:
- * TODO
+ * https://tools.ietf.org/html/draft-pot-webdav-resource-sharing-03#section-4.4.1
  *
  * This property is used to indicate if a resource is a shared resource, and
  * whether the instance of the shared resource is the original instance, or
  * an instance belonging to a sharee.
  *
- * @copyright Copyright (C) 2007-2015 fruux GmbH (https://fruux.com/).
- * @author Evert Pot (http://www.rooftopsolutions.nl/)
+ * @copyright Copyright (C) fruux GmbH (https://fruux.com/).
+ * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
 class ShareAccess implements Element {

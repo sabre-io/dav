@@ -136,7 +136,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 }
 
                 return new Xml\Property\Invite(
-                    $node->getShares(),
+                    $node->getInvites(),
                     $ownerInfo
                 );
 
@@ -204,12 +204,12 @@ class SharingPlugin extends DAV\ServerPlugin {
 
             $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
                 if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
-                $shares = $node->getShares();
+                $shares = $node->getInvites();
                 $remove = [];
                 foreach ($shares as $share) {
-                    $remove[] = $share['href'];
+                    $share->access = DAV\Sharing\Plugin::ACCESS_NOACCESS;
                 }
-                $node->updateShares([], $remove);
+                $node->updateInvites($shares);
 
                 return true;
 

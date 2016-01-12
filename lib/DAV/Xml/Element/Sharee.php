@@ -45,12 +45,12 @@ class Sharee implements Element {
      * ACCESS_READWRITE
      * ACCESS_SHAREDOWNER
      * ACCESS_NOACCESS
-     * 
+     *
      * depending on context.
      *
      * @var int
      */
-    public $shareAccess;
+    public $access;
 
     /**
      * When a sharee is originally invited to a share, the sharer may add
@@ -67,6 +67,27 @@ class Sharee implements Element {
      * @var int
      */
     public $inviteStatus;
+
+    /**
+     * Creates the object
+     *
+     * $properties will be used to populate all internal properties.
+     *
+     * @param array $properties
+     */
+    function __construct(array $properties = []) {
+
+        foreach($properties as $k=>$v) {
+
+            if (property_exists($this, $k)) {
+                $this->$k = $v;
+            } else {
+                throw new \InvalidArgumentException('Unknown property: ' . $k);
+            }
+
+        }
+
+    }
 
     /**
      * The xmlSerialize method is called during xml writing.

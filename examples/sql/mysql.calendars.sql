@@ -19,7 +19,7 @@ CREATE TABLE calendars (
     components VARBINARY(20)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE calendar_instances (
+CREATE TABLE calendarinstances (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     calendarid INTEGER UNSIGNED NOT NULL,
     principaluri VARBINARY(100),

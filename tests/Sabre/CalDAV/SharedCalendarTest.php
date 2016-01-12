@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV\Sharing;
+use Sabre\DAV\Xml\Element\Sharee;
 
 class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
@@ -26,26 +27,29 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
             [],
             []
         );
-        $this->backend->updateShares(1, [
-            [
-                'href'       => 'mailto:removeme@example.org',
-                'commonName' => 'To be removed',
-                'readOnly'   => true,
-            ],
-        ], []);
+
+        $sharee = new Sharee();
+        $sharee->href = 'mailto:removeme@example.org';
+        $sharee->properties['{DAV:}displayname'] = 'To be removed';
+        $sharee->access = Sharing\Plugin::ACCESS_READ;
+        $this->backend->updateInvites(1, [$sharee]);
 
         return new SharedCalendar($this->backend, $props);
 
     }
 
-    function testGetShares() {
+    function testGetInvites() {
 
-        $this->assertEquals([[
-            'href'       => 'mailto:removeme@example.org',
-            'commonName' => 'To be removed',
-            'readOnly'   => true,
-            'status'     => Sharing\Plugin::INVITE_NORESPONSE,
-        ]], $this->getInstance()->getInvites());
+        $sharee = new Sharee();
+        $sharee->href = 'mailto:removeme@example.org';
+        $sharee->properties['{DAV:}displayname'] = 'To be removed';
+        $sharee->access = Sharing\Plugin::ACCESS_READ;
+        $sharee->inviteStatus = Sharing\Plugin::INVITE_NORESPONSE;
+
+        $this->assertEquals(
+            [$sharee],
+            $this->getInstance()->getInvites()
+        );
 
     }
 
@@ -137,25 +141,28 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function testUpdateShares() {
+    function testUpdateInvites() {
 
         $instance = $this->getInstance();
-        $instance->updateShares([
-            [
-                'href'       => 'mailto:test@example.org',
-                'commonName' => 'Foo Bar',
-                'summary'    => 'Booh',
-                'readOnly'   => false,
-            ],
-        ], ['mailto:removeme@example.org']);
+        $newSharees = [
+            new Sharee(),
+            new Sharee()
+        ];
+        $newSharees[0]->href = 'mailto:test@example.org';
+        $newSharees[0]->properties['{DAV:}displayname'] = 'Foo Bar';
+        $newSharees[0]->comment = 'Booh';
+        $newSharees[0]->access = Sharing\Plugin::ACCESS_READWRITE;
 
-        $this->assertEquals([[
-            'href'       => 'mailto:test@example.org',
-            'commonName' => 'Foo Bar',
-            'summary'    => 'Booh',
-            'readOnly'   => false,
-            'status'     => SharingPlugin::STATUS_NORESPONSE,
-        ]], $instance->getShares());
+        $newSharees[1]->href = 'mailto:removeme@example.org';
+        $newSharees[1]->access = Sharing\Plugin::ACCESS_NOACCESS;
+
+        $instance->updateInvites($newSharees);
+
+        $expected = [
+            clone $newSharees[0]
+        ];
+        $expected[0]->inviteStatus = Sharing\Plugin::INVITE_NORESPONSE;
+        $this->assertEquals($expected, $instance->getInvites());
 
     }
 

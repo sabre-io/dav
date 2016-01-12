@@ -131,7 +131,7 @@ class Plugin extends ServerPlugin {
             $acl->checkPrivileges($path, '{DAV:}share');
         }
 
-        $node->updateShares($sharees);
+        $node->updateInvites($sharees);
 
     }
 

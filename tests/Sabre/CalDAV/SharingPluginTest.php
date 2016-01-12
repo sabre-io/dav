@@ -3,6 +3,7 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV;
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\HTTP;
 
 class SharingPluginTest extends \Sabre\DAVServerTest {
@@ -84,13 +85,12 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUpdateResourceType() {
 
-        $this->caldavBackend->updateShares(1,
+        $this->caldavBackend->updateInvites(1,
             [
-                [
+                new Sharee([
                     'href' => 'mailto:joe@example.org',
-                ],
-            ],
-            []
+                ])
+            ]
         );
         $result = $this->server->updateProperties('calendars/user1/cal1', [
             '{DAV:}resourcetype' => new DAV\Xml\Property\ResourceType(['{DAV:}collection'])
@@ -100,7 +100,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             '{DAV:}resourcetype' => 200
         ], $result);
 
-        $this->assertEquals(0, count($this->caldavBackend->getShares(1)));
+        $this->assertEquals(0, count($this->caldavBackend->getInvites(1)));
 
     }
 

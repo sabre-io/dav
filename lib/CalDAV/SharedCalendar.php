@@ -54,7 +54,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function updateInvites(array $sharees) {
 
-        $this->caldavBackend->updateShares($this->calendarInfo['id'], $sharees);
+        $this->caldavBackend->updateInvites($this->calendarInfo['id'], $sharees);
 
     }
 
@@ -76,7 +76,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getInvites() {
 
-        return $this->caldavBackend->getShares($this->calendarInfo['id']);
+        return $this->caldavBackend->getInvites($this->calendarInfo['id']);
 
     }
 

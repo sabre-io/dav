@@ -18,7 +18,7 @@ CREATE TABLE calendars (
     components text
 );
 
-CREATE TABLE calendar_instances (
+CREATE TABLE calendarinstances (
     id integer primary key asc,
     calendarid integer,
     principaluri text,

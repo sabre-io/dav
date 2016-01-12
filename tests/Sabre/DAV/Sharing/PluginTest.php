@@ -30,7 +30,7 @@ class PluginTest extends \Sabre\DAVServerTest {
                 200 => [
                     '{DAV:}share-access' => new Property\ShareAccess(Plugin::ACCESS_READWRITE)
                 ],
-                404 => [],
+                404    => [],
                 'href' => 'shareable',
             ]
         ];

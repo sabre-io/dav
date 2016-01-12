@@ -4,6 +4,7 @@ namespace Sabre\DAV\Xml\Element;
 
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Sharing\Plugin;
+use Sabre\DAV\Xml\Property\ShareAccess;
 use Sabre\Xml\Deserializer;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
@@ -89,22 +90,22 @@ class Sharee implements Element {
     function xmlSerialize(Writer $writer) {
 
         $writer->write([
-            '{DAV:}href' => $href,
+            '{DAV:}href' => $this->href,
             '{DAV:}prop' => $this->properties,
             '{DAV:}share-access' => new ShareAccess($this->shareAccess),
         ]);
         switch($this->inviteStatus) {
             case Plugin::INVITE_NORESPONSE :
-                $write->writeElement('{DAV:}invite-noresponse');
+                $writer->writeElement('{DAV:}invite-noresponse');
                 break;
             case Plugin::INVITE_ACCEPTED :
-                $write->writeElement('{DAV:}invite-accepted');
+                $writer->writeElement('{DAV:}invite-accepted');
                 break;
             case Plugin::INVITE_DECLINED :
-                $write->writeElement('{DAV:}invite-declined');
+                $writer->writeElement('{DAV:}invite-declined');
                 break;
             case Plugin::INVITE_INVALID :
-                $write->writeElement('{DAV:}invite-invalid');
+                $writer->writeElement('{DAV:}invite-invalid');
                 break;
         }
 

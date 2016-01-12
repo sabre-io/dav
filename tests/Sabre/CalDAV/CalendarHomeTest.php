@@ -208,7 +208,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
      */
     function testShareReplyFail() {
 
-        $this->usercalendars->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $this->usercalendars->shareReply('uri', DAV\Sharing\Plugin::INVITE_DECLINED, 'curi', '1');
 
     }
 

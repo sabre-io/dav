@@ -44,8 +44,8 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
             'href'       => 'mailto:removeme@example.org',
             'commonName' => 'To be removed',
             'readOnly'   => true,
-            'status'     => SharingPlugin::STATUS_NORESPONSE,
-        ]], $this->getInstance()->getShares());
+            'status'     => Sharing\Plugin::INVITE_NORESPONSE,
+        ]], $this->getInstance()->getInvites());
 
     }
 

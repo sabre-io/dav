@@ -26,15 +26,6 @@ use Sabre\HTTP\ResponseInterface;
 class SharingPlugin extends DAV\ServerPlugin {
 
     /**
-     * These are the various status constants used by sharing-messages.
-     */
-    const STATUS_ACCEPTED = 1;
-    const STATUS_DECLINED = 2;
-    const STATUS_DELETED = 3;
-    const STATUS_NORESPONSE = 4;
-    const STATUS_INVALID = 5;
-
-    /**
      * Reference to SabreDAV server object.
      *
      * @var Sabre\DAV\Server
@@ -170,10 +161,10 @@ class SharingPlugin extends DAV\ServerPlugin {
             $shareAccess = $node->getShareAccess();
             if ($rt = $propFind->get('{DAV:}resourcetype')) {
                 switch ($shareAccess) {
-                    case \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER :
+                    case \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER :
                         $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared-owner');
                         break;
-                    case \Sabre\DAV\Sharing\Plugin::ACCESS_READONLY :
+                    case \Sabre\DAV\Sharing\Plugin::ACCESS_READ :
                     case \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE :
                         $rt->add('{' . Plugin::NS_CALENDARSERVER . '}shared');
                         break;
@@ -209,7 +200,7 @@ class SharingPlugin extends DAV\ServerPlugin {
         if (!$node instanceof ISharedCalendar)
             return;
 
-        if ($node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER || $node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED) {
+        if ($node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER || $node->getShareAccess() === \Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED) {
 
             $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
                 if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;

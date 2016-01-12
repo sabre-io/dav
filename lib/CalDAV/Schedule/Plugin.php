@@ -257,7 +257,7 @@ class Plugin extends ServerPlugin {
                     }
                     if (isset($child[200]['{DAV:}share-access'])) {
                         $shareAccess = $child[200]['{DAV:}share-access']->getValue();
-                        if ($shareAccess !== Sharing\Plugin::ACCESS_NOTSHARED && $shareAccess !== Sharing\Plugin::ACCESS_OWNER) {
+                        if ($shareAccess !== Sharing\Plugin::ACCESS_NOTSHARED && $shareAccess !== Sharing\Plugin::ACCESS_SHAREDOWNER) {
                             // Node is a shared node, not owned by the relevant
                             // user.
                             continue;

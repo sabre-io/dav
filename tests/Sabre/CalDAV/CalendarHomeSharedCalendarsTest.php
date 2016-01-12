@@ -2,10 +2,8 @@
 
 namespace Sabre\CalDAV;
 
-require_once 'Sabre/CalDAV/TestUtil.php';
+use Sabre\DAV;
 
-/**
- */
 class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
@@ -74,7 +72,7 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
     function testShareReply() {
 
         $instance = $this->getInstance();
-        $result = $instance->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $result = $instance->shareReply('uri', DAV\Sharing\Plugin::INVITE_DECLINED, 'curi', '1');
         $this->assertNull($result);
 
     }

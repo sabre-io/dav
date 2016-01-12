@@ -28,17 +28,53 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
     }
 
     /**
+     * This function must return a URI that uniquely identifies the shared
+     * resource. This URI should be identical across instances, and is
+     * also used in several other XML bodies to connect invites to
+     * resources.
+     *
+     * This may simply be a relative reference to the original shared instance,
+     * but it could also be a urn. As long as it's a valid URI and unique.
+     *
+     * @return string
+     */
+    function getShareResourceUri() {
+
+        throw new \Exception('Not implemented');
+
+    }
+
+    /**
+     * Updates the list of sharees.
+     *
+     * Every item must be a Sharee object.
+     *
+     * @param \Sabre\DAV\Xml\Element\Sharee[] $sharees
+     * @return void
+     */
+    function updateInvites(array $sharees) {
+
+        $this->caldavBackend->updateShares($this->calendarInfo['id'], $sharees);
+
+    }
+
+    /**
      * Returns the list of people whom this resource is shared with.
      *
-     * Every element in this array should have the following properties:
-     *   * href - Often a mailto: address
-     *   * commonName - Optional, for example a first + last name
-     *   * status - See the Sabre\DAV\Sharing\Plugin::STATUS_ constants.
-     *   * access - one of the Sabre\DAV\Sharing\Plugin::ACCESS_ constants.
+     * Every item in the returned array must be a Sharee object with
+     * at least the following properties set:
      *
-     * @return array
+     * * $href
+     * * $shareAccess
+     * * $inviteStatus
+     *
+     * and optionally:
+     *
+     * * $properties
+     *
+     * @return \Sabre\DAV\Xml\Element\Sharee[]
      */
-    function getShares() {
+    function getInvites() {
 
         return $this->caldavBackend->getShares($this->calendarInfo['id']);
 
@@ -60,43 +96,6 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
     }
 
     /**
-     * Updates the list of shares.
-     *
-     * The first array is a list of people that are to be added to the
-     * calendar.
-     *
-     * Every element in the add array has the following properties:
-     *   * href - A url. Usually a mailto: address
-     *   * commonName - Usually a first and last name, or false
-     *   * summary - A description of the share, can also be false
-     *   * readOnly - A boolean value
-     *
-     * Every element in the remove array is just the address string.
-     *
-     * @param array $add
-     * @param array $remove
-     * @return void
-     */
-    function updateShares(array $add, array $remove) {
-
-        $this->caldavBackend->updateShares($this->calendarInfo['id'], $add, $remove);
-
-    }
-
-    /**
-     * Returns the owner principal
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getOwner() {
-
-        return $this->calendarInfo['principaluri'];
-
-    }
-
-    /**
      * Returns a list of ACE's for this node.
      *
      * Each ACE has the following properties:
@@ -114,7 +113,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
 
         switch ($this->getShareAccess()) {
             case SPlugin::ACCESS_NOTSHARED :
-            case SPlugin::ACCESS_OWNER :
+            case SPlugin::ACCESS_SHAREDOWNER :
                 $acl[] = [
                     'privilege' => '{DAV:}share',
                     'principal' => $this->calendarInfo['principaluri'],
@@ -138,7 +137,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
                     'protected' => true,
                 ];
                 // No break intentional!
-            case SPlugin::ACCESS_READONLY :
+            case SPlugin::ACCESS_READ :
                 $acl[] = [
                     'privilege' => '{DAV:}write-properties',
                     'principal' => $this->calendarInfo['principaluri'],
@@ -212,7 +211,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
         switch ($this->getShareAccess()) {
             case SPlugin::ACCESS_NOTSHARED :
                 // No break intentional
-            case SPlugin::ACCESS_OWNER :
+            case SPlugin::ACCESS_SHAREDOWNER :
                 // No break intentional
             case SPlugin::ACCESS_READWRITE:
                 $acl[] = [
@@ -226,7 +225,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
                     'protected' => true,
                 ];
                 // No break intentional
-            case SPlugin::ACCESS_READONLY:
+            case SPlugin::ACCESS_READ:
                 $acl[] = [
                     'privilege' => '{DAV:}read',
                     'principal' => $this->calendarInfo['principaluri'],

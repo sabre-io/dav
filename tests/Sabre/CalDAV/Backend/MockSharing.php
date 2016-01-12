@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV\Backend;
 
 use Sabre\DAV;
-use Sabre\CalDAV;
 use Sabre\CalDAV\Xml\Notification\NotificationInterface;
 
 class MockSharing extends Mock implements NotificationSupport, SharingSupport {
@@ -44,9 +43,9 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
                 continue;
             }
             if (!empty($this->shares[$calendar['id']])) {
-                $calendar['share-access'] = \Sabre\DAV\Sharing\Plugin::ACCESS_OWNER;
+                $calendar['share-access'] = DAV\Sharing\Plugin::ACCESS_OWNER;
             } else {
-                $calendar['share-access'] = \Sabre\DAV\Sharing\Plugin::ACCESS_NOTSHARED;
+                $calendar['share-access'] = DAV\Sharing\Plugin::ACCESS_NOTSHARED;
             }
             $calendars[$k] = $calendar;
 
@@ -122,7 +121,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
         }
 
         foreach ($add as $val) {
-            $val['status'] = CalDAV\SharingPlugin::STATUS_NORESPONSE;
+            $val['status'] = DAV\Sharing\Plugin::INVITE_NORESPONSE;
             $this->shares[$calendarId][] = $val;
         }
 
@@ -145,7 +144,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
      * Every element in this array should have the following properties:
      *   * href - Often a mailto: address
      *   * commonName - Optional, for example a first + last name
-     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
+     *   * status - See the Sabre\DAV\Sharing\Plugin::INVITE_ constants.
      *   * readOnly - boolean
      *   * summary - Optional, a description for the share
      *
@@ -166,7 +165,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
      * This method is called when a user replied to a request to share.
      *
      * @param string href The sharee who is replying (often a mailto: address)
-     * @param int status One of the SharingPlugin::STATUS_* constants
+     * @param int status One of the \Sabre\DAV\Sharing\Plugin::INVITE_* constants
      * @param string $calendarUri The url to the calendar thats being shared
      * @param string $inReplyTo The unique id this message is a response to
      * @param string $summary A description of the reply
@@ -175,7 +174,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
     function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null) {
 
         // This operation basically doesn't do anything yet
-        if ($status === CalDAV\SharingPlugin::STATUS_ACCEPTED) {
+        if ($status === DAV\Sharing\Plugin::INVITE_ACCEPTED) {
             return 'calendars/blabla/calendar';
         }
 

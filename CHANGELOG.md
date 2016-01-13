@@ -1,8 +1,15 @@
 ChangeLog
 =========
 
-3.1.0-alpha3 (2015-??-??)
--------------------------
+3.1.1 (????-??-??)
+------------------
+
+* #755: The brower plugin and some operations would break when scheduling and
+  delegation would both be enabled.
+
+
+3.1.0 (2016-01-06)
+------------------
 
 * Better error message when the browser plugin is not enabled.
 * Added a super minimal server example.
@@ -13,7 +20,6 @@ ChangeLog
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #742: Fixes to make sure that vobject 4 is correctly supported.
-* Subtle browser improvements.
 * #726: Better error reporting in `Client::propPatch`. We're now throwing
   exceptions.
 * #608: When a HTTP error is triggered during `Client:propFind`, we're now
@@ -26,6 +32,10 @@ ChangeLog
 * #686: Corrected PDO principal backend's findByURI for email addresses that
   don't match the exact capitalization.
 * #512: The client now has it's own `User-Agent`.
+* #720: Some browser improvements.
+* The zip release ships with [sabre/vobject 4.0.1][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.1.0-alpha2 (2015-09-05)
@@ -59,6 +69,12 @@ ChangeLog
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
   [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.7 (????-??-??)
+------------------
+
+* #752: PHP 7 support for 3.0 branch. (@DeepDiver1975)
 
 
 3.0.6 (2016-01-04)
@@ -2133,8 +2149,9 @@ ChangeLog
 
 * First release!
 * Passes litmus: basic, http and copymove test.
-* Fully working in Finder and DavFSv2 Project started: 2007-12-13
+* Fully working in Finder and DavFS2.
 
+Project started: 2007-12-13
 
 [vobj]: http://sabre.io/vobject/
 [evnt]: http://sabre.io/event/

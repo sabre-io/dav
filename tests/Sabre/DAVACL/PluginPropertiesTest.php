@@ -43,7 +43,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testCurrentUserPrincipal() {
 
         $fakeServer = new DAV\Server();
-        $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
+        $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
@@ -154,7 +154,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($nodes);
         $server->addPlugin($plugin);
-        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
+        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $server->addPlugin($authPlugin);
 
         // Force login
@@ -192,7 +192,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($nodes);
         $server->addPlugin($plugin);
-        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(),'realm');
+        $authPlugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $server->addPlugin($authPlugin);
 
         // Force login
@@ -220,7 +220,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
@@ -248,7 +248,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
@@ -277,7 +277,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend(),'realm');
+        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);

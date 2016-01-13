@@ -210,6 +210,9 @@ class Plugin extends ServerPlugin {
             $propFind->handle('{' . self::NS_CALDAV . '}schedule-outbox-URL', function() use ($principalUrl, $caldavPlugin) {
 
                 $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                if (!$calendarHomePath) {
+                    return null;
+                }
                 $outboxPath = $calendarHomePath . '/outbox/';
 
                 return new Href($outboxPath);
@@ -219,6 +222,9 @@ class Plugin extends ServerPlugin {
             $propFind->handle('{' . self::NS_CALDAV . '}schedule-inbox-URL', function() use ($principalUrl, $caldavPlugin) {
 
                 $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+                if (!$calendarHomePath) {
+                    return null;
+                }
                 $inboxPath = $calendarHomePath . '/inbox/';
 
                 return new Href($inboxPath);
@@ -230,6 +236,10 @@ class Plugin extends ServerPlugin {
                 // We don't support customizing this property yet, so in the
                 // meantime we just grab the first calendar in the home-set.
                 $calendarHomePath = $caldavPlugin->getCalendarHomeForPrincipal($principalUrl);
+
+                if (!$calendarHomePath) {
+                    return null;
+                }
 
                 $sccs = '{' . self::NS_CALDAV . '}supported-calendar-component-set';
 

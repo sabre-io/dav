@@ -18,6 +18,15 @@ class PDOSqliteTest extends AbstractPDOTest {
      */
     function getPDO() {
 
+        return self::getSQLite();
+
+    }
+
+    /**
+     * @return PDO
+     */
+    static function getSQLite() {
+
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);

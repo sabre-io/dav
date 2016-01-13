@@ -7,6 +7,7 @@ use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
 use Sabre\CalDAV\Plugin;
 use Sabre\CalDAV\SharingPlugin;
+use Sabre\DAV;
 
 /**
  * Invite property
@@ -131,16 +132,16 @@ class Invite implements Element {
             }
             switch ($user['status']) {
 
-                case SharingPlugin::STATUS_ACCEPTED :
+                case DAV\Sharing\Plugin::INVITE_ACCEPTED :
                     $writer->writeElement($cs . 'invite-accepted');
                     break;
-                case SharingPlugin::STATUS_DECLINED :
+                case DAV\Sharing\Plugin::INVITE_DECLINED :
                     $writer->writeElement($cs . 'invite-declined');
                     break;
-                case SharingPlugin::STATUS_NORESPONSE :
+                case DAV\Sharing\Plugin::INVITE_NORESPONSE :
                     $writer->writeElement($cs . 'invite-noresponse');
                     break;
-                case SharingPlugin::STATUS_INVALID :
+                case DAV\Sharing\Plugin::INVITE_INVALID :
                     $writer->writeElement($cs . 'invite-invalid');
                     break;
             }
@@ -207,16 +208,16 @@ class Invite implements Element {
 
                 switch ($userElem['name']) {
                     case $cs . 'invite-accepted' :
-                        $user['status'] = SharingPlugin::STATUS_ACCEPTED;
+                        $user['status'] = DAV\Sharing\Plugin::INVITE_ACCEPTED;
                         break;
                     case $cs . 'invite-declined' :
-                        $user['status'] = SharingPlugin::STATUS_DECLINED;
+                        $user['status'] = DAV\Sharing\Plugin::INVITE_DECLINED;
                         break;
                     case $cs . 'invite-noresponse' :
-                        $user['status'] = SharingPlugin::STATUS_NORESPONSE;
+                        $user['status'] = DAV\Sharing\Plugin::INVITE_NORESPONSE;
                         break;
                     case $cs . 'invite-invalid' :
-                        $user['status'] = SharingPlugin::STATUS_INVALID;
+                        $user['status'] = DAV\Sharing\Plugin::INVITE_INVALID;
                         break;
                     case '{DAV:}href' :
                         $user['href'] = $userElem['value'];

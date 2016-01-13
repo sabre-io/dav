@@ -2,7 +2,6 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\Xml\Writer;
 
@@ -30,12 +29,12 @@ class SystemStatusTest extends \PHPUnit_Framework_TestCase {
         $writer = new Writer();
         $writer->namespaceMap = [
             'http://calendarserver.org/ns/' => 'cs',
-            'DAV:' => 'd',
+            'DAV:'                          => 'd',
         ];
         $writer->openMemory();
         $writer->startDocument('1.0', 'UTF-8');
         $writer->startElement('{http://calendarserver.org/ns/}root');
-        $notification->xmlSerializeFull($writer);;
+        $notification->xmlSerializeFull($writer);
         $writer->endElement();
         $this->assertXmlStringEqualsXmlString($expected2, $writer->outputMemory());
 
@@ -51,12 +50,12 @@ class SystemStatusTest extends \PHPUnit_Framework_TestCase {
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:"><cs:systemstatus type="high"/></cs:root>' . "\n",
             ],
             [
-                new SystemStatus('foo', '"1"', SystemStatus::TYPE_MEDIUM,'bar'),
+                new SystemStatus('foo', '"1"', SystemStatus::TYPE_MEDIUM, 'bar'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="medium"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:"><cs:systemstatus type="medium"><cs:description>bar</cs:description></cs:systemstatus></cs:root>' . "\n",
             ],
             [
-                new SystemStatus('foo', '"1"', SystemStatus::TYPE_LOW,null,'http://example.org/'),
+                new SystemStatus('foo', '"1"', SystemStatus::TYPE_LOW, null, 'http://example.org/'),
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:systemstatus type="low"/></cs:root>' . "\n",
                 '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:"><cs:systemstatus type="low"><d:href>http://example.org/</d:href></cs:systemstatus></cs:root>' . "\n",
             ]

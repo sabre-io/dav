@@ -3,7 +3,7 @@
 namespace Sabre\CalDAV\Xml\Request;
 
 use Sabre\DAV\Xml\XmlTest;
-use Sabre\CalDAV\SharingPlugin;
+use Sabre\DAV;
 
 class InviteReplyTest extends XmlTest {
 
@@ -25,7 +25,7 @@ class InviteReplyTest extends XmlTest {
 XML;
 
         $result = $this->parse($xml);
-        $inviteReply = new InviteReply('/principal/1', '/calendar/1', 'blabla', 'Summary', SharingPlugin::STATUS_ACCEPTED);
+        $inviteReply = new InviteReply('/principal/1', '/calendar/1', 'blabla', 'Summary', DAV\Sharing\Plugin::INVITE_ACCEPTED);
 
         $this->assertEquals(
             $inviteReply,
@@ -48,7 +48,7 @@ XML;
 XML;
 
         $result = $this->parse($xml);
-        $inviteReply = new InviteReply('/principal/1', '/calendar/1', 'blabla', 'Summary', SharingPlugin::STATUS_DECLINED);
+        $inviteReply = new InviteReply('/principal/1', '/calendar/1', 'blabla', 'Summary', DAV\Sharing\Plugin::INVITE_DECLINED);
 
         $this->assertEquals(
             $inviteReply,

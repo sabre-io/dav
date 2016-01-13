@@ -2,12 +2,13 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
+use Sabre\CalDAV\Plugin;
+use Sabre\CalDAV\SharingPlugin;
+use Sabre\DAV;
+use Sabre\DAV\Exception\BadRequest;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 use Sabre\Xml\Element\KeyValue;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CalDAV\Plugin;
-use Sabre\CalDAV\SharingPlugin;
 
 /**
  * Invite-reply POST request parser
@@ -121,10 +122,10 @@ class InviteReply implements XmlDeserializable {
                     }
                     break;
                 case '{' . Plugin::NS_CALENDARSERVER . '}invite-accepted' :
-                    $status = SharingPlugin::STATUS_ACCEPTED;
+                    $status = DAV\Sharing\Plugin::INVITE_ACCEPTED;
                     break;
                 case '{' . Plugin::NS_CALENDARSERVER . '}invite-declined' :
-                    $status = SharingPlugin::STATUS_DECLINED;
+                    $status = DAV\Sharing\Plugin::INVITE_DECLINED;
                     break;
                 case '{' . Plugin::NS_CALENDARSERVER . '}in-reply-to' :
                     $inReplyTo = $value;

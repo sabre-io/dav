@@ -77,41 +77,6 @@ FOO
             ],
             [
                 [
-                    'id'         => 'foo',
-                    'dtStamp'    => $dtStamp,
-                    'etag'       => '"1"',
-                    'href'       => 'mailto:foo@example.org',
-                    'type'       => DAV\Sharing\Plugin::INVITE_DECLINED,
-                    'readOnly'   => true,
-                    'hostUrl'    => 'calendar',
-                    'organizer'  => 'principal/user1',
-                    'commonName' => 'John Doe',
-                ],
-<<<FOO
-<?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
-  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
-  <cs:invite-notification>
-    <cs:uid>foo</cs:uid>
-    <d:href>mailto:foo@example.org</d:href>
-    <cs:invite-declined/>
-    <cs:hosturl>
-      <d:href>/calendar</d:href>
-    </cs:hosturl>
-    <cs:access>
-      <cs:read/>
-    </cs:access>
-    <cs:organizer>
-      <d:href>/principal/user1</d:href>
-      <cs:common-name>John Doe</cs:common-name>
-    </cs:organizer>
-    <cs:organizer-cn>John Doe</cs:organizer-cn>
-  </cs:invite-notification>
-</cs:root>
-FOO
-            ],
-            [
-                [
                     'id'        => 'foo',
                     'dtStamp'   => $dtStamp,
                     'etag'      => '"1"',

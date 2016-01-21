@@ -108,27 +108,6 @@ class Plugin extends ServerPlugin {
     }
 
     /**
-     * Returns the current username.
-     *
-     * This method is deprecated and is only kept for backwards compatibility
-     * purposes. Please switch to getCurrentPrincipal().
-     *
-     * @deprecated Will be removed in a future version!
-     * @return string|null
-     */
-    function getCurrentUser() {
-
-        // We just do a 'basename' on the principal to give back a sane value
-        // here.
-        list(, $userName) = URLUtil::splitPath(
-            $this->getCurrentPrincipal()
-        );
-
-        return $userName;
-
-    }
-
-    /**
      * This method is called before any HTTP method and forces users to be authenticated
      *
      * @param RequestInterface $request

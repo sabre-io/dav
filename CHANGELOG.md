@@ -6,6 +6,7 @@ ChangeLog
 
 * Removed database migration script for sabre/dav 1.7. To update from that
   version you now first need to update to sabre/dav 3.1.
+* Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.
 
 
 3.1.1 (????-??-??)

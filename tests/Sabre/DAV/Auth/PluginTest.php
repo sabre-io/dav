@@ -113,18 +113,4 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @depends testAuthenticate
-     */
-    function testGetCurrentUser() {
-
-        $fakeServer = new DAV\Server( new DAV\SimpleCollection('bla'));
-        $plugin = new Plugin(new Backend\Mock());
-        $fakeServer->addPlugin($plugin);
-        $fakeServer->emit('beforeMethod', [new HTTP\Request(), new HTTP\Response()]);
-        $this->assertEquals('admin', $plugin->getCurrentUser());
-
-    }
-
 }
-

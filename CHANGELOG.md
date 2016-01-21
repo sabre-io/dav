@@ -22,7 +22,7 @@ ChangeLog
 * #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
   use emoji in some tables where you couldn't before.
 * #710: Provide an Auth backend that acts as a helper for people implementing
-  OAuth2 helper token. (@fkooman).
+  OAuth2 Bearer token. (@fkooman).
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #742: Fixes to make sure that vobject 4 is correctly supported.

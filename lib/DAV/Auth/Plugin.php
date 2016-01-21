@@ -4,7 +4,6 @@ namespace Sabre\DAV\Auth;
 
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\URLUtil;
 use Sabre\DAV\Exception\NotAuthenticated;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;

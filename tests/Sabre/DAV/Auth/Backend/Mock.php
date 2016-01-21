@@ -2,10 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use
-    Sabre\DAV,
-    Sabre\HTTP\RequestInterface,
-    Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 class Mock implements BackendInterface {
 

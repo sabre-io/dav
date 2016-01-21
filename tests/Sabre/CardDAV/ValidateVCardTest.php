@@ -15,20 +15,20 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $addressbooks = array(
-            array(
-                'id' => 'addressbook1',
+        $addressbooks = [
+            [
+                'id'           => 'addressbook1',
                 'principaluri' => 'principals/admin',
-                'uri' => 'addressbook1',
-            )
-        );
+                'uri'          => 'addressbook1',
+            ]
+        ];
 
-        $this->cardBackend = new Backend\Mock($addressbooks,array());
+        $this->cardBackend = new Backend\Mock($addressbooks, []);
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
-        $tree = array(
+        $tree = [
             new AddressBookRoot($principalBackend, $this->cardBackend),
-        );
+        ];
 
         $this->server = new DAV\Server($tree);
         $this->server->sapi = new HTTP\SapiMock();
@@ -53,10 +53,10 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ));
+            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
+        ]);
 
         $response = $this->request($request);
 
@@ -66,21 +66,21 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileValid() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ));
+            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
+        ]);
         $request->setBody("BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n");
 
         $response = $this->request($request);
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
-        $expected = array(
+        $expected = [
             'uri'          => 'blabla.vcf',
-            'carddata' => "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n",
-        );
+            'carddata'     => "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n",
+        ];
 
-        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1','blabla.vcf'));
+        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
 
     }
 
@@ -96,8 +96,8 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
-        $foo = $this->cardBackend->getCard('addressbook1','blabla.vcf');
-        $this->assertTrue(strpos($foo['carddata'],'UID')!==false);
+        $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
+        $this->assertTrue(strpos($foo['carddata'], 'UID') !== false);
     }
 
     function testCreateFileJson() {
@@ -112,17 +112,17 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
-        $foo = $this->cardBackend->getCard('addressbook1','blabla.vcf');
+        $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
         $this->assertEquals("BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n", $foo['carddata']);
 
     }
 
     function testCreateFileVCalendar() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ));
+            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
+        ]);
         $request->setBody("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
 
         $response = $this->request($request);
@@ -133,11 +133,11 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateFile() {
 
-        $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $this->cardBackend->createCard('addressbook1', 'blabla.vcf', 'foo');
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ));
+            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
+        ]);
 
         $response = $this->request($request);
 
@@ -147,11 +147,11 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateFileParsableBody() {
 
-        $this->cardBackend->createCard('addressbook1','blabla.vcf','foo');
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $this->cardBackend->createCard('addressbook1', 'blabla.vcf', 'foo');
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI' => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ));
+            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
+        ]);
         $body = "BEGIN:VCARD\r\nUID:foo\r\nEND:VCARD\r\n";
         $request->setBody($body);
 
@@ -159,14 +159,12 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(204, $response->status);
 
-        $expected = array(
+        $expected = [
             'uri'          => 'blabla.vcf',
-            'carddata' => $body,
-        );
+            'carddata'     => $body,
+        ];
 
-        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1','blabla.vcf'));
+        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
 
     }
 }
-
-?>

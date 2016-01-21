@@ -98,18 +98,18 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateExtendedCollection() {
 
-        $resourceType = [ 
+        $resourceType = [
             '{' . Plugin::NS_CARDDAV . '}addressbook',
             '{DAV:}collection',
         ];
         $this->s->createExtendedCollection('book2', new MkCol($resourceType, ['{DAV:}displayname' => 'a-book 2']));
 
-        $this->assertEquals(array(
-            'id' => 'book2',
-            'uri' => 'book2',
+        $this->assertEquals([
+            'id'                => 'book2',
+            'uri'               => 'book2',
             '{DAV:}displayname' => 'a-book 2',
-            'principaluri' => 'principals/user1',
-        ), $this->backend->addressBooks[1]);
+            'principaluri'      => 'principals/user1',
+        ], $this->backend->addressBooks[1]);
 
     }
 
@@ -118,10 +118,10 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
      */
     function testCreateExtendedCollectionInvalid() {
 
-        $resourceType = array(
+        $resourceType = [
             '{DAV:}collection',
-        );
-        $this->s->createExtendedCollection('book2', new MkCol($resourceType, array('{DAV:}displayname' => 'a-book 2')));
+        ];
+        $this->s->createExtendedCollection('book2', new MkCol($resourceType, ['{DAV:}displayname' => 'a-book 2']));
 
     }
 
@@ -130,18 +130,18 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals('principals/user1', $this->s->getOwner());
         $this->assertNull($this->s->getGroup());
-        $this->assertEquals(array(
-            array(
+        $this->assertEquals([
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-        ), $this->s->getACL());
+            ],
+        ], $this->s->getACL());
 
     }
 
@@ -150,7 +150,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-       $this->s->setACL(array());
+       $this->s->setACL([]);
 
     }
 

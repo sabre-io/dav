@@ -2,8 +2,6 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL;
-
 require_once 'Sabre/CalDAV/TestUtil.php';
 
 /**
@@ -14,29 +12,29 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
 
     function getInstance() {
 
-        $calendars = array(
-            array(
-                'id' => 1,
+        $calendars = [
+            [
+                'id'           => 1,
                 'principaluri' => 'principals/user1',
-            ),
-            array(
-                'id' => 2,
+            ],
+            [
+                'id'                                        => 2,
                 '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/cal1',
-                '{http://sabredav.org/ns}owner-principal' => 'principal/owner',
-                '{http://sabredav.org/ns}read-only' => false,
-                'principaluri' => 'principals/user1',
-            ),
-        );
+                '{http://sabredav.org/ns}owner-principal'   => 'principal/owner',
+                '{http://sabredav.org/ns}read-only'         => false,
+                'principaluri'                              => 'principals/user1',
+            ],
+        ];
 
         $this->backend = new Backend\MockSharing(
             $calendars,
-            array(),
-            array()
+            [],
+            []
         );
 
-        return new CalendarHome($this->backend, array(
+        return new CalendarHome($this->backend, [
             'uri' => 'principals/user1'
-        ));
+        ]);
 
     }
 
@@ -59,7 +57,7 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
         $hasOutbox = false;
         $hasNotifications = false;
         
-        foreach($children as $child) {
+        foreach ($children as $child) {
 
             if ($child instanceof IShareableCalendar) {
                 $hasShareable = true;
@@ -74,7 +72,7 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit_Framework_TestCase {
         }
         if (!$hasShareable) $this->fail('Missing node!');
         if (!$hasShared) $this->fail('Missing node!');
-        if (!$hasNotifications) $this->fail('Missing node!'); 
+        if (!$hasNotifications) $this->fail('Missing node!');
 
     }
     

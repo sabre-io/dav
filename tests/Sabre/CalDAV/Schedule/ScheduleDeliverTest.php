@@ -14,11 +14,11 @@ class ScheduleDeliverTest extends \Sabre\DAVServerTest {
     public $caldavCalendars = [
         [
             'principaluri' => 'principals/user1',
-            'uri' => 'cal',
+            'uri'          => 'cal',
         ],
         [
             'principaluri' => 'principals/user2',
-            'uri' => 'cal',
+            'uri'          => 'cal',
         ],
     ];
 
@@ -557,14 +557,14 @@ ICS;
 
         $this->server->httpRequest->setUrl($this->calendarObjectUri);
         if ($disableScheduling) {
-            $this->server->httpRequest->setHeader('Schedule-Reply','F');
+            $this->server->httpRequest->setHeader('Schedule-Reply', 'F');
         }
 
         if ($oldObject && $newObject) {
             // update
             $this->putPath($this->calendarObjectUri, $oldObject);
 
-            $stream = fopen('php://memory','r+');
+            $stream = fopen('php://memory', 'r+');
             fwrite($stream, $newObject);
             rewind($stream);
             $modified = false;
@@ -589,7 +589,7 @@ ICS;
         } else {
 
             // create
-            $stream = fopen('php://memory','r+');
+            $stream = fopen('php://memory', 'r+');
             fwrite($stream, $newObject);
             rewind($stream);
             $modified = false;
@@ -635,7 +635,7 @@ ICS;
 
     function assertItemsInInbox($user, $count) {
 
-        $inboxNode = $this->server->tree->getNodeForPath('calendars/'.$user.'/inbox');
+        $inboxNode = $this->server->tree->getNodeForPath('calendars/' . $user . '/inbox');
         $this->assertEquals($count, count($inboxNode->getChildren()));
 
     }
@@ -645,7 +645,7 @@ ICS;
         $format = function($data) {
 
             $data = trim($data, "\r\n");
-            $data = str_replace("\r","", $data);
+            $data = str_replace("\r", "", $data);
             // Unfolding lines.
             $data = str_replace("\n ", "", $data);
 
@@ -661,4 +661,3 @@ ICS;
     }
 
 }
-

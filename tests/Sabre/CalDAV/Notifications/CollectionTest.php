@@ -14,13 +14,13 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
 
         $this->principalUri = 'principals/user1';
 
-        $this->notification = new CalDAV\Xml\Notification\SystemStatus(1,'"1"');
+        $this->notification = new CalDAV\Xml\Notification\SystemStatus(1, '"1"');
 
-        $this->caldavBackend = new CalDAV\Backend\MockSharing(array(),array(), array(
-            'principals/user1' => array(
+        $this->caldavBackend = new CalDAV\Backend\MockSharing([], [], [
+            'principals/user1' => [
                 $this->notification
-            )
-        )); 
+            ]
+        ]);
 
         return new Collection($this->caldavBackend, $this->principalUri);
 
@@ -31,9 +31,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
         $col = $this->getInstance();
         $this->assertEquals('notifications', $col->getName());
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             new Node($this->caldavBackend, $this->principalUri, $this->notification)
-        ), $col->getChildren()); 
+        ], $col->getChildren());
 
     }
 
@@ -54,18 +54,18 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
     function testGetACL() {
 
         $col = $this->getInstance();
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => $this->principalUri,
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => $this->principalUri,
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
 
         $this->assertEquals($expected, $col->getACL());
 
@@ -77,7 +77,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
     function testSetACL() {
 
         $col = $this->getInstance();
-        $col->setACL(array());
+        $col->setACL([]);
 
     }
 

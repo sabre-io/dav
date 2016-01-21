@@ -38,7 +38,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $propName = '{http://calendarserver.org/ns/}subscribed-strip-alarms';
         $propFind = new PropFind('foo', [$propName]);
-        $propFind->set($propName,null,200);
+        $propFind->set($propName, null, 200);
 
         $plugin = new Plugin();
         $plugin->propFind($propFind, new \Sabre\DAV\SimpleCollection('hi'));

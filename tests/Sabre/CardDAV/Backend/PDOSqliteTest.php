@@ -28,8 +28,8 @@ class PDOSqliteTest extends AbstractPDOTest {
     static function getSQLite() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/pdobackend');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         $pdo->query("DROP TABLE IF EXISTS addressbooks");
         $pdo->query("DROP TABLE IF EXISTS addressbookchanges");
@@ -40,8 +40,8 @@ class PDOSqliteTest extends AbstractPDOTest {
             file_get_contents(__DIR__ . '/../../../../examples/sql/sqlite.addressbooks.sql')
         );
 
-        foreach($queries as $query) {
-            $query = trim($query," \r\n\t");
+        foreach ($queries as $query) {
+            $query = trim($query, " \r\n\t");
             if ($query)
                 $pdo->exec($query);
         }
@@ -51,4 +51,3 @@ class PDOSqliteTest extends AbstractPDOTest {
     }
 
 }
-

@@ -95,6 +95,6 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
             ]
         ];
 
-    }   
+    }
 
 }

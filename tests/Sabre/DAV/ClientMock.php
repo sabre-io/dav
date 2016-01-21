@@ -18,13 +18,13 @@ class ClientMock extends Client {
      * @param string $url
      * @return string
      */
-    public function getAbsoluteUrl($url) {
+    function getAbsoluteUrl($url) {
 
         return parent::getAbsoluteUrl($url);
 
     }
 
-    public function doRequest(RequestInterface $request) {
+    function doRequest(RequestInterface $request) {
 
         $this->request = $request;
         return $this->response;

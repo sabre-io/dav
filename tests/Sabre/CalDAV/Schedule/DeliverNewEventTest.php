@@ -2,9 +2,8 @@
 
 namespace Sabre\CalDAV\Schedule;
 
-use
-    Sabre\HTTP\Request,
-    Sabre\VObject;
+use Sabre\HTTP\Request;
+use Sabre\VObject;
 
 class DeliverNewEventTest extends \Sabre\DAVServerTest {
 

@@ -62,7 +62,7 @@ class PluginTest extends \Sabre\DAVServerTest {
 
         $this->testSetProperty();
         $this->server->emit('afterUnbind', ['']);
-        $this->assertEquals([],$this->backend->data);
+        $this->assertEquals([], $this->backend->data);
 
     }
 

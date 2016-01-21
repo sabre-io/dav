@@ -75,7 +75,7 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
-        $this->assertTrue(strpos($response->body, 'BEGIN:VCALENDAR')!==false);
+        $this->assertTrue(strpos($response->body, 'BEGIN:VCALENDAR') !== false);
 
     }
 

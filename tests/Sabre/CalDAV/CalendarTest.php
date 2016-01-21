@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV\PropPatch;
-use Sabre\DAVACL;
 
 require_once 'Sabre/CalDAV/TestUtil.php';
 
@@ -63,7 +62,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(true, $result);
 
         $calendars2 = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals('NewName',$calendars2[0]['{DAV:}displayname']);
+        $this->assertEquals('NewName', $calendars2[0]['{DAV:}displayname']);
 
     }
 
@@ -72,15 +71,15 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
      */
     function testGetProperties() {
 
-        $question = array(
+        $question = [
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set',
-        );
+        ];
 
         $result = $this->calendar->getProperties($question);
 
-        foreach($question as $q) $this->assertArrayHasKey($q,$result);
+        foreach ($question as $q) $this->assertArrayHasKey($q, $result);
 
-        $this->assertEquals(array('VEVENT','VTODO'), $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
+        $this->assertEquals(['VEVENT', 'VTODO'], $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
 
     }
 
@@ -100,7 +99,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     function testGetChildren() {
 
         $children = $this->calendar->getChildren();
-        $this->assertEquals(1,count($children));
+        $this->assertEquals(1, count($children));
 
         $this->assertTrue($children[0] instanceof CalendarObject);
 
@@ -145,11 +144,11 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $file = fopen('php://memory','r+');
-        fwrite($file,TestUtil::getTestCalendarData());
+        $file = fopen('php://memory', 'r+');
+        fwrite($file, TestUtil::getTestCalendarData());
         rewind($file);
 
-        $this->calendar->createFile('hello',$file);
+        $this->calendar->createFile('hello', $file);
 
         $file = $this->calendar->getChild('hello');
         $this->assertTrue($file instanceof CalendarObject);
@@ -158,12 +157,12 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileNoSupportedComponents() {
 
-        $file = fopen('php://memory','r+');
-        fwrite($file,TestUtil::getTestCalendarData());
+        $file = fopen('php://memory', 'r+');
+        fwrite($file, TestUtil::getTestCalendarData());
         rewind($file);
 
         $calendar = new Calendar($this->backend, $this->calendars[1]);
-        $calendar->createFile('hello',$file);
+        $calendar->createFile('hello', $file);
 
         $file = $calendar->getChild('hello');
         $this->assertTrue($file instanceof CalendarObject);
@@ -180,7 +179,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testGetOwner() {
 
-        $this->assertEquals('principals/user1',$this->calendar->getOwner());
+        $this->assertEquals('principals/user1', $this->calendar->getOwner());
 
     }
 
@@ -192,38 +191,38 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testGetACL() {
 
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-read',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
         $this->assertEquals($expected, $this->calendar->getACL());
 
     }
@@ -233,7 +232,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-        $this->calendar->setACL(array());
+        $this->calendar->setACL([]);
 
     }
 
@@ -255,7 +254,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     }
     function testGetSyncToken2() {
 
-        $calendar = new Calendar(new Backend\Mock([],[]), [
+        $calendar = new Calendar(new Backend\Mock([], []), [
             '{DAV:}sync-token' => 2
         ]);
         $this->assertEquals(2, $this->calendar->getSyncToken());
@@ -264,7 +263,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testGetSyncTokenNoSyncSupport() {
 
-        $calendar = new Calendar(new Backend\Mock([],[]), []);
+        $calendar = new Calendar(new Backend\Mock([], []), []);
         $this->assertNull($calendar->getSyncToken());
 
     }
@@ -282,8 +281,8 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testGetChangesNoSyncSupport() {
 
-        $calendar = new Calendar(new Backend\Mock([],[]), []);
-        $this->assertNull($calendar->getChanges(1,null));
+        $calendar = new Calendar(new Backend\Mock([], []), []);
+        $this->assertNull($calendar->getChanges(1, null));
 
     }
 }

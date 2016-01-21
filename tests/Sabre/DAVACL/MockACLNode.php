@@ -3,14 +3,13 @@
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 
 class MockACLNode extends DAV\Node implements IACL {
 
     public $name;
     public $acl;
 
-    function __construct($name, array $acl = array()) {
+    function __construct($name, array $acl = []) {
 
         $this->name = $name;
         $this->acl = $acl;

@@ -15,7 +15,7 @@ class PDOSqliteTest extends AbstractPDOTest {
 
         $pdo->exec('DROP TABLE IF EXISTS propertystorage');
 
-        foreach($setupSql as $sql) {
+        foreach ($setupSql as $sql) {
 
             if (!trim($sql)) continue;
             $pdo->exec($sql);
@@ -34,4 +34,3 @@ class PDOSqliteTest extends AbstractPDOTest {
     }
 
 }
-

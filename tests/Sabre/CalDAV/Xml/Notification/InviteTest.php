@@ -36,20 +36,20 @@ class InviteTest extends DAV\Xml\XmlTest {
     function dataProvider() {
 
         $dtStamp = new \DateTime('2012-01-01 00:00:00', new \DateTimeZone('GMT'));
-        return array(
-            array(
-                array(
-                    'id' => 'foo',
-                    'dtStamp' => $dtStamp,
-                    'etag' => '"1"',
-                    'href' => 'mailto:foo@example.org',
-                    'type' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
-                    'readOnly' => true,
-                    'hostUrl' => 'calendar',
-                    'organizer' => 'principal/user1',
+        return [
+            [
+                [
+                    'id'         => 'foo',
+                    'dtStamp'    => $dtStamp,
+                    'etag'       => '"1"',
+                    'href'       => 'mailto:foo@example.org',
+                    'type'       => CalDAV\SharingPlugin::STATUS_ACCEPTED,
+                    'readOnly'   => true,
+                    'hostUrl'    => 'calendar',
+                    'organizer'  => 'principal/user1',
                     'commonName' => 'John Doe',
-                    'summary' => 'Awesome stuff!'
-                ),
+                    'summary'    => 'Awesome stuff!'
+                ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
@@ -74,19 +74,19 @@ class InviteTest extends DAV\Xml\XmlTest {
 </cs:root>
 
 FOO
-            ),
-            array(
-                array(
-                    'id' => 'foo',
-                    'dtStamp' => $dtStamp,
-                    'etag' => '"1"',
-                    'href' => 'mailto:foo@example.org',
-                    'type' => CalDAV\SharingPlugin::STATUS_DECLINED,
-                    'readOnly' => true,
-                    'hostUrl' => 'calendar',
-                    'organizer' => 'principal/user1',
+            ],
+            [
+                [
+                    'id'         => 'foo',
+                    'dtStamp'    => $dtStamp,
+                    'etag'       => '"1"',
+                    'href'       => 'mailto:foo@example.org',
+                    'type'       => CalDAV\SharingPlugin::STATUS_DECLINED,
+                    'readOnly'   => true,
+                    'hostUrl'    => 'calendar',
+                    'organizer'  => 'principal/user1',
                     'commonName' => 'John Doe',
-                ),
+                ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
@@ -109,20 +109,20 @@ FOO
   </cs:invite-notification>
 </cs:root>
 FOO
-            ),
-            array(
-                array(
-                    'id' => 'foo',
-                    'dtStamp' => $dtStamp,
-                    'etag' => '"1"',
-                    'href' => 'mailto:foo@example.org',
-                    'type' => CalDAV\SharingPlugin::STATUS_NORESPONSE,
-                    'readOnly' => true,
-                    'hostUrl' => 'calendar',
+            ],
+            [
+                [
+                    'id'        => 'foo',
+                    'dtStamp'   => $dtStamp,
+                    'etag'      => '"1"',
+                    'href'      => 'mailto:foo@example.org',
+                    'type'      => CalDAV\SharingPlugin::STATUS_NORESPONSE,
+                    'readOnly'  => true,
+                    'hostUrl'   => 'calendar',
                     'organizer' => 'principal/user1',
                     'firstName' => 'Foo',
                     'lastName'  => 'Bar',
-                ),
+                ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
@@ -148,19 +148,19 @@ FOO
 </cs:root>
 
 FOO
-            ),
-            array(
-                array(
-                    'id' => 'foo',
-                    'dtStamp' => $dtStamp,
-                    'etag' => '"1"',
-                    'href' => 'mailto:foo@example.org',
-                    'type' => CalDAV\SharingPlugin::STATUS_DELETED,
-                    'readOnly' => false,
-                    'hostUrl' => 'calendar',
-                    'organizer' => 'mailto:user1@fruux.com',
-                    'supportedComponents' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT','VTODO']),
-                ),
+            ],
+            [
+                [
+                    'id'                  => 'foo',
+                    'dtStamp'             => $dtStamp,
+                    'etag'                => '"1"',
+                    'href'                => 'mailto:foo@example.org',
+                    'type'                => CalDAV\SharingPlugin::STATUS_DELETED,
+                    'readOnly'            => false,
+                    'hostUrl'             => 'calendar',
+                    'organizer'           => 'mailto:user1@fruux.com',
+                    'supportedComponents' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT', 'VTODO']),
+                ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
@@ -186,9 +186,9 @@ FOO
 </cs:root>
 
 FOO
-            ),
+            ],
 
-        );
+        ];
 
     }
 
@@ -197,7 +197,7 @@ FOO
      */
     function testMissingArg() {
 
-        new Invite(array());
+        new Invite([]);
 
     }
 
@@ -206,18 +206,18 @@ FOO
      */
     function testUnknownArg() {
 
-        new Invite(array(
+        new Invite([
             'foo-i-will-break' => true,
 
-            'id' => 1,
-            'etag' => '"bla"',
-            'href' => 'abc',
-            'dtStamp' => 'def',
-            'type' => 'ghi',
-            'readOnly' => true,
-            'hostUrl' => 'jkl',
+            'id'        => 1,
+            'etag'      => '"bla"',
+            'href'      => 'abc',
+            'dtStamp'   => 'def',
+            'type'      => 'ghi',
+            'readOnly'  => true,
+            'hostUrl'   => 'jkl',
             'organizer' => 'mno',
-        ));
+        ]);
 
     }
 

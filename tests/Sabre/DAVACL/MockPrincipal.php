@@ -3,16 +3,15 @@
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 
 class MockPrincipal extends DAV\Node implements IPrincipal {
 
     public $name;
     public $principalUrl;
-    public $groupMembership = array();
-    public $groupMemberSet = array();
+    public $groupMembership = [];
+    public $groupMemberSet = [];
 
-    function __construct($name,$principalUrl,array $groupMembership = array(), array $groupMemberSet = array()) {
+    function __construct($name, $principalUrl, array $groupMembership = [], array $groupMemberSet = []) {
 
         $this->name = $name;
         $this->principalUrl = $principalUrl;
@@ -35,7 +34,7 @@ class MockPrincipal extends DAV\Node implements IPrincipal {
 
     function getAlternateUriSet() {
 
-        return array();
+        return [];
 
     }
 
@@ -63,4 +62,3 @@ class MockPrincipal extends DAV\Node implements IPrincipal {
 
     }
 }
-

@@ -29,34 +29,34 @@ class InviteTest extends DAV\Xml\XmlTest {
 
         $property = new Invite([
             [
-                'href' => 'mailto:user1@example.org',
-                'status' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
+                'href'     => 'mailto:user1@example.org',
+                'status'   => CalDAV\SharingPlugin::STATUS_ACCEPTED,
                 'readOnly' => false,
             ],
             [
-                'href' => 'mailto:user2@example.org',
+                'href'       => 'mailto:user2@example.org',
                 'commonName' => 'John Doe',
-                'status' => CalDAV\SharingPlugin::STATUS_DECLINED,
-                'readOnly' => true,
+                'status'     => CalDAV\SharingPlugin::STATUS_DECLINED,
+                'readOnly'   => true,
             ],
             [
-                'href' => 'mailto:user3@example.org',
+                'href'       => 'mailto:user3@example.org',
                 'commonName' => 'Joe Shmoe',
-                'status' => CalDAV\SharingPlugin::STATUS_NORESPONSE,
-                'readOnly' => true,
-                'summary' => 'Something, something',
+                'status'     => CalDAV\SharingPlugin::STATUS_NORESPONSE,
+                'readOnly'   => true,
+                'summary'    => 'Something, something',
             ],
             [
-                'href' => 'mailto:user4@example.org',
+                'href'       => 'mailto:user4@example.org',
                 'commonName' => 'Hoe Boe',
-                'status' => CalDAV\SharingPlugin::STATUS_INVALID,
-                'readOnly' => true,
+                'status'     => CalDAV\SharingPlugin::STATUS_INVALID,
+                'readOnly'   => true,
             ],
         ], [
-            'href' => 'mailto:thedoctor@example.org',
+            'href'       => 'mailto:thedoctor@example.org',
             'commonName' => 'The Doctor',
-            'firstName' => 'The',
-            'lastName' => 'Doctor',
+            'firstName'  => 'The',
+            'lastName'   => 'Doctor',
         ]);
 
         $xml = $this->write(['{DAV:}root' => $property]);
@@ -114,32 +114,32 @@ class InviteTest extends DAV\Xml\XmlTest {
 
         $input = [
             [
-                'href' => 'mailto:user1@example.org',
-                'status' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
-                'readOnly' => false,
+                'href'       => 'mailto:user1@example.org',
+                'status'     => CalDAV\SharingPlugin::STATUS_ACCEPTED,
+                'readOnly'   => false,
                 'commonName' => '',
-                'summary' => '',
+                'summary'    => '',
             ],
             [
-                'href' => 'mailto:user2@example.org',
+                'href'       => 'mailto:user2@example.org',
                 'commonName' => 'John Doe',
-                'status' => CalDAV\SharingPlugin::STATUS_DECLINED,
-                'readOnly' => true,
-                'summary' => '',
+                'status'     => CalDAV\SharingPlugin::STATUS_DECLINED,
+                'readOnly'   => true,
+                'summary'    => '',
             ],
             [
-                'href' => 'mailto:user3@example.org',
+                'href'       => 'mailto:user3@example.org',
                 'commonName' => 'Joe Shmoe',
-                'status' => CalDAV\SharingPlugin::STATUS_NORESPONSE,
-                'readOnly' => true,
-                'summary' => 'Something, something',
+                'status'     => CalDAV\SharingPlugin::STATUS_NORESPONSE,
+                'readOnly'   => true,
+                'summary'    => 'Something, something',
             ],
             [
-                'href' => 'mailto:user4@example.org',
+                'href'       => 'mailto:user4@example.org',
                 'commonName' => 'Hoe Boe',
-                'status' => CalDAV\SharingPlugin::STATUS_INVALID,
-                'readOnly' => true,
-                'summary' => '',
+                'status'     => CalDAV\SharingPlugin::STATUS_INVALID,
+                'readOnly'   => true,
+                'summary'    => '',
             ],
         ];
 

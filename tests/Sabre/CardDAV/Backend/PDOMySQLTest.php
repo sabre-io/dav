@@ -9,7 +9,7 @@ class PDOMySQLTest extends AbstractPDOTest {
     /**
      * @return PDO
      */
-    public function getPDO() {
+    function getPDO() {
 
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or not properly configured');
 
@@ -23,8 +23,8 @@ class PDOMySQLTest extends AbstractPDOTest {
             file_get_contents(__DIR__ . '/../../../../examples/sql/mysql.addressbook.sql')
         );
 
-        foreach($queries as $query) {
-            $query = trim($query," \r\n\t");
+        foreach ($queries as $query) {
+            $query = trim($query, " \r\n\t");
             if ($query)
                 $pdo->exec($query);
         }
@@ -33,4 +33,3 @@ class PDOMySQLTest extends AbstractPDOTest {
     }
 
 }
-

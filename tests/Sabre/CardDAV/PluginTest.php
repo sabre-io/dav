@@ -3,7 +3,6 @@
 namespace Sabre\CardDAV;
 
 use Sabre\DAV;
-use Sabre\DAV\Xml\Property\Href;
 
 class PluginTest extends AbstractPluginTest {
 
@@ -18,23 +17,23 @@ class PluginTest extends AbstractPluginTest {
 
     function testSupportedReportSet() {
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             '{' . Plugin::NS_CARDDAV . '}addressbook-multiget',
             '{' . Plugin::NS_CARDDAV . '}addressbook-query',
-        ), $this->plugin->getSupportedReportSet('addressbooks/user1/book1'));
+        ], $this->plugin->getSupportedReportSet('addressbooks/user1/book1'));
 
     }
 
     function testSupportedReportSetEmpty() {
 
-        $this->assertEquals(array(
-        ), $this->plugin->getSupportedReportSet(''));
+        $this->assertEquals([
+        ], $this->plugin->getSupportedReportSet(''));
 
     }
 
     function testAddressBookHomeSet() {
 
-        $result = $this->server->getProperties('principals/user1', array('{' . Plugin::NS_CARDDAV . '}addressbook-home-set'));
+        $result = $this->server->getProperties('principals/user1', ['{' . Plugin::NS_CARDDAV . '}addressbook-home-set']);
 
         $this->assertEquals(1, count($result));
         $this->assertTrue(isset($result['{' . Plugin::NS_CARDDAV . '}addressbook-home-set']));
@@ -44,11 +43,11 @@ class PluginTest extends AbstractPluginTest {
 
     function testDirectoryGateway() {
 
-        $result = $this->server->getProperties('principals/user1', array('{' . Plugin::NS_CARDDAV . '}directory-gateway'));
+        $result = $this->server->getProperties('principals/user1', ['{' . Plugin::NS_CARDDAV . '}directory-gateway']);
 
         $this->assertEquals(1, count($result));
         $this->assertTrue(isset($result['{' . Plugin::NS_CARDDAV . '}directory-gateway']));
-        $this->assertEquals(array('directory'), $result['{' . Plugin::NS_CARDDAV . '}directory-gateway']->getHrefs());
+        $this->assertEquals(['directory'], $result['{' . Plugin::NS_CARDDAV . '}directory-gateway']->getHrefs());
 
     }
 
@@ -64,7 +63,7 @@ class PluginTest extends AbstractPluginTest {
         $r = $this->server->emit('onHTMLActionsPanel', [$this->server->tree->getNodeForPath('addressbooks/user1'), &$output]);
         $this->assertFalse($r);
 
-        $this->assertTrue(!!strpos($output,'Display name'));
+        $this->assertTrue(!!strpos($output, 'Display name'));
 
     }
 

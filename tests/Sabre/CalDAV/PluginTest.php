@@ -719,7 +719,7 @@ XML;
             '</c:calendar-query>';
 
         $request = new HTTP\Request('REPORT', '/calendars/user1/UUID-123467', [
-            'Depth' => '0',
+            'Depth'      => '0',
             'User-Agent' => 'MSFT-WP/8.10.14219 (gzip)',
         ]);
 

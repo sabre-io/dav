@@ -36,7 +36,7 @@ class InviteReplyTest extends \PHPUnit_Framework_TestCase {
         $writer->contextUri = '/';
         $writer->namespaceMap = [
             'http://calendarserver.org/ns/' => 'cs',
-            'DAV:' => 'd',
+            'DAV:'                          => 'd',
         ];
         $writer->openMemory();
         $writer->startDocument('1.0', 'UTF-8');
@@ -52,17 +52,17 @@ class InviteReplyTest extends \PHPUnit_Framework_TestCase {
     function dataProvider() {
 
         $dtStamp = new \DateTime('2012-01-01 00:00:00 GMT');
-        return array(
-            array(
-                array(
-                    'id' => 'foo',
-                    'dtStamp' => $dtStamp,
-                    'etag' => '"1"',
+        return [
+            [
+                [
+                    'id'        => 'foo',
+                    'dtStamp'   => $dtStamp,
+                    'etag'      => '"1"',
                     'inReplyTo' => 'bar',
-                    'href' => 'mailto:foo@example.org',
-                    'type' => CalDAV\SharingPlugin::STATUS_ACCEPTED,
-                    'hostUrl' => 'calendar'
-                ),
+                    'href'      => 'mailto:foo@example.org',
+                    'type'      => CalDAV\SharingPlugin::STATUS_ACCEPTED,
+                    'hostUrl'   => 'calendar'
+                ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
@@ -79,18 +79,18 @@ class InviteReplyTest extends \PHPUnit_Framework_TestCase {
 </cs:root>
 
 FOO
-            ),
-            array(
-                array(
-                    'id' => 'foo',
-                    'dtStamp' => $dtStamp,
-                    'etag' => '"1"',
+            ],
+            [
+                [
+                    'id'        => 'foo',
+                    'dtStamp'   => $dtStamp,
+                    'etag'      => '"1"',
                     'inReplyTo' => 'bar',
-                    'href' => 'mailto:foo@example.org',
-                    'type' => CalDAV\SharingPlugin::STATUS_DECLINED,
-                    'hostUrl' => 'calendar',
-                    'summary' => 'Summary!'
-                ),
+                    'href'      => 'mailto:foo@example.org',
+                    'type'      => CalDAV\SharingPlugin::STATUS_DECLINED,
+                    'hostUrl'   => 'calendar',
+                    'summary'   => 'Summary!'
+                ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
@@ -108,9 +108,9 @@ FOO
 </cs:root>
 
 FOO
-            ),
+            ],
 
-        );
+        ];
 
     }
 
@@ -119,7 +119,7 @@ FOO
      */
     function testMissingArg() {
 
-        new InviteReply(array());
+        new InviteReply([]);
 
     }
 
@@ -128,17 +128,17 @@ FOO
      */
     function testUnknownArg() {
 
-        new InviteReply(array(
+        new InviteReply([
             'foo-i-will-break' => true,
 
-            'id' => 1,
-            'etag' => '"bla"',
-            'href' => 'abc',
-            'dtStamp' => 'def',
+            'id'        => 1,
+            'etag'      => '"bla"',
+            'href'      => 'abc',
+            'dtStamp'   => 'def',
             'inReplyTo' => 'qrs',
-            'type' => 'ghi',
-            'hostUrl' => 'jkl',
-        ));
+            'type'      => 'ghi',
+            'hostUrl'   => 'jkl',
+        ]);
 
     }
 

@@ -8,7 +8,7 @@ class EmailAddressSetTest extends XmlTest {
 
     protected $namespaceMap = [
         \Sabre\CalDAV\Plugin::NS_CALENDARSERVER => 'cs',
-        'DAV:' => 'd',
+        'DAV:'                                  => 'd',
     ];
 
     function testSimple() {

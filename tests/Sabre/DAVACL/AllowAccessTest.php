@@ -3,7 +3,6 @@
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 
 class AllowAccessTest extends \PHPUnit_Framework_TestCase {
 
@@ -14,9 +13,9 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $nodes = array(
+        $nodes = [
             new DAV\SimpleCollection('testdir'),
-        );
+        ];
 
         $this->server = new DAV\Server($nodes);
         $aclPlugin = new Plugin();

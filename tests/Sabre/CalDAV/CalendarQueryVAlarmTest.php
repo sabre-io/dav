@@ -26,32 +26,32 @@ class CalendarQueryVAlarmTest extends \PHPUnit_Framework_TestCase {
 
         $vcalendar->add($vevent);
 
-        $filter = array(
-            'name' => 'VCALENDAR',
+        $filter = [
+            'name'           => 'VCALENDAR',
             'is-not-defined' => false,
-            'time-range' => null,
-            'prop-filters' => array(),
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
+            'time-range'     => null,
+            'prop-filters'   => [],
+            'comp-filters'   => [
+                [
+                    'name'           => 'VEVENT',
                     'is-not-defined' => false,
-                    'time-range' => null,
-                    'prop-filters' => array(),
-                    'comp-filters' => array(
-                        array(
-                            'name' => 'VALARM',
+                    'time-range'     => null,
+                    'prop-filters'   => [],
+                    'comp-filters'   => [
+                        [
+                            'name'           => 'VALARM',
                             'is-not-defined' => false,
-                            'prop-filters' => array(),
-                            'comp-filters' => array(),
-                            'time-range' => array(
+                            'prop-filters'   => [],
+                            'comp-filters'   => [],
+                            'time-range'     => [
                                 'start' => new \DateTime('2012-05-10'),
-                                'end' => new \DateTime('2012-05-20'),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        );
+                                'end'   => new \DateTime('2012-05-20'),
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
         $validator = new CalendarQueryValidator();
         $this->assertTrue($validator->validate($vcalendar, $filter));
@@ -87,32 +87,32 @@ class CalendarQueryVAlarmTest extends \PHPUnit_Framework_TestCase {
 
         $vcalendar->add($vevent);
 
-        $filter = array(
-            'name' => 'VCALENDAR',
+        $filter = [
+            'name'           => 'VCALENDAR',
             'is-not-defined' => false,
-            'time-range' => null,
-            'prop-filters' => array(),
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
+            'time-range'     => null,
+            'prop-filters'   => [],
+            'comp-filters'   => [
+                [
+                    'name'           => 'VEVENT',
                     'is-not-defined' => false,
-                    'time-range' => null,
-                    'prop-filters' => array(),
-                    'comp-filters' => array(
-                        array(
-                            'name' => 'VALARM',
+                    'time-range'     => null,
+                    'prop-filters'   => [],
+                    'comp-filters'   => [
+                        [
+                            'name'           => 'VALARM',
                             'is-not-defined' => false,
-                            'prop-filters' => array(),
-                            'comp-filters' => array(),
-                            'time-range' => array(
+                            'prop-filters'   => [],
+                            'comp-filters'   => [],
+                            'time-range'     => [
                                 'start' => new \DateTime('2011-12-10'),
-                                'end' => new \DateTime('2011-12-20'),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        );
+                                'end'   => new \DateTime('2011-12-20'),
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
         $validator = new CalendarQueryValidator();
         $this->assertTrue($validator->validate($vcalendar, $filter));

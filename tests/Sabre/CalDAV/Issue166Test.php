@@ -1,8 +1,8 @@
 <?php
 
 namespace Sabre\CalDAV;
+
 use Sabre\VObject;
-use Sabre\DAV;
 
 class Issue166Test extends \PHPUnit_Framework_TestCase {
 
@@ -37,26 +37,26 @@ HI;
 
         $validator = new CalendarQueryValidator();
 
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VEVENT',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range'     => [
                         'start' => new \DateTime('2011-12-01'),
                         'end'   => new \DateTime('2012-02-01'),
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
+                    ],
+                ],
+            ],
+            'prop-filters'   => [],
             'is-not-defined' => false,
-            'time-range' => null,
-        );
+            'time-range'     => null,
+        ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input,$filters));
+        $this->assertTrue($validator->validate($input, $filters));
 
     }
 

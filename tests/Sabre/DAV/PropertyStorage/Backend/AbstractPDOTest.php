@@ -147,7 +147,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->propPatch('dir/child', $propPatch);
         $propPatch->commit();
 
-        $backend->move('dir','dir2');
+        $backend->move('dir', 'dir2');
 
         // Old 'dir'
         $propFind = new PropFind('dir', ['{DAV:}displayname']);

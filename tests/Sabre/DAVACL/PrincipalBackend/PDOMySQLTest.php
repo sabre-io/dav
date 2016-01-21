@@ -2,10 +2,6 @@
 
 namespace Sabre\DAVACL\PrincipalBackend;
 
-use Sabre\DAV;
-use Sabre\HTTP;
-
-
 require_once 'Sabre/TestUtil.php';
 
 class PDOMySQLTest extends AbstractPDOTest {

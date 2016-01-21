@@ -17,16 +17,16 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
     function testCopyMoveInfo() {
 
         $bar = new SimpleCollection('bar');
-        $root = new SimpleCollection('webdav',array($bar));
+        $root = new SimpleCollection('webdav', [$bar]);
 
         $server = new Server($root);
         $server->setBaseUri('/webdav/');
 
-        $serverVars = array(
-            'REQUEST_URI' => '/webdav/bar',
+        $serverVars = [
+            'REQUEST_URI'      => '/webdav/bar',
             'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
-            'HTTP_OVERWRITE' => 'F',
-        );
+            'HTTP_OVERWRITE'   => 'F',
+        ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
 
@@ -48,19 +48,19 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $dir->createDirectory('bar');
 
         $tree = new Tree($dir);
-        $tree->move('bar',urldecode('%C3%A0fo%C3%B3'));
+        $tree->move('bar', urldecode('%C3%A0fo%C3%B3'));
 
         $node = $tree->getNodeForPath(urldecode('%C3%A0fo%C3%B3'));
-        $this->assertEquals(urldecode('%C3%A0fo%C3%B3'),$node->getName());
+        $this->assertEquals(urldecode('%C3%A0fo%C3%B3'), $node->getName());
 
     }
 
     function testDirName() {
 
         $dirname1 = 'bar';
-        $dirname2 = urlencode('%C3%A0fo%C3%B3');;
+        $dirname2 = urlencode('%C3%A0fo%C3%B3');
 
-        $this->assertTrue(dirname($dirname1)==dirname($dirname2));
+        $this->assertTrue(dirname($dirname1) == dirname($dirname2));
 
     }
 
@@ -71,12 +71,12 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
     function testEverything() {
 
         // Request object
-        $serverVars = array(
-            'REQUEST_METHOD' => 'MOVE',
-            'REQUEST_URI' => '/webdav/bar',
+        $serverVars = [
+            'REQUEST_METHOD'   => 'MOVE',
+            'REQUEST_URI'      => '/webdav/bar',
             'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
-            'HTTP_OVERWRITE' => 'F',
-        );
+            'HTTP_OVERWRITE'   => 'F',
+        ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');

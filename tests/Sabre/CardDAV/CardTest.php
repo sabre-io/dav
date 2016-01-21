@@ -18,16 +18,16 @@ class CardTest extends \PHPUnit_Framework_TestCase {
         $this->backend = new Backend\Mock();
         $this->card = new Card(
             $this->backend,
-            array(
-                'uri' => 'book1',
-                'id' => 'foo',
+            [
+                'uri'          => 'book1',
+                'id'           => 'foo',
                 'principaluri' => 'principals/user1',
-            ),
-            array(
-                'uri' => 'card1',
+            ],
+            [
+                'uri'           => 'card1',
                 'addressbookid' => 'foo',
-                'carddata' => 'card',
-            )
+                'carddata'      => 'card',
+            ]
         );
 
     }
@@ -42,15 +42,15 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
         $this->card = new Card(
             $this->backend,
-            array(
-                'uri' => 'book1',
-                'id' => 'foo',
+            [
+                'uri'          => 'book1',
+                'id'           => 'foo',
                 'principaluri' => 'principals/user1',
-            ),
-            array(
-                'uri' => 'card1',
+            ],
+            [
+                'uri'           => 'card1',
                 'addressbookid' => 'foo',
-            )
+            ]
         );
         $result = $this->card->get();
         $this->assertEquals("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD", $result);
@@ -63,7 +63,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
      */
     function testPut() {
 
-        $file = fopen('php://memory','r+');
+        $file = fopen('php://memory', 'r+');
         fwrite($file, 'newdata');
         rewind($file);
         $this->card->put($file);
@@ -88,7 +88,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
     function testGetETag() {
 
-        $this->assertEquals('"' . md5('card') . '"' , $this->card->getETag());
+        $this->assertEquals('"' . md5('card') . '"', $this->card->getETag());
 
     }
 
@@ -96,19 +96,19 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
         $card = new Card(
             $this->backend,
-            array(
-                'uri' => 'book1',
-                'id' => 'foo',
+            [
+                'uri'          => 'book1',
+                'id'           => 'foo',
                 'principaluri' => 'principals/user1',
-            ),
-            array(
-                'uri' => 'card1',
+            ],
+            [
+                'uri'           => 'card1',
                 'addressbookid' => 'foo',
-                'carddata' => 'card',
-                'etag' => '"blabla"',
-            )
+                'carddata'      => 'card',
+                'etag'          => '"blabla"',
+            ]
         );
-        $this->assertEquals('"blabla"' , $card->getETag());
+        $this->assertEquals('"blabla"', $card->getETag());
 
     }
 
@@ -129,17 +129,17 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
         $card = new Card(
             $this->backend,
-            array(
-                'uri' => 'book1',
-                'id' => 'foo',
+            [
+                'uri'          => 'book1',
+                'id'           => 'foo',
                 'principaluri' => 'principals/user1',
-            ),
-            array(
-                'uri' => 'card1',
+            ],
+            [
+                'uri'           => 'card1',
                 'addressbookid' => 'foo',
-                'etag' => '"blabla"',
-                'size' => 4,
-            )
+                'etag'          => '"blabla"',
+                'size'          => 4,
+            ]
         );
         $this->assertEquals(4, $card->getSize());
 
@@ -149,49 +149,49 @@ class CardTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals('principals/user1', $this->card->getOwner());
         $this->assertNull($this->card->getGroup());
-        $this->assertEquals(array(
-            array(
+        $this->assertEquals([
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-        ), $this->card->getACL());
+            ],
+        ], $this->card->getACL());
 
     }
     function testOverrideACL() {
 
         $card = new Card(
             $this->backend,
-            array(
-                'uri' => 'book1',
-                'id' => 'foo',
+            [
+                'uri'          => 'book1',
+                'id'           => 'foo',
                 'principaluri' => 'principals/user1',
-            ),
-            array(
-                'uri' => 'card1',
+            ],
+            [
+                'uri'           => 'card1',
                 'addressbookid' => 'foo',
-                'carddata' => 'card',
-                'acl' => array(
-                    array(
+                'carddata'      => 'card',
+                'acl'           => [
+                    [
                         'privilege' => '{DAV:}read',
                         'principal' => 'principals/user1',
                         'protected' => true,
-                    ),
-                ),
-            )
+                    ],
+                ],
+            ]
         );
-        $this->assertEquals(array(
-            array(
+        $this->assertEquals([
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-        ), $card->getACL());
+            ],
+        ], $card->getACL());
 
     }
 
@@ -200,7 +200,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-       $this->card->setACL(array());
+       $this->card->setACL([]);
 
     }
 

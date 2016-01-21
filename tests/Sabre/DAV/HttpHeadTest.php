@@ -24,7 +24,7 @@ class HttpHeadTest extends DAVServerTest {
         $this->tree = new Mock\Collection('root', [
             'file1' => 'foo',
             new Mock\Collection('dir', []),
-            new Mock\StreamingFile('streaming', 'stream') 
+            new Mock\StreamingFile('streaming', 'stream')
         ]);
 
     }
@@ -76,7 +76,7 @@ class HttpHeadTest extends DAVServerTest {
 
         $count = 0;
 
-        $authBackend = new Auth\Backend\BasicCallBack(function($userName,$password) use (&$count) {
+        $authBackend = new Auth\Backend\BasicCallBack(function($userName, $password) use (&$count) {
             $count++;
             return true;
         });

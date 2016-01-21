@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\DAV;
-
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     abstract function getPDO();
@@ -24,11 +22,11 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
 
-        $this->assertNull($backend->getDigestHash('realm','blabla'));
+        $this->assertNull($backend->getDigestHash('realm', 'blabla'));
 
         $expected = 'hash';
 
-        $this->assertEquals($expected, $backend->getDigestHash('realm','user'));
+        $this->assertEquals($expected, $backend->getDigestHash('realm', 'user'));
 
     }
 

@@ -2,8 +2,6 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL;
-
 class ShareableCalendarTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
@@ -11,20 +9,20 @@ class ShareableCalendarTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $props = array(
+        $props = [
             'id' => 1,
-        );
+        ];
 
         $this->backend = new Backend\MockSharing(
-            array($props)
+            [$props]
         );
-        $this->backend->updateShares(1, array(
-            array(
-                'href' => 'mailto:removeme@example.org',
+        $this->backend->updateShares(1, [
+            [
+                'href'       => 'mailto:removeme@example.org',
                 'commonName' => 'To be removed',
-                'readOnly' => true,
-            ),
-        ), array());
+                'readOnly'   => true,
+            ],
+        ], []);
 
         $this->instance = new ShareableCalendar($this->backend, $props);
 
@@ -32,22 +30,22 @@ class ShareableCalendarTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdateShares() {
 
-        $this->instance->updateShares(array(
-            array(
-                'href' => 'mailto:test@example.org',
+        $this->instance->updateShares([
+            [
+                'href'       => 'mailto:test@example.org',
                 'commonName' => 'Foo Bar',
-                'summary' => 'Booh',
-                'readOnly' => false,
-            ),
-        ), array('mailto:removeme@example.org'));
+                'summary'    => 'Booh',
+                'readOnly'   => false,
+            ],
+        ], ['mailto:removeme@example.org']);
 
-        $this->assertEquals(array(array(
-            'href' => 'mailto:test@example.org',
+        $this->assertEquals([[
+            'href'       => 'mailto:test@example.org',
             'commonName' => 'Foo Bar',
-            'summary' => 'Booh',
-            'readOnly' => false,
-            'status' => SharingPlugin::STATUS_NORESPONSE,
-        )), $this->instance->getShares());
+            'summary'    => 'Booh',
+            'readOnly'   => false,
+            'status'     => SharingPlugin::STATUS_NORESPONSE,
+        ]], $this->instance->getShares());
 
     }
 

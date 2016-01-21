@@ -17,11 +17,11 @@ class TestUtil {
             unlink(SABRE_TEMPDIR . '/testdb.sqlite');
 
         $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         // Yup this is definitely not 'fool proof', but good enough for now.
         $queries = explode(';', file_get_contents(__DIR__ . '/../../../examples/sql/sqlite.calendars.sql'));
-        foreach($queries as $query) {
+        foreach ($queries as $query) {
             $pdo->exec($query);
         }
         // Inserting events through a backend class.
@@ -29,22 +29,22 @@ class TestUtil {
         $calendarId = $backend->createCalendar(
             'principals/user1',
             'UUID-123467',
-            array(
-                '{DAV:}displayname' => 'user1 calendar',
+            [
+                '{DAV:}displayname'                                   => 'user1 calendar',
                 '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar description',
-                '{http://apple.com/ns/ical/}calendar-order' => '1',
-                '{http://apple.com/ns/ical/}calendar-color' => '#FF0000',
-            )
+                '{http://apple.com/ns/ical/}calendar-order'           => '1',
+                '{http://apple.com/ns/ical/}calendar-color'           => '#FF0000',
+            ]
         );
         $backend->createCalendar(
             'principals/user1',
             'UUID-123468',
-            array(
-                '{DAV:}displayname' => 'user1 calendar2',
+            [
+                '{DAV:}displayname'                                   => 'user1 calendar2',
                 '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'Calendar description',
-                '{http://apple.com/ns/ical/}calendar-order' => '1',
-                '{http://apple.com/ns/ical/}calendar-color' => '#FF0000',
-            )
+                '{http://apple.com/ns/ical/}calendar-order'           => '1',
+                '{http://apple.com/ns/ical/}calendar-color'           => '#FF0000',
+            ]
         );
         $backend->createCalendarObject($calendarId, 'UUID-2345', self::getTestCalendarData());
         return $pdo;
@@ -80,37 +80,37 @@ TRANSP:TRANSPARENT
 SUMMARY:Something here
 DTSTAMP:20100228T130202Z';
 
-        switch($type) {
+        switch ($type) {
             case 1 :
-                $calendarData.="\nDTSTART;TZID=Asia/Seoul:20100223T060000\nDTEND;TZID=Asia/Seoul:20100223T070000\n";
+                $calendarData .= "\nDTSTART;TZID=Asia/Seoul:20100223T060000\nDTEND;TZID=Asia/Seoul:20100223T070000\n";
                 break;
             case 2 :
-                $calendarData.="\nDTSTART:20100223T060000\nDTEND:20100223T070000\n";
+                $calendarData .= "\nDTSTART:20100223T060000\nDTEND:20100223T070000\n";
                 break;
             case 3 :
-                $calendarData.="\nDTSTART;VALUE=DATE:20100223\nDTEND;VALUE=DATE:20100223\n";
+                $calendarData .= "\nDTSTART;VALUE=DATE:20100223\nDTEND;VALUE=DATE:20100223\n";
                 break;
             case 4 :
-                $calendarData.="\nDTSTART;TZID=Asia/Seoul:20100223T060000\nDURATION:PT1H\n";
+                $calendarData .= "\nDTSTART;TZID=Asia/Seoul:20100223T060000\nDURATION:PT1H\n";
                 break;
             case 5 :
-                $calendarData.="\nDTSTART;TZID=Asia/Seoul:20100223T060000\nDURATION:-P5D\n";
+                $calendarData .= "\nDTSTART;TZID=Asia/Seoul:20100223T060000\nDURATION:-P5D\n";
                 break;
             case 6 :
-                $calendarData.="\nDTSTART;VALUE=DATE:20100223\n";
+                $calendarData .= "\nDTSTART;VALUE=DATE:20100223\n";
                 break;
             case 7 :
-                $calendarData.="\nDTSTART;VALUE=DATETIME:20100223T060000\n";
+                $calendarData .= "\nDTSTART;VALUE=DATETIME:20100223T060000\n";
                 break;
 
             // No DTSTART, so intentionally broken
             case 'X' :
-                $calendarData.="\n";
+                $calendarData .= "\n";
                 break;
         }
 
 
-        $calendarData.='ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:lisa@example.com
+        $calendarData .= 'ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:lisa@example.com
 SEQUENCE:2
 END:VEVENT
 END:VCALENDAR';
@@ -121,7 +121,7 @@ END:VCALENDAR';
 
     static function getTestTODO($type = 'due') {
 
-        switch($type) {
+        switch ($type) {
 
             case 'due' :
                 $extra = "DUE:20100104T000000Z";

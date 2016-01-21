@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CardDAV\Xml\Request;
+
 use Sabre\DAV\Xml\XmlTest;
 
 class AddressBookQueryReportTest extends XmlTest {
@@ -31,11 +32,11 @@ XML;
         $addressBookQueryReport->test = 'anyof';
         $addressBookQueryReport->filters = [
             [
-                'name' => 'uid',
-                'test' => 'anyof',
+                'name'           => 'uid',
+                'test'           => 'anyof',
                 'is-not-defined' => false,
-                'param-filters' => [],
-                'text-matches' => [],
+                'param-filters'  => [],
+                'text-matches'   => [],
             ]
         ];
 
@@ -68,11 +69,11 @@ XML;
         $addressBookQueryReport->test = 'allof';
         $addressBookQueryReport->filters = [
             [
-                'name' => 'uid',
-                'test' => 'anyof',
+                'name'           => 'uid',
+                'test'           => 'anyof',
                 'is-not-defined' => false,
-                'param-filters' => [],
-                'text-matches' => [],
+                'param-filters'  => [],
+                'text-matches'   => [],
             ]
         ];
 
@@ -172,51 +173,51 @@ XML;
         $addressBookQueryReport->test = 'anyof';
         $addressBookQueryReport->filters = [
             [
-                'name' => 'uid',
-                'test' => 'anyof',
+                'name'           => 'uid',
+                'test'           => 'anyof',
                 'is-not-defined' => true,
-                'param-filters' => [],
-                'text-matches' => [],
+                'param-filters'  => [],
+                'text-matches'   => [],
             ],
             [
-                'name' => 'x-foo',
-                'test' => 'allof',
+                'name'           => 'x-foo',
+                'test'           => 'allof',
                 'is-not-defined' => false,
-                'param-filters' => [
+                'param-filters'  => [
                     [
-                        'name' => 'x-param1',
+                        'name'           => 'x-param1',
                         'is-not-defined' => false,
-                        'text-match' => null,
+                        'text-match'     => null,
                     ],
                     [
-                        'name' => 'x-param2',
+                        'name'           => 'x-param2',
                         'is-not-defined' => true,
-                        'text-match' => null,
+                        'text-match'     => null,
                     ],
                     [
-                        'name' => 'x-param3',
+                        'name'           => 'x-param3',
                         'is-not-defined' => false,
-                        'text-match' => [
+                        'text-match'     => [
                             'negate-condition' => false,
-                            'value' => 'Hello!',
-                            'match-type' => 'contains',
-                            'collation' => 'i;unicode-casemap',
+                            'value'            => 'Hello!',
+                            'match-type'       => 'contains',
+                            'collation'        => 'i;unicode-casemap',
                         ],
                     ],
                 ],
                 'text-matches' => [],
             ],
             [
-                'name' => 'x-prop2',
-                'test' => 'anyof',
+                'name'           => 'x-prop2',
+                'test'           => 'anyof',
                 'is-not-defined' => false,
-                'param-filters' => [],
-                'text-matches' => [
+                'param-filters'  => [],
+                'text-matches'   => [
                     [
                         'negate-condition' => true,
-                        'value' => 'No',
-                        'match-type' => 'starts-with',
-                        'collation' => 'i;unicode-casemap',
+                        'value'            => 'No',
+                        'match-type'       => 'starts-with',
+                        'collation'        => 'i;unicode-casemap',
                     ],
                 ],
             ]

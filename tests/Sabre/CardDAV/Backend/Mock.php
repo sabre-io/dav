@@ -13,24 +13,24 @@ class Mock extends AbstractBackend {
         $this->cards = $cards;
 
         if (is_null($this->addressBooks)) {
-            $this->addressBooks = array(
-                array(
-                    'id' => 'foo',
-                    'uri' => 'book1',
-                    'principaluri' => 'principals/user1',
+            $this->addressBooks = [
+                [
+                    'id'                => 'foo',
+                    'uri'               => 'book1',
+                    'principaluri'      => 'principals/user1',
                     '{DAV:}displayname' => 'd-name',
-                ),
-            );
+                ],
+            ];
 
-            $card2 = fopen('php://memory','r+');
-            fwrite($card2,"BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD");
+            $card2 = fopen('php://memory', 'r+');
+            fwrite($card2, "BEGIN:VCARD\nVERSION:3.0\nUID:45678\nEND:VCARD");
             rewind($card2);
-            $this->cards = array(
-                'foo' => array(
+            $this->cards = [
+                'foo' => [
                     'card1' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
                     'card2' => $card2,
-                ),
-            );
+                ],
+            ];
         }
 
     }
@@ -38,8 +38,8 @@ class Mock extends AbstractBackend {
 
     function getAddressBooksForUser($principalUri) {
 
-        $books = array();
-        foreach($this->addressBooks as $book) {
+        $books = [];
+        foreach ($this->addressBooks as $book) {
             if ($book['principaluri'] === $principalUri) {
                 $books[] = $book;
             }
@@ -64,14 +64,14 @@ class Mock extends AbstractBackend {
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */
-    public function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch) {
+    function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch) {
 
-        foreach($this->addressBooks as &$book) {
+        foreach ($this->addressBooks as &$book) {
             if ($book['id'] !== $addressBookId)
                 continue;
 
             $propPatch->handleRemaining(function($mutations) use (&$book) {
-                foreach($mutations as $key=>$value) {
+                foreach ($mutations as $key => $value) {
                     $book[$key] = $value;
                 }
                 return true;
@@ -83,17 +83,17 @@ class Mock extends AbstractBackend {
 
     function createAddressBook($principalUri, $url, array $properties) {
 
-        $this->addressBooks[] = array_merge($properties, array(
-            'id' => $url,
-            'uri' => $url,
+        $this->addressBooks[] = array_merge($properties, [
+            'id'           => $url,
+            'uri'          => $url,
             'principaluri' => $principalUri,
-        ));
+        ]);
 
     }
 
     function deleteAddressBook($addressBookId) {
 
-        foreach($this->addressBooks as $key=>$value) {
+        foreach ($this->addressBooks as $key => $value) {
             if ($value['id'] === $addressBookId)
                 unset($this->addressBooks[$key]);
         }
@@ -103,12 +103,12 @@ class Mock extends AbstractBackend {
 
     function getCards($addressBookId) {
 
-        $cards = array();
-        foreach($this->cards[$addressBookId] as $uri=>$data) {
-            $cards[] = array(
-                'uri' => $uri,
+        $cards = [];
+        foreach ($this->cards[$addressBookId] as $uri => $data) {
+            $cards[] = [
+                'uri'      => $uri,
                 'carddata' => $data,
-            );
+            ];
         }
         return $cards;
 
@@ -120,10 +120,10 @@ class Mock extends AbstractBackend {
             return false;
         }
 
-        return array(
-            'uri' => $cardUri,
+        return [
+            'uri'      => $cardUri,
             'carddata' => $this->cards[$addressBookId][$cardUri],
-        );
+        ];
 
     }
 

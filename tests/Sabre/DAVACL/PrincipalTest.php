@@ -7,10 +7,10 @@ use Sabre\HTTP;
 
 class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
-    public function testConstruct() {
+    function testConstruct() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
         $this->assertTrue($principal instanceof Principal);
 
     }
@@ -18,65 +18,65 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException Sabre\DAV\Exception
      */
-    public function testConstructNoUri() {
+    function testConstructNoUri() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array());
+        $principal = new Principal($principalBackend, []);
 
     }
 
-    public function testGetName() {
+    function testGetName() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals('admin',$principal->getName());
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals('admin', $principal->getName());
 
     }
 
-    public function testGetDisplayName() {
+    function testGetDisplayName() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals('admin',$principal->getDisplayname());
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals('admin', $principal->getDisplayname());
 
-        $principal = new Principal($principalBackend, array(
-            'uri' => 'principals/admin',
+        $principal = new Principal($principalBackend, [
+            'uri'               => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin'
-        ));
-        $this->assertEquals('Mr. Admin',$principal->getDisplayname());
+        ]);
+        $this->assertEquals('Mr. Admin', $principal->getDisplayname());
 
     }
 
-    public function testGetProperties() {
+    function testGetProperties() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array(
-            'uri' => 'principals/admin',
-            '{DAV:}displayname' => 'Mr. Admin',
+        $principal = new Principal($principalBackend, [
+            'uri'                                   => 'principals/admin',
+            '{DAV:}displayname'                     => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
             '{http://sabredav.org/ns}email-address' => 'admin@example.org',
-        ));
+        ]);
 
-        $keys = array(
+        $keys = [
             '{DAV:}displayname',
             '{http://www.example.org/custom}custom',
             '{http://sabredav.org/ns}email-address',
-        );
+        ];
         $props = $principal->getProperties($keys);
 
-        foreach($keys as $key) $this->assertArrayHasKey($key,$props);
+        foreach ($keys as $key) $this->assertArrayHasKey($key, $props);
 
-        $this->assertEquals('Mr. Admin',$props['{DAV:}displayname']);
+        $this->assertEquals('Mr. Admin', $props['{DAV:}displayname']);
 
         $this->assertEquals('admin@example.org', $props['{http://sabredav.org/ns}email-address']);
     }
 
-    public function testUpdateProperties() {
+    function testUpdateProperties() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
 
-        $propPatch = new DAV\PropPatch(array('{DAV:}yourmom' => 'test'));
+        $propPatch = new DAV\PropPatch(['{DAV:}yourmom' => 'test']);
 
         $result = $principal->propPatch($propPatch);
         $result = $propPatch->commit();
@@ -84,123 +84,123 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function testGetPrincipalUrl() {
+    function testGetPrincipalUrl() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals('principals/admin',$principal->getPrincipalUrl());
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals('principals/admin', $principal->getPrincipalUrl());
 
     }
 
-    public function testGetAlternateUriSet() {
+    function testGetAlternateUriSet() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array(
-            'uri' => 'principals/admin',
-            '{DAV:}displayname' => 'Mr. Admin',
+        $principal = new Principal($principalBackend, [
+            'uri'                                   => 'principals/admin',
+            '{DAV:}displayname'                     => 'Mr. Admin',
             '{http://www.example.org/custom}custom' => 'Custom',
             '{http://sabredav.org/ns}email-address' => 'admin@example.org',
-            '{DAV:}alternate-URI-set' => array(
+            '{DAV:}alternate-URI-set'               => [
                 'mailto:admin+1@example.org',
                 'mailto:admin+2@example.org',
                 'mailto:admin@example.org',
-            ),
-        ));
+            ],
+        ]);
 
-        $expected = array(
+        $expected = [
             'mailto:admin+1@example.org',
             'mailto:admin+2@example.org',
             'mailto:admin@example.org',
-        );
+        ];
 
-        $this->assertEquals($expected,$principal->getAlternateUriSet());
+        $this->assertEquals($expected, $principal->getAlternateUriSet());
 
     }
-    public function testGetAlternateUriSetEmpty() {
+    function testGetAlternateUriSetEmpty() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array(
+        $principal = new Principal($principalBackend, [
             'uri' => 'principals/admin',
-        ));
+        ]);
 
-        $expected = array();
+        $expected = [];
 
-        $this->assertEquals($expected,$principal->getAlternateUriSet());
-
-    }
-
-    public function testGetGroupMemberSet() {
-
-        $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals(array(),$principal->getGroupMemberSet());
-
-    }
-    public function testGetGroupMembership() {
-
-        $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals(array(),$principal->getGroupMembership());
+        $this->assertEquals($expected, $principal->getAlternateUriSet());
 
     }
 
-    public function testSetGroupMemberSet() {
+    function testGetGroupMemberSet() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $principal->setGroupMemberSet(array('principals/foo'));
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals([], $principal->getGroupMemberSet());
 
-        $this->assertEquals(array(
-            'principals/admin' => array('principals/foo'),
-        ), $principalBackend->groupMembers);
+    }
+    function testGetGroupMembership() {
+
+        $principalBackend = new PrincipalBackend\Mock();
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals([], $principal->getGroupMembership());
 
     }
 
-    public function testGetOwner() {
+    function testSetGroupMemberSet() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals('principals/admin',$principal->getOwner());
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $principal->setGroupMemberSet(['principals/foo']);
+
+        $this->assertEquals([
+            'principals/admin' => ['principals/foo'],
+        ], $principalBackend->groupMembers);
 
     }
 
-    public function testGetGroup() {
+    function testGetOwner() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals('principals/admin', $principal->getOwner());
+
+    }
+
+    function testGetGroup() {
+
+        $principalBackend = new PrincipalBackend\Mock();
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
         $this->assertNull($principal->getGroup());
 
     }
 
-    public function testGetACl() {
+    function testGetACl() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $this->assertEquals(array(
-            array(
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $this->assertEquals([
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
-            )
-        ),$principal->getACL());
+            ]
+        ], $principal->getACL());
 
     }
 
     /**
      * @expectedException Sabre\DAV\Exception\MethodNotAllowed
      */
-    public function testSetACl() {
+    function testSetACl() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
-        $principal->setACL(array());
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
+        $principal->setACL([]);
 
     }
 
-    public function testGetSupportedPrivilegeSet() {
+    function testGetSupportedPrivilegeSet() {
 
         $principalBackend = new PrincipalBackend\Mock();
-        $principal = new Principal($principalBackend, array('uri' => 'principals/admin'));
+        $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
         $this->assertNull($principal->getSupportedPrivilegeSet());
 
     }

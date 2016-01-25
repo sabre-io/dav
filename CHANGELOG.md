@@ -7,7 +7,7 @@ ChangeLog
 * #755: The brower plugin and some operations would break when scheduling and
   delegation would both be enabled.
 * #757: A bunch of unittest improvements (@jakobsack).
-* The zip release ships with [sabre/vobject 4.0.1][vobj],
+* The zip release ships with [sabre/vobject 4.0.2][vobj],
   [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 

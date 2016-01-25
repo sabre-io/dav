@@ -237,6 +237,14 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
+2.1.9 (2016-01-25)
+------------------
+
+* #674: PHP7 support (@DeepDiver1975).
+* The zip release ships with [sabre/vobject 3.5.0][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
+
+
 2.1.8 (2016-01-04)
 ------------------
 

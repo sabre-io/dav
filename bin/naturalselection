@@ -107,7 +107,7 @@ def main():
     parser.add_option(
         '-m', '--min-erase',
         help="Minimum number of bytes to erase when the threshold is reached. " +
-            "Setting this option higher will reduce the amount of times the cache directory will need to be scanned. " +
+            "Setting this option higher will reduce the number of times the cache directory will need to be scanned. " +
             "(the default is 1073741824, which is 1GB.)",
         type="int",
         dest="min_erase",

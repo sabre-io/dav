@@ -80,7 +80,7 @@ END:VCALENDAR',
 
         $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setPrincipal('principals/user1');
-        $this->authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+        $this->authPlugin = new DAV\Auth\Plugin($authBackend);
         // Forcing authentication to work.
         $this->authPlugin->beforeMethod($this->request, $this->response);
         $this->server->addPlugin($this->authPlugin);

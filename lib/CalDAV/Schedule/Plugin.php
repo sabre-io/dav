@@ -727,7 +727,7 @@ class Plugin extends ServerPlugin {
     protected function handleFreeBusyRequest(IOutbox $outbox, VObject\Component $vObject, RequestInterface $request, ResponseInterface $response) {
 
         $vFreeBusy = $vObject->VFREEBUSY;
-        $organizer = $vFreeBusy->organizer;
+        $organizer = $vFreeBusy->ORGANIZER;
 
         $organizer = (string)$organizer;
 

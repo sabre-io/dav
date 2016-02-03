@@ -408,7 +408,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $data = $backend->getCalendarObjects($returnedId, 'random-id');
+        $data = $backend->getCalendarObjects($returnedId);
 
         $this->assertEquals(1, count($data));
         $data = $data[0];

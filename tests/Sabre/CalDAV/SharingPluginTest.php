@@ -289,7 +289,7 @@ RRR;
 
         // If the plugin did not handle this request, it must ensure that the
         // body is still accessible by other plugins.
-        $this->assertEquals($xml, $request->getBody(true));
+        $this->assertEquals($xml, $request->getBody());
 
     }
 

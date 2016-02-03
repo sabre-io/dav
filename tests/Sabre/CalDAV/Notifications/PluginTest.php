@@ -51,8 +51,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->addPlugin(new CalDAV\Plugin());
         // Adding Auth plugin, and ensuring that we are logged in.
         $authBackend = new DAV\Auth\Backend\Mock();
-        $authBackend->defaultUser = 'user1';
-        $authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+        $authPlugin = new DAV\Auth\Plugin($authBackend);
         $this->server->addPlugin($authPlugin);
 
         // This forces a login

@@ -104,7 +104,7 @@ ics;
 XML;
 
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
-        $this->plugin->report($rootElem, $report);
+        $this->plugin->report($rootElem, $report, null);
 
         $this->assertEquals(200, $this->server->httpResponse->status);
         $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
@@ -126,7 +126,6 @@ XML;
 XML;
 
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
-        $this->plugin->report($rootElem, $report);
 
     }
 
@@ -148,7 +147,7 @@ XML;
 XML;
 
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
-        $this->plugin->report($rootElem, $report);
+        $this->plugin->report($rootElem, $report, null);
 
     }
 
@@ -169,7 +168,7 @@ XML;
 XML;
 
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
-        $this->plugin->report($rootElem, $report);
+        $this->plugin->report($rootElem, $report, null);
 
     }
 }

@@ -200,7 +200,7 @@ class ICSExportPluginTest extends \PHPUnit_Framework_TestCase {
         $s->addPlugin($p);
         $s->addPlugin(new Plugin());
         $s->addPlugin(new DAVACL\Plugin());
-        $s->addPlugin(new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock(), 'SabreDAV'));
+        $s->addPlugin(new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock()));
 
         // Forcing login
         $s->getPlugin('acl')->adminPrincipals = ['principals/admin'];

@@ -140,7 +140,6 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
      */
     function deleteSubscription($subscriptionId) {
 
-        $found = null;
         foreach ($this->subs[$subscriptionId[0]] as $index => $sub) {
 
             if ($sub['id'][1] === $subscriptionId[1]) {

@@ -272,11 +272,11 @@ class ICSExportPlugin extends DAV\ServerPlugin {
     function mergeObjects(array $properties, array $inputObjects) {
 
         $calendar = new VObject\Component\VCalendar();
-        $calendar->version = '2.0';
+        $calendar->VERSION = '2.0';
         if (DAV\Server::$exposeVersion) {
-            $calendar->prodid = '-//SabreDAV//SabreDAV ' . DAV\Version::VERSION . '//EN';
+            $calendar->PRODID = '-//SabreDAV//SabreDAV ' . DAV\Version::VERSION . '//EN';
         } else {
-            $calendar->prodid = '-//SabreDAV//SabreDAV//EN';
+            $calendar->PRODID = '-//SabreDAV//SabreDAV//EN';
         }
         if (isset($properties['{DAV:}displayname'])) {
             $calendar->{'X-WR-CALNAME'} = $properties['{DAV:}displayname'];

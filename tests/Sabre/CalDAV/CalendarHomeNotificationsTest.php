@@ -4,8 +4,6 @@ namespace Sabre\CalDAV;
 
 class CalendarHomeNotificationsTest extends \PHPUnit_Framework_TestCase {
 
-    protected $backend;
-
     function testGetChildrenNoSupport() {
 
         $backend = new Backend\Mock();

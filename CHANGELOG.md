@@ -7,6 +7,7 @@ ChangeLog
 * Removed database migration script for sabre/dav 1.7. To update from that
   version you now first need to update to sabre/dav 3.1.
 * Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.
+* #774: Fixes for getting free disk space on Windows.
 
 
 3.1.1 (2016-01-25)

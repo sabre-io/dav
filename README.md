@@ -1,10 +1,10 @@
-![sabre's logo](http://sabre.io/img/logo.png) SabreDAV
-======================================================
+![sabre's logo](http://sabre.io/img/logo.png) sabre/dav
+======================================================-
 
 Introduction
 ------------
 
-SabreDAV is the most popular WebDAV framework for PHP. Use it to create WebDAV, CalDAV and CardDAV servers.
+sabre/dav is the most popular WebDAV framework for PHP. Use it to create WebDAV, CalDAV and CardDAV servers.
 
 Full documentation can be found on the website:
 

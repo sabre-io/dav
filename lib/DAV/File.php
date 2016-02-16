@@ -19,7 +19,7 @@ abstract class File extends Node implements IFile {
      *
      * data is a readable stream resource.
      *
-     * @param string|resource $calendarData
+     * @param string|resource $data
      * @return void
      */
     function put($data) {

@@ -1,7 +1,6 @@
 ChangeLog
 =========
 
-
 3.1.1 (2016-01-25)
 ------------------
 
@@ -76,7 +75,7 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.8 (2016-01-12)
+3.0.8 (2016-??-??)
 ------------------
 
 * #784: Sync logs for address books were not correctly cleaned up after

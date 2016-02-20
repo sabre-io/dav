@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.0.8 (2016-01-12)
+3.0.8 (2016-??-??)
 ------------------
 
 * #784: Sync logs for address books were not correctly cleaned up after

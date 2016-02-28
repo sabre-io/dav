@@ -227,7 +227,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
     /**
      * Returns the last modification date as a unix timestamp.
      *
-     * @return void
+     * @return null
      */
     function getLastModified() {
 

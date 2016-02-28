@@ -144,7 +144,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * The Server class will filter out the extra.
      *
      * @param array $properties
-     * @return void
+     * @return array
      */
     function getProperties($properties) {
 

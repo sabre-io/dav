@@ -32,7 +32,7 @@ interface IFile extends INode {
      * different object on a subsequent GET you are strongly recommended to not
      * return an ETag, and just return null.
      *
-     * @param resource $data
+     * @param resource|data $data
      * @return string|null
      */
     function put($data);

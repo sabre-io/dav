@@ -172,7 +172,7 @@ class CorePlugin extends ServerPlugin {
             // Streams may advertise themselves as seekable, but still not
             // actually allow fseek.  We'll manually go forward in the stream
             // if fseek failed.
-            if (!stream_get_meta_data($body)['seekable'] || fseek($body, $start, SEEK_SET) === 0) {
+            if (!stream_get_meta_data($body)['seekable'] || fseek($body, $start, SEEK_SET) === -1) {
                 $consumeBlock = 8192;
                 for ($consumed = 0; $start - $consumed > 0;){
                     if (feof($body)) throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $start . ') exceeded the size of the entity (' . $consumed . ')');

@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\DAV;
+
 use Sabre\HTTP;
 
 require_once 'Sabre/DAV/AbstractServer.php';
@@ -182,7 +183,7 @@ class ServerRangeTest extends AbstractServer{
             'GET',
             '/test.txt',
             [
-                'Range' => 'bytes=2-5',
+                'Range'    => 'bytes=2-5',
                 'If-Range' => $node->getEtag() . 'blabla'
             ]
         );
@@ -253,7 +254,7 @@ class ServerRangeTest extends AbstractServer{
             'GET',
             '/test.txt',
             [
-                'Range' => 'bytes=2-5',
+                'Range'    => 'bytes=2-5',
                 'If-Range' => '-2 years',
             ]
         );

@@ -463,7 +463,7 @@ class ServerSimpleTest extends AbstractServer{
      * There are certain cases where no HTTP status may be set. We need to
      * intercept these and set it to a default error message.
      */
-    function testNoHTTPSTatusSet() {
+    function testNoHTTPStatusSet() {
 
         $this->server->on('method:GET', function() { return false; }, 1);
         $this->server->httpRequest = new HTTP\Request('GET', '/');

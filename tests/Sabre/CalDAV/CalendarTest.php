@@ -251,6 +251,22 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testGetSyncToken2() {
+
+        $calendar = new Calendar(new Backend\Mock([], []), [
+            '{DAV:}sync-token' => 2
+        ]);
+        $this->assertEquals(2, $this->calendar->getSyncToken());
+
+    }
+
+    function testGetSyncTokenNoSyncSupport() {
+
+        $calendar = new Calendar(new Backend\Mock([], []), []);
+        $this->assertNull($calendar->getSyncToken());
+
+    }
+
     function testGetChanges() {
 
         $this->assertNull($this->calendar->getChanges(1, 1));

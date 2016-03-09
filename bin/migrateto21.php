@@ -169,10 +169,6 @@ switch ($driver) {
 )
 ');
         break;
-        $pdo->exec('
-            CREATE INDEX principaluri_uri ON calendarsubscriptions (principaluri, uri);
-        ');
-        break;
 }
 
 echo "Done.\n";

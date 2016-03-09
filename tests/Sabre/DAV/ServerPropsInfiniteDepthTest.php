@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\DAV;
+
 use Sabre\HTTP;
 
 require_once 'Sabre/DAV/AbstractServer.php';
@@ -15,7 +16,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     function setUp() {
 
-        if (file_exists(SABRE_TEMPDIR.'../.sabredav')) unlink(SABRE_TEMPDIR.'../.sabredav');
+        if (file_exists(SABRE_TEMPDIR . '../.sabredav')) unlink(SABRE_TEMPDIR . '../.sabredav');
         parent::setUp();
         file_put_contents(SABRE_TEMPDIR . '/test2.txt', 'Test contents2');
         mkdir(SABRE_TEMPDIR . '/col');
@@ -29,7 +30,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
     function tearDown() {
 
         parent::tearDown();
-        if (file_exists(SABRE_TEMPDIR.'../.locksdb')) unlink(SABRE_TEMPDIR.'../.locksdb');
+        if (file_exists(SABRE_TEMPDIR . '../.locksdb')) unlink(SABRE_TEMPDIR . '../.locksdb');
 
     }
 
@@ -43,31 +44,31 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     }
 
-    public function testPropFindEmptyBody() {
+    function testPropFindEmptyBody() {
 
         $this->sendRequest("");
 
         $this->assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: ' . $this->response->getBodyAsString());
 
-        $this->assertEquals(array(
+        $this->assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
-                'Content-Type' => ['application/xml; charset=utf-8'],
-                'DAV' => ['1, 3, extended-mkcol, 2'],
-                'Vary' => ['Brief,Prefer'],
-            ),
+                'Content-Type'    => ['application/xml; charset=utf-8'],
+                'DAV'             => ['1, 3, extended-mkcol, 2'],
+                'Vary'            => ['Brief,Prefer'],
+            ],
             $this->response->getHeaders()
          );
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d', 'urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
-        $this->assertEquals('/',(string)$data,'href element should have been /');
+        $this->assertEquals('/', (string)$data, 'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
         // 8 resources are to be returned: /, col, col/col, col/col/test.txt, dir, dir/child.txt, test.txt and test2.txt
-        $this->assertEquals(8,count($data));
+        $this->assertEquals(8, count($data));
 
     }
 
@@ -85,27 +86,27 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $body = $this->response->getBodyAsString();
         $this->assertEquals(207, $this->response->getStatus(), $body);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry');
-        $this->assertEquals(16,count($data),'We expected sixteen \'d:lockentry\' tags');
+        $this->assertEquals(16, count($data), 'We expected sixteen \'d:lockentry\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope');
-        $this->assertEquals(16,count($data),'We expected sixteen \'d:lockscope\' tags');
+        $this->assertEquals(16, count($data), 'We expected sixteen \'d:lockscope\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype');
-        $this->assertEquals(16,count($data),'We expected sixteen \'d:locktype\' tags');
+        $this->assertEquals(16, count($data), 'We expected sixteen \'d:locktype\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:shared');
-        $this->assertEquals(8,count($data),'We expected eight \'d:shared\' tags');
+        $this->assertEquals(8, count($data), 'We expected eight \'d:shared\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:exclusive');
-        $this->assertEquals(8,count($data),'We expected eight \'d:exclusive\' tags');
+        $this->assertEquals(8, count($data), 'We expected eight \'d:exclusive\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype/d:write');
-        $this->assertEquals(16,count($data),'We expected sixteen \'d:write\' tags');
+        $this->assertEquals(16, count($data), 'We expected sixteen \'d:write\' tags');
     }
 
     function testLockDiscovery() {
@@ -119,12 +120,12 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
         $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
+        $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:lockdiscovery');
-        $this->assertEquals(8,count($data),'We expected eight \'d:lockdiscovery\' tags');
+        $this->assertEquals(8, count($data), 'We expected eight \'d:lockdiscovery\' tags');
 
     }
 
@@ -138,24 +139,24 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 </d:propfind>';
 
         $this->sendRequest($xml);
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/","xmlns\\1=\"urn:DAV\"",$this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
         $xml = simplexml_load_string($body);
-        $xml->registerXPathNamespace('d','urn:DAV');
-        $pathTests = array(
+        $xml->registerXPathNamespace('d', 'urn:DAV');
+        $pathTests = [
             '/d:multistatus',
             '/d:multistatus/d:response',
             '/d:multistatus/d:response/d:propstat',
             '/d:multistatus/d:response/d:propstat/d:status',
             '/d:multistatus/d:response/d:propstat/d:prop',
             '/d:multistatus/d:response/d:propstat/d:prop/d:macaroni',
-        );
-        foreach($pathTests as $test) {
-            $this->assertTrue(count($xml->xpath($test))==true,'We expected the ' . $test . ' element to appear in the response, we got: ' . $body);
+        ];
+        foreach ($pathTests as $test) {
+            $this->assertTrue(count($xml->xpath($test)) == true, 'We expected the ' . $test . ' element to appear in the response, we got: ' . $body);
         }
 
         $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(8,count($val),$body);
-        $this->assertEquals('HTTP/1.1 404 Not Found',(string)$val[0]);
+        $this->assertEquals(8, count($val), $body);
+        $this->assertEquals('HTTP/1.1 404 Not Found', (string)$val[0]);
 
     }
 

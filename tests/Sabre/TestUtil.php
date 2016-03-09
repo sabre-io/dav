@@ -11,17 +11,17 @@ class TestUtil {
      */
     static function clearTempDir() {
 
-        self::deleteTree(SABRE_TEMPDIR,false);
+        self::deleteTree(SABRE_TEMPDIR, false);
 
     }
 
 
-    static private function deleteTree($path,$deleteRoot = true) {
+    private static function deleteTree($path, $deleteRoot = true) {
 
-        foreach(scandir($path) as $node) {
+        foreach (scandir($path) as $node) {
 
-            if ($node=='.' || $node=='..') continue;
-            $myPath = $path.'/'. $node;
+            if ($node == '.' || $node == '..') continue;
+            $myPath = $path . '/' . $node;
             if (is_file($myPath)) {
                 unlink($myPath);
             } else {
@@ -38,8 +38,8 @@ class TestUtil {
     static function getMySQLDB() {
 
         try {
-            $pdo = new \PDO(SABRE_MYSQLDSN,SABRE_MYSQLUSER,SABRE_MYSQLPASS);
-            $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+            $pdo = new \PDO(SABRE_MYSQLDSN, SABRE_MYSQLUSER, SABRE_MYSQLPASS);
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             return $pdo;
         } catch (\PDOException $e) {
             return null;
@@ -49,8 +49,8 @@ class TestUtil {
 
     static function getSQLiteDB() {
 
-        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/pdobackend');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         return $pdo;
 
     }

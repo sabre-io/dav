@@ -16,11 +16,11 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
 
     protected $server;
 
-    public function setUp() {
+    function setUp() {
 
-        $tree = array(
+        $tree = [
             new File(SABRE_TEMPDIR . '/foobar.txt')
-        );
+        ];
         $server = new Server($tree);
         $server->debugExceptions = true;
         $server->addPlugin(new Plugin());
@@ -31,7 +31,7 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function tearDown() {
+    function tearDown() {
 
         \Sabre\TestUtil::clearTempDir();
 
@@ -40,10 +40,10 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider data
      */
-    public function testUpdateRange($headerValue, $httpStatus, $endResult, $contentLength = 4) {
+    function testUpdateRange($headerValue, $httpStatus, $endResult, $contentLength = 4) {
 
         $headers = [
-            'Content-Type' => 'application/x-sabredav-partialupdate',
+            'Content-Type'   => 'application/x-sabredav-partialupdate',
             'X-Update-Range' => $headerValue,
         ];
 
@@ -64,25 +64,25 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
             $this->assertEquals($endResult, file_get_contents(SABRE_TEMPDIR . '/foobar.txt'));
         }
 
-    } 
+    }
 
-    public function data() {
+    function data() {
 
-        return array(
+        return [
             // Problems
-            array('foo',       400, null),
-            array('bytes=0-3', 411, null, 0),
-            array('bytes=4-1', 416, null),
+            ['foo',       400, null],
+            ['bytes=0-3', 411, null, 0],
+            ['bytes=4-1', 416, null],
 
-            array('bytes=0-3', 204, '----567890'),
-            array('bytes=1-4', 204, '1----67890'),
-            array('bytes=0-',  204, '----567890'),
-            array('bytes=-4',  204, '123456----'),
-            array('bytes=-2',  204, '12345678----'),
-            array('bytes=2-',  204, '12----7890'),
-            array('append',    204, '1234567890----'),
+            ['bytes=0-3', 204, '----567890'],
+            ['bytes=1-4', 204, '1----67890'],
+            ['bytes=0-',  204, '----567890'],
+            ['bytes=-4',  204, '123456----'],
+            ['bytes=-2',  204, '12345678----'],
+            ['bytes=2-',  204, '12----7890'],
+            ['append',    204, '1234567890----'],
 
-        );
+        ];
 
     }
 

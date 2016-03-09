@@ -86,7 +86,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         // Adding Auth plugin, and ensuring that we are logged in.
         $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setPrincipal('principals/user1');
-        $authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+        $authPlugin = new DAV\Auth\Plugin($authBackend);
         $authPlugin->beforeMethod(new \Sabre\HTTP\Request(), new \Sabre\HTTP\Response());
         $this->server->addPlugin($authPlugin);
 
@@ -719,7 +719,7 @@ XML;
             '</c:calendar-query>';
 
         $request = new HTTP\Request('REPORT', '/calendars/user1/UUID-123467', [
-            'Depth' => '0',
+            'Depth'      => '0',
             'User-Agent' => 'MSFT-WP/8.10.14219 (gzip)',
         ]);
 

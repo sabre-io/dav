@@ -19,12 +19,12 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
         $this->backend = new Backend\Mock();
         $this->ab = new AddressBook(
             $this->backend,
-            array(
-                'uri' => 'book1',
-                'id' => 'foo',
+            [
+                'uri'               => 'book1',
+                'id'                => 'foo',
                 '{DAV:}displayname' => 'd-name',
-                'principaluri' => 'principals/user1',
-            )
+                'principaluri'      => 'principals/user1',
+            ]
         );
 
     }
@@ -73,10 +73,10 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFile() {
 
-        $file = fopen('php://memory','r+');
-        fwrite($file,'foo');
+        $file = fopen('php://memory', 'r+');
+        fwrite($file, 'foo');
         rewind($file);
-        $this->ab->createFile('card2',$file);
+        $this->ab->createFile('card2', $file);
 
         $this->assertEquals('foo', $this->backend->cards['foo']['card2']);
 
@@ -85,7 +85,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     function testDelete() {
 
         $this->ab->delete();
-        $this->assertEquals(array(), $this->backend->addressBooks);
+        $this->assertEquals([], $this->backend->addressBooks);
 
     }
 
@@ -118,10 +118,10 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     function testGetProperties() {
 
-        $props = $this->ab->getProperties(array('{DAV:}displayname'));
-        $this->assertEquals(array(
+        $props = $this->ab->getProperties(['{DAV:}displayname']);
+        $this->assertEquals([
             '{DAV:}displayname' => 'd-name',
-        ), $props);
+        ], $props);
 
     }
 
@@ -129,18 +129,18 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals('principals/user1', $this->ab->getOwner());
         $this->assertNull($this->ab->getGroup());
-        $this->assertEquals(array(
-            array(
+        $this->assertEquals([
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-        ), $this->ab->getACL());
+            ],
+        ], $this->ab->getACL());
 
     }
 
@@ -149,7 +149,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
      */
     function testSetACL() {
 
-       $this->ab->setACL(array());
+       $this->ab->setACL([]);
 
     }
 
@@ -168,7 +168,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     }
     function testGetChangesNoSyncSupport() {
 
-        $this->assertNull($this->ab->getChanges(1,null));
+        $this->assertNull($this->ab->getChanges(1, null));
 
     }
 
@@ -200,9 +200,9 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
         $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
         $this->assertEquals([
             'syncToken' => 2,
-            'modified' => [],
-            'deleted' => [],
-            'added' => ['UUID-2345'],
+            'modified'  => [],
+            'deleted'   => [],
+            'added'     => ['UUID-2345'],
         ], $ab->getChanges(1, 1));
         TestUtil::deleteSQLiteDB();
 

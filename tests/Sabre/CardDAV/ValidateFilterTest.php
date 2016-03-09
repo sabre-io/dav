@@ -48,35 +48,35 @@ HELLO;
 
         // Check if TITLE is defined
         $filter1 =
-            array('name' => 'title', 'is-not-defined' => false, 'param-filters' => array(), 'text-matches' => array());
+            ['name' => 'title', 'is-not-defined' => false, 'param-filters' => [], 'text-matches' => []];
 
         // Check if FOO is defined
         $filter2 =
-            array('name' => 'foo', 'is-not-defined' => false, 'param-filters' => array(), 'text-matches' => array());
+            ['name' => 'foo', 'is-not-defined' => false, 'param-filters' => [], 'text-matches' => []];
 
         // Check if TITLE is not defined
         $filter3 =
-            array('name' => 'title', 'is-not-defined' => true, 'param-filters' => array(), 'text-matches' => array());
+            ['name' => 'title', 'is-not-defined' => true, 'param-filters' => [], 'text-matches' => []];
 
         // Check if FOO is not defined
         $filter4 =
-            array('name' => 'foo', 'is-not-defined' => true, 'param-filters' => array(), 'text-matches' => array());
+            ['name' => 'foo', 'is-not-defined' => true, 'param-filters' => [], 'text-matches' => []];
 
         // Check if TEL[TYPE] is defined
         $filter5 =
-            array(
-                'name' => 'tel',
+            [
+                'name'           => 'tel',
                 'is-not-defined' => false,
-                'test' => 'anyof',
-                'param-filters' => array(
-                    array(
-                        'name' => 'type',
+                'test'           => 'anyof',
+                'param-filters'  => [
+                    [
+                        'name'           => 'type',
                         'is-not-defined' => false,
-                        'text-match' => null
-                    ),
-                ),
-                'text-matches' => array(),
-            );
+                        'text-match'     => null
+                    ],
+                ],
+                'text-matches' => [],
+            ];
 
         // Check if TEL[FOO] is defined
         $filter6 = $filter5;
@@ -101,20 +101,20 @@ HELLO;
 
         // Check if URL contains 'google'
         $filter11 =
-            array(
-                'name' => 'url',
+            [
+                'name'           => 'url',
                 'is-not-defined' => false,
-                'test' => 'anyof',
-                'param-filters' => array(),
-                'text-matches' => array(
-                    array(
-                        'match-type' => 'contains',
-                        'value' => 'google',
+                'test'           => 'anyof',
+                'param-filters'  => [],
+                'text-matches'   => [
+                    [
+                        'match-type'       => 'contains',
+                        'value'            => 'google',
                         'negate-condition' => false,
-                        'collation' => 'i;octet',
-                    ),
-                ),
-            );
+                        'collation'        => 'i;octet',
+                    ],
+                ],
+            ];
 
         // Check if URL contains 'bing'
         $filter12 = $filter11;
@@ -131,12 +131,12 @@ HELLO;
 
         // Param filter with text
         $filter15 = $filter5;
-        $filter15['param-filters'][0]['text-match'] = array(
-            'match-type' => 'contains',
-            'value' => 'WORK',
-            'collation' => 'i;octet',
+        $filter15['param-filters'][0]['text-match'] = [
+            'match-type'       => 'contains',
+            'value'            => 'WORK',
+            'collation'        => 'i;octet',
             'negate-condition' => false,
-        );
+        ];
         $filter16 = $filter15;
         $filter16['param-filters'][0]['text-match']['negate-condition'] = true;
 
@@ -144,60 +144,60 @@ HELLO;
         // Param filter + text filter
         $filter17 = $filter5;
         $filter17['test'] = 'anyof';
-        $filter17['text-matches'][] = array(
-            'match-type' => 'contains',
-            'value' => '444',
-            'collation' => 'i;octet',
+        $filter17['text-matches'][] = [
+            'match-type'       => 'contains',
+            'value'            => '444',
+            'collation'        => 'i;octet',
             'negate-condition' => false,
-        );
+        ];
 
         $filter18 = $filter17;
         $filter18['text-matches'][0]['negate-condition'] = true;
 
         $filter18['test'] = 'allof';
 
-        return array(
+        return [
 
             // Basic filters
-            array($body1, array($filter1), 'anyof',true),
-            array($body1, array($filter2), 'anyof',false),
-            array($body1, array($filter3), 'anyof',false),
-            array($body1, array($filter4), 'anyof',true),
+            [$body1, [$filter1], 'anyof',true],
+            [$body1, [$filter2], 'anyof',false],
+            [$body1, [$filter3], 'anyof',false],
+            [$body1, [$filter4], 'anyof',true],
 
             // Combinations
-            array($body1, array($filter1, $filter2), 'anyof',true),
-            array($body1, array($filter1, $filter2), 'allof',false),
-            array($body1, array($filter1, $filter4), 'anyof',true),
-            array($body1, array($filter1, $filter4), 'allof',true),
-            array($body1, array($filter2, $filter3), 'anyof',false),
-            array($body1, array($filter2, $filter3), 'allof',false),
+            [$body1, [$filter1, $filter2], 'anyof',true],
+            [$body1, [$filter1, $filter2], 'allof',false],
+            [$body1, [$filter1, $filter4], 'anyof',true],
+            [$body1, [$filter1, $filter4], 'allof',true],
+            [$body1, [$filter2, $filter3], 'anyof',false],
+            [$body1, [$filter2, $filter3], 'allof',false],
 
             // Basic parameters
-            array($body1, array($filter5), 'anyof', true, 'TEL;TYPE is defined, so this should return true'),
-            array($body1, array($filter6), 'anyof', false, 'TEL;FOO is not defined, so this should return false'),
+            [$body1, [$filter5], 'anyof', true, 'TEL;TYPE is defined, so this should return true'],
+            [$body1, [$filter6], 'anyof', false, 'TEL;FOO is not defined, so this should return false'],
 
-            array($body1, array($filter7), 'anyof', false, 'TEL;TYPE is defined, so this should return false'),
-            array($body1, array($filter8), 'anyof', true, 'TEL;TYPE is not defined, so this should return true'),
+            [$body1, [$filter7], 'anyof', false, 'TEL;TYPE is defined, so this should return false'],
+            [$body1, [$filter8], 'anyof', true, 'TEL;TYPE is not defined, so this should return true'],
 
             // Combined parameters
-            array($body1, array($filter9), 'anyof', true),
-            array($body1, array($filter10), 'anyof', false),
+            [$body1, [$filter9], 'anyof', true],
+            [$body1, [$filter10], 'anyof', false],
 
             // Text-filters
-            array($body1, array($filter11), 'anyof', true),
-            array($body1, array($filter12), 'anyof', false),
-            array($body1, array($filter13), 'anyof', false),
-            array($body1, array($filter14), 'anyof', true),
+            [$body1, [$filter11], 'anyof', true],
+            [$body1, [$filter12], 'anyof', false],
+            [$body1, [$filter13], 'anyof', false],
+            [$body1, [$filter14], 'anyof', true],
 
             // Param filter with text-match
-            array($body1, array($filter15), 'anyof', true),
-            array($body1, array($filter16), 'anyof', false),
+            [$body1, [$filter15], 'anyof', true],
+            [$body1, [$filter16], 'anyof', false],
 
             // Param filter + text filter
-            array($body1, array($filter17), 'anyof', true),
-            array($body1, array($filter18), 'anyof', false),
-            array($body1, array($filter18), 'anyof', false),
-        );
+            [$body1, [$filter17], 'anyof', true],
+            [$body1, [$filter18], 'anyof', false],
+            [$body1, [$filter18], 'anyof', false],
+        ];
 
     }
 

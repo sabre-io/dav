@@ -28,8 +28,8 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [DAV\Version::VERSION],
-                'Content-Type' => ['text/html; charset=utf-8'],
+                'X-Sabre-Version'         => [DAV\Version::VERSION],
+                'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
             ],
             $this->response->getHeaders()
@@ -37,7 +37,7 @@ class PluginTest extends DAV\AbstractServer{
 
         $body = $this->response->getBodyAsString();
         $this->assertTrue(strpos($body, '<title>dir') !== false, $body);
-        $this->assertTrue(strpos($body, '<a href="/dir/child.txt">')!==false);
+        $this->assertTrue(strpos($body, '<a href="/dir/child.txt">') !== false);
 
     }
 
@@ -54,8 +54,8 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [DAV\Version::VERSION],
-                'Content-Type' => ['text/html; charset=utf-8'],
+                'X-Sabre-Version'         => [DAV\Version::VERSION],
+                'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
             ],
             $this->response->getHeaders()
@@ -63,7 +63,7 @@ class PluginTest extends DAV\AbstractServer{
 
         $body = $this->response->getBodyAsString();
         $this->assertTrue(strpos($body, '<title>dir') !== false, $body);
-        $this->assertTrue(strpos($body, '<a href="/dir/child.txt">')!==false);
+        $this->assertTrue(strpos($body, '<a href="/dir/child.txt">') !== false);
 
     }
     function testCollectionGetRoot() {
@@ -75,8 +75,8 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $this->response->status, "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [DAV\Version::VERSION],
-                'Content-Type' => ['text/html; charset=utf-8'],
+                'X-Sabre-Version'         => [DAV\Version::VERSION],
+                'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
             ],
             $this->response->getHeaders()
@@ -84,8 +84,8 @@ class PluginTest extends DAV\AbstractServer{
 
         $body = $this->response->getBodyAsString();
         $this->assertTrue(strpos($body, '<title>/') !== false, $body);
-        $this->assertTrue(strpos($body, '<a href="/dir/">')!==false);
-        $this->assertTrue(strpos($body, '<span class="btn disabled">')!==false);
+        $this->assertTrue(strpos($body, '<a href="/dir/">') !== false);
+        $this->assertTrue(strpos($body, '<span class="btn disabled">') !== false);
 
     }
 
@@ -122,15 +122,15 @@ class PluginTest extends DAV\AbstractServer{
 
     function testPostMkCol() {
 
-        $serverVars = array(
+        $serverVars = [
             'REQUEST_URI'    => '/',
             'REQUEST_METHOD' => 'POST',
-            'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
-        );
-        $postVars = array(
+            'CONTENT_TYPE'   => 'application/x-www-form-urlencoded',
+        ];
+        $postVars = [
             'sabreAction' => 'mkcol',
-            'name' => 'new_collection',
-        );
+            'name'        => 'new_collection',
+        ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setPostData($postVars);
@@ -138,10 +138,10 @@ class PluginTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals(302, $this->response->status);
-        $this->assertEquals(array(
+        $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
-            'Location' => ['/'],
-        ), $this->response->getHeaders());
+            'Location'        => ['/'],
+        ], $this->response->getHeaders());
 
         $this->assertTrue(is_dir(SABRE_TEMPDIR . '/new_collection'));
 
@@ -155,10 +155,10 @@ class PluginTest extends DAV\AbstractServer{
 
         $this->assertEquals(200, $this->response->getStatus(), 'Error: ' . $this->response->body);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
-            'Content-Type' => ['image/vnd.microsoft.icon'],
-            'Content-Length' => ['4286'],
-            'Cache-Control' => ['public, max-age=1209600'],
+            'X-Sabre-Version'         => [DAV\Version::VERSION],
+            'Content-Type'            => ['image/vnd.microsoft.icon'],
+            'Content-Length'          => ['4286'],
+            'Cache-Control'           => ['public, max-age=1209600'],
             'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
         ], $this->response->getHeaders());
 

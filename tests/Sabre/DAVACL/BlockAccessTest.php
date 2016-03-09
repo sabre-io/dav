@@ -3,7 +3,6 @@
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 
 class BlockAccessTest extends \PHPUnit_Framework_TestCase {
 
@@ -178,10 +177,10 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
             200 => [],
             404 => [],
             403 => [
-                '{DAV:}displayname' => null,
+                '{DAV:}displayname'      => null,
                 '{DAV:}getcontentlength' => null,
-                '{DAV:}bar' => null,
-                '{DAV:}owner' => null,
+                '{DAV:}bar'              => null,
+                '{DAV:}owner'            => null,
             ],
         ];
 

@@ -1,8 +1,8 @@
 <?php
 
 namespace Sabre\CalDAV;
+
 use Sabre\VObject;
-use Sabre\DAV;
 
 class Issue172Test extends \PHPUnit_Framework_TestCase {
 
@@ -18,24 +18,24 @@ END:VEVENT
 END:VCALENDAR
 HI;
         $validator = new CalendarQueryValidator();
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VEVENT',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range'     => [
                         'start' => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
                         'end'   => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
-        );
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
+        ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input,$filters));
+        $this->assertTrue($validator->validate($input, $filters));
     }
 
     // Pacific Standard Time, translates to America/Los_Angeles (GMT-8 in January)
@@ -65,24 +65,24 @@ END:VEVENT
 END:VCALENDAR
 HI;
         $validator = new CalendarQueryValidator();
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VEVENT',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range'     => [
                         'start' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
                         'end'   => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
-        );
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
+        ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input,$filters));
+        $this->assertTrue($validator->validate($input, $filters));
     }
 
     // X-LIC-LOCATION, translates to America/Los_Angeles (GMT-8 in January)
@@ -113,23 +113,23 @@ END:VEVENT
 END:VCALENDAR
 HI;
         $validator = new CalendarQueryValidator();
-        $filters = array(
-            'name' => 'VCALENDAR',
-            'comp-filters' => array(
-                array(
-                    'name' => 'VEVENT',
-                    'comp-filters' => array(),
-                    'prop-filters' => array(),
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VEVENT',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
                     'is-not-defined' => false,
-                    'time-range' => array(
+                    'time-range'     => [
                         'start' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
                         'end'   => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
-                    ),
-                ),
-            ),
-            'prop-filters' => array(),
-        );
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
+        ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input,$filters));
+        $this->assertTrue($validator->validate($input, $filters));
     }
 }

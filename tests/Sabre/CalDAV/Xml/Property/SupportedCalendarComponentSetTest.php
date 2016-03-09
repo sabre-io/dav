@@ -97,11 +97,6 @@ XML;
             ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet']
         );
 
-        $this->assertEquals(
-            new SupportedCalendarComponentSet([]),
-            $result['value']
-        );
-
     }
 
 }

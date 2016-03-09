@@ -6,7 +6,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 
     function tearDown() {
 
-        if (file_exists(SABRE_TEMPDIR . '/filebackend')) unlink(SABRE_TEMPDIR .'/filebackend');
+        if (file_exists(SABRE_TEMPDIR . '/filebackend')) unlink(SABRE_TEMPDIR . '/filebackend');
 
     }
 
@@ -22,20 +22,20 @@ class FileTest extends \PHPUnit_Framework_TestCase {
      */
     function testLoadFileBroken() {
 
-        file_put_contents(SABRE_TEMPDIR . '/backend','user:realm:hash');
+        file_put_contents(SABRE_TEMPDIR . '/backend', 'user:realm:hash');
         $file = new File();
-        $file->loadFile(SABRE_TEMPDIR .'/backend');
+        $file->loadFile(SABRE_TEMPDIR . '/backend');
 
     }
 
     function testLoadFile() {
 
-        file_put_contents(SABRE_TEMPDIR . '/backend','user:realm:' . md5('user:realm:password'));
+        file_put_contents(SABRE_TEMPDIR . '/backend', 'user:realm:' . md5('user:realm:password'));
         $file = new File();
         $file->loadFile(SABRE_TEMPDIR . '/backend');
 
-        $this->assertFalse($file->getDigestHash('realm','blabla'));
-        $this->assertEquals(md5('user:realm:password'), $file->getDigestHash('realm','user'));
+        $this->assertFalse($file->getDigestHash('realm', 'blabla'));
+        $this->assertEquals(md5('user:realm:password'), $file->getDigestHash('realm', 'user'));
 
     }
 

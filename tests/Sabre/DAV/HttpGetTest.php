@@ -24,7 +24,7 @@ class HttpGetTest extends DAVServerTest {
         $this->tree = new Mock\Collection('root', [
             'file1' => 'foo',
             new Mock\Collection('dir', []),
-            new Mock\StreamingFile('streaming', 'stream') 
+            new Mock\StreamingFile('streaming', 'stream')
         ]);
 
     }

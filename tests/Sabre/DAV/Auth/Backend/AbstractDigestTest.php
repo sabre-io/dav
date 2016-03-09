@@ -2,7 +2,6 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\DAV;
 use Sabre\HTTP;
 
 class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
@@ -87,12 +86,12 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
     function testCheck() {
 
         $digestHash = md5('HELLO:12345:1:1:auth:' . md5('GET:/'));
-        $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response='.$digestHash.', opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=' . $digestHash . ', opaque=1, qop=auth, nc=1, cnonce=1';
+        $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD'  => 'GET',
             'PHP_AUTH_DIGEST' => $header,
             'REQUEST_URI'     => '/',
-        ));
+        ]);
 
         $response = new HTTP\Response();
 
@@ -127,10 +126,10 @@ class AbstractDigestMock extends AbstractDigest {
 
     function getDigestHash($realm, $userName) {
 
-        switch($userName) {
+        switch ($userName) {
             case 'null' : return null;
             case 'false' : return false;
-            case 'array' : return array();
+            case 'array' : return [];
             case 'user'  : return 'HELLO';
         }
 

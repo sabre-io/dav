@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\PropertyStorage\Backend;
 
-class PDOMySqlTest extends AbstractPDOTest {
+class PDOMysqlTest extends AbstractPDOTest {
 
     function getPDO() {
 
@@ -15,7 +15,7 @@ class PDOMySqlTest extends AbstractPDOTest {
 
         $pdo->exec('DROP TABLE IF EXISTS propertystorage');
 
-        foreach($setupSql as $sql) {
+        foreach ($setupSql as $sql) {
 
             if (!trim($sql)) continue;
             $pdo->exec($sql);
@@ -28,4 +28,3 @@ class PDOMySqlTest extends AbstractPDOTest {
     }
 
 }
-

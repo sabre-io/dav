@@ -2,8 +2,6 @@
 
 namespace Sabre\CardDAV;
 
-use PDO;
-
 class TestUtil {
 
     static function getBackend() {
@@ -22,18 +20,18 @@ class TestUtil {
         $addressbookId = $backend->createAddressBook(
             'principals/user1',
             'UUID-123467',
-            array(
-                '{DAV:}displayname' => 'user1 addressbook',
+            [
+                '{DAV:}displayname'                                       => 'user1 addressbook',
                 '{urn:ietf:params:xml:ns:carddav}addressbook-description' => 'AddressBook description',
-            )
+            ]
         );
         $backend->createAddressBook(
             'principals/user1',
             'UUID-123468',
-            array(
-                '{DAV:}displayname' => 'user1 addressbook2',
+            [
+                '{DAV:}displayname'                                       => 'user1 addressbook2',
                 '{urn:ietf:params:xml:ns:carddav}addressbook-description' => 'AddressBook description',
-            )
+            ]
         );
         $backend->createCard($addressbookId, 'UUID-2345', self::getTestCardData());
         return $pdo;

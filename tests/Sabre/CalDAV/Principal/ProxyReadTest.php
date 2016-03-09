@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Principal;
+
 use Sabre\DAVACL;
 
 class ProxyReadTest extends \PHPUnit_Framework_TestCase {
@@ -10,9 +11,9 @@ class ProxyReadTest extends \PHPUnit_Framework_TestCase {
     function getInstance() {
 
         $backend = new DAVACL\PrincipalBackend\Mock();
-        $principal = new ProxyRead($backend, array(
+        $principal = new ProxyRead($backend, [
             'uri' => 'principal/user',
-        ));
+        ]);
         $this->backend = $backend;
         return $principal;
 
@@ -61,7 +62,7 @@ class ProxyReadTest extends \PHPUnit_Framework_TestCase {
     function testGetAlternateUriSet() {
 
         $i = $this->getInstance();
-        $this->assertEquals(array(), $i->getAlternateUriSet());
+        $this->assertEquals([], $i->getAlternateUriSet());
 
     }
 
@@ -75,25 +76,25 @@ class ProxyReadTest extends \PHPUnit_Framework_TestCase {
     function testGetGroupMemberSet() {
 
         $i = $this->getInstance();
-        $this->assertEquals(array(), $i->getGroupMemberSet());
+        $this->assertEquals([], $i->getGroupMemberSet());
 
     }
 
     function testGetGroupMembership() {
 
         $i = $this->getInstance();
-        $this->assertEquals(array(), $i->getGroupMembership());
+        $this->assertEquals([], $i->getGroupMembership());
 
     }
 
     function testSetGroupMemberSet() {
 
         $i = $this->getInstance();
-        $i->setGroupMemberSet(array('principals/foo'));
+        $i->setGroupMemberSet(['principals/foo']);
 
-        $expected = array(
-            $i->getPrincipalUrl() => array('principals/foo')
-        );
+        $expected = [
+            $i->getPrincipalUrl() => ['principals/foo']
+        ];
 
         $this->assertEquals($expected, $this->backend->groupMembers);
 

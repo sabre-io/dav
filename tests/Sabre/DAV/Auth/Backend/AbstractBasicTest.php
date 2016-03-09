@@ -2,7 +2,6 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\DAV;
 use Sabre\HTTP;
 
 class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
@@ -22,10 +21,10 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckUnknownUser() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'PHP_AUTH_USER' => 'username',
-            'PHP_AUTH_PW' => 'wrongpassword',
-        ));
+            'PHP_AUTH_PW'   => 'wrongpassword',
+        ]);
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
@@ -38,10 +37,10 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckSuccess() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'PHP_AUTH_USER' => 'username',
-            'PHP_AUTH_PW' => 'password',
-        ));
+            'PHP_AUTH_PW'   => 'password',
+        ]);
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();

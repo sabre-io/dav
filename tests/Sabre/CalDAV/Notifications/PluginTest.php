@@ -9,7 +9,6 @@ use Sabre\CalDAV\Xml\Notification\SystemStatus;
 use Sabre\HTTP;
 use Sabre\HTTP\Request;
 
-
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -30,7 +29,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->caldavBackend = new CalDAV\Backend\MockSharing();
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
-        $calendars = new CalDAV\CalendarRoot($principalBackend,$this->caldavBackend);
+        $calendars = new CalDAV\CalendarRoot($principalBackend, $this->caldavBackend);
         $principals = new CalDAV\Principal\Collection($principalBackend);
 
         $root = new DAV\SimpleCollection('root');
@@ -52,8 +51,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->addPlugin(new CalDAV\Plugin());
         // Adding Auth plugin, and ensuring that we are logged in.
         $authBackend = new DAV\Auth\Backend\Mock();
-        $authBackend->defaultUser = 'user1';
-        $authPlugin = new DAV\Auth\Plugin($authBackend, 'SabreDAV');
+        $authPlugin = new DAV\Auth\Plugin($authBackend);
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
@@ -80,16 +78,16 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $httpRequest = new Request('GET', '/', ['Host' => 'sabredav.org']);
         $this->server->httpRequest = $httpRequest;
 
-        $props = $this->server->getPropertiesForPath('/principals/user1',[
+        $props = $this->server->getPropertiesForPath('/principals/user1', [
             '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
         ]);
 
-        $this->assertArrayHasKey(0,$props);
-        $this->assertArrayHasKey(200,$props[0]);
+        $this->assertArrayHasKey(0, $props);
+        $this->assertArrayHasKey(200, $props[0]);
 
 
-        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER .'}notification-URL',$props[0][200]);
-        $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER .'}notification-URL'];
+        $this->assertArrayHasKey('{' . Plugin::NS_CALENDARSERVER . '}notification-URL', $props[0][200]);
+        $prop = $props[0][200]['{' . Plugin::NS_CALENDARSERVER . '}notification-URL'];
         $this->assertTrue($prop instanceof DAV\Xml\Property\Href);
         $this->assertEquals('calendars/user1/notifications/', $prop->getHref());
 
@@ -100,7 +98,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $notification = new Node(
             $this->caldavBackend,
             'principals/user1',
-            new SystemStatus('foo','"1"')
+            new SystemStatus('foo', '"1"')
         );
         $propFind = new DAV\PropFind('calendars/user1/notifications', [
             '{' . Plugin::NS_CALENDARSERVER . '}notificationtype',
@@ -120,7 +118,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $notification = new Node(
             $this->caldavBackend,
             'principals/user1',
-            new SystemStatus('foo','"1"')
+            new SystemStatus('foo', '"1"')
         );
 
         $server = new DAV\Server([$notification]);
@@ -161,7 +159,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $server->addPlugin($caldav);
 
-        $this->assertNull($caldav->httpGet(new HTTP\Request('GET','/foozz'), $server->httpResponse));
+        $this->assertNull($caldav->httpGet(new HTTP\Request('GET', '/foozz'), $server->httpResponse));
 
     }
 

@@ -11,17 +11,17 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
 
     function getSub($override = []) {
 
-        $caldavBackend = new \Sabre\CalDAV\Backend\MockSubscriptionSupport([],[]);
+        $caldavBackend = new \Sabre\CalDAV\Backend\MockSubscriptionSupport([], []);
 
         $info = [
             '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src', false),
-            'lastmodified' => date('2013-04-06 11:40:00'), // tomorrow is my birthday!
-            '{DAV:}displayname' => 'displayname',
+            'lastmodified'                          => date('2013-04-06 11:40:00'), // tomorrow is my birthday!
+            '{DAV:}displayname'                     => 'displayname',
         ];
 
 
         $id = $caldavBackend->createSubscription('principals/user1', 'uri', array_merge($info, $override));
-        $subInfo = $caldavBackend->getSubscriptionsForUser('principals/user1'); 
+        $subInfo = $caldavBackend->getSubscriptionsForUser('principals/user1');
 
         $this->assertEquals(1, count($subInfo));
         $subscription = new Subscription($caldavBackend, $subInfo[0]);
@@ -41,8 +41,8 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             [
-                '{DAV:}displayname' => 'displayname',
-                '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src',false),
+                '{DAV:}displayname'                     => 'displayname',
+                '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src', false),
             ],
             $sub->getProperties(['{DAV:}displayname', '{http://calendarserver.org/ns/}source'])
         );
@@ -86,7 +86,7 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
     function testValues2() {
 
         $sub = $this->getSub([
-            'lastmodified' => null, 
+            'lastmodified' => null,
         ]);
 
         $this->assertEquals(null, $sub->getLastModified());
@@ -133,7 +133,7 @@ class SubscriptionTest extends \PHPUnit_Framework_TestCase {
      */
     function testBadConstruct() {
 
-        $caldavBackend = new \Sabre\CalDAV\Backend\MockSubscriptionSupport([],[]);
+        $caldavBackend = new \Sabre\CalDAV\Backend\MockSubscriptionSupport([], []);
         new Subscription($caldavBackend, []);
 
     }

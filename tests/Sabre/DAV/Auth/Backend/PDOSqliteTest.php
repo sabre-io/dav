@@ -4,7 +4,7 @@ namespace Sabre\DAV\Auth\Backend;
 
 require_once 'Sabre/DAV/Auth/Backend/AbstractPDOTest.php';
 
-class PDOSQLiteTest extends AbstractPDOTest {
+class PDOSqliteTest extends AbstractPDOTest {
 
     function tearDown() {
 
@@ -16,8 +16,8 @@ class PDOSQLiteTest extends AbstractPDOTest {
     function getPDO() {
 
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
-        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/pdobackend');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT, email VARCHAR(80), displayname VARCHAR(80))');
         $pdo->query('INSERT INTO users VALUES ("user","hash","user@example.org","User")');
 

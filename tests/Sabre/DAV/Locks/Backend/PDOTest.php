@@ -13,7 +13,7 @@ class PDOTest extends AbstractTest {
         \Sabre\TestUtil::clearTempDir();
         mkdir(SABRE_TEMPDIR . '/pdolocks');
         $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/pdolocks/db.sqlite');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $pdo->query('CREATE TABLE locks ( id integer primary key asc, owner text, timeout text, created integer, token text, scope integer, depth integer, uri text)');
         $backend = new PDO($pdo);
         return $backend;

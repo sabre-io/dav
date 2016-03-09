@@ -16,18 +16,18 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
     function testCopy() {
 
         $tree = new TreeMock();
-        $tree->copy('hi','hi2');
+        $tree->copy('hi', 'hi2');
 
         $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
         $this->assertEquals('foobar', $tree->getNodeForPath('hi/file')->get());
-        $this->assertEquals(array('test1'=>'value'), $tree->getNodeForPath('hi/file')->getProperties(array()));
+        $this->assertEquals(['test1' => 'value'], $tree->getNodeForPath('hi/file')->getProperties([]));
 
     }
 
     function testMove() {
 
         $tree = new TreeMock();
-        $tree->move('hi','hi2');
+        $tree->move('hi', 'hi2');
 
         $this->assertEquals('hi2', $tree->getNodeForPath('hi')->getName());
         $this->assertTrue($tree->getNodeForPath('hi')->isRenamed);
@@ -37,7 +37,7 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
     function testDeepMove() {
 
         $tree = new TreeMock();
-        $tree->move('hi/sub','hi2');
+        $tree->move('hi/sub', 'hi2');
 
         $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
         $this->assertTrue($tree->getNodeForPath('hi/sub')->isDeleted);
@@ -56,7 +56,7 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
 
         $tree = new TreeMock();
         $children = $tree->getChildren('');
-        $this->assertEquals(2,count($children));
+        $this->assertEquals(2, count($children));
         $this->assertEquals('hi', $children[0]->getName());
 
     }
@@ -85,12 +85,12 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
 
 class TreeMock extends Tree {
 
-    private $nodes = array();
+    private $nodes = [];
 
     function __construct() {
 
         $file = new TreeFileTester('file');
-        $file->properties = ['test1'=>'value'];
+        $file->properties = ['test1' => 'value'];
         $file->data = 'foobar';
 
         parent::__construct(
@@ -113,8 +113,8 @@ class TreeMock extends Tree {
 
 class TreeDirectoryTester extends SimpleCollection {
 
-    public $newDirectories = array();
-    public $newFiles = array();
+    public $newDirectories = [];
+    public $newFiles = [];
     public $isDeleted = false;
     public $isRenamed = false;
 
@@ -124,7 +124,7 @@ class TreeDirectoryTester extends SimpleCollection {
 
     }
 
-    function createFile($name,$data = null) {
+    function createFile($name, $data = null) {
 
         $this->newFiles[$name] = $data;
 
@@ -132,7 +132,7 @@ class TreeDirectoryTester extends SimpleCollection {
 
     function getChild($name) {
 
-        if (isset($this->newDirectories[$name])) return new TreeDirectoryTester($name);
+        if (isset($this->newDirectories[$name])) return new self($name);
         if (isset($this->newFiles[$name])) return new TreeFileTester($name, $this->newFiles[$name]);
         return parent::getChild($name);
 
@@ -225,7 +225,7 @@ class TreeMultiGetTester extends TreeDirectoryTester implements IMultiGet {
     function getMultipleChildren(array $paths) {
 
         $result = [];
-        foreach($paths as $path) {
+        foreach ($paths as $path) {
             try {
                 $child = $this->getChild($path);
                 $result[] = $child;

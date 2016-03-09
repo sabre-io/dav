@@ -2,7 +2,6 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\DAV;
 use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
@@ -24,9 +23,9 @@ class AbstractBearerTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckInvalidToken() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'HTTP_AUTHORIZATION' => 'Bearer foo',
-        ));
+        ]);
         $response = new HTTP\Response();
 
         $backend = new AbstractBearerMock();
@@ -39,9 +38,9 @@ class AbstractBearerTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckSuccess() {
 
-        $request = HTTP\Sapi::createFromServerArray(array(
+        $request = HTTP\Sapi::createFromServerArray([
             'HTTP_AUTHORIZATION' => 'Bearer valid',
-        ));
+        ]);
         $response = new HTTP\Response();
 
         $backend = new AbstractBearerMock();

@@ -1,11 +1,24 @@
 ChangeLog
 =========
 
-3.1.1 (????-??-??)
+3.2.0-alpha1 (????-??-??)
+-------------------------
+
+* Removed database migration script for sabre/dav 1.7. To update from that
+  version you now first need to update to sabre/dav 3.1.
+* Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.
+* #774: Fixes for getting free disk space on Windows.
+
+
+3.1.1 (2016-01-25)
 ------------------
 
 * #755: The brower plugin and some operations would break when scheduling and
   delegation would both be enabled.
+* #757: A bunch of unittest improvements (@jakobsack).
+* The zip release ships with [sabre/vobject 4.0.2][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.1.0 (2016-01-06)
@@ -16,7 +29,7 @@ ChangeLog
 * #730: Switched all mysql tables to `utf8mb4` character set, allowing you to
   use emoji in some tables where you couldn't before.
 * #710: Provide an Auth backend that acts as a helper for people implementing
-  OAuth2 helper token. (@fkooman).
+  OAuth2 Bearer token. (@fkooman).
 * #729: Not all calls to `Sabre\DAV\Tree::getChildren()` were properly cached.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #742: Fixes to make sure that vobject 4 is correctly supported.
@@ -71,10 +84,13 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.7 (????-??-??)
+3.0.7 (2016-01-12)
 ------------------
 
 * #752: PHP 7 support for 3.0 branch. (@DeepDiver1975)
+* The zip release ships with [sabre/vobject 3.5.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.0.1][uri] and [sabre/xml 1.3.0][xml].
 
 
 3.0.6 (2016-01-04)
@@ -305,6 +321,14 @@ ChangeLog
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.9 (2016-01-25)
+------------------
+
+* #674: PHP7 support (@DeepDiver1975).
+* The zip release ships with [sabre/vobject 3.5.0][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.8 (2016-01-04)

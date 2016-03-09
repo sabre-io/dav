@@ -304,7 +304,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                 $response->setHeader('X-Sabre-Status', 'everything-went-well');
 
                 if ($url) {
-                    $writer = $this->server->xml->getWriter($this->server->getBaseUri());
+                    $writer = $this->server->xml->getWriter();
                     $writer->openMemory();
                     $writer->startDocument();
                     $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');

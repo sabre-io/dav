@@ -44,15 +44,15 @@ ICS;
 
         $expected = [
             [
-                'to' => 'Recipient <recipient@example.org>',
+                'to'      => 'Recipient <recipient@example.org>',
                 'subject' => 'Re: Birthday party',
-                'body' => $ics,
+                'body'    => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
                     'From: system@example.org',
                     'Content-Type: text/calendar; charset=UTF-8; method=REPLY',
                     'X-Sabre-Version: ' . \Sabre\DAV\Version::VERSION,
-                ], 
+                ],
             ]
         ];
 
@@ -116,15 +116,15 @@ ICS;
 
         $expected = [
             [
-                'to' => 'Recipient <recipient@example.org>',
+                'to'      => 'Recipient <recipient@example.org>',
                 'subject' => 'Birthday party',
-                'body' => $ics,
+                'body'    => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
                     'From: system@example.org',
                     'Content-Type: text/calendar; charset=UTF-8; method=REQUEST',
                     'X-Sabre-Version: ' . \Sabre\DAV\Version::VERSION,
-                ], 
+                ],
             ]
         ];
 
@@ -158,15 +158,15 @@ ICS;
 
         $expected = [
             [
-                'to' => 'Recipient <recipient@example.org>',
+                'to'      => 'Recipient <recipient@example.org>',
                 'subject' => 'Cancelled: Birthday party',
-                'body' => $ics,
+                'body'    => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
                     'From: system@example.org',
                     'Content-Type: text/calendar; charset=UTF-8; method=CANCEL',
                     'X-Sabre-Version: ' . \Sabre\DAV\Version::VERSION,
-                ], 
+                ],
             ]
         ];
 

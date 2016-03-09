@@ -4,7 +4,6 @@ namespace Sabre\DAV\Auth;
 
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\URLUtil;
 use Sabre\DAV\Exception\NotAuthenticated;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
@@ -104,27 +103,6 @@ class Plugin extends ServerPlugin {
     function getCurrentPrincipal() {
 
         return $this->currentPrincipal;
-
-    }
-
-    /**
-     * Returns the current username.
-     *
-     * This method is deprecated and is only kept for backwards compatibility
-     * purposes. Please switch to getCurrentPrincipal().
-     *
-     * @deprecated Will be removed in a future version!
-     * @return string|null
-     */
-    function getCurrentUser() {
-
-        // We just do a 'basename' on the principal to give back a sane value
-        // here.
-        list(, $userName) = URLUtil::splitPath(
-            $this->getCurrentPrincipal()
-        );
-
-        return $userName;
 
     }
 

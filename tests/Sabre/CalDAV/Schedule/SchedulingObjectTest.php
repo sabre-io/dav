@@ -1,7 +1,7 @@
 <?php
 
 namespace Sabre\CalDAV\Schedule;
-use Sabre\DAVACL;
+
 use Sabre\CalDAV\Backend;
 
 class SchedulingObjectTest extends \PHPUnit_Framework_TestCase {
@@ -58,9 +58,9 @@ ICS;
         $children = $this->inbox->getChildren();
         $this->assertTrue($children[0] instanceof SchedulingObject);
 
-        $this->assertInternalType('string',$children[0]->getName());
-        $this->assertInternalType('string',$children[0]->get());
-        $this->assertInternalType('string',$children[0]->getETag());
+        $this->assertInternalType('string', $children[0]->getName());
+        $this->assertInternalType('string', $children[0]->get());
+        $this->assertInternalType('string', $children[0]->getETag());
         $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
 
     }
@@ -71,9 +71,9 @@ ICS;
     function testInvalidArg1() {
 
         $obj = new SchedulingObject(
-            new Backend\MockScheduling(array(),array()),
-            array(),
-            array()
+            new Backend\MockScheduling([], []),
+            [],
+            []
         );
 
     }
@@ -84,9 +84,9 @@ ICS;
     function testInvalidArg2() {
 
         $obj = new SchedulingObject(
-            new Backend\MockScheduling(array(),array()),
-            array(),
-            array('calendarid' => '1')
+            new Backend\MockScheduling([], []),
+            [],
+            ['calendarid' => '1']
         );
 
     }
@@ -116,7 +116,7 @@ ICS;
         $obj->delete();
 
         $children2 =  $this->inbox->getChildren();
-        $this->assertEquals(count($children)-1, count($children2));
+        $this->assertEquals(count($children) - 1, count($children2));
 
     }
 
@@ -172,33 +172,33 @@ ICS;
 
     function testGetACL() {
 
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-read',
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
 
         $children = $this->inbox->getChildren();
         $this->assertTrue($children[0] instanceof SchedulingObject);
@@ -212,33 +212,33 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $calendarObject = new SchedulingObject($backend, ['calendarid' => 1, 'uri' => 'foo', 'principaluri' => 'principals/user1' ]);
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1/calendar-proxy-read',
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
         $this->assertEquals($expected, $calendarObject->getACL());
 
 
@@ -253,7 +253,7 @@ ICS;
         $this->assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
-        $obj->setACL(array());
+        $obj->setACL([]);
 
     }
 
@@ -271,13 +271,13 @@ ICS;
     function testGetRefetch() {
 
         $backend = new Backend\MockScheduling();
-        $backend->createSchedulingObject('principals/user1', 'foo', 'foo'); 
+        $backend->createSchedulingObject('principals/user1', 'foo', 'foo');
 
-        $obj = new SchedulingObject($backend, array( 
-            'calendarid' => 1,
-            'uri' => 'foo',
+        $obj = new SchedulingObject($backend, [
+            'calendarid'   => 1,
+            'uri'          => 'foo',
             'principaluri' => 'principals/user1',
-        ));
+        ]);
 
         $this->assertEquals('foo', $obj->get());
 
@@ -285,14 +285,14 @@ ICS;
 
     function testGetEtag1() {
 
-        $objectInfo = array(
+        $objectInfo = [
             'calendardata' => 'foo',
-            'uri' => 'foo',
-            'etag' => 'bar',
-            'calendarid' => 1
-        );
+            'uri'          => 'foo',
+            'etag'         => 'bar',
+            'calendarid'   => 1
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
 
         $this->assertEquals('bar', $obj->getETag());
@@ -301,13 +301,13 @@ ICS;
 
     function testGetEtag2() {
 
-        $objectInfo = array(
+        $objectInfo = [
             'calendardata' => 'foo',
-            'uri' => 'foo',
-            'calendarid' => 1
-        );
+            'uri'          => 'foo',
+            'calendarid'   => 1
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
 
         $this->assertEquals('"' . md5('foo') . '"', $obj->getETag());
@@ -316,13 +316,13 @@ ICS;
 
     function testGetSupportedPrivilegesSet() {
 
-        $objectInfo = array(
+        $objectInfo = [
             'calendardata' => 'foo',
-            'uri' => 'foo',
-            'calendarid' => 1
-        );
+            'uri'          => 'foo',
+            'calendarid'   => 1
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
         $this->assertNull($obj->getSupportedPrivilegeSet());
 
@@ -330,13 +330,13 @@ ICS;
 
     function testGetSize1() {
 
-        $objectInfo = array(
+        $objectInfo = [
             'calendardata' => 'foo',
-            'uri' => 'foo',
-            'calendarid' => 1
-        );
+            'uri'          => 'foo',
+            'calendarid'   => 1
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
         $this->assertEquals(3, $obj->getSize());
 
@@ -344,13 +344,13 @@ ICS;
 
     function testGetSize2() {
 
-        $objectInfo = array(
-            'uri' => 'foo',
+        $objectInfo = [
+            'uri'        => 'foo',
             'calendarid' => 1,
-            'size' => 4,
-        );
+            'size'       => 4,
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
         $this->assertEquals(4, $obj->getSize());
 
@@ -358,12 +358,12 @@ ICS;
 
     function testGetContentType() {
 
-        $objectInfo = array(
-            'uri' => 'foo',
+        $objectInfo = [
+            'uri'        => 'foo',
             'calendarid' => 1,
-        );
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
         $this->assertEquals('text/calendar; charset=utf-8', $obj->getContentType());
 
@@ -371,26 +371,26 @@ ICS;
 
     function testGetContentType2() {
 
-        $objectInfo = array(
-            'uri' => 'foo',
+        $objectInfo = [
+            'uri'        => 'foo',
             'calendarid' => 1,
-            'component' => 'VEVENT',
-        );
+            'component'  => 'VEVENT',
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
         $this->assertEquals('text/calendar; charset=utf-8; component=VEVENT', $obj->getContentType());
 
     }
     function testGetACL2() {
 
-        $objectInfo = array(
-            'uri' => 'foo',
+        $objectInfo = [
+            'uri'        => 'foo',
             'calendarid' => 1,
-            'acl' => [],
-        );
+            'acl'        => [],
+        ];
 
-        $backend = new Backend\MockScheduling(array(), array());
+        $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
         $this->assertEquals([], $obj->getACL());
 

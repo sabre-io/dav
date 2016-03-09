@@ -13,7 +13,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
 
         $principalUri = 'principals/user1';
 
-        $this->systemStatus = new CalDAV\Xml\Notification\SystemStatus(1,'"1"');
+        $this->systemStatus = new CalDAV\Xml\Notification\SystemStatus(1, '"1"');
 
         $this->caldavBackend = new CalDAV\Backend\MockSharing([], [], [
             'principals/user1' => [
@@ -51,7 +51,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
 
         $node = $this->getInstance();
         $node->delete();
-        $this->assertEquals(array(), $this->caldavBackend->getNotificationsForPrincipal('principals/user1'));
+        $this->assertEquals([], $this->caldavBackend->getNotificationsForPrincipal('principals/user1'));
 
     }
 
@@ -65,18 +65,18 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
     function testGetACL() {
 
         $node = $this->getInstance();
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-            array(
+            ],
+            [
                 'privilege' => '{DAV:}write',
                 'principal' => 'principals/user1',
                 'protected' => true,
-            ),
-        );
+            ],
+        ];
 
         $this->assertEquals($expected, $node->getACL());
 
@@ -88,7 +88,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
     function testSetACL() {
 
         $node = $this->getInstance();
-        $node->setACL(array());
+        $node->setACL([]);
 
     }
 

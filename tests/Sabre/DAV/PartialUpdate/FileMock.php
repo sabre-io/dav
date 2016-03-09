@@ -1,6 +1,7 @@
 <?php
 
 namespace Sabre\DAV\PartialUpdate;
+
 use Sabre\DAV;
 
 class FileMock implements IPatchSupport {
@@ -49,10 +50,10 @@ class FileMock implements IPatchSupport {
             $data = stream_get_contents($data);
         }
 
-        switch($rangeType) {
+        switch ($rangeType) {
 
             case 1 :
-                $this->data.=$data;
+                $this->data .= $data;
                 break;
             case 3 :
                 // Turn the offset into an offset-offset.

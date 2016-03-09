@@ -1,10 +1,10 @@
-![sabre's logo](http://sabre.io/img/logo.png) SabreDAV
-======================================================
+![sabre's logo](http://sabre.io/img/logo.png) sabre/dav
+=======================================================
 
 Introduction
 ------------
 
-SabreDAV is the most popular WebDAV framework for PHP. Use it to create WebDAV, CalDAV and CardDAV servers.
+sabre/dav is the most popular WebDAV framework for PHP. Use it to create WebDAV, CalDAV and CardDAV servers.
 
 Full documentation can be found on the website:
 
@@ -16,6 +16,7 @@ Build status
 | branch       | status | minimum PHP version |
 | ------------ | ------ | ------------------- |
 | master       | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=master)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.5 |
+| 3.1          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=3.0)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.5 |
 | 3.0          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=3.0)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.4 |
 | 2.1          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=2.1)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.4 |
 | 2.0          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=2.0)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.4 |

@@ -19,18 +19,18 @@ class ExpandEventsDoubleEventsTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
 
-    protected $caldavCalendars = array(
-        array(
-            'id' => 1,
-            'name' => 'Calendar',
+    protected $caldavCalendars = [
+        [
+            'id'           => 1,
+            'name'         => 'Calendar',
             'principaluri' => 'principals/user1',
-            'uri' => 'calendar1',
-        )
-    );
+            'uri'          => 'calendar1',
+        ]
+    ];
 
-    protected $caldavCalendarObjects = array(
-        1 => array(
-           'event.ics' => array(
+    protected $caldavCalendarObjects = [
+        1 => [
+           'event.ics' => [
                 'calendardata' => 'BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
@@ -50,17 +50,17 @@ RECURRENCE-ID;TZID=Europe/Berlin:20120208T181500
 END:VEVENT
 END:VCALENDAR
 ',
-            ),
-        ),
-    );
+            ],
+        ],
+    ];
 
     function testExpand() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_METHOD'    => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
-            'REQUEST_URI' => '/calendars/user1/calendar1',
-            'HTTP_DEPTH' => '1',
+            'REQUEST_URI'       => '/calendars/user1/calendar1',
+            'HTTP_DEPTH'        => '1',
         ]);
 
         $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
@@ -88,12 +88,12 @@ END:VCALENDAR
             $start = strpos($response->body, 'BEGIN:VCALENDAR'),
             strpos($response->body, 'END:VCALENDAR') - $start + 13
         );
-        $body = str_replace('&#13;','',$body);
+        $body = str_replace('&#13;', '', $body);
 
         $vObject = VObject\Reader::read($body);
 
         // We only expect 3 events
-        $this->assertEquals(3, count($vObject->VEVENT),'We got 6 events instead of 3. Output: ' . $body);
+        $this->assertEquals(3, count($vObject->VEVENT), 'We got 6 events instead of 3. Output: ' . $body);
 
         // TZID should be gone
         $this->assertFalse(isset($vObject->VEVENT->DTSTART['TZID']));
@@ -101,4 +101,3 @@ END:VCALENDAR
     }
 
 }
-

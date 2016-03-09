@@ -2,16 +2,12 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL;
-
 class CalendarHomeNotificationsTest extends \PHPUnit_Framework_TestCase {
-
-    protected $backend;
 
     function testGetChildrenNoSupport() {
 
         $backend = new Backend\Mock();
-        $calendarHome = new CalendarHome($backend,['uri' => 'principals/user']);
+        $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
 
         $this->assertEquals(
             [],
@@ -26,7 +22,7 @@ class CalendarHomeNotificationsTest extends \PHPUnit_Framework_TestCase {
     function testGetChildNoSupport() {
 
         $backend = new Backend\Mock();
-        $calendarHome = new CalendarHome($backend,['uri' => 'principals/user']);
+        $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
         $calendarHome->getChild('notifications');
 
     }
@@ -34,7 +30,7 @@ class CalendarHomeNotificationsTest extends \PHPUnit_Framework_TestCase {
     function testGetChildren() {
 
         $backend = new Backend\MockSharing();
-        $calendarHome = new CalendarHome($backend,['uri' => 'principals/user']);
+        $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
 
         $result = $calendarHome->getChildren();
         $this->assertEquals('notifications', $result[0]->getName());
@@ -44,7 +40,7 @@ class CalendarHomeNotificationsTest extends \PHPUnit_Framework_TestCase {
     function testGetChild() {
 
         $backend = new Backend\MockSharing();
-        $calendarHome = new CalendarHome($backend,['uri' => 'principals/user']);
+        $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
         $result = $calendarHome->getChild('notifications');
         $this->assertEquals('notifications', $result->getName());
 

@@ -15,12 +15,24 @@ namespace Sabre\DAV;
 abstract class File extends Node implements IFile {
 
     /**
-     * Updates the data
+     * Replaces the contents of the file.
      *
-     * data is a readable stream resource.
+     * The data argument is a readable stream resource.
      *
-     * @param resource $data
-     * @return void
+     * After a succesful put operation, you may choose to return an ETag. The
+     * etag must always be surrounded by double-quotes. These quotes must
+     * appear in the actual string you're returning.
+     *
+     * Clients may use the ETag from a PUT request to later on make sure that
+     * when they update the file, the contents haven't changed in the mean
+     * time.
+     *
+     * If you don't plan to store the file byte-by-byte, and you return a
+     * different object on a subsequent GET you are strongly recommended to not
+     * return an ETag, and just return null.
+     *
+     * @param string|resource $data
+     * @return string|null
      */
     function put($data) {
 

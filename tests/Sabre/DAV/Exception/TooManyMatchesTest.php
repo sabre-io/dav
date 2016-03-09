@@ -2,9 +2,8 @@
 
 namespace Sabre\DAV\Exception;
 
-use
-    Sabre\DAV,
-    DOMDocument;
+use Sabre\DAV;
+use DOMDocument;
 
 class TooManyMatchesTest extends \PHPUnit_Framework_TestCase {
 
@@ -15,7 +14,7 @@ class TooManyMatchesTest extends \PHPUnit_Framework_TestCase {
         $root = $dom->createElement('d:root');
 
         $dom->appendChild($root);
-        $root->setAttribute('xmlns:d','DAV:');
+        $root->setAttribute('xmlns:d', 'DAV:');
 
         $locked = new TooManyMatches();
 

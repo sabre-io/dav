@@ -10,6 +10,14 @@ ChangeLog
 * #774: Fixes for getting free disk space on Windows.
 
 
+3.1.2 (????-??-??)
+------------------
+
+* #784: Sync logs for address books were not correctly cleaned up after
+  deleting them.
+* #787: Cannot use non-seekable stream-wrappers with range requests.
+
+
 3.1.1 (2016-01-25)
 ------------------
 
@@ -82,6 +90,14 @@ ChangeLog
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
   [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.8 (2016-??-??)
+------------------
+
+* #784: Sync logs for address books were not correctly cleaned up after
+  deleting them.
+* #787: Cannot use non-seekable stream-wrappers with range requests.
 
 
 3.0.7 (2016-01-12)
@@ -321,6 +337,13 @@ ChangeLog
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.10 (????-??-??)
+-------------------
+
+* #784: Sync logs for address books were not correctly cleaned up after
+  deleting them.
 
 
 2.1.9 (2016-01-25)

@@ -354,7 +354,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $output = '';
         if ($this->enablePost) {
-            $this->server->emit('onHTMLActionsPanel', [$node, &$output]);
+            $this->server->emit('onHTMLActionsPanel', [$node, &$output, $path]);
         }
 
         if ($output) {
@@ -493,9 +493,10 @@ HTML;
      *
      * @param DAV\INode $node
      * @param mixed $output
+     * @param string $path
      * @return void
      */
-    function htmlActionsPanel(DAV\INode $node, &$output) {
+    function htmlActionsPanel(DAV\INode $node, &$output, $path) {
 
         if (!$node instanceof DAV\ICollection)
             return;

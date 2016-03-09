@@ -934,7 +934,6 @@ class Plugin extends DAV\ServerPlugin {
 
     }
 
-
     /**
      * This method is used to generate HTML output for the
      * DAV\Browser\Plugin. This allows us to generate an interface users

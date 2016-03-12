@@ -7,6 +7,7 @@ ChangeLog
 * #784: Sync logs for address books were not correctly cleaned up after
   deleting them.
 * #787: Cannot use non-seekable stream-wrappers with range requests.
+* Faster XML parsing and generating due to sabre/xml update.
 
 
 3.1.1 (2016-01-25)

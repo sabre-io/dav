@@ -83,12 +83,16 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.8 (2016-??-??)
+3.0.8 (2016-03-12)
 ------------------
 
 * #784: Sync logs for address books were not correctly cleaned up after
   deleting them.
 * #787: Cannot use non-seekable stream-wrappers with range requests.
+* Faster XML parsing and generating due to sabre/xml update.
+* The zip release ships with [sabre/vobject 3.5.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
 3.0.7 (2016-01-12)
@@ -330,7 +334,7 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
-2.1.10 (????-??-??)
+2.1.10 (2016-03-10)
 -------------------
 
 * #784: Sync logs for address books were not correctly cleaned up after

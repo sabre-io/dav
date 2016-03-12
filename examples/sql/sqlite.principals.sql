@@ -1,6 +1,6 @@
 CREATE TABLE principals (
-    id INTEGER PRIMARY KEY ASC,
-    uri TEXT,
+    id INTEGER PRIMARY KEY ASC NOT NULL,
+    uri TEXT NOT NULL,
     email TEXT,
     displayname TEXT,
     UNIQUE(uri)
@@ -8,8 +8,8 @@ CREATE TABLE principals (
 
 CREATE TABLE groupmembers (
     id INTEGER PRIMARY KEY ASC,
-    principal_id INTEGER,
-    member_id INTEGER,
+    principal_id INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
     UNIQUE(principal_id, member_id)
 );
 

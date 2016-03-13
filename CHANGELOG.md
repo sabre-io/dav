@@ -8,6 +8,8 @@ ChangeLog
   deleting them.
 * #787: Cannot use non-seekable stream-wrappers with range requests.
 * Faster XML parsing and generating due to sabre/xml update.
+* #793: The Sqlite schema is now more strict and more similar to the MySQL
+  schema. This solves a problem within Baikal.
 * The zip release ships with [sabre/vobject 4.0.3][vobj],
   [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
   [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].

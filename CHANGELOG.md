@@ -8,6 +8,8 @@ ChangeLog
   deleting them.
 * #787: Cannot use non-seekable stream-wrappers with range requests.
 * Faster XML parsing and generating due to sabre/xml update.
+* #793: The Sqlite schema is now more strict and more similar to the MySQL
+  schema. This solves a problem within Baikal.
 
 
 3.1.1 (2016-01-25)

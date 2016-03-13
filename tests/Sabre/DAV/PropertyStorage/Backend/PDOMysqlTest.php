@@ -21,7 +21,7 @@ class PDOMySqlTest extends AbstractPDOTest {
             $pdo->exec($sql);
 
         }
-        $pdo->exec('INSERT INTO propertystorage (path, name, value) VALUES ("dir", "{DAV:}displayname", "Directory")');
+        $pdo->exec('INSERT INTO propertystorage (path, name, value, valuetype) VALUES ("dir", "{DAV:}displayname", "Directory", 1)');
 
         return $pdo;
 

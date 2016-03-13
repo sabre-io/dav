@@ -7,7 +7,7 @@ CREATE TABLE principals (
 );
 
 CREATE TABLE groupmembers (
-    id INTEGER PRIMARY KEY ASC,
+    id INTEGER PRIMARY KEY ASC NOT NULL,
     principal_id INTEGER NOT NULL,
     member_id INTEGER NOT NULL,
     UNIQUE(principal_id, member_id)

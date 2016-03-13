@@ -37,7 +37,7 @@ CREATE TABLE calendarchanges (
 CREATE INDEX calendarid_synctoken ON calendarchanges (calendarid, synctoken);
 
 CREATE TABLE calendarsubscriptions (
-    id integer primary key asc,
+    id integer primary key asc NOT NULL,
     uri text NOT NULL,
     principaluri text NOT NULL,
     source text NOT NULL,

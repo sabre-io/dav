@@ -15,7 +15,6 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "hirak/prestissimo": "^0.1.15",
         "sabre/vobject": "~4.0",
         "sabre/event" : ">=2.0.0, <4.0.0",
         "sabre/xml"  : "~1.0",
@@ -32,6 +31,7 @@
         "ext-libxml" : "*"
     },
     "require-dev" : {
+        "hirak/prestissimo": "^0.1.15",
         "phpunit/phpunit" : "> 4.8, <=6.0.0",
         "evert/phpdoc-md" : "~0.1.0",
         "sabre/cs"        : "~0.0.5"

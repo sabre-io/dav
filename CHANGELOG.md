@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.0.9 (????-??-??)
+------------------
+
+* Set minimum libxml version to 2.7.0 in `composer.json`.
+
+
 3.0.8 (2016-03-12)
 ------------------
 

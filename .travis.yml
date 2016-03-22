@@ -23,10 +23,10 @@ cache: vendor
 
 before_script:
   - mysql -e 'create database sabredav'
+  - phpenv config-rm xdebug.ini
   #  - composer self-update
-  - composer update --prefer-source $LOWEST_DEPS
+  - composer update --prefer-dist $LOWEST_DEPS
 
 script:
   - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS
   - ./bin/sabre-cs-fixer fix lib/ --dry-run --diff
-

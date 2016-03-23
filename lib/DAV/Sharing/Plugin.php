@@ -250,6 +250,10 @@ class Plugin extends ServerPlugin {
      */
     function htmlActionsPanel(INode $node, &$output, $path) {
 
+        if (!$node instanceof ISharedNode) {
+            return;
+        }
+
         $aclPlugin = $this->server->getPlugin('acl');
         if ($aclPlugin) {
           if (!$aclPlugin->checkPrivileges($path, '{DAV:}share', \Sabre\DAVACL\Plugin::R_PARENT, false)) {

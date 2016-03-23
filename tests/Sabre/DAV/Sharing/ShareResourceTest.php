@@ -138,7 +138,7 @@ XML;
           </d:sharee>
         </d:invite>
         <d:share-access><d:shared-owner /></d:share-access>
-        <d:share-resource-uri></d:share-resource-uri>
+        <d:share-resource-uri><d:href>urn:example:bar</d:href></d:share-resource-uri>
       </d:prop>
       <d:status>HTTP/1.1 200 OK</d:status>
     </d:propstat>

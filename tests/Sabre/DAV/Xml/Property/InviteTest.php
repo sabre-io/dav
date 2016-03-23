@@ -18,19 +18,19 @@ class InviteTest extends XmlTest {
         ];
         $sharees[0]->href = 'mailto:foo@example.org';
         $sharees[0]->properties['{DAV:}displayname'] = 'Foo Bar';
-        $sharees[0]->shareAccess = Plugin::ACCESS_SHAREDOWNER;
+        $sharees[0]->access = Plugin::ACCESS_SHAREDOWNER;
         $sharees[0]->inviteStatus = Plugin::INVITE_ACCEPTED;
 
         $sharees[1]->href = 'mailto:bar@example.org';
-        $sharees[1]->shareAccess = Plugin::ACCESS_READ;
+        $sharees[1]->access = Plugin::ACCESS_READ;
         $sharees[1]->inviteStatus = Plugin::INVITE_DECLINED;
 
         $sharees[2]->href = 'mailto:baz@example.org';
-        $sharees[2]->shareAccess = Plugin::ACCESS_READWRITE;
+        $sharees[2]->access = Plugin::ACCESS_READWRITE;
         $sharees[2]->inviteStatus = Plugin::INVITE_NORESPONSE;
 
         $sharees[3]->href = 'mailto:zim@example.org';
-        $sharees[3]->shareAccess = Plugin::ACCESS_READWRITE;
+        $sharees[3]->access = Plugin::ACCESS_READWRITE;
         $sharees[3]->inviteStatus = Plugin::INVITE_INVALID;
 
         $invite = new Invite($sharees);

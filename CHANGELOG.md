@@ -8,6 +8,9 @@ ChangeLog
   version you now first need to update to sabre/dav 3.1.
 * Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.
 * #774: Fixes for getting free disk space on Windows.
+* #801: BC break: If you were using the `Href` object before, it's behavior
+  now changed a bit, and `LocalHref` was added to replace the old, default
+  behavior of `Href`. See the migration doc for more info.
 
 
 3.1.3 (????-??-??)

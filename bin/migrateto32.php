@@ -81,19 +81,19 @@ switch ($driver) {
         die(-1);
 }
 
-echo "Creating 'calendar_instances'\n";
+echo "Creating 'calendarinstances'\n";
 $addValueType = false;
 try {
-    $result = $pdo->query('SELECT * FROM calendar_instances LIMIT 1');
+    $result = $pdo->query('SELECT * FROM calendarinstances LIMIT 1');
     $result->fetch(\PDO::FETCH_ASSOC);
-    echo "calendar_instances exists. Assuming this part of the migration has already been done.\n";
+    echo "calendarinstances exists. Assuming this part of the migration has already been done.\n";
 } catch (Exception $e) {
-    echo "calendar_instances does not yet exist. Creating table and migrating data.\n";
+    echo "calendarinstances does not yet exist. Creating table and migrating data.\n";
 
     switch ($driver) {
         case 'mysql' :
             $pdo->exec(<<<SQL
-CREATE TABLE calendar_instances (
+CREATE TABLE calendarinstances (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     calendarid INTEGER UNSIGNED NOT NULL,
     principaluri VARBINARY(100),
@@ -110,7 +110,7 @@ CREATE TABLE calendar_instances (
 SQL
         );
             $pdo->exec("
-INSERT INTO calendar_instances
+INSERT INTO calendarinstances
     (
         calendarid,
         principaluri,
@@ -153,7 +153,7 @@ CREATE TABLE calendarinstances (
 SQL
         );
             $pdo->exec("
-INSERT INTO calendar_instances
+INSERT INTO calendarinstances
     (
         calendarid,
         principaluri,
@@ -247,7 +247,7 @@ SQL
     echo "Migrating data from old to new table\n";
 
     $pdo->exec(<<<SQL
-INSERT INTO calendars (id, synctoken, components) SELECT id, synctoken, components FROM $calendarBackup
+INSERT INTO calendars (id, synctoken, components) SELECT id, synctoken, COALESCE(components,"VEVENT,VTODO,VJOURNAL") as components FROM $calendarBackup
 SQL
     );
 

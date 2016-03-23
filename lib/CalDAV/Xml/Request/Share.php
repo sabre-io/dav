@@ -96,7 +96,7 @@ class Share implements XmlDeserializable {
 
                 case '{' . Plugin::NS_CALENDARSERVER . '}remove' :
                     $sharees[] = new Sharee([
-                        'href' => $elem['value']['{DAV:}href'],
+                        'href'   => $elem['value']['{DAV:}href'],
                         'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS
                     ]);
                     break;

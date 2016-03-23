@@ -179,13 +179,20 @@ RRR;
 
         $response = $this->request($request, 200);
 
-        $this->assertEquals([[
-            'href'       => 'mailto:joe@example.org',
-            'commonName' => 'Joe Shmoe',
-            'readOnly'   => false,
-            'status'     => SharingPlugin::STATUS_NORESPONSE,
-            'summary'    => '',
-        ]], $this->caldavBackend->getShares(1));
+        $this->assertEquals(
+            [
+                new Sharee([
+                    'href'         => 'mailto:joe@example.org',
+                    'properties'   => [
+                        '{DAV:}displayname' => 'Joe Shmoe',
+                    ],
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
+                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                    'comment'      => '',
+                ]),
+            ],
+            $this->caldavBackend->getInvites(1)
+        );
 
         // Wiping out tree cache
         $this->server->tree->markDirty('');

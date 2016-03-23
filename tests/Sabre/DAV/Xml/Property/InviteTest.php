@@ -6,7 +6,7 @@ use Sabre\DAV\Sharing\Plugin;
 use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\DAV\Xml\XmlTest;
 
-class InviteTestTest extends XmlTest {
+class InviteTest extends XmlTest {
 
     function testSerialize() {
 

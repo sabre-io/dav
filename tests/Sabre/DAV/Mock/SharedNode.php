@@ -65,11 +65,11 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
      */
     function updateInvites(array $sharees) {
 
-        foreach($sharees as $sharee) {
+        foreach ($sharees as $sharee) {
 
             if ($sharee->access === \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS) {
                 // Removal
-                foreach($this->invites as $k=>$invitee) {
+                foreach ($this->invites as $k => $invitee) {
 
                     if ($invitee->href = $sharee->href) {
                         unset($this->invites[$k]);
@@ -78,7 +78,7 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
                 }
 
             } else {
-                foreach($this->invites as $k=>$invitee) {
+                foreach ($this->invites as $k => $invitee) {
 
                     if ($invitee->href = $sharee->href) {
                         // Overwriting an existing invitee

@@ -77,7 +77,7 @@ class Sharee implements Element {
      */
     function __construct(array $properties = []) {
 
-        foreach($properties as $k=>$v) {
+        foreach ($properties as $k => $v) {
 
             if (property_exists($this, $k)) {
                 $this->$k = $v;
@@ -111,11 +111,11 @@ class Sharee implements Element {
     function xmlSerialize(Writer $writer) {
 
         $writer->write([
-            '{DAV:}href' => $this->href,
-            '{DAV:}prop' => $this->properties,
+            '{DAV:}href'         => $this->href,
+            '{DAV:}prop'         => $this->properties,
             '{DAV:}share-access' => new ShareAccess($this->access),
         ]);
-        switch($this->inviteStatus) {
+        switch ($this->inviteStatus) {
             case Plugin::INVITE_NORESPONSE :
                 $writer->writeElement('{DAV:}invite-noresponse');
                 break;

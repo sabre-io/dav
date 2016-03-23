@@ -107,7 +107,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
         foreach ($sharees as $sharee) {
 
             $existingKey = null;
-            foreach($this->shares[$calendarId] as $k=>$existingSharee) {
+            foreach ($this->shares[$calendarId] as $k => $existingSharee) {
                 if ($sharee->href === $existingSharee->href) {
                     $existingKey = $k;
                 }

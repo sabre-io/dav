@@ -135,7 +135,7 @@ class Plugin extends ServerPlugin {
         }
 
         // By default all sharees are marked as not having responded yet.
-        foreach($sharees as $sharee) {
+        foreach ($sharees as $sharee) {
             $sharee->inviteStatus = self::INVITE_NORESPONSE;
         }
         $node->updateInvites($sharees);
@@ -284,7 +284,7 @@ class Plugin extends ServerPlugin {
      */
     function browserPostAction($path, $action, $postVars) {
 
-        if ($action!=='share') {
+        if ($action !== 'share') {
             return;
         }
 
@@ -305,7 +305,7 @@ class Plugin extends ServerPlugin {
             throw new BadRequest('The "access" POST must be readwrite, read or no-access');
         }
         $sharee = new Sharee([
-            'href' => $postVars['href'],
+            'href'   => $postVars['href'],
             'access' => $accessMap[$postVars['access']],
         ]);
 

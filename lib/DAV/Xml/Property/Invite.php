@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\DAV\Sharing\Plugin as SharingPlugin;
 use Sabre\DAV\Sharing\Sharee;
 use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
@@ -63,7 +61,7 @@ class Invite implements XmlSerializable {
      */
     function xmlSerialize(Writer $writer) {
 
-        foreach($this->sharees as $sharee) {
+        foreach ($this->sharees as $sharee) {
             $writer->writeElement('{DAV:}sharee', $sharee);
         }
 

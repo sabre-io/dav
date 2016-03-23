@@ -44,14 +44,14 @@ XML;
 
         $expected = [
             new Sharee([
-                'href' => 'mailto:eric@example.com',
+                'href'       => 'mailto:eric@example.com',
                 'properties' => [
                     '{DAV:}displayname' => 'Eric York',
                 ],
-                'access' => Plugin::ACCESS_READWRITE,
-                'comment' => 'Shared workspace',
+                'access'       => Plugin::ACCESS_READWRITE,
+                'comment'      => 'Shared workspace',
                 'inviteStatus' => Plugin::INVITE_NORESPONSE,
-            ]) 
+            ])
         ];
 
         $this->assertEquals(

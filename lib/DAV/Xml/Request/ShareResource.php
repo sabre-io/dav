@@ -4,9 +4,7 @@ namespace Sabre\DAV\Xml\Request;
 
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Deserializer;
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\DAV\Exception\BadRequest;
 
 /**
  * ShareResource request parser.
@@ -63,9 +61,9 @@ class ShareResource implements XmlDeserializable {
     static function xmlDeserialize(Reader $reader) {
 
         $elems = $reader->parseInnerTree([
-            '{DAV:}sharee' => 'Sabre\DAV\Xml\Element\Sharee',
+            '{DAV:}sharee'       => 'Sabre\DAV\Xml\Element\Sharee',
             '{DAV:}share-access' => 'Sabre\DAV\Xml\Property\ShareAccess',
-            '{DAV:}prop' => 'Sabre\Xml\Deserializer\keyValue',
+            '{DAV:}prop'         => 'Sabre\Xml\Deserializer\keyValue',
         ]);
 
         $sharees = [];

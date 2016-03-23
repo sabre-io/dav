@@ -124,8 +124,8 @@ class ShareAccess implements Element {
 
         $elems = $reader->parseInnerTree();
         $value = null;
-        foreach($elems as $elem) {
-            switch($elem['name']) {
+        foreach ($elems as $elem) {
+            switch ($elem['name']) {
                 case '{DAV:}not-shared' :
                     return new self(SharingPlugin::ACCESS_NOTSHARED);
                 case '{DAV:}sharedowner' :

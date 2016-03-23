@@ -7,6 +7,7 @@ use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
+use Sabre\Uri;
 
 /**
  * Href property
@@ -32,13 +33,6 @@ class Href implements Element, HtmlOutput {
     protected $hrefs;
 
     /**
-     * Automatically prefix the url with the server base directory
-     *
-     * @var bool
-     */
-    protected $autoPrefix = true;
-
-    /**
      * Constructor
      *
      * You must either pass a string for a single href, or an array of hrefs.
@@ -47,16 +41,13 @@ class Href implements Element, HtmlOutput {
      * and not relative to the servers base uri.
      *
      * @param string|string[] $href
-     * @param bool $autoPrefix
      */
-    function __construct($hrefs, $autoPrefix = true) {
+    function __construct($hrefs) {
 
         if (is_string($hrefs)) {
             $hrefs = [$hrefs];
         }
         $this->hrefs = $hrefs;
-        $this->autoPrefix = $autoPrefix;
-
 
     }
 
@@ -104,9 +95,7 @@ class Href implements Element, HtmlOutput {
     function xmlSerialize(Writer $writer) {
 
         foreach ($this->getHrefs() as $href) {
-            if ($this->autoPrefix) {
-                $href = $writer->contextUri . \Sabre\HTTP\encodePath($href);
-            }
+            $href = Uri\resolve($writer->contextUri, $href);
             $writer->writeElement('{DAV:}href', $href);
         }
 

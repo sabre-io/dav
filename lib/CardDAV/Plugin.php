@@ -5,6 +5,7 @@ namespace Sabre\CardDAV;
 use Sabre\DAV;
 use Sabre\DAV\Exception\ReportNotSupported;
 use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
@@ -156,11 +157,11 @@ class Plugin extends DAV\ServerPlugin {
             $path = $propFind->getPath();
 
             $propFind->handle('{' . self::NS_CARDDAV . '}addressbook-home-set', function() use ($path) {
-                return new Href($this->getAddressBookHomeForPrincipal($path) . '/');
+                return new LocalHref($this->getAddressBookHomeForPrincipal($path) . '/');
             });
 
             if ($this->directories) $propFind->handle('{' . self::NS_CARDDAV . '}directory-gateway', function() {
-                return new Href($this->directories);
+                return new LocalHref($this->directories);
             });
 
         }

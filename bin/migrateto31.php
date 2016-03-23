@@ -1,16 +1,16 @@
 #!/usr/bin/env php
 <?php
 
-echo "SabreDAV migrate script for version 3.1\n";
+echo "SabreDAV migrate script for version 3.2\n";
 
 if ($argc < 2) {
 
     echo <<<HELLO
 
-This script help you migrate from a 3.0 database to 3.1 and later
+This script help you migrate from a 3.1 database to 3.2 and later
 
 Changes:
-* Created a new calendar_instances table to support calendar sharing.
+* Created a new calendarinstances table to support calendar sharing.
 * Remove a lot of columns from calendars.
 
 Keep in mind that ALTER TABLE commands will be executed. If you have a large
@@ -22,7 +22,7 @@ possible situation.
 
 In the worst case, you will lose all your data. This is not an overstatement.
 
-Lastly, if you are upgrading from an older version than 3.0, make sure you run
+Lastly, if you are upgrading from an older version than 3.1, make sure you run
 the earlier migration script first. Migration scripts must be ran in order.
 
 Usage:
@@ -137,13 +137,13 @@ FROM calendars
             break;
         case 'sqlite' :
             $pdo->exec(<<<SQL
-CREATE TABLE calendar_instances (
-    id integer primary key asc,
-    calendarid integer,
-    principaluri text,
-    access integer COMMENT '1 = owner, 2 = readwrite, 3 = read',
+CREATE TABLE calendarinstances (
+    id integer primary key asc NOT NULL,
+    calendarid integer NOT NULL,
+    principaluri text NOT NULL,
+    access integer COMMENT '1 = owner, 2 = readwrite, 3 = read' NOT NULL DEFAULT '1',
     displayname text,
-    uri text,
+    uri text NOT NULL,
     description text,
     calendarorder integer,
     calendarcolor text,
@@ -206,7 +206,7 @@ try {
 
 if ($migrateCalendars) {
 
-    $calendarBackup = 'calendars_3_0_' . $backupPostfix;
+    $calendarBackup = 'calendars_3_1_' . $backupPostfix;
     echo "Backing up 'calendars' to '", $calendarBackup, "'\n";
 
     switch ($driver) {
@@ -234,9 +234,9 @@ SQL
         case 'sqlite' :
             $pdo->exec(<<<SQL
 CREATE TABLE calendars (
-    id integer primary key asc,
-    synctoken integer,
-    components text
+    id integer primary key asc NOT NULL,
+    synctoken integer DEFAULT 1 NOT NULL,
+    components text NOT NULL
 );
 SQL
         );
@@ -254,4 +254,4 @@ SQL
 }
 
 
-echo "Upgrade to 3.1 schema completed.\n";
+echo "Upgrade to 3.2 schema completed.\n";

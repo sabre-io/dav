@@ -9,6 +9,7 @@ use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
 use Sabre\DAV\INode;
 use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\VObject;
@@ -215,7 +216,7 @@ class Plugin extends ServerPlugin {
                 }
                 $outboxPath = $calendarHomePath . '/outbox/';
 
-                return new Href($outboxPath);
+                return new LocalHref($outboxPath);
 
             });
             // schedule-inbox-URL property
@@ -227,7 +228,7 @@ class Plugin extends ServerPlugin {
                 }
                 $inboxPath = $calendarHomePath . '/inbox/';
 
-                return new Href($inboxPath);
+                return new LocalHref($inboxPath);
 
             });
 
@@ -256,7 +257,7 @@ class Plugin extends ServerPlugin {
                     if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {
                         // Either there is no supported-calendar-component-set
                         // (which is fine) or we found one that supports VEVENT.
-                        return new Href($child['href']);
+                        return new LocalHref($child['href']);
                     }
                 }
 

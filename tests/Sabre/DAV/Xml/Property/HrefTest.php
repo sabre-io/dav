@@ -30,35 +30,6 @@ class HrefTest extends XmlTest {
 ', $xml);
 
     }
-    function testSerializeSpace() {
-
-        $href = new Href('path alsopath');
-        $this->assertEquals('path alsopath', $href->getHref());
-
-        $this->contextUri = '/bla/';
-
-        $xml = $this->write(['{DAV:}anything' => $href]);
-
-        $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
-<d:anything xmlns:d="DAV:"><d:href>/bla/path%20alsopath</d:href></d:anything>
-', $xml);
-
-    }
-
-    function testSerializeNoPrefix() {
-
-        $href = new Href('path', false);
-        $this->assertEquals('path', $href->getHref());
-
-        $xml = $this->write(['{DAV:}anything' => $href]);
-
-        $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
-<d:anything xmlns:d="DAV:"><d:href>path</d:href></d:anything>
-', $xml);
-
-    }
 
     function testUnserialize() {
 

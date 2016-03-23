@@ -40,7 +40,7 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getShareResourceUri() {
 
-        throw new \Exception('Not implemented');
+        return $this->calendarInfo['share-resource-uri'];
 
     }
 

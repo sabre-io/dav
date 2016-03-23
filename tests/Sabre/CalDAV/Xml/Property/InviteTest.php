@@ -4,6 +4,8 @@ namespace Sabre\CalDAV\Xml\Property;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
+use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\DAV\Sharing\Plugin as SP;
 
 class InviteTest extends DAV\Xml\XmlTest {
 
@@ -28,35 +30,36 @@ class InviteTest extends DAV\Xml\XmlTest {
     function testSerialize() {
 
         $property = new Invite([
-            [
-                'href'     => 'mailto:user1@example.org',
-                'status'   => DAV\Sharing\Plugin::INVITE_ACCEPTED,
-                'readOnly' => false,
-            ],
-            [
-                'href'       => 'mailto:user2@example.org',
-                'commonName' => 'John Doe',
-                'status'     => DAV\Sharing\Plugin::INVITE_DECLINED,
-                'readOnly'   => true,
-            ],
-            [
-                'href'       => 'mailto:user3@example.org',
-                'commonName' => 'Joe Shmoe',
-                'status'     => DAV\Sharing\Plugin::INVITE_NORESPONSE,
-                'readOnly'   => true,
-                'summary'    => 'Something, something',
-            ],
-            [
-                'href'       => 'mailto:user4@example.org',
-                'commonName' => 'Hoe Boe',
-                'status'     => DAV\Sharing\Plugin::INVITE_INVALID,
-                'readOnly'   => true,
-            ],
-        ], [
-            'href'       => 'mailto:thedoctor@example.org',
-            'commonName' => 'The Doctor',
-            'firstName'  => 'The',
-            'lastName'   => 'Doctor',
+            new Sharee([
+                'href'         => 'mailto:thedoctor@example.org',
+                'properties'   => ['{DAV:}displayname' => 'The Doctor'],
+                'inviteStatus' => SP::INVITE_ACCEPTED,
+                'access'       => SP::ACCESS_SHAREDOWNER,
+            ]),
+            new Sharee([
+                'href'         => 'mailto:user1@example.org',
+                'inviteStatus' => SP::INVITE_ACCEPTED,
+                'access'       => SP::ACCESS_READWRITE,
+            ]),
+            new Sharee([
+                'href'         => 'mailto:user2@example.org',
+                'properties'   => ['{DAV:}displayname' => 'John Doe'],
+                'inviteStatus' => SP::INVITE_DECLINED,
+                'access'       => SP::ACCESS_READ,
+            ]),
+            new Sharee([
+                'href'         => 'mailto:user3@example.org',
+                'properties'   => ['{DAV:}displayname' => 'Joe Shmoe'],
+                'inviteStatus' => SP::INVITE_NORESPONSE,
+                'access'       => SP::ACCESS_READ,
+                'comment'      => 'Something, something',
+            ]),
+            new Sharee([
+                'href'         => 'mailto:user4@example.org',
+                'properties'   => ['{DAV:}displayname' => 'Hoe Boe'],
+                'inviteStatus' => SP::INVITE_INVALID,
+                'access'       => SP::ACCESS_READ,
+            ]),
         ]);
 
         $xml = $this->write(['{DAV:}root' => $property]);
@@ -67,118 +70,41 @@ class InviteTest extends DAV\Xml\XmlTest {
   <cs:organizer>
     <d:href>mailto:thedoctor@example.org</d:href>
     <cs:common-name>The Doctor</cs:common-name>
-    <cs:first-name>The</cs:first-name>
-    <cs:last-name>Doctor</cs:last-name>
   </cs:organizer>
   <cs:user>
-    <d:href>mailto:user1@example.org</d:href>
     <cs:invite-accepted/>
     <cs:access>
       <cs:read-write/>
     </cs:access>
+    <d:href>mailto:user1@example.org</d:href>
   </cs:user>
   <cs:user>
-    <d:href>mailto:user2@example.org</d:href>
-    <cs:common-name>John Doe</cs:common-name>
     <cs:invite-declined/>
     <cs:access>
       <cs:read/>
     </cs:access>
+    <d:href>mailto:user2@example.org</d:href>
+    <cs:common-name>John Doe</cs:common-name>
   </cs:user>
   <cs:user>
-    <d:href>mailto:user3@example.org</d:href>
-    <cs:common-name>Joe Shmoe</cs:common-name>
     <cs:invite-noresponse/>
     <cs:access>
       <cs:read/>
     </cs:access>
+    <d:href>mailto:user3@example.org</d:href>
+    <cs:common-name>Joe Shmoe</cs:common-name>
     <cs:summary>Something, something</cs:summary>
   </cs:user>
   <cs:user>
-    <d:href>mailto:user4@example.org</d:href>
-    <cs:common-name>Hoe Boe</cs:common-name>
     <cs:invite-invalid/>
     <cs:access>
       <cs:read/>
     </cs:access>
+    <d:href>mailto:user4@example.org</d:href>
+    <cs:common-name>Hoe Boe</cs:common-name>
   </cs:user>
 </d:root>
 ', $xml);
-
-    }
-
-    /**
-     * @depends testSerialize
-     */
-    function testUnserialize() {
-
-        $input = [
-            [
-                'href'       => 'mailto:user1@example.org',
-                'status'     => DAV\Sharing\Plugin::INVITE_ACCEPTED,
-                'readOnly'   => false,
-                'commonName' => '',
-                'summary'    => '',
-            ],
-            [
-                'href'       => 'mailto:user2@example.org',
-                'commonName' => 'John Doe',
-                'status'     => DAV\Sharing\Plugin::INVITE_DECLINED,
-                'readOnly'   => true,
-                'summary'    => '',
-            ],
-            [
-                'href'       => 'mailto:user3@example.org',
-                'commonName' => 'Joe Shmoe',
-                'status'     => DAV\Sharing\Plugin::INVITE_NORESPONSE,
-                'readOnly'   => true,
-                'summary'    => 'Something, something',
-            ],
-            [
-                'href'       => 'mailto:user4@example.org',
-                'commonName' => 'Hoe Boe',
-                'status'     => DAV\Sharing\Plugin::INVITE_INVALID,
-                'readOnly'   => true,
-                'summary'    => '',
-            ],
-        ];
-
-        // Creating the xml
-        $inputProperty = new Invite($input);
-        $xml = $this->write(['{DAV:}root' => $inputProperty]);
-        // Parsing it again
-
-        $doc2 = $this->parse(
-            $xml,
-            ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\Invite']
-        );
-
-        $outputProperty = $doc2['value'];
-
-        $this->assertEquals($input, $outputProperty->getValue());
-
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    function testUnserializeNoStatus() {
-
-$xml = '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '" xmlns:cs="' . CalDAV\Plugin::NS_CALENDARSERVER . '">
-  <cs:user>
-    <d:href>mailto:user1@example.org</d:href>
-    <!-- <cs:invite-accepted/> -->
-    <cs:access>
-      <cs:read-write/>
-    </cs:access>
-  </cs:user>
-</d:root>';
-
-        $this->parse(
-            $xml,
-            ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\Invite']
-        );
 
     }
 

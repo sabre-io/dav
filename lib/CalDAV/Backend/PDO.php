@@ -6,6 +6,7 @@ use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\VObject;
+use Sabre\DAV\Xml\Element\Sharee;
 
 /**
  * PDO CalDAV backend
@@ -190,6 +191,7 @@ SQL
                 '{http://sabredav.org/ns}sync-token'                                 => $row['synctoken'] ? $row['synctoken'] : '0',
                 '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet($components),
                 '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp'         => new CalDAV\Xml\Property\ScheduleCalendarTransp($row['transparent'] ? 'transparent' : 'opaque'),
+                'share-resource-uri'                                                 => '/ns/share/' . $row['calendarid'],
             ];
 
             // 1 = owner, 2 = readonly, 3 = readwrite
@@ -1331,7 +1333,7 @@ SQL;
     }
 
     /**
-     * Returns the list of people whom this calendar is shared with.
+     * Returns the list of people whom a calendar is shared with.
      *
      * Every item in the returned list must be a Sharee object with at
      * least the following properties set:
@@ -1347,7 +1349,35 @@ SQL;
      */
     function getInvites($calendarId) {
 
-        throw new \Exception('Not implemented');
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        list($calendarId, $instanceId) = $calendarId;
+
+        $query = <<<SQL
+SELECT
+    principaluri,
+    access
+FROM {$this->calendarInstancesTableName}
+WHERE
+    calendarid = ?
+SQL;
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$calendarId]);
+
+        $result = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+            $result[] = new Sharee([
+                'href'   => \Sabre\HTTP\encodePath($row['principaluri']),
+                'access' => $row['access'],
+                /// Everyone is always immediately accepted, for now.
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            ]);
+
+        }
+        return $result;
 
     }
 

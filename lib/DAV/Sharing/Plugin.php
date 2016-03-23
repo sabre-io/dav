@@ -16,7 +16,7 @@ use Sabre\HTTP\ResponseInterface;
 /**
  * This plugin implements HTTP requests and properties related to:
  *
- * draft-pot-webdav-resource-sharing-02
+ * draft-pot-webdav-resource-sharing
  *
  * This specification allows people to share webdav resources with others.
  *

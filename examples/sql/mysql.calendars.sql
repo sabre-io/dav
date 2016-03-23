@@ -23,7 +23,7 @@ CREATE TABLE calendarinstances (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     calendarid INTEGER UNSIGNED NOT NULL,
     principaluri VARBINARY(100),
-    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = readwrite, 3 = read',
+    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = read, 3 = readwrite',
     displayname VARCHAR(100),
     uri VARBINARY(200),
     description TEXT,

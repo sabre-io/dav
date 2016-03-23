@@ -22,7 +22,7 @@ CREATE TABLE calendarinstances (
     id integer primary key asc NOT NULL,
     calendarid integer NOT NULL,
     principaluri text NOT NULL,
-    access integer COMMENT '1 = owner, 2 = readwrite, 3 = read' NOT NULL DEFAULT '1',
+    access integer COMMENT '1 = owner, 2 = read, 3 = readwrite' NOT NULL DEFAULT '1',
     displayname text,
     uri text NOT NULL,
     description text,

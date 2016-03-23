@@ -134,6 +134,10 @@ class Plugin extends ServerPlugin {
             $acl->checkPrivileges($path, '{DAV:}share');
         }
 
+        // By default all sharees are marked as not having responded yet.
+        foreach($sharees as $sharee) {
+            $sharee->inviteStatus = self::INVITE_NORESPONSE;
+        }
         $node->updateInvites($sharees);
 
     }

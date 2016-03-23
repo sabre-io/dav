@@ -18,6 +18,15 @@ class PluginTest extends \Sabre\DAVServerTest {
 
     }
 
+    function testFeatures() {
+
+        $this->assertEquals(
+            ['resource-sharing'],
+            $this->sharingPlugin->getFeatures()
+        );
+
+    }
+
     function testProperties() {
 
         $result = $this->server->getPropertiesForPath(

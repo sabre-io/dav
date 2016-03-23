@@ -9,6 +9,7 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
 
     protected $name;
     protected $access;
+    protected $invites = [];
 
     function __construct($name, $access) {
 
@@ -50,7 +51,7 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
      */
     function getShareResourceUri() {
 
-        throw new \Exception('Not implemented');
+        return 'urn:example:bar';
 
     }
 
@@ -64,7 +65,33 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
      */
     function updateInvites(array $sharees) {
 
-        throw new \Exception('Not implemented');
+        foreach($sharees as $sharee) {
+
+            if ($sharee->access === \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS) {
+                // Removal
+                foreach($this->invites as $k=>$invitee) {
+
+                    if ($invitee->href = $sharee->href) {
+                        unset($this->invites[$k]);
+                    }
+
+                }
+
+            } else {
+                foreach($this->invites as $k=>$invitee) {
+
+                    if ($invitee->href = $sharee->href) {
+                        // Overwriting an existing invitee
+                        $this->invites[$k] = $sharee;
+                        continue 2;
+                    }
+
+                }
+                // Adding a new invitee
+                $this->invites[] = $sharee;
+            }
+
+        }
 
     }
 
@@ -82,11 +109,11 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
      *
      * * $properties
      *
-     * @return array
+     * @return \Sabre\DAV\Xml\Element\Sharee[]
      */
     function getInvites() {
 
-        throw new \Exception('Not implemented');
+        return $this->invites;
 
     }
-} 
+}

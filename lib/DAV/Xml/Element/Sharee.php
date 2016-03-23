@@ -113,7 +113,7 @@ class Sharee implements Element {
         $writer->write([
             '{DAV:}href' => $this->href,
             '{DAV:}prop' => $this->properties,
-            '{DAV:}share-access' => new ShareAccess($this->shareAccess),
+            '{DAV:}share-access' => new ShareAccess($this->access),
         ]);
         switch($this->inviteStatus) {
             case Plugin::INVITE_NORESPONSE :

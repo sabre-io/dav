@@ -22,10 +22,10 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
                 'uri'          => 'cal1',
             ],
             [
-                'principaluri'                                  => 'principals/user1',
-                'id'                                            => 2,
-                'uri'                                           => 'cal2',
-                'share-access'                                  => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
+                'principaluri' => 'principals/user1',
+                'id'           => 2,
+                'uri'          => 'cal2',
+                'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
             ],
             [
                 'principaluri' => 'principals/user1',

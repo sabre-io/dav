@@ -263,7 +263,7 @@ class SharingPlugin extends DAV\ServerPlugin {
             case '{' . Plugin::NS_CALENDARSERVER . '}share' :
 
                 $sharingPlugin = $this->server->getPlugin('sharing');
-                $sharingPlugin->shareResource($path, $message->set, $message->remove);
+                $sharingPlugin->shareResource($path, $message->sharees);
 
                 $response->setStatus(200);
                 // Adding this because sending a response body may cause issues,

@@ -6,7 +6,6 @@ use DateTimeZone;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\MkCol;
-use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\DAVACL;
 use Sabre\VObject;

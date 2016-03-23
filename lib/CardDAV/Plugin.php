@@ -4,7 +4,6 @@ namespace Sabre\CardDAV;
 
 use Sabre\DAV;
 use Sabre\DAV\Exception\ReportNotSupported;
-use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\DAVACL;
 use Sabre\HTTP;

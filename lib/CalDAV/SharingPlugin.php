@@ -4,6 +4,7 @@ namespace Sabre\CalDAV;
 
 use Sabre\DAV;
 use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
@@ -308,7 +309,7 @@ class SharingPlugin extends DAV\ServerPlugin {
                     $writer->openMemory();
                     $writer->startDocument();
                     $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');
-                    $writer->write(new Href($url));
+                    $writer->write(new LocalHref($url));
                     $writer->endElement();
                     $response->setHeader('Content-Type', 'application/xml');
                     $response->setBody($writer->outputMemory());

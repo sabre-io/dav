@@ -154,7 +154,7 @@ class Subscription extends Collection implements ISubscription, IACL {
 
             switch ($prop) {
                 case '{http://calendarserver.org/ns/}source' :
-                    $r[$prop] = new Href($this->subscriptionInfo['source'], false);
+                    $r[$prop] = new Href($this->subscriptionInfo['source']);
                     break;
                 default :
                     if (array_key_exists($prop, $this->subscriptionInfo)) {

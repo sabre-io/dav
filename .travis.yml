@@ -23,8 +23,8 @@ sudo: false
 cache: vendor
 
 before_script:
-  - mysql -e 'create database sabredav'
-  - phpenv config-rm xdebug.ini; true
+  - mysql -e 'create database sabredav
+  - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   #  - composer self-update
   - composer update --prefer-dist $LOWEST_DEPS
 

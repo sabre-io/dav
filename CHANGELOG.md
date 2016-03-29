@@ -256,6 +256,13 @@ ChangeLog
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
 
 
+2.1.11 (2016-??-??)
+-------------------
+
+* #805: It wasn't possible to create calendars that hold events, journals and
+  todos using MySQL, because the `components` column was 1 byte too small.
+
+
 2.1.10 (2016-03-10)
 -------------------
 

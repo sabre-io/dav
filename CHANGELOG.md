@@ -6,6 +6,8 @@ ChangeLog
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
+* #805: It wasn't possible to create calendars that hold events, journals and
+  todos using MySQL, because the `components` column was 1 byte too small.
 
 
 3.0.8 (2016-03-12)

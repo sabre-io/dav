@@ -5,6 +5,8 @@ ChangeLog
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
+* #805: It wasn't possible to create calendars that hold events, journals and
+  todos using MySQL, because the `components` column was 1 byte too small.
 
 
 3.1.2 (2016-03-12)

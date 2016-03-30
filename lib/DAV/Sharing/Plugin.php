@@ -134,9 +134,12 @@ class Plugin extends ServerPlugin {
             $acl->checkPrivileges($path, '{DAV:}share');
         }
 
-        // By default all sharees are marked as not having responded yet.
         foreach ($sharees as $sharee) {
-            $sharee->inviteStatus = self::INVITE_NORESPONSE;
+            // We're going to attempt to get a local principal uri for a share
+            // href by emitting the getPrincipalByUri event.
+            $principal = null;
+            $this->server->emit('getPrincipalByUri', [$sharee->href, &$principal]);
+            $sharee->principal = $principal;
         }
         $node->updateInvites($sharees);
 

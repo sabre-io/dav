@@ -683,6 +683,14 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('report',              [$this, 'report']);
         $server->on('method:ACL',          [$this, 'httpAcl']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
+        $server->on('getPrincipalByUri',  function($principal, &$uri) {
+
+            $uri = $this->getPrincipalByUri($principal);
+
+            // Break event chain
+            if ($uri) return false;
+
+        });
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',

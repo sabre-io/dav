@@ -97,7 +97,7 @@ CREATE TABLE calendarinstances (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     calendarid INTEGER UNSIGNED NOT NULL,
     principaluri VARBINARY(100),
-    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = readwrite, 3 = read',
+    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = read, 3 = readwrite',
     displayname VARCHAR(100),
     uri VARBINARY(200),
     description TEXT,
@@ -105,8 +105,13 @@ CREATE TABLE calendarinstances (
     calendarcolor VARBINARY(10),
     timezone TEXT,
     transparent TINYINT(1) NOT NULL DEFAULT '0',
-    UNIQUE(principaluri, uri)
-);
+    share_href VARBINARY(100),
+    share_displayname VARCHAR(100),
+    share_invitestatus TINYINT(1) NOT NULL DEFAULT '2' COMMENT '1 = noresponse, 2 = accepted, 3 = declined, 4 = invalid',
+    UNIQUE(principaluri, uri),
+    UNIQUE(calendarid, principaluri),
+    UNIQUE(calendarid, share_href)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 SQL
         );
             $pdo->exec("
@@ -139,16 +144,22 @@ FROM calendars
             $pdo->exec(<<<SQL
 CREATE TABLE calendarinstances (
     id integer primary key asc NOT NULL,
-    calendarid integer NOT NULL,
-    principaluri text NOT NULL,
-    access integer COMMENT '1 = owner, 2 = readwrite, 3 = read' NOT NULL DEFAULT '1',
+    calendarid integer,
+    principaluri text,
+    access integer COMMENT '1 = owner, 2 = read, 3 = readwrite' NOT NULL DEFAULT '1',
     displayname text,
     uri text NOT NULL,
     description text,
     calendarorder integer,
     calendarcolor text,
     timezone text,
-    transparent bool
+    transparent bool,
+    share_href text,
+    share_displayname text,
+    share_invitestatus integer DEFAULT '2',
+    UNIQUE (principaluri, uri),
+    UNIQUE (calendarid, principaluri),
+    UNIQUE (calendarid, share_href)
 );
 SQL
         );

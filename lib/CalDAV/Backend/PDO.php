@@ -356,7 +356,7 @@ SQL
         $stmt->execute([$instanceId]);
         $access = $stmt->fetchColumn();
 
-        if ($access === 1) {
+        if ($access === \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER) {
 
             /**
              * If the user is the owner of the calendar, we delete all data and all
@@ -1383,6 +1383,10 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
                 // If the server could not determine the principal automatically,
                 // we will mark the invite status as invalid.
                 $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_INVALID;
+            } else {
+                // Because sabre/dav does not yet have an invitation system,
+                // every invite is automatically accepted for now.
+                $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED;
             }
 
             foreach ($currentInvites as $oldSharee) {
@@ -1396,7 +1400,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
                     $updateStmt->execute([
                         $sharee->access,
                         isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
-                        $sharee->inviteStatus,
+                        $sharee->inviteStatus ? : $oldSharee->inviteStatus,
                         $calendarId,
                         $sharee->href
                     ]);
@@ -1412,7 +1416,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
                 \Sabre\DAV\UUIDUtil::getUUID(),
                 $sharee->href,
                 isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
-                $sharee->inviteStatus,
+                $sharee->inviteStatus ? : \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
                 $instanceId
             ]);
 

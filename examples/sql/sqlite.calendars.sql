@@ -21,7 +21,7 @@ CREATE TABLE calendars (
 CREATE TABLE calendarinstances (
     id integer primary key asc NOT NULL,
     calendarid integer NOT NULL,
-    principaluri text NOT NULL,
+    principaluri text NULL,
     access integer COMMENT '1 = owner, 2 = read, 3 = readwrite' NOT NULL DEFAULT '1',
     displayname text,
     uri text NOT NULL,

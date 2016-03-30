@@ -28,6 +28,15 @@ class Sharee implements Element {
     public $href;
 
     /**
+     * A local principal path. The server will do its best to locate the
+     * principal uri based on the given uri. If we could find a local matching
+     * principal uri, this property will contain the value.
+     *
+     * @var string|null
+     */
+    public $principal;
+
+    /**
      * A list of WebDAV properties that describe the sharee. This might for
      * example contain a {DAV:}displayname with the real name of the user.
      *

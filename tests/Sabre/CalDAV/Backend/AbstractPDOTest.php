@@ -5,6 +5,7 @@ namespace Sabre\CalDAV\Backend;
 use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\PropPatch;
+use Sabre\DAV\Xml\Element\Sharee;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
@@ -872,6 +873,165 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
 
         $this->assertNull($result);
+
+    }
+
+    function testGetInvites() {
+
+        $backend = new PDO($this->pdo);
+
+        // creating a new calendar
+        $backend->createCalendar('principals/user1', 'somerandomid', []);
+        $calendar = $backend->getCalendarsForUser('principals/user1')[0];
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            new Sharee([
+                'href'         => 'principals/user1',
+                'principal'    => 'principals/user1',
+                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            ])
+        ];
+
+        $this->assertEquals($expected, $result);
+
+    }
+
+    /**
+     * @depends testCreateCalendarAndFetch
+     */
+    function testUpdateInvites() {
+
+        $backend = new PDO($this->pdo);
+
+        // creating a new calendar
+        $backend->createCalendar('principals/user1', 'somerandomid', []);
+        $calendar = $backend->getCalendarsForUser('principals/user1')[0];
+
+        $ownerSharee = new Sharee([
+            'href'         => 'principals/user1',
+            'principal'    => 'principals/user1',
+            'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+            'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+        ]);
+
+        // Add a new invite
+        $backend->updateInvites(
+            $calendar['id'],
+            [
+                new Sharee([
+                    'href'         => 'mailto:user@example.org',
+                    'principal'    => 'principals/user2',
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'properties'   => ['{DAV:}displayname' => 'User 2'],
+                ])
+            ]
+        );
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            $ownerSharee,
+            new Sharee([
+                'href'         => 'mailto:user@example.org',
+                'principal'    => 'principals/user2',
+                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'properties'   => [
+                    '{DAV:}displayname' => 'User 2',
+                ],
+            ])
+        ];
+        $this->assertEquals($expected, $result);
+
+        // Checking calendar_instances too
+        $expectedCalendar = [
+            'id' => [1,2],
+            'principaluri' => 'principals/user2',
+            '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/1',
+            '{http://sabredav.org/ns}sync-token'     => '1',
+            'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+            'read-only' => true,
+            'share-resource-uri' => '/ns/share/1',
+        ];
+        $calendars = $backend->getCalendarsForUser('principals/user2');
+
+        foreach($expectedCalendar as $k=>$v) {
+            $this->assertEquals(
+                $v,
+                $calendars[0][$k],
+                "Key " . $k . " in calendars array did not have the expected value."
+            );
+        }
+
+
+        // Updating an invite
+        $backend->updateInvites(
+            $calendar['id'],
+            [
+                new Sharee([
+                    'href'         => 'mailto:user@example.org',
+                    'principal'    => 'principals/user2',
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
+                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                ])
+            ]
+        );
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            $ownerSharee,
+            new Sharee([
+                'href'         => 'mailto:user@example.org',
+                'principal'    => 'principals/user2',
+                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'properties'   => [
+                    '{DAV:}displayname' => 'User 2',
+                ],
+            ])
+        ];
+        $this->assertEquals($expected, $result);
+
+        // Removing an invite
+        $backend->updateInvites(
+            $calendar['id'],
+            [
+                new Sharee([
+                    'href'         => 'mailto:user@example.org',
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
+                ])
+            ]
+        );
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            $ownerSharee
+        ];
+        $this->assertEquals($expected, $result);
+
+        // Preventing the owner share from being removed
+        $backend->updateInvites(
+            $calendar['id'],
+            [
+                new Sharee([
+                    'href'         => 'principals/user2',
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
+                ])
+            ]
+        );
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            new Sharee([
+                'href'         => 'principals/user1',
+                'principal'    => 'principals/user1',
+                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            ]),
+        ];
+        $this->assertEquals($expected, $result);
 
     }
 

@@ -167,7 +167,7 @@ class PDO extends AbstractBackend
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
         $stmt = $this->pdo->prepare(<<<SQL
-SELECT calendars.id as id, $fields FROM {$this->calendarInstancesTableName}
+SELECT {$this->calendarInstancesTableName}.id as id, $fields FROM {$this->calendarInstancesTableName}
     LEFT JOIN {$this->calendarTableName} ON
         {$this->calendarInstancesTableName}.calendarid = {$this->calendarTableName}.id
 WHERE principaluri = ? ORDER BY calendarorder ASC
@@ -184,7 +184,7 @@ SQL
             }
 
             $calendar = [
-                'id'                                                                 => [$row['id'], $row['calendarid']],
+                'id'                                                                 => [(int)$row['calendarid'], (int)$row['id']],
                 'uri'                                                                => $row['uri'],
                 'principaluri'                                                       => $row['principaluri'],
                 '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag'                  => 'http://sabre.io/ns/sync/' . ($row['synctoken'] ? $row['synctoken'] : '0'),
@@ -197,14 +197,14 @@ SQL
             // 1 = owner, 2 = readonly, 3 = readwrite
             if ($row['access'] > 1) {
                 // We need to find more information about the original owner.
-                $stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
-                $stmt2->execute([$row['id']]);
+                //$stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
+                //$stmt2->execute([$row['id']]);
 
-                $calendar['share-access'] = $row['access'];
+                $calendar['share-access'] = (int)$row['access'];
 
                 // read-only is for backwards compatbility. Might go away in
                 // the future.
-                $calendar['read-only'] = $row['access'] === \Sabre\DAV\Sharing\Plugin::ACCESS_READONLY;
+                $calendar['read-only'] = (int)$row['access'] === \Sabre\DAV\Sharing\Plugin::ACCESS_READ;
             }
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -1328,7 +1328,95 @@ SQL;
      */
     function updateInvites($calendarId, array $sharees) {
 
-        throw new \Exception('Not implemented');
+        if (!is_array($calendarId)) {
+            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+        }
+        $currentInvites = $this->getInvites($calendarId);
+        list($calendarId, $instanceId) = $calendarId;
+
+        $removeStmt = $this->pdo->prepare("DELETE FROM " . $this->calendarInstancesTableName . " WHERE calendarid = ? AND share_href = ? AND access IN (2,3)");
+        $updateStmt = $this->pdo->prepare("UPDATE " . $this->calendarInstancesTableName . " SET access = ?, share_displayname = ?, share_invitestatus = ? WHERE calendarid = ? AND share_href = ?");
+
+        $insertStmt = $this->pdo->prepare('
+INSERT INTO ' . $this->calendarInstancesTableName . '
+    (
+        calendarid,
+        principaluri,
+        access,
+        displayname,
+        uri,
+        description,
+        calendarorder,
+        calendarcolor,
+        timezone,
+        transparent,
+        share_href,
+        share_displayname,
+        share_invitestatus
+    )
+    SELECT
+        ?,
+        ?,
+        ?,
+        displayname,
+        ?,
+        description,
+        calendarorder,
+        calendarcolor,
+        timezone,
+        1,
+        ?,
+        ?,
+        ?
+    FROM ' . $this->calendarInstancesTableName . ' WHERE id = ?');
+
+        foreach($sharees as $sharee) {
+
+            if ($sharee->access === \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS) {
+                // if access was set no NOACCESS, it means access for an
+                // existing sharee was removed.
+                $removeStmt->execute([$calendarId, $sharee->href]);
+                continue;
+            }
+
+            if (is_null($sharee->principal)) {
+                // If the server could not determine the principal automatically,
+                // we will mark the invite status as invalid.
+                $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_INVALID;
+            }
+
+            foreach($currentInvites as $oldSharee) {
+
+                if ($oldSharee->href === $sharee->href) {
+                    // This is an update
+                    $sharee->properties = array_merge(
+                        $oldSharee->properties,
+                        $sharee->properties
+                    );
+                    $updateStmt->execute([
+                        $sharee->access,
+                        isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
+                        $sharee->inviteStatus,
+                        $calendarId,
+                        $sharee->href
+                    ]);
+                    continue 2;
+                }
+
+            }
+            // If we got here, it means it was a new sharee
+            $insertStmt->execute([
+                $calendarId,
+                $sharee->principal,
+                $sharee->access,
+                \Sabre\DAV\UUIDUtil::getUUID(),
+                $sharee->href,
+                isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
+                $sharee->inviteStatus,
+                $instanceId
+            ]);
+
+        }
 
     }
 
@@ -1350,14 +1438,17 @@ SQL;
     function getInvites($calendarId) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \LogicException('The value passed to getInvites() is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
         $query = <<<SQL
 SELECT
     principaluri,
-    access
+    access,
+    share_href,
+    share_displayname,
+    share_invitestatus
 FROM {$this->calendarInstancesTableName}
 WHERE
     calendarid = ?
@@ -1370,10 +1461,15 @@ SQL;
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             $result[] = new Sharee([
-                'href'   => \Sabre\HTTP\encodePath($row['principaluri']),
-                'access' => $row['access'],
+                'href'   => isset( $row['share_href'] ) ? $row['share_href'] : \Sabre\HTTP\encodePath($row['principaluri']),
+                'access' => (int)$row['access'],
                 /// Everyone is always immediately accepted, for now.
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'inviteStatus' => (int)$row['share_invitestatus'],
+                'properties' =>
+                    !empty($row['share_displayname'])
+                    ?  [ '{DAV:}displayname' => $row['share_displayname'] ]
+                    : [],
+                'principal' => $row['principaluri'],
             ]);
 
         }

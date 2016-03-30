@@ -31,7 +31,12 @@ CREATE TABLE calendarinstances (
     calendarcolor VARBINARY(10),
     timezone TEXT,
     transparent TINYINT(1) NOT NULL DEFAULT '0',
-    UNIQUE(principaluri, uri)
+    share_href VARBINARY(100),
+    share_displayname VARCHAR(100),
+    share_invitestatus TINYINT(1) NOT NULL DEFAULT '2' COMMENT '1 = noresponse, 2 = accepted, 3 = declined, 4 = invalid',
+    UNIQUE(principaluri, uri),
+    UNIQUE(calendarid, principaluri),
+    UNIQUE(calendarid, share_href)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE calendarchanges (

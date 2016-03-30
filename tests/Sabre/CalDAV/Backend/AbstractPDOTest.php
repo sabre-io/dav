@@ -947,17 +947,17 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         // Checking calendar_instances too
         $expectedCalendar = [
-            'id' => [1,2],
-            'principaluri' => 'principals/user2',
+            'id'                                     => [1,2],
+            'principaluri'                           => 'principals/user2',
             '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/1',
             '{http://sabredav.org/ns}sync-token'     => '1',
-            'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-            'read-only' => true,
-            'share-resource-uri' => '/ns/share/1',
+            'share-access'                           => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+            'read-only'                              => true,
+            'share-resource-uri'                     => '/ns/share/1',
         ];
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
-        foreach($expectedCalendar as $k=>$v) {
+        foreach ($expectedCalendar as $k => $v) {
             $this->assertEquals(
                 $v,
                 $calendars[0][$k],

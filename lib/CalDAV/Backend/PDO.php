@@ -1370,7 +1370,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
         ?
     FROM ' . $this->calendarInstancesTableName . ' WHERE id = ?');
 
-        foreach($sharees as $sharee) {
+        foreach ($sharees as $sharee) {
 
             if ($sharee->access === \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS) {
                 // if access was set no NOACCESS, it means access for an
@@ -1385,7 +1385,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
                 $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_INVALID;
             }
 
-            foreach($currentInvites as $oldSharee) {
+            foreach ($currentInvites as $oldSharee) {
 
                 if ($oldSharee->href === $sharee->href) {
                     // This is an update
@@ -1461,11 +1461,11 @@ SQL;
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
             $result[] = new Sharee([
-                'href'   => isset( $row['share_href'] ) ? $row['share_href'] : \Sabre\HTTP\encodePath($row['principaluri']),
+                'href'   => isset($row['share_href']) ? $row['share_href'] : \Sabre\HTTP\encodePath($row['principaluri']),
                 'access' => (int)$row['access'],
                 /// Everyone is always immediately accepted, for now.
                 'inviteStatus' => (int)$row['share_invitestatus'],
-                'properties' =>
+                'properties'   =>
                     !empty($row['share_displayname'])
                     ?  [ '{DAV:}displayname' => $row['share_displayname'] ]
                     : [],

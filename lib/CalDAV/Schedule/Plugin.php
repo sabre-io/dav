@@ -5,6 +5,7 @@ namespace Sabre\CalDAV\Schedule;
 use DateTimeZone;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
+use Sabre\DAV\Sharing;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
 use Sabre\DAV\INode;
@@ -246,13 +247,23 @@ class Plugin extends ServerPlugin {
 
                 $result = $this->server->getPropertiesForPath($calendarHomePath, [
                     '{DAV:}resourcetype',
+                    '{DAV:}share-access',
                     $sccs,
                 ], 1);
 
                 foreach ($result as $child) {
-                    if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar') || $child[200]['{DAV:}resourcetype']->is('{http://calendarserver.org/ns/}shared')) {
-                        // Node is either not a calendar or a shared instance.
+                    if (!isset($child[200]['{DAV:}resourcetype']) || !$child[200]['{DAV:}resourcetype']->is('{' . self::NS_CALDAV . '}calendar')) {
+                        // Node is either not a calendar
                         continue;
+                    }
+                    if (isset($child[200]['{DAV:}share-access'])) {
+                        $shareAccess = $child[200]['{DAV:}share-access']->getValue();
+                        if ($shareAccess !== Sharing\Plugin::ACCESS_NOTSHARED && $shareAccess !== Sharing\Plugin::ACCESS_SHAREDOWNER) {
+                            // Node is a shared node, not owned by the relevant
+                            // user.
+                            continue;
+                        }
+
                     }
                     if (!isset($child[200][$sccs]) || in_array('VEVENT', $child[200][$sccs]->getValue())) {
                         // Either there is no supported-calendar-component-set

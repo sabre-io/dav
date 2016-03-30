@@ -2,6 +2,9 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\DAV\Sharing;
+use Sabre\DAV\Xml\Element\Sharee;
+
 class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
     protected $backend;
@@ -14,6 +17,7 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
                 '{http://sabredav.org/ns}owner-principal'   => 'principals/owner',
                 '{http://sabredav.org/ns}read-only'         => false,
+                'share-access'                              => Sharing\Plugin::ACCESS_READWRITE,
                 'principaluri'                              => 'principals/sharee',
             ];
         }
@@ -23,79 +27,77 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
             [],
             []
         );
-        $this->backend->updateShares(1, [
-            [
-                'href'       => 'mailto:removeme@example.org',
-                'commonName' => 'To be removed',
-                'readOnly'   => true,
-            ],
-        ], []);
+
+        $sharee = new Sharee();
+        $sharee->href = 'mailto:removeme@example.org';
+        $sharee->properties['{DAV:}displayname'] = 'To be removed';
+        $sharee->access = Sharing\Plugin::ACCESS_READ;
+        $this->backend->updateInvites(1, [$sharee]);
 
         return new SharedCalendar($this->backend, $props);
 
     }
 
-    function testGetSharedUrl() {
-        $this->assertEquals('calendars/owner/original', $this->getInstance()->getSharedUrl());
-    }
+    function testGetInvites() {
 
-    function testGetShares() {
+        $sharee = new Sharee();
+        $sharee->href = 'mailto:removeme@example.org';
+        $sharee->properties['{DAV:}displayname'] = 'To be removed';
+        $sharee->access = Sharing\Plugin::ACCESS_READ;
+        $sharee->inviteStatus = Sharing\Plugin::INVITE_NORESPONSE;
 
-        $this->assertEquals([[
-            'href'       => 'mailto:removeme@example.org',
-            'commonName' => 'To be removed',
-            'readOnly'   => true,
-            'status'     => SharingPlugin::STATUS_NORESPONSE,
-        ]], $this->getInstance()->getShares());
+        $this->assertEquals(
+            [$sharee],
+            $this->getInstance()->getInvites()
+        );
 
     }
 
     function testGetOwner() {
-        $this->assertEquals('principals/owner', $this->getInstance()->getOwner());
+        $this->assertEquals('principals/sharee', $this->getInstance()->getOwner());
     }
 
     function testGetACL() {
 
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/sharee',
                 'protected' => true,
             ],
             [
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/sharee/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write-properties',
+                'principal' => 'principals/sharee',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write-properties',
+                'principal' => 'principals/sharee/calendar-proxy-write',
+                'protected' => true,
+            ],
+            [
                 'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-read',
+                'principal' => 'principals/sharee',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-read',
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-write',
                 'protected' => true,
             ],
             [
                 'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
                 'principal' => '{DAV:}authenticated',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/sharee',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/sharee',
                 'protected' => true,
             ],
         ];
@@ -108,28 +110,13 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
 
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-read',
+                'privilege' => '{DAV:}write',
+                'principal' => 'principals/sharee',
                 'protected' => true,
             ],
             [
                 'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/owner/calendar-proxy-write',
+                'principal' => 'principals/sharee/calendar-proxy-write',
                 'protected' => true,
             ],
             [
@@ -138,64 +125,52 @@ class SharedCalendarTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/sharee',
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-write',
                 'protected' => true,
             ],
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => 'principals/sharee/calendar-proxy-read',
+                'protected' => true,
+            ],
+
         ];
 
         $this->assertEquals($expected, $this->getInstance()->getChildACL());
 
     }
 
-    function testGetChildACLReadOnly() {
+    function testUpdateInvites() {
+
+        $instance = $this->getInstance();
+        $newSharees = [
+            new Sharee(),
+            new Sharee()
+        ];
+        $newSharees[0]->href = 'mailto:test@example.org';
+        $newSharees[0]->properties['{DAV:}displayname'] = 'Foo Bar';
+        $newSharees[0]->comment = 'Booh';
+        $newSharees[0]->access = Sharing\Plugin::ACCESS_READWRITE;
+
+        $newSharees[1]->href = 'mailto:removeme@example.org';
+        $newSharees[1]->access = Sharing\Plugin::ACCESS_NOACCESS;
+
+        $instance->updateInvites($newSharees);
 
         $expected = [
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/owner/calendar-proxy-read',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/sharee',
-                'protected' => true,
-            ],
+            clone $newSharees[0]
         ];
-
-        $props = [
-            'id'                                        => 1,
-            '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
-            '{http://sabredav.org/ns}owner-principal'   => 'principals/owner',
-            '{http://sabredav.org/ns}read-only'         => true,
-            'principaluri'                              => 'principals/sharee',
-        ];
-        $this->assertEquals($expected, $this->getInstance($props)->getChildACL());
+        $expected[0]->inviteStatus = Sharing\Plugin::INVITE_NORESPONSE;
+        $this->assertEquals($expected, $instance->getInvites());
 
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    function testCreateInstanceMissingArg() {
+    function testPublish() {
 
-        $this->getInstance([
-            'id'                                        => 1,
-            '{http://calendarserver.org/ns/}shared-url' => 'calendars/owner/original',
-            '{http://sabredav.org/ns}read-only'         => false,
-            'principaluri'                              => 'principals/sharee',
-        ]);
+        $instance = $this->getInstance();
+        $this->assertNull($instance->setPublishStatus(true));
+        $this->assertNull($instance->setPublishStatus(false));
 
     }
-
 }

@@ -11,14 +11,14 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
      * @var Sabre\CalDAV\CalendarHome
      */
     protected $usercalendars;
+
     /**
-     * @var Sabre\CalDAV\Backend\PDO
+     * @var Backend\BackendInterface
      */
     protected $backend;
 
     function setup() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = TestUtil::getBackend();
         $this->usercalendars = new CalendarHome($this->backend, [
             'uri' => 'principals/user1'
@@ -208,7 +208,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
      */
     function testShareReplyFail() {
 
-        $this->usercalendars->shareReply('uri', SharingPlugin::STATUS_DECLINED, 'curi', '1');
+        $this->usercalendars->shareReply('uri', DAV\Sharing\Plugin::INVITE_DECLINED, 'curi', '1');
 
     }
 

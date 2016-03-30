@@ -147,11 +147,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
         foreach ($this->caldavBackend->getCalendarsForUser($this->principalInfo['uri']) as $calendar) {
             if ($calendar['uri'] === $name) {
                 if ($this->caldavBackend instanceof Backend\SharingSupport) {
-                    if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
-                        return new SharedCalendar($this->caldavBackend, $calendar);
-                    } else {
-                        return new ShareableCalendar($this->caldavBackend, $calendar);
-                    }
+                    return new SharedCalendar($this->caldavBackend, $calendar);
                 } else {
                     return new Calendar($this->caldavBackend, $calendar);
                 }
@@ -198,11 +194,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
         $objs = [];
         foreach ($calendars as $calendar) {
             if ($this->caldavBackend instanceof Backend\SharingSupport) {
-                if (isset($calendar['{http://calendarserver.org/ns/}shared-url'])) {
-                    $objs[] = new SharedCalendar($this->caldavBackend, $calendar);
-                } else {
-                    $objs[] = new ShareableCalendar($this->caldavBackend, $calendar);
-                }
+                $objs[] = new SharedCalendar($this->caldavBackend, $calendar);
             } else {
                 $objs[] = new Calendar($this->caldavBackend, $calendar);
             }

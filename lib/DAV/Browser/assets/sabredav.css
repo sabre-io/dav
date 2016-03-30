@@ -96,12 +96,12 @@ header a {
   vertical-align: middle;
   border: 0;
 }
-input, button {
+input, button, select {
     font: inherit;
     color: inherit;
 }
 
-input[type=text] {
+input[type=text], select {
   border: 1px solid #bbbbbb;
   line-height: 22px;
   padding: 5px 10px;
@@ -200,7 +200,7 @@ section table {
     line-height: 40px;
 }
 
-.actions input[type=text] {
+.actions input[type=text], select {
     width: 450px;
 }
 

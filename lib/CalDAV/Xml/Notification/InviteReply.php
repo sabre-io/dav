@@ -5,6 +5,7 @@ namespace Sabre\CalDAV\Xml\Notification;
 use Sabre\Xml\Writer;
 use Sabre\CalDAV;
 use Sabre\CalDAV\SharingPlugin;
+use Sabre\DAV;
 
 /**
  * This class represents the cs:invite-reply notification element.
@@ -162,10 +163,10 @@ class InviteReply implements NotificationInterface {
 
         switch ($this->type) {
 
-            case SharingPlugin::STATUS_ACCEPTED :
+            case DAV\Sharing\Plugin::INVITE_ACCEPTED :
                 $writer->writeElement($cs . 'invite-accepted');
                 break;
-            case SharingPlugin::STATUS_DECLINED :
+            case DAV\Sharing\Plugin::INVITE_DECLINED :
                 $writer->writeElement($cs . 'invite-declined');
                 break;
 

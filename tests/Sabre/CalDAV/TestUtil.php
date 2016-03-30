@@ -6,26 +6,7 @@ class TestUtil {
 
     static function getBackend() {
 
-        $backend = new Backend\PDO(self::getSQLiteDB());
-        return $backend;
-
-    }
-
-    static function getSQLiteDB() {
-
-        if (file_exists(SABRE_TEMPDIR . '/testdb.sqlite'))
-            unlink(SABRE_TEMPDIR . '/testdb.sqlite');
-
-        $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/testdb.sqlite');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-        // Yup this is definitely not 'fool proof', but good enough for now.
-        $queries = explode(';', file_get_contents(__DIR__ . '/../../../examples/sql/sqlite.calendars.sql'));
-        foreach ($queries as $query) {
-            $pdo->exec($query);
-        }
-        // Inserting events through a backend class.
-        $backend = new Backend\PDO($pdo);
+        $backend = new Backend\Mock();
         $calendarId = $backend->createCalendar(
             'principals/user1',
             'UUID-123467',
@@ -47,7 +28,7 @@ class TestUtil {
             ]
         );
         $backend->createCalendarObject($calendarId, 'UUID-2345', self::getTestCalendarData());
-        return $pdo;
+        return $backend;
 
     }
 

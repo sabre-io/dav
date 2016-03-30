@@ -2,7 +2,6 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\Xml\Writer;
 
@@ -60,7 +59,7 @@ class InviteReplyTest extends \PHPUnit_Framework_TestCase {
                     'etag'      => '"1"',
                     'inReplyTo' => 'bar',
                     'href'      => 'mailto:foo@example.org',
-                    'type'      => CalDAV\SharingPlugin::STATUS_ACCEPTED,
+                    'type'      => DAV\Sharing\Plugin::INVITE_ACCEPTED,
                     'hostUrl'   => 'calendar'
                 ],
 <<<FOO
@@ -87,7 +86,7 @@ FOO
                     'etag'      => '"1"',
                     'inReplyTo' => 'bar',
                     'href'      => 'mailto:foo@example.org',
-                    'type'      => CalDAV\SharingPlugin::STATUS_DECLINED,
+                    'type'      => DAV\Sharing\Plugin::INVITE_DECLINED,
                     'hostUrl'   => 'calendar',
                     'summary'   => 'Summary!'
                 ],

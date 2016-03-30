@@ -5,6 +5,7 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\DAV\INode;
 use Sabre\DAV\Exception\BadRequest;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
@@ -587,7 +588,13 @@ class Plugin extends DAV\ServerPlugin {
         $collections = $this->principalCollectionSet;
         foreach ($collections as $collection) {
 
-            $principalCollection = $this->server->tree->getNodeForPath($collection);
+            try {
+                $principalCollection = $this->server->tree->getNodeForPath($collection);
+            } catch (NotFound $e) {
+                // Ignore and move on
+                continue;
+            }
+
             if (!$principalCollection instanceof IPrincipalCollection) {
                 // Not a principal collection, we're simply going to ignore
                 // this.
@@ -683,6 +690,14 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('report',              [$this, 'report']);
         $server->on('method:ACL',          [$this, 'httpAcl']);
         $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
+        $server->on('getPrincipalByUri',  function($principal, &$uri) {
+
+            $uri = $this->getPrincipalByUri($principal);
+
+            // Break event chain
+            if ($uri) return false;
+
+        });
 
         array_push($server->protectedProperties,
             '{DAV:}alternate-URI-set',
@@ -1073,7 +1088,7 @@ class Plugin extends DAV\ServerPlugin {
             // Looking up the principal
             try {
                 $principal = $this->server->tree->getNodeForPath($newAce['principal']);
-            } catch (DAV\Exception\NotFound $e) {
+            } catch (NotFound $e) {
                 throw new Exception\NotRecognizedPrincipal('The specified principal (' . $newAce['principal'] . ') does not exist');
             }
             if (!($principal instanceof IPrincipal)) {

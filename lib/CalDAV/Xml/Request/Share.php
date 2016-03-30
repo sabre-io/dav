@@ -2,9 +2,10 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
+use Sabre\CalDAV\Plugin;
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\CalDAV\Plugin;
 
 /**
  * Share POST request parser
@@ -20,37 +21,20 @@ use Sabre\CalDAV\Plugin;
 class Share implements XmlDeserializable {
 
     /**
-     * The list of new people added or updated.
+     * The list of new people added or updated or removed from the share.
      *
-     * Every element has the following keys:
-     * 1. href - An email address
-     * 2. commonName - Some name
-     * 3. summary - An optional description of the share
-     * 4. readOnly - true or false
-     *
-     * @var array
+     * @var Sharee[]
      */
-    public $set = [];
-
-    /**
-     * List of people removed from the share list.
-     *
-     * The list is a flat list of email addresses (including mailto:).
-     *
-     * @var array
-     */
-    public $remove = [];
+    public $sharees = [];
 
     /**
      * Constructor
      *
-     * @param array $set
-     * @param array $remove
+     * @param Sharee[] $sharees
      */
-    function __construct(array $set, array $remove) {
+    function __construct(array $sharees) {
 
-        $this->set = $set;
-        $this->remove = $remove;
+        $this->sharees = $sharees;
 
     }
 
@@ -77,13 +61,12 @@ class Share implements XmlDeserializable {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $elems = $reader->parseInnerTree([
+        $elems = $reader->parseGetElements([
             '{' . Plugin::NS_CALENDARSERVER . '}set'    => 'Sabre\\Xml\\Element\\KeyValue',
             '{' . Plugin::NS_CALENDARSERVER . '}remove' => 'Sabre\\Xml\\Element\\KeyValue',
         ]);
 
-        $set = [];
-        $remove = [];
+        $sharees = [];
 
         foreach ($elems as $elem) {
             switch ($elem['name']) {
@@ -94,22 +77,34 @@ class Share implements XmlDeserializable {
                     $sumElem = '{' . Plugin::NS_CALENDARSERVER . '}summary';
                     $commonName = '{' . Plugin::NS_CALENDARSERVER . '}common-name';
 
-                    $set[] = [
+                    $properties = [];
+                    if (isset($sharee[$commonName])) {
+                        $properties['{DAV:}displayname'] = $sharee[$commonName];
+                    }
+
+                    $access = array_key_exists('{' . Plugin::NS_CALENDARSERVER . '}read-write', $sharee)
+                        ? \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE
+                        : \Sabre\DAV\Sharing\Plugin::ACCESS_READ;
+
+                    $sharees[] = new Sharee([
                         'href'       => $sharee['{DAV:}href'],
-                        'commonName' => isset($sharee[$commonName]) ? $sharee[$commonName] : null,
-                        'summary'    => isset($sharee[$sumElem]) ? $sharee[$sumElem] : null,
-                        'readOnly'   => !array_key_exists('{' . Plugin::NS_CALENDARSERVER . '}read-write', $sharee),
-                    ];
+                        'properties' => $properties,
+                        'access'     => $access,
+                        'comment'    => isset($sharee[$sumElem]) ? $sharee[$sumElem] : null
+                    ]);
                     break;
 
                 case '{' . Plugin::NS_CALENDARSERVER . '}remove' :
-                    $remove[] = $elem['value']['{DAV:}href'];
+                    $sharees[] = new Sharee([
+                        'href'   => $elem['value']['{DAV:}href'],
+                        'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS
+                    ]);
                     break;
 
             }
         }
 
-        return new self($set, $remove);
+        return new self($sharees);
 
     }
 

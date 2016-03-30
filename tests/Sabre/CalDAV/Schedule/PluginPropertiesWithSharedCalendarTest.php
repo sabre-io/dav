@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV\Schedule;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 
 class PluginPropertiesWithSharedCalendarTest extends \Sabre\DAVServerTest {
 
@@ -18,9 +17,7 @@ class PluginPropertiesWithSharedCalendarTest extends \Sabre\DAVServerTest {
             'principals/user1',
             'shared',
             [
-                '{http://calendarserver.org/ns/}shared-url' => new DAV\Xml\Property\Href('calendars/user2/default/'),
-                '{http://sabredav.org/ns}read-only'         => false,
-                '{http://sabredav.org/ns}owner-principal'   => 'principals/user2',
+                'share-access' => DAV\Sharing\Plugin::ACCESS_READWRITE
             ]
         );
         $this->caldavBackend->createCalendar(

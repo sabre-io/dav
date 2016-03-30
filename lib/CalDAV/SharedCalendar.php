@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV;
 
+use Sabre\DAV\Sharing\Plugin as SPlugin;
+
 /**
  * This object represents a CalDAV calendar that is shared by a different user.
  *
@@ -12,50 +14,84 @@ namespace Sabre\CalDAV;
 class SharedCalendar extends Calendar implements ISharedCalendar {
 
     /**
-     * Constructor
+     * Returns the 'access level' for the instance of this shared resource.
      *
-     * @param Backend\BackendInterface $caldavBackend
-     * @param array $calendarInfo
+     * The value should be one of the Sabre\DAV\Sharing\Plugin::ACCESS_
+     * constants.
+     *
+     * @return int
      */
-    function __construct(Backend\BackendInterface $caldavBackend, $calendarInfo) {
+    function getShareAccess() {
 
-        $required = [
-            '{http://calendarserver.org/ns/}shared-url',
-            '{http://sabredav.org/ns}owner-principal',
-            '{http://sabredav.org/ns}read-only',
-        ];
-        foreach ($required as $r) {
-            if (!isset($calendarInfo[$r])) {
-                throw new \InvalidArgumentException('The ' . $r . ' property must be specified for SharedCalendar(s)');
-            }
-        }
-
-        parent::__construct($caldavBackend, $calendarInfo);
+        return isset($this->calendarInfo['share-access']) ? $this->calendarInfo['share-access'] : SPlugin::ACCESS_NOTSHARED;
 
     }
 
     /**
-     * This method should return the url of the owners' copy of the shared
-     * calendar.
+     * This function must return a URI that uniquely identifies the shared
+     * resource. This URI should be identical across instances, and is
+     * also used in several other XML bodies to connect invites to
+     * resources.
+     *
+     * This may simply be a relative reference to the original shared instance,
+     * but it could also be a urn. As long as it's a valid URI and unique.
      *
      * @return string
      */
-    function getSharedUrl() {
+    function getShareResourceUri() {
 
-        return $this->calendarInfo['{http://calendarserver.org/ns/}shared-url'];
+        return $this->calendarInfo['share-resource-uri'];
 
     }
 
     /**
-     * Returns the owner principal
+     * Updates the list of sharees.
      *
-     * This must be a url to a principal, or null if there's no owner
+     * Every item must be a Sharee object.
      *
-     * @return string|null
+     * @param \Sabre\DAV\Xml\Element\Sharee[] $sharees
+     * @return void
      */
-    function getOwner() {
+    function updateInvites(array $sharees) {
 
-        return $this->calendarInfo['{http://sabredav.org/ns}owner-principal'];
+        $this->caldavBackend->updateInvites($this->calendarInfo['id'], $sharees);
+
+    }
+
+    /**
+     * Returns the list of people whom this resource is shared with.
+     *
+     * Every item in the returned array must be a Sharee object with
+     * at least the following properties set:
+     *
+     * * $href
+     * * $shareAccess
+     * * $inviteStatus
+     *
+     * and optionally:
+     *
+     * * $properties
+     *
+     * @return \Sabre\DAV\Xml\Element\Sharee[]
+     */
+    function getInvites() {
+
+        return $this->caldavBackend->getInvites($this->calendarInfo['id']);
+
+    }
+
+    /**
+     * Marks this calendar as published.
+     *
+     * Publishing a calendar should automatically create a read-only, public,
+     * subscribable calendar.
+     *
+     * @param bool $value
+     * @return void
+     */
+    function setPublishStatus($value) {
+
+        $this->caldavBackend->setPublishStatus($this->calendarInfo['id'], $value);
 
     }
 
@@ -73,29 +109,91 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getACL() {
 
-        // The top-level ACL only contains access information for the true
-        // owner of the calendar, so we need to add the information for the
-        // sharee.
-        $acl = parent::getACL();
-        $acl[] = [
-            'privilege' => '{DAV:}read',
-            'principal' => $this->calendarInfo['principaluri'],
-            'protected' => true,
-        ];
-        if ($this->calendarInfo['{http://sabredav.org/ns}read-only']) {
-            $acl[] = [
-                'privilege' => '{DAV:}write-properties',
-                'principal' => $this->calendarInfo['principaluri'],
-                'protected' => true,
-            ];
-        } else {
-            $acl[] = [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->calendarInfo['principaluri'],
-                'protected' => true,
-            ];
+        $acl = [];
+
+        switch ($this->getShareAccess()) {
+            case SPlugin::ACCESS_NOTSHARED :
+            case SPlugin::ACCESS_SHAREDOWNER :
+                $acl[] = [
+                    'privilege' => '{DAV:}share',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}share',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                // No break intentional!
+            case SPlugin::ACCESS_READWRITE :
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                // No break intentional!
+            case SPlugin::ACCESS_READ :
+                $acl[] = [
+                    'privilege' => '{DAV:}write-properties',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}write-properties',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{' . Plugin::NS_CALDAV . '}read-free-busy',
+                    'principal' => '{DAV:}authenticated',
+                    'protected' => true,
+                ];
+                break;
         }
         return $acl;
+
+    }
+
+    /**
+     * Returns the list of supported privileges for this node.
+     *
+     * The returned data structure is a list of nested privileges.
+     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
+     * standard structure.
+     *
+     * If null is returned from this method, the default privilege set is used,
+     * which is fine for most common usecases.
+     *
+     * @return array|null
+     */
+    function getSupportedPrivilegeSet() {
+
+        $default = parent::getSupportedPrivilegeSet();
+        $default['aggregates'][] = [
+            'privilege' => '{DAV:}share',
+        ];
+
+        return $default;
 
     }
 
@@ -108,40 +206,45 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
      */
     function getChildACL() {
 
-        $acl = parent::getChildACL();
-        $acl[] = [
-            'privilege' => '{DAV:}read',
-            'principal' => $this->calendarInfo['principaluri'],
-            'protected' => true,
-        ];
+        $acl = [];
 
-        if (!$this->calendarInfo['{http://sabredav.org/ns}read-only']) {
-            $acl[] = [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->calendarInfo['principaluri'],
-                'protected' => true,
-            ];
+        switch ($this->getShareAccess()) {
+            case SPlugin::ACCESS_NOTSHARED :
+                // No break intentional
+            case SPlugin::ACCESS_SHAREDOWNER :
+                // No break intentional
+            case SPlugin::ACCESS_READWRITE:
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}write',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                // No break intentional
+            case SPlugin::ACCESS_READ:
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'],
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-write',
+                    'protected' => true,
+                ];
+                $acl[] = [
+                    'privilege' => '{DAV:}read',
+                    'principal' => $this->calendarInfo['principaluri'] . '/calendar-proxy-read',
+                    'protected' => true,
+                ];
+                break;
         }
+
         return $acl;
-
-    }
-
-
-    /**
-     * Returns the list of people whom this calendar is shared with.
-     *
-     * Every element in this array should have the following properties:
-     *   * href - Often a mailto: address
-     *   * commonName - Optional, for example a first + last name
-     *   * status - See the Sabre\CalDAV\SharingPlugin::STATUS_ constants.
-     *   * readOnly - boolean
-     *   * summary - Optional, a description for the share
-     *
-     * @return array
-     */
-    function getShares() {
-
-        return $this->caldavBackend->getShares($this->calendarInfo['id']);
 
     }
 

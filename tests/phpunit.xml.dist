@@ -1,11 +1,14 @@
+<?xml version="1.0"?>
 <phpunit
   colors="true"
   bootstrap="bootstrap.php"
   convertErrorsToExceptions="true"
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
-  strict="true"
-  >
+  beStrictAboutTestsThatDoNotTestAnything="true"
+  beStrictAboutOutputDuringTests="true"
+  beStrictAboutTestSize="true">
+
   <testsuite name="sabre-event">
       <directory>../vendor/sabre/event/tests/</directory>
   </testsuite>
@@ -38,10 +41,6 @@
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">
        <directory suffix=".php">../lib/</directory>
-       <exclude>
-         <file>../lib/Sabre/autoload.php</file>
-         <file>../lib/Sabre/VObject/includes.php</file>
-       </exclude>
     </whitelist>
   </filter>
 </phpunit>

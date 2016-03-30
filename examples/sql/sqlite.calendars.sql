@@ -14,16 +14,28 @@ CREATE TABLE calendarobjects (
 
 CREATE TABLE calendars (
     id integer primary key asc NOT NULL,
-    principaluri text NOT NULL,
+    synctoken integer DEFAULT 1 NOT NULL,
+    components text NOT NULL
+);
+
+CREATE TABLE calendarinstances (
+    id integer primary key asc NOT NULL,
+    calendarid integer NOT NULL,
+    principaluri text NULL,
+    access integer COMMENT '1 = owner, 2 = read, 3 = readwrite' NOT NULL DEFAULT '1',
     displayname text,
     uri text NOT NULL,
-    synctoken integer DEFAULT 1 NOT NULL,
     description text,
     calendarorder integer,
     calendarcolor text,
     timezone text,
-    components text NOT NULL,
-    transparent bool
+    transparent bool,
+    share_href text,
+    share_displayname text,
+    share_invitestatus integer DEFAULT '2',
+    UNIQUE (principaluri, uri),
+    UNIQUE (calendarid, principaluri),
+    UNIQUE (calendarid, share_href)
 );
 
 CREATE TABLE calendarchanges (

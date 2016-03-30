@@ -43,7 +43,7 @@ class InviteTest extends DAV\Xml\XmlTest {
                     'dtStamp'    => $dtStamp,
                     'etag'       => '"1"',
                     'href'       => 'mailto:foo@example.org',
-                    'type'       => CalDAV\SharingPlugin::STATUS_ACCEPTED,
+                    'type'       => DAV\Sharing\Plugin::INVITE_ACCEPTED,
                     'readOnly'   => true,
                     'hostUrl'    => 'calendar',
                     'organizer'  => 'principal/user1',
@@ -77,46 +77,11 @@ FOO
             ],
             [
                 [
-                    'id'         => 'foo',
-                    'dtStamp'    => $dtStamp,
-                    'etag'       => '"1"',
-                    'href'       => 'mailto:foo@example.org',
-                    'type'       => CalDAV\SharingPlugin::STATUS_DECLINED,
-                    'readOnly'   => true,
-                    'hostUrl'    => 'calendar',
-                    'organizer'  => 'principal/user1',
-                    'commonName' => 'John Doe',
-                ],
-<<<FOO
-<?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
-  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
-  <cs:invite-notification>
-    <cs:uid>foo</cs:uid>
-    <d:href>mailto:foo@example.org</d:href>
-    <cs:invite-declined/>
-    <cs:hosturl>
-      <d:href>/calendar</d:href>
-    </cs:hosturl>
-    <cs:access>
-      <cs:read/>
-    </cs:access>
-    <cs:organizer>
-      <d:href>/principal/user1</d:href>
-      <cs:common-name>John Doe</cs:common-name>
-    </cs:organizer>
-    <cs:organizer-cn>John Doe</cs:organizer-cn>
-  </cs:invite-notification>
-</cs:root>
-FOO
-            ],
-            [
-                [
                     'id'        => 'foo',
                     'dtStamp'   => $dtStamp,
                     'etag'      => '"1"',
                     'href'      => 'mailto:foo@example.org',
-                    'type'      => CalDAV\SharingPlugin::STATUS_NORESPONSE,
+                    'type'      => DAV\Sharing\Plugin::INVITE_NORESPONSE,
                     'readOnly'  => true,
                     'hostUrl'   => 'calendar',
                     'organizer' => 'principal/user1',
@@ -144,44 +109,6 @@ FOO
     </cs:organizer>
     <cs:organizer-first>Foo</cs:organizer-first>
     <cs:organizer-last>Bar</cs:organizer-last>
-  </cs:invite-notification>
-</cs:root>
-
-FOO
-            ],
-            [
-                [
-                    'id'                  => 'foo',
-                    'dtStamp'             => $dtStamp,
-                    'etag'                => '"1"',
-                    'href'                => 'mailto:foo@example.org',
-                    'type'                => CalDAV\SharingPlugin::STATUS_DELETED,
-                    'readOnly'            => false,
-                    'hostUrl'             => 'calendar',
-                    'organizer'           => 'mailto:user1@fruux.com',
-                    'supportedComponents' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT', 'VTODO']),
-                ],
-<<<FOO
-<?xml version="1.0" encoding="UTF-8"?>
-<cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
-  <cs:dtstamp>20120101T000000Z</cs:dtstamp>
-  <cs:invite-notification>
-    <cs:uid>foo</cs:uid>
-    <d:href>mailto:foo@example.org</d:href>
-    <cs:invite-deleted/>
-    <cs:hosturl>
-      <d:href>/calendar</d:href>
-    </cs:hosturl>
-    <cs:access>
-      <cs:read-write/>
-    </cs:access>
-    <cs:organizer>
-      <d:href>mailto:user1@fruux.com</d:href>
-    </cs:organizer>
-    <cal:supported-calendar-component-set>
-      <cal:comp name="VEVENT"/>
-      <cal:comp name="VTODO"/>
-    </cal:supported-calendar-component-set>
   </cs:invite-notification>
 </cs:root>
 

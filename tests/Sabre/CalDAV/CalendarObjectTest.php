@@ -18,7 +18,6 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
 
     function setup() {
 
-        if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $this->backend = TestUtil::getBackend();
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
@@ -42,7 +41,7 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         $this->assertInternalType('string', $children[0]->getName());
         $this->assertInternalType('string', $children[0]->get());
         $this->assertInternalType('string', $children[0]->getETag());
-        $this->assertEquals('text/calendar; charset=utf-8; component=vevent', $children[0]->getContentType());
+        $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
 
     }
 
@@ -131,7 +130,7 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
-        $this->assertTrue(is_int($lastMod) || ctype_digit($lastMod));
+        $this->assertTrue(is_int($lastMod) || ctype_digit($lastMod) || is_null($lastMod));
 
     }
 

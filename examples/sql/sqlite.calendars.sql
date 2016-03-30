@@ -29,7 +29,13 @@ CREATE TABLE calendarinstances (
     calendarorder integer,
     calendarcolor text,
     timezone text,
-    transparent bool
+    transparent bool,
+    share_href text,
+    share_displayname text,
+    share_invitestatus integer DEFAULT '2',
+    UNIQUE (principaluri, uri),
+    UNIQUE (calendarid, principaluri),
+    UNIQUE (calendarid, share_href)
 );
 
 CREATE TABLE calendarchanges (

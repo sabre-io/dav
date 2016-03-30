@@ -1400,7 +1400,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
                     $updateStmt->execute([
                         $sharee->access,
                         isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
-                        $sharee->inviteStatus ? : $oldSharee->inviteStatus,
+                        $sharee->inviteStatus ?: $oldSharee->inviteStatus,
                         $calendarId,
                         $sharee->href
                     ]);
@@ -1416,7 +1416,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
                 \Sabre\DAV\UUIDUtil::getUUID(),
                 $sharee->href,
                 isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
-                $sharee->inviteStatus ? : \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                $sharee->inviteStatus ?: \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
                 $instanceId
             ]);
 

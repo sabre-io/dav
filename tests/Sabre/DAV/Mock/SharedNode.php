@@ -81,11 +81,17 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode {
                 foreach ($this->invites as $k => $invitee) {
 
                     if ($invitee->href = $sharee->href) {
+                        if (!$sharee->inviteStatus) {
+                            $sharee->inviteStatus = $invitee->inviteStatus;
+                        }
                         // Overwriting an existing invitee
                         $this->invites[$k] = $sharee;
                         continue 2;
                     }
 
+                }
+                if (!$sharee->inviteStatus) {
+                    $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE;
                 }
                 // Adding a new invitee
                 $this->invites[] = $sharee;

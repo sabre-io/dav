@@ -51,6 +51,18 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     }
 
+    /**
+     * @expectedException \LogicException
+     */
+    function testSetupWithoutCoreSharingPlugin() {
+
+        $server = new DAV\Server();
+        $server->addPlugin(
+            new SharingPlugin()
+        );
+
+    }
+
     function testGetFeatures() {
 
         $this->assertEquals(['calendarserver-sharing'], $this->caldavSharingPlugin->getFeatures());
@@ -309,13 +321,14 @@ RRR;
 
     }
 
+
     function testUnpublish() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1/cal1',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
+        $request = new HTTP\Request(
+            'POST',
+            '/calendars/user1/cal1',
+            ['Content-Type' => 'text/xml']
+        );
 
         $xml = '<?xml version="1.0"?>
 <cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
@@ -330,46 +343,46 @@ RRR;
 
     function testPublishWrongUrl() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1/cal2',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
+        $request = new HTTP\Request(
+            'POST',
+            '/calendars/user1',
+            ['Content-Type' => 'text/xml']
+        );
 
         $xml = '<?xml version="1.0"?>
 <cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
         $request->setBody($xml);
-        $this->request($request, 403);
+        $this->request($request, 501);
 
     }
 
     function testUnpublishWrongUrl() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1/cal2',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
-
+        $request = new HTTP\Request(
+            'POST',
+            '/calendars/user1',
+            ['Content-Type' => 'text/xml']
+        );
         $xml = '<?xml version="1.0"?>
 <cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
         $request->setBody($xml);
 
-        $this->request($request, 403);
+        $this->request($request, 501);
 
     }
 
     function testUnknownXmlDoc() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1/cal2',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
+
+        $request = new HTTP\Request(
+            'POST',
+            '/calendars/user1/cal2',
+            ['Content-Type' => 'text/xml']
+        );
 
         $xml = '<?xml version="1.0"?>
 <cs:foo-bar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />';

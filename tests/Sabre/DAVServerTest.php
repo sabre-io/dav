@@ -152,6 +152,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
         if ($this->setupACL) {
             $this->aclPlugin = new DAVACL\Plugin();
+            $this->aclPlugin->adminPrincipals = ['principals/admin'];
             $this->server->addPlugin($this->aclPlugin);
         }
         if ($this->setupLocks) {
@@ -215,6 +216,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setPrincipal('principals/' . $userName);
         $this->authPlugin = new DAV\Auth\Plugin($authBackend);
+
+        // If the auth plugin already exists, we're removing its hooks:
+        if ($oldAuth = $this->server->getPlugin('auth')) {
+            $this->server->removeListener('beforeMethod', [$oldAuth, 'beforeMethod']);
+        }
         $this->server->addPlugin($this->authPlugin);
 
         // This will trigger the actual login procedure
@@ -239,7 +245,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             );
         }
 
-        if ($this->setupCardDAV || $this->setupCalDAV) {
+        if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {
             $this->tree[] = new CalDAV\Principal\Collection(
                 $this->principalBackend
             );

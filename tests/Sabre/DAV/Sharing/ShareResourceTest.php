@@ -150,4 +150,61 @@ XML;
 
     }
 
+    function testShareResourceNotFound() {
+
+        $body = <<<XML
+<?xml version="1.0" encoding="utf-8" ?>
+<D:share-resource xmlns:D="DAV:">
+ <D:sharee>
+   <D:href>mailto:eric@example.com</D:href>
+   <D:prop>
+     <D:displayname>Eric York</D:displayname>
+   </D:prop>
+   <D:comment>Shared workspace</D:comment>
+   <D:share-access>
+     <D:read-write />
+   </D:share-access>
+ </D:sharee>
+</D:share-resource>
+XML;
+        $request = new Request('POST', '/not-found', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+
+        $response = $this->request($request, 404);
+
+    }
+
+    function testShareResourceNotISharedNode() {
+
+        $body = <<<XML
+<?xml version="1.0" encoding="utf-8" ?>
+<D:share-resource xmlns:D="DAV:">
+ <D:sharee>
+   <D:href>mailto:eric@example.com</D:href>
+   <D:prop>
+     <D:displayname>Eric York</D:displayname>
+   </D:prop>
+   <D:comment>Shared workspace</D:comment>
+   <D:share-access>
+     <D:read-write />
+   </D:share-access>
+ </D:sharee>
+</D:share-resource>
+XML;
+        $request = new Request('POST', '/', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+
+        $response = $this->request($request, 403);
+
+    }
+
+    function testShareResourceUnknownDoc() {
+
+        $body = <<<XML
+<?xml version="1.0" encoding="utf-8" ?>
+<D:blablabla xmlns:D="DAV:" />
+XML;
+        $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+        $response = $this->request($request, 400);
+
+    }
+
 }

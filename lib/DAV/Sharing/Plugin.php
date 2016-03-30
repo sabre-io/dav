@@ -113,12 +113,7 @@ class Plugin extends ServerPlugin {
      */
     function shareResource($path, array $sharees) {
 
-        try {
-            $node = $this->server->tree->getNodeForPath($path);
-        } catch (DAV\Exception\NotFound $e) {
-            // If the target node is not found, we stop executing.
-            return;
-        }
+        $node = $this->server->tree->getNodeForPath($path);
 
         if (!$node instanceof ISharedNode) {
 

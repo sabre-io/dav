@@ -5,6 +5,7 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\DAV\INode;
 use Sabre\DAV\Exception\BadRequest;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
@@ -587,7 +588,13 @@ class Plugin extends DAV\ServerPlugin {
         $collections = $this->principalCollectionSet;
         foreach ($collections as $collection) {
 
-            $principalCollection = $this->server->tree->getNodeForPath($collection);
+            try {
+                $principalCollection = $this->server->tree->getNodeForPath($collection);
+            } catch (NotFound $e) {
+                // Ignore and move on
+                continue;
+            }
+
             if (!$principalCollection instanceof IPrincipalCollection) {
                 // Not a principal collection, we're simply going to ignore
                 // this.
@@ -1081,7 +1088,7 @@ class Plugin extends DAV\ServerPlugin {
             // Looking up the principal
             try {
                 $principal = $this->server->tree->getNodeForPath($newAce['principal']);
-            } catch (DAV\Exception\NotFound $e) {
+            } catch (NotFound $e) {
                 throw new Exception\NotRecognizedPrincipal('The specified principal (' . $newAce['principal'] . ') does not exist');
             }
             if (!($principal instanceof IPrincipal)) {

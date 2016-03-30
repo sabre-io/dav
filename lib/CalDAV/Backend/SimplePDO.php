@@ -8,10 +8,21 @@ use Sabre\DAV;
 /**
  * Simple PDO CalDAV backend.
  *
- * This backend class serves as a demononstration on how to create a very
- * simple CalDAV backend.
+ * This class is basically the most minmum example to get a caldav backend up
+ * and running. This class uses the following schema (MySQL example):
  *
- * Unlike the 'PDO' class, this class only has the most basic features.
+ * CREATE TABLE simple_calendars (
+ *    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+ *    uri VARBINARY(200) NOT NULL,
+ *    principaluri VARBINARY(200) NOT NULL
+ * );
+ *
+ * CREATE TABLE simple_calendarobjects (
+ *    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+ *    calendarid INT UNSIGNED NOT NULL,
+ *    uri VARBINARY(200) NOT NULL,
+ *    calendardata MEDIUMBLOB
+ * )
  *
  * To make this class work, you absolutely need to have the PropertyStorage
  * plugin enabled.
@@ -67,7 +78,7 @@ class SimplePDO extends AbstractBackend {
     function getCalendarsForUser($principalUri) {
 
         // Making fields a comma-delimited list
-        $stmt = $this->pdo->prepare("SELECT id, uri FROM simple_calendars WHERE principaluri = ? ORDER BY calendarorder ASC");
+        $stmt = $this->pdo->prepare("SELECT id, uri FROM simple_calendars WHERE principaluri = ? ORDER BY id ASC");
         $stmt->execute([$principalUri]);
 
         $calendars = [];

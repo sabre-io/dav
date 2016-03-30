@@ -4,14 +4,26 @@ ChangeLog
 3.2.0-alpha1 (????-??-??)
 -------------------------
 
+* Database changes for CalDAV. If you are using the CalDAV PDO backends, you
+  must migrate. Run `./bin/migrateto32.php` for more info.
+* Support for WebDAV Resource Sharing, an upcoming standard.
+* Added support for sharing in the CalDAV PDO backend! Users can now invite
+  others to their calendar and give them read/read-write access!
 * Removed database migration script for sabre/dav 1.7. To update from that
   version you now first need to update to sabre/dav 3.1.
 * Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.
 * #774: Fixes for getting free disk space on Windows.
+* #803: Major changes in the sharing API. If you were using an old sabre/dav
+  sharing api, head to the website for more detailed migration notes.
 * #801: BC break: If you were using the `Href` object before, it's behavior
   now changed a bit, and `LocalHref` was added to replace the old, default
   behavior of `Href`. See the migration doc for more info.
-
+* Added Sharing, ICSExport and VCFExport plugins to `groupwareserver.php`
+  example.
+* Added a new `getPrincipalByUri` plugin event. Allowing plugins to request
+  quickly where a principal lives on a server.
+* Renamed `phpunit.xml` to `phpunit.xml.dist` to make local modifications easy.
+* Functionality from `IShareableCalendar` is merged into `ISharedCalendar`.
 
 3.1.3 (????-??-??)
 ------------------

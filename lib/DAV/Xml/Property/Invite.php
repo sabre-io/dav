@@ -10,7 +10,7 @@ use Sabre\Xml\Writer;
  * This class represents the {DAV:}invite property.
  *
  * This property is defined here:
- * https://tools.ietf.org/html/draft-pot-webdav-resource-sharing-03#section-4.4.2 
+ * https://tools.ietf.org/html/draft-pot-webdav-resource-sharing-03#section-4.4.2
  *
  * This property is used by clients to determine who currently has access to
  * a shared resource, what their access level is and what their invite status

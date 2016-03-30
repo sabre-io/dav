@@ -17,6 +17,8 @@ ChangeLog
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
+* #805: It wasn't possible to create calendars that hold events, journals and
+  todos using MySQL, because the `components` column was 1 byte too small.
 
 
 3.1.2 (2016-03-12)
@@ -111,6 +113,9 @@ ChangeLog
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
+* #727: Added another workaround to make CalDAV work for Windows 10 clients.
+* #805: It wasn't possible to create calendars that hold events, journals and
+  todos using MySQL, because the `components` column was 1 byte too small.
 
 
 3.0.8 (2016-03-12)
@@ -362,6 +367,13 @@ ChangeLog
 * #582: `Sabre\DAV\Auth\Plugin::getCurrentUser()` is now deprecated. Use
   `Sabre\DAV\Auth\Plugin::getCurrentPrincipal()` instead.
 * #193: Fix `Sabre\DAV\FSExt\Directory::getQuotaInfo()` on windows.
+
+
+2.1.11 (2016-??-??)
+-------------------
+
+* #805: It wasn't possible to create calendars that hold events, journals and
+  todos using MySQL, because the `components` column was 1 byte too small.
 
 
 2.1.10 (2016-03-10)

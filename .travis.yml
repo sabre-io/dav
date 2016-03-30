@@ -23,7 +23,7 @@ cache: vendor
 
 before_script:
   - mysql -e 'create database sabredav'
-  - phpenv config-rm xdebug.ini
+  - phpenv config-rm xdebug.ini; true
   #  - composer self-update
   - composer update --prefer-dist $LOWEST_DEPS
 

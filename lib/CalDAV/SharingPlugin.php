@@ -206,7 +206,6 @@ class SharingPlugin extends DAV\ServerPlugin {
             $propPatch->handle('{DAV:}resourcetype', function($value) use ($node) {
                 if ($value->is('{' . Plugin::NS_CALENDARSERVER . '}shared-owner')) return false;
                 $shares = $node->getInvites();
-                $remove = [];
                 foreach ($shares as $share) {
                     $share->access = DAV\Sharing\Plugin::ACCESS_NOACCESS;
                 }

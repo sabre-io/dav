@@ -123,7 +123,6 @@ class ShareAccess implements Element {
     static function xmlDeserialize(Reader $reader) {
 
         $elems = $reader->parseInnerTree();
-        $value = null;
         foreach ($elems as $elem) {
             switch ($elem['name']) {
                 case '{DAV:}not-shared' :

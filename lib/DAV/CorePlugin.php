@@ -50,6 +50,8 @@ class CorePlugin extends ServerPlugin {
         $server->on('propFind',         [$this, 'propFindNode'], 120);
         $server->on('propFind',         [$this, 'propFindLate'], 200);
 
+        $server->on('exception',        [$this, 'exception']);
+
     }
 
     /**
@@ -900,6 +902,38 @@ class CorePlugin extends ServerPlugin {
 
         });
 
+    }
+
+    /**
+     * Listens for exception events, and automatically logs them.
+     *
+     * @param Exception $e
+     */
+    function exception($e) {
+
+        $logLevel = \Psr\Log\LogLevel::CRITICAL;
+        if ($e instanceof \Sabre\DAV\Exception) {
+            // If it's a standard sabre/dav exception, it means we have a http
+            // status code available.
+            $code = $e->getHTTPCode();
+
+            if ($code >= 400 && $code < 500) {
+                // user error
+                $logLevel = \Psr\Log\LogLevel::INFO;
+            } else {
+                // Server-side error. We mark it's as an error, but it's not
+                // critical.
+                $logLevel = \Psr\Log\LogLevel::ERROR;
+            }
+        }
+
+        $this->server->getLogger()->log(
+            $logLevel,
+            'Uncaught exception',
+            [
+                'exception' => $e,
+            ]
+        );
     }
 
     /**

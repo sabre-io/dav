@@ -401,7 +401,7 @@ class Plugin extends DAV\ServerPlugin {
         }
         if ($warningMessage) {
             $this->server->httpResponse->setHeader(
-                'Ew',
+                'X-Sabre-Ew-Gross',
                 'vCard validation warning: ' . $warningMessage
             );
 

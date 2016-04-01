@@ -100,7 +100,7 @@ VCF;
 
         // The custom Ew header should not be set
         $this->assertNull(
-            $response->getHeader('Ew')
+            $response->getHeader('X-Sabre-Ew-Gross')
         );
         // Valid, non-auto-fixed responses should contain an ETag.
         $this->assertTrue(
@@ -154,7 +154,7 @@ VCF;
 
         // We should have gotten an Ew header
         $this->assertNotNull(
-            $response->getHeader('Ew')
+            $response->getHeader('X-Sabre-Ew-Gross')
         );
 
         $expectedVCard = <<<VCF

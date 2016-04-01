@@ -26,6 +26,7 @@ ChangeLog
   quickly where a principal lives on a server.
 * Renamed `phpunit.xml` to `phpunit.xml.dist` to make local modifications easy.
 * Functionality from `IShareableCalendar` is merged into `ISharedCalendar`.
+* #751: Fixed XML responses from failing `MKCOL` requests.
 
 3.1.3 (????-??-??)
 ------------------

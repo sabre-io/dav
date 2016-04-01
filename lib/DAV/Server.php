@@ -1197,9 +1197,20 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
         if (!$success) {
             $result = $mkCol->getResult();
-            // generateMkCol needs the href key to exist.
-            $result['href'] = $uri;
-            return $result;
+
+            $formattedResult = [
+                'href' => $uri,
+            ];
+
+            foreach ($result as $propertyName => $status) {
+
+                if (!isset($formattedResult[$status])) {
+                    $formattedResult[$status] = [];
+                }
+                $formattedResult[$status][$propertyName] = null;
+
+            }
+            return $formattedResult;
         }
 
         $this->tree->markDirty($parentUri);

@@ -19,8 +19,6 @@ services:
 
 sudo: false
 
-cache: vendor
-
 before_script:
   - mysql -e 'create database sabredav'
   - phpenv config-rm xdebug.ini; true
@@ -30,3 +28,7 @@ before_script:
 script:
   - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS
   - ./bin/sabre-cs-fixer fix lib/ --dry-run --diff
+
+cache:
+  directories:
+    - $HOME/.composer/cache

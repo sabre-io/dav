@@ -370,7 +370,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // $messages contains a list of problems with the vcard, along with
         // their severity.
-        foreach($messages as $message) {
+        foreach ($messages as $message) {
 
             if ($message['level'] > $highestLevel) {
                 // Recording the highest reported error level.
@@ -378,7 +378,7 @@ class Plugin extends DAV\ServerPlugin {
                 $warningMessage = $message['message'];
             }
 
-            switch($message['level']) {
+            switch ($message['level']) {
 
                 case 1 :
                     // Level 1 means that there was a problem, but it was repaired.

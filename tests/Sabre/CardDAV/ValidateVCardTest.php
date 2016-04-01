@@ -52,7 +52,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
             $realStatus = $this->server->httpResponse->getStatus();
 
             $msg = '';
-            if ($realStatus!==$expectedStatus) {
+            if ($realStatus !== $expectedStatus) {
                 $msg = 'Response body: ' . $this->server->httpResponse->getBodyAsString();
             }
             $this->assertEquals(
@@ -198,7 +198,7 @@ VCF;
         $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
         $this->assertTrue(
             strpos($foo['carddata'], 'UID') !== false,
-            print_r($foo,true)
+            print_r($foo, true)
         );
     }
 

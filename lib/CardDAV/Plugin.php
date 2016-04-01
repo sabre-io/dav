@@ -361,9 +361,14 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\UnsupportedMediaType('This collection can only support vcard objects.');
         }
 
-        $messages = $vobj->validate(
-            VObject\Node::PROFILE_CARDDAV | VObject\Node::REPAIR
-        );
+        $options = VObject\Node::PROFILE_CARDDAV;
+        $prefer = $this->server->getHTTPPrefer();
+
+        if ($prefer['handling'] !== 'strict') {
+            $options |= VObject\Node::REPAIR;
+        }
+
+        $messages = $vobj->validate($options);
 
         $highestLevel = 0;
         $warningMessage = null;

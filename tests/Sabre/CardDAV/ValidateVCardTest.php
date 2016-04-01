@@ -178,6 +178,40 @@ VCF;
 
     }
 
+    /**
+     * This test creates an intentionally broken vCard that vobject is able
+     * to automatically repair.
+     *
+     * However, we're supplying a heading asking the server to treat the
+     * request as strict, so the server should still let the request fail.
+     *
+     * @depends testCreateFileValid
+     */
+    function testCreateVCardStrictFail() {
+
+        $request = new HTTP\Request(
+            'PUT',
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [
+                'Prefer' => 'handling=strict',
+            ]
+        );
+
+        // The error in this vcard is that there's not enough semi-colons in N
+        $vcard = <<<VCF
+BEGIN:VCARD
+VERSION:4.0
+UID:foo
+FN:Firstname LastName
+N:LastName;FirstName;;
+END:VCARD
+VCF;
+
+        $request->setBody($vcard);
+        $this->request($request, 415);
+
+    }
+
     function testCreateFileNoUID() {
 
         $request = new HTTP\Request(

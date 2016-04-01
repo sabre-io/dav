@@ -315,13 +315,11 @@ class ServerMKCOLTest extends AbstractServer {
      */
     function testMKCOLAndProps() {
 
-        $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
-            'HTTP_CONTENT_TYPE' => 'application/xml',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request(
+            'MKCOL',
+            '/testcol',
+            ['Content-Type' => 'application/xml']
+        );
         $request->setBody('<?xml version="1.0"?>
 <mkcol xmlns="DAV:">
   <set>
@@ -340,6 +338,28 @@ class ServerMKCOLTest extends AbstractServer {
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
+
+        $responseBody = $this->response->getBodyAsString();
+
+        $expected = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
+ <d:response>
+  <d:href>/testcol</d:href>
+  <d:propstat>
+   <d:prop>
+    <d:displayname />
+   </d:prop>
+   <d:status>HTTP/1.1 403 Forbidden</d:status>
+  </d:propstat>
+ </d:response>
+</d:multistatus>
+XML;
+
+        $this->assertXmlStringEqualsXmlString(
+            $expected,
+            $responseBody
+        );
 
     }
 

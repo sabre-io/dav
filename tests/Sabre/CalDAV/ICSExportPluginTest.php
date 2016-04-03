@@ -319,4 +319,38 @@ ICS
         $response = $this->request($request, 400);
 
     }
+
+    function testContentDisposition() {
+
+        $request = new HTTP\Request(
+            'GET',
+            '/calendars/admin/UUID-123467?export'
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="Hello!-' . date('Y-m-d') . '.ics"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
+    function testContentDispositionJson() {
+
+        $request = new HTTP\Request(
+            'GET',
+            '/calendars/admin/UUID-123467?export',
+            ['Accept' => 'application/calendar+json']
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="Hello!-' . date('Y-m-d') . '.json"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
 }

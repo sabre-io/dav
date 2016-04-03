@@ -246,16 +246,29 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             $mergedCalendar = $mergedCalendar->expand($start, $end, $calendarTimeZone);
         }
 
-        $response->setHeader('Content-Type', $format);
+        $filenameExtension = '.ics';
 
         switch ($format) {
             case 'text/calendar' :
                 $mergedCalendar = $mergedCalendar->serialize();
+                $filenameExtension = '.ics';
                 break;
             case 'application/calendar+json' :
                 $mergedCalendar = json_encode($mergedCalendar->jsonSerialize());
+                $filenameExtension = '.json';
                 break;
         }
+
+        $filename = null;
+        if (isset($properties['{DAV:}displayname']) && $properties['{DAV:}displayname'] !== '') {
+            $filename = $properties['{DAV:}displayname'];
+        } else {
+            $filename = 'calendar';
+        }
+        $filename .= '-' . date('Y-m-d') . $filenameExtension;
+
+        $response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $response->setHeader('Content-Type', $format);
 
         $response->setStatus(200);
         $response->setBody($mergedCalendar);

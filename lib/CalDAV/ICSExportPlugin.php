@@ -261,7 +261,11 @@ class ICSExportPlugin extends DAV\ServerPlugin {
 
         $filename = null;
         if (isset($properties['{DAV:}displayname']) && $properties['{DAV:}displayname'] !== '') {
-            $filename = $properties['{DAV:}displayname'];
+            $filename = preg_replace(
+                '/[^a-zA-Z0-9-_ ]/um',
+                '',
+                $properties['{DAV:}displayname']
+            );
         } else {
             $filename = 'calendar';
         }

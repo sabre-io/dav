@@ -330,7 +330,7 @@ ICS
         $response = $this->request($request, 200);
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
         $this->assertEquals(
-            'attachment; filename="Hello!-' . date('Y-m-d') . '.ics"',
+            'attachment; filename="Hello-' . date('Y-m-d') . '.ics"',
             $response->getHeader('Content-Disposition')
         );
 
@@ -347,7 +347,33 @@ ICS
         $response = $this->request($request, 200);
         $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
         $this->assertEquals(
-            'attachment; filename="Hello!-' . date('Y-m-d') . '.json"',
+            'attachment; filename="Hello-' . date('Y-m-d') . '.json"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
+    function testContentDispositionBadChars() {
+
+        $this->caldavBackend->createCalendar(
+            'principals/admin',
+            'UUID-badchars',
+            [
+                '{DAV:}displayname'                         => 'Test Char-acters!"$%_^&*()~#42<>/',
+                '{http://apple.com/ns/ical/}calendar-color' => '#AA0000FF',
+            ]
+        );
+
+        $request = new HTTP\Request(
+            'GET',
+            '/calendars/admin/UUID-badchars?export',
+            ['Accept' => 'application/calendar+json']
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="Test Char-acters_42-' . date('Y-m-d') . '.json"',
             $response->getHeader('Content-Disposition')
         );
 

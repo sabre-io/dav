@@ -79,11 +79,25 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileValid() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $request = new HTTP\Request(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=strict']
+        );
+
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:foo
+BEGIN:VEVENT
+UID:foo
+DTSTAMP:20160406T052348Z
+DTSTART:20160706T140000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $request->setBody($ics);
 
         $response = $this->request($request);
 
@@ -91,12 +105,93 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
-            'ETag'            => ['"' . md5("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n") . '"'],
+            'ETag'            => ['"' . md5($ics) . '"'],
         ], $response->getHeaders());
 
         $expected = [
             'uri'          => 'blabla.ics',
-            'calendardata' => "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
+            'calendardata' => $ics,
+            'calendarid'   => 'calendar1',
+            'lastmodified' => null,
+        ];
+
+        $this->assertEquals($expected, $this->calBackend->getCalendarObject('calendar1', 'blabla.ics'));
+
+    }
+
+    function testCreateFileNoVersion() {
+
+        $request = new HTTP\Request(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=strict']
+        );
+
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+PRODID:foo
+BEGIN:VEVENT
+UID:foo
+DTSTAMP:20160406T052348Z
+DTSTART:20160706T140000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $request->setBody($ics);
+
+        $response = $this->request($request);
+
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+
+    }
+
+    function testCreateFileNoVersionFixed() {
+
+        $request = new HTTP\Request(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=lenient']
+        );
+
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+PRODID:foo
+BEGIN:VEVENT
+UID:foo
+DTSTAMP:20160406T052348Z
+DTSTART:20160706T140000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $request->setBody($ics);
+
+        $response = $this->request($request);
+
+        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals([
+            'X-Sabre-Version'  => [DAV\Version::VERSION],
+            'Content-Length'   => ['0'],
+            'X-Sabre-Ew-Gross' => ['iCalendar validation warning: VERSION MUST appear exactly once in a VCALENDAR component'],
+        ], $response->getHeaders());
+
+        $ics = <<<ICS
+BEGIN:VCALENDAR\r
+VERSION:2.0\r
+PRODID:foo\r
+BEGIN:VEVENT\r
+UID:foo\r
+DTSTAMP:20160406T052348Z\r
+DTSTART:20160706T140000Z\r
+END:VEVENT\r
+END:VCALENDAR\r
+
+ICS;
+
+        $expected = [
+            'uri'          => 'blabla.ics',
+            'calendardata' => $ics,
             'calendarid'   => 'calendar1',
             'lastmodified' => null,
         ];
@@ -107,15 +202,22 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileNoComponents() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
+        $request = new HTTP\Request(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=strict']
+        );
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:foo
+END:VCALENDAR
+ICS;
+
+        $request->setBody($ics);
 
         $response = $this->request($request);
-
-        $this->assertEquals(400, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
@@ -129,7 +231,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals(400, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
@@ -157,7 +259,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals(400, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
@@ -171,7 +273,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals(400, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
@@ -185,7 +287,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals(400, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
 
     }
 
@@ -206,20 +308,30 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
     function testUpdateFileParsableBody() {
 
         $this->calBackend->createCalendarObject('calendar1', 'blabla.ics', 'foo');
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $body = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
-        $request->setBody($body);
+        $request = new HTTP\Request(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics'
+        );
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:foo
+BEGIN:VEVENT
+UID:foo
+DTSTAMP:20160406T052348Z
+DTSTART:20160706T140000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
 
+        $request->setBody($ics);
         $response = $this->request($request);
 
         $this->assertEquals(204, $response->status);
 
         $expected = [
             'uri'          => 'blabla.ics',
-            'calendardata' => $body,
+            'calendardata' => $ics,
             'calendarid'   => 'calendar1',
             'lastmodified' => null,
         ];
@@ -266,11 +378,24 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
      */
     function testCreateFileModified() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nSUMMARY:Meeting in M\xfcnster\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $request = new HTTP\Request(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics'
+        );
+        $ics = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:foo
+BEGIN:VEVENT
+UID:foo
+SUMMARY:Meeting in M\xfcnster
+DTSTAMP:20160406T052348Z
+DTSTART:20160706T140000Z
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $request->setBody($ics);
 
         $response = $this->request($request);
 

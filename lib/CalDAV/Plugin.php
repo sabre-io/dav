@@ -822,11 +822,7 @@ class Plugin extends DAV\ServerPlugin {
             $data = stream_get_contents($data);
         }
 
-        $before = md5($data);
-        // Converting the data to unicode, if needed.
-        $data = DAV\StringUtil::ensureUTF8($data);
-
-        if ($before !== md5($data)) $modified = true;
+        $before = $data;
 
         try {
 
@@ -866,7 +862,7 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         $foundType = null;
-        $foundUID = null;
+
         foreach ($vobj->getComponents() as $component) {
             switch ($component->name) {
                 case 'VTIMEZONE' :
@@ -874,31 +870,59 @@ class Plugin extends DAV\ServerPlugin {
                 case 'VEVENT' :
                 case 'VTODO' :
                 case 'VJOURNAL' :
-                    if (is_null($foundType)) {
-                        $foundType = $component->name;
-                        if (!in_array($foundType, $supportedComponents)) {
-                            throw new Exception\InvalidComponentType('This calendar only supports ' . implode(', ', $supportedComponents) . '. We found a ' . $foundType);
-                        }
-                        if (!isset($component->UID)) {
-                            throw new DAV\Exception\BadRequest('Every ' . $component->name . ' component must have an UID');
-                        }
-                        $foundUID = (string)$component->UID;
-                    } else {
-                        if ($foundType !== $component->name) {
-                            throw new DAV\Exception\BadRequest('A calendar object must only contain 1 component. We found a ' . $component->name . ' as well as a ' . $foundType);
-                        }
-                        if ($foundUID !== (string)$component->UID) {
-                            throw new DAV\Exception\BadRequest('Every ' . $component->name . ' in this object must have identical UIDs');
-                        }
-                    }
+                    $foundType = $component->name;
                     break;
-                default :
-                    throw new DAV\Exception\BadRequest('You are not allowed to create components of type: ' . $component->name . ' here');
+            }
+
+        }
+
+        if (!$foundType || !in_array($foundType, $supportedComponents)) {
+            throw new Exception\InvalidComponentType('iCalendar objects must at least have a component of type ' . implode(', ', $supportedComponents));
+        }
+
+        $options = VObject\Node::PROFILE_CALDAV;
+        $prefer = $this->server->getHTTPPrefer();
+
+        if ($prefer['handling'] !== 'strict') {
+            $options |= VObject\Node::REPAIR;
+        }
+
+        $messages = $vobj->validate($options);
+
+        $highestLevel = 0;
+        $warningMessage = null;
+
+        // $messages contains a list of problems with the vcard, along with
+        // their severity.
+        foreach ($messages as $message) {
+
+            if ($message['level'] > $highestLevel) {
+                // Recording the highest reported error level.
+                $highestLevel = $message['level'];
+                $warningMessage = $message['message'];
+            }
+            switch ($message['level']) {
+
+                case 1 :
+                    // Level 1 means that there was a problem, but it was repaired.
+                    $modified = true;
+                    break;
+                case 2 :
+                    // Level 2 means a warning, but not critical
+                    break;
+                case 3 :
+                    // Level 3 means a critical error
+                    throw new DAV\Exception\UnsupportedMediaType('Validation error in iCalendar: ' . $message['message']);
 
             }
+
         }
-        if (!$foundType)
-            throw new DAV\Exception\BadRequest('iCalendar object must contain at least 1 of VEVENT, VTODO or VJOURNAL');
+        if ($warningMessage) {
+            $response->setHeader(
+                'X-Sabre-Ew-Gross',
+                'iCalendar validation warning: ' . $warningMessage
+            );
+        }
 
         // We use an extra variable to allow event handles to tell us wether
         // the object was modified or not.
@@ -918,12 +942,12 @@ class Plugin extends DAV\ServerPlugin {
             ]
         );
 
-        if ($subModified) {
+        if ($modified || $subModified) {
             // An event handler told us that it modified the object.
             $data = $vobj->serialize();
 
             // Using md5 to figure out if there was an *actual* change.
-            if (!$modified && $before !== md5($data)) {
+            if (!$modified && strcmp($data, $before) !== 0) {
                 $modified = true;
             }
 

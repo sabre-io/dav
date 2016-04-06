@@ -3,8 +3,11 @@
 namespace Sabre\CalDAV;
 
 use Sabre\HTTP\Request;
+use Sabre\VObject;
 
 class JCalTransformTest extends \Sabre\DAVServerTest {
+
+    use VObject\PHPUnitAssertions;
 
     protected $setupCalDAV = true;
     protected $caldavCalendars = [
@@ -222,7 +225,8 @@ XML;
                 [
                     'vevent',
                     [
-                        ['uid', (object)[], 'text', 'foo'],
+                        ['uid',     (object)[], 'text', 'foo'],
+                        ['dtstart', (object)[], 'date', '2016-04-06'],
                     ],
                     [],
                 ],
@@ -236,7 +240,22 @@ XML;
             $modified
         );
 
-        $this->assertEquals("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n", $input);
+
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:foo
+DTSTART;VALUE=DATE:20160406
+DTSTAMP:**ANY**
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->assertVObjectEqualsVObject(
+            $expected,
+            $input
+        );
 
     }
 

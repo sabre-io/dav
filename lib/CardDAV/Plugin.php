@@ -407,7 +407,7 @@ class Plugin extends DAV\ServerPlugin {
 
             // Re-serializing object.
             $data = $vobj->serialize();
-            if (strcmp($data, $before) !== 0) {
+            if (!$modified && strcmp($data, $before) !== 0) {
                 // This ensures that the system does not send an ETag back.
                 $modified = true;
             }

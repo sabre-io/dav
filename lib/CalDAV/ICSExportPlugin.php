@@ -170,13 +170,13 @@ class ICSExportPlugin extends DAV\ServerPlugin {
     protected function generateResponse($path, $start, $end, $expand, $componentType, $format, $properties, ResponseInterface $response) {
 
         $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
+        $calendarNode = $this->server->tree->getNodeForPath($path);
 
         $blobs = [];
         if ($start || $end || $componentType) {
 
             // If there was a start or end filter, we need to enlist
             // calendarQuery for speed.
-            $calendarNode = $this->server->tree->getNodeForPath($path);
             $queryResult = $calendarNode->calendarQuery([
                 'name'         => 'VCALENDAR',
                 'comp-filters' => [
@@ -259,16 +259,11 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                 break;
         }
 
-        $filename = null;
-        if (isset($properties['{DAV:}displayname']) && $properties['{DAV:}displayname'] !== '') {
-            $filename = preg_replace(
-                '/[^a-zA-Z0-9-_ ]/um',
-                '',
-                $properties['{DAV:}displayname']
-            );
-        } else {
-            $filename = 'calendar';
-        }
+        $filename = preg_replace(
+            '/[^a-zA-Z0-9-_ ]/um',
+            '',
+            $calendarNode->getName()
+        );
         $filename .= '-' . date('Y-m-d') . $filenameExtension;
 
         $response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');

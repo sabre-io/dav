@@ -8,6 +8,10 @@ use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\HTTP\URLUtil;
 use Sabre\Uri;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Main DAV server class
@@ -16,7 +20,9 @@ use Sabre\Uri;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Server extends EventEmitter {
+class Server extends EventEmitter implements LoggerAwareInterface {
+
+    use LoggerAwareTrait;
 
     /**
      * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree
@@ -427,6 +433,20 @@ class Server extends EventEmitter {
     function getPlugins() {
 
         return $this->plugins;
+
+    }
+
+    /**
+     * Returns the PSR-3 logger objcet.
+     *
+     * @return LoggerInterface
+     */
+    function getLogger() {
+
+        if (!$this->logger) {
+            $this->logger = new NullLogger();
+        }
+        return $this->logger;
 
     }
 

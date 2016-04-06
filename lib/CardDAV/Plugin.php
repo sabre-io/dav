@@ -334,12 +334,7 @@ class Plugin extends DAV\ServerPlugin {
             $data = stream_get_contents($data);
         }
 
-        $before = md5($data);
-
-        // Converting the data to unicode, if needed.
-        $data = DAV\StringUtil::ensureUTF8($data);
-
-        if (md5($data) !== $before) $modified = true;
+        $before = $data;
 
         try {
 
@@ -366,11 +361,56 @@ class Plugin extends DAV\ServerPlugin {
             throw new DAV\Exception\UnsupportedMediaType('This collection can only support vcard objects.');
         }
 
-        if (!isset($vobj->UID)) {
-            // No UID in vcards is invalid, but we'll just add it in anyway.
-            $vobj->add('UID', DAV\UUIDUtil::getUUID());
+        $options = VObject\Node::PROFILE_CARDDAV;
+        $prefer = $this->server->getHTTPPrefer();
+
+        if ($prefer['handling'] !== 'strict') {
+            $options |= VObject\Node::REPAIR;
+        }
+
+        $messages = $vobj->validate($options);
+
+        $highestLevel = 0;
+        $warningMessage = null;
+
+        // $messages contains a list of problems with the vcard, along with
+        // their severity.
+        foreach ($messages as $message) {
+
+            if ($message['level'] > $highestLevel) {
+                // Recording the highest reported error level.
+                $highestLevel = $message['level'];
+                $warningMessage = $message['message'];
+            }
+
+            switch ($message['level']) {
+
+                case 1 :
+                    // Level 1 means that there was a problem, but it was repaired.
+                    $modified = true;
+                    break;
+                case 2 :
+                    // Level 2 means a warning, but not critical
+                    break;
+                case 3 :
+                    // Level 3 means a critical error
+                    throw new DAV\Exception\UnsupportedMediaType('Validation error in vCard: ' . $message['message']);
+
+            }
+
+        }
+        if ($warningMessage) {
+            $this->server->httpResponse->setHeader(
+                'X-Sabre-Ew-Gross',
+                'vCard validation warning: ' . $warningMessage
+            );
+
+            // Re-serializing object.
             $data = $vobj->serialize();
-            $modified = true;
+            if (!$modified && strcmp($data, $before) !== 0) {
+                // This ensures that the system does not send an ETag back.
+                $modified = true;
+            }
         }
 
         // Destroy circular references to PHP will GC the object.

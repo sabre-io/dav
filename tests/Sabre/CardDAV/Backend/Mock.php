@@ -124,12 +124,19 @@ class Mock extends AbstractBackend {
 
         $cards = [];
         foreach ($this->cards[$addressBookId] as $uri => $data) {
-            $cards[] = [
-                'uri'      => $uri,
-                'carddata' => $data,
-                'etag'     => '"' . md5($data) . '"',
-                'size'     => strlen($data)
-            ];
+            if (is_resource($data)) {
+                $cards[] = [
+                    'uri'      => $uri,
+                    'carddata' => $data,
+                ];
+            } else {
+                $cards[] = [
+                    'uri'      => $uri,
+                    'carddata' => $data,
+                    'etag'     => '"' . md5($data) . '"',
+                    'size'     => strlen($data)
+                ];
+            }
         }
         return $cards;
 
@@ -190,6 +197,9 @@ class Mock extends AbstractBackend {
      */
     function createCard($addressBookId, $cardUri, $cardData) {
 
+        if (is_resource($cardData)) {
+            $cardData = stream_get_contents($cardData);
+        }
         $this->cards[$addressBookId][$cardUri] = $cardData;
         return '"' . md5($cardData) . '"';
 
@@ -222,6 +232,9 @@ class Mock extends AbstractBackend {
      */
     function updateCard($addressBookId, $cardUri, $cardData) {
 
+        if (is_resource($cardData)) {
+            $cardData = stream_get_contents($cardData);
+        }
         $this->cards[$addressBookId][$cardUri] = $cardData;
         return '"' . md5($cardData) . '"';
 

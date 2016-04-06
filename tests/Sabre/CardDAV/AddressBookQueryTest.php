@@ -12,11 +12,11 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQuery() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/addressbooks/user1/book1',
-            'HTTP_DEPTH'     => '1',
-        ]);
+        $request = new HTTP\Request(
+            'REPORT',
+            '/addressbooks/user1/book1',
+            ['Depth' => '1']
+        );
 
         $request->setBody(
 '<?xml version="1.0"?>
@@ -62,11 +62,11 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQueryDepth0() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/addressbooks/user1/book1/card1',
-            'HTTP_DEPTH'     => '0',
-        ]);
+        $request = new HTTP\Request(
+            'REPORT',
+            '/addressbooks/user1/book1/card1',
+            ['Depth' => '0']
+        );
 
         $request->setBody(
 '<?xml version="1.0"?>
@@ -107,11 +107,11 @@ class AddressBookQueryTest extends AbstractPluginTest {
 
     function testQueryNoMatch() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/addressbooks/user1/book1',
-            'HTTP_DEPTH'     => '1',
-        ]);
+        $request = new HTTP\Request(
+            'REPORT',
+            '/addressbooks/user1/book1',
+            ['Depth' => '1']
+        );
 
         $request->setBody(
 '<?xml version="1.0"?>

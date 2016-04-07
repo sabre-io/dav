@@ -97,13 +97,16 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.9 (????-??-??)
+3.0.9 (2016-04-06)
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #805: It wasn't possible to create calendars that hold events, journals and
   todos using MySQL, because the `components` column was 1 byte too small.
+* The zip release ships with [sabre/vobject 3.5.1][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
 3.0.8 (2016-03-12)

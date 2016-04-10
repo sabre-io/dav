@@ -18,8 +18,9 @@ class PDOSqliteTest extends AbstractPDOTest {
         if (!SABRE_HASSQLITE) $this->markTestSkipped('SQLite driver is not available');
         $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/pdobackend');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $pdo->query('CREATE TABLE users (username TEXT, digesta1 TEXT, email VARCHAR(80), displayname VARCHAR(80))');
-        $pdo->query('INSERT INTO users VALUES ("user","hash","user@example.org","User")');
+        $sql = file_get_contents(__DIR__ . '/../../../../../examples/sql/sqlite.users.sql');
+        $pdo->query($sql);
+        $pdo->query('INSERT INTO users (username, digesta1) VALUES ("user","hash")');
 
         return $pdo;
 

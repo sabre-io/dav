@@ -186,6 +186,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->on('beforeCreateFile',    [$this, 'beforeCreateFile']);
         $server->on('beforeWriteContent',  [$this, 'beforeWriteContent']);
         $server->on('afterMethod:GET',     [$this, 'httpAfterGET']);
+        $server->on('getSupportedPrivilegeSet', [$this, 'getSupportedPrivilegeSet']);
 
         $server->xml->namespaceMap[self::NS_CALDAV] = 'cal';
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
@@ -956,6 +957,23 @@ class Plugin extends DAV\ServerPlugin {
         // Destroy circular references so PHP will garbage collect the object.
         $vobj->destroy();
 
+    }
+
+    /**
+     * This method is triggered whenever a subsystem reqeuests the privileges
+     * that are supported on a particular node.
+     *
+     * @param INode $node
+     * @param array $supportedPrivilegeSet
+     */
+    function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet) {
+
+        if ($node instanceof ISharedNode) {
+            $supportedPrivilegeSet['{DAV:}read']['aggregates']['{' . self::NS_CALDAV . '}read-free-busy'] = [
+                'abstract' => false,
+                'aggregates' => [],
+            ];
+        }
     }
 
     /**

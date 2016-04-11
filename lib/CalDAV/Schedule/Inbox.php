@@ -17,6 +17,8 @@ use Sabre\VObject;
  */
 class Inbox extends DAV\Collection implements IInbox {
 
+    use DAVACL\ACLTrait;
+
     /**
      * CalDAV backend
      *
@@ -119,19 +121,6 @@ class Inbox extends DAV\Collection implements IInbox {
     }
 
     /**
-     * Returns a group principal
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getGroup() {
-
-        return null;
-
-    }
-
-    /**
      * Returns a list of ACE's for this node.
      *
      * Each ACE has the following properties:
@@ -167,58 +156,11 @@ class Inbox extends DAV\Collection implements IInbox {
                 'protected' => true,
             ],
             [
-                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver-invite',
-                'principal' => '{DAV:}authenticated',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver-reply',
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ],
         ];
-
-    }
-
-    /**
-     * Updates the ACL
-     *
-     * This method will receive a list of new ACE's.
-     *
-     * @param array $acl
-     * @return void
-     */
-    function setACL(array $acl) {
-
-        throw new DAV\Exception\MethodNotAllowed('You\'re not allowed to update the ACL');
-
-    }
-
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        $ns = '{' . CalDAV\Plugin::NS_CALDAV . '}';
-
-        $default = DAVACL\Plugin::getDefaultSupportedPrivilegeSet();
-        $default['aggregates'][] = [
-            'privilege'  => $ns . 'schedule-deliver',
-            'aggregates' => [
-               ['privilege' => $ns . 'schedule-deliver-invite'],
-               ['privilege' => $ns . 'schedule-deliver-reply'],
-            ],
-        ];
-        return $default;
 
     }
 

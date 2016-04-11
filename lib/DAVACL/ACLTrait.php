@@ -2,18 +2,19 @@
 
 namespace Sabre\DAVACL;
 
-use Sabre\DAV;
-
 /**
- * ACL-enabled node
+ * This trait is a default implementation of the IACL interface.
  *
- * If you want to add WebDAV ACL to a node, you must implement this class
+ * In many cases you only want to implement 1 or to of the IACL functions,
+ * this trait allows you to be a bit lazier.
+ *
+ * By default this trait grants all privileges to the owner of the resource.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
- * @author Evert Pot (http://evertpot.com/)
+ * @author Evert Pot (https://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-interface IACL extends DAV\INode {
+trait ACLTrait {
 
     /**
      * Returns the owner principal
@@ -22,7 +23,11 @@ interface IACL extends DAV\INode {
      *
      * @return string|null
      */
-    function getOwner();
+    function getOwner() {
+
+        return null;
+
+    }
 
     /**
      * Returns a group principal
@@ -31,7 +36,11 @@ interface IACL extends DAV\INode {
      *
      * @return string|null
      */
-    function getGroup();
+    function getGroup() {
+
+        return null;
+
+    }
 
     /**
      * Returns a list of ACE's for this node.
@@ -45,7 +54,17 @@ interface IACL extends DAV\INode {
      *
      * @return array
      */
-    function getACL();
+    function getACL() {
+
+        return [
+            [
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
+                'protected' => true,
+            ]
+        ];
+
+    }
 
     /**
      * Updates the ACL
@@ -55,7 +74,10 @@ interface IACL extends DAV\INode {
      * @param array $acl
      * @return void
      */
-    function setACL(array $acl);
+    function setACL(array $acl) {
+
+        throw new \Sabre\DAV\Exception\Forbidden('Setting ACL is not supported on this node');
+    }
 
     /**
      * Returns the list of supported privileges for this node.
@@ -69,6 +91,10 @@ interface IACL extends DAV\INode {
      *
      * @return array|null
      */
-    function getSupportedPrivilegeSet();
+    function getSupportedPrivilegeSet() {
+
+        return null;
+
+    }
 
 }

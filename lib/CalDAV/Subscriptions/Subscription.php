@@ -183,19 +183,6 @@ class Subscription extends Collection implements ISubscription, IACL {
     }
 
     /**
-     * Returns a group principal.
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getGroup() {
-
-        return null;
-
-    }
-
-    /**
      * Returns a list of ACE's for this node.
      *
      * Each ACE has the following properties:
@@ -211,22 +198,12 @@ class Subscription extends Collection implements ISubscription, IACL {
 
         return [
             [
-                'privilege' => '{DAV:}read',
+                'privilege' => '{DAV:}all',
                 'principal' => $this->getOwner(),
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->getOwner(),
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner() . '/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => $this->getOwner() . '/calendar-proxy-write',
                 'protected' => true,
             ],
@@ -236,38 +213,6 @@ class Subscription extends Collection implements ISubscription, IACL {
                 'protected' => true,
             ]
         ];
-
-    }
-
-    /**
-     * Updates the ACL.
-     *
-     * This method will receive a list of new ACE's.
-     *
-     * @param array $acl
-     * @return void
-     */
-    function setACL(array $acl) {
-
-        throw new MethodNotAllowed('Changing ACL is not yet supported');
-
-    }
-
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See \Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        return null;
 
     }
 

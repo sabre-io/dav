@@ -333,13 +333,77 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * Returns the supported privilege structure for this ACL plugin.
+     * Find out of a principal equals another principal.
      *
-     * See RFC3744 for more details. Currently we default on a simple,
-     * standard structure.
+     * This is a quick way to find out wether a principal URI is part of a
+     * group, or any subgroups.
      *
-     * You can either get the list of privileges by a uri (path) or by
-     * specifying a Node.
+     * The first argument is the principal URI you want to check against. For
+     * example the principal group, and the second argument is the principal of
+     * which you want to find out of it is the same as the first principal, or
+     * in a member of the first principal's group or subgroups.
+     *
+     * So the arguments are not interchangable. If principal A is in group B,
+     * passing 'B', 'A' will yield true, but 'A', 'B' is false.
+     *
+     * If the sceond argument is not passed, we will use the current user
+     * principal.
+     *
+     * @param string $checkPrincipal
+     * @param string $currentPrincipal
+     * @return bool
+     */
+    function principalMatchesPrincipal($checkPrincipal, $currentPrincipal = null) {
+
+        if (is_null($currentPrincipal)) {
+            $currentPrincipal = $this->getCurrentUserPrincipal();
+        }
+        if ($currentPrincipal === $checkPrincipal) {
+            return true;
+        }
+        return in_array(
+            $checkPrincipal,
+            $this->getPrincipalMembership($currentPrincipal)
+        );
+
+    }
+
+
+    /**
+     * Returns a tree of supported privileges for a resource.
+     *
+     * The returned array structure should be in this form:
+     *
+     * [
+     *    [
+     *       'privilege' => '{DAV:}read',
+     *       'abstract'  => false,
+     *       'aggregates' => []
+     *    ]
+     * ]
+     *
+     * Privileges can be nested using "aggregrates". Doing so means that
+     * if you assign someone the aggregrating privilege, all the
+     * sub-privileges will automatically be granted.
+     *
+     * Marking a privilege as abstract means that the privilege cannot be
+     * directly assigned, but must be assigned via the parent privilege.
+     *
+     * So a more complex version might look like this:
+     *
+     * [
+     *    [
+     *       'privilege' => '{DAV:}read',
+     *       'abstract'  => false,
+     *       'aggregates' => [
+     *          [
+     *              'privilege'  => '{DAV:}read-acl',
+     *              'abstract'   => false,
+     *              'aggregates' => [],
+     *          ]
+     *       ]
+     *    ]
+     * ]
      *
      * @param string|INode $node
      * @return array
@@ -350,73 +414,74 @@ class Plugin extends DAV\ServerPlugin {
             $node = $this->server->tree->getNodeForPath($node);
         }
 
+        $supportedPrivileges = null;
         if ($node instanceof IACL) {
-            $result = $node->getSupportedPrivilegeSet();
-
-            if ($result)
-                return $result;
+            $supportedPrivileges = $node->getSupportedPrivileges();
         }
 
-        return self::getDefaultSupportedPrivilegeSet();
+        if (is_null($supportedPrivileges)) {
 
-    }
-
-    /**
-     * Returns a fairly standard set of privileges, which may be useful for
-     * other systems to use as a basis.
-     *
-     * @return array
-     */
-    static function getDefaultSupportedPrivilegeSet() {
-
-        return [
-            'privilege'  => '{DAV:}all',
-            'abstract'   => true,
-            'aggregates' => [
-                [
-                    'privilege'  => '{DAV:}read',
+            // Default
+            $supportedPrivileges = [
+                '{DAV:}read' => [
+                    'abstract'   => false,
                     'aggregates' => [
-                        [
-                            'privilege' => '{DAV:}read-acl',
+                        '{DAV:}read-acl' => [
                             'abstract'  => false,
+                            'aggregates' => [],
                         ],
-                        [
-                            'privilege' => '{DAV:}read-current-user-privilege-set',
+                        '{DAV:}read-current-user-privilege-set' => [
                             'abstract'  => false,
+                            'aggregates' => [],
                         ],
                     ],
-                ], // {DAV:}read
+                ],
                 [
                     'privilege'  => '{DAV:}write',
+                    'abstract'   => false,
                     'aggregates' => [
-                        [
-                            'privilege' => '{DAV:}write-acl',
+                        '{DAV:}write-properties' => [
                             'abstract'  => false,
+                            'aggregates' => [],
                         ],
-                        [
-                            'privilege' => '{DAV:}write-properties',
+                        '{DAV:}unlock' => [
                             'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}write-content',
-                            'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}bind',
-                            'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}unbind',
-                            'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}unlock',
-                            'abstract'  => false,
+                            'aggregates' => [],
                         ],
                     ],
-                ], // {DAV:}write
-            ],
-        ]; // {DAV:}all
+                ],
+            ];
+            if ($node instanceof \Sabre\DAV\IFile) {
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}write-content'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+            }
+            if ($node instanceof \Sabre\DAV\ICollection) {
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}bind'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}unbind'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+            }
+            if ($node instanceof \Sabre\DAV\IACL) {
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}write-acl'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+            }
+
+        }
+
+        $this->server->emit(
+            'getSupportedPrivilegeSet',
+            [$node, &$supportedPrivileges]
+        );
+
+        return $supportedPrivileges;
 
     }
 
@@ -528,8 +593,6 @@ class Plugin extends DAV\ServerPlugin {
 
         $acl = $this->getACL($node);
 
-        $principals = $this->getCurrentUserPrincipals();
-
         $collected = [];
 
         foreach ($acl as $ace) {
@@ -540,7 +603,7 @@ class Plugin extends DAV\ServerPlugin {
 
                 case '{DAV:}owner' :
                     $owner = $node->getOwner();
-                    if ($owner && in_array($owner, $principals)) {
+                    if ($owner && $this->principalMatchesPrincipal($owner)) {
                         $collected[] = $ace;
                     }
                     break;
@@ -562,7 +625,7 @@ class Plugin extends DAV\ServerPlugin {
                     break;
 
                 default :
-                    if (in_array($ace['principal'], $principals)) {
+                    if ($this->principalMatchesPrincipal($ace['principal'])) {
                         $collected[] = $ace;
                     }
                     break;

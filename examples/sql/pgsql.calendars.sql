@@ -8,7 +8,7 @@ CREATE TABLE calendars (
     calendarorder INTEGER NOT NULL DEFAULT 0,
     calendarcolor VARCHAR(10),
     timezone TEXT,
-    components VARCHAR(20),
+    components VARCHAR(21),
     uid VARCHAR(200),
     transparent SMALLINT NOT NULL DEFAULT '0'
 );

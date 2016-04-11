@@ -77,16 +77,9 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
     function testToHtml() {
 
         $prop = new SupportedPrivilegeSet([
-            'privilege'  => '{DAV:}all',
-            'abstract'   => true,
-            'aggregates' => [
-                [
-                    'privilege' => '{DAV:}read',
-                ],
-                [
-                    'privilege'   => '{DAV:}write',
-                    'description' => 'booh',
-                ],
+            '{DAV:}read'  => [],
+            '{DAV:}write' => [
+                'description' => 'booh',
             ],
         ]);
         $html = new HtmlOutputHelper(
@@ -95,7 +88,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
         );
 
         $expected = <<<HTML
-<ul class="tree"><li><span title="{DAV:}all">d:all</span> <i>(abstract)</i>
+<ul class="tree"><li><span title="{DAV:}all">d:all</span>
 <ul>
 <li><span title="{DAV:}read">d:read</span></li>
 <li><span title="{DAV:}write">d:write</span> booh</li>

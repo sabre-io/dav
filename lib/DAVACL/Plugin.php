@@ -65,18 +65,6 @@ class Plugin extends DAV\ServerPlugin {
     ];
 
     /**
-     * By default ACL is only enforced for nodes that have ACL support (the
-     * ones that implement IACL). For any other node, access is
-     * always granted.
-     *
-     * To override this behaviour you can turn this setting off. This is useful
-     * if you plan to fully support ACL in the entire tree.
-     *
-     * @var bool
-     */
-    public $allowAccessToNodesWithoutACL = true;
-
-    /**
      * By default nodes that are inaccessible by the user, can still be seen
      * in directory listings (PROPFIND on parent with Depth: 1)
      *
@@ -189,18 +177,6 @@ class Plugin extends DAV\ServerPlugin {
 
         $acl = $this->getCurrentUserPrivilegeSet($uri);
 
-        if (is_null($acl)) {
-            if ($this->allowAccessToNodesWithoutACL) {
-                return true;
-            } else {
-                if ($throwExceptions)
-                    throw new Exception\NeedPrivileges($uri, $privileges);
-                else
-                    return false;
-
-            }
-        }
-
         $failed = [];
         foreach ($privileges as $priv) {
 
@@ -257,6 +233,51 @@ class Plugin extends DAV\ServerPlugin {
         );
 
     }
+
+    /**
+     * Sets the default ACL rules.
+     *
+     * These rules are used for all nodes that don't implement the IACL interface.
+     *
+     * @param array $acl
+     * @return void
+     */
+    function setDefaultAcl(array $acl) {
+
+        $this->defaultAcl = $acl;
+
+    }
+
+    /**
+     * Returns the default ACL rules.
+     *
+     * These rules are used for all nodes that don't implement the IACL interface.
+     *
+     * @param array $acl
+     * @return void
+     */
+    function getDefaultAcl() {
+
+        return $this->defaultAcl;
+
+    }
+
+    /**
+     * The default ACL rules.
+     *
+     * These rules are used for nodes that don't implement IACL. These default
+     * set of rules allow anyone to do anything, as long as they are
+     * authenticated.
+     *
+     * var array
+     */
+    protected $defaultAcl = [
+        [
+            'principal' => '{DAV:}authenticated',
+            'protected' => true,
+            'privilege' => '{DAV:}all',
+        ],
+    ];
 
     /**
      * This array holds a cache for all the principals that are associated with
@@ -468,13 +489,13 @@ class Plugin extends DAV\ServerPlugin {
      * @param string|DAV\INode $node
      * @return array
      */
-    function getACL($node) {
+    function getAcl($node) {
 
         if (is_string($node)) {
             $node = $this->server->tree->getNodeForPath($node);
         }
         if (!$node instanceof IACL) {
-            return null;
+            return $this->getDefaultAcl();
         }
         $acl = $node->getACL();
         foreach ($this->adminPrincipals as $adminPrincipal) {
@@ -506,8 +527,6 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         $acl = $this->getACL($node);
-
-        if (is_null($acl)) return null;
 
         $principals = $this->getCurrentUserPrincipals();
 
@@ -936,9 +955,7 @@ class Plugin extends DAV\ServerPlugin {
                 $propFind->set('{DAV:}acl', null, 403);
             } else {
                 $acl = $this->getACL($node);
-                if (!is_null($acl)) {
-                    return new Xml\Property\Acl($this->getACL($node));
-                }
+                return new Xml\Property\Acl($this->getACL($node));
             }
         });
         $propFind->handle('{DAV:}acl-restrictions', function() {

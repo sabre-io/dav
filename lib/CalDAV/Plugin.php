@@ -969,7 +969,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet) {
 
-        if ($node instanceof ISharedNode) {
+        if ($node instanceof ICalendar) {
             $supportedPrivilegeSet['{DAV:}read']['aggregates']['{' . self::NS_CALDAV . '}read-free-busy'] = [
                 'abstract'   => false,
                 'aggregates' => [],

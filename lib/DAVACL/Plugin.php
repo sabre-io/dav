@@ -644,6 +644,9 @@ class Plugin extends DAV\ServerPlugin {
             $current = array_pop($collected);
             $collected2[] = $current['privilege'];
 
+            if (!isset($flat[$current['privilege']])) {
+                throw new \Sabre\DAV\Exception('A node has the "' . $current['privilege'] . '" in its ACL list, but this privilege was not reported in the supportedPrivilegeSet list');
+            }
             foreach ($flat[$current['privilege']]['aggregates'] as $subPriv) {
                 $collected2[] = $subPriv;
                 $collected[] = $flat[$subPriv];

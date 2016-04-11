@@ -155,6 +155,9 @@ ICS
         $this->server->addPlugin(
             new DAVACL\Plugin()
         );
+        $this->server->addPlugin(
+            new Plugin()
+        );
 
         $this->autoLogin('admin');
 

@@ -586,7 +586,7 @@ class Plugin extends ServerPlugin {
 
         $ns = '{' . self::NS_CALDAV . '}';
         if ($node instanceof IOutbox) {
-            $supportedPrivilegeSet[$ns . 'schedule-send'][
+            $supportedPrivilegeSet[$ns . 'schedule-send'] = [
                 'abstract' => false,
                 'aggregates' => [
                     $ns . 'schedule-send-invite' => [
@@ -611,7 +611,7 @@ class Plugin extends ServerPlugin {
             ];
         }
         if ($node instanceof IInbox) {
-            $supportedPrivilegeSet[$ns . 'schedule-deliver'][
+            $supportedPrivilegeSet[$ns . 'schedule-deliver'] = [
                 'abstract' => false,
                 'aggregates' => [
                     $ns . 'schedule-deliver-invite' => [
@@ -771,7 +771,7 @@ class Plugin extends ServerPlugin {
 
         if ($componentType === 'VFREEBUSY' && $method === 'REQUEST') {
 
-            $acl && $acl->checkPrivileges($outboxPath, '{' . self::NS_CALDAV . '}schedule-query-freebusy');
+            $acl && $acl->checkPrivileges($outboxPath, '{' . self::NS_CALDAV . '}schedule-send-freebusy');
             $this->handleFreeBusyRequest($outboxNode, $vObject, $request, $response);
 
             // Destroy circular references so PHP can GC the object.

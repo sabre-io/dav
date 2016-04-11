@@ -40,54 +40,13 @@ class InboxTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ],
             [
-                'privilege' => '{urn:ietf:params:xml:ns:caldav}schedule-deliver-invite',
-                'principal' => '{DAV:}authenticated',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{urn:ietf:params:xml:ns:caldav}schedule-deliver-reply',
+                'privilege' => '{urn:ietf:params:xml:ns:caldav}schedule-deliver',
                 'principal' => '{DAV:}authenticated',
                 'protected' => true,
             ],
         ], $inbox->getACL());
 
         $ok = false;
-        try {
-            $inbox->setACL([]);
-        } catch (DAV\Exception\MethodNotAllowed $e) {
-            $ok = true;
-        }
-        if (!$ok) {
-            $this->fail('Exception was not emitted');
-        }
-
-    }
-
-    function testGetSupportedPrivilegeSet() {
-
-        $inbox = new Inbox(
-            new CalDAV\Backend\MockScheduling(),
-            'principals/user1'
-        );
-        $r = $inbox->getSupportedPrivilegeSet();
-
-        $ok = 0;
-        foreach ($r['aggregates'] as $priv) {
-
-            if ($priv['privilege'] == '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver') {
-                $ok++;
-                foreach ($priv['aggregates'] as $subpriv) {
-                    if ($subpriv['privilege'] == '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver-invite') {
-                        $ok++;
-                    }
-                    if ($subpriv['privilege'] == '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-deliver-reply') {
-                        $ok++;
-                    }
-                }
-            }
-        }
-
-        $this->assertEquals(3, $ok, "We're missing one or more privileges");
 
     }
 

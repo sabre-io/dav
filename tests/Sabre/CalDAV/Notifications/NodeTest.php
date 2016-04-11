@@ -67,13 +67,8 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
         $node = $this->getInstance();
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
         ];
@@ -83,7 +78,7 @@ class NodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

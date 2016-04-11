@@ -174,22 +174,12 @@ ICS;
 
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1',
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ],
@@ -214,22 +204,12 @@ ICS;
         $calendarObject = new SchedulingObject($backend, ['calendarid' => 1, 'uri' => 'foo', 'principaluri' => 'principals/user1' ]);
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1',
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ],
@@ -245,7 +225,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

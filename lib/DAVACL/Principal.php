@@ -22,6 +22,8 @@ use Sabre\HTTP\URLUtil;
  */
 class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
+    use ACLTrait;
+
     /**
      * Struct with principal information.
      *
@@ -213,75 +215,6 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
         return $this->principalProperties['uri'];
 
-
-    }
-
-    /**
-     * Returns a group principal
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getGroup() {
-
-        return null;
-
-    }
-
-    /**
-     * Returns a list of ACE's for this node.
-     *
-     * Each ACE has the following properties:
-     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
-     *     currently the only supported privileges
-     *   * 'principal', a url to the principal who owns the node
-     *   * 'protected' (optional), indicating that this ACE is not allowed to
-     *      be updated.
-     *
-     * @return array
-     */
-    function getACL() {
-
-        return [
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => '{DAV:}authenticated',
-                'protected' => true,
-            ],
-        ];
-
-    }
-
-    /**
-     * Updates the ACL
-     *
-     * This method will receive a list of new ACE's.
-     *
-     * @param array $acl
-     * @return void
-     */
-    function setACL(array $acl) {
-
-        throw new DAV\Exception\MethodNotAllowed('Updating ACLs is not allowed here');
-
-    }
-
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        return null;
 
     }
 

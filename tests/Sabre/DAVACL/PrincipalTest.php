@@ -178,8 +178,8 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
         $this->assertEquals([
             [
-                'privilege' => '{DAV:}read',
-                'principal' => '{DAV:}authenticated',
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ]
         ], $principal->getACL());
@@ -187,7 +187,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACl() {
 

@@ -65,18 +65,6 @@ class Plugin extends DAV\ServerPlugin {
     ];
 
     /**
-     * By default ACL is only enforced for nodes that have ACL support (the
-     * ones that implement IACL). For any other node, access is
-     * always granted.
-     *
-     * To override this behaviour you can turn this setting off. This is useful
-     * if you plan to fully support ACL in the entire tree.
-     *
-     * @var bool
-     */
-    public $allowAccessToNodesWithoutACL = true;
-
-    /**
      * By default nodes that are inaccessible by the user, can still be seen
      * in directory listings (PROPFIND on parent with Depth: 1)
      *
@@ -189,18 +177,6 @@ class Plugin extends DAV\ServerPlugin {
 
         $acl = $this->getCurrentUserPrivilegeSet($uri);
 
-        if (is_null($acl)) {
-            if ($this->allowAccessToNodesWithoutACL) {
-                return true;
-            } else {
-                if ($throwExceptions)
-                    throw new Exception\NeedPrivileges($uri, $privileges);
-                else
-                    return false;
-
-            }
-        }
-
         $failed = [];
         foreach ($privileges as $priv) {
 
@@ -259,6 +235,51 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
+     * Sets the default ACL rules.
+     *
+     * These rules are used for all nodes that don't implement the IACL interface.
+     *
+     * @param array $acl
+     * @return void
+     */
+    function setDefaultAcl(array $acl) {
+
+        $this->defaultAcl = $acl;
+
+    }
+
+    /**
+     * Returns the default ACL rules.
+     *
+     * These rules are used for all nodes that don't implement the IACL interface.
+     *
+     * @param array $acl
+     * @return void
+     */
+    function getDefaultAcl() {
+
+        return $this->defaultAcl;
+
+    }
+
+    /**
+     * The default ACL rules.
+     *
+     * These rules are used for nodes that don't implement IACL. These default
+     * set of rules allow anyone to do anything, as long as they are
+     * authenticated.
+     *
+     * var array
+     */
+    protected $defaultAcl = [
+        [
+            'principal' => '{DAV:}authenticated',
+            'protected' => true,
+            'privilege' => '{DAV:}all',
+        ],
+    ];
+
+    /**
      * This array holds a cache for all the principals that are associated with
      * a single principal.
      *
@@ -312,13 +333,77 @@ class Plugin extends DAV\ServerPlugin {
     }
 
     /**
-     * Returns the supported privilege structure for this ACL plugin.
+     * Find out of a principal equals another principal.
      *
-     * See RFC3744 for more details. Currently we default on a simple,
-     * standard structure.
+     * This is a quick way to find out wether a principal URI is part of a
+     * group, or any subgroups.
      *
-     * You can either get the list of privileges by a uri (path) or by
-     * specifying a Node.
+     * The first argument is the principal URI you want to check against. For
+     * example the principal group, and the second argument is the principal of
+     * which you want to find out of it is the same as the first principal, or
+     * in a member of the first principal's group or subgroups.
+     *
+     * So the arguments are not interchangable. If principal A is in group B,
+     * passing 'B', 'A' will yield true, but 'A', 'B' is false.
+     *
+     * If the sceond argument is not passed, we will use the current user
+     * principal.
+     *
+     * @param string $checkPrincipal
+     * @param string $currentPrincipal
+     * @return bool
+     */
+    function principalMatchesPrincipal($checkPrincipal, $currentPrincipal = null) {
+
+        if (is_null($currentPrincipal)) {
+            $currentPrincipal = $this->getCurrentUserPrincipal();
+        }
+        if ($currentPrincipal === $checkPrincipal) {
+            return true;
+        }
+        return in_array(
+            $checkPrincipal,
+            $this->getPrincipalMembership($currentPrincipal)
+        );
+
+    }
+
+
+    /**
+     * Returns a tree of supported privileges for a resource.
+     *
+     * The returned array structure should be in this form:
+     *
+     * [
+     *    [
+     *       'privilege' => '{DAV:}read',
+     *       'abstract'  => false,
+     *       'aggregates' => []
+     *    ]
+     * ]
+     *
+     * Privileges can be nested using "aggregrates". Doing so means that
+     * if you assign someone the aggregrating privilege, all the
+     * sub-privileges will automatically be granted.
+     *
+     * Marking a privilege as abstract means that the privilege cannot be
+     * directly assigned, but must be assigned via the parent privilege.
+     *
+     * So a more complex version might look like this:
+     *
+     * [
+     *    [
+     *       'privilege' => '{DAV:}read',
+     *       'abstract'  => false,
+     *       'aggregates' => [
+     *          [
+     *              'privilege'  => '{DAV:}read-acl',
+     *              'abstract'   => false,
+     *              'aggregates' => [],
+     *          ]
+     *       ]
+     *    ]
+     * ]
      *
      * @param string|INode $node
      * @return array
@@ -329,73 +414,71 @@ class Plugin extends DAV\ServerPlugin {
             $node = $this->server->tree->getNodeForPath($node);
         }
 
+        $supportedPrivileges = null;
         if ($node instanceof IACL) {
-            $result = $node->getSupportedPrivilegeSet();
-
-            if ($result)
-                return $result;
+            $supportedPrivileges = $node->getSupportedPrivilegeSet();
         }
 
-        return self::getDefaultSupportedPrivilegeSet();
+        if (is_null($supportedPrivileges)) {
 
-    }
-
-    /**
-     * Returns a fairly standard set of privileges, which may be useful for
-     * other systems to use as a basis.
-     *
-     * @return array
-     */
-    static function getDefaultSupportedPrivilegeSet() {
-
-        return [
-            'privilege'  => '{DAV:}all',
-            'abstract'   => true,
-            'aggregates' => [
-                [
-                    'privilege'  => '{DAV:}read',
+            // Default
+            $supportedPrivileges = [
+                '{DAV:}read' => [
+                    'abstract'   => false,
                     'aggregates' => [
-                        [
-                            'privilege' => '{DAV:}read-acl',
-                            'abstract'  => false,
+                        '{DAV:}read-acl' => [
+                            'abstract'   => false,
+                            'aggregates' => [],
                         ],
-                        [
-                            'privilege' => '{DAV:}read-current-user-privilege-set',
-                            'abstract'  => false,
+                        '{DAV:}read-current-user-privilege-set' => [
+                            'abstract'   => false,
+                            'aggregates' => [],
                         ],
                     ],
-                ], // {DAV:}read
-                [
-                    'privilege'  => '{DAV:}write',
+                ],
+                '{DAV:}write' => [
+                    'abstract'   => false,
                     'aggregates' => [
-                        [
-                            'privilege' => '{DAV:}write-acl',
-                            'abstract'  => false,
+                        '{DAV:}write-properties' => [
+                            'abstract'   => false,
+                            'aggregates' => [],
                         ],
-                        [
-                            'privilege' => '{DAV:}write-properties',
-                            'abstract'  => false,
+                        '{DAV:}write-content' => [
+                            'abstract'   => false,
+                            'aggregates' => [],
                         ],
-                        [
-                            'privilege' => '{DAV:}write-content',
-                            'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}bind',
-                            'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}unbind',
-                            'abstract'  => false,
-                        ],
-                        [
-                            'privilege' => '{DAV:}unlock',
-                            'abstract'  => false,
+                        '{DAV:}unlock' => [
+                            'abstract'   => false,
+                            'aggregates' => [],
                         ],
                     ],
-                ], // {DAV:}write
-            ],
-        ]; // {DAV:}all
+                ],
+            ];
+            if ($node instanceof \Sabre\DAV\ICollection) {
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}bind'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}unbind'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+            }
+            if ($node instanceof \Sabre\DAVACL\IACL) {
+                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}write-acl'] = [
+                    'abstract'   => false,
+                    'aggregates' => [],
+                ];
+            }
+
+        }
+
+        $this->server->emit(
+            'getSupportedPrivilegeSet',
+            [$node, &$supportedPrivileges]
+        );
+
+        return $supportedPrivileges;
 
     }
 
@@ -415,35 +498,38 @@ class Plugin extends DAV\ServerPlugin {
      */
     final function getFlatPrivilegeSet($node) {
 
-        $privs = $this->getSupportedPrivilegeSet($node);
+        $privs = [
+            'abstract'   => false,
+            'aggregates' => $this->getSupportedPrivilegeSet($node)
+        ];
 
         $fpsTraverse = null;
-        $fpsTraverse = function($priv, $concrete, &$flat) use (&$fpsTraverse) {
+        $fpsTraverse = function($privName, $privInfo, $concrete, &$flat) use (&$fpsTraverse) {
 
             $myPriv = [
-                'privilege'  => $priv['privilege'],
-                'abstract'   => isset($priv['abstract']) && $priv['abstract'],
+                'privilege'  => $privName,
+                'abstract'   => isset($privInfo['abstract']) && $privInfo['abstract'],
                 'aggregates' => [],
-                'concrete'   => isset($priv['abstract']) && $priv['abstract'] ? $concrete : $priv['privilege'],
+                'concrete'   => isset($privInfo['abstract']) && $privInfo['abstract'] ? $concrete : $privName,
             ];
 
-            if (isset($priv['aggregates'])) {
+            if (isset($privInfo['aggregates'])) {
 
-                foreach ($priv['aggregates'] as $subPriv) {
+                foreach ($privInfo['aggregates'] as $subPrivName => $subPrivInfo) {
 
-                    $myPriv['aggregates'][] = $subPriv['privilege'];
+                    $myPriv['aggregates'][] = $subPrivName;
 
                 }
 
             }
 
-            $flat[$priv['privilege']] = $myPriv;
+            $flat[$privName] = $myPriv;
 
-            if (isset($priv['aggregates'])) {
+            if (isset($privInfo['aggregates'])) {
 
-                foreach ($priv['aggregates'] as $subPriv) {
+                foreach ($privInfo['aggregates'] as $subPrivName => $subPrivInfo) {
 
-                    $fpsTraverse($subPriv, $myPriv['concrete'], $flat);
+                    $fpsTraverse($subPrivName, $subPrivInfo, $myPriv['concrete'], $flat);
 
                 }
 
@@ -452,7 +538,7 @@ class Plugin extends DAV\ServerPlugin {
         };
 
         $flat = [];
-        $fpsTraverse($privs, null, $flat);
+        $fpsTraverse('{DAV:}all', $privs, null, $flat);
 
         return $flat;
 
@@ -468,13 +554,13 @@ class Plugin extends DAV\ServerPlugin {
      * @param string|DAV\INode $node
      * @return array
      */
-    function getACL($node) {
+    function getAcl($node) {
 
         if (is_string($node)) {
             $node = $this->server->tree->getNodeForPath($node);
         }
         if (!$node instanceof IACL) {
-            return null;
+            return $this->getDefaultAcl();
         }
         $acl = $node->getACL();
         foreach ($this->adminPrincipals as $adminPrincipal) {
@@ -507,10 +593,6 @@ class Plugin extends DAV\ServerPlugin {
 
         $acl = $this->getACL($node);
 
-        if (is_null($acl)) return null;
-
-        $principals = $this->getCurrentUserPrincipals();
-
         $collected = [];
 
         foreach ($acl as $ace) {
@@ -521,7 +603,7 @@ class Plugin extends DAV\ServerPlugin {
 
                 case '{DAV:}owner' :
                     $owner = $node->getOwner();
-                    if ($owner && in_array($owner, $principals)) {
+                    if ($owner && $this->principalMatchesPrincipal($owner)) {
                         $collected[] = $ace;
                     }
                     break;
@@ -543,7 +625,7 @@ class Plugin extends DAV\ServerPlugin {
                     break;
 
                 default :
-                    if (in_array($ace['principal'], $principals)) {
+                    if ($this->principalMatchesPrincipal($ace['principal'])) {
                         $collected[] = $ace;
                     }
                     break;
@@ -562,6 +644,9 @@ class Plugin extends DAV\ServerPlugin {
             $current = array_pop($collected);
             $collected2[] = $current['privilege'];
 
+            if (!isset($flat[$current['privilege']])) {
+                throw new \Sabre\DAV\Exception('A node has the "' . $current['privilege'] . '" in its ACL list, but this privilege was not reported in the supportedPrivilegeSet list');
+            }
             foreach ($flat[$current['privilege']]['aggregates'] as $subPriv) {
                 $collected2[] = $subPriv;
                 $collected[] = $flat[$subPriv];
@@ -758,12 +843,16 @@ class Plugin extends DAV\ServerPlugin {
 
             case 'PUT' :
             case 'LOCK' :
-            case 'UNLOCK' :
                 // This method requires the write-content priv if the node
                 // already exists, and bind on the parent if the node is being
                 // created.
                 // The bind privilege is handled in the beforeBind event.
                 $this->checkPrivileges($path, '{DAV:}write-content');
+                break;
+
+
+            case 'UNLOCK' :
+                // Unlock is always allowed at the moment.
                 break;
 
 
@@ -925,9 +1014,7 @@ class Plugin extends DAV\ServerPlugin {
                 $propFind->set('{DAV:}current-user-privilege-set', null, 403);
             } else {
                 $val = $this->getCurrentUserPrivilegeSet($node);
-                if (!is_null($val)) {
-                    return new Xml\Property\CurrentUserPrivilegeSet($val);
-                }
+                return new Xml\Property\CurrentUserPrivilegeSet($val);
             }
         });
         $propFind->handle('{DAV:}acl', function() use ($node, $propFind, $path) {
@@ -936,9 +1023,7 @@ class Plugin extends DAV\ServerPlugin {
                 $propFind->set('{DAV:}acl', null, 403);
             } else {
                 $acl = $this->getACL($node);
-                if (!is_null($acl)) {
-                    return new Xml\Property\Acl($this->getACL($node));
-                }
+                return new Xml\Property\Acl($this->getACL($node));
             }
         });
         $propFind->handle('{DAV:}acl-restrictions', function() {

@@ -132,13 +132,8 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($this->s->getGroup());
         $this->assertEquals([
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
         ], $this->s->getACL());
@@ -146,7 +141,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

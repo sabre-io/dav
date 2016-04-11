@@ -41,12 +41,12 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $expected = [
             '{DAV:}all' => [
                 'privilege'  => '{DAV:}all',
-                'abstract'   => true,
+                'abstract'   => false,
                 'aggregates' => [
                     '{DAV:}read',
                     '{DAV:}write',
                 ],
-                'concrete' => null,
+                'concrete' => '{DAV:}all',
             ],
             '{DAV:}read' => [
                 'privilege'  => '{DAV:}read',
@@ -73,20 +73,13 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
                 'privilege'  => '{DAV:}write',
                 'abstract'   => false,
                 'aggregates' => [
-                    '{DAV:}write-acl',
                     '{DAV:}write-properties',
                     '{DAV:}write-content',
+                    '{DAV:}unlock',
                     '{DAV:}bind',
                     '{DAV:}unbind',
-                    '{DAV:}unlock',
                 ],
                 'concrete' => '{DAV:}write',
-            ],
-            '{DAV:}write-acl' => [
-                'privilege'  => '{DAV:}write-acl',
-                'abstract'   => false,
-                'aggregates' => [],
-                'concrete'   => '{DAV:}write-acl',
             ],
             '{DAV:}write-properties' => [
                 'privilege'  => '{DAV:}write-properties',
@@ -264,12 +257,10 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $expected = [
             '{DAV:}write',
-            '{DAV:}write-acl',
             '{DAV:}write-properties',
             '{DAV:}write-content',
-            '{DAV:}bind',
-            '{DAV:}unbind',
             '{DAV:}unlock',
+            '{DAV:}write-acl',
             '{DAV:}read',
             '{DAV:}read-acl',
             '{DAV:}read-current-user-privilege-set',

@@ -56,13 +56,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
         $col = $this->getInstance();
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->principalUri,
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->principalUri,
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
         ];
@@ -72,7 +67,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

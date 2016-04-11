@@ -134,22 +134,12 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
         // The default ACL
         return [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->objectData['principaluri'],
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->objectData['principaluri'],
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->objectData['principaluri'] . '/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => $this->objectData['principaluri'] . '/calendar-proxy-write',
                 'protected' => true,
             ],

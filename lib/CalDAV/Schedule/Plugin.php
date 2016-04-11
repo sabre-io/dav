@@ -102,12 +102,13 @@ class Plugin extends ServerPlugin {
     function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('method:POST',          [$this, 'httpPost']);
-        $server->on('propFind',             [$this, 'propFind']);
-        $server->on('propPatch',            [$this, 'propPatch']);
-        $server->on('calendarObjectChange', [$this, 'calendarObjectChange']);
-        $server->on('beforeUnbind',         [$this, 'beforeUnbind']);
-        $server->on('schedule',             [$this, 'scheduleLocalDelivery']);
+        $server->on('method:POST',              [$this, 'httpPost']);
+        $server->on('propFind',                 [$this, 'propFind']);
+        $server->on('propPatch',                [$this, 'propPatch']);
+        $server->on('calendarObjectChange',     [$this, 'calendarObjectChange']);
+        $server->on('beforeUnbind',             [$this, 'beforeUnbind']);
+        $server->on('schedule',                 [$this, 'scheduleLocalDelivery']);
+        $server->on('getSupportedPrivilegeSet', [$this, 'getSupportedPrivilegeSet']);
 
         $ns = '{' . self::NS_CALDAV . '}';
 
@@ -573,6 +574,65 @@ class Plugin extends ServerPlugin {
     }
 
     /**
+     * This method is triggered whenever a subsystem reqeuests the privileges
+     * hat are supported on a particular node.
+     *
+     * We need to add a number of privileges for scheduling purposes.
+     *
+     * @param INode $node
+     * @param array $supportedPrivilegeSet
+     */
+    function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet) {
+
+        $ns = '{' . self::NS_CALDAV . '}';
+        if ($node instanceof IOutbox) {
+            $supportedPrivilegeSet[$ns . 'schedule-send'] = [
+                'abstract'   => false,
+                'aggregates' => [
+                    $ns . 'schedule-send-invite' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                    $ns . 'schedule-send-reply' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                    $ns . 'schedule-send-freebusy' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                    // Privilege from an earlier scheduling draft, but still
+                    // used by some clients.
+                    $ns . 'schedule-post-vevent' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                ]
+            ];
+        }
+        if ($node instanceof IInbox) {
+            $supportedPrivilegeSet[$ns . 'schedule-deliver'] = [
+                'abstract'   => false,
+                'aggregates' => [
+                    $ns . 'schedule-deliver-invite' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                    $ns . 'schedule-deliver-reply' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                    $ns . 'schedule-query-freebusy' => [
+                        'abstract'   => false,
+                        'aggregates' => [],
+                    ],
+                ]
+            ];
+        }
+
+    }
+
+    /**
      * This method looks at an old iCalendar object, a new iCalendar object and
      * starts sending scheduling messages based on the changes.
      *
@@ -711,7 +771,7 @@ class Plugin extends ServerPlugin {
 
         if ($componentType === 'VFREEBUSY' && $method === 'REQUEST') {
 
-            $acl && $acl->checkPrivileges($outboxPath, '{' . self::NS_CALDAV . '}schedule-query-freebusy');
+            $acl && $acl->checkPrivileges($outboxPath, '{' . self::NS_CALDAV . '}schedule-send-freebusy');
             $this->handleFreeBusyRequest($outboxNode, $vObject, $request, $response);
 
             // Destroy circular references so PHP can GC the object.

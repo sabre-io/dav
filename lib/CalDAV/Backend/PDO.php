@@ -257,7 +257,7 @@ SQL
         }
         $transp = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
         if (isset($properties[$transp])) {
-            $values[':transparent'] = $properties[$transp]->getValue() === 'transparent';
+            $values[':transparent'] = $properties[$transp]->getValue() === 'transparent' ? 1 : 0;
         }
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarTableName . " (synctoken, components) VALUES (1, ?)");
         $stmt->execute([$components]);

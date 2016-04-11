@@ -229,8 +229,8 @@ class Plugin extends ServerPlugin {
     function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet) {
 
         if ($node instanceof ISharedNode) {
-            $supportedPrivilegeSet['{DAV:}share'][
-                'abstract' => false,
+            $supportedPrivilegeSet['{DAV:}share'] = [
+                'abstract'   => false,
                 'aggregates' => [],
             ];
         }

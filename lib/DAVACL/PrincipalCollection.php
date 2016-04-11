@@ -3,7 +3,6 @@
 namespace Sabre\DAVACL;
 
 use Sabre\DAV\Exception\InvalidResourceType;
-use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\IExtendedCollection;
 use Sabre\DAV\MkCol;
 
@@ -19,7 +18,7 @@ use Sabre\DAV\MkCol;
  */
 class PrincipalCollection extends AbstractPrincipalCollection implements IExtendedCollection, IACL {
 
-    use IACLTrait;
+    use ACLTrait;
 
     /**
      * This method returns a node for a principal.

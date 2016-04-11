@@ -5,8 +5,8 @@ namespace Sabre\CalDAV\Subscriptions;
 use Sabre\DAV\Collection;
 use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\PropPatch;
-use Sabre\DAV\Exception\MethodNotAllowed;
 use Sabre\DAVACL\IACL;
+use Sabre\DAVACL\ACLTrait;
 use Sabre\CalDAV\Backend\SubscriptionSupport;
 
 /**
@@ -19,6 +19,8 @@ use Sabre\CalDAV\Backend\SubscriptionSupport;
  * @license http://sabre.io/license/ Modified BSD License
  */
 class Subscription extends Collection implements ISubscription, IACL {
+
+    use ACLTrait;
 
     /**
      * caldavBackend

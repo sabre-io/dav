@@ -22,7 +22,7 @@ use Sabre\DAVACL;
  */
 class Collection extends DAV\Collection implements ICollection, DAVACL\IACL {
 
-    use DAVACL\IACLTrait;
+    use DAVACL\ACLTrait;
 
     /**
      * The notification backend

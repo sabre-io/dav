@@ -73,7 +73,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
      */
     function xmlSerialize(Writer $writer) {
 
-        $this->serializePriv($writer, $this->privileges);
+        $this->serializePriv($writer, '{DAV:}all', [ 'aggregates' => $this->privileges]);
 
     }
 
@@ -132,12 +132,12 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
      * @param array $privilege
      * @return void
      */
-    private function serializePriv(Writer $writer, $privilege) {
+    private function serializePriv(Writer $writer, $privName, $privilege) {
 
         $writer->startElement('{DAV:}supported-privilege');
 
         $writer->startElement('{DAV:}privilege');
-        $writer->writeElement($privilege['privilege']);
+        $writer->writeElement($privName);
         $writer->endElement(); // privilege
 
         if (!empty($privilege['abstract'])) {
@@ -147,8 +147,8 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
             $writer->writeElement('{DAV:}description', $privilege['description']);
         }
         if (isset($privilege['aggregates'])) {
-            foreach ($privilege['aggregates'] as $subPrivilege) {
-                $this->serializePriv($writer, $subPrivilege);
+            foreach ($privilege['aggregates'] as $subPrivName => $subPrivilege) {
+                $this->serializePriv($writer, $subPrivName, $subPrivilege);
             }
         }
 

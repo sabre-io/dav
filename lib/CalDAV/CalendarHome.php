@@ -22,7 +22,7 @@ use Sabre\HTTP\URLUtil;
  */
 class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
 
-    use DAVACL\IACLTrait;
+    use DAVACL\ACLTrait;
 
     /**
      * CalDAV backend

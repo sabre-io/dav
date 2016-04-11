@@ -150,12 +150,15 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         ];
         $acl = new Plugin();
         $server = new DAV\Server($tree);
+        $server->on('getSupportedPrivilegeSet', function($node, &$supportedPrivilegeSet) {
+            $supportedPrivilegeSet['{DAV:}foo'] = ['abstract' => true];
+        });
         $server->httpRequest = new HTTP\Request('ACL', '/test');
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
-        <d:grant><d:privilege><d:all /></d:privilege></d:grant>
-        <d:principal><d:href>/principals/notfound</d:href></d:principal>
+        <d:grant><d:privilege><d:foo /></d:privilege></d:grant>
+        <d:principal><d:href>/principals/foo/</d:href></d:principal>
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);

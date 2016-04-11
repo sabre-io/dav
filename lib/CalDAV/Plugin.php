@@ -970,7 +970,7 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($node instanceof ISharedNode) {
             $supportedPrivilegeSet['{DAV:}read']['aggregates']['{' . self::NS_CALDAV . '}read-free-busy'] = [
-                'abstract' => false,
+                'abstract'   => false,
                 'aggregates' => [],
             ];
         }

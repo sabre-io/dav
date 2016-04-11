@@ -416,7 +416,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $supportedPrivileges = null;
         if ($node instanceof IACL) {
-            $supportedPrivileges = $node->getSupportedPrivileges();
+            $supportedPrivileges = $node->getSupportedPrivilegeSet();
         }
 
         if (is_null($supportedPrivileges)) {
@@ -427,36 +427,33 @@ class Plugin extends DAV\ServerPlugin {
                     'abstract'   => false,
                     'aggregates' => [
                         '{DAV:}read-acl' => [
-                            'abstract'  => false,
+                            'abstract'   => false,
                             'aggregates' => [],
                         ],
                         '{DAV:}read-current-user-privilege-set' => [
-                            'abstract'  => false,
+                            'abstract'   => false,
                             'aggregates' => [],
                         ],
                     ],
                 ],
-                [
-                    'privilege'  => '{DAV:}write',
+                '{DAV:}write' => [
                     'abstract'   => false,
                     'aggregates' => [
                         '{DAV:}write-properties' => [
-                            'abstract'  => false,
+                            'abstract'   => false,
+                            'aggregates' => [],
+                        ],
+                        '{DAV:}write-content' => [
+                            'abstract' => false,
                             'aggregates' => [],
                         ],
                         '{DAV:}unlock' => [
-                            'abstract'  => false,
+                            'abstract'   => false,
                             'aggregates' => [],
                         ],
                     ],
                 ],
             ];
-            if ($node instanceof \Sabre\DAV\IFile) {
-                $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}write-content'] = [
-                    'abstract'   => false,
-                    'aggregates' => [],
-                ];
-            }
             if ($node instanceof \Sabre\DAV\ICollection) {
                 $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}bind'] = [
                     'abstract'   => false,
@@ -467,7 +464,7 @@ class Plugin extends DAV\ServerPlugin {
                     'aggregates' => [],
                 ];
             }
-            if ($node instanceof \Sabre\DAV\IACL) {
+            if ($node instanceof \Sabre\DAVACL\IACL) {
                 $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}write-acl'] = [
                     'abstract'   => false,
                     'aggregates' => [],
@@ -501,35 +498,38 @@ class Plugin extends DAV\ServerPlugin {
      */
     final function getFlatPrivilegeSet($node) {
 
-        $privs = $this->getSupportedPrivilegeSet($node);
+        $privs = [
+            'abstract'   => false,
+            'aggregates' => $this->getSupportedPrivilegeSet($node)
+        ];
 
         $fpsTraverse = null;
-        $fpsTraverse = function($priv, $concrete, &$flat) use (&$fpsTraverse) {
+        $fpsTraverse = function($privName, $privInfo, $concrete, &$flat) use (&$fpsTraverse) {
 
             $myPriv = [
-                'privilege'  => $priv['privilege'],
-                'abstract'   => isset($priv['abstract']) && $priv['abstract'],
+                'privilege'  => $privName,
+                'abstract'   => isset($privInfo['abstract']) && $privInfo['abstract'],
                 'aggregates' => [],
-                'concrete'   => isset($priv['abstract']) && $priv['abstract'] ? $concrete : $priv['privilege'],
+                'concrete'   => isset($privInfo['abstract']) && $privInfo['abstract'] ? $concrete : $privName,
             ];
 
-            if (isset($priv['aggregates'])) {
+            if (isset($privInfo['aggregates'])) {
 
-                foreach ($priv['aggregates'] as $subPriv) {
+                foreach ($privInfo['aggregates'] as $subPrivName => $subPrivInfo) {
 
-                    $myPriv['aggregates'][] = $subPriv['privilege'];
+                    $myPriv['aggregates'][] = $subPrivName;
 
                 }
 
             }
 
-            $flat[$priv['privilege']] = $myPriv;
+            $flat[$privName] = $myPriv;
 
-            if (isset($priv['aggregates'])) {
+            if (isset($privInfo['aggregates'])) {
 
-                foreach ($priv['aggregates'] as $subPriv) {
+                foreach ($privInfo['aggregates'] as $subPrivName => $subPrivInfo) {
 
-                    $fpsTraverse($subPriv, $myPriv['concrete'], $flat);
+                    $fpsTraverse($subPrivName, $subPrivInfo, $myPriv['concrete'], $flat);
 
                 }
 
@@ -538,7 +538,7 @@ class Plugin extends DAV\ServerPlugin {
         };
 
         $flat = [];
-        $fpsTraverse($privs, null, $flat);
+        $fpsTraverse('{DAV:}all', $privs, null, $flat);
 
         return $flat;
 
@@ -840,12 +840,16 @@ class Plugin extends DAV\ServerPlugin {
 
             case 'PUT' :
             case 'LOCK' :
-            case 'UNLOCK' :
                 // This method requires the write-content priv if the node
                 // already exists, and bind on the parent if the node is being
                 // created.
                 // The bind privilege is handled in the beforeBind event.
                 $this->checkPrivileges($path, '{DAV:}write-content');
+                break;
+
+
+            case 'UNLOCK' :
+                // Unlock is always allowed at the moment.
                 break;
 
 

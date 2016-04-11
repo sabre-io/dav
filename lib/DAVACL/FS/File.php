@@ -4,7 +4,7 @@ namespace Sabre\DAVACL\FS;
 
 use Sabre\DAV\FSExt\File as BaseFile;
 use Sabre\DAVACL\IACL;
-use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAVACL\ACLTrait;
 
 /**
  * This is an ACL-enabled file node.

@@ -22,7 +22,7 @@ use Sabre\HTTP\URLUtil;
  */
 class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL {
 
-    use IACLTrait;
+    use ACLTrait;
 
     /**
      * Struct with principal information.

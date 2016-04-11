@@ -17,7 +17,7 @@ ChangeLog
 * #774: Fixes for getting free disk space on Windows.
 * #803: Major changes in the sharing API. If you were using an old sabre/dav
   sharing api, head to the website for more detailed migration notes.
-* #812: ICS exporter now includes a more useful filename in its
+* #812 #814: ICS/VCF exporter now includes a more useful filename in its
   `Content-Disposition` header. (@Xenopathic).
 * #801: BC break: If you were using the `Href` object before, it's behavior
   now changed a bit, and `LocalHref` was added to replace the old, default

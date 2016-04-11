@@ -226,22 +226,11 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 
         $this->calendar->setACL([]);
-
-    }
-
-    function testGetSupportedPrivilegesSet() {
-
-        $result = $this->calendar->getSupportedPrivilegeSet();
-
-        $this->assertEquals(
-            '{' . Plugin::NS_CALDAV . '}read-free-busy',
-            $result['aggregates'][0]['aggregates'][2]['privilege']
-        );
 
     }
 

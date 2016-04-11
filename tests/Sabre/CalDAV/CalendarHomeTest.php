@@ -95,7 +95,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 
@@ -104,7 +104,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      * @depends testSimple
      */
     function testSetName() {
@@ -114,7 +114,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      * @depends testSimple
      */
     function testDelete() {
@@ -133,7 +133,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      * @depends testSimple
      */
     function testCreateFile() {

@@ -272,6 +272,17 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
     }
 
     /**
+     * Returns the owner of the calendar home.
+     *
+     * @return string
+     */
+    function getOwner() {
+
+        return $this->principalInfo['uri'];
+
+    }
+
+    /**
      * Returns a list of ACE's for this node.
      *
      * Each ACE has the following properties:

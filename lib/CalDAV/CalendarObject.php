@@ -11,7 +11,7 @@ namespace Sabre\CalDAV;
  */
 class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\DAVACL\IACL {
 
-    use \Sabre\DAVACL\IACLTrait;
+    use \Sabre\DAVACL\ACLTrait;
 
     /**
      * Sabre\CalDAV\Backend\BackendInterface

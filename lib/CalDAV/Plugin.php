@@ -5,6 +5,7 @@ namespace Sabre\CalDAV;
 use DateTimeZone;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
+use Sabre\DAV\INode;
 use Sabre\DAV\MkCol;
 use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\DAVACL;

@@ -587,24 +587,24 @@ class Plugin extends ServerPlugin {
         $ns = '{' . self::NS_CALDAV . '}';
         if ($node instanceof IOutbox) {
             $supportedPrivilegeSet[$ns . 'schedule-send'] = [
-                'abstract' => false,
+                'abstract'   => false,
                 'aggregates' => [
                     $ns . 'schedule-send-invite' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                     $ns . 'schedule-send-reply' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                     $ns . 'schedule-send-freebusy' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                     // Privilege from an earlier scheduling draft, but still
                     // used by some clients.
                     $ns . 'schedule-post-vevent' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                 ]
@@ -612,18 +612,18 @@ class Plugin extends ServerPlugin {
         }
         if ($node instanceof IInbox) {
             $supportedPrivilegeSet[$ns . 'schedule-deliver'] = [
-                'abstract' => false,
+                'abstract'   => false,
                 'aggregates' => [
                     $ns . 'schedule-deliver-invite' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                     $ns . 'schedule-deliver-reply' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                     $ns . 'schedule-query-freebusy' => [
-                        'abstract' => false,
+                        'abstract'   => false,
                         'aggregates' => [],
                     ],
                 ]

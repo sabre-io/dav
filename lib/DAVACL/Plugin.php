@@ -444,7 +444,7 @@ class Plugin extends DAV\ServerPlugin {
                             'aggregates' => [],
                         ],
                         '{DAV:}write-content' => [
-                            'abstract' => false,
+                            'abstract'   => false,
                             'aggregates' => [],
                         ],
                         '{DAV:}unlock' => [

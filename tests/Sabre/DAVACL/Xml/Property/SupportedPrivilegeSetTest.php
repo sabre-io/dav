@@ -44,7 +44,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
     function testSerializeAggregate() {
 
         $prop = new SupportedPrivilegeSet([
-            '{DAV:}read' => [],
+            '{DAV:}read'  => [],
             '{DAV:}write' => [
                 'description' => 'booh',
             ]

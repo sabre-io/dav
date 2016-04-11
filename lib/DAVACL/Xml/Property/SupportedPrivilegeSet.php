@@ -93,9 +93,9 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
      */
     function toHtml(HtmlOutputHelper $html) {
 
-        $traverse = function($priv) use (&$traverse, $html) {
+        $traverse = function($privName, $priv) use (&$traverse, $html) {
             echo "<li>";
-            echo $html->xmlName($priv['privilege']);
+            echo $html->xmlName($privName);
             if (isset($priv['abstract']) && $priv['abstract']) {
                 echo " <i>(abstract)</i>";
             }
@@ -104,8 +104,8 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
             }
             if (isset($priv['aggregates'])) {
                 echo "\n<ul>\n";
-                foreach ($priv['aggregates'] as $subPriv) {
-                    $traverse($subPriv);
+                foreach ($priv['aggregates'] as $subPrivName => $subPriv) {
+                    $traverse($subPrivName, $subPriv);
                 }
                 echo "</ul>";
             }
@@ -114,7 +114,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
 
         ob_start();
         echo "<ul class=\"tree\">";
-        $traverse($this->getValue());
+        $traverse('{DAV:}all', [ 'aggregates' => $this->getValue() ]);
         echo "</ul>\n";
 
         return ob_get_clean();

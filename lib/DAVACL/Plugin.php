@@ -1014,9 +1014,7 @@ class Plugin extends DAV\ServerPlugin {
                 $propFind->set('{DAV:}current-user-privilege-set', null, 403);
             } else {
                 $val = $this->getCurrentUserPrivilegeSet($node);
-                if (!is_null($val)) {
-                    return new Xml\Property\CurrentUserPrivilegeSet($val);
-                }
+                return new Xml\Property\CurrentUserPrivilegeSet($val);
             }
         });
         $propFind->handle('{DAV:}acl', function() use ($node, $propFind, $path) {

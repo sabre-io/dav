@@ -22,8 +22,22 @@ ChangeLog
 * #801: BC break: If you were using the `Href` object before, it's behavior
   now changed a bit, and `LocalHref` was added to replace the old, default
   behavior of `Href`. See the migration doc for more info.
+* Removed `Sabre\DAVACL\Plugin::$allowAccessToNodesWithoutACL` setting.
+  Instead, you can provide a set of default ACL rules with
+  `Sabre\DAVACL\Plugin::setDefaultAcl()`.
+* Introduced `Sabre\DAVACL\ACLTrait` which contains a default implementation
+  of `Sabre\DAV\IACL` with some sane defaults. We're using this trait all over
+  the place now, reducing the amount of boilerplate.
+* Plugins can now control the "Supported Privilege Set".
 * Added Sharing, ICSExport and VCFExport plugins to `groupwareserver.php`
   example.
+* The `{DAV:}all` privilege is now no longer abstract, so it can be assigned
+  directly. We're using the `{DAV:}all` privilege now in a lot of cases where
+  we before assigned both `{DAV:}read` and `{DAV:}write`.
+* Resources that are not collections no longer support the `{DAV:}bind` and
+  `{DAV:}unbind` privileges.
+* Corrected the CalDAV-scheduling related privileges.
+* Doing an `UNLOCK` no longer requires the `{DAV:}write-content` privilege.
 * Added a new `getPrincipalByUri` plugin event. Allowing plugins to request
   quickly where a principal lives on a server.
 * Renamed `phpunit.xml` to `phpunit.xml.dist` to make local modifications easy.

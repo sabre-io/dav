@@ -47,6 +47,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}displayname'                                       => 'Hello!',
             '{urn:ietf:params:xml:ns:caldav}calendar-description'     => '',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
+            'share-access'                                            => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
         ];
 
         $this->assertInternalType('array', $calendars);
@@ -110,6 +111,27 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testConstruct
+     * @expectedException \InvalidArgumentException
+     */
+    function testUpdateCalendarBadId() {
+
+        $backend = new PDO($this->pdo);
+
+        //Creating a new calendar
+        $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        $propPatch = new PropPatch([
+            '{DAV:}displayname'                                       => 'myCalendar',
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
+        ]);
+
+        // Updating the calendar
+        $backend->updateCalendar('raaaa', $propPatch);
+
+    }
+
+    /**
      * @depends testUpdateCalendarAndFetch
      */
     function testUpdateCalendarUnknownProperty() {
@@ -151,6 +173,22 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $calendars = $backend->getCalendarsForUser('principals/user2');
         $this->assertEquals([], $calendars);
+
+    }
+
+    /**
+     * @depends testCreateCalendarAndFetch
+     * @expectedException \InvalidArgumentException
+     */
+    function testDeleteCalendarBadID() {
+
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', [
+            '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT']),
+            '{DAV:}displayname'                                               => 'Hello!',
+        ]);
+
+        $backend->deleteCalendar('bad-id');
 
     }
 
@@ -237,6 +275,17 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testGetMultipleObjects
+     * @expectedException \InvalidArgumentException
+     */
+    function testGetMultipleObjectsBadId() {
+
+        $backend = new PDO($this->pdo);
+        $backend->getMultipleCalendarObjects('bad-id',['foo-bar']);
+
+    }
+
+    /**
      * @expectedException Sabre\DAV\Exception\BadRequest
      * @depends testCreateCalendarObject
      */
@@ -274,6 +323,22 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         ], $result->fetch(\PDO::FETCH_ASSOC));
 
     }
+
+    /**
+     * @depends testCreateCalendarObject
+     * @expectedException \InvalidArgumentException
+     */
+    function testCreateCalendarObjectBadId() {
+
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nDURATION:P2D\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject('bad-id', 'random-id', $object);
+
+    }
+
 
     /**
      * @depends testCreateCalendarObject
@@ -414,8 +479,30 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('random-id', $data['uri']);
         $this->assertEquals(strlen($object), $data['size']);
 
+    }
+
+    /**
+     * @depends testGetCalendarObjects
+     * @expectedException \InvalidArgumentException
+     */
+    function testGetCalendarObjectsBadId() {
+
+        $backend = new PDO($this->pdo);
+        $backend->getCalendarObjects('bad-id');
 
     }
+
+    /**
+     * @depends testGetCalendarObjects
+     * @expectedException \InvalidArgumentException
+     */
+    function testGetCalendarObjectBadId() {
+
+        $backend = new PDO($this->pdo);
+        $backend->getCalendarObject('bad-id','foo-bar');
+
+    }
+
     /**
      * @depends testCreateCalendarObject
      */
@@ -459,6 +546,17 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testUpdateCalendarObject
+     * @expectedException \InvalidArgumentException
+     */
+    function testUpdateCalendarObjectBadId() {
+
+        $backend = new PDO($this->pdo);
+        $backend->updateCalendarObject('bad-id', 'object-id', 'objectdata');
+
+    }
+
+    /**
      * @depends testCreateCalendarObject
      */
     function testDeleteCalendarObject() {
@@ -472,6 +570,21 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $data = $backend->getCalendarObject($returnedId, 'random-id');
         $this->assertNull($data);
+
+    }
+
+    /**
+     * @depends testDeleteCalendarObject
+     * @expectedException \InvalidArgumentException
+     */
+    function testDeleteCalendarObjectBadId() {
+
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+        $backend->deleteCalendarObject('bad-id', 'random-id');
 
     }
 
@@ -496,6 +609,33 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
         ], $abstract->calendarQuery([1, 1], $filters));
+
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @depends testCalendarQueryNoResult
+     */
+    function testCalendarQueryBadId() {
+
+        $abstract = new PDO($this->pdo);
+        $filters = [
+            'name'         => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name'           => 'VJOURNAL',
+                    'comp-filters'   => [],
+                    'prop-filters'   => [],
+                    'is-not-defined' => false,
+                    'time-range'     => null,
+                ],
+            ],
+            'prop-filters'   => [],
+            'is-not-defined' => false,
+            'time-range'     => null,
+        ];
+
+        $abstract->calendarQuery('bad-id', $filters);
 
     }
 
@@ -688,6 +828,22 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'deleted'   => [],
             'added'     => ["todo1.ics", "todo3.ics"],
         ], $result);
+    }
+
+    /**
+     * @depends testGetChanges
+     * @expectedException \InvalidArgumentException
+     */
+    function testGetChangesBadId() {
+
+        $backend = new PDO($this->pdo);
+        $id = $backend->createCalendar(
+            'principals/user1',
+            'bla',
+            []
+        );
+        $backend->getChangesForCalendar('bad-id', null, 1);
+
     }
 
     function testCreateSubscriptions() {
@@ -899,6 +1055,22 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testGetInvites
+     * @expectedException \InvalidArgumentException
+     */
+    function testGetInvitesBadId() {
+
+        $backend = new PDO($this->pdo);
+
+        // creating a new calendar
+        $backend->createCalendar('principals/user1', 'somerandomid', []);
+        $calendar = $backend->getCalendarsForUser('principals/user1')[0];
+
+        $backend->getInvites('bad-id');
+
+    }
+
+    /**
      * @depends testCreateCalendarAndFetch
      */
     function testUpdateInvites() {
@@ -1020,6 +1192,142 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                     'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
                 ])
             ]
+        );
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            new Sharee([
+                'href'         => 'principals/user1',
+                'principal'    => 'principals/user1',
+                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            ]),
+        ];
+        $this->assertEquals($expected, $result);
+
+    }
+
+    /**
+     * @depends testUpdateInvites
+     * @expectedException \InvalidArgumentException
+     */
+    function testUpdateInvitesBadId() {
+
+        $backend = new PDO($this->pdo);
+        // Add a new invite
+        $backend->updateInvites(
+            'bad-id',
+            []
+        );
+
+    }
+
+    /**
+     * @depends testUpdateInvites
+     */
+    function testUpdateInvitesNoPrincipal() {
+
+        $backend = new PDO($this->pdo);
+
+        // creating a new calendar
+        $backend->createCalendar('principals/user1', 'somerandomid', []);
+        $calendar = $backend->getCalendarsForUser('principals/user1')[0];
+
+        $ownerSharee = new Sharee([
+            'href'         => 'principals/user1',
+            'principal'    => 'principals/user1',
+            'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+            'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+        ]);
+
+        // Add a new invite
+        $backend->updateInvites(
+            $calendar['id'],
+            [
+                new Sharee([
+                    'href'         => 'mailto:user@example.org',
+                    'principal'    => null,
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'properties'   => ['{DAV:}displayname' => 'User 2'],
+                ])
+            ]
+        );
+
+        $result = $backend->getInvites($calendar['id']);
+        $expected = [
+            $ownerSharee,
+            new Sharee([
+                'href'         => 'mailto:user@example.org',
+                'principal'    => null,
+                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_INVALID,
+                'properties'   => [
+                    '{DAV:}displayname' => 'User 2',
+                ],
+            ])
+        ];
+        $this->assertEquals($expected, $result);
+
+    }
+
+    /**
+     * @depends testUpdateInvites
+     */
+    function testDeleteSharedCalendar() {
+
+        $backend = new PDO($this->pdo);
+
+        // creating a new calendar
+        $backend->createCalendar('principals/user1', 'somerandomid', []);
+        $calendar = $backend->getCalendarsForUser('principals/user1')[0];
+
+        $ownerSharee = new Sharee([
+            'href'         => 'principals/user1',
+            'principal'    => 'principals/user1',
+            'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+            'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+        ]);
+
+        // Add a new invite
+        $backend->updateInvites(
+            $calendar['id'],
+            [
+                new Sharee([
+                    'href'         => 'mailto:user@example.org',
+                    'principal'    => 'principals/user2',
+                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'properties'   => ['{DAV:}displayname' => 'User 2'],
+                ])
+            ]
+        );
+
+        $expectedCalendar = [
+            'id'                                     => [1,2],
+            'principaluri'                           => 'principals/user2',
+            '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/1',
+            '{http://sabredav.org/ns}sync-token'     => '1',
+            'share-access'                           => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+            'read-only'                              => true,
+            'share-resource-uri'                     => '/ns/share/1',
+        ];
+        $calendars = $backend->getCalendarsForUser('principals/user2');
+
+        foreach ($expectedCalendar as $k => $v) {
+            $this->assertEquals(
+                $v,
+                $calendars[0][$k],
+                "Key " . $k . " in calendars array did not have the expected value."
+            );
+        }
+
+        // Removing the shared calendar.
+        $backend->deleteCalendar($calendars[0]['id']);
+
+        $this->assertEquals(
+            [],
+            $backend->getCalendarsForUser('principals/user2')
         );
 
         $result = $backend->getInvites($calendar['id']);

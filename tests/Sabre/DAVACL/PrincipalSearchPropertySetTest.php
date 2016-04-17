@@ -21,6 +21,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));

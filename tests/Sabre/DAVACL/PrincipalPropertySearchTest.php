@@ -23,6 +23,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->debugExceptions = true;
         $plugin = new MockPlugin();
         $plugin->allowAccessToNodesWithoutACL = true;
+        $plugin->allowUnauthenticatedAccess = false;
 
         $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);

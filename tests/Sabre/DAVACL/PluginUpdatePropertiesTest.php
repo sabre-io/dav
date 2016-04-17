@@ -4,8 +4,6 @@ namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 
-require_once 'Sabre/DAVACL/MockPrincipal.php';
-
 class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
 
     function testUpdatePropertiesPassthrough() {
@@ -14,6 +12,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new DAV\SimpleCollection('foo'),
         ];
         $server = new DAV\Server($tree);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin(new Plugin());
 
         $result = $server->updateProperties('foo', [
@@ -34,7 +33,9 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new MockPrincipal('foo', 'foo'),
         ];
         $server = new DAV\Server($tree);
-        $server->addPlugin(new Plugin());
+        $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
+        $server->addPlugin($plugin);
 
         $result = $server->updateProperties('foo', [
             '{DAV:}group-member-set' => null,
@@ -55,7 +56,9 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new MockPrincipal('foo', 'foo'),
         ];
         $server = new DAV\Server($tree);
-        $server->addPlugin(new Plugin());
+        $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
+        $server->addPlugin($plugin);
 
         $result = $server->updateProperties('foo', [
             '{DAV:}group-member-set' => new DAV\Xml\Property\Href(['/bar', '/baz'], true),
@@ -79,7 +82,9 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new MockPrincipal('foo', 'foo'),
         ];
         $server = new DAV\Server($tree);
-        $server->addPlugin(new Plugin());
+        $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
+        $server->addPlugin($plugin);
 
         $result = $server->updateProperties('foo', [
             '{DAV:}group-member-set' => new \StdClass(),
@@ -93,7 +98,9 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
             new DAV\SimpleCollection('foo'),
         ];
         $server = new DAV\Server($tree);
-        $server->addPlugin(new Plugin());
+        $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
+        $server->addPlugin($plugin);
 
         $result = $server->updateProperties('foo', [
             '{DAV:}group-member-set' => new DAV\Xml\Property\Href(['/bar', '/baz'], false),

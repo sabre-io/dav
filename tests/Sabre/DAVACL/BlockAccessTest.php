@@ -21,6 +21,16 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server = new DAV\Server($nodes);
         $this->plugin = new Plugin();
         $this->plugin->setDefaultAcl([]);
+        $this->server->addPlugin(
+            new DAV\Auth\Plugin(
+                new DAV\Auth\Backend\Mock()
+            )
+        );
+        // Login
+        $this->server->getPlugin('auth')->beforeMethod(
+            new \Sabre\HTTP\Request(),
+            new \Sabre\HTTP\Response()
+        );
         $this->server->addPlugin($this->plugin);
 
     }

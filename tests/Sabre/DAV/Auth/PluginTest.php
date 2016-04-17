@@ -5,8 +5,6 @@ namespace Sabre\DAV\Auth;
 use Sabre\HTTP;
 use Sabre\DAV;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function testInit() {

@@ -76,6 +76,7 @@ END:VCALENDAR',
         $this->server->httpResponse = $this->response;
 
         $this->aclPlugin = new DAVACL\Plugin();
+        $this->aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin($this->aclPlugin);
 
         $authBackend = new DAV\Auth\Backend\Mock();

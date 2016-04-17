@@ -20,8 +20,17 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $this->server = new DAV\Server($nodes);
+        $this->server->addPlugin(
+            new DAV\Auth\Plugin(
+                new DAV\Auth\Backend\Mock()
+            )
+        );
+        // Login
+        $this->server->getPlugin('auth')->beforeMethod(
+            new \Sabre\HTTP\Request(),
+            new \Sabre\HTTP\Response()
+        );
         $aclPlugin = new Plugin();
-        $aclPlugin->allowAccessToNodesWithoutACL = true;
         $this->server->addPlugin($aclPlugin);
 
     }

@@ -150,11 +150,6 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->carddavPlugin = new CardDAV\Plugin();
             $this->server->addPlugin($this->carddavPlugin);
         }
-        if ($this->setupACL) {
-            $this->aclPlugin = new DAVACL\Plugin();
-            $this->aclPlugin->adminPrincipals = ['principals/admin'];
-            $this->server->addPlugin($this->aclPlugin);
-        }
         if ($this->setupLocks) {
             $this->locksPlugin = new DAV\Locks\Plugin(
                 $this->locksBackend
@@ -169,6 +164,14 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
         if ($this->autoLogin) {
             $this->autoLogin($this->autoLogin);
+        }
+        if ($this->setupACL) {
+            $this->aclPlugin = new DAVACL\Plugin();
+            if (!$this->autoLogin) {
+                $this->aclPlugin->allowUnauthenticatedAccess = false;
+            }
+            $this->aclPlugin->adminPrincipals = ['principals/admin'];
+            $this->server->addPlugin($this->aclPlugin);
         }
 
     }

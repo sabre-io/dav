@@ -45,7 +45,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
 
         // Adding ACL plugin
-        $this->server->addPlugin(new DAVACL\Plugin());
+        $aclPlugin = new DAVACL\Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
+        $this->server->addPlugin($aclPlugin);
 
         // CalDAV is also required.
         $this->server->addPlugin(new CalDAV\Plugin());

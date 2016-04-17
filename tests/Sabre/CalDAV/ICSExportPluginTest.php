@@ -7,9 +7,6 @@ use Sabre\HTTP;
 use Sabre\VObject;
 use Sabre\DAVACL;
 
-require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class ICSExportPluginTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
@@ -137,8 +134,10 @@ ICS
 
     function testACLIntegrationBlocked() {
 
+        $aclPlugin = new DAVACL\Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin(
-            new DAVACL\Plugin()
+            $aclPlugin
         );
 
         $request = new HTTP\Request(
@@ -152,8 +151,10 @@ ICS
 
     function testACLIntegrationNotBlocked() {
 
+        $aclPlugin = new DAVACL\Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin(
-            new DAVACL\Plugin()
+            $aclPlugin
         );
         $this->server->addPlugin(
             new Plugin()

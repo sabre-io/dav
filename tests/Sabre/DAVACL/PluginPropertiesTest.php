@@ -10,6 +10,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testPrincipalCollectionSet() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $plugin->principalCollectionSet = [
             'principals1',
             'principals2',
@@ -78,6 +79,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testSupportedPrivilegeSet() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $server = new DAV\Server();
         $server->addPlugin($plugin);
 
@@ -137,6 +139,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testACL() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
 
         $nodes = [
             new MockACLNode('foo', [
@@ -175,6 +178,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testACLRestrictions() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
 
         $nodes = [
             new MockACLNode('foo', [
@@ -222,6 +226,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -250,6 +255,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -279,6 +285,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -306,6 +313,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer = new DAV\Server($tree);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -333,6 +341,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer = new DAV\Server($tree);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [

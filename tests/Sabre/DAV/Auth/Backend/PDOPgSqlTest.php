@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-require_once 'Sabre/TestUtil.php';
-
 class PDOPgSqlTest extends AbstractPDOTest {
 
     function getPDO() {

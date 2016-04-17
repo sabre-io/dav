@@ -281,7 +281,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testGetMultipleObjectsBadId() {
 
         $backend = new PDO($this->pdo);
-        $backend->getMultipleCalendarObjects('bad-id',['foo-bar']);
+        $backend->getMultipleCalendarObjects('bad-id', ['foo-bar']);
 
     }
 
@@ -499,7 +499,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     function testGetCalendarObjectBadId() {
 
         $backend = new PDO($this->pdo);
-        $backend->getCalendarObject('bad-id','foo-bar');
+        $backend->getCalendarObject('bad-id', 'foo-bar');
 
     }
 

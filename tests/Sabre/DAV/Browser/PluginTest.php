@@ -30,7 +30,7 @@ class PluginTest extends DAV\AbstractServer{
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
-                'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
+                'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
             $this->response->getHeaders()
         );
@@ -56,7 +56,7 @@ class PluginTest extends DAV\AbstractServer{
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
-                'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
+                'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
             $this->response->getHeaders()
         );
@@ -77,7 +77,7 @@ class PluginTest extends DAV\AbstractServer{
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
-                'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
+                'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
             $this->response->getHeaders()
         );
@@ -159,7 +159,7 @@ class PluginTest extends DAV\AbstractServer{
             'Content-Type'            => ['image/vnd.microsoft.icon'],
             'Content-Length'          => ['4286'],
             'Cache-Control'           => ['public, max-age=1209600'],
-            'Content-Security-Policy' => ["img-src 'self'; style-src 'self';"]
+            'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
         ], $this->response->getHeaders());
 
     }

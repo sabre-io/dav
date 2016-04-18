@@ -16,7 +16,7 @@ $config = [
     'SABRE_TEMPDIR'   => dirname(__FILE__) . '/temp/',
     'SABRE_HASSQLITE' => in_array('sqlite', PDO::getAvailableDrivers()),
     'SABRE_HASMYSQL'  => in_array('mysql', PDO::getAvailableDrivers()),
-    'SABRE_MYSQLDSN'  => 'mysql:host=127.0.0.1;dbname=sabredav',
+    'SABRE_MYSQLDSN'  => 'mysql:host=127.0.0.1;dbname=sabredav_test',
     'SABRE_MYSQLUSER' => 'root',
     'SABRE_MYSQLPASS' => '',
 ];

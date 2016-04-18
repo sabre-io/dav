@@ -1254,10 +1254,78 @@ class Plugin extends DAV\ServerPlugin {
      * @param Xml\Request\PrincipalMatchReport $report
      * @return void
      */
-    protected function principalMatchReport($report) {
+    protected function principalMatchReport(Xml\Request\PrincipalMatchReport $report) {
 
-        print_r($report);
-        die();
+        $depth = $this->server->getHTTPDepth(0);
+        if ($depth !== 0) {
+            throw new BadRequest('The principal-match report is only defined on Depth: 0');
+        }
+
+        $requestUri = $this->server->getRequestUri();
+        $currentPrincipals = $this->getCurrentUserPrincipals();
+
+        $result = [];
+
+        if ($report->type === Xml\Request\PrincipalMatchReport::SELF) {
+
+            // Finding all principals under the request uri that match the
+            // current principal.
+            foreach ($currentPrincipals as $currentPrincipal) {
+
+                if ($currentPrincipal === $requestUri || strpos($currentPrincipal, $requestUri . '/') === 0) {
+                    $result[] = $currentPrincipal;
+                }
+
+            }
+
+        } else {
+
+            // We need to find all resources that have a property that matches
+            // one of the current principals.
+            $candidates = $this->server->getPropertiesForPath(
+                $requestUri,
+                [$report->principalProperty],
+                1
+            );
+            foreach ($candidates as $candidate) {
+
+                if (!isset($candidate[200][$report->principalProperty])) {
+                    continue;
+                }
+                $hrefs = $candidate[200][$report->principalProperty];
+
+                if (!$hrefs instanceof Href) {
+                    continue;
+                }
+
+                foreach ($hrefs->getHref() as $href) {
+                    if (in_array($href, $currentPrincipals)) {
+                        $result[] = $candidate['href'];
+                        continue 2;
+                    }
+                }
+            }
+
+        }
+
+        $responses = [];
+
+        foreach ($result as $item) {
+
+            $properties = [];
+
+            if ($report->properties) {
+
+                $foo = $this->server->getPropertiesForPath($item, $report->properties);
+                unset($foo['href']);
+                $properties = $foo;
+
+            }
+
+            $responses[] = new Response($item, $properties, 'HTTP/1.1 200 OK');
+
+        }
+
 
     }
 

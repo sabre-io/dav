@@ -79,7 +79,7 @@ class PrincipalMatchReport implements XmlDeserializable {
             $principalMatch->properties = $elems['prop'];
         }
 
-        return $principalMatch; 
+        return $principalMatch;
 
     }
 

@@ -25,6 +25,20 @@ use Sabre\DAV\ServerPlugin;
 class Plugin extends ServerPlugin {
 
     /**
+     * By default this plugin will require that the user is authenticated,
+     * and refuse any access if the user is not authenticated.
+     *
+     * If this setting is set to false, we let the user through, whether they
+     * are authenticated or not.
+     *
+     * This is useful if you want to allow both authenticated and
+     * unauthenticated access to your server.
+     *
+     * @param bool
+     */
+    public $autoRequireLogin = true;
+
+    /**
      * authentication backends
      */
     protected $backends;
@@ -132,6 +146,50 @@ class Plugin extends ServerPlugin {
             return;
 
         }
+
+        $authResult = $this->check($request, $response);
+
+        if ($authResult[0]) {
+            // Auth was successful
+            $this->currentPrincipal = $authResult[1];
+            $this->loginFailedReasons = null;
+            return;
+        }
+
+
+
+        // If we got here, it means that no authentication backend was
+        // successful in authenticating the user.
+        $this->currentPrincipal = null;
+        $this->loginFailedReasons = $authResult[1];
+
+        if ($this->autoRequireLogin) {
+            $this->challenge($request, $response);
+            throw new NotAuthenticated(implode(', ', $authResult[1]));
+        }
+
+    }
+
+    /**
+     * Checks authentication credentials, and logs the user in if possible.
+     *
+     * This method returns an array. The first item in the array is a boolean
+     * indicating if login was successful.
+     *
+     * If login was successful, the second item in the array will contain the
+     * current principal url/path of the logged in user.
+     *
+     * If login was not successful, the second item in the array will contain a
+     * an array with strings. The strings are a list of reasons why login was
+     * unsuccesful. For every auth backend there will be one reason, so usually
+     * there's just one.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return array
+     */
+    function check(RequestInterface $request, ResponseInterface $response) {
+
         if (!$this->backends) {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
@@ -150,20 +208,56 @@ class Plugin extends ServerPlugin {
             if ($result[0]) {
                 $this->currentPrincipal = $result[1];
                 // Exit early
-                return;
+                return [true, $result[1]];
             }
             $reasons[] = $result[1];
 
         }
 
-        // If we got here, it means that no authentication backend was
-        // successful in authenticating the user.
-        $this->currentPrincipal = null;
+        return [false, $reasons];
+
+    }
+
+    /**
+     * This method sends authentication challenges to the user.
+     *
+     * This method will for example cause a HTTP Basic backend to set a
+     * WWW-Authorization header, indicating to the client that it should
+     * authenticate.
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return array
+     */
+    function challenge(RequestInterface $request, ResponseInterface $response) {
 
         foreach ($this->backends as $backend) {
             $backend->challenge($request, $response);
         }
-        throw new NotAuthenticated(implode(', ', $reasons));
+
+    }
+
+    /**
+     * List of reasons why login failed for the last login operation.
+     *
+     * @var string[]|null
+     */
+    protected $loginFailedReasons;
+
+    /**
+     * Returns a list of reasons why login was unsuccessful.
+     *
+     * This method will return the login failed reasons for the last login
+     * operation. One for each auth backend.
+     *
+     * This method returns null if the last authentication attempt was
+     * successful, or if there was no authentication attempt yet.
+     *
+     * @return string[]|null
+     */
+    function getLoginFailedReasons() {
+
+        return $this->loginFailedReasons;
 
     }
 

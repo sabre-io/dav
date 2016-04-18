@@ -115,6 +115,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $server = new DAV\Server();
         $server->addPlugin($plugin);
         $this->assertEquals($expected, $plugin->getFlatPrivilegeSet(''));
@@ -124,6 +125,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
     function testCurrentUserPrincipalsNotLoggedIn() {
 
         $acl = new Plugin();
+        $acl->allowUnauthenticatedAccess = false;
         $server = new DAV\Server();
         $server->addPlugin($acl);
 
@@ -142,6 +144,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $acl = new Plugin();
+        $acl->allowUnauthenticatedAccess = false;
         $server = new DAV\Server($tree);
         $server->addPlugin($acl);
 
@@ -169,6 +172,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $acl = new Plugin();
+        $acl->allowUnauthenticatedAccess = false;
         $server = new DAV\Server($tree);
         $server->addPlugin($acl);
 
@@ -212,6 +216,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($tree);
         $aclPlugin = new Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
 
         $this->assertEquals($acl, $aclPlugin->getACL('foo'));
@@ -247,6 +252,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($tree);
         $aclPlugin = new Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
 
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
@@ -299,6 +305,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($tree);
         $aclPlugin = new Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
 
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());

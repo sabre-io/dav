@@ -6,6 +6,8 @@ use Sabre\DAV;
 use Sabre\DAV\INode;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\NotFound;
+use Sabre\DAV\Exception\NotAuthenticated;
+use Sabre\DAVACL\Exception\NeedPrivileges;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
@@ -98,6 +100,18 @@ class Plugin extends DAV\ServerPlugin {
     public $adminPrincipals = [];
 
     /**
+     * The ACL plugin allows privileges to be assigned to users that are not
+     * logged in. To facilitate that, it modifies the auth plugin's behavior
+     * to only require login when a privileged operation was denied.
+     *
+     * Unauthenticated access can be considered a security concern, so it's
+     * possible to turn this feature off to harden the server's security.
+     *
+     * @var bool
+     */
+    public $allowUnauthenticatedAccess = true;
+
+    /**
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
@@ -168,7 +182,8 @@ class Plugin extends DAV\ServerPlugin {
      * @param array|string $privileges
      * @param int $recursion
      * @param bool $throwExceptions if set to false, this method won't throw exceptions.
-     * @throws Sabre\DAVACL\Exception\NeedPrivileges
+     * @throws NeedPrivileges
+     * @throws NotAuthenticated
      * @return bool
      */
     function checkPrivileges($uri, $privileges, $recursion = self::R_PARENT, $throwExceptions = true) {
@@ -187,10 +202,22 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if ($failed) {
-            if ($throwExceptions)
-                throw new Exception\NeedPrivileges($uri, $failed);
-            else
+            if ($this->allowUnauthenticatedAccess && is_null($this->getCurrentUserPrincipal())) {
+                // We are not authenticated. Kicking in the Auth plugin.
+                $authPlugin = $this->server->getPlugin('auth');
+                $reasons = $authPlugin->getLoginFailedReasons();
+                $authPlugin->challenge(
+                    $this->server->httpRequest,
+                    $this->server->httpResponse
+                );
+                throw new notAuthenticated(implode(', ', $reasons) . '. Login was needed for privilege: ' . implode(', ', $failed) . ' on ' . $uri);
+            }
+            if ($throwExceptions) {
+
+                throw new NeedPrivileges($uri, $failed);
+            } else {
                 return false;
+            }
         }
         return true;
 
@@ -207,9 +234,9 @@ class Plugin extends DAV\ServerPlugin {
     function getCurrentUserPrincipal() {
 
         $authPlugin = $this->server->getPlugin('auth');
-        if (is_null($authPlugin)) return null;
-        /** @var $authPlugin Sabre\DAV\Auth\Plugin */
-
+        if (!$authPlugin) {
+            return null;
+        }
         return $authPlugin->getCurrentPrincipal();
 
     }
@@ -276,6 +303,11 @@ class Plugin extends DAV\ServerPlugin {
             'principal' => '{DAV:}authenticated',
             'protected' => true,
             'privilege' => '{DAV:}all',
+        ],
+        [
+            'principal' => '{DAV:}unauthenticated',
+            'protected' => true,
+            'privilege' => '{DAV:}read',
         ],
     ];
 
@@ -595,6 +627,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $collected = [];
 
+        $isAuthenticated = $this->getCurrentUserPrincipal() !== null;
+
         foreach ($acl as $ace) {
 
             $principal = $ace['principal'];
@@ -611,17 +645,21 @@ class Plugin extends DAV\ServerPlugin {
 
                 // 'all' matches for every user
                 case '{DAV:}all' :
-
-                // 'authenticated' matched for every user that's logged in.
-                // Since it's not possible to use ACL while not being logged
-                // in, this is also always true.
-                case '{DAV:}authenticated' :
                     $collected[] = $ace;
                     break;
 
-                // 'unauthenticated' can never occur either, so we simply
-                // ignore these.
+                case '{DAV:}authenticated' :
+                    // Authenticated users only
+                    if ($isAuthenticated) {
+                        $collected[] = $ace;
+                    }
+                    break;
+
                 case '{DAV:}unauthenticated' :
+                    // Unauthenticated users only
+                    if (!$isAuthenticated) {
+                        $collected[] = $ace;
+                    }
                     break;
 
                 default :
@@ -764,6 +802,14 @@ class Plugin extends DAV\ServerPlugin {
      * @return void
      */
     function initialize(DAV\Server $server) {
+
+        if ($this->allowUnauthenticatedAccess) {
+            $authPlugin = $server->getPlugin('auth');
+            if (!$authPlugin) {
+                throw new \Exception('The Auth plugin must be loaded before the ACL plugin if you want to allow unauthenticated access.');
+            }
+            $authPlugin->autoRequireLogin = false;
+        }
 
         $this->server = $server;
         $server->on('propFind',            [$this, 'propFind'], 20);

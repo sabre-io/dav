@@ -33,9 +33,9 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->debugExceptions = true;
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin();
-        $plugin->allowAccessToNodesWithoutACL = true;
-
+        $plugin->allowUnauthenticatedAccess = false;
         $this->assertTrue($plugin instanceof Plugin);
+
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
 

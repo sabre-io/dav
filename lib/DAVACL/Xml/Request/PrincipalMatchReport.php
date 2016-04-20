@@ -20,13 +20,36 @@ use Sabre\Xml\Deserializer;
  */
 class PrincipalMatchReport implements XmlDeserializable {
 
+    /**
+     * Report on a list of principals that match the current principal.
+     */
     const SELF = 1;
+
+    /**
+     * Report on a property on resources, such as {DAV:}owner, that match the current principal.
+     */
     const PRINCIPAL_PROPERTY = 2;
 
+    /**
+     * Must be SELF or PRINCIPAL_PROPERTY
+     *
+     * @var int
+     */
     public $type;
 
+    /**
+     * List of properties that are being requested for matching resources.
+     *
+     * @var string[]
+     */
     public $properties = [];
 
+    /**
+     * If $type = PRINCIPAL_PROPERTY, which WebDAV property we should compare
+     * to the current principal.
+     *
+     * @var string
+     */
     public $principalProperty;
 
     /**
@@ -51,7 +74,7 @@ class PrincipalMatchReport implements XmlDeserializable {
      * @return mixed
      */
     static function xmlDeserialize(Reader $reader) {
-        
+
         $reader->pushContext();
         $reader->elementMap['{DAV:}prop'] = 'Sabre\Xml\Deserializer\enum';
 
@@ -63,8 +86,6 @@ class PrincipalMatchReport implements XmlDeserializable {
         $reader->popContext();
 
         $principalMatch = new self();
-
-        $principalMatch->type = 'carrot';
 
         if (array_key_exists('self', $elems)) {
             $principalMatch->type = self::SELF;

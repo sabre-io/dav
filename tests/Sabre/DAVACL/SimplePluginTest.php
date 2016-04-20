@@ -22,6 +22,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             [
                 '{DAV:}expand-property',
+                '{DAV:}principal-match',
                 '{DAV:}principal-property-search',
                 '{DAV:}principal-search-property-set'
             ],

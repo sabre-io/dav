@@ -164,6 +164,7 @@ class Plugin extends DAV\ServerPlugin {
 
         return [
             '{DAV:}expand-property',
+            '{DAV:}principal-match',
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set',
         ];
@@ -233,6 +234,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     function getCurrentUserPrincipal() {
 
+        /** @var $authPlugin Sabre\DAV\Auth\Plugin */
         $authPlugin = $this->server->getPlugin('auth');
         if (!$authPlugin) {
             return null;
@@ -856,6 +858,7 @@ class Plugin extends DAV\ServerPlugin {
         $server->xml->elementMap['{DAV:}expand-property'] = 'Sabre\\DAVACL\\Xml\\Request\\ExpandPropertyReport';
         $server->xml->elementMap['{DAV:}principal-property-search'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalPropertySearchReport';
         $server->xml->elementMap['{DAV:}principal-search-property-set'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalSearchPropertySetReport';
+        $server->xml->elementMap['{DAV:}principal-match'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalMatchReport';
 
     }
 
@@ -896,11 +899,9 @@ class Plugin extends DAV\ServerPlugin {
                 $this->checkPrivileges($path, '{DAV:}write-content');
                 break;
 
-
             case 'UNLOCK' :
                 // Unlock is always allowed at the moment.
                 break;
-
 
             case 'PROPPATCH' :
                 $this->checkPrivileges($path, '{DAV:}write-properties');
@@ -924,7 +925,6 @@ class Plugin extends DAV\ServerPlugin {
                 // If MOVE is used beforeUnbind will also be used to check if
                 // the sourcenode can be deleted.
                 $this->checkPrivileges($path, '{DAV:}read', self::R_RECURSIVE);
-
                 break;
 
         }
@@ -1146,6 +1146,10 @@ class Plugin extends DAV\ServerPlugin {
                 $this->server->transactionType = 'report-expand-property';
                 $this->expandPropertyReport($report);
                 return false;
+            case '{DAV:}principal-match' :
+                $this->server->transactionType = 'report-principal-match';
+                $this->principalMatchReport($report);
+                return false;
 
         }
 
@@ -1241,7 +1245,106 @@ class Plugin extends DAV\ServerPlugin {
     /* Reports {{{ */
 
     /**
-     * The expand-property report is defined in RFC3253 section 3-8.
+     * The principal-match report is defined in RFC3744, section 9.3.
+     *
+     * This report allows a client to figure out based on the current user,
+     * or a principal URL, the principal URL and principal URLs of groups that
+     * principal belongs to.
+     *
+     * @param Xml\Request\PrincipalMatchReport $report
+     * @return void
+     */
+    protected function principalMatchReport(Xml\Request\PrincipalMatchReport $report) {
+
+        $depth = $this->server->getHTTPDepth(0);
+        if ($depth !== 0) {
+            throw new BadRequest('The principal-match report is only defined on Depth: 0');
+        }
+
+        $requestUri = $this->server->getRequestUri();
+        $currentPrincipals = $this->getCurrentUserPrincipals();
+
+        $result = [];
+
+        if ($report->type === Xml\Request\PrincipalMatchReport::SELF) {
+
+            // Finding all principals under the request uri that match the
+            // current principal.
+            foreach ($currentPrincipals as $currentPrincipal) {
+
+                if ($currentPrincipal === $requestUri || strpos($currentPrincipal, $requestUri . '/') === 0) {
+                    $result[] = $currentPrincipal;
+                }
+
+            }
+
+        } else {
+
+            // We need to find all resources that have a property that matches
+            // one of the current principals.
+            $candidates = $this->server->getPropertiesForPath(
+                $requestUri,
+                [$report->principalProperty],
+                1
+            );
+            foreach ($candidates as $candidate) {
+
+                if (!isset($candidate[200][$report->principalProperty])) {
+                    continue;
+                }
+                $hrefs = $candidate[200][$report->principalProperty];
+
+                if (!$hrefs instanceof Href) {
+                    continue;
+                }
+
+                foreach ($hrefs->getHref() as $href) {
+                    if (in_array($href, $currentPrincipals)) {
+                        $result[] = $candidate['href'];
+                        continue 2;
+                    }
+                }
+            }
+
+        }
+
+        $responses = [];
+
+        foreach ($result as $item) {
+
+            $properties = [];
+
+            if ($report->properties) {
+
+                $foo = $this->server->getPropertiesForPath($item, $report->properties);
+                unset($foo['href']);
+                $properties = $foo;
+
+            }
+
+            $responses[] = new DAV\Xml\Element\Response(
+                $item,
+                $properties,
+                '200'
+            );
+
+        }
+
+        $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
+        $this->server->httpResponse->setStatus(207);
+        $this->server->httpResponse->setBody(
+            $this->server->xml->write(
+                '{DAV:}multistatus',
+                $responses,
+                $this->server->getBaseUri()
+            )
+        );
+
+
+    }
+
+    /**
+     * The expand-property report is defined in RFC3253 section 3.8.
      *
      * This report is very similar to a standard PROPFIND. The difference is
      * that it has the additional ability to look at properties containing a

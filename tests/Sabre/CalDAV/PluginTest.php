@@ -482,8 +482,9 @@ END:VCALENDAR';
         $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = [
             '{DAV:}expand-property',
+            '{DAV:}principal-match',
             '{DAV:}principal-property-search',
-            '{DAV:}principal-search-property-set'
+            '{DAV:}principal-search-property-set',
         ];
         $this->assertEquals($value, $prop->getValue());
 
@@ -510,6 +511,7 @@ END:VCALENDAR';
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
             '{urn:ietf:params:xml:ns:caldav}free-busy-query',
             '{DAV:}expand-property',
+            '{DAV:}principal-match',
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set'
         ];
@@ -535,6 +537,7 @@ END:VCALENDAR';
         $value = [
             '{DAV:}sync-collection',
             '{DAV:}expand-property',
+            '{DAV:}principal-match',
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set',
         ];

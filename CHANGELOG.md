@@ -47,6 +47,7 @@ ChangeLog
 * Renamed `phpunit.xml` to `phpunit.xml.dist` to make local modifications easy.
 * Functionality from `IShareableCalendar` is merged into `ISharedCalendar`.
 * #751: Fixed XML responses from failing `MKCOL` requests.
+* #600: Support for `principal-match` ACL `REPORT`.
 
 
 3.1.3 (2016-04-06)

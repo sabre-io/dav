@@ -4,6 +4,7 @@ namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 use Sabre\DAV\INode;
+use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\Exception\NotAuthenticated;
@@ -1014,24 +1015,24 @@ class Plugin extends DAV\ServerPlugin {
         if ($node instanceof IPrincipal) {
 
             $propFind->handle('{DAV:}alternate-URI-set', function() use ($node) {
-                return new DAV\Xml\Property\Href($node->getAlternateUriSet());
+                return new Href($node->getAlternateUriSet());
             });
             $propFind->handle('{DAV:}principal-URL', function() use ($node) {
-                return new DAV\Xml\Property\Href($node->getPrincipalUrl() . '/');
+                return new Href($node->getPrincipalUrl() . '/');
             });
             $propFind->handle('{DAV:}group-member-set', function() use ($node) {
                 $members = $node->getGroupMemberSet();
                 foreach ($members as $k => $member) {
                     $members[$k] = rtrim($member, '/') . '/';
                 }
-                return new DAV\Xml\Property\Href($members);
+                return new Href($members);
             });
             $propFind->handle('{DAV:}group-membership', function() use ($node) {
                 $members = $node->getGroupMembership();
                 foreach ($members as $k => $member) {
                     $members[$k] = rtrim($member, '/') . '/';
                 }
-                return new DAV\Xml\Property\Href($members);
+                return new Href($members);
             });
             $propFind->handle('{DAV:}displayname', [$node, 'getDisplayName']);
 
@@ -1042,7 +1043,7 @@ class Plugin extends DAV\ServerPlugin {
             $val = $this->principalCollectionSet;
             // Ensuring all collections end with a slash
             foreach ($val as $k => $v) $val[$k] = $v . '/';
-            return new DAV\Xml\Property\Href($val);
+            return new Href($val);
 
         });
         $propFind->handle('{DAV:}current-user-principal', function() {
@@ -1079,7 +1080,7 @@ class Plugin extends DAV\ServerPlugin {
         /* Adding ACL properties */
         if ($node instanceof IACL) {
             $propFind->handle('{DAV:}owner', function() use ($node) {
-                return new DAV\Xml\Property\Href($node->getOwner() . '/');
+                return new Href($node->getOwner() . '/');
             });
         }
 
@@ -1098,7 +1099,7 @@ class Plugin extends DAV\ServerPlugin {
         $propPatch->handle('{DAV:}group-member-set', function($value) use ($path) {
             if (is_null($value)) {
                 $memberSet = [];
-            } elseif ($value instanceof DAV\Xml\Property\Href) {
+            } elseif ($value instanceof Href) {
                 $memberSet = array_map(
                     [$this->server, 'calculateUri'],
                     $value->getHrefs()
@@ -1287,19 +1288,21 @@ class Plugin extends DAV\ServerPlugin {
                 [$report->principalProperty],
                 1
             );
+
             foreach ($candidates as $candidate) {
 
                 if (!isset($candidate[200][$report->principalProperty])) {
                     continue;
                 }
+
                 $hrefs = $candidate[200][$report->principalProperty];
 
                 if (!$hrefs instanceof Href) {
                     continue;
                 }
 
-                foreach ($hrefs->getHref() as $href) {
-                    if (in_array($href, $currentPrincipals)) {
+                foreach ($hrefs->getHrefs() as $href) {
+                    if (in_array(trim($href,'/'), $currentPrincipals)) {
                         $result[] = $candidate['href'];
                         continue 2;
                     }
@@ -1317,6 +1320,8 @@ class Plugin extends DAV\ServerPlugin {
             if ($report->properties) {
 
                 $foo = $this->server->getPropertiesForPath($item, $report->properties);
+                $foo = $foo[0];
+                $item = $foo['href'];
                 unset($foo['href']);
                 $properties = $foo;
 

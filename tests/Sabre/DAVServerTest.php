@@ -279,7 +279,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);
         }
-        if ($this->setupCardDAV || $this->setupCalDAV) {
+        if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {
             $this->principalBackend = new DAVACL\PrincipalBackend\Mock();
         }
         if ($this->setupLocks) {

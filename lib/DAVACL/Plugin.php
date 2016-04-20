@@ -1322,9 +1322,23 @@ class Plugin extends DAV\ServerPlugin {
 
             }
 
-            $responses[] = new Response($item, $properties, 'HTTP/1.1 200 OK');
+            $responses[] = new DAV\Xml\Element\Response(
+                $item,
+                $properties,
+                '200'
+            );
 
         }
+
+        $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
+        $this->server->httpResponse->setStatus(207);
+        $this->server->httpResponse->setBody(
+            $this->server->xml->write(
+                '{DAV:}multistatus',
+                $responses,
+                $this->server->getBaseUri()
+            )
+        );
 
 
     }

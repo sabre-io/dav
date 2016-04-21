@@ -248,8 +248,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             );
         }
 
-        if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {
+        if ($this->setupCalDAV) {
             $this->tree[] = new CalDAV\Principal\Collection(
+                $this->principalBackend
+            );
+        } elseif ($this->setupCardDAV || $this->setupACL) {
+            $this->tree[] = new DAVACL\PrincipalCollection(
                 $this->principalBackend
             );
         }

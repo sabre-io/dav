@@ -10,7 +10,8 @@ CREATE TABLE calendarobjects (
     firstoccurence INT(11) UNSIGNED,
     lastoccurence INT(11) UNSIGNED,
     uid VARBINARY(200),
-    UNIQUE(calendarid, uri)
+    UNIQUE(calendarid, uri),
+    INDEX calendarid_time (calendarid, firstoccurence)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE calendars (

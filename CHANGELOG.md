@@ -49,6 +49,8 @@ ChangeLog
 * #751: Fixed XML responses from failing `MKCOL` requests.
 * #600: Support for `principal-match` ACL `REPORT`.
 * #599: Support for `acl-principal-prop-set` ACL `REPORT`.
+* #798: Added an index on `firstoccurence` field in MySQL CalDAV backend. This
+  should speed up common calendar-query requests.
 
 
 3.1.3 (2016-04-06)

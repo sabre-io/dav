@@ -856,6 +856,7 @@ class Plugin extends DAV\ServerPlugin {
         // class.
         $server->xml->elementMap['{DAV:}group-member-set'] = 'Sabre\\DAV\\Xml\\Property\\Href';
         $server->xml->elementMap['{DAV:}acl'] = 'Sabre\\DAVACL\\Xml\\Property\\Acl';
+        $server->xml->elementMap['{DAV:}acl-principal-prop-set'] = 'Sabre\\DAVACL\\Xml\\Request\\AclPrincipalPropSetReport';
         $server->xml->elementMap['{DAV:}expand-property'] = 'Sabre\\DAVACL\\Xml\\Request\\ExpandPropertyReport';
         $server->xml->elementMap['{DAV:}principal-property-search'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalPropertySearchReport';
         $server->xml->elementMap['{DAV:}principal-search-property-set'] = 'Sabre\\DAVACL\\Xml\\Request\\PrincipalSearchPropertySetReport';
@@ -1137,19 +1138,23 @@ class Plugin extends DAV\ServerPlugin {
 
             case '{DAV:}principal-property-search' :
                 $this->server->transactionType = 'report-principal-property-search';
-                $this->principalPropertySearchReport($report);
+                $this->principalPropertySearchReport($path, $report);
                 return false;
             case '{DAV:}principal-search-property-set' :
                 $this->server->transactionType = 'report-principal-search-property-set';
-                $this->principalSearchPropertySetReport($report);
+                $this->principalSearchPropertySetReport($path, $report);
                 return false;
             case '{DAV:}expand-property' :
                 $this->server->transactionType = 'report-expand-property';
-                $this->expandPropertyReport($report);
+                $this->expandPropertyReport($path, $report);
                 return false;
             case '{DAV:}principal-match' :
                 $this->server->transactionType = 'report-principal-match';
-                $this->principalMatchReport($report);
+                $this->principalMatchReport($path, $report);
+                return false;
+            case '{DAV:}acl-principal-prop-set' :
+                $this->server->transactionType = 'acl-principal-prop-set';
+                $this->aclPrincipalPropSetReport($path, $report);
                 return false;
 
         }
@@ -1252,17 +1257,17 @@ class Plugin extends DAV\ServerPlugin {
      * or a principal URL, the principal URL and principal URLs of groups that
      * principal belongs to.
      *
+     * @param string $path
      * @param Xml\Request\PrincipalMatchReport $report
      * @return void
      */
-    protected function principalMatchReport(Xml\Request\PrincipalMatchReport $report) {
+    protected function principalMatchReport($path, Xml\Request\PrincipalMatchReport $report) {
 
         $depth = $this->server->getHTTPDepth(0);
         if ($depth !== 0) {
             throw new BadRequest('The principal-match report is only defined on Depth: 0');
         }
 
-        $requestUri = $this->server->getRequestUri();
         $currentPrincipals = $this->getCurrentUserPrincipals();
 
         $result = [];
@@ -1273,7 +1278,7 @@ class Plugin extends DAV\ServerPlugin {
             // current principal.
             foreach ($currentPrincipals as $currentPrincipal) {
 
-                if ($currentPrincipal === $requestUri || strpos($currentPrincipal, $requestUri . '/') === 0) {
+                if ($currentPrincipal === $path || strpos($currentPrincipal, $path . '/') === 0) {
                     $result[] = $currentPrincipal;
                 }
 
@@ -1284,7 +1289,7 @@ class Plugin extends DAV\ServerPlugin {
             // We need to find all resources that have a property that matches
             // one of the current principals.
             $candidates = $this->server->getPropertiesForPath(
-                $requestUri,
+                $path,
                 [$report->principalProperty],
                 1
             );
@@ -1302,7 +1307,7 @@ class Plugin extends DAV\ServerPlugin {
                 }
 
                 foreach ($hrefs->getHrefs() as $href) {
-                    if (in_array(trim($href,'/'), $currentPrincipals)) {
+                    if (in_array(trim($href, '/'), $currentPrincipals)) {
                         $result[] = $candidate['href'];
                         continue 2;
                     }
@@ -1359,15 +1364,15 @@ class Plugin extends DAV\ServerPlugin {
      * Other rfc's, such as ACL rely on this report, so it made sense to put
      * it in this plugin.
      *
+     * @param string $path
      * @param Xml\Request\ExpandPropertyReport $report
      * @return void
      */
-    protected function expandPropertyReport($report) {
+    protected function expandPropertyReport($path, $report) {
 
         $depth = $this->server->getHTTPDepth(0);
-        $requestUri = $this->server->getRequestUri();
 
-        $result = $this->expandProperties($requestUri, $report->properties, $depth);
+        $result = $this->expandProperties($path, $report->properties, $depth);
 
         $xml = $this->server->xml->write(
             '{DAV:}multistatus',
@@ -1441,10 +1446,11 @@ class Plugin extends DAV\ServerPlugin {
      * of properties the client may search on, using the
      * {DAV:}principal-property-search report.
      *
+     * @param string $path
      * @param Xml\Request\PrincipalSearchPropertySetReport $report
      * @return void
      */
-    protected function principalSearchPropertySetReport($report) {
+    protected function principalSearchPropertySetReport($path, $report) {
 
         $httpDepth = $this->server->getHTTPDepth(0);
         if ($httpDepth !== 0) {
@@ -1495,14 +1501,14 @@ class Plugin extends DAV\ServerPlugin {
      * clients to search for groups of principals, based on the value of one
      * or more properties.
      *
+     * @param string $path
      * @param Xml\Request\PrincipalPropertySearchReport $report
      * @return void
      */
-    protected function principalPropertySearchReport($report) {
+    protected function principalPropertySearchReport($path, Xml\Request\PrincipalPropertySearchReport $report) {
 
-        $uri = null;
-        if (!$report->applyToPrincipalCollectionSet) {
-            $uri = $this->server->httpRequest->getPath();
+        if ($report->applyToPrincipalCollectionSet) {
+            $path = null;
         }
         if ($this->server->getHttpDepth('0') !== 0) {
             throw new BadRequest('Depth must be 0');
@@ -1510,7 +1516,7 @@ class Plugin extends DAV\ServerPlugin {
         $result = $this->principalSearch(
             $report->searchProperties,
             $report->properties,
-            $uri,
+            $path,
             $report->test
         );
 
@@ -1522,6 +1528,64 @@ class Plugin extends DAV\ServerPlugin {
         $this->server->httpResponse->setBody($this->server->generateMultiStatus($result, $prefer['return'] === 'minimal'));
 
     }
+
+    /**
+     * aclPrincipalPropSet REPORT
+     *
+     * This method is responsible for handling the {DAV:}acl-principal-prop-set
+     * REPORT, as defined in:
+     *
+     * https://tools.ietf.org/html/rfc3744#section-9.2
+     *
+     * This REPORT allows a user to quickly fetch information about all
+     * principals specified in the access control list. Most commonly this
+     * is used to for example generate a UI with ACL rules, allowing you
+     * to show names for principals for every entry.
+     *
+     * @param string $path
+     * @param Xml\Request\AclPrincipalPropSetReport $report
+     * @return void
+     */
+    protected function aclPrincipalPropSetReport($path, Xml\Request\AclPrincipalPropSetReport $report) {
+
+        if ($this->server->getHTTPDepth(0) !== 0) {
+            throw new BadRequest('The {DAV:}acl-principal-prop-set REPORT only supports Depth 0');
+        }
+
+        // Fetching ACL rules for the given path. We're using the property
+        // API and not the local getACL, because it will ensure that all
+        // business rules and restrictions are applied.
+        $acl = $this->server->getProperties($path, '{DAV:}acl');
+
+        if (!$acl || !isset($acl['{DAV:}acl'])) {
+            throw new Forbidden('Could not fetch ACL rules for this path');
+        }
+
+        $principals = [];
+        foreach ($acl['{DAV:}acl']->getPrivileges() as $ace) {
+
+            if ($ace['principal'][0] === '{') {
+                // It's not a principal, it's one of the special rules such as {DAV:}authenticated
+                continue;
+            }
+
+            $principals[] = $ace['principal'];
+
+        }
+
+        $properties = $this->server->getPropertiesForMultiplePaths(
+            $principals,
+            $report->properties
+        );
+
+        $this->server->httpResponse->setStatus(207);
+        $this->server->httpResponse->setHeader('Content-Type', 'application/xml; charset=utf-8');
+        $this->server->httpResponse->setBody(
+            $this->server->generateMultiStatus($properties)
+        );
+
+    }
+
 
     /* }}} */
 

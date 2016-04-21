@@ -66,7 +66,7 @@ XML;
     <d:href>/principals/user1/</d:href>
     <d:propstat>
         <d:prop>
-            <d:resourcetype><d:collection/><d:principal/></d:resourcetype>
+            <d:resourcetype><d:principal/></d:resourcetype>
         </d:prop>
         <d:status>HTTP/1.1 200 OK</d:status>
     </d:propstat>
@@ -106,7 +106,7 @@ XML;
     <d:href>/principals/user1/</d:href>
     <d:propstat>
         <d:prop>
-            <d:resourcetype><d:collection/><d:principal/></d:resourcetype>
+            <d:resourcetype><d:principal/></d:resourcetype>
         </d:prop>
         <d:status>HTTP/1.1 200 OK</d:status>
     </d:propstat>

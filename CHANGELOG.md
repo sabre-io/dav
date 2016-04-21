@@ -48,6 +48,7 @@ ChangeLog
 * Functionality from `IShareableCalendar` is merged into `ISharedCalendar`.
 * #751: Fixed XML responses from failing `MKCOL` requests.
 * #600: Support for `principal-match` ACL `REPORT`.
+* #599: Support for `acl-principal-prop-set` ACL `REPORT`.
 
 
 3.1.3 (2016-04-06)

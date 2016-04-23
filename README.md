@@ -24,6 +24,12 @@ Build status
 | 1.7          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=1.7)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.3 |
 | 1.6          | [![Build Status](https://travis-ci.org/fruux/sabre-dav.svg?branch=1.6)](https://travis-ci.org/fruux/sabre-dav) | PHP 5.3 |
 
+Documentation
+-------------
+
+* [Introduction](http://sabre.io/dav/).
+* [Installation](http://sabre.io/dav/install/).
+
 Made at fruux
 -------------
 

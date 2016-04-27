@@ -574,8 +574,8 @@ class Plugin extends ServerPlugin {
     }
 
     /**
-     * This method is triggered whenever a subsystem reqeuests the privileges
-     * hat are supported on a particular node.
+     * This method is triggered whenever a subsystem requests the privileges
+     * that are supported on a particular node.
      *
      * We need to add a number of privileges for scheduling purposes.
      *
@@ -719,7 +719,7 @@ class Plugin extends ServerPlugin {
     /**
      * This method handles POST requests to the schedule-outbox.
      *
-     * Currently, two types of requests are support:
+     * Currently, two types of requests are supported:
      *   * FREEBUSY requests from RFC 6638
      *   * Simple iTIP messages from draft-desruisseaux-caldav-sched-04
      *

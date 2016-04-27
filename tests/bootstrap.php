@@ -20,7 +20,7 @@ $config = [
     'SABRE_MYSQLDSN'  => 'mysql:host=127.0.0.1;dbname=sabredav',
     'SABRE_MYSQLUSER' => 'root',
     'SABRE_MYSQLPASS' => '',
-    'SABRE_PGSQLDSN'  => 'pgsql:host=localhost;dbname=sabredav',
+    'SABRE_PGSQLDSN'  => 'pgsql:host=localhost;dbname=sabredav;user=sabredav;password=sabredav',
 ];
 
 if (file_exists(__DIR__ . '/config.user.php')) {

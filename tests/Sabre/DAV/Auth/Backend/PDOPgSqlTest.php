@@ -10,11 +10,14 @@ class PDOPgSqlTest extends AbstractPDOTest {
         $pdo = \Sabre\TestUtil::getPgSqlDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to PgSql database');
 
-        $sql = file_get_contents(__DIR__ . '/../../../../examples/sql/pgsql.users.sql');
+        $sql = file_get_contents(__DIR__ . '/../../../../../examples/sql/pgsql.users.sql');
 
         $pdo->query("DROP TABLE IF EXISTS users");
-        $pdo->query($sql);
-        $pdo->query("INSERT INTO users (username,digesta1) VALUES ('user','hash','user@example.org','User')");
+        foreach(explode(';', $sql) as $statement) {
+            if(trim($statement) === '') continue;;
+            $pdo->query($statement); // Yup
+        }
+        $pdo->query("INSERT INTO users (username,digesta1) VALUES ('user','hash')");
 
         return $pdo;
 

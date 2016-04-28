@@ -5,15 +5,18 @@ namespace Sabre\DAV;
 use PDOException;
 use PDO;
 
+class DbCache {
+
+    static $cache = [];
+
+}
+
 trait DbTestHelperTrait {
 
     /**
      * Should be "mysql", "pgsql", "sqlite".
      */
     public $driver = null;
-
-    private $db = [];
-
 
     /**
      * Returns a fully configured PDO object.
@@ -24,10 +27,11 @@ trait DbTestHelperTrait {
 
         if (!$this->driver) {
             throw new \Exception('You must set the $driver public property');
-       }
+        }
 
-        if (isset($this->db[$this->driver])) {
-            return $this->db[$this->driver];
+        if (isset(DbCache::$cache[$this->driver])) {
+            return DbCache::$cache[$this->driver];
+        } else {
         }
 
         try {
@@ -38,7 +42,7 @@ trait DbTestHelperTrait {
                     $pdo = new PDO(SABRE_MYSQLDSN, SABRE_MYSQLUSER, SABRE_MYSQLPASS);
                     break;
                 case 'sqlite' :
-                    $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/pdobackend');
+                    $pdo = new \PDO('sqlite:' . SABRE_TEMPDIR . '/testdb');
                     break;
                 case 'pgsql' :
                     $pdo = new \PDO(SABRE_PGSQLDSN);
@@ -55,7 +59,7 @@ trait DbTestHelperTrait {
 
         }
 
-        $this->db[$this->driver] = $pdo;
+        DbCache::$cache[$this->driver] = $pdo;
         return $pdo;
 
     }
@@ -108,6 +112,18 @@ trait DbTestHelperTrait {
             $db->exec('DROP TABLE IF EXISTS ' . $tableName);
         }
         
+
+    }
+
+    function tearDown() {
+
+        switch($this->driver) {
+
+            case 'sqlite' :
+                // Recreating sqlite, just in case
+                unset(DbCache::$cache[$this->driver]);
+                unlink(SABRE_TEMPDIR . '/testdb');
+        }
 
     }
 

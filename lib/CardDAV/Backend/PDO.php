@@ -128,7 +128,7 @@ class PDO extends AbstractBackend implements SyncSupport {
                 } else {
                     $query .= ', ';
                 }
-                $query .= ' `' . $key . '` = :' . $key . ' ';
+                $query .= ' ' . $key . ' = :' . $key . ' ';
             }
             $query .= ' WHERE id = :addressbookid';
 
@@ -180,7 +180,9 @@ class PDO extends AbstractBackend implements SyncSupport {
         $query = 'INSERT INTO ' . $this->addressBooksTableName . ' (uri, displayname, description, principaluri, synctoken) VALUES (:uri, :displayname, :description, :principaluri, 1)';
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
-        return $this->pdo->lastInsertId();
+        return $this->pdo->lastInsertId(
+            $this->addressBooksTableName . '_id_seq'
+        );
 
     }
 
@@ -230,6 +232,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $result = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $row['etag'] = '"' . $row['etag'] . '"';
+            $row['lastmodified'] = (int)$row['lastmodified'];
             $result[] = $row;
         }
         return $result;
@@ -258,6 +261,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         if (!$result) return false;
 
         $result['etag'] = '"' . $result['etag'] . '"';
+        $result['lastmodified'] = (int)$result['lastmodified'];
         return $result;
 
     }
@@ -286,6 +290,7 @@ class PDO extends AbstractBackend implements SyncSupport {
         $result = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $row['etag'] = '"' . $row['etag'] . '"';
+            $row['lastmodified'] = (int)$row['lastmodified'];
             $result[] = $row;
         }
         return $result;

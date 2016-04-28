@@ -11,11 +11,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     use \Sabre\DAV\DbTestHelperTrait;
 
-
     function getBackend() {
 
         $this->dropTables('propertystorage');
         $this->createSchema('propertystorage');
+
+        $pdo = $this->getPDO();
+
+        $pdo->exec("INSERT INTO propertystorage (path, name, valuetype, value) VALUES ('dir', '{DAV:}displayname', 1, 'Directory')");
 
         return new PDO($this->getPDO());
 

@@ -11,18 +11,15 @@ class PDOMySQLTest extends AbstractTest {
         if (!SABRE_HASMYSQL) $this->markTestSkipped('MySQL driver is not available, or it was not properly configured');
         $pdo = \Sabre\TestUtil::getMySQLDB();
         if (!$pdo) $this->markTestSkipped('Could not connect to MySQL database');
+
         $pdo->query('DROP TABLE IF EXISTS locks;');
-        $pdo->query("
-CREATE TABLE locks (
-	id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	owner VARCHAR(100),
-	timeout INTEGER UNSIGNED,
-	created INTEGER,
-	token VARCHAR(100),
-	scope TINYINT,
-	depth TINYINT,
-	uri text
-);");
+        $queries = file_get_contents(__DIR__ . '/../../../../../examples/sql/mysql.locks.sql');
+        foreach (explode(';', $queries) as $query) {
+            if (trim($query) === '') {
+                continue;
+            }
+            $pdo->query($query);
+        }
 
         $backend = new PDO($pdo);
         return $backend;

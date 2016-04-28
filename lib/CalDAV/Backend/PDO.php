@@ -261,7 +261,10 @@ SQL
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarTableName . " (synctoken, components) VALUES (1, ?)");
         $stmt->execute([$components]);
 
-        $calendarId = $this->pdo->lastInsertId();
+        $calendarId = $this->pdo->lastInsertId(
+            $this->calendarTableName . '_id_seq'
+        );
+
         $values[':calendarid'] = $calendarId;
 
         foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -273,9 +276,13 @@ SQL
         }
 
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarInstancesTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
+
         $stmt->execute($values);
 
-        return [$calendarId, $this->pdo->lastInsertId()];
+        return [
+            $calendarId,
+            $this->pdo->lastInsertId($this->calendarInstancesTableName . '_id_seq')
+        ];
 
     }
 
@@ -433,7 +440,7 @@ SQL
             $result[] = [
                 'id'           => $row['id'],
                 'uri'          => $row['uri'],
-                'lastmodified' => $row['lastmodified'],
+                'lastmodified' => (int)$row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
                 'size'         => (int)$row['size'],
                 'component'    => strtolower($row['componenttype']),
@@ -476,7 +483,7 @@ SQL
         return [
             'id'            => $row['id'],
             'uri'           => $row['uri'],
-            'lastmodified'  => $row['lastmodified'],
+            'lastmodified'  => (int)$row['lastmodified'],
             'etag'          => '"' . $row['etag'] . '"',
             'size'          => (int)$row['size'],
             'calendardata'  => $row['calendardata'],
@@ -518,7 +525,7 @@ SQL
             $result[] = [
                 'id'           => $row['id'],
                 'uri'          => $row['uri'],
-                'lastmodified' => $row['lastmodified'],
+                'lastmodified' => (int)$row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
                 'size'         => (int)$row['size'],
                 'calendardata' => $row['calendardata'],
@@ -1154,7 +1161,9 @@ SQL;
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarSubscriptionsTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
         $stmt->execute($values);
 
-        return $this->pdo->lastInsertId();
+        return $this->pdo->lastInsertId(
+            $this->calendarSubscriptionsTableName . '_id_seq'
+        );
 
     }
 

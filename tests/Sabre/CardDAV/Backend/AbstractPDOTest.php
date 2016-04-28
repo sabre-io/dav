@@ -284,7 +284,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
                 $expected = $v;
                 $actual = $result[$index][$k];
 
-                switch($k) {
+                switch ($k) {
                     case 'lastmodified' :
                         $this->assertInternalType('int', $actual);
                         break;

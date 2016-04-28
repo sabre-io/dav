@@ -21,7 +21,7 @@ CREATE UNIQUE INDEX calendars_ukey
 
 CREATE TABLE calendarobjects (
     id SERIAL NOT NULL,
-    calendardata TEXT,
+    calendardata BYTEA,
     uri VARCHAR(200),
     calendarid INTEGER NOT NULL,
     lastmodified INTEGER,

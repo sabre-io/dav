@@ -17,8 +17,8 @@ $config = [
     'SABRE_HASSQLITE' => in_array('sqlite', PDO::getAvailableDrivers()),
     'SABRE_HASMYSQL'  => in_array('mysql', PDO::getAvailableDrivers()),
     'SABRE_HASPGSQL'  => in_array('pgsql', PDO::getAvailableDrivers()),
-    'SABRE_MYSQLDSN'  => 'mysql:host=127.0.0.1;dbname=sabredav',
-    'SABRE_MYSQLUSER' => 'root',
+    'SABRE_MYSQLDSN'  => 'mysql:host=127.0.0.1;dbname=sabredav_test',
+    'SABRE_MYSQLUSER' => 'sabredav',
     'SABRE_MYSQLPASS' => '',
     'SABRE_PGSQLDSN'  => 'pgsql:host=localhost;dbname=sabredav;user=sabredav;password=sabredav',
 ];

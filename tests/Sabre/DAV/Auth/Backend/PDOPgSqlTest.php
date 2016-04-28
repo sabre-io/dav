@@ -13,8 +13,8 @@ class PDOPgSqlTest extends AbstractPDOTest {
         $sql = file_get_contents(__DIR__ . '/../../../../../examples/sql/pgsql.users.sql');
 
         $pdo->query("DROP TABLE IF EXISTS users");
-        foreach(explode(';', $sql) as $statement) {
-            if(trim($statement) === '') continue;;
+        foreach (explode(';', $sql) as $statement) {
+            if (trim($statement) === '') continue;
             $pdo->query($statement); // Yup
         }
         $pdo->query("INSERT INTO users (username,digesta1) VALUES ('user','hash')");

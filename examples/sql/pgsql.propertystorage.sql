@@ -3,7 +3,7 @@ CREATE TABLE propertystorage (
     path VARCHAR(1024) NOT NULL,
     name VARCHAR(100) NOT NULL,
     valuetype INT,
-    value TEXT
+    value BYTEA
 );
 
 ALTER TABLE ONLY propertystorage

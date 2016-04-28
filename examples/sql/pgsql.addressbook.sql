@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX addressbooks_ukey
 CREATE TABLE cards (
     id SERIAL NOT NULL,
     addressbookid INTEGER NOT NULL,
-    carddata TEXT,
+    carddata BYTEA,
     uri VARCHAR(200),
     lastmodified INTEGER,
     etag VARCHAR(32),

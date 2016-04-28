@@ -4,9 +4,9 @@ namespace Sabre\CardDAV;
 
 use Sabre\DAV\PropPatch;
 
-require_once 'Sabre/CardDAV/Backend/Mock.php';
-
 class AddressBookTest extends \PHPUnit_Framework_TestCase {
+
+    use \Sabre\DAV\DbTestHelperTrait;
 
     /**
      * @var Sabre\CardDAV\AddressBook
@@ -169,39 +169,26 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
 
     function testGetSyncToken() {
 
-        if (!SABRE_HASSQLITE) {
-            $this->markTestSkipped('Sqlite is required for this test to run');
-        }
-        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
+        $this->driver = 'sqlite';
+        $this->dropTables(['addressbooks', 'cards', 'addressbookchanges']);
+        $this->createSchema('addressbooks');
+        $backend = new Backend\PDO(
+            $this->getPDO()
+        );
+        $ab = new AddressBook($backend, [ 'id' => 1, '{DAV:}sync-token' => 2]);
         $this->assertEquals(2, $ab->getSyncToken());
-        TestUtil::deleteSQLiteDB();
     }
 
     function testGetSyncToken2() {
 
-        if (!SABRE_HASSQLITE) {
-            $this->markTestSkipped('Sqlite is required for this test to run');
-        }
-        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
+        $this->driver = 'sqlite';
+        $this->dropTables(['addressbooks', 'cards', 'addressbookchanges']);
+        $this->createSchema('addressbooks');
+        $backend = new Backend\PDO(
+            $this->getPDO()
+        );
+        $ab = new AddressBook($backend, [ 'id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
         $this->assertEquals(2, $ab->getSyncToken());
-        TestUtil::deleteSQLiteDB();
     }
-
-    function testGetChanges() {
-
-        if (!SABRE_HASSQLITE) {
-            $this->markTestSkipped('Sqlite is required for this test to run');
-        }
-        $ab = new AddressBook(TestUtil::getBackend(), [ 'id' => 1, '{DAV:}sync-token' => 2]);
-        $this->assertEquals([
-            'syncToken' => 2,
-            'modified'  => [],
-            'deleted'   => [],
-            'added'     => ['UUID-2345'],
-        ], $ab->getChanges(1, 1));
-        TestUtil::deleteSQLiteDB();
-
-    }
-
 
 }

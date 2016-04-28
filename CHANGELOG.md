@@ -11,6 +11,7 @@ ChangeLog
   others to their calendar and give them read/read-write access!
 * #397: Support for PSR-3. You can now log exceptions with your favourite
   psr3-compatible logging tool.
+* #825: Actual proper, tested support for PostgreSQL. We require version 9.5.
 * Removed database migration script for sabre/dav 1.7. To update from that
   version you now first need to update to sabre/dav 3.1.
 * Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.

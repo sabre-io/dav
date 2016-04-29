@@ -935,6 +935,9 @@ class Plugin extends ServerPlugin {
         $homeSet = $result[0][200][$caldavNS . 'calendar-home-set']->getHref();
         $inboxUrl = $result[0][200][$caldavNS . 'schedule-inbox-URL']->getHref();
 
+        // Do we have permission?
+        $aclPlugin->checkPrivileges($inboxUrl, $caldavNS . 'schedule-query-freebusy');
+
         // Grabbing the calendar list
         $objects = [];
         $calendarTimeZone = new DateTimeZone('UTC');
@@ -953,8 +956,6 @@ class Plugin extends ServerPlugin {
                 // ignore it for free-busy purposes.
                 continue;
             }
-
-            $aclPlugin->checkPrivileges($homeSet . $node->getName(), $caldavNS . 'read-free-busy');
 
             if (isset($props[$ctz])) {
                 $vtimezoneObj = VObject\Reader::read($props[$ctz]);

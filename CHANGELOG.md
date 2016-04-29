@@ -53,6 +53,10 @@ ChangeLog
 * #798: Added an index on `firstoccurence` field in MySQL CalDAV backend. This
   should speed up common calendar-query requests.
 * #759: DAV\Client is now able to actually correctly resolve relative urls.
+* #671: We are no longer checking the `read-free-busy` privilege on individual
+  calendars during freebusy operations in the scheduling plugin. Instead, we
+  check the `schedule-query-freebusy` privilege on the target users' inbox,
+  which validates access for the entire account, per the spec.
 
 
 3.1.3 (2016-04-06)

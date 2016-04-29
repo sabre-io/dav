@@ -9,7 +9,25 @@ use Sabre\DAV\Xml\Element\Sharee;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
+    use DAV\DbTestHelperTrait;
+
     protected $pdo;
+
+    function setUp() {
+
+        $this->dropTables([
+            'calendarobjects',
+            'calendars',
+            'calendarinstances',
+            'calendarchanges',
+            'calendarsubscriptions',
+            'schedulingobjects',
+        ]);
+        $this->createSchema('calendars');
+
+        $this->pdo = $this->getDb();
+
+    }
 
     function testConstruct() {
 
@@ -216,7 +234,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -224,7 +248,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => strtotime('20120101'),
             'lastoccurence'  => strtotime('20120101') + (3600 * 24),
             'componenttype'  => 'VEVENT',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
     function testGetMultipleObjects() {
@@ -260,12 +284,22 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         foreach ($check as $index => $props) {
 
-            foreach ($props as $key => $value) {
+            foreach ($props as $key => $expected) {
 
-                if ($key !== 'lastmodified') {
-                    $this->assertEquals($value, $result[$index][$key]);
-                } else {
-                    $this->assertTrue(isset($result[$index][$key]));
+                $actual = $result[$index][$key];
+
+                switch ($key) {
+                    case 'lastmodified' :
+                        $this->assertInternalType('int', $actual);
+                        break;
+                    case 'calendardata' :
+                        if (is_resource($actual)) {
+                            $actual = stream_get_contents($actual);
+                        }
+                        // no break intentional
+                    default :
+                        $this->assertEquals($expected, $actual);
+
                 }
 
             }
@@ -312,7 +346,13 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -320,7 +360,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => strtotime('20120101'),
             'lastoccurence'  => strtotime('20120101') + (3600 * 48),
             'componenttype'  => 'VEVENT',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
 
@@ -352,7 +392,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -360,7 +405,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
             'lastoccurence'  => strtotime('2012-01-01 10:00:00'),
             'componenttype'  => 'VEVENT',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
 
@@ -376,7 +421,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -384,7 +434,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
             'lastoccurence'  => strtotime('2012-01-01 11:00:00'),
             'componenttype'  => 'VEVENT',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
 
@@ -400,7 +450,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -408,7 +463,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
             'lastoccurence'  => strtotime(PDO::MAX_DATE),
             'componenttype'  => 'VEVENT',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
 
@@ -424,7 +479,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -432,7 +492,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => strtotime('2012-01-01 10:00:00'),
             'lastoccurence'  => strtotime('2012-01-01 11:00:00') + (3600 * 24 * 999),
             'componenttype'  => 'VEVENT',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
 
@@ -448,7 +508,12 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = "random-id"');
+        $result = $this->pdo->query('SELECT etag, size, calendardata, firstoccurence, lastoccurence, componenttype FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        if (is_resource($row['calendardata'])) {
+            $row['calendardata'] = stream_get_contents($row['calendardata']);
+        }
+
         $this->assertEquals([
             'etag'           => md5($object),
             'size'           => strlen($object),
@@ -456,7 +521,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             'firstoccurence' => null,
             'lastoccurence'  => null,
             'componenttype'  => 'VTODO',
-        ], $result->fetch(\PDO::FETCH_ASSOC));
+        ], $row);
 
     }
 
@@ -538,6 +603,10 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend->updateCalendarObject($returnedId, 'random-id', $object2);
 
         $data = $backend->getCalendarObject($returnedId, 'random-id');
+
+        if (is_resource($data['calendardata'])) {
+            $data['calendardata'] = stream_get_contents($data['calendardata']);
+        }
 
         $this->assertEquals($object2, $data['calendardata']);
         $this->assertEquals('random-id', $data['uri']);
@@ -1014,6 +1083,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
         foreach ($expected as $k => $v) {
             $this->assertArrayHasKey($k, $result);
+            if (is_resource($result[$k])) {
+                $result[$k] = stream_get_contents($result[$k]);
+            }
             $this->assertEquals($v, $result[$k]);
         }
 
@@ -1022,6 +1094,9 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(1, count($results));
         $result = $results[0];
         foreach ($expected as $k => $v) {
+            if (is_resource($result[$k])) {
+                $result[$k] = stream_get_contents($result[$k]);
+            }
             $this->assertEquals($v, $result[$k]);
         }
 

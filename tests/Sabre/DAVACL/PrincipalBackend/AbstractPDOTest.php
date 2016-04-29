@@ -7,7 +7,22 @@ use Sabre\HTTP;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
-    abstract function getPDO();
+    use DAV\DbTestHelperTrait;
+
+    function setUp() {
+
+        $this->dropTables(['principals', 'groupmembers']);
+        $this->createSchema('principals');
+
+        $pdo = $this->getPDO();
+
+        $pdo->query("INSERT INTO principals (uri,email,displayname) VALUES ('principals/user','user@example.org','User')");
+        $pdo->query("INSERT INTO principals (uri,email,displayname) VALUES ('principals/group','group@example.org','Group')");
+
+        $pdo->query("INSERT INTO groupmembers (principal_id,member_id) VALUES (5,4)");
+
+    }
+
 
     function testConstruct() {
 
@@ -26,6 +41,11 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($pdo);
 
         $expected = [
+            [
+                'uri'                                   => 'principals/admin',
+                '{http://sabredav.org/ns}email-address' => 'admin@example.org',
+                '{DAV:}displayname'                     => 'Administrator',
+            ],
             [
                 'uri'                                   => 'principals/user',
                 '{http://sabredav.org/ns}email-address' => 'user@example.org',
@@ -52,7 +72,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $backend = new PDO($pdo);
 
         $expected = [
-            'id'                                    => 1,
+            'id'                                    => 4,
             'uri'                                   => 'principals/user',
             '{http://sabredav.org/ns}email-address' => 'user@example.org',
             '{DAV:}displayname'                     => 'User',
@@ -137,7 +157,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($result);
 
         $this->assertEquals([
-            'id'                                    => 1,
+            'id'                                    => 4,
             'uri'                                   => 'principals/user',
             '{DAV:}displayname'                     => 'pietje',
             '{http://sabredav.org/ns}email-address' => 'user@example.org',
@@ -166,7 +186,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
         ], $propPatch->getResult());
 
         $this->assertEquals([
-            'id'                                    => '1',
+            'id'                                    => '4',
             'uri'                                   => 'principals/user',
             '{DAV:}displayname'                     => 'User',
             '{http://sabredav.org/ns}email-address' => 'user@example.org',

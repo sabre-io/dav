@@ -55,4 +55,17 @@ class TestUtil {
 
     }
 
+    static function getPgSqlDB() {
+
+        //try {
+            $pdo = new \PDO(SABRE_PGSQLDSN);
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            return $pdo;
+        //} catch (\PDOException $e) {
+        //    return null;
+        //}
+
+    }
+
+
 }

@@ -23,14 +23,6 @@ ALTER TABLE ONLY groupmembers
 CREATE UNIQUE INDEX groupmembers_ukey
     ON groupmembers USING btree (principal_id, member_id);
 
-ALTER TABLE ONLY groupmembers
-    ADD CONSTRAINT groupmembers_principal_id_fkey FOREIGN KEY (principal_id) REFERENCES principals(id)
-        ON DELETE CASCADE;
-
-ALTER TABLE ONLY groupmembers
-    ADD CONSTRAINT groupmembers_member_id_id_fkey FOREIGN KEY (member_id) REFERENCES principals(id)
-        ON DELETE CASCADE;
-
 INSERT INTO principals (uri,email,displayname) VALUES
 ('principals/admin', 'admin@example.org','Administrator'),
 ('principals/admin/calendar-proxy-read', null, null),

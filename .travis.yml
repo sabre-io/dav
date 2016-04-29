@@ -29,10 +29,7 @@ before_script:
   - composer update --prefer-dist $LOWEST_DEPS
 
 add-ons:
-    apt:
-        packages:
-            - postgresql-9.5
-            - postgresql-contrib-9.5
+    postgresql: 9.5
 
 script:
   - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS

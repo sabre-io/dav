@@ -127,7 +127,7 @@ trait DbTestHelperTrait {
 
     function tearDown() {
 
-        switch($this->driver) {
+        switch ($this->driver) {
 
             case 'sqlite' :
                 // Recreating sqlite, just in case

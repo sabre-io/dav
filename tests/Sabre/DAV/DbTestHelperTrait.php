@@ -29,9 +29,12 @@ trait DbTestHelperTrait {
             throw new \Exception('You must set the $driver public property');
         }
 
-        if (isset(DbCache::$cache[$this->driver])) {
-            return DbCache::$cache[$this->driver];
-        } else {
+        if (array_key_exists($this->driver, DbCache::$cache)) {
+            $pdo = DbCache::$cache[$this->driver];
+            if ($pdo === null) {
+                $this->markTestSkipped($this->driver . ' was not enabled, not correctly configured or of the wrong version');
+            }
+            return $pdo;
         }
 
         try {
@@ -46,6 +49,13 @@ trait DbTestHelperTrait {
                     break;
                 case 'pgsql' :
                     $pdo = new \PDO(SABRE_PGSQLDSN);
+                    $version = $pdo->query('SELECT VERSION()')->fetchColumn();
+                    preg_match('|([0-9\.]){5,}|', $version, $matches);
+                    $version = $matches[0];
+                    if (version_compare($version, '9.5.0', '<')) {
+                        DbCache::$cache[$this->driver] = null;
+                        $this->markTestSkipped('We require at least Postgres 9.5. This server is running ' . $version);
+                    }
                     break;
 
 
@@ -91,7 +101,7 @@ trait DbTestHelperTrait {
             if (trim($query) === '') {
                 continue;
             }
-            
+
             $db->exec($query);
 
         }
@@ -111,7 +121,7 @@ trait DbTestHelperTrait {
         foreach ($tableNames as $tableName) {
             $db->exec('DROP TABLE IF EXISTS ' . $tableName);
         }
-        
+
 
     }
 

@@ -3,6 +3,7 @@
 namespace Sabre\DAV;
 
 use Sabre\HTTP;
+use Sabre\Uri;
 
 /**
  * SabreDAV DAV client
@@ -387,20 +388,10 @@ class Client extends HTTP\Client {
      */
     function getAbsoluteUrl($url) {
 
-        // If the url starts with http:// or https://, the url is already absolute.
-        if (preg_match('/^http(s?):\/\//', $url)) {
-            return $url;
-        }
-
-        // If the url starts with a slash, we must calculate the url based off
-        // the root of the base url.
-        if (strpos($url, '/') === 0) {
-            $parts = parse_url($this->baseUri);
-            return $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '') . $url;
-        }
-
-        // Otherwise...
-        return $this->baseUri . $url;
+        return Uri\resolve(
+            $this->baseUri,
+            $url
+        );
 
     }
 

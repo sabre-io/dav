@@ -52,6 +52,7 @@ ChangeLog
 * #599: Support for `acl-principal-prop-set` ACL `REPORT`.
 * #798: Added an index on `firstoccurence` field in MySQL CalDAV backend. This
   should speed up common calendar-query requests.
+* #759: DAV\Client is now able to actually correctly resolve relative urls.
 
 
 3.1.3 (2016-04-06)

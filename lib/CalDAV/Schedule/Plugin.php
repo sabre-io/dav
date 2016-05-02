@@ -505,7 +505,7 @@ class Plugin extends ServerPlugin {
         }
 
         if (!$aclPlugin->checkPrivileges($inboxPath, $caldavNS . $privilege, DAVACL\Plugin::R_PARENT, false)) {
-            $iTipMessage->scheduleStatus = '3.8;organizer did not have the ' . $privilege . ' privilege on the attendees inbox';
+            $iTipMessage->scheduleStatus = '3.8;insufficient privileges: ' . $privilege . ' is required on the recipient schedule inbox.';
             return;
         }
 

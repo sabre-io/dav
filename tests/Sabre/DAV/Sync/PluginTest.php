@@ -96,6 +96,7 @@ BLA;
 
         $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
 
+        /** @var DAV\Xml\Response\MultiStatus $multiStatus */
         $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
         // Checking the sync-token

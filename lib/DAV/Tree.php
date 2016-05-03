@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use Sabre\DAV\Exception\NotFound;
 use Sabre\Uri;
 
 /**
@@ -266,20 +267,37 @@ class Tree {
 
         foreach ($parents as $parent => $children) {
 
-            $parentNode = $this->getNodeForPath($parent);
+            try {
+                $parentNode = $this->getNodeForPath($parent);
+            } catch (NotFound $ex) {
+                foreach ($children as $child) {
+                    $fullPath = $parent . '/' . $child;
+                    $result[$fullPath] = null;
+                }
+                continue;
+            }
             if ($parentNode instanceof IMultiGet) {
                 foreach ($parentNode->getMultipleChildren($children) as $childNode) {
                     $fullPath = $parent . '/' . $childNode->getName();
                     $result[$fullPath] = $childNode;
                     $this->cache[$fullPath] = $childNode;
                 }
+                foreach ($children as $child) {
+                    $fullPath = $parent . '/' . $child;
+                    if (!isset($result[$fullPath])) {
+                        $result[$fullPath] = null;
+                    }
+                }
             } else {
                 foreach ($children as $child) {
                     $fullPath = $parent . '/' . $child;
-                    $result[$fullPath] = $this->getNodeForPath($fullPath);
+                    try {
+                        $result[$fullPath] = $this->getNodeForPath($fullPath);
+                    } catch (NotFound $ex) {
+                        $result[$fullPath] = null;
+                    }
                 }
             }
-
         }
 
         return $result;

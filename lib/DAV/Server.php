@@ -1013,30 +1013,28 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      * @return array
      */
     function getPropertiesForMultiplePaths(array $paths, array $propertyNames = []) {
-
         $result = [
         ];
-
         $nodes = $this->tree->getMultipleNodes($paths);
-
         foreach ($nodes as $path => $node) {
-
-            $propFind = new PropFind($path, $propertyNames);
-            $r = $this->getPropertiesByNode($propFind, $node);
-            if ($r) {
-                $result[$path] = $propFind->getResultForMultiStatus();
+            if (is_null($node)) {
+                $result[$path] = [];
                 $result[$path]['href'] = $path;
-
-                $resourceType = $this->getResourceTypeForNode($node);
-                if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
-                    $result[$path]['href'] .= '/';
+                $result[$path]['status'] = 404;
+            } else {
+                $propFind = new PropFind($path, $propertyNames);
+                $r = $this->getPropertiesByNode($propFind, $node);
+                if ($r) {
+                    $result[$path] = $propFind->getResultForMultiStatus();
+                    $result[$path]['href'] = $path;
+                    $resourceType = $this->getResourceTypeForNode($node);
+                    if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
+                        $result[$path]['href'] .= '/';
+                    }
                 }
             }
-
         }
-
         return $result;
-
     }
 
 
@@ -1670,9 +1668,11 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             if ($strip404s) {
                 unset($entry[404]);
             }
+            $status = isset($entry['status']) ? $entry['status'] : null;
             $response = new Xml\Element\Response(
                 ltrim($href, '/'),
-                $entry
+                $entry,
+                $status
             );
             $w->write([
                 'name'  => '{DAV:}response',

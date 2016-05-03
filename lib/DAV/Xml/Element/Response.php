@@ -27,7 +27,7 @@ class Response implements Element {
     protected $href;
 
     /**
-     * Propertylist, ordered by HTTP status code
+     * Property list, ordered by HTTP status code
      *
      * @var array
      */
@@ -119,7 +119,7 @@ class Response implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
-        if ($status = $this->getHTTPStatus()) {
+        if ($status = $this->getHttpStatus()) {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
         }
         $writer->writeElement('{DAV:}href', $writer->contextUri . \Sabre\HTTP\encodePath($this->getHref()));
@@ -137,9 +137,8 @@ class Response implements Element {
             $writer->writeElement('{DAV:}prop', $properties);
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 ' . $status . ' ' . \Sabre\HTTP\Response::$statusCodes[$status]);
             $writer->endElement(); // {DAV:}propstat
-
         }
-        if ($empty) {
+        if ($empty && !$status) {
             /*
              * The WebDAV spec _requires_ at least one DAV:propstat to appear for
              * every DAV:response. In some circumstances however, there are no

@@ -110,7 +110,7 @@ function test() {
 
     echo "  Running all unittests.\n";
     echo "  This may take a while.\n\n";
-    system(__DIR__ . '/phpunit --configuration ' . $baseDir . '/tests/phpunit.xml --stop-on-failure', $code);
+    system(__DIR__ . '/phpunit --configuration ' . $baseDir . '/tests/phpunit.xml.dist --stop-on-failure', $code);
     if ($code != 0) {
         echo "PHPUnit reported error code $code\n";
         die(1);

@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.2.0-alpha1 (????-??-??)
+3.2.0-alpha1 (2016-05-09)
 -------------------------
 
 * Database changes for CalDAV. If you are using the CalDAV PDO backends, you
@@ -57,6 +57,9 @@ ChangeLog
   calendars during freebusy operations in the scheduling plugin. Instead, we
   check the `schedule-query-freebusy` privilege on the target users' inbox,
   which validates access for the entire account, per the spec.
+* The zip release ships with [sabre/vobject 4.1.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
 3.1.3 (2016-04-06)

@@ -274,7 +274,7 @@ class Plugin extends ServerPlugin {
 
         $aclPlugin = $this->server->getPlugin('acl');
         if ($aclPlugin) {
-          if (!$aclPlugin->checkPrivileges($path, '{DAV:}share', \Sabre\DAVACL\Plugin::R_PARENT, false)) {
+            if (!$aclPlugin->checkPrivileges($path, '{DAV:}share', \Sabre\DAVACL\Plugin::R_PARENT, false)) {
                 // Sharing is not permitted, we will not draw this interface.
                 return;
             }

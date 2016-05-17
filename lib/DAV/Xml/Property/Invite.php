@@ -25,7 +25,7 @@ class Invite implements XmlSerializable {
     /**
      * A list of sharees
      *
-     * @var Sharee[] 
+     * @var Sharee[]
      */
     public $sharees = [];
 

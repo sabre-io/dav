@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.2.0-alpha2 (2016-??-??)
+-------------------------
+
+* #833: Calendars throw exceptions when the sharing plugin is not enabled.
+
+
 3.2.0-alpha1 (2016-05-09)
 -------------------------
 

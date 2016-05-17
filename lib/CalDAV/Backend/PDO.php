@@ -686,6 +686,10 @@ SQL
                 }
 
             }
+            
+            // Ensure Occurence values are positive
+            if($firstOccurence<0) $firstOccurence=0;
+            if($lastOccurence<0) $lastOccurence=0;
         }
 
         // Destroy circular references to PHP will GC the object.

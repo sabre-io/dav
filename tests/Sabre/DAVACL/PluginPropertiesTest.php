@@ -11,6 +11,13 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
+        //Anyone can do anything
         $plugin->principalCollectionSet = [
             'principals1',
             'principals2',
@@ -47,6 +54,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
         $fakeServer->addPlugin($plugin);
 
 
@@ -80,6 +93,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
         $server = new DAV\Server();
         $server->addPlugin($plugin);
 
@@ -140,6 +159,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
 
         $nodes = [
             new MockACLNode('foo', [
@@ -227,6 +252,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -256,6 +287,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -286,6 +323,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -315,6 +358,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
 
         $requestedProperties = [
             '{DAV:}group-membership',
@@ -343,6 +392,12 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ],
+        ]);
 
         $requestedProperties = [
             '{DAV:}displayname',

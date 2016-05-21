@@ -307,11 +307,6 @@ class Plugin extends DAV\ServerPlugin {
             'protected' => true,
             'privilege' => '{DAV:}all',
         ],
-        [
-            'principal' => '{DAV:}unauthenticated',
-            'protected' => true,
-            'privilege' => '{DAV:}read',
-        ],
     ];
 
     /**

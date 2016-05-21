@@ -1,12 +1,23 @@
 ChangeLog
 =========
 
+3.2.0-beta2 (????-??-??)
+------------------------
+
+* The default ACL rules allow an unauthenticated user to read information
+  about nodes that don't have their own ACL defined. This was a security
+  problem.
+
+
 3.2.0-beta1 (2016-05-20)
 ------------------------
 
 * #833: Calendars throw exceptions when the sharing plugin is not enabled.
 * #834: Return vCards exactly as they were stored if we don't need to convert
   in between versions.
+* The zip release ships with [sabre/vobject 4.1.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.2][xml].
 
 
 3.2.0-alpha1 (2016-05-09)

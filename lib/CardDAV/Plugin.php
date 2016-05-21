@@ -803,33 +803,49 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Converts a vcard blob to a different version, or jcard.
      *
-     * @param string $data
+     * @param string|resource $data
      * @param string $target
      * @return string
      */
     protected function convertVCard($data, $target) {
 
-        $data = VObject\Reader::read($data);
-        switch ($target) {
-            default :
-            case 'vcard3' :
-                $data = $data->convert(VObject\Document::VCARD30);
-                $newResult = $data->serialize();
-                break;
-            case 'vcard4' :
-                $data = $data->convert(VObject\Document::VCARD40);
-                $newResult = $data->serialize();
-                break;
-            case 'jcard' :
-                $data = $data->convert(VObject\Document::VCARD40);
-                $newResult = json_encode($data->jsonSerialize());
-                break;
-
+        if (is_resource($data)) {
+            $data = stream_get_contents($data);
         }
-        // Destroy circular references to PHP will GC the object.
-        $data->destroy();
+        $input = VObject\Reader::read($data);
+        $output = null;
+        try {
 
-        return $newResult;
+            switch ($target) {
+                default :
+                case 'vcard3' :
+                    if ($input->getDocumentType() === VObject\Document::VCARD30) {
+                        // Do nothing
+                        return $data;
+                    }
+                    $output = $input->convert(VObject\Document::VCARD30);
+                    return $output->serialize();
+                case 'vcard4' :
+                    if ($input->getDocumentType() === VObject\Document::VCARD40) {
+                        // Do nothing
+                        return $data;
+                    }
+                    $output = $input->convert(VObject\Document::VCARD40);
+                    return $output->serialize();
+                case 'jcard' :
+                    $output = $input->convert(VObject\Document::VCARD40);
+                    return json_encode($output);
+
+            }
+
+        } finally {
+
+            // Destroy circular references to PHP will GC the object.
+            $input->destroy();
+            if (!is_null($output)) {
+                $output->destroy();
+            }
+        }
 
     }
 

@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+3.1.4 (2016-??-??)
+------------------
+
+* #834: Backport from `master`: Return vCards exactly as they were stored if
+  we don't need to convert in between versions.
+
+
 3.1.3 (2016-04-06)
 ------------------
 

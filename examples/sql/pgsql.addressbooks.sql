@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX addressbooks_ukey
 CREATE TABLE cards (
     id SERIAL NOT NULL,
     addressbookid INTEGER NOT NULL,
-    carddata TEXT,
+    carddata BYTEA,
     uri VARCHAR(200),
     lastmodified INTEGER,
     etag VARCHAR(32),
@@ -28,10 +28,6 @@ ALTER TABLE ONLY cards
 
 CREATE UNIQUE INDEX cards_ukey
     ON cards USING btree (addressbookid, uri);
-
-ALTER TABLE ONLY cards
-    ADD CONSTRAINT cards_addressbookid_fkey FOREIGN KEY (addressbookid) REFERENCES addressbooks(id)
-        ON DELETE CASCADE;
 
 CREATE TABLE addressbookchanges (
     id SERIAL NOT NULL,
@@ -46,7 +42,3 @@ ALTER TABLE ONLY addressbookchanges
 
 CREATE INDEX addressbookchanges_addressbookid_synctoken_ix
     ON addressbookchanges USING btree (addressbookid, synctoken);
-
-ALTER TABLE ONLY addressbookchanges
-    ADD CONSTRAINT addressbookchanges_addressbookid_fkey FOREIGN KEY (addressbookid) REFERENCES addressbooks(id)
-        ON DELETE CASCADE;

@@ -16,6 +16,8 @@ use Sabre\DAVACL;
  */
 class AddressBook extends DAV\Collection implements IAddressBook, DAV\IProperties, DAVACL\IACL, DAV\Sync\ISyncCollection, DAV\IMultiGet {
 
+    use DAVACL\ACLTrait;
+
     /**
      * This is an array with addressbook information
      *
@@ -236,48 +238,6 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
 
     }
 
-    /**
-     * Returns a group principal
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getGroup() {
-
-        return null;
-
-    }
-
-    /**
-     * Returns a list of ACE's for this node.
-     *
-     * Each ACE has the following properties:
-     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
-     *     currently the only supported privileges
-     *   * 'principal', a url to the principal who owns the node
-     *   * 'protected' (optional), indicating that this ACE is not allowed to
-     *      be updated.
-     *
-     * @return array
-     */
-    function getACL() {
-
-        return [
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner(),
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => $this->getOwner(),
-                'protected' => true,
-            ],
-
-        ];
-
-    }
 
     /**
      * This method returns the ACL's for card nodes in this address book.
@@ -290,12 +250,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
 
         return [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => $this->getOwner(),
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => $this->getOwner(),
                 'protected' => true,
             ],
@@ -303,37 +258,6 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
 
     }
 
-    /**
-     * Updates the ACL
-     *
-     * This method will receive a list of new ACE's.
-     *
-     * @param array $acl
-     * @return void
-     */
-    function setACL(array $acl) {
-
-        throw new DAV\Exception\MethodNotAllowed('Changing ACL is not yet supported');
-
-    }
-
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        return null;
-
-    }
 
     /**
      * This method returns the current sync-token for this collection.

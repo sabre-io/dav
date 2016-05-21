@@ -174,28 +174,6 @@ class SharedCalendar extends Calendar implements ISharedCalendar {
 
     }
 
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        $default = parent::getSupportedPrivilegeSet();
-        $default['aggregates'][] = [
-            'privilege' => '{DAV:}share',
-        ];
-
-        return $default;
-
-    }
 
     /**
      * This method returns the ACL's for calendar objects in this calendar.

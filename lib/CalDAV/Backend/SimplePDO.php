@@ -110,7 +110,7 @@ class SimplePDO extends AbstractBackend {
     function createCalendar($principalUri, $calendarUri, array $properties) {
 
         $stmt = $this->pdo->prepare("INSERT INTO simple_calendars (principaluri, uri) VALUES (?, ?)");
-        $stmt->execute($principalUri, $calendarUri);
+        $stmt->execute([$principalUri, $calendarUri]);
 
         return $this->pdo->lastInsertId();
 

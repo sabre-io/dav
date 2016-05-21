@@ -170,13 +170,13 @@ class ICSExportPlugin extends DAV\ServerPlugin {
     protected function generateResponse($path, $start, $end, $expand, $componentType, $format, $properties, ResponseInterface $response) {
 
         $calDataProp = '{' . Plugin::NS_CALDAV . '}calendar-data';
+        $calendarNode = $this->server->tree->getNodeForPath($path);
 
         $blobs = [];
         if ($start || $end || $componentType) {
 
             // If there was a start or end filter, we need to enlist
             // calendarQuery for speed.
-            $calendarNode = $this->server->tree->getNodeForPath($path);
             $queryResult = $calendarNode->calendarQuery([
                 'name'         => 'VCALENDAR',
                 'comp-filters' => [
@@ -246,16 +246,28 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             $mergedCalendar = $mergedCalendar->expand($start, $end, $calendarTimeZone);
         }
 
-        $response->setHeader('Content-Type', $format);
+        $filenameExtension = '.ics';
 
         switch ($format) {
             case 'text/calendar' :
                 $mergedCalendar = $mergedCalendar->serialize();
+                $filenameExtension = '.ics';
                 break;
             case 'application/calendar+json' :
                 $mergedCalendar = json_encode($mergedCalendar->jsonSerialize());
+                $filenameExtension = '.json';
                 break;
         }
+
+        $filename = preg_replace(
+            '/[^a-zA-Z0-9-_ ]/um',
+            '',
+            $calendarNode->getName()
+        );
+        $filename .= '-' . date('Y-m-d') . $filenameExtension;
+
+        $response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $response->setHeader('Content-Type', $format);
 
         $response->setStatus(200);
         $response->setBody($mergedCalendar);

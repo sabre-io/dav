@@ -17,13 +17,7 @@ class OutboxTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([
             [
-                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-
-            [
-                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-send',
                 'principal' => 'principals/user1',
                 'protected' => true,
             ],
@@ -33,12 +27,7 @@ class OutboxTest extends \PHPUnit_Framework_TestCase {
                 'protected' => true,
             ],
             [
-                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy',
-                'principal' => 'principals/user1/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent',
+                'privilege' => '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-send',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ],
@@ -54,37 +43,6 @@ class OutboxTest extends \PHPUnit_Framework_TestCase {
             ],
         ], $outbox->getACL());
 
-        $ok = false;
-        try {
-            $outbox->setACL([]);
-        } catch (DAV\Exception\MethodNotAllowed $e) {
-            $ok = true;
-        }
-        if (!$ok) {
-            $this->fail('Exception was not emitted');
-        }
-
     }
-
-    function testGetSupportedPrivilegeSet() {
-
-        $outbox = new Outbox('principals/user1');
-        $r = $outbox->getSupportedPrivilegeSet();
-
-        $ok = 0;
-        foreach ($r['aggregates'] as $priv) {
-
-            if ($priv['privilege'] == '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-query-freebusy') {
-                $ok++;
-            }
-            if ($priv['privilege'] == '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-post-vevent') {
-                $ok++;
-            }
-        }
-
-        $this->assertEquals(2, $ok, "We're missing one or more privileges");
-
-    }
-
 
 }

@@ -151,12 +151,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($this->card->getGroup());
         $this->assertEquals([
             [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => 'principals/user1',
                 'protected' => true,
             ],
@@ -196,7 +191,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

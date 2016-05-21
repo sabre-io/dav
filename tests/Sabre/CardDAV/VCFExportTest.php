@@ -89,4 +89,47 @@ END:VCARD
 
     }
 
+    function testContentDisposition() {
+
+        $request = new HTTP\Request(
+            'GET',
+            '/addressbooks/user1/book1?export'
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="book1-' . date('Y-m-d') . '.vcf"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
+    function testContentDispositionBadChars() {
+
+        $this->carddavBackend->createAddressBook(
+            'principals/user1',
+            'book-b_ad"(ch)ars',
+            []
+        );
+        $this->carddavBackend->createCard(
+            'book-b_ad"(ch)ars',
+            'card1',
+            "BEGIN:VCARD\r\nFN:Person1\r\nEND:VCARD\r\n"
+        );
+
+        $request = new HTTP\Request(
+            'GET',
+            '/addressbooks/user1/book-b_ad"(ch)ars?export'
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="book-b_adchars-' . date('Y-m-d') . '.vcf"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
 }

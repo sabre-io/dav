@@ -4,7 +4,19 @@ namespace Sabre\DAV\Auth\Backend;
 
 abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
-    abstract function getPDO();
+    use \Sabre\DAV\DbTestHelperTrait;
+
+    function setUp() {
+
+        $this->dropTables('users');
+        $this->createSchema('users');
+
+        $this->getPDO()->query(
+            "INSERT INTO users (username,digesta1) VALUES ('user','hash')"
+
+        );
+
+    }
 
     function testConstruct() {
 

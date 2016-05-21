@@ -88,6 +88,9 @@ class PDO implements BackendInterface {
         $stmt->execute([$path]);
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            if (gettype($row['value']) === 'resource') {
+                $row['value'] = stream_get_contents($row['value']);
+            }
             switch ($row['valuetype']) {
                 case null :
                 case self::VT_STRING :
@@ -121,7 +124,26 @@ class PDO implements BackendInterface {
 
         $propPatch->handleRemaining(function($properties) use ($path) {
 
-            $updateStmt = $this->pdo->prepare("REPLACE INTO " . $this->tableName . " (path, name, valuetype, value) VALUES (?, ?, ?, ?)");
+
+            if ($this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+
+                $updateSql = <<<SQL
+INSERT INTO {$this->tableName} (path, name, valuetype, value)
+VALUES (:path, :name, :valuetype, :value)
+ON CONFLICT (path, name)
+DO UPDATE SET valuetype = :valuetype, value = :value
+SQL;
+
+
+            } else {
+                $updateSql = <<<SQL
+REPLACE INTO {$this->tableName} (path, name, valuetype, value)
+VALUES (:path, :name, :valuetype, :value)
+SQL;
+
+            }
+
+            $updateStmt = $this->pdo->prepare($updateSql);
             $deleteStmt = $this->pdo->prepare("DELETE FROM " . $this->tableName . " WHERE path = ? AND name = ?");
 
             foreach ($properties as $name => $value) {
@@ -136,7 +158,14 @@ class PDO implements BackendInterface {
                         $valueType = self::VT_OBJECT;
                         $value = serialize($value);
                     }
-                    $updateStmt->execute([$path, $name, $valueType, $value]);
+
+                    $updateStmt->bindParam('path', $path, \PDO::PARAM_STR);
+                    $updateStmt->bindParam('name', $name, \PDO::PARAM_STR);
+                    $updateStmt->bindParam('valuetype', $valueType, \PDO::PARAM_INT);
+                    $updateStmt->bindParam('value', $value, \PDO::PARAM_LOB);
+
+                    $updateStmt->execute();
+
                 } else {
                     $deleteStmt->execute([$path, $name]);
                 }

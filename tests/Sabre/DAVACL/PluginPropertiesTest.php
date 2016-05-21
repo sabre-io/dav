@@ -10,6 +10,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testPrincipalCollectionSet() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $plugin->principalCollectionSet = [
             'principals1',
             'principals2',
@@ -78,6 +79,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testSupportedPrivilegeSet() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $server = new DAV\Server();
         $server->addPlugin($plugin);
 
@@ -102,18 +104,17 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
             '/d:root/d:supported-privilege'                                                                                           => 1,
             '/d:root/d:supported-privilege/d:privilege'                                                                               => 1,
             '/d:root/d:supported-privilege/d:privilege/d:all'                                                                         => 1,
-            '/d:root/d:supported-privilege/d:abstract'                                                                                => 1,
+            '/d:root/d:supported-privilege/d:abstract'                                                                                => 0,
             '/d:root/d:supported-privilege/d:supported-privilege'                                                                     => 2,
             '/d:root/d:supported-privilege/d:supported-privilege/d:privilege'                                                         => 2,
             '/d:root/d:supported-privilege/d:supported-privilege/d:privilege/d:read'                                                  => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:privilege/d:write'                                                 => 1,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege'                                               => 8,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege'                                   => 8,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege'                                               => 7,
+            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege'                                   => 7,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:read-acl'                        => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:read-current-user-privilege-set' => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-content'                   => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-properties'                => 1,
-            '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:write-acl'                       => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:bind'                            => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unbind'                          => 1,
             '/d:root/d:supported-privilege/d:supported-privilege/d:supported-privilege/d:privilege/d:unlock'                          => 1,
@@ -138,6 +139,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testACL() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
 
         $nodes = [
             new MockACLNode('foo', [
@@ -176,6 +178,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
     function testACLRestrictions() {
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
 
         $nodes = [
             new MockACLNode('foo', [
@@ -223,6 +226,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -251,6 +255,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -280,6 +285,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
         //$fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -307,6 +313,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer = new DAV\Server($tree);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [
@@ -334,6 +341,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer = new DAV\Server($tree);
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $fakeServer->addPlugin($plugin);
 
         $requestedProperties = [

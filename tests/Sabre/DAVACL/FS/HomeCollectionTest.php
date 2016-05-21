@@ -52,13 +52,8 @@ class HomeCollectionTest extends \PHPUnit_Framework_TestCase {
         $owner = 'principals/user1';
         $acl = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => $owner,
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
-                'principal' => $owner,
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
         ];

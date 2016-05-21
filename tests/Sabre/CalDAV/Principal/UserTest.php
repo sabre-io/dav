@@ -103,8 +103,8 @@ class UserTest extends \PHPUnit_Framework_TestCase {
 
         $expected = [
             [
-                'privilege' => '{DAV:}read',
-                'principal' => '{DAV:}authenticated',
+                'privilege' => '{DAV:}all',
+                'principal' => '{DAV:}owner',
                 'protected' => true,
             ],
             [

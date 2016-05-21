@@ -45,7 +45,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
 
         // Adding ACL plugin
-        $this->server->addPlugin(new DAVACL\Plugin());
+        $aclPlugin = new DAVACL\Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
+        $this->server->addPlugin($aclPlugin);
 
         // CalDAV is also required.
         $this->server->addPlugin(new CalDAV\Plugin());
@@ -78,18 +80,17 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $httpRequest = new Request('GET', '/', ['Host' => 'sabredav.org']);
         $this->server->httpRequest = $httpRequest;
 
-        $props = $this->server->getPropertiesForPath('/principals/user1', [
+        $props = $this->server->getPropertiesForPath('principals/admin', [
             '{' . Plugin::NS_CALENDARSERVER . '}notification-URL',
         ]);
 
         $this->assertArrayHasKey(0, $props);
         $this->assertArrayHasKey(200, $props[0]);
 
-
         $this->assertArrayHasKey('{' . Plugin::NS_CALENDARSERVER . '}notification-URL', $props[0][200]);
         $prop = $props[0][200]['{' . Plugin::NS_CALENDARSERVER . '}notification-URL'];
         $this->assertTrue($prop instanceof DAV\Xml\Property\Href);
-        $this->assertEquals('calendars/user1/notifications/', $prop->getHref());
+        $this->assertEquals('calendars/admin/notifications/', $prop->getHref());
 
     }
 

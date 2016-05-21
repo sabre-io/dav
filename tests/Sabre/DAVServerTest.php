@@ -150,11 +150,6 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             $this->carddavPlugin = new CardDAV\Plugin();
             $this->server->addPlugin($this->carddavPlugin);
         }
-        if ($this->setupACL) {
-            $this->aclPlugin = new DAVACL\Plugin();
-            $this->aclPlugin->adminPrincipals = ['principals/admin'];
-            $this->server->addPlugin($this->aclPlugin);
-        }
         if ($this->setupLocks) {
             $this->locksPlugin = new DAV\Locks\Plugin(
                 $this->locksBackend
@@ -169,6 +164,14 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
         if ($this->autoLogin) {
             $this->autoLogin($this->autoLogin);
+        }
+        if ($this->setupACL) {
+            $this->aclPlugin = new DAVACL\Plugin();
+            if (!$this->autoLogin) {
+                $this->aclPlugin->allowUnauthenticatedAccess = false;
+            }
+            $this->aclPlugin->adminPrincipals = ['principals/admin'];
+            $this->server->addPlugin($this->aclPlugin);
         }
 
     }
@@ -245,8 +248,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
             );
         }
 
-        if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {
+        if ($this->setupCalDAV) {
             $this->tree[] = new CalDAV\Principal\Collection(
+                $this->principalBackend
+            );
+        } elseif ($this->setupCardDAV || $this->setupACL) {
+            $this->tree[] = new DAVACL\PrincipalCollection(
                 $this->principalBackend
             );
         }
@@ -276,7 +283,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if ($this->setupCardDAV && is_null($this->carddavBackend)) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);
         }
-        if ($this->setupCardDAV || $this->setupCalDAV) {
+        if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {
             $this->principalBackend = new DAVACL\PrincipalBackend\Mock();
         }
         if ($this->setupLocks) {

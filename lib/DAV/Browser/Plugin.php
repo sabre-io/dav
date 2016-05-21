@@ -48,7 +48,7 @@ class Plugin extends DAV\ServerPlugin {
     public $uninterestingProperties = [
         '{DAV:}supportedlock',
         '{DAV:}acl-restrictions',
-        '{DAV:}supported-privilege-set',
+//        '{DAV:}supported-privilege-set',
         '{DAV:}supported-method-set',
     ];
 
@@ -112,7 +112,7 @@ class Plugin extends DAV\ServerPlugin {
         $getVars = $request->getQueryParameters();
 
         // CSP headers
-        $this->server->httpResponse->setHeader('Content-Security-Policy', "img-src 'self'; style-src 'self';");
+        $this->server->httpResponse->setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';");
 
         $sabreAction = isset($getVars['sabreAction']) ? $getVars['sabreAction'] : null;
 
@@ -368,7 +368,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $html .= $this->generateFooter();
 
-        $this->server->httpResponse->setHeader('Content-Security-Policy', "img-src 'self'; style-src 'self';");
+        $this->server->httpResponse->setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';");
 
         return $html;
 

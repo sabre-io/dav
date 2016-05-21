@@ -7,9 +7,6 @@ use Sabre\HTTP;
 use Sabre\VObject;
 use Sabre\DAVACL;
 
-require_once 'Sabre/CalDAV/TestUtil.php';
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class ICSExportPluginTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
@@ -137,8 +134,10 @@ ICS
 
     function testACLIntegrationBlocked() {
 
+        $aclPlugin = new DAVACL\Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin(
-            new DAVACL\Plugin()
+            $aclPlugin
         );
 
         $request = new HTTP\Request(
@@ -152,8 +151,13 @@ ICS
 
     function testACLIntegrationNotBlocked() {
 
+        $aclPlugin = new DAVACL\Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin(
-            new DAVACL\Plugin()
+            $aclPlugin
+        );
+        $this->server->addPlugin(
+            new Plugin()
         );
 
         $this->autoLogin('admin');
@@ -319,4 +323,64 @@ ICS
         $response = $this->request($request, 400);
 
     }
+
+    function testContentDisposition() {
+
+        $request = new HTTP\Request(
+            'GET',
+            '/calendars/admin/UUID-123467?export'
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="UUID-123467-' . date('Y-m-d') . '.ics"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
+    function testContentDispositionJson() {
+
+        $request = new HTTP\Request(
+            'GET',
+            '/calendars/admin/UUID-123467?export',
+            ['Accept' => 'application/calendar+json']
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="UUID-123467-' . date('Y-m-d') . '.json"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
+    function testContentDispositionBadChars() {
+
+        $this->caldavBackend->createCalendar(
+            'principals/admin',
+            'UUID-b_ad"(ch)ars',
+            [
+                '{DAV:}displayname'                         => 'Test bad characters',
+                '{http://apple.com/ns/ical/}calendar-color' => '#AA0000FF',
+            ]
+        );
+
+        $request = new HTTP\Request(
+            'GET',
+            '/calendars/admin/UUID-b_ad"(ch)ars?export',
+            ['Accept' => 'application/calendar+json']
+        );
+
+        $response = $this->request($request, 200);
+        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        $this->assertEquals(
+            'attachment; filename="UUID-b_adchars-' . date('Y-m-d') . '.json"',
+            $response->getHeader('Content-Disposition')
+        );
+
+    }
+
 }

@@ -71,5 +71,4 @@ interface IACL extends DAV\INode {
      */
     function getSupportedPrivilegeSet();
 
-
 }

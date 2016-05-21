@@ -175,7 +175,7 @@ class PluginTest extends \Sabre\DAVServerTest {
      */
     function testBrowserPostActionAccessDenied() {
 
-        $this->aclPlugin->allowAccessToNodesWithoutACL = false;
+        $this->aclPlugin->setDefaultAcl([]);
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',

@@ -14,6 +14,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
 
         $acl = new Plugin();
         $server = new DAV\Server();
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpAcl($server->httpRequest, $server->httpResponse);
@@ -36,6 +37,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
 <d:acl xmlns:d="DAV:">
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -56,6 +58,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
 <d:acl xmlns:d="DAV:">
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $this->assertFalse($acl->httpACL($server->httpRequest, $server->httpResponse));
@@ -81,6 +84,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -109,6 +113,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -134,6 +139,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -150,15 +156,19 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         ];
         $acl = new Plugin();
         $server = new DAV\Server($tree);
+        $server->on('getSupportedPrivilegeSet', function($node, &$supportedPrivilegeSet) {
+            $supportedPrivilegeSet['{DAV:}foo'] = ['abstract' => true];
+        });
         $server->httpRequest = new HTTP\Request('ACL', '/test');
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
     <d:ace>
-        <d:grant><d:privilege><d:all /></d:privilege></d:grant>
-        <d:principal><d:href>/principals/notfound</d:href></d:principal>
+        <d:grant><d:privilege><d:foo /></d:privilege></d:grant>
+        <d:principal><d:href>/principals/foo/</d:href></d:principal>
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -192,6 +202,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -225,6 +236,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -258,6 +270,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
         $acl->httpACL($server->httpRequest, $server->httpResponse);
@@ -301,6 +314,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     </d:ace>
 </d:acl>';
         $server->httpRequest->setBody($body);
+        $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
 

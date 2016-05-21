@@ -1,7 +1,13 @@
 ChangeLog
 =========
 
-3.2.0-alpha1 (????-??-??)
+3.2.0-alpha2 (2016-??-??)
+-------------------------
+
+* #833: Calendars throw exceptions when the sharing plugin is not enabled.
+
+
+3.2.0-alpha1 (2016-05-09)
 -------------------------
 
 * Database changes for CalDAV. If you are using the CalDAV PDO backends, you
@@ -11,29 +17,66 @@ ChangeLog
   others to their calendar and give them read/read-write access!
 * #397: Support for PSR-3. You can now log exceptions with your favourite
   psr3-compatible logging tool.
+* #825: Actual proper, tested support for PostgreSQL. We require version 9.5.
 * Removed database migration script for sabre/dav 1.7. To update from that
   version you now first need to update to sabre/dav 3.1.
 * Removed deprecated function: `Sabre\DAV\Auth\Plugin::getCurrentUser()`.
 * #774: Fixes for getting free disk space on Windows.
 * #803: Major changes in the sharing API. If you were using an old sabre/dav
   sharing api, head to the website for more detailed migration notes.
+* #657: Support for optional auth using `{DAV:}unauthorized` and `{DAV:}all`
+  privileges. This allows you to assign a privilege to a resource, allowing
+  non-authenticated users to access it. For instance, this could allow you
+  to create a public read-only collection.
+* #812 #814: ICS/VCF exporter now includes a more useful filename in its
+  `Content-Disposition` header. (@Xenopathic).
 * #801: BC break: If you were using the `Href` object before, it's behavior
   now changed a bit, and `LocalHref` was added to replace the old, default
   behavior of `Href`. See the migration doc for more info.
+* Removed `Sabre\DAVACL\Plugin::$allowAccessToNodesWithoutACL` setting.
+  Instead, you can provide a set of default ACL rules with
+  `Sabre\DAVACL\Plugin::setDefaultAcl()`.
+* Introduced `Sabre\DAVACL\ACLTrait` which contains a default implementation
+  of `Sabre\DAV\IACL` with some sane defaults. We're using this trait all over
+  the place now, reducing the amount of boilerplate.
+* Plugins can now control the "Supported Privilege Set".
 * Added Sharing, ICSExport and VCFExport plugins to `groupwareserver.php`
   example.
+* The `{DAV:}all` privilege is now no longer abstract, so it can be assigned
+  directly. We're using the `{DAV:}all` privilege now in a lot of cases where
+  we before assigned both `{DAV:}read` and `{DAV:}write`.
+* Resources that are not collections no longer support the `{DAV:}bind` and
+  `{DAV:}unbind` privileges.
+* Corrected the CalDAV-scheduling related privileges.
+* Doing an `UNLOCK` no longer requires the `{DAV:}write-content` privilege.
 * Added a new `getPrincipalByUri` plugin event. Allowing plugins to request
   quickly where a principal lives on a server.
 * Renamed `phpunit.xml` to `phpunit.xml.dist` to make local modifications easy.
 * Functionality from `IShareableCalendar` is merged into `ISharedCalendar`.
 * #751: Fixed XML responses from failing `MKCOL` requests.
+* #600: Support for `principal-match` ACL `REPORT`.
+* #599: Support for `acl-principal-prop-set` ACL `REPORT`.
+* #798: Added an index on `firstoccurence` field in MySQL CalDAV backend. This
+  should speed up common calendar-query requests.
+* #759: DAV\Client is now able to actually correctly resolve relative urls.
+* #671: We are no longer checking the `read-free-busy` privilege on individual
+  calendars during freebusy operations in the scheduling plugin. Instead, we
+  check the `schedule-query-freebusy` privilege on the target users' inbox,
+  which validates access for the entire account, per the spec.
+* The zip release ships with [sabre/vobject 4.1.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
-3.1.3 (????-??-??)
+
+3.1.3 (2016-04-06)
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
 * #805: It wasn't possible to create calendars that hold events, journals and
   todos using MySQL, because the `components` column was 1 byte too small.
+* The zip release ships with [sabre/vobject 4.1.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
 3.1.2 (2016-03-12)
@@ -124,13 +167,16 @@ ChangeLog
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
 
 
-3.0.9 (????-??-??)
+3.0.9 (2016-04-06)
 ------------------
 
 * Set minimum libxml version to 2.7.0 in `composer.json`.
 * #727: Added another workaround to make CalDAV work for Windows 10 clients.
 * #805: It wasn't possible to create calendars that hold events, journals and
   todos using MySQL, because the `components` column was 1 byte too small.
+* The zip release ships with [sabre/vobject 3.5.1][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 2.0.2][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
 3.0.8 (2016-03-12)

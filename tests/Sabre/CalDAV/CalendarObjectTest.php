@@ -213,22 +213,12 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         $calendarObject = new CalendarObject($backend, ['principaluri' => 'principals/user1'], ['calendarid' => 1, 'uri' => 'foo']);
         $expected = [
             [
-                'privilege' => '{DAV:}read',
+                'privilege' => '{DAV:}all',
                 'principal' => 'principals/user1',
                 'protected' => true,
             ],
             [
-                'privilege' => '{DAV:}write',
-                'principal' => 'principals/user1',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}read',
-                'principal' => 'principals/user1/calendar-proxy-write',
-                'protected' => true,
-            ],
-            [
-                'privilege' => '{DAV:}write',
+                'privilege' => '{DAV:}all',
                 'principal' => 'principals/user1/calendar-proxy-write',
                 'protected' => true,
             ],
@@ -244,7 +234,7 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

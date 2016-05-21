@@ -94,10 +94,11 @@ class Plugin extends ServerPlugin {
             '{DAV:}share-mode'
         );
 
-        $server->on('method:POST',         [$this, 'httpPost']);
-        $server->on('propFind',            [$this, 'propFind']);
-        $server->on('onHTMLActionsPanel',  [$this, 'htmlActionsPanel']);
-        $server->on('onBrowserPostAction', [$this, 'browserPostAction']);
+        $server->on('method:POST',              [$this, 'httpPost']);
+        $server->on('propFind',                 [$this, 'propFind']);
+        $server->on('getSupportedPrivilegeSet', [$this, 'getSupportedPrivilegeSet']);
+        $server->on('onHTMLActionsPanel',       [$this, 'htmlActionsPanel']);
+        $server->on('onBrowserPostAction',      [$this, 'browserPostAction']);
 
     }
 
@@ -217,6 +218,25 @@ class Plugin extends ServerPlugin {
     }
 
     /**
+     * This method is triggered whenever a subsystem reqeuests the privileges
+     * hat are supported on a particular node.
+     *
+     * We need to add a number of privileges for scheduling purposes.
+     *
+     * @param INode $node
+     * @param array $supportedPrivilegeSet
+     */
+    function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet) {
+
+        if ($node instanceof ISharedNode) {
+            $supportedPrivilegeSet['{DAV:}share'] = [
+                'abstract'   => false,
+                'aggregates' => [],
+            ];
+        }
+    }
+
+    /**
      * Returns a bunch of meta-data about the plugin.
      *
      * Providing this information is optional, and is mainly displayed by the
@@ -254,7 +274,7 @@ class Plugin extends ServerPlugin {
 
         $aclPlugin = $this->server->getPlugin('acl');
         if ($aclPlugin) {
-          if (!$aclPlugin->checkPrivileges($path, '{DAV:}share', \Sabre\DAVACL\Plugin::R_PARENT, false)) {
+            if (!$aclPlugin->checkPrivileges($path, '{DAV:}share', \Sabre\DAVACL\Plugin::R_PARENT, false)) {
                 // Sharing is not permitted, we will not draw this interface.
                 return;
             }

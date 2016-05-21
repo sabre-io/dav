@@ -155,7 +155,13 @@ abstract class AbstractDigest implements BackendInterface {
             $response
         );
         $auth->init();
+
+        $oldStatus = $response->getStatus() ?: 200;
         $auth->requireLogin();
+
+        // Preventing the digest utility from modifying the http status code,
+        // this should be handled by the main plugin.
+        $response->setStatus($oldStatus);
 
     }
 

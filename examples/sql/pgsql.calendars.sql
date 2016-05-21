@@ -1,27 +1,6 @@
-CREATE TABLE calendars (
-    id SERIAL NOT NULL,
-    principaluri VARCHAR(100),
-    displayname VARCHAR(100),
-    uri VARCHAR(200),
-    synctoken INTEGER NOT NULL DEFAULT 1,
-    description TEXT,
-    calendarorder INTEGER NOT NULL DEFAULT 0,
-    calendarcolor VARCHAR(10),
-    timezone TEXT,
-    components VARCHAR(20),
-    uid VARCHAR(200),
-    transparent SMALLINT NOT NULL DEFAULT '0'
-);
-
-ALTER TABLE ONLY calendars
-    ADD CONSTRAINT calendars_pkey PRIMARY KEY (id);
-
-CREATE UNIQUE INDEX calendars_ukey
-    ON calendars USING btree (principaluri, uri);
-
 CREATE TABLE calendarobjects (
     id SERIAL NOT NULL,
-    calendardata TEXT,
+    calendardata BYTEA,
     uri VARCHAR(200),
     calendarid INTEGER NOT NULL,
     lastmodified INTEGER,
@@ -39,9 +18,46 @@ ALTER TABLE ONLY calendarobjects
 CREATE UNIQUE INDEX calendarobjects_ukey
     ON calendarobjects USING btree (calendarid, uri);
 
-ALTER TABLE ONLY calendarobjects
-    ADD CONSTRAINT calendarobjects_calendarid_fkey FOREIGN KEY (calendarid) REFERENCES calendars(id)
-        ON DELETE CASCADE;
+
+CREATE TABLE calendars (
+    id SERIAL NOT NULL,
+    synctoken INTEGER NOT NULL DEFAULT 1,
+    components VARCHAR(21)
+);
+
+ALTER TABLE ONLY calendars
+    ADD CONSTRAINT calendars_pkey PRIMARY KEY (id);
+
+
+CREATE TABLE calendarinstances (
+    id SERIAL NOT NULL,
+    calendarid INTEGER NOT NULL,
+    principaluri VARCHAR(100),
+    access SMALLINT NOT NULL DEFAULT '1', -- '1 = owner, 2 = read, 3 = readwrite'
+    displayname VARCHAR(100),
+    uri VARCHAR(200),
+    description TEXT,
+    calendarorder INTEGER NOT NULL DEFAULT 0,
+    calendarcolor VARCHAR(10),
+    timezone TEXT,
+    transparent SMALLINT NOT NULL DEFAULT '0',
+    share_href VARCHAR(100),
+    share_displayname VARCHAR(100),
+    share_invitestatus SMALLINT NOT NULL DEFAULT '2' --  '1 = noresponse, 2 = accepted, 3 = declined, 4 = invalid'
+);
+
+ALTER TABLE ONLY calendarinstances
+    ADD CONSTRAINT calendarinstances_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX calendarinstances_principaluri_uri
+    ON calendarinstances USING btree (principaluri, uri);
+
+
+CREATE UNIQUE INDEX calendarinstances_principaluri_calendarid
+    ON calendarinstances USING btree (principaluri, calendarid);
+
+CREATE UNIQUE INDEX calendarinstances_principaluri_share_href
+    ON calendarinstances USING btree (principaluri, share_href);
 
 CREATE TABLE calendarsubscriptions (
     id SERIAL NOT NULL,
@@ -77,10 +93,6 @@ ALTER TABLE ONLY calendarchanges
 
 CREATE INDEX calendarchanges_calendarid_synctoken_ix
     ON calendarchanges USING btree (calendarid, synctoken);
-
-ALTER TABLE ONLY calendarchanges
-    ADD CONSTRAINT calendarchanges_calendar_fk FOREIGN KEY (calendarid) REFERENCES calendars(id)
-        ON DELETE CASCADE;
 
 CREATE TABLE schedulingobjects (
     id SERIAL NOT NULL,

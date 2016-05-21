@@ -194,13 +194,12 @@ SQL
                 'share-resource-uri'                                                 => '/ns/share/' . $row['calendarid'],
             ];
 
+            $calendar['share-access'] = (int)$row['access'];
             // 1 = owner, 2 = readonly, 3 = readwrite
             if ($row['access'] > 1) {
                 // We need to find more information about the original owner.
                 //$stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
                 //$stmt2->execute([$row['id']]);
-
-                $calendar['share-access'] = (int)$row['access'];
 
                 // read-only is for backwards compatbility. Might go away in
                 // the future.
@@ -257,12 +256,15 @@ SQL
         }
         $transp = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
         if (isset($properties[$transp])) {
-            $values[':transparent'] = $properties[$transp]->getValue() === 'transparent';
+            $values[':transparent'] = $properties[$transp]->getValue() === 'transparent' ? 1 : 0;
         }
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarTableName . " (synctoken, components) VALUES (1, ?)");
         $stmt->execute([$components]);
 
-        $calendarId = $this->pdo->lastInsertId();
+        $calendarId = $this->pdo->lastInsertId(
+            $this->calendarTableName . '_id_seq'
+        );
+
         $values[':calendarid'] = $calendarId;
 
         foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -274,9 +276,13 @@ SQL
         }
 
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarInstancesTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
+
         $stmt->execute($values);
 
-        return [$calendarId, $this->pdo->lastInsertId()];
+        return [
+            $calendarId,
+            $this->pdo->lastInsertId($this->calendarInstancesTableName . '_id_seq')
+        ];
 
     }
 
@@ -299,7 +305,7 @@ SQL
     function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -348,13 +354,13 @@ SQL
     function deleteCalendar($calendarId) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
         $stmt = $this->pdo->prepare('SELECT access FROM ' . $this->calendarInstancesTableName . ' where id = ?');
         $stmt->execute([$instanceId]);
-        $access = $stmt->fetchColumn();
+        $access = (int)$stmt->fetchColumn();
 
         if ($access === \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER) {
 
@@ -422,7 +428,7 @@ SQL
     function getCalendarObjects($calendarId) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -434,7 +440,7 @@ SQL
             $result[] = [
                 'id'           => $row['id'],
                 'uri'          => $row['uri'],
-                'lastmodified' => $row['lastmodified'],
+                'lastmodified' => (int)$row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
                 'size'         => (int)$row['size'],
                 'component'    => strtolower($row['componenttype']),
@@ -464,7 +470,7 @@ SQL
     function getCalendarObject($calendarId, $objectUri) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -477,7 +483,7 @@ SQL
         return [
             'id'            => $row['id'],
             'uri'           => $row['uri'],
-            'lastmodified'  => $row['lastmodified'],
+            'lastmodified'  => (int)$row['lastmodified'],
             'etag'          => '"' . $row['etag'] . '"',
             'size'          => (int)$row['size'],
             'calendardata'  => $row['calendardata'],
@@ -501,7 +507,7 @@ SQL
     function getMultipleCalendarObjects($calendarId, array $uris) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -519,7 +525,7 @@ SQL
             $result[] = [
                 'id'           => $row['id'],
                 'uri'          => $row['uri'],
-                'lastmodified' => $row['lastmodified'],
+                'lastmodified' => (int)$row['lastmodified'],
                 'etag'         => '"' . $row['etag'] . '"',
                 'size'         => (int)$row['size'],
                 'calendardata' => $row['calendardata'],
@@ -553,7 +559,7 @@ SQL
     function createCalendarObject($calendarId, $objectUri, $calendarData) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -599,7 +605,7 @@ SQL
     function updateCalendarObject($calendarId, $objectUri, $calendarData) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -680,6 +686,10 @@ SQL
                 }
 
             }
+            
+            // Ensure Occurence values are positive
+            if ($firstOccurence < 0) $firstOccurence = 0;
+            if ($lastOccurence < 0) $lastOccurence = 0;
         }
 
         // Destroy circular references to PHP will GC the object.
@@ -708,7 +718,7 @@ SQL
     function deleteCalendarObject($calendarId, $objectUri) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -774,7 +784,7 @@ SQL
     function calendarQuery($calendarId, array $filters) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -953,7 +963,7 @@ SQL;
     function getChangesForCalendar($calendarId, $syncToken, $syncLevel, $limit = null) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 
@@ -1155,7 +1165,9 @@ SQL;
         $stmt = $this->pdo->prepare("INSERT INTO " . $this->calendarSubscriptionsTableName . " (" . implode(', ', $fieldNames) . ") VALUES (" . implode(', ', array_keys($values)) . ")");
         $stmt->execute($values);
 
-        return $this->pdo->lastInsertId();
+        return $this->pdo->lastInsertId(
+            $this->calendarSubscriptionsTableName . '_id_seq'
+        );
 
     }
 
@@ -1329,7 +1341,7 @@ SQL;
     function updateInvites($calendarId, array $sharees) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
         }
         $currentInvites = $this->getInvites($calendarId);
         list($calendarId, $instanceId) = $calendarId;
@@ -1442,7 +1454,7 @@ INSERT INTO ' . $this->calendarInstancesTableName . '
     function getInvites($calendarId) {
 
         if (!is_array($calendarId)) {
-            throw new \LogicException('The value passed to getInvites() is expected to be an array with a calendarId and an instanceId');
+            throw new \InvalidArgumentException('The value passed to getInvites() is expected to be an array with a calendarId and an instanceId');
         }
         list($calendarId, $instanceId) = $calendarId;
 

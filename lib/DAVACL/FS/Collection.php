@@ -3,6 +3,7 @@
 namespace Sabre\DAVACL\FS;
 
 use Sabre\DAV\FSExt\Directory as BaseCollection;
+use Sabre\DAVACL\ACLTrait;
 use Sabre\DAVACL\IACL;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
@@ -15,6 +16,8 @@ use Sabre\DAV\Exception\NotFound;
  * @license http://sabre.io/license/ Modified BSD License
  */
 class Collection extends BaseCollection implements IACL {
+
+    use ACLTrait;
 
     /**
      * A list of ACL rules.
@@ -88,19 +91,6 @@ class Collection extends BaseCollection implements IACL {
     }
 
     /**
-     * Returns a group principal
-     *
-     * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
-     */
-    function getGroup() {
-
-        return null;
-
-    }
-
-    /**
      * Returns a list of ACE's for this node.
      *
      * Each ACE has the following properties:
@@ -115,38 +105,6 @@ class Collection extends BaseCollection implements IACL {
     function getACL() {
 
         return $this->acl;
-
-    }
-
-    /**
-     * Updates the ACL
-     *
-     * This method will receive a list of new ACE's as an array argument.
-     *
-     * @param array $acl
-     * @return void
-     */
-    function setACL(array $acl) {
-
-        throw new Forbidden('Setting ACL is not allowed here');
-
-    }
-
-    /**
-     * Returns the list of supported privileges for this node.
-     *
-     * The returned data structure is a list of nested privileges.
-     * See Sabre\DAVACL\Plugin::getDefaultSupportedPrivilegeSet for a simple
-     * standard structure.
-     *
-     * If null is returned from this method, the default privilege set is used,
-     * which is fine for most common usecases.
-     *
-     * @return array|null
-     */
-    function getSupportedPrivilegeSet() {
-
-        return null;
 
     }
 

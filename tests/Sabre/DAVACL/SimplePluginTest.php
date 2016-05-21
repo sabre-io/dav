@@ -22,6 +22,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             [
                 '{DAV:}expand-property',
+                '{DAV:}principal-match',
                 '{DAV:}principal-property-search',
                 '{DAV:}principal-search-property-set'
             ],
@@ -41,12 +42,12 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         $expected = [
             '{DAV:}all' => [
                 'privilege'  => '{DAV:}all',
-                'abstract'   => true,
+                'abstract'   => false,
                 'aggregates' => [
                     '{DAV:}read',
                     '{DAV:}write',
                 ],
-                'concrete' => null,
+                'concrete' => '{DAV:}all',
             ],
             '{DAV:}read' => [
                 'privilege'  => '{DAV:}read',
@@ -73,20 +74,13 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
                 'privilege'  => '{DAV:}write',
                 'abstract'   => false,
                 'aggregates' => [
-                    '{DAV:}write-acl',
                     '{DAV:}write-properties',
                     '{DAV:}write-content',
+                    '{DAV:}unlock',
                     '{DAV:}bind',
                     '{DAV:}unbind',
-                    '{DAV:}unlock',
                 ],
                 'concrete' => '{DAV:}write',
-            ],
-            '{DAV:}write-acl' => [
-                'privilege'  => '{DAV:}write-acl',
-                'abstract'   => false,
-                'aggregates' => [],
-                'concrete'   => '{DAV:}write-acl',
             ],
             '{DAV:}write-properties' => [
                 'privilege'  => '{DAV:}write-properties',
@@ -122,6 +116,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $plugin = new Plugin();
+        $plugin->allowUnauthenticatedAccess = false;
         $server = new DAV\Server();
         $server->addPlugin($plugin);
         $this->assertEquals($expected, $plugin->getFlatPrivilegeSet(''));
@@ -131,6 +126,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
     function testCurrentUserPrincipalsNotLoggedIn() {
 
         $acl = new Plugin();
+        $acl->allowUnauthenticatedAccess = false;
         $server = new DAV\Server();
         $server->addPlugin($acl);
 
@@ -149,6 +145,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $acl = new Plugin();
+        $acl->allowUnauthenticatedAccess = false;
         $server = new DAV\Server($tree);
         $server->addPlugin($acl);
 
@@ -176,6 +173,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $acl = new Plugin();
+        $acl->allowUnauthenticatedAccess = false;
         $server = new DAV\Server($tree);
         $server->addPlugin($acl);
 
@@ -219,6 +217,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($tree);
         $aclPlugin = new Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
 
         $this->assertEquals($acl, $aclPlugin->getACL('foo'));
@@ -254,6 +253,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($tree);
         $aclPlugin = new Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
 
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
@@ -264,12 +264,10 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $expected = [
             '{DAV:}write',
-            '{DAV:}write-acl',
             '{DAV:}write-properties',
             '{DAV:}write-content',
-            '{DAV:}bind',
-            '{DAV:}unbind',
             '{DAV:}unlock',
+            '{DAV:}write-acl',
             '{DAV:}read',
             '{DAV:}read-acl',
             '{DAV:}read-current-user-privilege-set',
@@ -308,6 +306,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server($tree);
         $aclPlugin = new Plugin();
+        $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
 
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());

@@ -4,6 +4,7 @@ namespace Sabre\DAV\Xml\Element;
 
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Sharing\Plugin;
+use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\Xml\Property\ShareAccess;
 use Sabre\Xml\Deserializer;
 use Sabre\Xml\Element;
@@ -119,8 +120,9 @@ class Sharee implements Element {
      */
     function xmlSerialize(Writer $writer) {
 
+
         $writer->write([
-            '{DAV:}href'         => $this->href,
+            new Href($this->href),
             '{DAV:}prop'         => $this->properties,
             '{DAV:}share-access' => new ShareAccess($this->access),
         ]);

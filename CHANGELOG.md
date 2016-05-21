@@ -1,8 +1,8 @@
 ChangeLog
 =========
 
-3.2.0-alpha2 (2016-??-??)
--------------------------
+3.2.0-beta1 (2016-05-20)
+------------------------
 
 * #833: Calendars throw exceptions when the sharing plugin is not enabled.
 * #834: Return vCards exactly as they were stored if we don't need to convert

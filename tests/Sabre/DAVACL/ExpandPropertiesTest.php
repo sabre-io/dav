@@ -34,6 +34,13 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
+        // Anyone can do anything
+        $plugin->setDefaultACL([
+            [
+                'principal' => '{DAV:}all',
+                'privilege' => '{DAV:}all',
+            ]
+        ]);
         $this->assertTrue($plugin instanceof Plugin);
 
         $fakeServer->addPlugin($plugin);

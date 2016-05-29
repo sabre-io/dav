@@ -1,11 +1,15 @@
 ChangeLog
 =========
 
-3.1.4 (2016-??-??)
+3.1.4 (2016-05-28)
 ------------------
 
 * #834: Backport from `master`: Return vCards exactly as they were stored if
-  we don't need to convert in between versions.
+  we don't need to convert in between versions. This should speed up many
+  large addressbook syncs sometimes up to 50%.
+* The zip release ships with [sabre/vobject 4.1.0][vobj],
+  [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.2][xml].
 
 
 3.1.3 (2016-04-06)

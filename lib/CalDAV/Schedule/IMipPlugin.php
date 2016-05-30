@@ -200,12 +200,12 @@ class IMipPlugin extends DAV\ServerPlugin {
     function getMessage($iTipMessage) {
 
         // Text message
-        $message = '------='. $this->_boundary . "\n";   
+        $message = '------=' . $this->_boundary . "\n";   
         $message .= 'Content-Type: text/plain; charset=UTF-8' . "\n";
         $message .= 'Content-Transfer-Encoding: 8bit' . "\n\n";
         
         $message .= 'Meeting with ' . $iTipMessage->senderName . "\n";
-        $message .= '"' . $iTipMessage->message->VEVENT->SUMMARY . '"'  . "\n\n"; 
+        $message .= '"' . $iTipMessage->message->VEVENT->SUMMARY . '"' . "\n\n"; 
         $time = [
             $iTipMessage->message->VEVENT->DTSTART->getDateTime()->format("l\, jS F Y"),
             $iTipMessage->message->VEVENT->DTSTART->getDateTime()->format("g\.i A"),
@@ -222,16 +222,15 @@ class IMipPlugin extends DAV\ServerPlugin {
         $message .= "\n";
         
         // not implemented :: location :: description
-        
         $message .= "\n\n";
 
         // Calendar object
-        $message .= '------='.$this->_boundary . "\n";
+        $message .= '------=' . $this->_boundary . "\n";
         $message .= 'Content-Type: text/calendar; name="meeting.ics"; method=' . $iTipMessage->method . "\n";
         $message .= 'Content-Transfer-Encoding: 8bit' . "\n\n";
         $message .= $iTipMessage->message->serialize() . "\n";
 
-        $message .= '------='.$this->_boundary . '--'; 
+        $message .= '------=' . $this->_boundary . '--'; 
 
         return $message;
 

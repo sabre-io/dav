@@ -31,7 +31,9 @@ class ServerEventsTest extends AbstractServer {
 
     function testAfterResponse() {
 
-        $mock = $this->getMock('stdClass', ['afterResponseCallback']);
+        $mock = $this->getMockBuilder('stdClass')
+            ->setMethods(['afterResponseCallback'])
+            ->getMock();
         $mock->expects($this->once())->method('afterResponseCallback');
 
         $this->server->on('afterResponse', [$mock, 'afterResponseCallback']);

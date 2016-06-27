@@ -237,7 +237,7 @@ if ($migrateCalendars) {
 CREATE TABLE calendars (
     id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     synctoken INTEGER UNSIGNED NOT NULL DEFAULT '1',
-    components VARBINARY(20)
+    components VARBINARY(21)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL
 );

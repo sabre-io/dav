@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+3.1.5 (????-??-??)
+------------------
+
+* Fixed: Creating a new calendar on some MySQL configurations caused an error.
+
 3.1.4 (2016-05-28)
 ------------------
 

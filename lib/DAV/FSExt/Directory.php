@@ -131,12 +131,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
         foreach ($iterator as $entry) {
 
-            $node = $entry->getFilename();
-
-            if ($node === '.sabredav')
-                continue;
-
-            $nodes[] = $this->getChild($node);
+            $nodes[] = $this->getChild($entry->getFilename());
 
         }
         return $nodes;
@@ -152,9 +147,6 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
         // Deleting all children
         foreach ($this->getChildren() as $child) $child->delete();
-
-        // Removing resource info, if its still around
-        if (file_exists($this->path . '/.sabredav')) unlink($this->path . '/.sabredav');
 
         // Removing the directory itself
         rmdir($this->path);

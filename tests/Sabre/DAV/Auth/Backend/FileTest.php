@@ -23,8 +23,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
     function testLoadFileBroken() {
 
         file_put_contents(SABRE_TEMPDIR . '/backend', 'user:realm:hash');
-        $file = new File();
-        $file->loadFile(SABRE_TEMPDIR . '/backend');
+        $file = new File(SABRE_TEMPDIR . '/backend');
 
     }
 

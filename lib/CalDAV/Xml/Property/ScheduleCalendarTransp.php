@@ -4,8 +4,8 @@ namespace Sabre\CalDAV\Xml\Property;
 
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
+use Sabre\Xml\Deserializer;
 use Sabre\Xml\Writer;
-use Sabre\Xml\Element\Elements;
 use Sabre\CalDAV\Plugin;
 
 /**
@@ -116,23 +116,13 @@ class ScheduleCalendarTransp implements Element {
      */
     static function xmlDeserialize(Reader $reader) {
 
-        $elems = Elements::xmlDeserialize($reader);
+        $elems = Deserializer\enum($reader, Plugin::NS_CALDAV);
 
-        $value = null;
-
-        foreach ($elems as $elem) {
-            switch ($elem) {
-                case '{' . Plugin::NS_CALDAV . '}opaque' :
-                    $value = self::OPAQUE;
-                    break;
-                case '{' . Plugin::NS_CALDAV . '}transparent' :
-                    $value = self::TRANSPARENT;
-                    break;
-            }
+        if (in_array('transparent', $elems)) {
+            $value = self::TRANSPARENT;
+        } else {
+            $value = self::OPAQUE;
         }
-        if (is_null($value))
-           return null;
-
         return new self($value);
 
     }

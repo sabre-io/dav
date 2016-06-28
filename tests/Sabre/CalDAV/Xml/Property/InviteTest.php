@@ -19,8 +19,9 @@ class InviteTest extends DAV\Xml\XmlTest {
 
     function testSimple() {
 
-        $sccs = new Invite([]);
-        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\Invite', $sccs);
+        $invite = new Invite([]);
+        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\Invite', $invite);
+        $this->assertEquals([], $invite->getValue());
 
     }
 

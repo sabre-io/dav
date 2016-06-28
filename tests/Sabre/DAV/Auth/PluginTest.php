@@ -49,6 +49,25 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @depends testAuthenticateFail
+     */
+    function testAuthenticateFailDontAutoRequire() {
+
+        $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
+        $backend = new Backend\Mock();
+        $backend->fail = true;
+
+        $plugin = new Plugin($backend);
+        $plugin->autoRequireLogin = false;
+        $fakeServer->addPlugin($plugin);
+        $this->assertTrue(
+            $fakeServer->emit('beforeMethod', [new HTTP\Request(), new HTTP\Response()])
+        );
+        $this->assertEquals(1, count($plugin->getLoginFailedReasons()));
+
+    }
+
+    /**
      * @depends testAuthenticate
      */
     function testMultipleBackend() {

@@ -127,7 +127,7 @@ class ShareAccess implements Element {
             switch ($elem['name']) {
                 case '{DAV:}not-shared' :
                     return new self(SharingPlugin::ACCESS_NOTSHARED);
-                case '{DAV:}sharedowner' :
+                case '{DAV:}shared-owner' :
                     return new self(SharingPlugin::ACCESS_SHAREDOWNER);
                 case '{DAV:}read' :
                     return new self(SharingPlugin::ACCESS_READ);

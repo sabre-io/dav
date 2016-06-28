@@ -25,7 +25,7 @@ class File extends AbstractDigest {
     /**
      * Creates the backend object.
      *
-     * If the filename argument is passed in, it will parse out the specified file fist.
+     * If the filename argument is passed in, it will parse out the specified file first.
      *
      * @param string|null $filename
      */

@@ -1418,4 +1418,14 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
+     */
+    function testSetPublishStatus() {
+
+        $backend = new PDO($this->pdo);
+        $backend->setPublishStatus([1, 1], true);
+
+    }
+
 }

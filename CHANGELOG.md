@@ -15,11 +15,27 @@ ChangeLog
 * #833: Calendars throw exceptions when the sharing plugin is not enabled.
 * #834: Return vCards exactly as they were stored if we don't need to convert
   in between versions.
+
+
+3.1.5 (????-??-??)
+------------------
+
+* Fixed: Creating a new calendar on some MySQL configurations caused an error.
+
+
+3.1.4 (2016-05-28)
+------------------
+
+* #834: Backport from `master`: Return vCards exactly as they were stored if
+  we don't need to convert in between versions. This should speed up many
+  large addressbook syncs sometimes up to 50%.
+>>>>>>> 3.1
 * The zip release ships with [sabre/vobject 4.1.0][vobj],
   [sabre/http 4.2.1][http], [sabre/event 3.0.0][evnt],
   [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.2][xml].
 
 
+<<<<<<< HEAD
 3.2.0-alpha1 (2016-05-09)
 -------------------------
 
@@ -81,6 +97,8 @@ ChangeLog
   [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
+=======
+>>>>>>> 3.1
 3.1.3 (2016-04-06)
 ------------------
 

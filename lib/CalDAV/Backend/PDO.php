@@ -222,7 +222,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
         }
         $transp = '{' . CalDAV\Plugin::NS_CALDAV . '}schedule-calendar-transp';
         if (isset($properties[$transp])) {
-            $values[':transparent'] = $properties[$transp]->getValue() === 'transparent';
+            $values[':transparent'] = $properties[$transp]->getValue() === 'transparent' ? 1 : 0;
         }
 
         foreach ($this->propertyMap as $xmlName => $dbName) {

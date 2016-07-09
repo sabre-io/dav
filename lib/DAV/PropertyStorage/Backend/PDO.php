@@ -66,7 +66,7 @@ class PDO implements BackendInterface {
      * This method received a PropFind object, which contains all the
      * information about the properties that need to be fetched.
      *
-     * Ususually you would just want to call 'get404Properties' on this object,
+     * Usually you would just want to call 'get404Properties' on this object,
      * as this will give you the _exact_ list of properties that need to be
      * fetched, and haven't yet.
      *

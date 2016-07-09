@@ -18,7 +18,7 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection {
     /**
      * Principal Backend
      *
-     * @var Sabre\DAVACL\PrincipalBackend\BackendInteface
+     * @var DAVACL\PrincipalBackend\BackendInterface
      */
     protected $principalBackend;
 

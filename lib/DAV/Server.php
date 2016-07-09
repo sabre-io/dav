@@ -437,7 +437,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
     }
 
     /**
-     * Returns the PSR-3 logger objcet.
+     * Returns the PSR-3 logger object.
      *
      * @return LoggerInterface
      */
@@ -1450,7 +1450,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
                 if (!$token['etag']) {
                     $etagValid = true;
                 }
-                // Checking the ETag, only if the token was already deamed
+                // Checking the ETag, only if the token was already deemed
                 // valid and there is one.
                 if ($token['etag'] && $tokenValid) {
 

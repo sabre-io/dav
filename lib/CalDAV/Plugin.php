@@ -926,7 +926,7 @@ class Plugin extends DAV\ServerPlugin {
             );
         }
 
-        // We use an extra variable to allow event handles to tell us wether
+        // We use an extra variable to allow event handles to tell us whether
         // the object was modified or not.
         //
         // This helps us determine if we need to re-serialize the object.

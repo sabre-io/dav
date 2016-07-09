@@ -72,7 +72,7 @@ class PropFind {
     /**
      * Handles a specific property.
      *
-     * This method checks wether the specified property was requested in this
+     * This method checks whether the specified property was requested in this
      * PROPFIND request, and if so, it will call the callback and use the
      * return value for it's value.
      *

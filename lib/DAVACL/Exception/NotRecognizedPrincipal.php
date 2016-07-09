@@ -5,7 +5,7 @@ namespace Sabre\DAVACL\Exception;
 use Sabre\DAV;
 
 /**
- * If a client tried to set a privilege assigned to a non-existant principal,
+ * If a client tried to set a privilege assigned to a non-existent principal,
  * this exception will be thrown.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)

@@ -194,7 +194,7 @@ class CorePlugin extends ServerPlugin {
             $response->setBody($body);
 
         }
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -224,7 +224,7 @@ class CorePlugin extends ServerPlugin {
         $response->setHeader('Content-Length', '0');
         $response->setStatus(200);
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -264,7 +264,7 @@ class CorePlugin extends ServerPlugin {
             $response->setHeader('X-Sabre-Real-Status', $e->getHTTPCode());
         }
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -290,7 +290,7 @@ class CorePlugin extends ServerPlugin {
         $response->setStatus(204);
         $response->setHeader('Content-Length', '0');
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -355,7 +355,7 @@ class CorePlugin extends ServerPlugin {
         $data = $this->server->generateMultiStatus($newProperties, $minimal);
         $response->setBody($data);
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -390,7 +390,7 @@ class CorePlugin extends ServerPlugin {
         if ($prefer['return'] === 'minimal') {
 
             // If return-minimal is specified, we only have to check if the
-            // request was succesful, and don't need to return the
+            // request was successful, and don't need to return the
             // multi-status.
             $ok = true;
             foreach ($result as $prop => $code) {
@@ -427,7 +427,7 @@ class CorePlugin extends ServerPlugin {
             $this->server->generateMultiStatus([$multiStatus])
         );
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -533,7 +533,7 @@ class CorePlugin extends ServerPlugin {
 
         }
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -602,7 +602,7 @@ class CorePlugin extends ServerPlugin {
             $response->setStatus(201);
         }
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -653,7 +653,7 @@ class CorePlugin extends ServerPlugin {
         $response->setHeader('Content-Length', '0');
         $response->setStatus($moveInfo['destinationExists'] ? 204 : 201);
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -688,7 +688,7 @@ class CorePlugin extends ServerPlugin {
         $response->setHeader('Content-Length', '0');
         $response->setStatus($copyInfo['destinationExists'] ? 204 : 201);
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -722,7 +722,7 @@ class CorePlugin extends ServerPlugin {
 
         }
 
-        // Sending back false will interupt the event chain and tell the server
+        // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
 
@@ -740,7 +740,7 @@ class CorePlugin extends ServerPlugin {
      */
     function propPatchProtectedPropertyCheck($path, PropPatch $propPatch) {
 
-        // Comparing the mutation list to the list of propetected properties.
+        // Comparing the mutation list to the list of protected properties.
         $mutations = $propPatch->getMutations();
 
         $protected = array_intersect(

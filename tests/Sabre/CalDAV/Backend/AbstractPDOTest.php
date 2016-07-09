@@ -441,7 +441,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     /**
      * @depends testCreateCalendarObject
      */
-    function testCreateCalendarObjectInfiniteReccurence() {
+    function testCreateCalendarObjectInfiniteRecurrence() {
 
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
@@ -470,7 +470,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     /**
      * @depends testCreateCalendarObject
      */
-    function testCreateCalendarObjectEndingReccurence() {
+    function testCreateCalendarObjectEndingRecurrence() {
 
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);

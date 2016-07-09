@@ -11,7 +11,7 @@ use Sabre\HTTP\URLUtil;
  *
  *
  * This backend assumes all principals are in a single collection. The default collection
- * is 'principals/', but this can be overriden.
+ * is 'principals/', but this can be overridden.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
@@ -171,7 +171,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
      * Calling the handle method is like telling the PropPatch object "I
      * promise I can handle updating this property".
      *
-     * Read the PropPatch documenation for more info and examples.
+     * Read the PropPatch documentation for more info and examples.
      *
      * @param string $path
      * @param DAV\PropPatch $propPatch

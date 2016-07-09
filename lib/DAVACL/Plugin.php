@@ -8,6 +8,7 @@ use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\Exception\NotAuthenticated;
+use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAVACL\Exception\NeedPrivileges;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
@@ -53,7 +54,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Reference to server object.
      *
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 
@@ -228,14 +229,14 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Returns the standard users' principal.
      *
-     * This is one authorative principal url for the current user.
+     * This is one authoritative principal url for the current user.
      * This method will return null if the user wasn't logged in.
      *
      * @return string|null
      */
     function getCurrentUserPrincipal() {
 
-        /** @var $authPlugin Sabre\DAV\Auth\Plugin */
+        /** @var $authPlugin \Sabre\DAV\Auth\Plugin */
         $authPlugin = $this->server->getPlugin('auth');
         if (!$authPlugin) {
             return null;
@@ -364,7 +365,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Find out of a principal equals another principal.
      *
-     * This is a quick way to find out wether a principal URI is part of a
+     * This is a quick way to find out whether a principal URI is part of a
      * group, or any subgroups.
      *
      * The first argument is the principal URI you want to check against. For
@@ -372,10 +373,10 @@ class Plugin extends DAV\ServerPlugin {
      * which you want to find out of it is the same as the first principal, or
      * in a member of the first principal's group or subgroups.
      *
-     * So the arguments are not interchangable. If principal A is in group B,
+     * So the arguments are not interchangeable. If principal A is in group B,
      * passing 'B', 'A' will yield true, but 'A', 'B' is false.
      *
-     * If the sceond argument is not passed, we will use the current user
+     * If the second argument is not passed, we will use the current user
      * principal.
      *
      * @param string $checkPrincipal
@@ -411,8 +412,8 @@ class Plugin extends DAV\ServerPlugin {
      *    ]
      * ]
      *
-     * Privileges can be nested using "aggregrates". Doing so means that
-     * if you assign someone the aggregrating privilege, all the
+     * Privileges can be nested using "aggregates". Doing so means that
+     * if you assign someone the aggregating privilege, all the
      * sub-privileges will automatically be granted.
      *
      * Marking a privilege as abstract means that the privilege cannot be
@@ -483,7 +484,7 @@ class Plugin extends DAV\ServerPlugin {
                     ],
                 ],
             ];
-            if ($node instanceof \Sabre\DAV\ICollection) {
+            if ($node instanceof DAV\ICollection) {
                 $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}bind'] = [
                     'abstract'   => false,
                     'aggregates' => [],
@@ -493,7 +494,7 @@ class Plugin extends DAV\ServerPlugin {
                     'aggregates' => [],
                 ];
             }
-            if ($node instanceof \Sabre\DAVACL\IACL) {
+            if ($node instanceof IACL) {
                 $supportedPrivileges['{DAV:}write']['aggregates']['{DAV:}write-acl'] = [
                     'abstract'   => false,
                     'aggregates' => [],
@@ -1420,7 +1421,7 @@ class Plugin extends DAV\ServerPlugin {
                     ];
                 }
 
-                // Replacing the property with its expannded form.
+                // Replacing the property with its expanded form.
                 $node[200][$propertyName] = $childProps;
 
             }

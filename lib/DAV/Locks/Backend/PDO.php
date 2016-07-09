@@ -33,7 +33,7 @@ class PDO extends AbstractBackend {
     /**
      * Constructor
      *
-     * @param PDO $pdo
+     * @param \PDO $pdo
      */
     function __construct(\PDO $pdo) {
 

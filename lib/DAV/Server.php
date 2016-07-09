@@ -37,7 +37,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
     /**
      * The tree object
      *
-     * @var Sabre\DAV\Tree
+     * @var Tree
      */
     public $tree;
 
@@ -51,21 +51,21 @@ class Server extends EventEmitter implements LoggerAwareInterface {
     /**
      * httpResponse
      *
-     * @var Sabre\HTTP\Response
+     * @var \Sabre\HTTP\Response
      */
     public $httpResponse;
 
     /**
      * httpRequest
      *
-     * @var Sabre\HTTP\Request
+     * @var \Sabre\HTTP\Request
      */
     public $httpRequest;
 
     /**
      * PHP HTTP Sapi
      *
-     * @var Sabre\HTTP\Sapi
+     * @var \Sabre\HTTP\Sapi
      */
     public $sapi;
 
@@ -455,7 +455,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param $sendResponse Whether to send the HTTP response to the DAV client.
+     * @param bool $sendResponse Whether to send the HTTP response to the DAV client.
      * @return void
      */
     function invokeMethod(RequestInterface $request, ResponseInterface $response, $sendResponse = true) {

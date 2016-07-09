@@ -283,8 +283,7 @@ class Plugin extends DAV\ServerPlugin {
      *
      * These rules are used for all nodes that don't implement the IACL interface.
      *
-     * @param array $acl
-     * @return void
+     * @return array
      */
     function getDefaultAcl() {
 
@@ -299,7 +298,7 @@ class Plugin extends DAV\ServerPlugin {
      * set of rules allow anyone to do anything, as long as they are
      * authenticated.
      *
-     * var array
+     * @var array
      */
     protected $defaultAcl = [
         [
@@ -321,7 +320,7 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * Returns all the principal groups the specified principal is a member of.
      *
-     * @param string $principal
+     * @param string $mainPrincipal
      * @return array
      */
     function getPrincipalMembership($mainPrincipal) {
@@ -980,8 +979,6 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param DAV\PropFind $propFind
      * @param DAV\INode $node
-     * @param array $requestedProperties
-     * @param array $returnedProperties
      * @TODO really should be broken into multiple methods, or even a class.
      * @return bool
      */

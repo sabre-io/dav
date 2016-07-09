@@ -42,7 +42,7 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
      *   * lastmodified - (optional) format as a unix timestamp.
      *   * acl - (optional) Use this to override the default ACL for the node.
      *
-     * @param Backend\BackendInterface $caldavBackend
+     * @param Backend\SchedulingSupport $caldavBackend
      * @param array $objectData
      */
     function __construct(Backend\SchedulingSupport $caldavBackend, array $objectData) {

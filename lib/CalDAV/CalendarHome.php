@@ -42,7 +42,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      * Constructor
      *
      * @param Backend\BackendInterface $caldavBackend
-     * @param mixed $userUri
+     * @param array $principalInfo
      */
     function __construct(Backend\BackendInterface $caldavBackend, $principalInfo) {
 

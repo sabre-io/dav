@@ -5,6 +5,13 @@ namespace Sabre\DAV;
 class StringUtilTest extends \PHPUnit_Framework_TestCase {
 
     /**
+     * @param string $haystack
+     * @param string $needle
+     * @param string $collation
+     * @param string $matchType
+     * @param string $result
+     * @throws Exception\BadRequest
+     *
      * @dataProvider dataset
      */
     function testTextMatch($haystack, $needle, $collation, $matchType, $result) {

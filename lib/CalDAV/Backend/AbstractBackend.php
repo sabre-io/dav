@@ -28,7 +28,7 @@ abstract class AbstractBackend implements BackendInterface {
      *
      * Read the PropPatch documenation for more info and examples.
      *
-     * @param string $path
+     * @param mixed $calendarId
      * @param \Sabre\DAV\PropPatch $propPatch
      * @return void
      */

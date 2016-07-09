@@ -28,7 +28,7 @@ class ResourceType extends Element\Elements implements HtmlOutput {
      *
      * The resourcetype must be specified in clark-notation
      *
-     * @param array|string|null $resourceType
+     * @param array|string|null $resourceTypes
      */
     function __construct($resourceTypes = null) {
 

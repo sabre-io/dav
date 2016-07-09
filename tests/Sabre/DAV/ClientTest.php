@@ -224,7 +224,7 @@ XML;
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $result = $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null], 1);
+        $result = $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null]);
         $this->assertTrue($result);
         $request = $client->request;
         $this->assertEquals('PROPPATCH', $request->getMethod());
@@ -246,7 +246,7 @@ XML;
         ]);
 
         $client->response = new Response(403, [], '');
-        $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null], 1);
+        $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null]);
 
     }
 
@@ -276,7 +276,7 @@ XML;
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null], 1);
+        $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null]);
 
     }
 

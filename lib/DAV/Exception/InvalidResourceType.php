@@ -19,7 +19,7 @@ class InvalidResourceType extends Forbidden {
     /**
      * This method allows the exception to include additional information into the WebDAV error response
      *
-     * @param DAV\Server $server
+     * @param \Sabre\DAV\Server $server
      * @param \DOMElement $errorNode
      * @return void
      */

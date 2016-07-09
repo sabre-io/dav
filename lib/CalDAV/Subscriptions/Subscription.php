@@ -40,7 +40,7 @@ class Subscription extends Collection implements ISubscription, IACL {
      * Constructor
      *
      * @param SubscriptionSupport $caldavBackend
-     * @param array $calendarInfo
+     * @param array $subscriptionInfo
      */
     function __construct(SubscriptionSupport $caldavBackend, array $subscriptionInfo) {
 

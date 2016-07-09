@@ -38,6 +38,11 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param string $headerValue
+     * @param string $httpStatus
+     * @param string $endResult
+     * @param int $contentLength
+     *
      * @dataProvider data
      */
     function testUpdateRange($headerValue, $httpStatus, $endResult, $contentLength = 4) {

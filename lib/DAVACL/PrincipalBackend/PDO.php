@@ -65,7 +65,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
     /**
      * Sets up the backend.
      *
-     * @param PDO $pdo
+     * @param \PDO $pdo
      */
     function __construct(\PDO $pdo) {
 

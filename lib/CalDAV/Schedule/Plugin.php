@@ -377,7 +377,7 @@ class Plugin extends ServerPlugin {
     /**
      * This method is responsible for delivering the ITip message.
      *
-     * @param ITip\Message $itipMessage
+     * @param ITip\Message $iTipMessage
      * @return void
      */
     function deliver(ITip\Message $iTipMessage) {
@@ -890,8 +890,8 @@ class Plugin extends ServerPlugin {
      *   * 3.7;description
      *
      * @param string $email address
-     * @param DateTimeInterface $start
-     * @param DateTimeInterface $end
+     * @param \DateTimeInterface $start
+     * @param \DateTimeInterface $end
      * @param VObject\Component $request
      * @return array
      */

@@ -7,6 +7,11 @@ require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 class ValidateFilterTest extends AbstractPluginTest {
 
     /**
+     * @param string $input
+     * @param array $filters
+     * @param string $test
+     * @param bool $result
+     * @param string|null $message
      * @dataProvider data
      */
     function testFilter($input, $filters, $test, $result, $message = null) {

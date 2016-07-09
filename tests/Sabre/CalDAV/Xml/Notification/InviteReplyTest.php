@@ -8,6 +8,8 @@ use Sabre\Xml\Writer;
 class InviteReplyTest extends \PHPUnit_Framework_TestCase {
 
     /**
+     * @param array $notification
+     * @param string $expected
      * @dataProvider dataProvider
      */
     function testSerializers($notification, $expected) {

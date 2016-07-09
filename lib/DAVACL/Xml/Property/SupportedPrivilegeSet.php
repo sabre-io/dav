@@ -129,6 +129,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
      * This is a recursive function.
      *
      * @param Writer $writer
+     * @param string $privName
      * @param array $privilege
      * @return void
      */

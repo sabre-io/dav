@@ -117,7 +117,7 @@ class Mock extends AbstractBackend {
      * calculating them. If they are specified, you can also ommit carddata.
      * This may speed up certain requests, especially with large cards.
      *
-     * @param mixed $addressbookId
+     * @param mixed $addressBookId
      * @return array
      */
     function getCards($addressBookId) {

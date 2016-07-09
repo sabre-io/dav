@@ -74,6 +74,9 @@ class Mock implements BackendInterface {
      * This method is called after a node is deleted.
      *
      * This allows a backend to clean up all associated properties.
+     *
+     * @param string $path
+     * @return void
      */
     function delete($path) {
 

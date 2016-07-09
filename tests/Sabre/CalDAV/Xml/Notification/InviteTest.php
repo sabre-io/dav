@@ -9,6 +9,8 @@ use Sabre\Xml\Writer;
 class InviteTest extends DAV\Xml\XmlTest {
 
     /**
+     * @param array $notification
+     * @param string $expected
      * @dataProvider dataProvider
      */
     function testSerializers($notification, $expected) {

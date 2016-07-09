@@ -25,7 +25,7 @@ class CalendarQueryValidator {
      *
      * The list of filters must be formatted as parsed by \Sabre\CalDAV\CalendarQueryParser
      *
-     * @param VObject\Component $vObject
+     * @param VObject\Component\VCalendar $vObject
      * @param array $filters
      * @return bool
      */

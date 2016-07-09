@@ -32,7 +32,7 @@ class LocalHref extends Href {
      * If auto-prefix is set to false, the hrefs will be treated as absolute
      * and not relative to the servers base uri.
      *
-     * @param string|string[] $href
+     * @param string|string[] $hrefs
      */
     function __construct($hrefs) {
 

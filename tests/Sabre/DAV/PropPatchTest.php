@@ -318,7 +318,6 @@ class PropPatchTest extends \PHPUnit_Framework_TestCase {
                 '{DAV:}a' => 201,
                 '{DAV:}b' => 204,
             ];
-            return false;
         });
         $result = $propPatch->commit();
         $this->assertTrue($calledA);

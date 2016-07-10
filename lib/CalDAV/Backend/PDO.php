@@ -1502,7 +1502,7 @@ SQL;
      */
     function setPublishStatus($calendarId, $value) {
 
-        throw new \Sabre\DAV\Exception\NotImplemented('Not implemented');
+        throw new DAV\Exception\NotImplemented('Not implemented');
 
     }
 

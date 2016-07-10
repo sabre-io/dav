@@ -25,7 +25,7 @@ class Subscription extends Collection implements ISubscription, IACL {
     /**
      * caldavBackend
      *
-     * @var SupportsSubscriptions
+     * @var SubscriptionSupport
      */
     protected $caldavBackend;
 
@@ -104,7 +104,7 @@ class Subscription extends Collection implements ISubscription, IACL {
     /**
      * Returns an array with all the child nodes
      *
-     * @return DAV\INode[]
+     * @return \Sabre\DAV\INode[]
      */
     function getChildren() {
 

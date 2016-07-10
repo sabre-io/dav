@@ -16,7 +16,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     /**
      * Sabre\CalDAV\Backend\BackendInterface
      *
-     * @var Sabre\CalDAV\Backend\AbstractBackend
+     * @var Backend\AbstractBackend
      */
     protected $caldavBackend;
 

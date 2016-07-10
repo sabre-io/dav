@@ -57,7 +57,7 @@ class PrincipalCollection extends AbstractPrincipalCollection implements IExtend
      *
      * @param string $name
      * @param MkCol $mkCol
-     * @throws Exception\InvalidResourceType
+     * @throws InvalidResourceType
      * @return void
      */
     function createExtendedCollection($name, MkCol $mkCol) {

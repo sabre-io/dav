@@ -107,7 +107,7 @@ class Invite implements NotificationInterface {
     /**
      * The list of supported components
      *
-     * @var Sabre\CalDAV\Property\SupportedCalendarComponentSet
+     * @var CalDAV\Xml\Property\SupportedCalendarComponentSet
      */
     protected $supportedComponents;
 

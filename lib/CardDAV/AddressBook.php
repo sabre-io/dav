@@ -60,7 +60,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * Returns a card
      *
      * @param string $name
-     * @return \ICard
+     * @return Card
      */
     function getChild($name) {
 

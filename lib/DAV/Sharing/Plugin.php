@@ -40,7 +40,7 @@ class Plugin extends ServerPlugin {
     /**
      * Reference to SabreDAV server object.
      *
-     * @var Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
 

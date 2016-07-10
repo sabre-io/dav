@@ -72,7 +72,7 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL {
      * supplied by the authentication backend.
      *
      * @param array $principalInfo
-     * @return \Sabre\DAVACL\INode
+     * @return \Sabre\DAV\INode
      */
     function getChildForPrincipal(array $principalInfo) {
 

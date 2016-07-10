@@ -11,11 +11,11 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var Plugin
      */
     protected $plugin;
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 
@@ -115,7 +115,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException DAV\Exception\BadRequest
      */
     function testFreeBusyReportNoTimeRange() {
 
@@ -130,7 +130,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException DAV\Exception\NotImplemented
      */
     function testFreeBusyReportWrongNode() {
 
@@ -152,7 +152,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException DAV\Exception
      */
     function testFreeBusyReportNoACLPlugin() {
 

@@ -51,21 +51,21 @@ class Server extends EventEmitter implements LoggerAwareInterface {
     /**
      * httpResponse
      *
-     * @var \Sabre\HTTP\Response
+     * @var HTTP\Response
      */
     public $httpResponse;
 
     /**
      * httpRequest
      *
-     * @var \Sabre\HTTP\Request
+     * @var HTTP\Request
      */
     public $httpRequest;
 
     /**
      * PHP HTTP Sapi
      *
-     * @var \Sabre\HTTP\Sapi
+     * @var HTTP\Sapi
      */
     public $sapi;
 
@@ -692,7 +692,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
             $result = array_merge(
                 $result,
-                \Sabre\HTTP\parsePrefer($prefer)
+                HTTP\parsePrefer($prefer)
             );
 
         } elseif ($this->httpRequest->getHeader('Brief') == 't') {
@@ -794,6 +794,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * @param string $path
      * @param array $propertyNames
+     * @return array
      */
     function getProperties($path, $propertyNames) {
 
@@ -1627,7 +1628,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
      * @param array $fileProperties The list with nodes
-     * @param bool strip404s
+     * @param bool $strip404s
      * @return string
      */
     function generateMultiStatus(array $fileProperties, $strip404s = false) {

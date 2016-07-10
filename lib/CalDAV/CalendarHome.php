@@ -27,7 +27,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
     /**
      * CalDAV backend
      *
-     * @var Sabre\CalDAV\Backend\BackendInterface
+     * @var Backend\BackendInterface
      */
     protected $caldavBackend;
 

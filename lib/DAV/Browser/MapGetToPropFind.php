@@ -21,7 +21,7 @@ class MapGetToPropFind extends DAV\ServerPlugin {
     /**
      * reference to server class
      *
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 

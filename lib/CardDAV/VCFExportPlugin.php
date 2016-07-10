@@ -24,7 +24,7 @@ class VCFExportPlugin extends DAV\ServerPlugin {
     /**
      * Reference to Server class
      *
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 

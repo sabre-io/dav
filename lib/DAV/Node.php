@@ -29,7 +29,7 @@ abstract class Node implements INode {
     /**
      * Deletes the current node
      *
-     * @throws Sabre\DAV\Exception\Forbidden
+     * @throws Exception\Forbidden
      * @return void
      */
     function delete() {
@@ -41,7 +41,7 @@ abstract class Node implements INode {
     /**
      * Renames the node
      *
-     * @throws Sabre\DAV\Exception\Forbidden
+     * @throws Exception\Forbidden
      * @param string $name The new name
      * @return void
      */

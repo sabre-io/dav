@@ -231,7 +231,7 @@ class Client extends HTTP\Client {
         $response = $this->send($request);
 
         if ((int)$response->getStatus() >= 400) {
-            throw new \Sabre\HTTP\ClientHttpException($response);
+            throw new HTTP\ClientHttpException($response);
         }
 
         $result = $this->parseMultiStatus($response->getBodyAsString());
@@ -281,7 +281,7 @@ class Client extends HTTP\Client {
         $response = $this->send($request);
 
         if ($response->getStatus() >= 400) {
-            throw new \Sabre\HTTP\ClientHttpException($response);
+            throw new HTTP\ClientHttpException($response);
         }
 
         if ($response->getStatus() === 207) {
@@ -303,7 +303,7 @@ class Client extends HTTP\Client {
             }
             if ($errorProperties) {
 
-                throw new \Sabre\HTTP\ClientException('PROPPATCH failed. The following properties errored: ' . implode(', ', $errorProperties));
+                throw new HTTP\ClientException('PROPPATCH failed. The following properties errored: ' . implode(', ', $errorProperties));
             }
         }
         return true;

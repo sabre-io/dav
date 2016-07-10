@@ -296,7 +296,7 @@ SQL
      * Calling the handle method is like telling the PropPatch object "I
      * promise I can handle updating this property".
      *
-     * Read the PropPatch documenation for more info and examples.
+     * Read the PropPatch documentation for more info and examples.
      *
      * @param mixed $calendarId
      * @param \Sabre\DAV\PropPatch $propPatch
@@ -769,7 +769,7 @@ SQL
      * Note that especially time-range-filters may be difficult to parse. A
      * time-range filter specified on a VEVENT must for instance also handle
      * recurrence rules correctly.
-     * A good example of how to interprete all these filters can also simply
+     * A good example of how to interpret all these filters can also simply
      * be found in \Sabre\CalDAV\CalendarQueryFilter. This class is as correct
      * as possible, so it gives you a good idea on what type of stuff you need
      * to think of.
@@ -1181,7 +1181,7 @@ SQL;
      * Calling the handle method is like telling the PropPatch object "I
      * promise I can handle updating this property".
      *
-     * Read the PropPatch documenation for more info and examples.
+     * Read the PropPatch documentation for more info and examples.
      *
      * @param mixed $subscriptionId
      * @param \Sabre\DAV\PropPatch $propPatch

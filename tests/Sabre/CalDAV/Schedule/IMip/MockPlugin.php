@@ -21,7 +21,7 @@ class MockPlugin extends \Sabre\CalDAV\Schedule\IMipPlugin {
     protected $emails = [];
 
     /**
-     * This function is reponsible for sending the actual email.
+     * This function is responsible for sending the actual email.
      *
      * @param string $to Recipient email address
      * @param string $subject Subject of the email

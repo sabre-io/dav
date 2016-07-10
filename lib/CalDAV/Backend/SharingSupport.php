@@ -11,9 +11,9 @@ namespace Sabre\CalDAV\Backend;
  * 1. Return shared calendars for users.
  * 2. For every calendar, return calendar-resource-uri. This strings is a URI or
  *    relative URI reference that must be unique for every calendar, but
- *    identical for every instance of the same shared calenar.
- * 3. For every calenar, you must return a share-access element. This element
- *    should contain one of the Sabre\DAV\Sharing\Plugin:ACCESS_* contants and
+ *    identical for every instance of the same shared calendar.
+ * 3. For every calendar, you must return a share-access element. This element
+ *    should contain one of the Sabre\DAV\Sharing\Plugin:ACCESS_* constants and
  *    indicates the access level the user has.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)

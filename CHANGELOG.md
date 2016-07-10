@@ -627,7 +627,7 @@ ChangeLog
 * Added: Automatically converting between vCard 3, 4 and jCard using the
   `Accept:` header, in CardDAV reports, and automatically converting from
   jCard to vCard upon `PUT`. It's important to note that your backends _may_
-  now recieve both vCard 3.0 and 4.0.
+  now receive both vCard 3.0 and 4.0.
 * Added: #444. Collections can now opt-in to support high-speed `MOVE`.
 * Changed: PropertyStorage backends now have a `move` method.
 * Added: `beforeMove`, and `afterMove` events.
@@ -812,7 +812,7 @@ ChangeLog
 * Added: Support for the `{DAV:}supported-method-set` property server-wide.
 * Making it easier for implementors to override how the CardDAV addressbook
   home is located.
-* Fixed: Issue #422 Preconditions were not being set on PUT on non-existant
+* Fixed: Issue #422 Preconditions were not being set on PUT on non-existent
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #428: Etag check with `If:` fails if the target is a collection.
 * Fixed: Issues #430, #431, #433: Locks plugin didn't not properly release
@@ -1024,7 +1024,7 @@ ChangeLog
 * Added: Sharee's can now also read out the list of invites for a shared
   calendar.
 * Added: The Proxy principal classes now both implement an interface, for
-  greater flexiblity.
+  greater flexibility.
 
 
 1.7.13 (2014-07-28)
@@ -1042,7 +1042,7 @@ ChangeLog
   Sabre_DAV_PartialUpdate_IFile interface is now deprecated and will be removed
   in a future version.
 * Fixed: Restoring old setting after changing libxml_disable_entity_loader.
-* Fixed: Issue #422: Preconditions were not being set on PUT on non-existant
+* Fixed: Issue #422: Preconditions were not being set on PUT on non-existent
   files. Not really a chance for data-loss, but incorrect nevertheless.
 * Fixed: Issue #427: Now checking preconditions on DELETE requests.
 * Fixed: Issue #428: Etag check with If: fails if the target is a collection.
@@ -1121,7 +1121,7 @@ ChangeLog
 ------------------
 
 * The zip release ships with sabre/vobject 2.0.5.
-* Changed: To be compatibile with MS Office 2011 for Mac, a workaround was
+* Changed: To be compatible with MS Office 2011 for Mac, a workaround was
   removed that was added to support old versions of Windows XP (pre-SP3).
   Indeed! We needed a crazy workaround to work with one MS product in the past,
   and we can't keep that workaround to be compatible with another MS product.
@@ -1129,7 +1129,7 @@ ChangeLog
 * Fixed: Range requests now work for non-seekable streams. (Thanks Alfred
   Klomp).
 * Fixed: Changed serialization of {DAV:}getlastmodified and {DAV:}supportedlock
-  to improve compatiblity with MS Office 2011 for Mac.
+  to improve compatibility with MS Office 2011 for Mac.
 * Changed: reverted the automatic translation of 'DAV:' xml namespaces to
   'urn:DAV' when parsing files. Issues were reported with libxml 2.6.32, on a
   relatively recent debian release, so we'll wait till 2015 to take this one out
@@ -2006,7 +2006,7 @@ ChangeLog
 -------------------
 
 * Fixed: Issue 34: Invalid Lock-Token header response.
-* Added: Issue 35: Addign SabreDAV version to HTTP OPTIONS responses.
+* Added: Issue 35: Adding SabreDAV version to HTTP OPTIONS responses.
 
 
 1.0.9 (2010-03-19)
@@ -2220,7 +2220,7 @@ ChangeLog
 * Added: Simple HTML directory plugin, for browser access.
 * Added: Server class now sends back standard pre-condition error xml bodies.
   This was new since RFC4918.
-* Added: Sabre_DAV_Tree_Aggregrate, which can 'host' multiple Tree objects into
+* Added: Sabre_DAV_Tree_Aggregate, which can 'host' multiple Tree objects into
   one.
 * Added: simple basis for HTTP REPORT method. This method is not used yet, but
   can be used by plugins to add reports.
@@ -2237,7 +2237,7 @@ ChangeLog
   8.2.
 * Fixed: TemporaryFileFilter now lets through GET's if they actually exist on
   the backend. (r274)
-* FIxed: Some methods didn't get passed through in the FilterTree (r283).
+* Fixed: Some methods didn't get passed through in the FilterTree (r283).
 * Fixed: LockManager is now slightly more complex, Tree classes slightly less.
   (r287)
 

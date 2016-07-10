@@ -14,7 +14,7 @@ use Sabre\HTTP\URLUtil;
  * a WebDAV share as a disk.
  *
  * It will intercept these files and place them in a separate directory.
- * these files are not deleted automatically, so it is adviceable to
+ * these files are not deleted automatically, so it is advisable to
  * delete these after they are not accessed for 24 hours.
  *
  * Currently it supports:

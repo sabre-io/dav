@@ -29,7 +29,7 @@ interface INode {
     /**
      * Returns the etag for the notification.
      *
-     * The etag must be surrounded by litteral double-quotes.
+     * The etag must be surrounded by literal double-quotes.
      *
      * @return string
      */

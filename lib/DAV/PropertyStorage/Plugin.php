@@ -38,6 +38,11 @@ class Plugin extends ServerPlugin {
     public $pathFilter;
 
     /**
+     * @var Backend\BackendInterface
+     */
+    public $backend;
+
+    /**
      * Creates the plugin
      *
      * @param Backend\BackendInterface $backend

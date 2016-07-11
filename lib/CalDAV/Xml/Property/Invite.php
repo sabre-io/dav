@@ -2,6 +2,7 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
 use Sabre\CalDAV\Plugin;
@@ -75,7 +76,7 @@ class Invite implements XmlSerializable {
 
         foreach ($this->sharees as $sharee) {
 
-            if ($sharee->access === \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER) {
+            if ($sharee->access === DAV\Sharing\Plugin::ACCESS_SHAREDOWNER) {
                 $writer->startElement($cs . 'organizer');
             } else {
                 $writer->startElement($cs . 'user');
@@ -109,7 +110,7 @@ class Invite implements XmlSerializable {
 
             }
 
-            $href = new \Sabre\DAV\Xml\Property\Href($sharee->href);
+            $href = new DAV\Xml\Property\Href($sharee->href);
             $href->xmlSerialize($writer);
 
             if (isset($sharee->properties['{DAV:}displayname'])) {

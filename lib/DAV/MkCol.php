@@ -61,6 +61,7 @@ class MkCol extends PropPatch {
      * checked.
      *
      * @param string|string[] $resourceType
+     * @return bool
      */
     function hasResourceType($resourceType) {
 

@@ -112,7 +112,7 @@ class Plugin extends DAV\ServerPlugin {
         $getVars = $request->getQueryParameters();
 
         // CSP headers
-        $this->server->httpResponse->setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';");
+        $response->setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';");
 
         $sabreAction = isset($getVars['sabreAction']) ? $getVars['sabreAction'] : null;
 

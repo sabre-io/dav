@@ -25,14 +25,14 @@ class Plugin extends DAV\ServerPlugin {
     /**
      * locksBackend
      *
-     * @var Backend\Backend\Interface
+     * @var Backend\BackendInterface
      */
     protected $locksBackend;
 
     /**
      * server
      *
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 

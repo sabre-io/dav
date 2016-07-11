@@ -302,8 +302,8 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server->createCollection($path, new MkCol($resourceType, $properties));
 
-        $this->server->httpResponse->setStatus(201);
-        $this->server->httpResponse->setHeader('Content-Length', 0);
+        $response->setStatus(201);
+        $response->setHeader('Content-Length', 0);
 
         // This breaks the method chain.
         return false;

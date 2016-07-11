@@ -3,7 +3,6 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV;
-use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
@@ -29,7 +28,7 @@ class SharingPlugin extends DAV\ServerPlugin {
     /**
      * Reference to SabreDAV server object.
      *
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 

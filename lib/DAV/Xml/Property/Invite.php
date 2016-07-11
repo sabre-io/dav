@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV\Sharing\Sharee;
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
 

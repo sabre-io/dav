@@ -2,6 +2,8 @@
 
 namespace Sabre\CalDAV\Notifications;
 
+use Sabre\CalDAV\Xml\Notification\NotificationInterface;
+
 /**
  * This node represents a single notification.
  *
@@ -20,9 +22,9 @@ interface INode {
 
     /**
      * This method must return an xml element, using the
-     * Sabre\CalDAV\Notifications\INotificationType classes.
+     * Sabre\CalDAV\Xml\Notification\NotificationInterface classes.
      *
-     * @return INotificationType
+     * @return NotificationInterface
      */
     function getNotificationType();
 

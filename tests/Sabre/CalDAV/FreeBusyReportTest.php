@@ -115,7 +115,7 @@ XML;
     }
 
     /**
-     * @expectedException DAV\Exception\BadRequest
+     * @expectedException Sabre\DAV\Exception\BadRequest
      */
     function testFreeBusyReportNoTimeRange() {
 
@@ -130,7 +130,7 @@ XML;
     }
 
     /**
-     * @expectedException DAV\Exception\NotImplemented
+     * @expectedException Sabre\DAV\Exception\NotImplemented
      */
     function testFreeBusyReportWrongNode() {
 
@@ -152,7 +152,7 @@ XML;
     }
 
     /**
-     * @expectedException DAV\Exception
+     * @expectedException Sabre\DAV\Exception
      */
     function testFreeBusyReportNoACLPlugin() {
 

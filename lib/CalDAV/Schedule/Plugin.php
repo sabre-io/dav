@@ -1058,7 +1058,7 @@ class Plugin extends ServerPlugin {
 
         return [
             'name'        => $this->getPluginName(),
-            'description' => 'Adds calendar-auto-schedule, as defined in rf6868',
+            'description' => 'Adds calendar-auto-schedule, as defined in rfc6638',
             'link'        => 'http://sabre.io/dav/scheduling/',
         ];
 

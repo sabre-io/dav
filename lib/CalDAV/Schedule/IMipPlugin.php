@@ -181,7 +181,7 @@ class IMipPlugin extends DAV\ServerPlugin {
 
         return [
             'name'        => $this->getPluginName(),
-            'description' => 'Email delivery (rfc6037) for CalDAV scheduling',
+            'description' => 'Email delivery (rfc6047) for CalDAV scheduling',
             'link'        => 'http://sabre.io/dav/scheduling/',
         ];
 

@@ -175,7 +175,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
         $backend = new Backend\PDO(
             $this->getPDO()
         );
-        $ab = new AddressBook($backend, [ 'id' => 1, '{DAV:}sync-token' => 2]);
+        $ab = new AddressBook($backend, ['id' => 1, '{DAV:}sync-token' => 2]);
         $this->assertEquals(2, $ab->getSyncToken());
     }
 
@@ -187,7 +187,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
         $backend = new Backend\PDO(
             $this->getPDO()
         );
-        $ab = new AddressBook($backend, [ 'id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
+        $ab = new AddressBook($backend, ['id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
         $this->assertEquals(2, $ab->getSyncToken());
     }
 

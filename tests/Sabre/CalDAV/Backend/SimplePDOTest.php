@@ -173,7 +173,7 @@ SQL
             ],
         ];
 
-        $result = $backend->getMultipleCalendarObjects($returnedId, [ 'id-1', 'id-2' ]);
+        $result = $backend->getMultipleCalendarObjects($returnedId, ['id-1', 'id-2']);
 
         foreach ($check as $index => $props) {
 

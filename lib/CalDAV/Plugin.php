@@ -9,11 +9,11 @@ use Sabre\DAV\INode;
 use Sabre\DAV\MkCol;
 use Sabre\DAV\Xml\Property\LocalHref;
 use Sabre\DAVACL;
-use Sabre\VObject;
 use Sabre\HTTP;
-use Sabre\Uri;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
+use Sabre\Uri;
+use Sabre\VObject;
 
 /**
  * CalDAV plugin

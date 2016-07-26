@@ -2,11 +2,11 @@
 
 namespace Sabre\CalDAV\Schedule;
 
+use Sabre\CalDAV;
+use Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
 use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
-use Sabre\CalDAV;
-use Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
@@ -35,7 +35,7 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
             ],
         ];
         $calendarobjects = [
-            1 => [ '1.ics' => [
+            1 => ['1.ics' => [
                 'uri'          => '1.ics',
                 'calendardata' => 'BEGIN:VCALENDAR
 BEGIN:VEVENT
@@ -45,7 +45,7 @@ END:VEVENT
 END:VCALENDAR',
                 'calendarid' => 1,
             ]],
-            2 => [ '2.ics' => [
+            2 => ['2.ics' => [
                 'uri'          => '2.ics',
                 'calendardata' => 'BEGIN:VCALENDAR
 BEGIN:VEVENT

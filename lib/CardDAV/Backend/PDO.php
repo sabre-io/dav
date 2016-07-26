@@ -466,7 +466,7 @@ class PDO extends AbstractBackend implements SyncSupport {
 
         // Current synctoken
         $stmt = $this->pdo->prepare('SELECT synctoken FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
-        $stmt->execute([ $addressBookId ]);
+        $stmt->execute([$addressBookId]);
         $currentToken = $stmt->fetchColumn(0);
 
         if (is_null($currentToken)) return null;

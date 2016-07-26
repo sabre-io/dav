@@ -5,8 +5,8 @@ namespace Sabre\CalDAV\Backend;
 use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\Exception\Forbidden;
-use Sabre\VObject;
 use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\VObject;
 
 /**
  * PDO CalDAV backend
@@ -969,7 +969,7 @@ SQL;
 
         // Current synctoken
         $stmt = $this->pdo->prepare('SELECT synctoken FROM ' . $this->calendarTableName . ' WHERE id = ?');
-        $stmt->execute([ $calendarId ]);
+        $stmt->execute([$calendarId]);
         $currentToken = $stmt->fetchColumn(0);
 
         if (is_null($currentToken)) return null;
@@ -1327,7 +1327,7 @@ SQL;
     function createSchedulingObject($principalUri, $objectUri, $objectData) {
 
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->schedulingObjectTableName . ' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData) ]);
+        $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData)]);
 
     }
 
@@ -1483,7 +1483,7 @@ SQL;
                 'inviteStatus' => (int)$row['share_invitestatus'],
                 'properties'   =>
                     !empty($row['share_displayname'])
-                    ?  [ '{DAV:}displayname' => $row['share_displayname'] ]
+                    ? ['{DAV:}displayname' => $row['share_displayname']]
                     : [],
                 'principal' => $row['principaluri'],
             ]);

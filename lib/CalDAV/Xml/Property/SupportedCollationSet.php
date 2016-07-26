@@ -2,9 +2,9 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
+use Sabre\CalDAV\Plugin;
 use Sabre\Xml\Writer;
 use Sabre\Xml\XmlSerializable;
-use Sabre\CalDAV\Plugin;
 
 /**
  * supported-collation-set property

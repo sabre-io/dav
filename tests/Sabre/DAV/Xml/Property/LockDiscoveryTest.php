@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV\Xml\XmlTest;
 use Sabre\DAV\Locks\LockInfo;
+use Sabre\DAV\Xml\XmlTest;
 
 class LockDiscoveryTest extends XmlTest {
 

@@ -2,9 +2,9 @@
 
 namespace Sabre\DAV\Xml\Request;
 
+use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\DAV\Xml\Element\Sharee;
 
 /**
  * ShareResource request parser.

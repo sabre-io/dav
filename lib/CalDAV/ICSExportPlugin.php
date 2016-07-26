@@ -2,13 +2,13 @@
 
 namespace Sabre\CalDAV;
 
+use DateTime;
 use DateTimeZone;
 use Sabre\DAV;
-use Sabre\VObject;
+use Sabre\DAV\Exception\BadRequest;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\DAV\Exception\BadRequest;
-use DateTime;
+use Sabre\VObject;
 
 /**
  * ICS Exporter

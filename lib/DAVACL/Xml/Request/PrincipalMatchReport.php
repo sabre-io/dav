@@ -2,9 +2,9 @@
 
 namespace Sabre\DAVACL\Xml\Request;
 
-use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Reader;
 use Sabre\Xml\Deserializer;
+use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
 
 /**
  * PrincipalMatchReport request parser.

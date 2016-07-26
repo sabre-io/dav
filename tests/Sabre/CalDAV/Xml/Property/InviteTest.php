@@ -4,8 +4,8 @@ namespace Sabre\CalDAV\Xml\Property;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
-use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\DAV\Sharing\Plugin as SP;
+use Sabre\DAV\Xml\Element\Sharee;
 
 class InviteTest extends DAV\Xml\XmlTest {
 

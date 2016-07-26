@@ -2,11 +2,11 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
-use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\Xml\XmlSerializable;
-use Sabre\Xml\Writer;
 use Sabre\CalDAV\Plugin;
 use Sabre\DAV;
+use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * Invite property

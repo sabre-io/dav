@@ -2,8 +2,8 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAVACL;
 use Sabre\DAV;
+use Sabre\DAVACL;
 
 /**
  * The Card object represents a single Card from an addressbook

@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Auth;
 
-use Sabre\HTTP;
 use Sabre\DAV;
+use Sabre\HTTP;
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
 

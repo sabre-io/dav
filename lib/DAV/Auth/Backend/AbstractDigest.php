@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\HTTP;
 use Sabre\DAV;
+use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 

@@ -99,7 +99,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $server->sapi = new HTTP\SapiMock();
         $server->exec();
 
-        $this->assertTrue(file_exists(SABRE_TEMPDIR  . '/issue33/' . urldecode('%C3%A0fo%C3%B3')));
+        $this->assertTrue(file_exists(SABRE_TEMPDIR . '/issue33/' . urldecode('%C3%A0fo%C3%B3')));
 
     }
 

@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Exception;
 
-use Sabre\DAV;
 use DOMDocument;
+use Sabre\DAV;
 
 class TooManyMatchesTest extends \PHPUnit_Framework_TestCase {
 

@@ -4,9 +4,9 @@ namespace Sabre\DAV\Browser;
 
 use Sabre\DAV;
 use Sabre\DAV\MkCol;
-use Sabre\HTTP\URLUtil;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
+use Sabre\HTTP\URLUtil;
 
 /**
  * Browser Plugin
@@ -549,8 +549,8 @@ HTML;
      * This method returns a local pathname to an asset.
      *
      * @param string $assetName
-     * @return string
      * @throws DAV\Exception\NotFound
+     * @return string
      */
     protected function getLocalAssetPath($assetName) {
 

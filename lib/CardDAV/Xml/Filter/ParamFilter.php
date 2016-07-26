@@ -2,10 +2,10 @@
 
 namespace Sabre\CardDAV\Xml\Filter;
 
+use Sabre\CardDAV\Plugin;
+use Sabre\DAV\Exception\BadRequest;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CardDAV\Plugin;
 
 /**
  * ParamFilter parser.

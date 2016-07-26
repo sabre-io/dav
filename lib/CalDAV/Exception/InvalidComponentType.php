@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Exception;
 
-use Sabre\DAV;
 use Sabre\CalDAV;
+use Sabre\DAV;
 
 /**
  * InvalidComponentType

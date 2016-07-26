@@ -2,9 +2,9 @@
 
 namespace Sabre\CalDAV\Schedule;
 
+use Sabre\DAV\Server;
 use Sabre\VObject\ITip\Message;
 use Sabre\VObject\Reader;
-use Sabre\DAV\Server;
 
 class IMipPluginTest extends \PHPUnit_Framework_TestCase {
 

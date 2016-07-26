@@ -2,9 +2,9 @@
 
 namespace Sabre\CardDAV\Xml\Property;
 
+use Sabre\CardDAV\Plugin;
 use Sabre\Xml\Writer;
 use Sabre\Xml\XmlSerializable;
-use Sabre\CardDAV\Plugin;
 
 /**
  * Supported-address-data property

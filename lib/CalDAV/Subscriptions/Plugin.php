@@ -4,8 +4,8 @@ namespace Sabre\CalDAV\Subscriptions;
 
 use Sabre\DAV\INode;
 use Sabre\DAV\PropFind;
-use Sabre\DAV\ServerPlugin;
 use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
 
 /**
  * This plugin adds calendar-subscription support to your CalDAV server.

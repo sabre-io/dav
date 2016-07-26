@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\DAV;
 use Sabre\CalDAV\Xml\Notification\NotificationInterface;
+use Sabre\DAV;
 
 class MockSharing extends Mock implements NotificationSupport, SharingSupport {
 

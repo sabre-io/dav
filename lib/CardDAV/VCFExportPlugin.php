@@ -3,9 +3,9 @@
 namespace Sabre\CardDAV;
 
 use Sabre\DAV;
-use Sabre\VObject;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
+use Sabre\VObject;
 
 /**
  * VCF Exporter

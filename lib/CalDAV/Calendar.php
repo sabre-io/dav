@@ -3,8 +3,8 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV;
-use Sabre\DAVACL;
 use Sabre\DAV\PropPatch;
+use Sabre\DAVACL;
 
 /**
  * This object represents a CalDAV calendar.

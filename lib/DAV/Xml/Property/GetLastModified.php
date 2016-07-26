@@ -2,12 +2,12 @@
 
 namespace Sabre\DAV\Xml\Property;
 
+use DateTime;
+use DateTimeZone;
+use Sabre\HTTP;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
-use Sabre\HTTP;
-use DateTime;
-use DateTimeZone;
 
 /**
  * This property represents the {DAV:}getlastmodified property.

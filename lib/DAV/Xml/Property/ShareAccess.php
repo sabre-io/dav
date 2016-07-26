@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV\Sharing\Plugin as SharingPlugin;
 use Sabre\DAV\Exception\BadRequest;
+use Sabre\DAV\Sharing\Plugin as SharingPlugin;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;

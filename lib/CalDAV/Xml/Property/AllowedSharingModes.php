@@ -2,9 +2,9 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
-use Sabre\Xml\XmlSerializable;
-use Sabre\Xml\Writer;
 use Sabre\CalDAV\Plugin;
+use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * AllowedSharingModes

@@ -3,9 +3,9 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV;
+use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\VObject;
-use Sabre\DAVACL;
 
 class ICSExportPluginTest extends \Sabre\DAVServerTest {
 

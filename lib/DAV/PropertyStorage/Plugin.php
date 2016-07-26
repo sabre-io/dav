@@ -2,11 +2,11 @@
 
 namespace Sabre\DAV\PropertyStorage;
 
+use Sabre\DAV\INode;
+use Sabre\DAV\PropFind;
+use Sabre\DAV\PropPatch;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
-use Sabre\DAV\PropPatch;
-use Sabre\DAV\PropFind;
-use Sabre\DAV\INode;
 
 /**
  * PropertyStorage Plugin.

@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Xml\Element;
 
-use Sabre\DAV\Xml\XmlTest;
 use Sabre\DAV\Sharing\Plugin;
+use Sabre\DAV\Xml\XmlTest;
 
 class ShareeTest extends XmlTest {
 

@@ -2,12 +2,12 @@
 
 namespace Sabre\CalDAV\Subscriptions;
 
-use Sabre\DAV\Collection;
-use Sabre\DAV\Xml\Property\Href;
-use Sabre\DAV\PropPatch;
-use Sabre\DAVACL\IACL;
-use Sabre\DAVACL\ACLTrait;
 use Sabre\CalDAV\Backend\SubscriptionSupport;
+use Sabre\DAV\Collection;
+use Sabre\DAV\PropPatch;
+use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAVACL\ACLTrait;
+use Sabre\DAVACL\IACL;
 
 /**
  * Subscription Node

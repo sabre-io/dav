@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\VObject;
 use Sabre\CalDAV;
+use Sabre\VObject;
 
 /**
  * Abstract Calendaring backend. Extend this class to create your own backends.

@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV;
 
-use PDOException;
 use PDO;
+use PDOException;
 
 class DbCache {
 

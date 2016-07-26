@@ -2,8 +2,8 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\HTTP;
 use Sabre\DAV;
+use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 

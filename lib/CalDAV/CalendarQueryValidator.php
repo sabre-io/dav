@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\VObject;
 use DateTime;
+use Sabre\VObject;
 
 /**
  * CalendarQuery Validator

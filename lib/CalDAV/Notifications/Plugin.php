@@ -3,10 +3,10 @@
 namespace Sabre\CalDAV\Notifications;
 
 use Sabre\DAV;
-use Sabre\DAV\PropFind;
 use Sabre\DAV\INode as BaseINode;
-use Sabre\DAV\ServerPlugin;
+use Sabre\DAV\PropFind;
 use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
 use Sabre\DAVACL;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;

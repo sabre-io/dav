@@ -2,10 +2,10 @@
 
 namespace Sabre\CalDAV\Schedule;
 
-use Sabre\DAV;
 use Sabre\CalDAV;
-use Sabre\DAVACL;
 use Sabre\CalDAV\Backend;
+use Sabre\DAV;
+use Sabre\DAVACL;
 use Sabre\VObject;
 
 /**

@@ -2,8 +2,8 @@
 
 namespace Sabre\CardDAV;
 
-use Sabre\HTTP;
 use Sabre\DAV\PropFind;
+use Sabre\HTTP;
 
 class SogoStripContentTypeTest extends \Sabre\DAVServerTest {
 

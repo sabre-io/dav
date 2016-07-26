@@ -201,7 +201,7 @@ ICS;
     function testDefaultACL() {
 
         $backend = new Backend\MockScheduling([], []);
-        $calendarObject = new SchedulingObject($backend, ['calendarid' => 1, 'uri' => 'foo', 'principaluri' => 'principals/user1' ]);
+        $calendarObject = new SchedulingObject($backend, ['calendarid' => 1, 'uri' => 'foo', 'principaluri' => 'principals/user1']);
         $expected = [
             [
                 'privilege' => '{DAV:}all',

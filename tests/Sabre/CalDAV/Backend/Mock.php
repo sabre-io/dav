@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\DAV;
 use Sabre\CalDAV;
+use Sabre\DAV;
 
 class Mock extends AbstractBackend {
 

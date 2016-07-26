@@ -280,7 +280,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             ],
         ];
 
-        $result = $backend->getMultipleCalendarObjects($returnedId, [ 'id-1', 'id-2' ]);
+        $result = $backend->getMultipleCalendarObjects($returnedId, ['id-1', 'id-2']);
 
         foreach ($check as $index => $props) {
 

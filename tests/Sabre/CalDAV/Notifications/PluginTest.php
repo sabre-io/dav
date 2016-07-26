@@ -2,10 +2,10 @@
 
 namespace Sabre\CalDAV\Notifications;
 
-use Sabre\DAV;
-use Sabre\DAVACL;
 use Sabre\CalDAV;
 use Sabre\CalDAV\Xml\Notification\SystemStatus;
+use Sabre\DAV;
+use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\HTTP\Request;
 

@@ -2,11 +2,11 @@
 
 namespace Sabre\CalDAV\Xml\Filter;
 
+use Sabre\CalDAV\Plugin;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\VObject\DateTimeParser;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CalDAV\Plugin;
-use Sabre\VObject\DateTimeParser;
 
 /**
  * CalendarData parser.

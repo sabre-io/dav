@@ -2,10 +2,10 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
-use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Reader;
-use Sabre\DAV\Exception\BadRequest;
 use Sabre\CalDAV\Plugin;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
 
 /**
  * CalendarQueryReport request parser.

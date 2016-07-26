@@ -41,8 +41,8 @@ abstract class Node implements INode {
     /**
      * Renames the node
      *
-     * @throws Exception\Forbidden
      * @param string $name The new name
+     * @throws Exception\Forbidden
      * @return void
      */
     function setName($name) {

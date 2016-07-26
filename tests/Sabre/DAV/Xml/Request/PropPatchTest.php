@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Xml\Request;
 
-use Sabre\DAV\Xml\XmlTest;
 use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAV\Xml\XmlTest;
 
 class PropPatchTest extends XmlTest {
 

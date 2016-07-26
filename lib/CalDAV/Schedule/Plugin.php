@@ -3,28 +3,28 @@
 namespace Sabre\CalDAV\Schedule;
 
 use DateTimeZone;
-use Sabre\DAV\Server;
-use Sabre\DAV\ServerPlugin;
-use Sabre\DAV\Sharing;
-use Sabre\DAV\PropFind;
-use Sabre\DAV\PropPatch;
-use Sabre\DAV\INode;
-use Sabre\DAV\Xml\Property\LocalHref;
-use Sabre\HTTP\RequestInterface;
-use Sabre\HTTP\ResponseInterface;
-use Sabre\VObject;
-use Sabre\VObject\Reader;
-use Sabre\VObject\Component\VCalendar;
-use Sabre\VObject\ITip;
-use Sabre\VObject\ITip\Message;
-use Sabre\DAVACL;
 use Sabre\CalDAV\ICalendar;
 use Sabre\CalDAV\ICalendarObject;
 use Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
-use Sabre\DAV\Exception\NotFound;
-use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\BadRequest;
+use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\Exception\NotImplemented;
+use Sabre\DAV\INode;
+use Sabre\DAV\PropFind;
+use Sabre\DAV\PropPatch;
+use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
+use Sabre\DAV\Sharing;
+use Sabre\DAV\Xml\Property\LocalHref;
+use Sabre\DAVACL;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
+use Sabre\VObject;
+use Sabre\VObject\Component\VCalendar;
+use Sabre\VObject\ITip;
+use Sabre\VObject\ITip\Message;
+use Sabre\VObject\Reader;
 
 /**
  * CalDAV scheduling plugin.

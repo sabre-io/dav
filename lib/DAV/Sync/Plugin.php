@@ -3,8 +3,8 @@
 namespace Sabre\DAV\Sync;
 
 use Sabre\DAV;
-use Sabre\HTTP\RequestInterface;
 use Sabre\DAV\Xml\Request\SyncCollectionReport;
+use Sabre\HTTP\RequestInterface;
 
 /**
  * This plugin all WebDAV-sync capabilities to the Server.

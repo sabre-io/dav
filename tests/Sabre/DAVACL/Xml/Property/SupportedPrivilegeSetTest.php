@@ -3,8 +3,8 @@
 namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
-use Sabre\HTTP;
 use Sabre\DAV\Browser\HtmlOutputHelper;
+use Sabre\HTTP;
 
 class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
 

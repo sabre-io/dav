@@ -4,10 +4,10 @@ namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Browser\HtmlOutput;
 use Sabre\DAV\Browser\HtmlOutputHelper;
+use Sabre\Uri;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
-use Sabre\Uri;
 
 /**
  * Href property

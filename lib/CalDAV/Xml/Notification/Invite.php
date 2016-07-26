@@ -2,10 +2,10 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\Xml\Writer;
-use Sabre\CalDAV\SharingPlugin as SharingPlugin;
 use Sabre\CalDAV;
+use Sabre\CalDAV\SharingPlugin as SharingPlugin;
 use Sabre\DAV;
+use Sabre\Xml\Writer;
 
 /**
  * This class represents the cs:invite-notification notification element.

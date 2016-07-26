@@ -2,9 +2,9 @@
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV\Xml\XmlTest;
 use DateTime;
 use DateTimeZone;
+use Sabre\DAV\Xml\XmlTest;
 
 class LastModifiedTest extends XmlTest {
 

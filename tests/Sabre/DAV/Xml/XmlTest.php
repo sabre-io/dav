@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Xml;
 
-use Sabre\Xml\Writer;
 use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 abstract class XmlTest extends \PHPUnit_Framework_TestCase {
 

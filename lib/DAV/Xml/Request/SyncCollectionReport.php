@@ -2,10 +2,10 @@
 
 namespace Sabre\DAV\Xml\Request;
 
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\Xml\Element\KeyValue;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Element\KeyValue;
-use Sabre\DAV\Exception\BadRequest;
 
 /**
  * SyncCollection request parser.

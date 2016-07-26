@@ -3,8 +3,8 @@
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * This class represents the {DAV:}invite property.

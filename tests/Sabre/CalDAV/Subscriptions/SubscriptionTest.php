@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Subscriptions;
 
-use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAV\PropPatch;
+use Sabre\DAV\Xml\Property\Href;
 
 class SubscriptionTest extends \PHPUnit_Framework_TestCase {
 

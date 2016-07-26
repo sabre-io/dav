@@ -3,8 +3,8 @@
 namespace Sabre\DAVACL\FS;
 
 use Sabre\DAV\FSExt\File as BaseFile;
-use Sabre\DAVACL\IACL;
 use Sabre\DAVACL\ACLTrait;
+use Sabre\DAVACL\IACL;
 
 /**
  * This is an ACL-enabled file node.

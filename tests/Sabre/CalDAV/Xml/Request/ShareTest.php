@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
-use Sabre\DAV\Xml\XmlTest;
 use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\DAV\Xml\XmlTest;
 
 class ShareTest extends XmlTest {
 

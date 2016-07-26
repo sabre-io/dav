@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-use Sabre\HTTP\Sapi;
 use Sabre\HTTP\Response;
+use Sabre\HTTP\Sapi;
 
 class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
 

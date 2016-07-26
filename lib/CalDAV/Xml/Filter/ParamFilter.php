@@ -2,9 +2,9 @@
 
 namespace Sabre\CalDAV\Xml\Filter;
 
+use Sabre\CalDAV\Plugin;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\CalDAV\Plugin;
 
 /**
  * PropFilter parser.

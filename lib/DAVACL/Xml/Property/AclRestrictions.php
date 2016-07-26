@@ -2,8 +2,8 @@
 
 namespace Sabre\DAVACL\Xml\Property;
 
-use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * AclRestrictions property

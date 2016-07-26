@@ -2,10 +2,10 @@
 
 namespace Sabre\CardDAV\Xml\Filter;
 
+use Sabre\CardDAV\Plugin;
+use Sabre\DAV\Exception\BadRequest;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\CardDAV\Plugin;
 
 /**
  * PropFilter parser.

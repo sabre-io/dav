@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Notifications;
 
-use Sabre\DAV;
 use Sabre\CalDAV;
+use Sabre\DAV;
 use Sabre\DAVACL;
 
 /**

@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\DAV;
 use Sabre\CalDAV;
+use Sabre\DAV;
 
 /**
  * This is a mock CalDAV backend that supports subscriptions.

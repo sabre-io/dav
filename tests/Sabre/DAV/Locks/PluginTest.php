@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV\Locks;
 
-use Sabre\HTTP;
 use Sabre\DAV;
+use Sabre\HTTP;
 
 require_once 'Sabre/DAV/AbstractServer.php';
 
@@ -168,7 +168,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
-        $request = new HTTP\Request('LOCK', '/test.txt', ['If' => '(' . $lockToken . ')' ]);
+        $request = new HTTP\Request('LOCK', '/test.txt', ['If' => '(' . $lockToken . ')']);
         $request->setBody('');
 
         $this->server->httpRequest = $request;
@@ -203,7 +203,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
 
-        $request = new HTTP\Request('LOCK', '/test.txt', ['If' => '(' . $lockToken . 'foobar) (<opaquelocktoken:anotherbadtoken>)' ]);
+        $request = new HTTP\Request('LOCK', '/test.txt', ['If' => '(' . $lockToken . 'foobar) (<opaquelocktoken:anotherbadtoken>)']);
         $request->setBody('');
 
         $this->server->httpRequest = $request;

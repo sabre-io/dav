@@ -2,9 +2,9 @@
 
 namespace Sabre\DAV\Xml\Element;
 
-use Sabre\DAV\Xml\XmlTest;
 use Sabre\DAV\Xml\Property\Complex;
 use Sabre\DAV\Xml\Property\Href;
+use Sabre\DAV\Xml\XmlTest;
 
 class PropTest extends XmlTest {
 

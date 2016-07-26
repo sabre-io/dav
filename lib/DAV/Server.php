@@ -2,16 +2,16 @@
 
 namespace Sabre\DAV;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Sabre\Event\EventEmitter;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\HTTP\URLUtil;
 use Sabre\Uri;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Main DAV server class
@@ -1431,7 +1431,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         // Plugins are responsible for validating all the tokens.
         // If a plugin deemed a token 'valid', it will set 'validToken' to
         // true.
-        $this->emit('validateTokens', [ $request, &$ifConditions ]);
+        $this->emit('validateTokens', [$request, &$ifConditions]);
 
         // Now we're going to analyze the result.
 

@@ -307,7 +307,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport {
             case "mailto":
                 $query = 'SELECT uri FROM ' . $this->tableName . ' WHERE lower(email)=lower(?)';
                 $stmt = $this->pdo->prepare($query);
-                $stmt->execute([ $value ]);
+                $stmt->execute([$value]);
             
                 while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                     // Checking if the principal is in the prefix

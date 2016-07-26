@@ -2,10 +2,10 @@
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\HTTP\URLUtil;
 use Sabre\DAV;
-use Sabre\DAV\PropFind;
 use Sabre\DAV\Inode;
+use Sabre\DAV\PropFind;
+use Sabre\HTTP\URLUtil;
 
 /**
  * GuessContentType plugin

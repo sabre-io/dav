@@ -2,11 +2,11 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
+use Sabre\CalDAV\Plugin;
+use Sabre\Xml\Deserializer;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
-use Sabre\Xml\Deserializer;
 use Sabre\Xml\Writer;
-use Sabre\CalDAV\Plugin;
 
 /**
  * schedule-calendar-transp property.

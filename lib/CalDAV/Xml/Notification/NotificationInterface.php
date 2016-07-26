@@ -2,8 +2,8 @@
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * This interface reflects a single notification type.

@@ -3,12 +3,12 @@
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
+use Sabre\DAV\Exception\BadRequest;
+use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\Exception\NotAuthenticated;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
 use Sabre\DAV\Xml\Property\Href;
-use Sabre\DAV\Exception\BadRequest;
-use Sabre\DAV\Exception\NotFound;
-use Sabre\DAV\Exception\NotAuthenticated;
-use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAVACL\Exception\NeedPrivileges;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;

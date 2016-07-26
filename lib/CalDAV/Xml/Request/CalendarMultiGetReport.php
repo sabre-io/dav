@@ -2,10 +2,10 @@
 
 namespace Sabre\CalDAV\Xml\Request;
 
-use Sabre\Xml\XmlDeserializable;
-use Sabre\Xml\Reader;
 use Sabre\CalDAV\Plugin;
 use Sabre\Uri;
+use Sabre\Xml\Reader;
+use Sabre\Xml\XmlDeserializable;
 
 /**
  * CalendarMultiGetReport request parser.

@@ -2,11 +2,11 @@
 
 namespace Sabre\DAVACL\FS;
 
+use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\FSExt\Directory as BaseCollection;
 use Sabre\DAVACL\ACLTrait;
 use Sabre\DAVACL\IACL;
-use Sabre\DAV\Exception\Forbidden;
-use Sabre\DAV\Exception\NotFound;
 
 /**
  * This is an ACL-enabled collection.

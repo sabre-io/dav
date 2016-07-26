@@ -2,11 +2,11 @@
 
 namespace Sabre\CalDAV\Xml\Property;
 
+use Sabre\CalDAV\Plugin;
 use Sabre\Xml\Element;
 use Sabre\Xml\ParseException;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
-use Sabre\CalDAV\Plugin;
 
 /**
  * SupportedCalendarComponentSet property.

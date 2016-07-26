@@ -4,8 +4,8 @@ namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV\Browser\HtmlOutput;
 use Sabre\DAV\Browser\HtmlOutputHelper;
-use Sabre\Xml\XmlSerializable;
 use Sabre\Xml\Writer;
+use Sabre\Xml\XmlSerializable;
 
 /**
  * SupportedPrivilegeSet property
@@ -73,7 +73,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
      */
     function xmlSerialize(Writer $writer) {
 
-        $this->serializePriv($writer, '{DAV:}all', [ 'aggregates' => $this->privileges]);
+        $this->serializePriv($writer, '{DAV:}all', ['aggregates' => $this->privileges]);
 
     }
 
@@ -114,7 +114,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput {
 
         ob_start();
         echo "<ul class=\"tree\">";
-        $traverse('{DAV:}all', [ 'aggregates' => $this->getValue() ]);
+        $traverse('{DAV:}all', ['aggregates' => $this->getValue()]);
         echo "</ul>\n";
 
         return ob_get_clean();

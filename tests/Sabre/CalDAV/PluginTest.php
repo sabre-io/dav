@@ -2,11 +2,11 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\DAVACL;
-use Sabre\DAV;
-use Sabre\HTTP;
 use DateTime;
 use DateTimeZone;
+use Sabre\DAV;
+use Sabre\DAVACL;
+use Sabre\HTTP;
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
 

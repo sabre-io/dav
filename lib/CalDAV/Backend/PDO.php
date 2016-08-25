@@ -481,13 +481,13 @@ SQL
         if (!$row) return null;
 
         return [
-            'id'            => $row['id'],
-            'uri'           => $row['uri'],
-            'lastmodified'  => (int)$row['lastmodified'],
-            'etag'          => '"' . $row['etag'] . '"',
-            'size'          => (int)$row['size'],
-            'calendardata'  => $row['calendardata'],
-            'component'     => strtolower($row['componenttype']),
+            'id'           => $row['id'],
+            'uri'          => $row['uri'],
+            'lastmodified' => (int)$row['lastmodified'],
+            'etag'         => '"' . $row['etag'] . '"',
+            'size'         => (int)$row['size'],
+            'calendardata' => $row['calendardata'],
+            'component'    => strtolower($row['componenttype']),
          ];
 
     }

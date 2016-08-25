@@ -681,11 +681,11 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             // can be true or false
             'respond-async' => false,
             // Could be set to 'representation' or 'minimal'.
-            'return'        => null,
+            'return' => null,
             // Used as a timeout, is usually a number.
-            'wait'          => null,
+            'wait' => null,
             // can be 'strict' or 'lenient'.
-            'handling'      => false,
+            'handling' => false,
         ];
 
         if ($prefer = $this->httpRequest->getHeader('Prefer')) {

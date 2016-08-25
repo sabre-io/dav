@@ -102,7 +102,7 @@ class PDO extends AbstractBackend {
             $lockInfo->created = $row['created'];
             $lockInfo->scope = $row['scope'];
             $lockInfo->depth = $row['depth'];
-            $lockInfo->uri   = $row['uri'];
+            $lockInfo->uri = $row['uri'];
             $lockList[] = $lockInfo;
 
         }

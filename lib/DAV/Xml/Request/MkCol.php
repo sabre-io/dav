@@ -63,8 +63,8 @@ class MkCol implements XmlDeserializable {
         $self = new self();
 
         $elementMap = $reader->elementMap;
-        $elementMap['{DAV:}prop']   = 'Sabre\DAV\Xml\Element\Prop';
-        $elementMap['{DAV:}set']    = 'Sabre\Xml\Element\KeyValue';
+        $elementMap['{DAV:}prop'] = 'Sabre\DAV\Xml\Element\Prop';
+        $elementMap['{DAV:}set'] = 'Sabre\Xml\Element\KeyValue';
         $elementMap['{DAV:}remove'] = 'Sabre\Xml\Element\KeyValue';
 
         $elems = $reader->parseInnerTree($elementMap);

@@ -511,27 +511,29 @@ SQL
         }
         list($calendarId, $instanceId) = $calendarId;
 
-        $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ? AND uri IN (';
-        // Inserting a whole bunch of question marks
-        $query .= implode(',', array_fill(0, count($uris), '?'));
-        $query .= ')';
-
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute(array_merge([$calendarId], $uris));
-
         $result = [];
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+        foreach(array_chunk($uris, 900) as $chunk) {
+            $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ? AND uri IN (';
+            // Inserting a whole bunch of question marks
+            $query .= implode(',', array_fill(0, count($chunk), '?'));
+            $query .= ')';
 
-            $result[] = [
-                'id'           => $row['id'],
-                'uri'          => $row['uri'],
-                'lastmodified' => (int)$row['lastmodified'],
-                'etag'         => '"' . $row['etag'] . '"',
-                'size'         => (int)$row['size'],
-                'calendardata' => $row['calendardata'],
-                'component'    => strtolower($row['componenttype']),
-            ];
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute(array_merge([$calendarId], $chunk));
 
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+                $result[] = [
+                    'id'           => $row['id'],
+                    'uri'          => $row['uri'],
+                    'lastmodified' => (int)$row['lastmodified'],
+                    'etag'         => '"' . $row['etag'] . '"',
+                    'size'         => (int)$row['size'],
+                    'calendardata' => $row['calendardata'],
+                    'component'    => strtolower($row['componenttype']),
+                ];
+
+            }
         }
         return $result;
 
@@ -686,7 +688,7 @@ SQL
                 }
 
             }
-            
+
             // Ensure Occurence values are positive
             if ($firstOccurence < 0) $firstOccurence = 0;
             if ($lastOccurence < 0) $lastOccurence = 0;

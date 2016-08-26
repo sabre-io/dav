@@ -43,7 +43,7 @@ abstract class Node implements DAV\INode {
      */
     function getName() {
 
-        list(, $name)  = URLUtil::splitPath($this->path);
+        list(, $name) = URLUtil::splitPath($this->path);
         return $name;
 
     }

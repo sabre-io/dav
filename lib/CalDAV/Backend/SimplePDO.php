@@ -209,12 +209,12 @@ class SimplePDO extends AbstractBackend {
         if (!$row) return null;
 
         return [
-            'id'            => $row['id'],
-            'uri'           => $row['uri'],
-            'etag'          => '"' . md5($row['calendardata']) . '"',
-            'calendarid'    => $calendarId,
-            'size'          => strlen($row['calendardata']),
-            'calendardata'  => $row['calendardata'],
+            'id'           => $row['id'],
+            'uri'          => $row['uri'],
+            'etag'         => '"' . md5($row['calendardata']) . '"',
+            'calendarid'   => $calendarId,
+            'size'         => strlen($row['calendardata']),
+            'calendardata' => $row['calendardata'],
          ];
 
     }

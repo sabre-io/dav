@@ -317,7 +317,7 @@ class Plugin extends DAV\ServerPlugin {
 
                 $buttonActions = '';
                 if ($subProps['subNode'] instanceof DAV\IFile) {
-                    $buttonActions =  '<a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
+                    $buttonActions = '<a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
                 }
                 $this->server->emit('browserButtonActions', [$subProps['fullPath'], $subProps['subNode'], &$buttonActions]);
 
@@ -581,9 +581,9 @@ HTML;
         // Rudimentary mime type detection
         $mime = 'application/octet-stream';
         $map = [
-            'ico'  => 'image/vnd.microsoft.icon',
-            'png'  => 'image/png',
-            'css'  => 'text/css',
+            'ico' => 'image/vnd.microsoft.icon',
+            'png' => 'image/png',
+            'css' => 'text/css',
         ];
 
         $ext = substr($assetName, strrpos($assetName, '.') + 1);

@@ -165,7 +165,7 @@ class CorePlugin extends ServerPlugin {
             } else {
 
                 $start = $nodeSize - $range[1];
-                $end  = $nodeSize - 1;
+                $end = $nodeSize - 1;
 
                 if ($start < 0) $start = 0;
 

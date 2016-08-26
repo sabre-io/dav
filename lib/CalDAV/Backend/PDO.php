@@ -512,7 +512,7 @@ SQL
         list($calendarId, $instanceId) = $calendarId;
 
         $result = [];
-        foreach(array_chunk($uris, 900) as $chunk) {
+        foreach (array_chunk($uris, 900) as $chunk) {
             $query = 'SELECT id, uri, lastmodified, etag, calendarid, size, calendardata, componenttype FROM ' . $this->calendarObjectTableName . ' WHERE calendarid = ? AND uri IN (';
             // Inserting a whole bunch of question marks
             $query .= implode(',', array_fill(0, count($chunk), '?'));

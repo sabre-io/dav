@@ -11,7 +11,6 @@ namespace Sabre\DAV\Auth\Backend;
  * @author Christoph Dyllick-Brenzinger (https://www.ionas-server.com/)
  * @thanks to Evert Pot for this great peace of software.
  */
-
 class LDAP extends AbstractBasic {
 
     /**
@@ -53,7 +52,6 @@ class LDAP extends AbstractBasic {
      *      "ldap_port"     => 999 );
      * $authBackend       = new \Sabre\DAV\Auth\Backend\LDAP($ldap_settings);
      */
-
     protected $ldap;
     function __construct($ldap) {
         $this->ldap = $ldap;

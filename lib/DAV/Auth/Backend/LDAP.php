@@ -27,7 +27,6 @@ class LDAP extends AbstractBasic {
      * @param array $ldap_settings
      * @return bool
      */
-
     /**
      * Example 1: OpenLDAP @ 127.0.0.1, plain-text communication, user in ldap tree "users",
      * Add the following code to the server.php:
@@ -35,7 +34,6 @@ class LDAP extends AbstractBasic {
      * $ldap_settings = array("127.0.0.1", "ou=users,dc=ionas,dc=lan", "plain");
      * $authBackend       = new \Sabre\DAV\Auth\Backend\LDAP($ldap_settings);
      */
-
     /**
      * Example 2: OpenLDAP @ 192.168.45.3, STARTTLS communication, user in ldap tree "users"
      * Add the following code to the server.php:
@@ -43,7 +41,6 @@ class LDAP extends AbstractBasic {
      * $ldap_settings = array("192.168.45.3", "ou=users,dc=example,dc=com");
      * $authBackend       = new \Sabre\DAV\Auth\Backend\LDAP($ldap_settings);
      */
-
     /**
      * Example 3: OpenLDAP @ 192.168.45.7:999, STARTTLS communication, custom search filter, user in ldap tree "users"
      * Add the following code to the server.php:
@@ -65,7 +62,7 @@ class LDAP extends AbstractBasic {
     protected function validateUserPass($username, $password) {
 
         // transform $ldap_settings without keys to keys
-        if ($this->ldap["ldap_host"] == "" AND $this->ldap[0] != ""){
+        if ($this->ldap["ldap_host"] == "" and $this->ldap[0] != ""){
             $this->ldap["ldap_host"] = $this->ldap[0];
             $this->ldap["ldap_basedn"] = $this->ldap[1];
             $this->ldap["ldap_auth"] = $this->ldap[2];

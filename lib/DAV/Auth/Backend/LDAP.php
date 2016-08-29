@@ -28,7 +28,6 @@ class LDAP extends AbstractBasic {
      * @return bool
      */
 
-
     /**
      * Example 1: OpenLDAP @ 127.0.0.1, plain-text communication, user in ldap tree "users",
      * Add the following code to the server.php:
@@ -56,10 +55,9 @@ class LDAP extends AbstractBasic {
      *      "ldap_basedn"   => ou=users,dc=example,dc=com", 
      *      "ldap_auth"     => starttls",
      *      "ldap_filter"   => "(&(objectclass=inetOrgPerson)(memberOf=cn=sabredav,ou=groups,dc=ionas,dc=lan))",
-    *       "ldap_port"     => 999 );
+     *      "ldap_port"     => 999 );
      * $authBackend       = new \Sabre\DAV\Auth\Backend\LDAP($ldap_settings);
      */
-
 
     protected $ldap;
     function __construct($ldap) {
@@ -69,7 +67,7 @@ class LDAP extends AbstractBasic {
     protected function validateUserPass($username, $password) {
 
         // transform $ldap_settings without keys to keys
-        if( $this->ldap["ldap_host"] == "" AND $this->ldap[0] != "" ){
+        if ($this->ldap["ldap_host"] == "" AND $this->ldap[0] != ""){
             $this->ldap["ldap_host"]        = $this->ldap[0];
             $this->ldap["ldap_basedn"]      = $this->ldap[1];
             $this->ldap["ldap_auth"]        = $this->ldap[2];
@@ -79,27 +77,26 @@ class LDAP extends AbstractBasic {
         }
 
         // set default values
-        if( $this->ldap["ldap_port"] == "" ) $this->ldap["ldap_port"] = 389; 
-        if( $this->ldap["ldap_auth"] == "" ) $this->ldap["ldap_auth"] = "starttls";
+        if ($this->ldap["ldap_port"] == "") $this->ldap["ldap_port"] = 389; 
+        if ($this->ldap["ldap_auth"] == "") $this->ldap["ldap_auth"] = "starttls";
 
         // check connection first ( http://bugs.php.net/bug.php?id=15637 )
-        $sock=@fsockopen( $this->ldap["ldap_host"], $this->ldap["ldap_port"], $errno, $errstr, 1 );
+        $sock = @fsockopen($this->ldap["ldap_host"], $this->ldap["ldap_port"], $errno, $errstr, 1);
         @fclose($sock);
 
-        if( $errno != 0 ){
+        if ($errno != 0){
 
             return false;
             //return [false, "No LDAP connection. Please check the host and the port."];
-        
         }
         else{
             
-            $conn = ldap_connect( $this->ldap["ldap_host"], $this->ldap["ldap_port"] );
-            ldap_set_option( $conn, LDAP_OPT_PROTOCOL_VERSION, 3 );
-            ldap_set_option( $conn, LDAP_OPT_REFERRALS, 0 );
+            $conn = ldap_connect( $this->ldap["ldap_host"], $this->ldap["ldap_port"]);
+            ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
 
-            if ( $this->ldap["ldap_auth"] != "plain"){
-                if(!ldap_start_tls( $conn )){
+            if ($this->ldap["ldap_auth"] != "plain") {
+                if (!ldap_start_tls($conn)){
 
                     return false;
                     //return [false, "LDAP Connections could not be encrypted with STARTTLS. Either use ldap_auth = plain or check your STARTTLS settings"];
@@ -107,20 +104,20 @@ class LDAP extends AbstractBasic {
                 }
             }
             
-            $basedn_with_user = "cn=".$username.",". $this->ldap["ldap_basedn"];
-            if ( $bind = @ldap_bind( $conn, $basedn_with_user, $password ) ) {
+            $basedn_with_user = "cn=" . $username . "," . $this->ldap["ldap_basedn"];
+            if ($bind = @ldap_bind($conn, $basedn_with_user, $password)){
 
                 $filter = "cn=". $username;
-                $sr=ldap_search( $conn, $this->ldap["ldap_basedn"], $filter, array("cn") );
+                $sr = ldap_search($conn, $this->ldap["ldap_basedn"], $filter, array("cn"));
                 $info = ldap_get_entries($conn, $sr);
-                if(isset($info['count']) && $info['count']>0) {
+                if (isset($info['count']) && $info['count'] >0 ) {
 
                     // check the custom filter for this user
-                    if( $this->ldap["ldap_filter"] != ""){
+                    if ($this->ldap["ldap_filter"] != ""){
 
-                        $sr_filter=ldap_search( $conn, $basedn_with_user, $this->ldap["ldap_filter"] );
+                        $sr_filter = ldap_search($conn, $basedn_with_user, $this->ldap["ldap_filter"]);
                         $info_filter = ldap_get_entries($conn, $sr_filter);
-                        if(isset($info_filter['count']) && $info_filter['count']>0) {
+                        if (isset($info_filter['count']) && $info_filter['count'] > 0) {
 
                             return true;
                             // Success with ldap filter.

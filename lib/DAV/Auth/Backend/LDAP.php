@@ -36,7 +36,6 @@ class LDAP extends AbstractBasic {
      * $authBackend       = new \Sabre\DAV\Auth\Backend\LDAP($ldap_settings);
      */
 
-
     /**
      * Example 2: OpenLDAP @ 192.168.45.3, STARTTLS communication, user in ldap tree "users"
      * Add the following code to the server.php:
@@ -44,7 +43,6 @@ class LDAP extends AbstractBasic {
      * $ldap_settings = array("192.168.45.3", "ou=users,dc=example,dc=com");
      * $authBackend       = new \Sabre\DAV\Auth\Backend\LDAP($ldap_settings);
      */
-
 
     /**
      * Example 3: OpenLDAP @ 192.168.45.7:999, STARTTLS communication, custom search filter, user in ldap tree "users"
@@ -68,16 +66,16 @@ class LDAP extends AbstractBasic {
 
         // transform $ldap_settings without keys to keys
         if ($this->ldap["ldap_host"] == "" AND $this->ldap[0] != ""){
-            $this->ldap["ldap_host"]        = $this->ldap[0];
-            $this->ldap["ldap_basedn"]      = $this->ldap[1];
-            $this->ldap["ldap_auth"]        = $this->ldap[2];
-            $this->ldap["ldap_filter"]      = $this->ldap[3];
-            $this->ldap["ldap_port"]        = $this->ldap[4];
+            $this->ldap["ldap_host"] = $this->ldap[0];
+            $this->ldap["ldap_basedn"] = $this->ldap[1];
+            $this->ldap["ldap_auth"] = $this->ldap[2];
+            $this->ldap["ldap_filter"] = $this->ldap[3];
+            $this->ldap["ldap_port"] = $this->ldap[4];
             
         }
 
         // set default values
-        if ($this->ldap["ldap_port"] == "") $this->ldap["ldap_port"] = 389; 
+        if ($this->ldap["ldap_port"] == "") $this->ldap["ldap_port"] = 389;
         if ($this->ldap["ldap_auth"] == "") $this->ldap["ldap_auth"] = "starttls";
 
         // check connection first ( http://bugs.php.net/bug.php?id=15637 )
@@ -91,7 +89,7 @@ class LDAP extends AbstractBasic {
         }
         else{
             
-            $conn = ldap_connect( $this->ldap["ldap_host"], $this->ldap["ldap_port"]);
+            $conn = ldap_connect($this->ldap["ldap_host"], $this->ldap["ldap_port"]);
             ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
 
@@ -107,10 +105,10 @@ class LDAP extends AbstractBasic {
             $basedn_with_user = "cn=" . $username . "," . $this->ldap["ldap_basedn"];
             if ($bind = @ldap_bind($conn, $basedn_with_user, $password)){
 
-                $filter = "cn=". $username;
-                $sr = ldap_search($conn, $this->ldap["ldap_basedn"], $filter, array("cn"));
+                $filter = "cn=" . $username;
+                $sr = ldap_search($conn, $this->ldap["ldap_basedn"], $filter, ["cn"]);
                 $info = ldap_get_entries($conn, $sr);
-                if (isset($info['count']) && $info['count'] >0 ) {
+                if (isset($info['count']) && $info['count'] > 0) {
 
                     // check the custom filter for this user
                     if ($this->ldap["ldap_filter"] != ""){

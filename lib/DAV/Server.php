@@ -1133,6 +1133,25 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         return true;
     }
 
+    /**
+     * This method is invoked by sub-systems deleting a file.
+     *
+     * This method will return true if the file was actually deleted
+     *
+     * @param string   $uri
+     * @return bool
+     */
+    function deleteFile($uri) {
+
+        if (!$this->emit('beforeUnbind', [$uri])) return false;
+
+        $this->tree->delete($uri);
+
+        $this->emit('afterUnbind', [$uri]);
+
+        return true;
+    }
+
 
 
     /**

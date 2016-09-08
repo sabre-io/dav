@@ -235,6 +235,12 @@ class Plugin extends DAV\ServerPlugin {
                     break;
                 // @codeCoverageIgnoreEnd
 
+                case 'delete' :
+
+                    if (isset($postVars['filePath']) && trim($postVars['filePath'])) {
+                        $this->server->deleteFile(rawurldecode($postVars['filePath']));
+                    }
+                    break;
             }
 
         }
@@ -318,6 +324,12 @@ class Plugin extends DAV\ServerPlugin {
                 $buttonActions = '';
                 if ($subProps['subNode'] instanceof DAV\IFile) {
                     $buttonActions = '<a href="' . $this->escapeHTML($subProps['fullPath']) . '?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
+
+                    $buttonActions .= '<form method="post" action="" class="deleteFileForm">
+                        <input type="hidden" name="sabreAction" value="delete" />
+                        <input type="hidden" name="filePath" value="'.$this->escapeHTML($subProps['fullPath']).'" />
+                        <input type="submit" value="Delete" />
+                        </form>';
                 }
                 $this->server->emit('browserButtonActions', [$subProps['fullPath'], $subProps['subNode'], &$buttonActions]);
 

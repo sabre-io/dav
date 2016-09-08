@@ -226,3 +226,8 @@ ul.tree ul {
     padding-left: 10px;
     border-left: 4px solid #ccc;
 }
+
+.deleteFileForm {
+    display: inline-block;
+    margin-left: 20px;
+}

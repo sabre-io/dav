@@ -277,7 +277,7 @@ class CorePlugin extends ServerPlugin {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return void
+     * @return bool
      */
     function httpDelete(RequestInterface $request, ResponseInterface $response) {
 
@@ -310,7 +310,7 @@ class CorePlugin extends ServerPlugin {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return void
+     * @return bool
      */
     function httpPropFind(RequestInterface $request, ResponseInterface $response) {
 
@@ -782,7 +782,7 @@ class CorePlugin extends ServerPlugin {
      *
      * @param PropFind $propFind
      * @param INode $node
-     * @return void
+     * @return \Sabre\Xml\Element
      */
     function propFind(PropFind $propFind, INode $node) {
 
@@ -862,7 +862,7 @@ class CorePlugin extends ServerPlugin {
      *
      * @param PropFind $propFind
      * @param INode $node
-     * @return void
+     * @return string
      */
     function propFindLate(PropFind $propFind, INode $node) {
 

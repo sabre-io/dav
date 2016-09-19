@@ -210,7 +210,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         if (is_array($request)) {
             $request = HTTP\Request::createFromServerArray($request);
         }
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;

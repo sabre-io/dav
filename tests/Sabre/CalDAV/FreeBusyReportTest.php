@@ -84,7 +84,7 @@ ics;
             'REQUEST_URI' => '/calendar',
         ]);
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = new HTTP\ResponseMock();
+        $this->server->httpResponse = new HTTP\Response();
 
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);

@@ -165,7 +165,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
-        $server->httpResponse = new HTTP\ResponseMock();
+        $server->httpResponse = new HTTP\Response();
 
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
         $this->assertEquals(304, $server->httpResponse->getStatus());
@@ -184,7 +184,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         HTTP\SapiMock::$sent = 0;
         $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
         $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
+        $server->httpResponse = new HTTP\Response();
 
         $server->exec();
 
@@ -208,10 +208,10 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
             'REQUEST_URI'            => '/foo'
         ]);
-        $server->httpResponse = new HTTP\ResponseMock();
+        $server->httpResponse = new HTTP\Response();
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
 
-        $this->assertEquals(304, $server->httpResponse->status);
+        $this->assertEquals(304, $server->httpResponse->getStatus());
         $this->assertEquals([
             'Last-Modified' => ['Sat, 06 Apr 1985 23:30:00 GMT'],
         ], $server->httpResponse->getHeaders());
@@ -230,7 +230,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'            => '/foo'
         ]);
 
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
@@ -245,7 +245,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
             'REQUEST_URI'            => '/foo'
         ]);
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
 
         // Invalid dates must be ignored, so this should return true
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
@@ -262,7 +262,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
             'REQUEST_URI'            => '/foo'
         ]);
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }
@@ -295,7 +295,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
             'REQUEST_URI'              => '/foo'
         ]);
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
         $server->checkPreconditions($httpRequest, $httpResponse);
 
     }
@@ -310,7 +310,7 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',
             'REQUEST_URI'              => '/foo'
         ]);
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
 
     }

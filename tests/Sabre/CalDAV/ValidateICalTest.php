@@ -49,7 +49,7 @@ class ValidateICalTest extends DAVServerTest  {
         $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
         $this->server->httpResponse = $response;
 
     }

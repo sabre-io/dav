@@ -333,7 +333,7 @@ class CorePlugin extends ServerPlugin {
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->server->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
 
-        $newProperties = $this->server->getPropertiesForPath($path, $propFindXml->properties, $depth);
+        $newProperties = $this->server->getPropertiesGeneratorForPath($path, $propFindXml->properties, $depth);
 
         // This is a multi-status response
         $response->setStatus(207);

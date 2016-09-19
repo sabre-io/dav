@@ -1646,7 +1646,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array $fileProperties The list with nodes
+     * @param array|\Generator $fileProperties The list with nodes
      * @param bool $strip404s
      * @return string
      */

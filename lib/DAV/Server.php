@@ -930,6 +930,9 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      * @param array $propertyNames
      * @param int $depth
      * @return array
+     *
+     * @deprecated Use getPropertiesIteratorForPath() instead (as it's more memory efficient)
+     * @see getPropertiesIteratorForPath()
      */
     function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 

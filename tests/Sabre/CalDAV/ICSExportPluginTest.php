@@ -13,6 +13,8 @@ class ICSExportPluginTest extends \Sabre\DAVServerTest {
 
     protected $icsExportPlugin;
 
+    private $originalExposeVersion;
+
     function setUp() {
 
         parent::setUp();
@@ -20,6 +22,7 @@ class ICSExportPluginTest extends \Sabre\DAVServerTest {
         $this->server->addPlugin(
             $this->icsExportPlugin
         );
+        $this->originalExposeVersion = DAV\Server::$exposeVersion;
 
         $id = $this->caldavBackend->createCalendar(
             'principals/admin',
@@ -59,6 +62,14 @@ ICS
 
 
     }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        DAV\Server::$exposeVersion = $this->originalExposeVersion;
+    }
+
 
     function testInit() {
 
@@ -104,7 +115,7 @@ ICS
         );
         DAV\Server::$exposeVersion = false;
         $response = $this->request($request);
-        DAV\Server::$exposeVersion = true;
+        // DAV\Server::$exposeVersion is reverted back to original value in tearDown
 
         $this->assertEquals(200, $response->getStatus());
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));

@@ -47,7 +47,14 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $server;
     protected $tree = [];
 
+    /**
+     * @var CalDAV\Backend\MockSharing|CalDAV\Backend\MockSubscriptionSupport|CalDAV\Backend\Mock
+     */
     protected $caldavBackend;
+
+    /**
+     * @var CardDAV\Backend\Mock
+     */
     protected $carddavBackend;
     protected $principalBackend;
     protected $locksBackend;
@@ -192,8 +199,11 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
      * the test.
      *
      * @param array|\Sabre\HTTP\Request $request
-     * @param int $expectedStatus
+     * @param int $expectedStatus Don't call this method directly with this argument; use assertHttpStatus() instead to
+     *                            make assertion more obvious.
      * @return \Sabre\HTTP\Response
+     *
+     * @see assertHttpStatus()
      */
     function request($request, $expectedStatus = null) {
 
@@ -301,10 +311,14 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     }
 
 
+    /**
+     * @param int $expectedStatus
+     * @param Request $req
+     * @return Response
+     */
     function assertHttpStatus($expectedStatus, HTTP\Request $req) {
 
-        $resp = $this->request($req);
-        $this->assertEquals((int)$expectedStatus, (int)$resp->status, 'Incorrect HTTP status received: ' . $resp->body);
+        return $this->request($req, (int)$expectedStatus);
 
     }
 

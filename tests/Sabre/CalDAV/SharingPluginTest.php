@@ -135,9 +135,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             'REQUEST_URI'    => '/',
         ]);
 
-        $response = $this->request($request);
-
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertHttpStatus(501, $request);
 
     }
 
@@ -149,9 +147,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             'CONTENT_TYPE'   => 'text/plain',
         ]);
 
-        $response = $this->request($request);
-
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertHttpStatus(501, $request);
 
     }
 
@@ -163,9 +159,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
             'CONTENT_TYPE'   => 'text/xml',
         ]);
 
-        $response = $this->request($request);
-
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertHttpStatus(501, $request);
 
     }
 
@@ -189,7 +183,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request, 200);
+        $this->assertHttpStatus(200, $request);
 
         $this->assertEquals(
             [
@@ -240,7 +234,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request, 403);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -260,8 +254,7 @@ RRR;
 ';
 
         $request->setBody($xml);
-        $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->body);
+        $this->assertHttpStatus(200, $request);
 
     }
 
@@ -278,8 +271,7 @@ RRR;
 </cs:invite-reply>
 ';
         $request->setBody($xml);
-        $response = $this->request($request);
-        $this->assertEquals(400, $response->status, $response->body);
+        $this->assertHttpStatus(400, $request);
 
     }
 
@@ -297,12 +289,11 @@ RRR;
 </cs:invite-reply>
 ';
         $request->setBody($xml);
-        $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertHttpStatus(501, $request);
 
         // If the plugin did not handle this request, it must ensure that the
         // body is still accessible by other plugins.
-        $this->assertEquals($xml, $request->getBody(true));
+        $this->assertEquals($xml, $request->getBody());
 
     }
 
@@ -316,8 +307,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request);
-        $this->assertEquals(202, $response->status, $response->body);
+        $this->assertHttpStatus(202, $request);
 
     }
 
@@ -336,8 +326,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->body);
+        $this->assertHttpStatus(200, $request);
 
     }
 
@@ -354,7 +343,7 @@ RRR;
 ';
 
         $request->setBody($xml);
-        $this->request($request, 501);
+        $this->assertHttpStatus(501, $request);
 
     }
 
@@ -371,7 +360,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $this->request($request, 501);
+        $this->assertHttpStatus(501, $request);
 
     }
 
@@ -389,8 +378,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertHttpStatus(501, $request);
 
     }
 }

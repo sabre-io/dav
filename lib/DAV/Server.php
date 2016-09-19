@@ -880,9 +880,9 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * @param PropFind $propFind
      * @param array $yieldFirst
-     * @return \Generator
+     * @return \Iterator
      */
-    private function generatePathNodesRecursively(PropFind $propFind, array $yieldFirst = null) {
+    private function generatePathNodes(PropFind $propFind, array $yieldFirst = null) {
         if ($yieldFirst !== null) {
             yield $yieldFirst;
         }
@@ -909,7 +909,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             ];
 
             if (($newDepth === self::DEPTH_INFINITY || $newDepth >= 1) && $childNode instanceof ICollection) {
-                foreach ($this->generatePathNodesRecursively($subPropFind) as $subItem) {
+                foreach ($this->generatePathNodes($subPropFind) as $subItem) {
                     yield $subItem;
                 }
             }
@@ -933,7 +933,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      */
     function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
 
-        return iterator_to_array($this->getPropertiesGeneratorForPath($path, $propertyNames, $depth));
+        return iterator_to_array($this->getPropertiesIteratorForPath($path, $propertyNames, $depth));
 
     }
     /**
@@ -948,9 +948,9 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      * @param string $path
      * @param array $propertyNames
      * @param int $depth
-     * @return \Generator
+     * @return \Iterator
      */
-    function getPropertiesGeneratorForPath($path, $propertyNames = [], $depth = 0) {
+    function getPropertiesIteratorForPath($path, $propertyNames = [], $depth = 0) {
 
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
@@ -968,7 +968,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         ]];
 
         if (($depth > 0 || $depth === self::DEPTH_INFINITY) && $parentNode instanceof ICollection) {
-            $propFindRequests = $this->generatePathNodesRecursively(clone $propFind, current($propFindRequests));
+            $propFindRequests = $this->generatePathNodes(clone $propFind, current($propFindRequests));
         }
 
         foreach ($propFindRequests as $propFindRequest) {
@@ -1646,7 +1646,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array|\Generator $fileProperties The list with nodes
+     * @param array|\Traversable $fileProperties The list with nodes
      * @param bool $strip404s
      * @return string
      */

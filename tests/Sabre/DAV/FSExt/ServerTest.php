@@ -5,8 +5,6 @@ namespace Sabre\DAV\FSExt;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/DAV/AbstractServer.php';
-
 class ServerTest extends DAV\AbstractServer{
 
     protected function getRootNode() {

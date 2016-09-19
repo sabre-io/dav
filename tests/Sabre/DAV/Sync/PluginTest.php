@@ -5,8 +5,6 @@ namespace Sabre\DAV\Sync;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once __DIR__ . '/MockSyncCollection.php';
-
 class PluginTest extends \Sabre\DAVServerTest {
 
     protected $collection;

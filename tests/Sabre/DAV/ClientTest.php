@@ -5,8 +5,6 @@ namespace Sabre\DAV;
 use Sabre\HTTP\Request;
 use Sabre\HTTP\Response;
 
-require_once 'Sabre/DAV/ClientMock.php';
-
 class ClientTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {

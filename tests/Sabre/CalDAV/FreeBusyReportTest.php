@@ -5,9 +5,6 @@ namespace Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
     /**

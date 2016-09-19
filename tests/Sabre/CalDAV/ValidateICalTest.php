@@ -6,8 +6,6 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     /**

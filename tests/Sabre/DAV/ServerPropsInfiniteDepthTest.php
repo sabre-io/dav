@@ -4,8 +4,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-require_once 'Sabre/DAV/AbstractServer.php';
-
 class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     protected function getRootNode() {

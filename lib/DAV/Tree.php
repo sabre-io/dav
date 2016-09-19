@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV;
 
+use Sabre\Common\ArrayCache;
+use Sabre\Common\Cache;
 use Sabre\HTTP\URLUtil;
 
 /**
@@ -27,9 +29,9 @@ class Tree {
      * This is the node cache. Accessed nodes are stored here.
      * Arrays keys are path names, values are the actual nodes.
      *
-     * @var array
+     * @var Cache
      */
-    protected $cache = [];
+    protected $cache;
 
     /**
      * Creates the object
@@ -37,10 +39,12 @@ class Tree {
      * This method expects the rootObject to be passed as a parameter
      *
      * @param ICollection $rootNode
+     * @param Cache $cache
      */
-    function __construct(ICollection $rootNode) {
+    function __construct(ICollection $rootNode, Cache $cache = null) {
 
         $this->rootNode = $rootNode;
+        $this->cache = $cache ?: new ArrayCache();
 
     }
 
@@ -53,7 +57,9 @@ class Tree {
     function getNodeForPath($path) {
 
         $path = trim($path, '/');
-        if (isset($this->cache[$path])) return $this->cache[$path];
+        if ($this->cache->keyExists($path)) {
+            return $this->cache->get($path);
+        }
 
         // Is it the root node?
         if (!strlen($path)) {
@@ -77,7 +83,7 @@ class Tree {
 
         }
 
-        $this->cache[$path] = $node;
+        $this->cache->set($path, $node);
         return $node;
 
     }
@@ -198,7 +204,7 @@ class Tree {
 
         foreach ($children as $child) {
 
-            $this->cache[$basePath . $child->getName()] = $child;
+            $this->cache->set($basePath . $child->getName(), $child);
 
         }
         return $children;
@@ -228,9 +234,9 @@ class Tree {
         // We don't care enough about sub-paths
         // flushing the entire cache
         $path = trim($path, '/');
-        foreach ($this->cache as $nodePath => $node) {
+        foreach ($this->cache->getAll() as $nodePath => $node) {
             if ($path === '' || $nodePath == $path || strpos($nodePath, $path . '/') === 0)
-                unset($this->cache[$nodePath]);
+                $this->cache->remove($nodePath);
 
         }
 
@@ -272,7 +278,7 @@ class Tree {
                 foreach ($parentNode->getMultipleChildren($children) as $childNode) {
                     $fullPath = $parent . '/' . $childNode->getName();
                     $result[$fullPath] = $childNode;
-                    $this->cache[$fullPath] = $childNode;
+                    $this->cache->set($fullPath, $childNode);
                 }
             } else {
                 foreach ($children as $child) {

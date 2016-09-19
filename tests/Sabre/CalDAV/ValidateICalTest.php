@@ -4,9 +4,10 @@ namespace Sabre\CalDAV;
 
 use Sabre\DAV;
 use Sabre\DAVACL;
+use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
-class ValidateICalTest extends \PHPUnit_Framework_TestCase {
+class ValidateICalTest extends DAVServerTest  {
 
     /**
      * @var DAV\Server
@@ -53,15 +54,6 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function request(HTTP\Request $request) {
-
-        $this->server->httpRequest = $request;
-        $this->server->exec();
-
-        return $this->server->httpResponse;
-
-    }
-
     function testCreateFile() {
 
         $request = HTTP\Sapi::createFromServerArray([
@@ -69,9 +61,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
             'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
         ]);
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -97,9 +87,8 @@ ICS;
 
         $request->setBody($ics);
 
-        $response = $this->request($request);
+        $response = $this->assertHttpStatus(201, $request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
@@ -138,9 +127,7 @@ ICS;
 
         $request->setBody($ics);
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -165,9 +152,8 @@ ICS;
 
         $request->setBody($ics);
 
-        $response = $this->request($request);
+        $response = $this->assertHttpStatus(201, $request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $this->assertEquals([
             'X-Sabre-Version'  => [DAV\Version::VERSION],
             'Content-Length'   => ['0'],
@@ -214,8 +200,7 @@ ICS;
 
         $request->setBody($ics);
 
-        $response = $this->request($request);
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -227,9 +212,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -241,9 +224,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCARD\r\nEND:VCARD\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -255,9 +236,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VJOURNAL\r\nUID:foo\r\nEND:VJOURNAL\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -269,9 +248,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:bar\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -283,9 +260,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VFREEBUSY\r\nUID:foo\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -297,9 +272,7 @@ ICS;
             'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
         ]);
 
-        $response = $this->request($request);
-
-        $this->assertEquals(415, $response->status);
+        $this->assertHttpStatus(415, $request);
 
     }
 
@@ -323,9 +296,7 @@ END:VCALENDAR
 ICS;
 
         $request->setBody($ics);
-        $response = $this->request($request);
-
-        $this->assertEquals(204, $response->status);
+        $this->assertHttpStatus(204, $request);
 
         $expected = [
             'uri'          => 'blabla.ics',
@@ -346,9 +317,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -361,9 +330,7 @@ ICS;
         ]);
         $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
-
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -395,9 +362,8 @@ ICS;
 
         $request->setBody($ics);
 
-        $response = $this->request($request);
+        $response = $this->assertHttpStatus(201, $request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
         $this->assertNull($response->getHeader('ETag'));
 
     }

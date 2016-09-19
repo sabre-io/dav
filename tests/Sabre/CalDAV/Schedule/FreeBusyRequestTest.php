@@ -10,11 +10,25 @@ use Sabre\HTTP;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
+    /** @var CalDAV\Plugin|Plugin */
     protected $plugin;
+
+    /** @var DAV\Server */
     protected $server;
+
+    /** @var DAVACL\Plugin */
     protected $aclPlugin;
+
+    /** @var HTTP\Request */
     protected $request;
+
+    /** @var HTTP\ResponseMock */
+    protected $response;
+
+    /** @var DAV\Auth\Plugin */
     protected $authPlugin;
+
+    /** @var CalDAV\Backend\MockScheduling */
     protected $caldavBackend;
 
     function setUp() {
@@ -139,7 +153,7 @@ END:VCALENDAR',
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testNoItipMethod() {
 
@@ -186,7 +200,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testIncorrectOrganizer() {
 
@@ -212,7 +226,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testNoAttendees() {
 
@@ -237,7 +251,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testNoDTStart() {
 
@@ -313,7 +327,7 @@ ICS;
         }
 
         $this->assertTrue(
-            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
+            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') === false,
             'The response body did contain free busy info from a transparent calendar.'
         );
 

@@ -106,16 +106,16 @@ XML;
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
         $this->plugin->report($rootElem, $report, null);
 
-        $this->assertEquals(200, $this->server->httpResponse->status);
+        $this->assertEquals(200, $this->server->httpResponse->getStatus());
         $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
-        $this->assertTrue(strpos($this->server->httpResponse->body, 'BEGIN:VFREEBUSY') !== false);
-        $this->assertTrue(strpos($this->server->httpResponse->body, '20111005T120000Z/20111005T130000Z') !== false);
-        $this->assertTrue(strpos($this->server->httpResponse->body, '20111006T100000Z/20111006T110000Z') !== false);
+        $this->assertTrue(strpos($this->server->httpResponse->getBody(), 'BEGIN:VFREEBUSY') !== false);
+        $this->assertTrue(strpos($this->server->httpResponse->getBody(), '20111005T120000Z/20111005T130000Z') !== false);
+        $this->assertTrue(strpos($this->server->httpResponse->getBody(), '20111006T100000Z/20111006T110000Z') !== false);
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testFreeBusyReportNoTimeRange() {
 
@@ -125,12 +125,12 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->server->xml->parse($reportXML, null, $rootElem);
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
     function testFreeBusyReportWrongNode() {
 
@@ -152,7 +152,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
     function testFreeBusyReportNoACLPlugin() {
 

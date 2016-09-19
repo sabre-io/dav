@@ -25,6 +25,4 @@ class IDirectoryTest extends \PHPUnit_Framework_TestCase {
 
 class DirectoryMock extends DAV\SimpleCollection implements IDirectory {
 
-
-
 }

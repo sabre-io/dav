@@ -42,7 +42,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $carddavCards = [];
 
     /**
-     * @var Sabre\DAV\Server
+     * @var \Sabre\DAV\Server
      */
     protected $server;
     protected $tree = [];
@@ -54,22 +54,22 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $propertyStorageBackend;
 
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var CalDAV\Plugin
      */
     protected $caldavPlugin;
 
     /**
-     * @var Sabre\CardDAV\Plugin
+     * @var CardDAV\Plugin
      */
     protected $carddavPlugin;
 
     /**
-     * @var Sabre\DAVACL\Plugin
+     * @var DAVACL\Plugin
      */
     protected $aclPlugin;
 
     /**
-     * @var Sabre\CalDAV\SharingPlugin
+     * @var CalDAV\SharingPlugin
      */
     protected $caldavSharingPlugin;
 
@@ -81,26 +81,31 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavSchedulePlugin;
 
     /**
-     * @var Sabre\DAV\Auth\Plugin
+     * @var DAV\Auth\Plugin
      */
     protected $authPlugin;
 
     /**
-     * @var Sabre\DAV\Locks\Plugin
+     * @var DAV\Locks\Plugin
      */
     protected $locksPlugin;
 
     /**
      * Sharing plugin.
      *
-     * @var \Sabre\DAV\Sharing\Plugin
+     * @var DAV\Sharing\Plugin
      */
     protected $sharingPlugin;
 
-    /*
-     * @var Sabre\DAV\PropertyStorage\Plugin
+    /**
+     * @var DAV\PropertyStorage\Plugin
      */
     protected $propertyStoragePlugin;
+
+    /**
+     * @var CalDAV\ICSExportPlugin
+     */
+    private $caldavICSExportPlugin;
 
     /**
      * If this string is set, we will automatically log in the user with this
@@ -267,20 +272,20 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
-        if ($this->setupCalDAVSharing && is_null($this->caldavBackend)) {
+        if ($this->setupCalDAVSharing && $this->caldavBackend === null) {
             $this->caldavBackend = new CalDAV\Backend\MockSharing($this->caldavCalendars, $this->caldavCalendarObjects);
         }
-        if ($this->setupCalDAVSubscriptions && is_null($this->caldavBackend)) {
+        if ($this->setupCalDAVSubscriptions && $this->caldavBackend === null) {
             $this->caldavBackend = new CalDAV\Backend\MockSubscriptionSupport($this->caldavCalendars, $this->caldavCalendarObjects);
         }
-        if ($this->setupCalDAV && is_null($this->caldavBackend)) {
+        if ($this->setupCalDAV && $this->caldavBackend === null) {
             if ($this->setupCalDAVScheduling) {
                 $this->caldavBackend = new CalDAV\Backend\MockScheduling($this->caldavCalendars, $this->caldavCalendarObjects);
             } else {
                 $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
             }
         }
-        if ($this->setupCardDAV && is_null($this->carddavBackend)) {
+        if ($this->setupCardDAV && $this->carddavBackend === null) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);
         }
         if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {

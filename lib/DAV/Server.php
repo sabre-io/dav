@@ -878,12 +878,14 @@ class Server extends EventEmitter implements LoggerAwareInterface {
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
      *
-     * @param array[] $propFindRequests
      * @param PropFind $propFind
-     * @return void
+     * @param array $yieldFirst
+     * @return \Iterator
      */
-    private function addPathNodesRecursively(&$propFindRequests, PropFind $propFind) {
-
+    private function generatePathNodes(PropFind $propFind, array $yieldFirst = null) {
+        if ($yieldFirst !== null) {
+            yield $yieldFirst;
+        }
         $newDepth = $propFind->getDepth();
         $path = $propFind->getPath();
 
@@ -901,13 +903,15 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             }
             $subPropFind->setPath($subPath);
 
-            $propFindRequests[] = [
+            yield [
                 $subPropFind,
                 $childNode
             ];
 
             if (($newDepth === self::DEPTH_INFINITY || $newDepth >= 1) && $childNode instanceof ICollection) {
-                $this->addPathNodesRecursively($propFindRequests, $subPropFind);
+                foreach ($this->generatePathNodes($subPropFind) as $subItem) {
+                    yield $subItem;
+                }
             }
 
         }
@@ -926,8 +930,30 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      * @param array $propertyNames
      * @param int $depth
      * @return array
+     *
+     * @deprecated Use getPropertiesIteratorForPath() instead (as it's more memory efficient)
+     * @see getPropertiesIteratorForPath()
      */
     function getPropertiesForPath($path, $propertyNames = [], $depth = 0) {
+
+        return iterator_to_array($this->getPropertiesIteratorForPath($path, $propertyNames, $depth));
+
+    }
+    /**
+     * Returns a list of properties for a given path
+     *
+     * The path that should be supplied should have the baseUrl stripped out
+     * The list of properties should be supplied in Clark notation. If the list is empty
+     * 'allprops' is assumed.
+     *
+     * If a depth of 1 is requested child elements will also be returned.
+     *
+     * @param string $path
+     * @param array $propertyNames
+     * @param int $depth
+     * @return \Iterator
+     */
+    function getPropertiesIteratorForPath($path, $propertyNames = [], $depth = 0) {
 
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->enablePropfindDepthInfinity && $depth != 0) $depth = 1;
@@ -945,10 +971,8 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         ]];
 
         if (($depth > 0 || $depth === self::DEPTH_INFINITY) && $parentNode instanceof ICollection) {
-            $this->addPathNodesRecursively($propFindRequests, $propFind);
+            $propFindRequests = $this->generatePathNodes(clone $propFind, current($propFindRequests));
         }
-
-        $returnPropertyList = [];
 
         foreach ($propFindRequests as $propFindRequest) {
 
@@ -966,12 +990,10 @@ class Server extends EventEmitter implements LoggerAwareInterface {
                 if (in_array('{DAV:}collection', $resourceType) || in_array('{DAV:}principal', $resourceType)) {
                     $result['href'] .= '/';
                 }
-                $returnPropertyList[] = $result;
+                yield $result;
             }
 
         }
-
-        return $returnPropertyList;
 
     }
 
@@ -1627,13 +1649,18 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
-     * @param array $fileProperties The list with nodes
+     * @param array|\Traversable $fileProperties The list with nodes
      * @param bool $strip404s
      * @return string
      */
-    function generateMultiStatus(array $fileProperties, $strip404s = false) {
+    function generateMultiStatus($fileProperties, $strip404s = false) {
 
-        $xml = [];
+        $w = $this->xml->getWriter();
+        $w->openMemory();
+        $w->contextUri = $this->baseUri;
+        $w->startDocument();
+
+        $w->startElement('{DAV:}multistatus');
 
         foreach ($fileProperties as $entry) {
 
@@ -1646,13 +1673,14 @@ class Server extends EventEmitter implements LoggerAwareInterface {
                 ltrim($href, '/'),
                 $entry
             );
-            $xml[] = [
+            $w->write([
                 'name'  => '{DAV:}response',
                 'value' => $response
-            ];
-
+            ]);
         }
-        return $this->xml->write('{DAV:}multistatus', $xml, $this->baseUri);
+        $w->endElement();
+
+        return $w->outputMemory();
 
     }
 

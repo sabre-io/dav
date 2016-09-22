@@ -237,8 +237,10 @@ class Plugin extends DAV\ServerPlugin {
 
                 case 'delete' :
 
-                    if (isset($postVars['filePath']) && trim($postVars['filePath'])) {
-                        $this->server->deleteFile(rawurldecode($postVars['filePath']));
+                    if (isset($postVars['filename']) && trim($postVars['filename'])) {
+                        list(, $filename) = URLUtil::splitPath(trim(rawurldecode($postVars['filename'])));
+
+                        $this->server->deleteFile($uri . '/' . $filename);
                     }
                     break;
             }
@@ -327,7 +329,7 @@ class Plugin extends DAV\ServerPlugin {
 
                     $buttonActions .= '<form method="post" action="" class="deleteFileForm">
                         <input type="hidden" name="sabreAction" value="delete" />
-                        <input type="hidden" name="filePath" value="'.$this->escapeHTML($subProps['fullPath']).'" />
+                        <input type="hidden" name="filename" value="' . $this->escapeHTML($subProps['displayPath']) . '" />
                         <input type="submit" class="DeleteButton" value="Delete" />
                         </form>';
                 }

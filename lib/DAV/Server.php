@@ -1144,9 +1144,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
     function deleteFile($uri) {
 
         if (!$this->emit('beforeUnbind', [$uri])) return false;
-
         $this->tree->delete($uri);
-
         $this->emit('afterUnbind', [$uri]);
 
         return true;

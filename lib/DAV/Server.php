@@ -1651,7 +1651,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * @param array|\Traversable $fileProperties The list with nodes
      * @param bool $strip404s
-     * @return string
+     * @return string|resource String for less than 10000 entries. For more entries, returns a resource (file handler).
      */
     function generateMultiStatus($fileProperties, $strip404s = false) {
 
@@ -1662,8 +1662,9 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
         $w->startElement('{DAV:}multistatus');
 
+        $i = 0;
+        $fd = null;
         foreach ($fileProperties as $entry) {
-
             $href = $entry['href'];
             unset($entry['href']);
             if ($strip404s) {
@@ -1677,8 +1678,21 @@ class Server extends EventEmitter implements LoggerAwareInterface {
                 'name'  => '{DAV:}response',
                 'value' => $response
             ]);
+
+            $i++;
+            // every 10000 entries, flush output to a tempfile to avoid high memory usage
+            if ($i % 10000 === 0) {
+                $fd = $fd ?: fopen('php://temp', 'r+');
+                fwrite($fd, $w->flush(true));
+            }
         }
         $w->endElement();
+
+        if ($fd !== null) {
+            fwrite($fd, $w->flush(true));
+            rewind($fd);
+            return $fd;
+        }
 
         return $w->outputMemory();
 

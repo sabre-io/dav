@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-2.1.11 (2016-??-??)
+2.1.11 (2016-10-06)
 -------------------
 
 * #805: It wasn't possible to create calendars that hold events, journals and

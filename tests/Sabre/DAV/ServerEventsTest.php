@@ -113,8 +113,8 @@ class ServerEventsTest extends AbstractServer {
             false
         );
 
-        $this->assertEquals(2, $k);
-
+        // Fun fact, PHP 7.1 changes the order when sorting-by-callback.
+        $this->assertTrue($k>=2 && $k <=3);
 
     }
 

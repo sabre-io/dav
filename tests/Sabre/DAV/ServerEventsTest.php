@@ -119,7 +119,7 @@ class ServerEventsTest extends AbstractServer {
         } catch (Exception $e) {}
 
         // Fun fact, PHP 7.1 changes the order when sorting-by-callback.
-        $this->assertTrue($k>=2 && $k <=3);
+        $this->assertTrue($k >= 2 && $k <= 3);
 
     }
 

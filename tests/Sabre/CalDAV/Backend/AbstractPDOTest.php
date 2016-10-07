@@ -1246,8 +1246,8 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             $calendar['id'],
             [
                 new Sharee([
-                    'href'         => 'mailto:user@example.org',
-                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
+                    'href'   => 'mailto:user@example.org',
+                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
                 ])
             ]
         );
@@ -1263,8 +1263,8 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
             $calendar['id'],
             [
                 new Sharee([
-                    'href'         => 'principals/user2',
-                    'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
+                    'href'   => 'principals/user2',
+                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
                 ])
             ]
         );

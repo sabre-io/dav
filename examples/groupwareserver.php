@@ -56,10 +56,10 @@ require_once 'vendor/autoload.php';
  * This allows any developer to subclass just any of them and hook into their
  * own backend systems.
  */
-$authBackend      = new \Sabre\DAV\Auth\Backend\PDO($pdo);
+$authBackend = new \Sabre\DAV\Auth\Backend\PDO($pdo);
 $principalBackend = new \Sabre\DAVACL\PrincipalBackend\PDO($pdo);
-$carddavBackend   = new \Sabre\CardDAV\Backend\PDO($pdo);
-$caldavBackend    = new \Sabre\CalDAV\Backend\PDO($pdo);
+$carddavBackend = new \Sabre\CardDAV\Backend\PDO($pdo);
+$caldavBackend = new \Sabre\CalDAV\Backend\PDO($pdo);
 
 /**
  * The directory tree

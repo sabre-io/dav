@@ -29,9 +29,9 @@ set_error_handler("exception_error_handler");
 require_once 'vendor/autoload.php';
 
 // Backends
-$authBackend      = new Sabre\DAV\Auth\Backend\PDO($pdo);
+$authBackend = new Sabre\DAV\Auth\Backend\PDO($pdo);
 $principalBackend = new Sabre\DAVACL\PrincipalBackend\PDO($pdo);
-$carddavBackend   = new Sabre\CardDAV\Backend\PDO($pdo);
+$carddavBackend = new Sabre\CardDAV\Backend\PDO($pdo);
 //$caldavBackend    = new Sabre\CalDAV\Backend\PDO($pdo);
 
 // Setting up the directory tree //

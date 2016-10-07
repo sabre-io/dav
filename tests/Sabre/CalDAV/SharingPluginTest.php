@@ -194,8 +194,8 @@ RRR;
         $this->assertEquals(
             [
                 new Sharee([
-                    'href'         => 'mailto:joe@example.org',
-                    'properties'   => [
+                    'href'       => 'mailto:joe@example.org',
+                    'properties' => [
                         '{DAV:}displayname' => 'Joe Shmoe',
                     ],
                     'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,

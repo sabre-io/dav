@@ -13,9 +13,9 @@ class SupportedReportSetTest extends DAV\AbstractServer {
     function sendPROPFIND($body) {
 
         $serverVars = [
-            'REQUEST_URI'         => '/',
-            'REQUEST_METHOD'      => 'PROPFIND',
-            'HTTP_DEPTH'          => '0',
+            'REQUEST_URI'    => '/',
+            'REQUEST_METHOD' => 'PROPFIND',
+            'HTTP_DEPTH'     => '0',
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);

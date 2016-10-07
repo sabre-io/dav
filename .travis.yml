@@ -28,5 +28,4 @@ before_script:
 
 script:
   - ./bin/phpunit --configuration tests/phpunit.xml $TEST_DEPS
-  - ./bin/sabre-cs-fixer fix lib/ --dry-run --diff
 

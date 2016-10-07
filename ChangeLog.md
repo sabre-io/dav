@@ -6,6 +6,8 @@ ChangeLog
 
 * #805: It wasn't possible to create calendars that hold events, journals and
   todos using MySQL, because the `components` column was 1 byte too small.
+* The zip release ships with [sabre/vobject 3.5.2][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.10 (2016-03-10)
@@ -13,6 +15,8 @@ ChangeLog
 
 * #784: Sync logs for address books were not correctly cleaned up after
   deleting them.
+* The zip release ships with [sabre/vobject 3.5.0][vobj],
+  [sabre/http 3.0.5][http], and [sabre/event 2.0.2][evnt].
 
 
 2.1.9 (2016-01-25)

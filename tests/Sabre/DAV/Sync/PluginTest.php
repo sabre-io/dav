@@ -137,9 +137,9 @@ BLA;
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/coll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA
@@ -196,9 +196,9 @@ BLA;
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/coll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA
@@ -304,9 +304,9 @@ BLA;
     function testSyncNoSyncInfo() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/coll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA
@@ -333,9 +333,9 @@ BLA;
     function testSyncNoSyncCollection() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/normalcoll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/normalcoll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA
@@ -363,9 +363,9 @@ BLA;
 
         $this->collection->addChange(['file1.txt'], [], []);
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/coll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA
@@ -392,9 +392,9 @@ BLA;
 
         $this->collection->addChange(['file1.txt'], [], []);
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/coll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA
@@ -421,9 +421,9 @@ BLA;
     function testSyncNoSyncToken() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'REPORT',
-            'REQUEST_URI'     => '/coll/',
-            'CONTENT_TYPE'    => 'application/xml',
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI'    => '/coll/',
+            'CONTENT_TYPE'   => 'application/xml',
         ]);
 
         $body = <<<BLA

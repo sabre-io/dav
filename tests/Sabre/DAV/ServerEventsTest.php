@@ -39,8 +39,8 @@ class ServerEventsTest extends AbstractServer {
         $this->server->on('afterResponse', [$mock, 'afterResponseCallback']);
 
         $this->server->httpRequest = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'    => 'GET',
-            'REQUEST_URI'       => '/test.txt',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/test.txt',
         ]);
 
         $this->server->exec();

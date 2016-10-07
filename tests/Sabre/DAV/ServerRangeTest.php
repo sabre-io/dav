@@ -144,7 +144,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             'Content-Length'  => [4],
             'Content-Range'   => ['bytes 2-5/12'],
             // 'ETag'            => ['"' . md5('Test contents') . '"'],
-            'Last-Modified'   => [$this->lastModified],
+            'Last-Modified' => [$this->lastModified],
             ],
             $response->getHeaders()
         );

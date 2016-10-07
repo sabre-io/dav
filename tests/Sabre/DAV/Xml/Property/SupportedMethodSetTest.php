@@ -34,7 +34,7 @@ class SupportedMethodSetTest extends XmlTest {
     function testSerializeHtml() {
 
         $cus = new SupportedMethodSet(['GET', 'PUT']);
-        $result  = $cus->toHtml(
+        $result = $cus->toHtml(
             new \Sabre\DAV\Browser\HtmlOutputHelper('/', [])
         );
 

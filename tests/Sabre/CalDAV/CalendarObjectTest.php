@@ -114,7 +114,7 @@ class CalendarObjectTest extends \PHPUnit_Framework_TestCase {
         $obj = $children[0];
         $obj->delete();
 
-        $children2 =  $this->calendar->getChildren();
+        $children2 = $this->calendar->getChildren();
         $this->assertEquals(count($children) - 1, count($children2));
 
     }

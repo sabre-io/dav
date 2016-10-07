@@ -115,7 +115,7 @@ ICS;
         $obj = $children[0];
         $obj->delete();
 
-        $children2 =  $this->inbox->getChildren();
+        $children2 = $this->inbox->getChildren();
         $this->assertEquals(count($children) - 1, count($children2));
 
     }

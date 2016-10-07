@@ -40,9 +40,9 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
 
         $this->token++;
         $this->changeLog[$this->token] = [
-            'added'     => $added,
-            'modified'  => $modified,
-            'deleted'   => $deleted,
+            'added'    => $added,
+            'modified' => $modified,
+            'deleted'  => $deleted,
         ];
 
     }
@@ -122,9 +122,9 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         }
         if (is_null($this->token)) return null;
 
-        $added    = [];
+        $added = [];
         $modified = [];
-        $deleted  = [];
+        $deleted = [];
 
         foreach ($this->changeLog as $token => $change) {
 

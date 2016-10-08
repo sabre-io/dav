@@ -11,7 +11,10 @@ class ICSExportPluginTest extends \Sabre\DAVServerTest {
 
     protected $setupCalDAV = true;
 
+    /** @var ICSExportPlugin */
     protected $icsExportPlugin;
+
+    private $originalExposeVersion;
 
     function setUp() {
 
@@ -20,6 +23,7 @@ class ICSExportPluginTest extends \Sabre\DAVServerTest {
         $this->server->addPlugin(
             $this->icsExportPlugin
         );
+        $this->originalExposeVersion = DAV\Server::$exposeVersion;
 
         $id = $this->caldavBackend->createCalendar(
             'principals/admin',
@@ -57,8 +61,15 @@ END:VCALENDAR
 ICS
         );
 
-
     }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        DAV\Server::$exposeVersion = $this->originalExposeVersion;
+    }
+
 
     function testInit() {
 
@@ -78,12 +89,11 @@ ICS
             '/calendars/admin/UUID-123467?export'
         );
 
-        $response = $this->request($request);
+        $response = $this->assertHttpStatus(200, $request);
 
-        $this->assertEquals(200, $response->getStatus());
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBody());
 
         $this->assertEquals(8, count($obj->children()));
         $this->assertEquals(1, count($obj->VERSION));
@@ -103,13 +113,12 @@ ICS
             '/calendars/admin/UUID-123467?export'
         );
         DAV\Server::$exposeVersion = false;
-        $response = $this->request($request);
-        DAV\Server::$exposeVersion = true;
+        $response = $this->assertHttpStatus(200, $request);
+        // DAV\Server::$exposeVersion is reverted back to original value in tearDown
 
-        $this->assertEquals(200, $response->getStatus());
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBody());
 
         $this->assertEquals(8, count($obj->children()));
         $this->assertEquals(1, count($obj->VERSION));
@@ -145,7 +154,7 @@ ICS
             '/calendars/admin/UUID-123467?export'
         );
 
-        $this->request($request, 403);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -167,10 +176,10 @@ ICS
             '/calendars/admin/UUID-123467?export'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBody());
 
         $this->assertEquals(8, count($obj->children()));
         $this->assertEquals(1, count($obj->VERSION));
@@ -188,7 +197,7 @@ ICS
             'GET',
             '/calendars/admin/UUID-123467?export&start=foo'
         );
-        $this->request($request, 400);
+        $this->assertHttpStatus(400, $request);
 
     }
 
@@ -198,7 +207,7 @@ ICS
             'GET',
             '/calendars/admin/UUID-123467?export&end=foo'
         );
-        $this->request($request, 400);
+        $this->assertHttpStatus(400, $request);
 
     }
 
@@ -208,7 +217,7 @@ ICS
             'GET',
             '/calendars/admin/UUID-123467?export&start=1&end=2'
         );
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
 
         $obj = VObject\Reader::read($response->getBody());
 
@@ -223,7 +232,7 @@ ICS
             'GET',
             '/calendars/admin/UUID-123467?export&expand=1&end=2'
         );
-        $this->request($request, 400);
+        $this->assertHttpStatus(400, $request);
 
     }
 
@@ -233,7 +242,7 @@ ICS
             'GET',
             '/calendars/admin/UUID-123467?export&start=1&end=2000000000&expand=1'
         );
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
 
         $obj = VObject\Reader::read($response->getBody());
 
@@ -250,7 +259,7 @@ ICS
             ['Accept' => 'application/calendar+json']
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
 
     }
@@ -262,7 +271,7 @@ ICS
             '/calendars/admin/UUID-123467?export&accept=jcal'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
 
     }
@@ -275,7 +284,7 @@ ICS
             ['Accept' => 'text/plain']
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
     }
@@ -287,9 +296,9 @@ ICS
             '/calendars/admin/UUID-123467?export&componentType=VEVENT'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBody());
         $this->assertEquals(1, count($obj->VTIMEZONE));
         $this->assertEquals(1, count($obj->VEVENT));
         $this->assertEquals(0, count($obj->VTODO));
@@ -303,9 +312,9 @@ ICS
             '/calendars/admin/UUID-123467?export&componentType=VTODO'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBody());
 
         $this->assertEquals(0, count($obj->VTIMEZONE));
         $this->assertEquals(0, count($obj->VEVENT));
@@ -320,7 +329,7 @@ ICS
             '/calendars/admin/UUID-123467?export&componentType=VVOODOO'
         );
 
-        $response = $this->request($request, 400);
+        $this->assertHttpStatus(400, $request);
 
     }
 
@@ -331,7 +340,7 @@ ICS
             '/calendars/admin/UUID-123467?export'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
         $this->assertEquals(
             'attachment; filename="UUID-123467-' . date('Y-m-d') . '.ics"',
@@ -348,7 +357,7 @@ ICS
             ['Accept' => 'application/calendar+json']
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
         $this->assertEquals(
             'attachment; filename="UUID-123467-' . date('Y-m-d') . '.json"',
@@ -374,7 +383,7 @@ ICS
             ['Accept' => 'application/calendar+json']
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
         $this->assertEquals(
             'attachment; filename="UUID-b_adchars-' . date('Y-m-d') . '.json"',

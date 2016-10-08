@@ -24,7 +24,7 @@ XML;
         $request = new Request('REPORT', '/principals/user1', ['Content-Type' => 'application/xml', 'Depth' => 0]);
         $request->setBody($xml);
 
-        $response = $this->request($request, 207);
+        $response = $this->assertHttpStatus(207, $request);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -62,7 +62,7 @@ XML;
         $request = new Request('REPORT', '/principals/user1', ['Content-Type' => 'application/xml', 'Depth' => 1]);
         $request->setBody($xml);
 
-        $this->request($request, 400);
+        $this->assertHttpStatus(400, $request);
 
     }
 

@@ -55,8 +55,8 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals(200, $this->response->getStatus());
+        $this->assertEquals('', $this->response->getBody());
 
     }
 
@@ -76,8 +76,8 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals(200, $this->response->getStatus());
+        $this->assertEquals('', $this->response->getBody());
 
     }
 
@@ -97,7 +97,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(501, $this->response->status);
+        $this->assertEquals(501, $this->response->getStatus());
 
 
     }
@@ -126,8 +126,8 @@ class ServerSimpleTest extends AbstractServer{
             $this->response->getHeaders()
          );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
+        $this->assertEquals(200, $this->response->getStatus());
+        $this->assertEquals('Test contents', stream_get_contents($this->response->getBody()));
 
     }
 
@@ -376,7 +376,7 @@ class ServerSimpleTest extends AbstractServer{
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(500, $this->response->status);
+        $this->assertEquals(500, $this->response->getStatus());
 
     }
 
@@ -405,7 +405,7 @@ class ServerSimpleTest extends AbstractServer{
             $this->response->getHeaders()
          );
 
-        $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals(415, $this->response->getStatus(), 'We got an incorrect status back. Full response body follows: ' . $this->response->getBody());
 
     }
 
@@ -429,7 +429,7 @@ class ServerSimpleTest extends AbstractServer{
             $this->response->getHeaders()
         );
 
-        $this->assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals(418, $this->response->getStatus(), 'We got an incorrect status back. Full response body follows: ' . $this->response->getBody());
 
     }
 

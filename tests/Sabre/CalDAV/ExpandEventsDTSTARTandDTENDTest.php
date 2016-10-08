@@ -82,9 +82,9 @@ END:VCALENDAR
 
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $response->getBody(),
+            $start = strpos($response->getBody(), 'BEGIN:VCALENDAR'),
+            strpos($response->getBody(), 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 

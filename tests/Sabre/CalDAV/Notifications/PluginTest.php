@@ -12,16 +12,16 @@ use Sabre\HTTP\Request;
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var CalDAV\Plugin
      */
     protected $plugin;
     protected $response;
     /**
-     * @var Sabre\CalDAV\Backend\PDO
+     * @var CalDAV\Backend\PDO
      */
     protected $caldavBackend;
 
@@ -59,7 +59,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         // This forces a login
         $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
 
-        $this->response = new HTTP\ResponseMock();
+        $this->response = new HTTP\Response();
         $this->server->httpResponse = $this->response;
 
     }
@@ -126,14 +126,14 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $caldav = new Plugin();
 
         $server->httpRequest = new Request('GET', '/foo.xml');
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
         $server->httpResponse = $httpResponse;
 
         $server->addPlugin($caldav);
 
         $caldav->httpGet($server->httpRequest, $server->httpResponse);
 
-        $this->assertEquals(200, $httpResponse->status);
+        $this->assertEquals(200, $httpResponse->getStatus());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
             'ETag'         => ['"1"'],
@@ -155,7 +155,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $server = new DAV\Server();
         $caldav = new Plugin();
 
-        $httpResponse = new HTTP\ResponseMock();
+        $httpResponse = new HTTP\Response();
         $server->httpResponse = $httpResponse;
 
         $server->addPlugin($caldav);

@@ -2,8 +2,6 @@
 
 namespace Sabre\DAV\FSExt;
 
-require_once 'Sabre/TestUtil.php';
-
 class FileTest extends \PHPUnit_Framework_TestCase {
 
     function setUp() {

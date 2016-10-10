@@ -168,7 +168,7 @@ class Plugin extends ServerPlugin {
 
         // Checking if this is a text/calendar content type
         $contentType = $request->getHeader('Content-Type');
-        if (strpos($contentType, 'text/calendar') !== 0) {
+        if (!$contentType || strpos($contentType, 'text/calendar') !== 0) {
             return;
         }
 

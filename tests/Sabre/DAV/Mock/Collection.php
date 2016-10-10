@@ -88,7 +88,7 @@ class Collection extends DAV\Collection {
      * @param resource|string $data Initial payload
      * @return null|string
      */
-    function createFile($name, $data = null) {
+    function createFile($name, $data = '') {
 
         if (is_resource($data)) {
             $data = stream_get_contents($data);

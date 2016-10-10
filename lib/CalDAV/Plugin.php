@@ -282,7 +282,7 @@ class Plugin extends DAV\ServerPlugin {
                     $body
                 );
             } catch (\Sabre\Xml\ParseException $e) {
-                throw new BadRequest($e->getMessage(), null, $e);
+                throw new BadRequest($e->getMessage(), 0, $e);
             }
             $properties = $mkcalendar->getProperties();
 
@@ -602,7 +602,7 @@ class Plugin extends DAV\ServerPlugin {
 
         if ($node instanceof ICalendarObjectContainer && $depth === 0) {
 
-            if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'MSFT-') === 0) {
+            if (strpos((string)$this->server->httpRequest->getHeader('User-Agent'), 'MSFT-') === 0) {
                 // Microsoft clients incorrectly supplied depth as 0, when it actually
                 // should have set depth to 1. We're implementing a workaround here
                 // to deal with this.

@@ -304,6 +304,7 @@ class SharingPlugin extends DAV\ServerPlugin {
 
                 if ($url) {
                     $writer = $this->server->xml->getWriter();
+                    $writer->contextUri = $request->getUrl();
                     $writer->openMemory();
                     $writer->startDocument();
                     $writer->startElement('{' . Plugin::NS_CALENDARSERVER . '}shared-as');

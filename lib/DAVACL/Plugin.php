@@ -391,6 +391,9 @@ class Plugin extends DAV\ServerPlugin {
         if ($currentPrincipal === $checkPrincipal) {
             return true;
         }
+        if (is_null($currentPrincipal)) {
+            return false;
+        }
         return in_array(
             $checkPrincipal,
             $this->getPrincipalMembership($currentPrincipal)

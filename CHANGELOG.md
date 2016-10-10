@@ -5,6 +5,7 @@ ChangeLog
 -------------------------
 
 * Now requires PHP 7.
+* Using `strict_types` in every php file.
 
 
 3.2.1 (????-??-??)

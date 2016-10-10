@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAVACL;
 
@@ -390,6 +390,9 @@ class Plugin extends DAV\ServerPlugin {
         }
         if ($currentPrincipal === $checkPrincipal) {
             return true;
+        }
+        if (is_null($currentPrincipal)) {
+            return false;
         }
         return in_array(
             $checkPrincipal,

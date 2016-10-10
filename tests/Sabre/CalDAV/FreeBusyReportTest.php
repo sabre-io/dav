@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV;
 
@@ -134,9 +134,7 @@ XML;
      */
     function testFreeBusyReportWrongNode() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/',
-        ]);
+        $request = new HTTP\Request('REPORT', '/');
         $this->server->httpRequest = $request;
 
         $reportXML = <<<XML
@@ -157,6 +155,7 @@ XML;
     function testFreeBusyReportNoACLPlugin() {
 
         $this->server = new DAV\Server();
+        $this->server->httpRequest = new HTTP\Request('REPORT', '/');
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 

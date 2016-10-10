@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Browser;
 
@@ -560,7 +560,8 @@ HTML;
         if (strpos($path, '/../') !== false || strrchr($path, '/') === '/..') {
             throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
         }
-        if (strpos(realpath($path), realpath($assetDir)) === 0 && file_exists($path)) {
+        $realPath = realpath($path);
+        if ($realPath && strpos($realPath, realpath($assetDir)) === 0 && file_exists($path)) {
             return $path;
         }
         throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');

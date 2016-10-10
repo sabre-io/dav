@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
@@ -96,7 +96,9 @@ class LockDiscovery implements XmlSerializable {
             $writer->writeElement('{DAV:}href', 'opaquelocktoken:' . $lock->token);
             $writer->endElement(); // {DAV:}locktoken
 
-            $writer->writeElement('{DAV:}owner', new XmlFragment($lock->owner));
+            if ($lock->owner) {
+                $writer->writeElement('{DAV:}owner', new XmlFragment($lock->owner));
+            }
             $writer->endElement(); // {DAV:}activelock
 
         }

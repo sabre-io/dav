@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -268,7 +268,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
             $h = function($v) {
 
-                return htmlspecialchars($v, ENT_NOQUOTES, 'UTF-8');
+                return htmlspecialchars((string)$v, ENT_NOQUOTES, 'UTF-8');
 
             };
 
@@ -629,7 +629,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      * If the second offset is null, it should be treated as the offset of the last byte of the entity
      * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
      *
-     * @return array|null
+     * @return int[]|null
      */
     function getHTTPRange() {
 
@@ -643,8 +643,8 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         if ($matches[1] === '' && $matches[2] === '') return null;
 
         return [
-            $matches[1] !== '' ? $matches[1] : null,
-            $matches[2] !== '' ? $matches[2] : null,
+            $matches[1] !== '' ? (int)$matches[1] : null,
+            $matches[2] !== '' ? (int)$matches[2] : null,
         ];
 
     }

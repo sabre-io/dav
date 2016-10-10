@@ -512,23 +512,21 @@ HTML;
         if (get_class($node) === 'Sabre\\DAV\\SimpleCollection')
             return;
 
-        ob_start();
-        echo '<form method="post" action="">
-        <h3>Create new folder</h3>
-        <input type="hidden" name="sabreAction" value="mkcol" />
-        <label>Name:</label> <input type="text" name="name" /><br />
-        <input type="submit" value="create" />
-        </form>
-        <form method="post" action="" enctype="multipart/form-data">
-        <h3>Upload file</h3>
-        <input type="hidden" name="sabreAction" value="put" />
-        <label>Name (optional):</label> <input type="text" name="name" /><br />
-        <label>File:</label> <input type="file" name="file" /><br />
-        <input type="submit" value="upload" />
-        </form>
-        ';
-
-        $output .= ob_get_clean();
+        $output .= <<<HTML
+<form method="post" action="">
+<h3>Create new folder</h3>
+<input type="hidden" name="sabreAction" value="mkcol" />
+<label>Name:</label> <input type="text" name="name" /><br />
+<input type="submit" value="create" />
+</form>
+<form method="post" action="" enctype="multipart/form-data">
+<h3>Upload file</h3>
+<input type="hidden" name="sabreAction" value="put" />
+<label>Name (optional):</label> <input type="text" name="name" /><br />
+<label>File:</label> <input type="file" name="file" /><br />
+<input type="submit" value="upload" />
+</form>
+HTML;
 
     }
 

@@ -2,7 +2,6 @@
 
 namespace Sabre\DAV\PartialUpdate;
 
-use Sabre\DAV;
 use Sabre\HTTP;
 
 class PluginTest extends \Sabre\DAVServerTest {

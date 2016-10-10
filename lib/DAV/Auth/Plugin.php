@@ -84,7 +84,7 @@ class Plugin extends ServerPlugin {
      */
     function initialize(Server $server) {
 
-        $server->on('beforeMethod', [$this, 'beforeMethod'], 10);
+        $server->on('beforeMethod:*', [$this, 'beforeMethod'], 10);
 
     }
 

@@ -95,14 +95,14 @@ class ServerEventsTest extends AbstractServer {
     function testMethod() {
 
         $k = 1;
-        $this->server->on('method', function($request, $response) use (&$k) {
+        $this->server->on('method:*', function($request, $response) use (&$k) {
 
             $k += 1;
 
             return false;
 
         });
-        $this->server->on('method', function($request, $response) use (&$k) {
+        $this->server->on('method:*', function($request, $response) use (&$k) {
 
             $k += 2;
 

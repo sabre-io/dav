@@ -369,7 +369,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = $httpRequest;
-        $this->server->on('beforeMethod', [$this, 'exceptionTrigger']);
+        $this->server->on('beforeMethod:*', [$this, 'exceptionTrigger']);
         $this->server->exec();
 
         $this->assertEquals([

@@ -5,9 +5,6 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/DAVACL/MockPrincipal.php';
-require_once 'Sabre/DAVACL/MockACLNode.php';
-
 class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
     function testValues() {

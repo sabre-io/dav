@@ -5,8 +5,6 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
     function getServer() {
@@ -19,7 +17,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer = new DAV\Server($dir);
         $fakeServer->sapi = new HTTP\SapiMock();
-        $fakeServer->httpResponse = new HTTP\ResponseMock();
+        $fakeServer->httpResponse = new HTTP\Response();
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $this->assertTrue($plugin instanceof Plugin);
@@ -49,7 +47,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->status);
+        $this->assertEquals(400, $server->httpResponse->getStatus());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
@@ -76,7 +74,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(400, $server->httpResponse->getStatus(), $server->httpResponse->getBody());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
@@ -103,7 +101,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $server->exec();
 
-        $this->assertEquals(200, $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(200, $server->httpResponse->getStatus(), $server->httpResponse->getBody());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
@@ -119,7 +117,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
             '/d:principal-search-property-set/d:principal-search-property/d:description'          => 2,
         ];
 
-        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml = simplexml_load_string($server->httpResponse->getBody());
         $xml->registerXPathNamespace('d', 'DAV:');
         $xml->registerXPathNamespace('s', 'http://sabredav.org/ns');
         foreach ($check as $v1 => $v2) {
@@ -131,7 +129,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->body);
+            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->getBody());
 
         }
 

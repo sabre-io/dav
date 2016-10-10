@@ -156,8 +156,8 @@ BLA
 
         $response = $this->request($request);
 
-        $this->assertEquals(0, strlen($response->body), 'Expected empty body: ' . $response->body);
-        $this->assertEquals(204, $response->status);
+        $this->assertEquals(0, strlen($response->getBody()), 'Expected empty body: ' . $response->getBody());
+        $this->assertEquals(204, $response->getStatus());
 
     }
 
@@ -180,7 +180,7 @@ BLA
 
         $body = $response->getBodyAsString();
 
-        $this->assertEquals(207, $response->status);
+        $this->assertEquals(207, $response->getStatus());
         $this->assertTrue(strpos($body, 'something') !== false);
         $this->assertTrue(strpos($body, '403 Forbidden') !== false, $body);
 

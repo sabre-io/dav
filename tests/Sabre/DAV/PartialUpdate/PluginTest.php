@@ -5,8 +5,6 @@ namespace Sabre\DAV\PartialUpdate;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/DAV/PartialUpdate/FileMock.php';
-
 class PluginTest extends \Sabre\DAVServerTest {
 
     protected $node;
@@ -47,7 +45,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals(400, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(400, $response->getStatus(), 'Full response body:' . $response->getBody());
 
     }
 
@@ -60,7 +58,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(405, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(405, $response->getStatus(), 'Full response body:' . $response->getBody());
 
     }
 
@@ -73,7 +71,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(415, $response->getStatus(), 'Full response body:' . $response->getBody());
 
     }
 
@@ -86,7 +84,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(416, $response->getStatus(), 'Full response body:' . $response->getBody());
 
     }
 
@@ -99,7 +97,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(411, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(411, $response->getStatus(), 'Full response body:' . $response->getBody());
 
     }
 
@@ -112,7 +110,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         );
         $response = $this->request($request);
 
-        $this->assertEquals(204, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(204, $response->getStatus(), 'Full response body:' . $response->getBody());
         $this->assertEquals('aaabbbaa', $this->node->get());
 
     }

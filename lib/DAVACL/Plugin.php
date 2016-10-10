@@ -533,7 +533,6 @@ class Plugin extends DAV\ServerPlugin {
             'aggregates' => $this->getSupportedPrivilegeSet($node)
         ];
 
-        $fpsTraverse = null;
         $fpsTraverse = function($privName, $privInfo, $concrete, &$flat) use (&$fpsTraverse) {
 
             $myPriv = [

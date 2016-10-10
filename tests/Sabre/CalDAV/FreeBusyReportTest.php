@@ -5,9 +5,6 @@ namespace Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -87,7 +84,7 @@ ics;
             'REQUEST_URI' => '/calendar',
         ]);
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = new HTTP\ResponseMock();
+        $this->server->httpResponse = new HTTP\Response();
 
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
@@ -106,16 +103,16 @@ XML;
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
         $this->plugin->report($rootElem, $report, null);
 
-        $this->assertEquals(200, $this->server->httpResponse->status);
+        $this->assertEquals(200, $this->server->httpResponse->getStatus());
         $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
-        $this->assertTrue(strpos($this->server->httpResponse->body, 'BEGIN:VFREEBUSY') !== false);
-        $this->assertTrue(strpos($this->server->httpResponse->body, '20111005T120000Z/20111005T130000Z') !== false);
-        $this->assertTrue(strpos($this->server->httpResponse->body, '20111006T100000Z/20111006T110000Z') !== false);
+        $this->assertTrue(strpos($this->server->httpResponse->getBody(), 'BEGIN:VFREEBUSY') !== false);
+        $this->assertTrue(strpos($this->server->httpResponse->getBody(), '20111005T120000Z/20111005T130000Z') !== false);
+        $this->assertTrue(strpos($this->server->httpResponse->getBody(), '20111006T100000Z/20111006T110000Z') !== false);
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testFreeBusyReportNoTimeRange() {
 
@@ -125,12 +122,12 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->server->xml->parse($reportXML, null, $rootElem);
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
     function testFreeBusyReportWrongNode() {
 
@@ -152,7 +149,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
     function testFreeBusyReportNoACLPlugin() {
 

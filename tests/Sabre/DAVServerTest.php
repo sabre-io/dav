@@ -42,34 +42,41 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $carddavCards = [];
 
     /**
-     * @var Sabre\DAV\Server
+     * @var \Sabre\DAV\Server
      */
     protected $server;
     protected $tree = [];
 
+    /**
+     * @var CalDAV\Backend\MockSharing|CalDAV\Backend\MockSubscriptionSupport|CalDAV\Backend\Mock
+     */
     protected $caldavBackend;
+
+    /**
+     * @var CardDAV\Backend\Mock
+     */
     protected $carddavBackend;
     protected $principalBackend;
     protected $locksBackend;
     protected $propertyStorageBackend;
 
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var CalDAV\Plugin
      */
     protected $caldavPlugin;
 
     /**
-     * @var Sabre\CardDAV\Plugin
+     * @var CardDAV\Plugin
      */
     protected $carddavPlugin;
 
     /**
-     * @var Sabre\DAVACL\Plugin
+     * @var DAVACL\Plugin
      */
     protected $aclPlugin;
 
     /**
-     * @var Sabre\CalDAV\SharingPlugin
+     * @var CalDAV\SharingPlugin
      */
     protected $caldavSharingPlugin;
 
@@ -81,26 +88,31 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavSchedulePlugin;
 
     /**
-     * @var Sabre\DAV\Auth\Plugin
+     * @var DAV\Auth\Plugin
      */
     protected $authPlugin;
 
     /**
-     * @var Sabre\DAV\Locks\Plugin
+     * @var DAV\Locks\Plugin
      */
     protected $locksPlugin;
 
     /**
      * Sharing plugin.
      *
-     * @var \Sabre\DAV\Sharing\Plugin
+     * @var DAV\Sharing\Plugin
      */
     protected $sharingPlugin;
 
-    /*
-     * @var Sabre\DAV\PropertyStorage\Plugin
+    /**
+     * @var DAV\PropertyStorage\Plugin
      */
     protected $propertyStoragePlugin;
+
+    /**
+     * @var CalDAV\ICSExportPlugin
+     */
+    private $caldavICSExportPlugin;
 
     /**
      * If this string is set, we will automatically log in the user with this
@@ -187,15 +199,18 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
      * the test.
      *
      * @param array|\Sabre\HTTP\Request $request
-     * @param int $expectedStatus
+     * @param int $expectedStatus Don't call this method directly with this argument; use assertHttpStatus() instead to
+     *                            make assertion more obvious.
      * @return \Sabre\HTTP\Response
+     *
+     * @see assertHttpStatus()
      */
     function request($request, $expectedStatus = null) {
 
         if (is_array($request)) {
             $request = HTTP\Request::createFromServerArray($request);
         }
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -267,20 +282,20 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
 
     function setUpBackends() {
 
-        if ($this->setupCalDAVSharing && is_null($this->caldavBackend)) {
+        if ($this->setupCalDAVSharing && $this->caldavBackend === null) {
             $this->caldavBackend = new CalDAV\Backend\MockSharing($this->caldavCalendars, $this->caldavCalendarObjects);
         }
-        if ($this->setupCalDAVSubscriptions && is_null($this->caldavBackend)) {
+        if ($this->setupCalDAVSubscriptions && $this->caldavBackend === null) {
             $this->caldavBackend = new CalDAV\Backend\MockSubscriptionSupport($this->caldavCalendars, $this->caldavCalendarObjects);
         }
-        if ($this->setupCalDAV && is_null($this->caldavBackend)) {
+        if ($this->setupCalDAV && $this->caldavBackend === null) {
             if ($this->setupCalDAVScheduling) {
                 $this->caldavBackend = new CalDAV\Backend\MockScheduling($this->caldavCalendars, $this->caldavCalendarObjects);
             } else {
                 $this->caldavBackend = new CalDAV\Backend\Mock($this->caldavCalendars, $this->caldavCalendarObjects);
             }
         }
-        if ($this->setupCardDAV && is_null($this->carddavBackend)) {
+        if ($this->setupCardDAV && $this->carddavBackend === null) {
             $this->carddavBackend = new CardDAV\Backend\Mock($this->carddavAddressBooks, $this->carddavCards);
         }
         if ($this->setupCardDAV || $this->setupCalDAV || $this->setupACL) {
@@ -296,10 +311,14 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     }
 
 
+    /**
+     * @param int $expectedStatus
+     * @param Request $req
+     * @return Response
+     */
     function assertHttpStatus($expectedStatus, HTTP\Request $req) {
 
-        $resp = $this->request($req);
-        $this->assertEquals((int)$expectedStatus, (int)$resp->status, 'Incorrect HTTP status received: ' . $resp->body);
+        return $this->request($req, (int)$expectedStatus);
 
     }
 

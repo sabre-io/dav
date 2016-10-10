@@ -21,7 +21,7 @@ XML;
         $request = new Request('REPORT', '/principals', ['Content-Type' => 'application/xml']);
         $request->setBody($xml);
 
-        $response = $this->request($request, 207);
+        $response = $this->assertHttpStatus(207, $request);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -57,7 +57,7 @@ XML;
         $request = new Request('REPORT', '/principals', ['Content-Type' => 'application/xml']);
         $request->setBody($xml);
 
-        $response = $this->request($request, 207);
+        $response = $this->assertHttpStatus(207, $request);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -97,7 +97,7 @@ XML;
         $request = new Request('REPORT', '/principals', ['Content-Type' => 'application/xml']);
         $request->setBody($xml);
 
-        $response = $this->request($request, 207);
+        $response = $this->assertHttpStatus(207, $request);
 
         $expected = <<<XML
 <?xml version="1.0"?>

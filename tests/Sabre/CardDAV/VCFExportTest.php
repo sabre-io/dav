@@ -19,10 +19,10 @@ class VCFExportTest extends \Sabre\DAVServerTest {
     ];
     protected $carddavCards = [
         'book1' => [
-            "card1" => "BEGIN:VCARD\r\nFN:Person1\r\nEND:VCARD\r\n",
-            "card2" => "BEGIN:VCARD\r\nFN:Person2\r\nEND:VCARD",
-            "card3" => "BEGIN:VCARD\r\nFN:Person3\r\nEND:VCARD\r\n",
-            "card4" => "BEGIN:VCARD\nFN:Person4\nEND:VCARD\n",
+            'card1' => "BEGIN:VCARD\r\nFN:Person1\r\nEND:VCARD\r\n",
+            'card2' => "BEGIN:VCARD\r\nFN:Person2\r\nEND:VCARD",
+            'card3' => "BEGIN:VCARD\r\nFN:Person3\r\nEND:VCARD\r\n",
+            'card4' => "BEGIN:VCARD\nFN:Person4\nEND:VCARD\n",
         ]
     ];
 
@@ -39,7 +39,7 @@ class VCFExportTest extends \Sabre\DAVServerTest {
     function testSimple() {
 
         $plugin = $this->server->getPlugin('vcf-export');
-        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $plugin);
+        $this->assertInstanceOf(VCFExportPlugin::class, $plugin);
 
         $this->assertEquals(
             'vcf-export',
@@ -56,10 +56,9 @@ class VCFExportTest extends \Sabre\DAVServerTest {
             'REQUEST_METHOD' => 'GET',
         ]);
 
-        $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->body);
+        $response = $this->assertHttpStatus(200, $request);
 
-        $expected = "BEGIN:VCARD
+        $expected = 'BEGIN:VCARD
 FN:Person1
 END:VCARD
 BEGIN:VCARD
@@ -71,17 +70,16 @@ END:VCARD
 BEGIN:VCARD
 FN:Person4
 END:VCARD
-";
+';
         // We actually expected windows line endings
         $expected = str_replace("\n", "\r\n", $expected);
 
-        $this->assertEquals($expected, $response->body);
+        $this->assertEquals($expected, $response->getBody());
 
     }
 
     function testBrowserIntegration() {
 
-        $plugin = $this->server->getPlugin('vcf-export');
         $actions = '';
         $addressbook = new AddressBook($this->carddavBackend, []);
         $this->server->emit('browserButtonActions', ['/foo', $addressbook, &$actions]);
@@ -96,7 +94,7 @@ END:VCARD
             '/addressbooks/user1/book1?export'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
         $this->assertEquals(
             'attachment; filename="book1-' . date('Y-m-d') . '.vcf"',
@@ -123,7 +121,7 @@ END:VCARD
             '/addressbooks/user1/book-b_ad"(ch)ars?export'
         );
 
-        $response = $this->request($request, 200);
+        $response = $this->assertHttpStatus(200, $request);
         $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
         $this->assertEquals(
             'attachment; filename="book-b_adchars-' . date('Y-m-d') . '.vcf"',

@@ -123,7 +123,7 @@ class Plugin extends ServerPlugin {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return void
+     * @return void|false
      */
     function httpGet(RequestInterface $request, ResponseInterface $response) {
 

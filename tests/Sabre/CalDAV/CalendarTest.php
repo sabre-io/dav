@@ -4,8 +4,6 @@ namespace Sabre\CalDAV;
 
 use Sabre\DAV\PropPatch;
 
-require_once 'Sabre/CalDAV/TestUtil.php';
-
 class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     /**

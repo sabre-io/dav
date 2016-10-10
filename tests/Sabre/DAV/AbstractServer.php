@@ -7,7 +7,7 @@ use Sabre\HTTP;
 abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\HTTP\ResponseMock
+     * @var Sabre\HTTP\Response
      */
     protected $response;
     protected $request;
@@ -19,7 +19,7 @@ abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $this->response = new HTTP\ResponseMock();
+        $this->response = new HTTP\Response();
         $this->server = new Server($this->getRootNode());
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->httpResponse = $this->response;

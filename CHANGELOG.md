@@ -6,6 +6,7 @@ ChangeLog
 
 * #877: Fix for syncing large calendars when using the Sqlite PDO backend.
   (@theseer).
+* #887: Major tests cleanup (@petrkotek).
 
 
 3.2.0 (2016-06-27)

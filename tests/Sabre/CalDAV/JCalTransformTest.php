@@ -38,7 +38,7 @@ class JCalTransformTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $body = $response->getBodyAsString();
-        $this->assertEquals(200, $response->getStatus(), "Incorrect status code: " . $body);
+        $this->assertEquals(200, $response->getStatus(), 'Incorrect status code: ' . $body);
 
         $response = json_decode($body, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -80,6 +80,7 @@ XML;
 
         $this->assertEquals(207, $response->getStatus(), 'Full rsponse: ' . $response->getBodyAsString());
 
+        /** @var \Sabre\DAV\Xml\Response\MultiStatus $multiStatus */
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
         );
@@ -87,7 +88,7 @@ XML;
         $responses = $multiStatus->getResponses();
         $this->assertEquals(1, count($responses));
 
-        $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];
+        $response = $responses[0]->getResponseProperties()[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'];
 
         $jresponse = json_decode($response, true);
         if (json_last_error()) {
@@ -131,8 +132,9 @@ XML;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $response->getBodyAsString());
+        $this->assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: ' . $response->getBodyAsString());
 
+        /** @var \Sabre\DAV\Xml\Response\MultiStatus $multiStatus */
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
         );
@@ -141,7 +143,7 @@ XML;
 
         $this->assertEquals(1, count($responses));
 
-        $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];
+        $response = $responses[0]->getResponseProperties()[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'];
         $response = json_decode($response, true);
         if (json_last_error()) {
             $this->fail('Json decoding error: ' . json_last_error_msg());
@@ -184,8 +186,9 @@ XML;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $response->getBodyAsString());
+        $this->assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: ' . $response->getBodyAsString());
 
+        /** @var \Sabre\DAV\Xml\Response\MultiStatus $multiStatus */
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
         );
@@ -194,7 +197,7 @@ XML;
 
         $this->assertEquals(1, count($responses));
 
-        $response = $responses[0]->getResponseProperties()[200]["{urn:ietf:params:xml:ns:caldav}calendar-data"];
+        $response = $responses[0]->getResponseProperties()[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'];
         $response = json_decode($response, true);
         if (json_last_error()) {
             $this->fail('Json decoding error: ' . json_last_error_msg());

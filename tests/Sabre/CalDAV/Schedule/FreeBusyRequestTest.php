@@ -10,11 +10,25 @@ use Sabre\HTTP;
 
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
+    /** @var CalDAV\Plugin|Plugin */
     protected $plugin;
+
+    /** @var DAV\Server */
     protected $server;
+
+    /** @var DAVACL\Plugin */
     protected $aclPlugin;
+
+    /** @var HTTP\Request */
     protected $request;
+
+    /** @var HTTP\Response */
+    protected $response;
+
+    /** @var DAV\Auth\Plugin */
     protected $authPlugin;
+
+    /** @var CalDAV\Backend\MockScheduling */
     protected $caldavBackend;
 
     function setUp() {
@@ -69,7 +83,7 @@ END:VCALENDAR',
         $this->request = HTTP\Sapi::createFromServerArray([
             'CONTENT_TYPE' => 'text/calendar',
         ]);
-        $this->response = new HTTP\ResponseMock();
+        $this->response = new HTTP\Response();
 
         $this->server = new DAV\Server($tree);
         $this->server->httpRequest = $this->request;
@@ -139,7 +153,7 @@ END:VCALENDAR',
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testNoItipMethod() {
 
@@ -186,7 +200,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testIncorrectOrganizer() {
 
@@ -212,7 +226,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testNoAttendees() {
 
@@ -237,7 +251,7 @@ ICS;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testNoDTStart() {
 
@@ -292,7 +306,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->getStatus());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -307,13 +321,13 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBody(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBody()
             );
         }
 
         $this->assertTrue(
-            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
+            strpos($this->response->getBody(), 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') === false,
             'The response body did contain free busy info from a transparent calendar.'
         );
 
@@ -356,7 +370,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->getStatus());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -368,8 +382,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBody(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBody()
             );
         }
 
@@ -411,7 +425,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->getStatus());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -423,8 +437,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBody(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBody()
             );
         }
 
@@ -466,7 +480,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->getStatus());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -478,8 +492,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBody(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBody()
             );
         }
 
@@ -537,7 +551,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->getStatus());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -552,8 +566,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBody(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBody()
             );
         }
 
@@ -588,7 +602,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->response->getStatus());
         $this->assertEquals([
             'Content-Type' => 'application/xml',
         ], $this->response->getHeaders());
@@ -600,8 +614,8 @@ ICS;
 
         foreach($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string)!==false,
-                'The response body did not contain: ' . $string .'Full response: ' . $this->response->body
+                strpos($this->response->getBody(), $string)!==false,
+                'The response body did not contain: ' . $string .'Full response: ' . $this->response->getBody()
             );
         }
 

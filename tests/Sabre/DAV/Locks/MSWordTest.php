@@ -5,9 +5,6 @@ namespace Sabre\DAV\Locks;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/TestUtil.php';
-
 class MSWordTest extends \PHPUnit_Framework_TestCase {
 
     function tearDown() {
@@ -27,7 +24,7 @@ class MSWordTest extends \PHPUnit_Framework_TestCase {
         $locksPlugin = new Plugin($locksBackend);
         $server->addPlugin($locksPlugin);
 
-        $response1 = new HTTP\ResponseMock();
+        $response1 = new HTTP\Response();
 
         $server->httpRequest = $this->getLockRequest();
         $server->httpResponse = $response1;
@@ -40,23 +37,23 @@ class MSWordTest extends \PHPUnit_Framework_TestCase {
 
         //sleep(10);
 
-        $response2 = new HTTP\ResponseMock();
+        $response2 = new HTTP\Response();
 
         $server->httpRequest = $this->getLockRequest2();
         $server->httpResponse = $response2;
         $server->exec();
 
-        $this->assertEquals(201, $server->httpResponse->status);
+        $this->assertEquals(201, $server->httpResponse->getStatus());
         $this->assertTrue(!!$server->httpResponse->getHeaders('Lock-Token'));
 
         //sleep(10);
 
-        $response3 = new HTTP\ResponseMock();
+        $response3 = new HTTP\Response();
         $server->httpRequest = $this->getPutRequest($lockToken);
         $server->httpResponse = $response3;
         $server->exec();
 
-        $this->assertEquals(204, $server->httpResponse->status);
+        $this->assertEquals(204, $server->httpResponse->getStatus());
 
     }
 

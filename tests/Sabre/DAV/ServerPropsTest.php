@@ -4,9 +4,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/DAV/AbstractServer.php';
-
 class ServerPropsTest extends AbstractServer {
 
     protected function getRootNode() {
@@ -45,7 +42,7 @@ class ServerPropsTest extends AbstractServer {
     function testPropFindEmptyBody() {
 
         $this->sendRequest("");
-        $this->assertEquals(207, $this->response->status);
+        $this->assertEquals(207, $this->response->getStatus());
 
         $this->assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
@@ -56,7 +53,7 @@ class ServerPropsTest extends AbstractServer {
             $this->response->getHeaders()
          );
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->getBody());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
@@ -71,7 +68,7 @@ class ServerPropsTest extends AbstractServer {
     function testPropFindEmptyBodyFile() {
 
         $this->sendRequest("", '/test2.txt', []);
-        $this->assertEquals(207, $this->response->status);
+        $this->assertEquals(207, $this->response->getStatus());
 
         $this->assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
@@ -82,7 +79,7 @@ class ServerPropsTest extends AbstractServer {
             $this->response->getHeaders()
          );
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->getBody());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
@@ -105,7 +102,7 @@ class ServerPropsTest extends AbstractServer {
 
         $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->getBody());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
@@ -139,7 +136,7 @@ class ServerPropsTest extends AbstractServer {
 
         $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->getBody());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
@@ -158,7 +155,7 @@ class ServerPropsTest extends AbstractServer {
 </d:propfind>';
 
         $this->sendRequest($xml);
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->getBody());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
         $pathTests = [

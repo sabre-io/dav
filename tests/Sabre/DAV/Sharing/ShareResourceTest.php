@@ -169,7 +169,7 @@ XML;
 XML;
         $request = new Request('POST', '/not-found', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
-        $response = $this->request($request, 404);
+        $this->assertHttpStatus(404, $request);
 
     }
 
@@ -192,7 +192,7 @@ XML;
 XML;
         $request = new Request('POST', '/', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
-        $response = $this->request($request, 403);
+        $this->assertHttpStatus(403, $request);
 
     }
 
@@ -203,7 +203,7 @@ XML;
 <D:blablabla xmlns:D="DAV:" />
 XML;
         $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
-        $response = $this->request($request, 400);
+        $this->assertHttpStatus(400, $request);
 
     }
 

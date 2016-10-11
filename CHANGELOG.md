@@ -6,6 +6,10 @@ ChangeLog
 
 * Now requires PHP 7.
 * Using `strict_types` in every php file.
+* #896: Using the [sabre/event][evnt] `WildcardEmitter`. This allows event
+  handlers to listen to events using a wildcard.
+* #896: Event listeners that in the past listened to `beforeMethod` or `method`
+  no longer get called. They must listen to `beforeMethod:*` and `method:*` now.
 
 
 3.2.1 (????-??-??)

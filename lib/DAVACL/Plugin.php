@@ -816,7 +816,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
         $server->on('propFind',            [$this, 'propFind'], 20);
-        $server->on('beforeMethod',        [$this, 'beforeMethod'], 20);
+        $server->on('beforeMethod:*',      [$this, 'beforeMethod'], 20);
         $server->on('beforeBind',          [$this, 'beforeBind'], 20);
         $server->on('beforeUnbind',        [$this, 'beforeUnbind'], 20);
         $server->on('propPatch',           [$this, 'propPatch']);

@@ -6,7 +6,8 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Sabre\Event\EventEmitter;
+use Sabre\Event\EmitterInterface;
+use Sabre\Event\WildcardEmitterTrait;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
@@ -20,8 +21,9 @@ use Sabre\Uri;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Server extends EventEmitter implements LoggerAwareInterface {
+class Server implements LoggerAwareInterface, EmitterInterface {
 
+    use WildcardEmitterTrait;
     use LoggerAwareTrait;
 
     /**
@@ -463,7 +465,6 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         $method = $request->getMethod();
 
         if (!$this->emit('beforeMethod:' . $method, [$request, $response])) return;
-        if (!$this->emit('beforeMethod', [$request, $response])) return;
 
         if (self::$exposeVersion) {
             $response->setHeader('X-Sabre-Version', Version::VERSION);
@@ -477,19 +478,16 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         }
 
         if ($this->emit('method:' . $method, [$request, $response])) {
-            if ($this->emit('method', [$request, $response])) {
-                $exMessage = "There was no plugin in the system that was willing to handle this " . $method . " method.";
-                if ($method === "GET") {
-                    $exMessage .= " Enable the Browser plugin to get a better result here.";
-                }
-
-                // Unsupported method
-                throw new Exception\NotImplemented($exMessage);
+            $exMessage = "There was no plugin in the system that was willing to handle this " . $method . " method.";
+            if ($method === "GET") {
+                $exMessage .= " Enable the Browser plugin to get a better result here.";
             }
+
+            // Unsupported method
+            throw new Exception\NotImplemented($exMessage);
         }
 
         if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
-        if (!$this->emit('afterMethod', [$request, $response])) return;
 
         if ($response->getStatus() === null) {
             throw new Exception('No subsystem set a valid HTTP status code. Something must have interrupted the request without providing further detail.');

@@ -40,7 +40,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -49,7 +49,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/foo');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -58,7 +58,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('HEAD');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:HEAD', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -67,7 +67,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('OPTIONS');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:OPTIONS', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -76,7 +76,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('PUT');
         $this->server->httpRequest->setUrl('/testdir/file1.txt');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:PUT', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -85,7 +85,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('PROPPATCH');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:PROPPATCH', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -94,7 +94,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('COPY');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:COPY', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -103,7 +103,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('MOVE');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:MOVE', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 
@@ -112,7 +112,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('LOCK');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]));
+        $this->assertTrue($this->server->emit('beforeMethod:LOCK', [$this->server->httpRequest, $this->server->httpResponse]));
 
     }
 

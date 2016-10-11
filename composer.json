@@ -43,6 +43,7 @@
     },
     "autoload": {
         "psr-4" : {
+            "Sabre\\Common\\"  : "lib/Common/",
             "Sabre\\DAV\\"     : "lib/DAV/",
             "Sabre\\DAVACL\\"  : "lib/DAVACL/",
             "Sabre\\CalDAV\\"  : "lib/CalDAV/",

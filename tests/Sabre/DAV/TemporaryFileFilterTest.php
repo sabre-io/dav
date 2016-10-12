@@ -21,7 +21,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals('0', $this->response->getHeader('Content-Length'));
 
@@ -37,7 +37,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
@@ -55,7 +55,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
@@ -81,7 +81,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
@@ -141,7 +141,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
@@ -151,12 +151,12 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(204, $this->response->status, "Incorrect status code received. Full body:\n" . $this->response->body);
+        $this->assertEquals(204, $this->response->status, "Incorrect status code received. Full body:\n" . $this->response->getBodyAsString());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
 
     }
 
@@ -178,13 +178,15 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(207, $this->response->status, 'Incorrect status code returned. Body: ' . $this->response->body);
+        $bodyAsString = $this->response->getBodyAsString();
+
+        $this->assertEquals(207, $this->response->status, 'Incorrect status code returned. Body: ' . $bodyAsString);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $bodyAsString);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 

@@ -17,6 +17,11 @@ class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
     protected $authPlugin;
     protected $caldavBackend;
 
+    /**
+     * @var HTTP\ResponseMock
+     */
+    protected $response;
+
     function setUp() {
 
         $caldavNS = '{' . CalDAV\Plugin::NS_CALDAV . '}';
@@ -307,13 +312,13 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBodyAsString(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBodyAsString()
             );
         }
 
         $this->assertTrue(
-            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
+            strpos($this->response->getBodyAsString(), 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
             'The response body did contain free busy info from a transparent calendar.'
         );
 
@@ -368,8 +373,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBodyAsString(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBodyAsString()
             );
         }
 
@@ -423,8 +428,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBodyAsString(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBodyAsString()
             );
         }
 
@@ -478,8 +483,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBodyAsString(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBodyAsString()
             );
         }
 
@@ -552,8 +557,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($this->response->getBodyAsString(), $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->getBodyAsString()
             );
         }
 
@@ -600,8 +605,8 @@ ICS;
 
         foreach($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string)!==false,
-                'The response body did not contain: ' . $string .'Full response: ' . $this->response->body
+                strpos($this->response->getBodyAsString(), $string)!==false,
+                'The response body did not contain: ' . $string .'Full response: ' . $this->response->getBodyAsString()
             );
         }
 

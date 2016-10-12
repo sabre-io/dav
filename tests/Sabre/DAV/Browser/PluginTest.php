@@ -153,7 +153,7 @@ class PluginTest extends DAV\AbstractServer{
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->getStatus(), 'Error: ' . $this->response->body);
+        $this->assertEquals(200, $this->response->getStatus(), 'Error: ' . $this->response->getBodyAsString());
         $this->assertEquals([
             'X-Sabre-Version'         => [DAV\Version::VERSION],
             'Content-Type'            => ['image/vnd.microsoft.icon'],
@@ -170,7 +170,7 @@ class PluginTest extends DAV\AbstractServer{
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->body);
+        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->getBodyAsString());
 
     }
 
@@ -180,7 +180,7 @@ class PluginTest extends DAV\AbstractServer{
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->body);
+        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->getBodyAsString());
 
     }
 }

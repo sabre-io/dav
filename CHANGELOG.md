@@ -10,6 +10,7 @@ ChangeLog
   handlers to listen to events using a wildcard.
 * #896: Event listeners that in the past listened to `beforeMethod` or `method`
   no longer get called. They must listen to `beforeMethod:*` and `method:*` now.
+* #322: Imap authentication backend. (@c0d3z3r0).
 
 
 3.2.1 (????-??-??)

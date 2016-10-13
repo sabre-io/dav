@@ -11,7 +11,6 @@ use Sabre\Event\WildcardEmitterTrait;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\URLUtil;
 use Sabre\Uri;
 
 /**
@@ -378,7 +377,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             // Note that REQUEST_URI is percent encoded, while PATH_INFO is
             // not, Therefore they are only comparable if we first decode
             // REQUEST_INFO as well.
-            $decodedUri = URLUtil::decodePath($uri);
+            $decodedUri = HTTP\decodePath($uri);
 
             // A simple sanity check:
             if (substr($decodedUri, strlen($decodedUri) - strlen($pathInfo)) === $pathInfo) {
@@ -573,7 +572,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
         if (strpos($uri, $baseUri) === 0) {
 
-            return trim(URLUtil::decodePath(substr($uri, strlen($baseUri))), '/');
+            return trim(HTTP\decodePath(substr($uri, strlen($baseUri))), '/');
 
         // A special case, if the baseUri was accessed without a trailing
         // slash, we'll accept it as well.
@@ -736,7 +735,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
         // We need to throw a bad request exception, if the header was invalid
         else throw new Exception\BadRequest('The HTTP Overwrite header should be either T or F');
 
-        list($destinationDir) = URLUtil::splitPath($destination);
+        list($destinationDir) = Uri\split($destination);
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationDir);
@@ -1073,7 +1072,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      */
     function createFile($uri, $data, &$etag = null) {
 
-        list($dir, $name) = URLUtil::splitPath($uri);
+        list($dir, $name) = Uri\split($uri);
 
         if (!$this->emit('beforeBind', [$uri])) return false;
 
@@ -1154,7 +1153,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      */
     function createCollection($uri, MkCol $mkCol) {
 
-        list($parentUri, $newName) = URLUtil::splitPath($uri);
+        list($parentUri, $newName) = Uri\split($uri);
 
         // Making sure the parent exists
         try {
@@ -1414,7 +1413,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
             // The If-Unmodified-Since will allow allow the request if the
             // entity has not changed since the specified date.
-            $date = HTTP\Util::parseHTTPDate($ifUnmodifiedSince);
+            $date = HTTP\parseDate($ifUnmodifiedSince);
 
             // We must only check the date if it's valid
             if ($date) {

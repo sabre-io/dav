@@ -293,9 +293,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_UNMODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
-            'REQUEST_URI'              => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Unmodified-Since' => 'Tue, 06 Nov 1984 08:49:37 GMT',
         ]);
         $httpResponse = new HTTP\ResponseMock();
         $server->checkPreconditions($httpRequest, $httpResponse);

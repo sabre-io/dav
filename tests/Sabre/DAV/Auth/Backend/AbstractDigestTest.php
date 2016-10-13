@@ -40,6 +40,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $header = 'username=array, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_URI' => '/',
+            'REQUEST_METHOD' => 'GET',
             'PHP_AUTH_DIGEST' => $header,
         ]);
 

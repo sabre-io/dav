@@ -578,6 +578,7 @@ ICS;
 
     function deliver($oldObject, &$newObject, $disableScheduling = false) {
 
+        $this->server->httpRequest->setMethod('PUT');
         $this->server->httpRequest->setUrl($this->calendarObjectUri);
         if ($disableScheduling) {
             $this->server->httpRequest->setHeader('Schedule-Reply', 'F');

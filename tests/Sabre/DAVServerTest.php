@@ -227,7 +227,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         $this->server->addPlugin($this->authPlugin);
 
         // This will trigger the actual login procedure
-        $this->authPlugin->beforeMethod(new Request(), new Response());
+        $this->authPlugin->beforeMethod(new Request('GET', '/'), new Response());
     }
 
     /**

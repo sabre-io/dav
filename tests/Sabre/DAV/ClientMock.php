@@ -3,6 +3,7 @@
 namespace Sabre\DAV;
 
 use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\ResponseInterface;
 
 class ClientMock extends Client {
 
@@ -24,7 +25,7 @@ class ClientMock extends Client {
 
     }
 
-    function doRequest(RequestInterface $request) {
+    function doRequest(RequestInterface $request) : ResponseInterface {
 
         $this->request = $request;
         return $this->response;

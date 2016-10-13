@@ -990,9 +990,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testGetTimeoutHeaderInvalid() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'HTTP_TIMEOUT' => 'yourmom',
-        ]);
+        $request = new HTTP\Request('GET' ,'/', ['Timeout' => 'yourmom']);
 
         $this->server->httpRequest = $request;
         $this->locksPlugin->getTimeoutHeader();

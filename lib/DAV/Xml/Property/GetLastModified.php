@@ -75,7 +75,7 @@ class GetLastModified implements Element {
     function xmlSerialize(Writer $writer) {
 
         $writer->write(
-            HTTP\Util::toHTTPDate($this->time)
+            HTTP\toDate($this->time)
         );
 
     }

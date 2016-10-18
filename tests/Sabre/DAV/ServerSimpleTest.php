@@ -120,7 +120,7 @@ class ServerSimpleTest extends AbstractServer{
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
-            'Last-Modified'   => [HTTP\Util::toHTTPDate(new \DateTime('@' . filemtime($filename)))],
+            'Last-Modified'   => [HTTP\toDate(new \DateTime('@' . filemtime($filename)))],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
             ],
             $this->response->getHeaders()
@@ -229,8 +229,9 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUri() {
 
         $serverVars = [
-            'REQUEST_URI' => '/index.php/root',
-            'PATH_INFO'   => '/root',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/index.php/root',
+            'PATH_INFO'      => '/root',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
@@ -247,8 +248,9 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUriPercentEncoding() {
 
         $serverVars = [
-            'REQUEST_URI' => '/index.php/dir/path2/path%20with%20spaces',
-            'PATH_INFO'   => '/dir/path2/path with spaces',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/index.php/dir/path2/path%20with%20spaces',
+            'PATH_INFO'      => '/dir/path2/path with spaces',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
@@ -282,8 +284,9 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUri2() {
 
         $serverVars = [
-            'REQUEST_URI' => '/index.php/root/',
-            'PATH_INFO'   => '/root/',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/index.php/root/',
+            'PATH_INFO'      => '/root/',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
@@ -297,7 +300,8 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUriNoPathInfo() {
 
         $serverVars = [
-            'REQUEST_URI' => '/index.php/root',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/index.php/root',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
@@ -310,11 +314,7 @@ class ServerSimpleTest extends AbstractServer{
 
     function testGuessBaseUriNoPathInfo2() {
 
-        $serverVars = [
-            'REQUEST_URI' => '/a/b/c/test.php',
-        ];
-
-        $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
+        $httpRequest = new HTTP\Request('GET', '/a/b/c/test.php');
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
@@ -329,8 +329,9 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUriQueryString() {
 
         $serverVars = [
-            'REQUEST_URI' => '/index.php/root?query_string=blabla',
-            'PATH_INFO'   => '/root',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/index.php/root?query_string=blabla',
+            'PATH_INFO'      => '/root',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
@@ -348,8 +349,9 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUriBadConfig() {
 
         $serverVars = [
-            'REQUEST_URI' => '/index.php/root/heyyy',
-            'PATH_INFO'   => '/root',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/index.php/root/heyyy',
+            'PATH_INFO'      => '/root',
         ];
 
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);

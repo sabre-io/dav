@@ -10,6 +10,7 @@ use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\VObject;
+use Sabre\Uri;
 
 /**
  * CardDAV plugin
@@ -218,7 +219,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function getAddressbookHomeForPrincipal($principal) {
 
-        list(, $principalId) = \Sabre\HTTP\URLUtil::splitPath($principal);
+        list(, $principalId) = Uri\split($principal);
         return self::ADDRESSBOOK_ROOT . '/' . $principalId;
 
     }

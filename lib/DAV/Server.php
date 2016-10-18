@@ -863,7 +863,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
             // GetLastModified gets special cased
             } elseif ($properties[$property] instanceof Xml\Property\GetLastModified) {
-                $headers[$header] = HTTP\Util::toHTTPDate($properties[$property]->getTime());
+                $headers[$header] = HTTP\toDate($properties[$property]->getTime());
             }
 
         }
@@ -1391,7 +1391,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             // header
             // Note that this header only has to be checked if there was no If-None-Match header
             // as per the HTTP spec.
-            $date = HTTP\Util::parseHTTPDate($ifModifiedSince);
+            $date = HTTP\parseDate($ifModifiedSince);
 
             if ($date) {
                 if (is_null($node)) {
@@ -1402,7 +1402,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
                     $lastMod = new \DateTime('@' . $lastMod);
                     if ($lastMod <= $date) {
                         $response->setStatus(304);
-                        $response->setHeader('Last-Modified', HTTP\Util::toHTTPDate($lastMod));
+                        $response->setHeader('Last-Modified', HTTP\toDate($lastMod));
                         return false;
                     }
                 }

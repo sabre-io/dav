@@ -206,9 +206,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
-            'REQUEST_URI'            => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Modified-Since' => 'Sun, 06 Nov 1994 08:49:37 GMT',
         ]);
         $server->httpResponse = new HTTP\ResponseMock();
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
@@ -227,9 +226,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_MODIFIED_SINCE' => 'Tue, 06 Nov 1984 08:49:37 GMT',
-            'REQUEST_URI'            => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Modified-Since' => 'Tue, 06 Nov 1984 08:49:37 GMT',
         ]);
 
         $httpResponse = new HTTP\ResponseMock();
@@ -243,9 +241,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_MODIFIED_SINCE' => 'Your mother',
-            'REQUEST_URI'            => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Modified-Since' => 'Your mother',
         ]);
         $httpResponse = new HTTP\ResponseMock();
 
@@ -260,9 +257,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_MODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 EST',
-            'REQUEST_URI'            => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Unmodified-Since' => 'Sun, 06 Nov 1994 08:49:37 EST',
         ]);
         $httpResponse = new HTTP\ResponseMock();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
@@ -276,9 +272,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1994 08:49:37 GMT',
-            'REQUEST_URI'              => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Unmodified-Since' => 'Sun, 06 Nov 1994 08:49:37 GMT',
         ]);
         $httpResponse = new HTTP\Response();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
@@ -307,9 +302,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_IF_UNMODIFIED_SINCE' => 'Sun, 06 Nov 1984 08:49:37 CET',
-            'REQUEST_URI'              => '/foo'
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'If-Unmodified-Since' => 'Sun, 06 Nov 1984 08:49:37 CET',
         ]);
         $httpResponse = new HTTP\ResponseMock();
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));

@@ -22,13 +22,10 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $server = new Server($root);
         $server->setBaseUri('/webdav/');
 
-        $serverVars = [
-            'REQUEST_URI'      => '/webdav/bar',
-            'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
-            'HTTP_OVERWRITE'   => 'F',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('GET', '/webdav/bar', [
+            'Destination' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
+            'Overwrite'   => 'F',
+        ]);
 
         $server->httpRequest = $request;
 
@@ -70,15 +67,11 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
      */
     function testEverything() {
 
-        // Request object
-        $serverVars = [
-            'REQUEST_METHOD'   => 'MOVE',
-            'REQUEST_URI'      => '/webdav/bar',
-            'HTTP_DESTINATION' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
-            'HTTP_OVERWRITE'   => 'F',
-        ];
+        $request = new HTTP\Request('MOVE', '/webdav/bar', [
+            'Destination' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
+            'Overwrite'   => 'F',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
 
         $response = new HTTP\ResponseMock();

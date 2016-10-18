@@ -4,9 +4,10 @@ namespace Sabre\DAV\Browser;
 
 use Sabre\DAV;
 use Sabre\DAV\MkCol;
+use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\URLUtil;
+use Sabre\Uri;
 
 /**
  * Browser Plugin
@@ -184,7 +185,7 @@ class Plugin extends DAV\ServerPlugin {
                 case 'mkcol' :
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         // Using basename() because we won't allow slashes
-                        list(, $folderName) = URLUtil::splitPath(trim($postVars['name']));
+                        list(, $folderName) = Uri\split(trim($postVars['name']));
 
                         if (isset($postVars['resourceType'])) {
                             $resourceType = explode(',', $postVars['resourceType']);
@@ -222,12 +223,12 @@ class Plugin extends DAV\ServerPlugin {
                     if ($_FILES) $file = current($_FILES);
                     else break;
 
-                    list(, $newName) = URLUtil::splitPath(trim($file['name']));
+                    list(, $newName) = Uri\split(trim($file['name']));
                     if (isset($postVars['name']) && trim($postVars['name']))
                         $newName = trim($postVars['name']);
 
                     // Making sure we only have a 'basename' component
-                    list(, $newName) = URLUtil::splitPath($newName);
+                    list(, $newName) = Uri\split($newName);
 
                     if (is_uploaded_file($file['tmp_name'])) {
                         $this->server->createFile($uri . '/' . $newName, fopen($file['tmp_name'], 'r'));
@@ -283,8 +284,8 @@ class Plugin extends DAV\ServerPlugin {
             foreach ($subNodes as $subPath => $subProps) {
 
                 $subNode = $this->server->tree->getNodeForPath($subPath);
-                $fullPath = $this->server->getBaseUri() . URLUtil::encodePath($subPath);
-                list(, $displayPath) = URLUtil::splitPath($subPath);
+                $fullPath = $this->server->getBaseUri() . HTTP\encodePath($subPath);
+                list(, $displayPath) = Uri\split($subPath);
 
                 $subNodes[$subPath]['subNode'] = $subNode;
                 $subNodes[$subPath]['fullPath'] = $fullPath;
@@ -454,8 +455,8 @@ HTML;
 
         // If the path is empty, there's no parent.
         if ($path)  {
-            list($parentUri) = URLUtil::splitPath($path);
-            $fullPath = $this->server->getBaseUri() . URLUtil::encodePath($parentUri);
+            list($parentUri) = Uri\split($path);
+            $fullPath = $this->server->getBaseUri() . HTTP\encodePath($parentUri);
             $html .= '<a href="' . $fullPath . '" class="btn">⇤ Go to parent</a>';
         } else {
             $html .= '<span class="btn disabled">⇤ Go to parent</span>';

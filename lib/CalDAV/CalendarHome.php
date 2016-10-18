@@ -6,7 +6,7 @@ use Sabre\DAV;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\MkCol;
 use Sabre\DAVACL;
-use Sabre\HTTP\URLUtil;
+use Sabre\Uri;
 
 /**
  * The CalendarHome represents a node that is usually in a users'
@@ -58,7 +58,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL {
      */
     function getName() {
 
-        list(, $name) = URLUtil::splitPath($this->principalInfo['uri']);
+        list(, $name) = Uri\split($this->principalInfo['uri']);
         return $name;
 
     }

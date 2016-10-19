@@ -9,8 +9,8 @@ use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\VObject;
 use Sabre\Uri;
+use Sabre\VObject;
 
 /**
  * CardDAV plugin
@@ -804,7 +804,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function negotiateVCard($input, &$mimeType = null) {
 
-        $result = HTTP\Util::negotiate(
+        $result = HTTP\negotiateContentType(
             $input,
             [
                 // Most often used mime-type. Version 3

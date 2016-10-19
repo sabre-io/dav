@@ -89,11 +89,11 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setPrincipal('principals/user1');
         $authPlugin = new DAV\Auth\Plugin($authBackend);
-        $authPlugin->beforeMethod(new \Sabre\HTTP\Request(), new \Sabre\HTTP\Response());
+        $authPlugin->beforeMethod(new \Sabre\HTTP\Request('GET', '/'), new \Sabre\HTTP\Response());
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
-        $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
+        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;

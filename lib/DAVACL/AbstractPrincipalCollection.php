@@ -149,7 +149,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
         $r = [];
 
         foreach ($result as $row) {
-            list(, $r[]) = Uri\splitPath($row);
+            list(, $r[]) = Uri\split($row);
         }
 
         return $r;

@@ -5,9 +5,6 @@ namespace Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/HTTP/ResponseMock.php';
-
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -83,9 +80,7 @@ ics;
 
         $this->server = new DAV\Server([$calendar]);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/calendar',
-        ]);
+        $request = new HTTP\Request('GET', '/calendar');
         $this->server->httpRequest = $request;
         $this->server->httpResponse = new HTTP\ResponseMock();
 
